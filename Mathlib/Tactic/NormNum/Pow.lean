@@ -235,7 +235,7 @@ def evalZPow : NormNumExt where eval {u α} e := do
   let rb ← derive (α := q(ℤ)) b
   haveI' : $e =Q $a ^ $b := ⟨⟩
   match rb with
-  | .isBool .. | .isRat _ _ _ _ _ => failure
+  | .isBool .. | .isRat _ .. => failure
   | .isNat sβ nb pb =>
     let e' : Q($α) := q($a ^ $nb)
     match ← derive e' with
