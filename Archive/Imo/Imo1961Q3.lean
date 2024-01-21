@@ -1,39 +1,8 @@
 import Mathlib
 
-@[simp]
-theorem neg_one_pow_eq_one_iff {R : Type*} [Ring R] [CharZero R] [NoZeroDivisors R] {n : ℕ} :
-    (-1 : R) ^ n = 1 ↔ Even n := by
-  cases n.even_xor_odd <;> simp [*]
-
-@[simp]
-theorem neg_one_pow_eq_neg_one_iff {R : Type*} [Ring R] [CharZero R] [NoZeroDivisors R] {n : ℕ} :
-    (-1 : R) ^ n = -1 ↔ Odd n := by
-  cases n.even_xor_odd <;> simp [*]
-
 open Real
 
 namespace Real
-
-theorem pow_eq_one {x : ℝ} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 ∨ x = -1 ∧ Even n := by
-  constructor
-  · intro h
-    have hx : |x| = 1 := by simp [← pow_eq_one_iff_of_nonneg (abs_nonneg x) hn, ← abs_pow, h]
-    refine (eq_or_eq_neg_of_abs_eq hx).imp_right fun hx' ↦ ⟨hx', ?_⟩
-    simpa [hx'] using h
-  · rintro (rfl | ⟨rfl, hn'⟩) <;> simp [*]
-
-theorem pow_eq_neg_one {x : ℝ} {n : ℕ} : x ^ n = -1 ↔ x = -1 ∧ Odd n := by
-  rcases eq_or_ne n 0 with rfl | hn; · simp
-  constructor
-  · intro h
-    have hx : |x| = 1 := by simp [← pow_eq_one_iff_of_nonneg (abs_nonneg x) hn, ← abs_pow, h]
-    rcases eq_or_eq_neg_of_abs_eq hx with rfl | rfl <;> simp_all
-  · rintro ⟨rfl, hn⟩
-    rwa [neg_one_pow_eq_neg_one_iff]
-
-theorem cos_eq_neg_one_iff {x : ℝ} : cos x = -1 ↔ ∃ k : ℤ, (2 * k + 1) * π = x := by
-  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
-  simp [eq_sub_iff_add_eq, add_mul, mul_assoc, mul_left_comm]
 
 theorem cos_even_int_mul_pi {k : ℤ} (hk : Even k) : cos (k * π) = 1 := by
   rcases hk with ⟨k, rfl⟩
@@ -44,14 +13,6 @@ theorem cos_even_int_mul_pi {k : ℤ} (hk : Even k) : cos (k * π) = 1 := by
 theorem cos_odd_int_mul_pi {k : ℤ} (hk : Odd k) : cos (k * π) = -1 := by
   rcases hk with ⟨k, rfl⟩
   simpa [add_mul] using cos_even_int_mul_pi (even_two_mul k)
-
-theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
-  simp_rw [← cos_sub_pi_div_two, cos_eq_one_iff, eq_sub_iff_add_eq']
-
-theorem sin_eq_neg_one_iff {x : ℝ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
-  rw [← neg_eq_iff_eq_neg, ← sin_neg, sin_eq_one_iff, neg_surjective.exists]
-  simp only [← neg_eq_iff_eq_neg]
-  simp [add_comm]
 
 @[simp]
 theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
@@ -69,15 +30,16 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
   constructor
   · intro h
     rcases eq_or_ne (sin x) 0 with hsinx | hsinx
-    · rw [hsinx, zero_pow' _ h₀, sub_zero, pow_eq_one h₀, cos_eq_one_iff, cos_eq_neg_one_iff] at h
+    · rw [hsinx, zero_pow' _ h₀, sub_zero, pow_eq_one_iff_of_ne_zero h₀, cos_eq_one_iff,
+        cos_eq_neg_one_iff] at h
       rcases h with ⟨k, rfl⟩ | ⟨⟨k, rfl⟩, hn⟩
       · cases n.even_or_odd with
         | inl hn => refine .inl ⟨⟨k * 2, ?_⟩, hn⟩; simp [mul_assoc]
         | inr hn => exact .inr <| .inl ⟨⟨_, rfl⟩, hn⟩
-      · exact .inl ⟨⟨2 * k + 1, mod_cast rfl⟩, hn⟩
+      · exact .inl ⟨⟨2 * k + 1, by push_cast; ring⟩, hn⟩
     · rcases eq_or_ne (cos x) 0 with hcosx | hcosx
       · right; right
-        rw [hcosx, zero_pow' _ h₀, zero_sub, ← neg_inj, neg_neg, pow_eq_neg_one,
+        rw [hcosx, zero_pow' _ h₀, zero_sub, ← neg_inj, neg_neg, pow_eq_neg_one_iff,
           sin_eq_neg_one_iff] at h
         simpa only [eq_comm] using h
       · have hcos1 : |cos x| < 1 := by
