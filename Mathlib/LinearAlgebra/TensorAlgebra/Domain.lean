@@ -37,7 +37,7 @@ suppress_compilation
 instance FreeMonoid.instUniqueProds {κ : Type*} : UniqueProds (FreeMonoid κ) where
   uniqueMul_of_nonempty := fun ha hb =>
     have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, u.toList.length ≤ w.toList.length :=
+        ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
       ⟨(s.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
           Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
             Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
@@ -45,9 +45,7 @@ instance FreeMonoid.instUniqueProds {κ : Type*} : UniqueProds (FreeMonoid κ) w
         fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
     have ⟨x, hx, hx_spec⟩ := max_length ha
     have ⟨y, hy, hy_spec⟩ := max_length hb
-    ⟨x, hx, y, hy, fun u v hu hv h => by
-      apply List.append_inj h
-      apply And.left
+    ⟨x, hx, y, hy, fun u v hu hv h => List.append_inj h <| And.left <| by
       rewrite [← toList.apply_eq_iff_eq, toList_mul, toList_mul] at h
       rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
         ← List.length_append, ← List.length_append]
