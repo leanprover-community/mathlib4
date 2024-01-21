@@ -811,7 +811,7 @@ lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
     HasFundamentalDomain G α ν := ⟨⟨s, fund_dom_s⟩⟩
 
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
---@[to_additive]
+@[to_additive]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
     [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) :
@@ -845,9 +845,9 @@ local notation "α_mod_G" => AddAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-/-- A measure `μ` on the `AddQuotient` of `α` mod `G` satisfies `AddQuotientMeasureEqMeasurePreimage`
-if: for any fundamental domain `t`, and any measurable subset `U` of the quotient,
-`μ U = volume ((π ⁻¹' U) ∩ t)`. -/
+/-- A measure `μ` on the `AddQuotient` of `α` mod `G` satisfies
+  `AddQuotientMeasureEqMeasurePreimage` if: for any fundamental domain `t`, and any measurable
+  subset `U` of the quotient, `μ U = volume ((π ⁻¹' U) ∩ t)`. -/
 class AddQuotientMeasureEqMeasurePreimage (ν : Measure α) (μ : Measure (Quotient α_mod_G)) : Prop
     where
   add_projection_respects_measure' : ∀ (t : Set α) (_ : IsAddFundamentalDomain G t ν),
@@ -952,8 +952,8 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_of_volume_zero
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure, then it is itself `SigmaFinite`. -/
---@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
--- instance
+@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
+--instance
 lemma instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
    [i : SigmaFinite ν] [i' : HasFundamentalDomain G α ν]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -964,13 +964,13 @@ lemma instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
   · obtain ⟨s, fund_dom_s⟩ := i'
     rw [projection_respects_measure (μ := μ) fund_dom_s]
     sorry
-    -- · have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+  -- have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     --   rw [this, iUnion_inter]
     --   refine lt_of_le_of_lt ?_ (hA n)
     --   rw [fund_dom_s.measure_eq_tsum (A n)]
     --   exact measure_iUnion_le _
     -- show MeasurableSet (π ⁻¹' (π '' (A n)))
-    -- have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+  -- have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     -- rw [this]
     -- refine MeasurableSet.iUnion ?_
     -- intro g
@@ -980,9 +980,9 @@ lemma instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
   · rw [← image_iUnion,  hA']
     refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
 
-/-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite covolume
-is a finite measure. -/
---@[to_additive]
+/-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
+covolume is a finite measure. -/
+@[to_additive]
 theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ]
     [hasFun : HasFundamentalDomain G α ν] (h : covolume G α ν ≠ ⊤) :
@@ -995,9 +995,9 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     rw [h𝓕.covolume_eq_volume]
   exact inferInstance
 
-/-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite covolume.
--/
---@[to_additive]
+/-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
+covolume. -/
+@[to_additive]
 theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ]
     [hasFun : HasFundamentalDomain G α ν] :
