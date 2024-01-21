@@ -10,8 +10,11 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Basis
 
 This file provides the following instances:
   * instNoZeroDivisorsMonoidAlgebraFreeMonoid
-      If `R` is a semiring with no zero-divisors and `κ` is a type with
-      decidable equality then `MonoidAlgebra (FreeMonoid κ) has no zero-divisors.
+      If `R` is a semiring with no zero-divisors and `κ` is any type
+      then `MonoidAlgebra (FreeMonoid κ) has no zero-divisors.
+  * FreeAlgebra.instNoZeroDivisors
+      If `R` is a commutative semiring with no zero-divisors and `X` is any type
+      then `MonoidAlgebra R X` has no zero-divisors.
   * TensorAlgebra.instNoZeroDivisors
       If `R` is a commutative semiring with no zero-divisors and `M` is a
       free `Module` over `R` then `TensorAlgebra R M` has no zero-divisors.
