@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Submodule.Basic
 
 #align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
@@ -253,7 +253,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
     ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
-      from { toFun := FunLike.coe,
+      from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum

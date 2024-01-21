@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Andre
   Johannes Hölzl, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 
@@ -115,5 +116,12 @@ theorem restrictScalars_top : restrictScalars S (⊤ : Submodule R M) = ⊤ :=
 theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = ⊤ ↔ p = ⊤ := by
   simp [SetLike.ext_iff]
 #align submodule.restrict_scalars_eq_top_iff Submodule.restrictScalars_eq_top_iff
+
+/-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
+we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. -/
+def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
+  toFun := restrictScalars S
+  map_sInf' s := by ext; simp
+  map_sSup' s := by rw [← toAddSubmonoid_eq, toAddSubmonoid_sSup, ← Set.image_comp]; simp
 
 end Submodule

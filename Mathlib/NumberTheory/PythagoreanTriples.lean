@@ -219,8 +219,8 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
   convert h.normalize.mul_isClassified (Int.gcd x y)
         (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
-  · exact Int.gcd_dvd_left x y
-  · exact Int.gcd_dvd_right x y
+  · exact Int.gcd_dvd_left
+  · exact Int.gcd_dvd_right
   · exact h.gcd_dvd
 #align pythagorean_triple.is_classified_of_normalize_is_primitive_classified PythagoreanTriple.isClassified_of_normalize_isPrimitiveClassified
 

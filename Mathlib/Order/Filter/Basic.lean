@@ -1252,6 +1252,10 @@ theorem eventually_principal {a : Set α} {p : α → Prop} : (∀ᶠ x in 𝓟 
   Iff.rfl
 #align filter.eventually_principal Filter.eventually_principal
 
+theorem Eventually.forall_mem {α : Type*} {f : Filter α} {s : Set α} {P : α → Prop}
+    (hP : ∀ᶠ x in f, P x) (hf : 𝓟 s ≤ f) : ∀ x ∈ s, P x :=
+  Filter.eventually_principal.mp (hP.filter_mono hf)
+
 theorem eventually_inf {f g : Filter α} {p : α → Prop} :
     (∀ᶠ x in f ⊓ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s ∩ t, p x :=
   mem_inf_iff_superset
@@ -2429,6 +2433,9 @@ theorem map_comap_of_surjective {f : α → β} (hf : Surjective f) (l : Filter 
     map f (comap f l) = l :=
   map_comap_of_mem <| by simp only [hf.range_eq, univ_mem]
 #align filter.map_comap_of_surjective Filter.map_comap_of_surjective
+
+theorem comap_injective {f : α → β} (hf : Surjective f) : Injective (comap f) :=
+  LeftInverse.injective <| map_comap_of_surjective hf
 
 theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjective f) : map f ⊤ = ⊤ :=
   (congr_arg _ comap_top).symm.trans <| map_comap_of_surjective hf ⊤
