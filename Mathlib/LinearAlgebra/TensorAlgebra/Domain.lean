@@ -32,14 +32,13 @@ open FreeMonoid in
 instance instNoZeroDivisorsMonoidAlgebraFreeMonoid {R : Type*} [Semiring R] [NoZeroDivisors R]
     {κ : Type*} : NoZeroDivisors (MonoidAlgebra R (FreeMonoid κ)) where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun hxy =>
-    letI := Classical.decEq κ
+    haveI := Classical.decEq (FreeMonoid κ)
     or_iff_not_and_not.mpr <| not_and.mpr <| fun hx hy => not_not.mpr hxy <| by
-    haveI : DecidableEq (FreeMonoid κ) := inferInstanceAs (DecidableEq (List κ))
     have max_length {x : MonoidAlgebra R (FreeMonoid κ)} (hx : x ≠ 0) :
         ∃ w ∈ x.support, ∀ u ∈ x.support, u.length ≤ w.length :=
       ⟨(x.support.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
           Option.ne_none_iff_isSome.mp <| fun h => hx <| Finsupp.support_eq_empty.mp <|
-            Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp <| h,
+            Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
         Finset.mem_toList.mp <| List.argmax_mem <| Option.get_mem _,
         fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
     have ⟨xmax, hxmax_mem, hxmax_spec⟩ := max_length hx
