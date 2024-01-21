@@ -340,7 +340,7 @@ theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ
     leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
     leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
   have hσ : σ ^ p ^ n = 1
-  · rw [FunLike.ext'_iff, coe_pow]
+  · rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices : Fintype.card f.fixedPoints = (support σ)ᶜ.card
   · exact this ▸ (card_compl_support_modEq hσ).symm

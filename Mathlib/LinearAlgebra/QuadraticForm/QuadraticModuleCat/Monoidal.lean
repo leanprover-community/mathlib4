@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
