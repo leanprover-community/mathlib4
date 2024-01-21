@@ -112,7 +112,7 @@ section
 variable [Preadditive C] [HasFiniteBiproducts C]
 
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
-@[simps]
+@[simps!]
 noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Fintype α]
     [Fintype β] {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃+
