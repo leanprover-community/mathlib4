@@ -24,6 +24,10 @@ instance : mkDataE₂Cohomological.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; linarith
   hi₂₃ pq := by dsimp; congr 1; linarith
 
+instance : mkDataE₂CohomologicalNat.HasFirstPageComputation where
+  hi₀₁ pq := by dsimp; congr 1; linarith
+  hi₂₃ pq := by dsimp; congr 1; linarith
+
 section
 
 variable [data.HasFirstPageComputation]

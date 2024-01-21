@@ -422,6 +422,9 @@ noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ whe
   iso := isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
     truncLE₀GE₀ToHeartιHeart
 
+noncomputable instance : (t : TStructure (DerivedCategory C)).homology₀.ShiftSequence ℤ :=
+  (inferInstance : (homologyFunctor C 0).ShiftSequence ℤ)
+
 end TStructure
 
 open DerivedCategory.TStructure

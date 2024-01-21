@@ -323,6 +323,7 @@ import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.Convergence
+import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
 import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
