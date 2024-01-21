@@ -583,14 +583,6 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
   /- We know that the measures integrate in the same way continuous compactly supported functions,
   up to the factor `c = haarScalarFactor μ' μ`. -/
   let c := haarScalarFactor μ' μ
-  /- By regularity, every compact set may be approximated by a continuous compactly supported
-  function. Therefore, the measures coincide on compact sets. -/
-  have A : ∀ k, IsCompact k → μ' k = (c • μ) k := by
-    intro k hk
-    rw [hk.measure_eq_biInf_integral_hasCompactSupport μ',
-        hk.measure_eq_biInf_integral_hasCompactSupport (c • μ)]
-    congr! 7 with f f_cont f_comp _fk _f_nonneg
-    exact integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ f_cont f_comp
   /- By regularity, every measurable set of finite measure may be approximated by compact sets.
   Therefore, the measures coincide on measurable sets of finite measure. -/
   have B : ∀ s, MeasurableSet s → μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
@@ -599,7 +591,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     rw [s_meas.measure_eq_iSup_isCompact_of_ne_top h's.ne,
         s_meas.measure_eq_iSup_isCompact_of_ne_top this]
     congr! 4 with K _Ks K_comp
-    exact A K K_comp
+    exact measure_isMulInvariant_eq_smul_of_isCompact_closure μ' μ K_comp.closure
   /- Finally, replace an arbitrary finite measure set with a measurable version, and use the
   version for measurable sets. -/
   let t := toMeasurable μ' s ∩ toMeasurable μ s
@@ -662,17 +654,22 @@ lemma isHaarMeasure_eq_smul [LocallyCompactSpace G] [SecondCountableTopology G]
 #align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul
 #align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul
 
-/-- **Uniqueness of left-invariant measures**: Given two left-invariant probability measures which
-are inner regular for finite measure sets with respect to compact sets, they coincide. -/
+/-- **Uniqueness of left-invariant measures**: Two Haar measures which are probability measures
+coincide. -/
 @[to_additive]
 lemma haarScalarFactor_eq_one_of_isProbabilityMeasure [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
-    [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
-    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] :
-    haarScalarFactor μ' μ = 1 := by
-  have : μ' univ = (haarScalarFactor μ' μ : ℝ≥0∞) * μ univ :=
-    measure_isMulLeftInvariant_eq_smul_of_ne_top _ _ (by simp) (by simp)
-  simpa [eq_comm] using this
+    [IsHaarMeasure μ] [IsHaarMeasure μ'] : μ' = μ := by
+  have : CompactSpace G := by
+    by_contra H
+    rw [not_compactSpace_iff] at H
+    simpa using measure_univ_of_isMulLeftInvariant μ
+  have A s : μ' s = haarScalarFactor μ' μ • μ s :=
+    measure_isMulInvariant_eq_smul_of_isCompact_closure _ _ isClosed_closure.isCompact
+  have Z := A univ
+  simp only [measure_univ, ENNReal.smul_def, smul_eq_mul, mul_one, ENNReal.one_eq_coe] at Z
+  ext s _hs
+  simp [A s, ← Z]
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
 second countable group. -/
