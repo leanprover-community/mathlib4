@@ -543,7 +543,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
     · simp at hij
     · exact (mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
 
-/-instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
+instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
     X.ConvergesInDegree mkDataE₂CohomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
     exfalso
@@ -566,10 +566,20 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
     rintro i ⟨j, hj⟩ hij pq hpq _ _ _ rfl rfl rfl h
     obtain _|⟨i, hi⟩ := i
     · obtain _|j := j
-      · intro n₀ n₁ n₂ hn₁ hn₂ hn₁'
+      · intro n₀ n₁ n₂ hn₁ hn₂ _
         subst hpq
         dsimp
-        sorry
+        apply X.isIso_EMapFourδ₂Toδ₁'
+        · apply X.isIso_H_map_twoδ₁Toδ₀' n₁ n₂ hn₂
+          · apply isZero₁_of_isFirstQuadrant
+            simp
+          · apply isZero₁_of_isFirstQuadrant
+            simp
+        · refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+          · apply isZero₁_of_isFirstQuadrant
+            simp
+          · apply isZero₁_of_isFirstQuadrant
+            simp
       · dsimp at hij
         change some _ = none at hij
         simp at hij
@@ -583,7 +593,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
           change some _ = _ at hij
           simpa using hij
         rw [← hpq]
-        rfl-/
+        rfl
 
 end SpectralObject
 

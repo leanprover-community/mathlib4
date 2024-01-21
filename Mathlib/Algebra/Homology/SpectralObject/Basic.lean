@@ -600,6 +600,16 @@ lemma EMap_comp' (h : α ≫ β  = γ) :
   subst h
   simp only [EMap_comp]
 
+lemma isIso_EMap
+    (h₀ : IsIso ((X.H n₀).map ((functorArrows ι 2 3 3).map α)))
+    (h₁ : IsIso ((X.H n₁).map ((functorArrows ι 1 2 3).map α)))
+    (h₂ : IsIso ((X.H n₂).map ((functorArrows ι 0 1 3).map α))) :
+    IsIso (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) := by
+  have : IsIso (shortComplexEMap X n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) :=
+    @ShortComplex.isIso_of_isIso _ _ _ _ _ _ h₀ h₁ h₂
+  dsimp [EMap]
+  infer_instance
+
 end
 
 section

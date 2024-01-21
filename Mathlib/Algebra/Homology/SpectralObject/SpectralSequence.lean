@@ -24,9 +24,19 @@ lemma isIso_homOfLE {ι : Type*} [Preorder ι] (i j : ι) (hij : i = j) :
   change IsIso (𝟙 _)
   infer_instance
 
-section
+namespace ComposableArrows
 
 variable {ι : Type*} [Preorder ι]
+
+noncomputable abbrev twoδ₁Toδ₀' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
+    (hi₁₂ : i₁ ≤ i₂) :
+    mk₁ (homOfLE (hi₀₁.trans hi₁₂)) ⟶ mk₁ (homOfLE hi₁₂) :=
+  twoδ₁Toδ₀ (homOfLE hi₀₁) _ _ rfl
+
+noncomputable abbrev twoδ₂Toδ₁' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
+    (hi₁₂ : i₁ ≤ i₂) :
+     mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
+  twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl
 
 noncomputable abbrev fourδ₁Toδ₀' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
@@ -46,7 +56,7 @@ noncomputable abbrev fourδ₄Toδ₃' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁
       mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE (hi₂₃.trans hi₃₄)) :=
   fourδ₄Toδ₃ _ _ _ (homOfLE hi₃₄) _ rfl
 
-end
+end ComposableArrows
 
 namespace Abelian
 
@@ -251,6 +261,30 @@ variable {ι c r₀}
 
 section
 
+variable (n n' : ℤ) (hn' : n + 1 = n') (i₀ i₁ i₂ : ι) (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂)
+  (h₁ : IsZero ((X.H n).obj (mk₁ (homOfLE h₀₁))))
+  (h₂ : IsZero ((X.H n').obj (mk₁ (homOfLE h₀₁))))
+
+lemma mono_H_map_twoδ₁Toδ₀' : Mono ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
+  have := h₁
+  apply (X.exact₂ n (homOfLE h₀₁) (homOfLE h₁₂) _ rfl).mono_g
+  apply h₁.eq_of_src
+
+lemma epi_H_map_twoδ₁Toδ₀' : Epi ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
+  have := hn'
+  have := h₂
+  apply (X.exact₃ n n' hn' (homOfLE h₀₁) (homOfLE h₁₂) _ rfl).epi_f
+  apply h₂.eq_of_tgt
+
+lemma isIso_H_map_twoδ₁Toδ₀' : IsIso ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
+  have := X.mono_H_map_twoδ₁Toδ₀' n i₀ i₁ i₂ h₀₁ h₁₂ h₁
+  have := X.epi_H_map_twoδ₁Toδ₀' n n' hn' i₀ i₁ i₂ h₀₁ h₁₂ h₂
+  apply isIso_of_mono_of_epi
+
+end
+
+section
+
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
     (i₀ i₁ i₂ i₃ i₄ i₅ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
@@ -367,6 +401,17 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 
 noncomputable def EMapFourδ₂Toδ₁' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₂Toδ₁' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
+
+lemma isIso_EMapFourδ₂Toδ₁'
+    (h₁ : IsIso ((X.H n₁).map (twoδ₁Toδ₀' i₁ i₂ i₃ hi₁₂ hi₂₃)))
+    (h₂ : IsIso ((X.H n₂).map (twoδ₂Toδ₁' i₀ i₁ i₂ hi₀₁ hi₁₂))) :
+    IsIso (X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
+  apply X.isIso_EMap
+  · dsimp
+    erw [Functor.map_id]
+    infer_instance
+  · exact h₁
+  · exact h₂
 
 end
 
