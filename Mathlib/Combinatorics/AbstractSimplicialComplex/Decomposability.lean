@@ -114,6 +114,12 @@ variable {K}
 @[reducible] noncomputable def decompositionInterval (R : K.facets → Finset α) (s : K.facets) :
     Finset (K.faces) := FinsetIcc K (R s) s.1
 
+@[simp]
+lemma decompositionInterval_def (R : K.facets → Finset α) (s : K.facets) (t : K.faces) :
+    t ∈ decompositionInterval R s ↔ R s ≤ t ∧ t.1 ≤ s.1 := by
+  unfold decompositionInterval
+  simp only [mem_FinsetIcc, Finset.le_eq_subset]
+
 /-- If `R` and `DF` define a decomposition of `K`, and if `s` is a facet and `t` is a face, then
 `t` is in the decomposition interval `decompositionInterval R s` if and only if `DF t = s`.-/
 lemma mem_decompositionInterval {R : K.facets → Finset α}  {DF : K.faces → K.facets}

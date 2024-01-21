@@ -1,5 +1,7 @@
 /- Copyright-/
 import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Group.NatPowAssoc
 
 /-! This files contains the definition of the Euler-Poincaré characteristic of a finite simplicial
 complex, and its calculation for a decomposable complex (see
@@ -13,38 +15,12 @@ variable {α : Type u} {K L : AbstractSimplicialComplex α}
 
 namespace AbstractSimplicialComplex
 
-/-
-/-- If `K` is finite, definition of the set of faces of `K` as a finset of `Finset α`.-/
-noncomputable def finset_of_faces (hfin : FiniteComplex K) : Finset (Finset α) :=
-  Set.Finite.toFinset (Set.finite_coe_iff.mp hfin)
-
-/-- If `K` is finite, definition of the set of facets of `K` as a finset of `Finset α`.-/
-noncomputable def finset_of_facets (hfin : FiniteComplex K) : Finset (Finset α) :=
-  Set.Finite.toFinset (Set.finite_coe_iff.mp (@Finite.of_injective _ K.faces hfin
-  (fun s => ⟨s.1, facets_subset s.2⟩) (fun _ _ h ↦ by
-  simp only [Subtype.mk.injEq, SetCoe.ext_iff] at h; exact h)) )
-
-/-- The Euler-Poincaré characteristic of a finite simplicial complex `K` is the sum over all faces
-`s` of `K` of `-1` to the dimension of `s` (i.e. `s.card - 1`). -/
-noncomputable def EulerPoincareCharacteristic (hfin : FiniteComplex K) : ℤ :=
-  ∑ s in (finset_of_faces hfin), (-1 : ℤ)^(s.card - 1)
-
-/-- If two abstract simplicial complexes have the same set of faces, then they have the same
-Euler-Poincaré characteristic.-/
-lemma EulerPoincareCharacteristic_congr (hKfin : FiniteComplex K) (hLfin : FiniteComplex L)
-    (heq : K.faces = L.faces) :
-    EulerPoincareCharacteristic hKfin = EulerPoincareCharacteristic hLfin := by
-  have heq : finset_of_faces hKfin = finset_of_faces hLfin := by
-    ext s
-    unfold finset_of_faces
-    rw [Set.Finite.mem_toFinset, Set.Finite.mem_toFinset, heq]
-  rw [EulerPoincareCharacteristic, heq, EulerPoincareCharacteristic]
--/
-
 /-- If `K` is finite, definition of the set of faces of `K` as a finset of `K.faces`.-/
+@[reducible]
 noncomputable def finset_of_faces (hfin : FiniteComplex K) : Finset K.faces :=
   @Finset.univ K.faces (@Fintype.ofFinite _ hfin)
 
+-- TODO: integrate into next definition, if not used anywhere.
 /-- If `K` is finite, then `K.facets` is finite.-/
 lemma facets_finite (hfin : FiniteComplex K) : Finite K.facets :=
   @Finite.of_injective _ K.faces hfin
@@ -52,6 +28,7 @@ lemma facets_finite (hfin : FiniteComplex K) : Finite K.facets :=
   simp only [Subtype.mk.injEq, SetCoe.ext_iff] at h; exact h)
 
 /-- If `K` is finite, definition of the set of facets of `K` as a finset of `K.facets`.-/
+@[reducible]
 noncomputable def finset_of_facets (hfin : FiniteComplex K) : Finset K.facets :=
   @Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin))
 
@@ -64,42 +41,242 @@ noncomputable def EulerPoincareCharacteristic (hfin : FiniteComplex K) : ℤ :=
 
 variable (R : K.facets → Finset α) (DF : K.faces → K.facets) (hdec : isDecomposition R DF)
 
-/-- The set of `π₀` facets as a set of `Finset α`.-/
-def π₀Facets : Set K.facets := {s | isPi0Facet R s}
+/-- If `s` is a nonempty finset, then the sum of `(-1)^t.card` on the powerset of `s` is `0`.-/
+lemma AlternatingSumPowerset {s : Finset α} (hsne : s.Nonempty) :
+    ∑ t in s.powerset, (-1)^t.card = 0 := by
+  have h := Finset.sum_pow_mul_eq_add_pow (-1 : ℤ) (1 : ℤ) s
+  rw [← Finset.card_pos] at hsne
+  simp only [zero_pow hsne, one_pow, mul_one, add_left_neg] at h
+  exact h
 
-/-- The set of homology facets as a set of `Finset α`.-/
-def homologyFacets : Set (Finset α) := {s | ∃ (hsf : s ∈ K.facets), isHomologyFacet R ⟨s, hsf⟩}
+/-- If `s ⊂ t` are finsets, then the sum of `(-1)^(x.card - 1)` on the interval `Finset.Icc s t`
+is `0`.-/
+lemma sum_on_sinsetInterval1 [DecidableEq α] {s t : Finset α} (hst : s ⊂ t) :
+    ∑ x in Finset.Icc s t, (-1)^x.card = 0 := by
+  set i : (x : Finset α) → x ∈ Finset.Icc s t → Finset α := by
+    intro x _
+    exact x \ s
+  have hi : ∀ (x : Finset α) (hx : x ∈ Finset.Icc s t), i x hx ∈ (t \ s).powerset := by
+    intro _ hx
+    exact Finset.mem_powerset.mpr (Finset.sdiff_subset_sdiff (Finset.mem_Icc.mp hx).2 (by rfl))
+  set j : (x : Finset α) → x ∈ (t \ s).powerset → Finset α := by
+    intro x _
+    exact x ⊔ s
+  have hj : ∀ (x : Finset α) (hx : x ∈ (t \ s).powerset), j x hx ∈ Finset.Icc s t := by
+    intro x hx
+    simp only [Finset.sup_eq_union, Finset.mem_Icc, Finset.le_eq_subset]
+    constructor
+    · exact Finset.subset_union_right _ _
+    · exact Finset.union_subset (Finset.subset_sdiff.mp (Finset.mem_powerset.mp hx)).1
+        (le_of_lt hst)
+  rw [Finset.sum_bij' (s := Finset.Icc s t) (t := Finset.powerset (t \ s))
+    (f := fun x => (-1)^x.card) (g := fun x ↦ (-1)^x.card * (-1)^s.card) i j hi hj]
+  · rw [← Finset.sum_mul, AlternatingSumPowerset (Finset.sdiff_nonempty.mpr (not_le_of_lt hst)),
+        zero_mul]
+  · intro x hx
+    simp only [Finset.sup_eq_union, Finset.sdiff_union_self_eq_union, Finset.union_eq_left]
+    exact (Finset.mem_Icc.mp hx).1
+  · intro x hx
+    simp only [Finset.sup_eq_union]
+    rw [Finset.union_sdiff_self, Finset.sdiff_eq_self_iff_disjoint]
+    exact (Finset.subset_sdiff.mp (Finset.mem_powerset.mp hx)).2
+  · intro x hx
+    rw [Finset.card_sdiff (Finset.mem_Icc.mp hx).1]
+    rw [← npow_add, tsub_add_cancel_of_le (Finset.card_le_card (Finset.mem_Icc.mp hx).1)]
 
-/-- If `K` is finite, then it set of homology facets is finite.-/
-lemma HomologyFacets_finite_of_finite (hfin : FiniteComplex K) : (homologyFacets R).Finite := by
-  rw [← Set.finite_coe_iff]
-  apply @Finite.of_injective _ K.faces hfin
-    (fun s => ⟨s.1, facets_subset (by match s.2 with | ⟨hsf,_⟩ => exact hsf)⟩)
-  exact fun _ _ heq ↦ by simp only [Subtype.mk.injEq, SetCoe.ext_iff] at heq; exact heq
+/-- If `s` is a nonempty finset, then the sum of `(-1)^(x.card - 1)` on the interval
+`Finset.Ioc ∅ s` is `1`.-/
+lemma Sum_on_FinsetInterval2 [DecidableEq α] {s : Finset α} (hsne : s.Nonempty) :
+    ∑ x in Finset.Ioc ∅ s, (-1)^(x.card - 1) = 1 := by
+  rw [@Finset.sum_congr ℤ (Finset α) (Finset.Ioc ∅ s) _ (fun s => (-1)^(Finset.card s - 1)) (fun s => (-1 : ℤ) * (-1 : ℤ)^(Finset.card s)) _ rfl
+  (fun s hs => by simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset] at hs
+                  simp only
+                  conv => rhs
+                          congr
+                          rw [←(pow_one (-1 : ℤ))]
+                  rw [←pow_add]
+                  conv => lhs
+                          rw [←(one_mul ((-1 : ℤ)^(Finset.card s - 1)))]
+                          congr
+                          rw [←neg_one_pow_two]
+                  rw [←pow_add]
+                  apply congr_arg
+                  rw [add_comm, add_comm 1 _, Nat.add_succ, ←(Nat.succ_eq_add_one (Finset.card s)), Nat.succ_inj', ←Nat.succ_eq_add_one,
+                         ←Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos (by rw [←Finset.card_pos] at hs; exact hs.1)]
+  )]
+  rw [←Finset.mul_sum]
+  have hsum := AlternatingSumPowerset hsne
+  have hunion : Finset.powerset s = {∅} ∪ Finset.Ioc ∅ s := by
+    ext t
+    simp only [Finset.mem_powerset, ge_iff_le, Finset.le_eq_subset, Finset.mem_union, Finset.mem_singleton,
+  Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset]
+    constructor
+    . exact fun ht => by by_cases hte : t = ∅
+                         . exact Or.inl hte
+                         . rw [←ne_eq, ←Finset.nonempty_iff_ne_empty] at hte
+                           exact Or.inr ⟨hte, ht⟩
+    . exact fun ht => by cases ht with
+                         | inl hte => rw [hte]; simp only [Finset.empty_subset]
+                         | inr htne => exact htne.2
+  have hdisj : Disjoint {∅} (Finset.Ioc ∅ s) := by
+    rw [Finset.disjoint_iff_ne]
+    intro t ht u hu
+    simp only [Finset.mem_singleton] at ht
+    by_contra habs
+    rw [ht] at habs
+    rw [←habs] at hu
+    simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, lt_self_iff_false, Finset.empty_subset, and_true] at hu
+  rw [←(Finset.disjUnion_eq_union _ _ hdisj)] at hunion
+  rw [hunion] at hsum
+  rw [Finset.sum_disjUnion hdisj] at hsum
+  simp only [Finset.sum_singleton, Finset.card_empty, pow_zero, ge_iff_le, Finset.le_eq_subset] at hsum
+  rw [add_comm, ←eq_neg_iff_add_eq_zero] at hsum
+  rw [hsum]
+  simp only [mul_neg, mul_one, neg_neg]
+
+variable {R DF}
+/-- If `s` is a boring facet, then `R s` is nonempty and strictly contained in `s`.-/
+lemma BoringFacet_image_by_R {s : K.facets} (hs : ¬ isPi0Facet R s ∧ ¬ isHomologyFacet R s) :
+    R s ≠ ∅ ∧ R s ⊂ s :=  by
+  constructor
+  · intro he
+    have heq : decompositionInterval R s = Set.Iic (⟨s.1, facets_subset s.2⟩ : K.faces) := by
+      ext t
+      simp only [Finset.mem_coe, decompositionInterval_def, he, Finset.le_eq_subset,
+        Finset.empty_subset, true_and, Set.mem_Iic]
+      rfl
+    exact hs.1 heq
+  · by_contra habs
+    have heq : decompositionInterval R s = {⟨s.1, facets_subset s.2⟩} := by
+      ext x
+      simp only [decompositionInterval_def, eq_of_le_of_not_lt (hdec.1 s) habs, Finset.le_eq_subset,
+        Finset.mem_singleton]
+      erw [← le_antisymm_iff (a := s.1) (b := x.1), ← SetCoe.ext_iff, eq_comm]
+    exact hs.2 ⟨hs.1, heq⟩
 
 lemma sum_fiber_pi0Facet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
     (hs : isPi0Facet R s) : ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin),
-    (-1) ^ (i.1.card - 1) = 1 := sorry
+    (-1) ^ (i.1.card - 1) = 1 := by
+  sorry
 
 lemma sum_fiber_homologyFacet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
     (hs : isHomologyFacet R s) : ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin),
     (-1) ^ (i.1.card - 1) = (-1)^(s.1.card - 1) := sorry
 
-lemma sum_fiber_boringFacet [DecidableEq K.facets] (hfin : FiniteComplex K) {s : K.facets}
-    (hs : ¬ isPi0Facet R s ∧ ¬ isHomologyFacet R s) :
-    ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin), (-1) ^ (i.1.card - 1) = 0:=
-  sorry
+lemma sum_fiber_boringFacet [DecidableEq α] [DecidableEq K.facets] (hfin : FiniteComplex K)
+    {s : K.facets} (hs : ¬ isPi0Facet R s ∧ ¬ isHomologyFacet R s) :
+    ∑ i in Finset.filter (fun t ↦ DF t = s) (finset_of_faces hfin), (-1) ^ (i.1.card - 1) = 0 := by
+  letI := @Fintype.ofFinite _ hfin
+  rw [Finset.sum_congr (s₂ := decompositionInterval R s) (g := fun s ↦ (-1)^(s.1.card -1))]
+  · sorry
+  · ext x
+    rw [finset_of_faces, mem_decompositionInterval hdec, Finset.mem_filter, eq_comm]
+    simp only [Finset.mem_univ, true_and]
+  · exact fun _ _ ↦ rfl
 
-variable {R DF}
+
+/-
+/- Now we have to actually calculate some sums. First, if s is boring facet, we show that the sum on the corresponding interval is 0.-/
+
+
+/- Suppose that we have a decomposition (R,DF). If s is a boring facet, then the sum on the corresponding decomposition interval is 0.-/
+lemma Sum_on_DecompositionInterval_BoringFacet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
+{s : Finset α} (hs : s ∈ BoringFacets hdec) : Sum_on_DecompositionInterval R s = 0 := by
+  unfold Sum_on_DecompositionInterval
+  unfold DecompositionInterval'
+  simp only [(BoringFacet_image_by_R hdec hs).1, ge_iff_le, Finset.le_eq_subset, gt_iff_lt, Finset.lt_eq_subset,
+  dite_eq_ite, ite_false, dite_eq_right_iff]
+  intro hsf
+  rw [@Finset.sum_congr ℤ (Finset α) (Finset.Icc (R ⟨s,hsf⟩) s) _ (fun s => (-1 : ℤ)^(Finset.card s - 1))
+      (fun s => (-1 : ℤ) * (-1 : ℤ)^(Finset.card s)) _ rfl
+      (fun s hsi => by simp only
+                       simp only [gt_iff_lt, Finset.lt_eq_subset, Finset.mem_Icc, Finset.le_eq_subset] at hsi
+                       have hsne : s.Nonempty := by
+                         by_contra hse
+                         rw [Finset.not_nonempty_iff_eq_empty] at hse
+                         rw [hse, Finset.subset_empty] at hsi
+                         exact (BoringFacet_image_by_R hdec hs).1 hsi.1
+                       rw [←(one_mul ((-1 : ℤ)^(Finset.card s - 1)))]
+                       conv => lhs
+                               congr
+                               rw [←neg_one_pow_two]
+                       rw [←pow_add]
+                       conv => rhs
+                               congr
+                               rw [←(pow_one (-1 : ℤ))]
+                       rw [←pow_add]
+                       apply congr_arg
+                       rw [add_comm, add_comm 1 _, Nat.add_succ, ←(Nat.succ_eq_add_one (Finset.card s)), Nat.succ_inj', ←Nat.succ_eq_add_one,
+                         ←Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos (by rw [←Finset.card_pos] at hsne; exact hsne)]
+      )]
+  rw [←Finset.mul_sum, Sum_on_FinsetInterval1 (BoringFacet_image_by_R hdec hs).2, mul_zero]
+
+/- Suppose that we have a decomposition (R,DF). If s is a π₀ facet, then the corresponding decomposition interval is (∅,s].-/
+lemma π₀Facet_interval {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) {s : Finset α}
+(hs : s ∈ π₀Facets hdec) : DecompositionInterval' R ⟨s, hs.1⟩ = Finset.Ioc ∅ s := by
+  unfold π₀Facets at hs
+  match hs with
+  | ⟨hsf, hs⟩ => unfold IsPi0Facet at hs
+                 ext t
+                 rw [ComparisonIntervals hdec]
+                 constructor
+                 . exact fun ⟨htf, ht⟩ => by rw [hs] at ht
+                                             simp only [Finset.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset] at ht
+                                             simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset]
+                                             exact ⟨K.nonempty_of_mem htf, ht⟩
+                 . exact fun ht => by simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset] at ht
+                                      exists K.down_closed (facets_subset hsf) ht.2 ht.1
+                                      rw [hs]
+                                      simp only [Finset.mem_Iic, Subtype.mk_le_mk, Finset.le_eq_subset]
+                                      exact ht.2
+
+/- Suppose that we have a decomposition (R,DF). If s is a π₀ facet, then the sum on the corresponding decomposition interval is 1.-/
+lemma Sum_on_DecompositionInterval_π₀Facet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
+{s : Finset α} (hs : s ∈ π₀Facets hdec) : Sum_on_DecompositionInterval R s = 1 := by
+  unfold Sum_on_DecompositionInterval
+  simp only [hs.1, ge_iff_le, dite_true]
+  rw [π₀Facet_interval hdec hs]
+  exact Sum_on_FinsetInterval2 (K.nonempty_of_mem (facets_subset hs.1))
+
+/- Suppose that we have a decomposition (R,DF). If s is a homology facet, then the corresponding decomposition interval is {s}.-/
+lemma HomologyFacet_interval {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF) {s : Finset α}
+(hs : s ∈ HomologyFacets hdec) : DecompositionInterval' R ⟨s, hs.1⟩ = {s} := by
+  unfold HomologyFacets at hs
+  match hs with
+  | ⟨hsf, hs⟩ => unfold IsHomologyFacet at hs
+                 ext t
+                 rw [ComparisonIntervals hdec]
+                 constructor
+                 . exact fun ⟨htf, ht⟩ => by rw [hs.2] at ht
+                                             simp only [Finset.mem_singleton, Subtype.mk.injEq] at ht
+                                             rw [ht]
+                                             simp only [Finset.mem_singleton]
+                 . exact fun ht => by simp only [Finset.mem_singleton] at ht
+                                      rw [ht]
+                                      exists (facets_subset hsf)
+                                      rw [hs.2]
+                                      simp only [Finset.mem_singleton]
+
+
+/- Suppose that we have a decomposition (R,DF). If s is a homology facet, then the sum on the corresponding decomposition interval is
+(-1)^{card(s) - 1}.-/
+lemma Sum_on_DecompositionInterval_HomologyFacet {R : K.facets → Finset α}  {DF : K.faces → K.facets} (hdec : IsDecomposition R DF)
+{s : Finset α} (hs : s ∈ HomologyFacets hdec) : Sum_on_DecompositionInterval R s = (-1 : ℤ)^(Finset.card s - 1) := by
+  unfold Sum_on_DecompositionInterval
+  simp only [hs.1, ge_iff_le, dite_true]
+  rw [HomologyFacet_interval hdec hs]
+  simp only [ge_iff_le, Finset.sum_singleton]
+
+-/
+
 /- Finally we put everything to calculate the Euler-Poincaré characteristic of `K`, for `K` finite
 and having a decomposition: it is equal to the cardinality of the set of `π₀` facets plus the sum
 over homology facets of the function `fun s ↦ (-1)^(s.card - 1)`.-/
 lemma EulerPoincareCharacteristicDecomposable [DecidableEq K.faces] [DecidableEq (Set K.faces)]
     (hfin : FiniteComplex K) :
     EulerPoincareCharacteristic hfin = (Finset.filter (fun (s : K.facets) ↦ isPi0Facet R s)
-    (@Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin)))).card +
-    ∑ s in Finset.filter (fun (s : K.facets) ↦ isHomologyFacet R s)
-    (@Finset.univ K.facets (@Fintype.ofFinite _ (facets_finite hfin))),
+    (finset_of_facets hfin)).card +
+    ∑ s in Finset.filter (fun (s : K.facets) ↦ isHomologyFacet R s) (finset_of_facets hfin),
     (-1 : ℤ)^(s.1.card - 1) := by
   classical
   letI : Finite (K.faces) := hfin
