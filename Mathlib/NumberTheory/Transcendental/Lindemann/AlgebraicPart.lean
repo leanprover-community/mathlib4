@@ -895,7 +895,7 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
 theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
     (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
     (inj : Function.Injective (algebraMap R S))
-    (card_aroots : Multiset.card (p.map (algebraMap R S)).roots = p.natDegree) :
+    (card_aroots : Multiset.card (p.aroots S) = p.natDegree) :
     ∃ c, ((p.aroots S).map fun x => k ^ e • aeval x q).sum = algebraMap R S c := by
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :

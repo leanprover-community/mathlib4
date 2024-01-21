@@ -147,9 +147,6 @@ set_option linter.uppercaseLean3 false in
 
 open Polynomial
 
-theorem Int.coe_castRingHom' {α} [NonAssocRing α] : ⇑(castRingHom α) = Int.cast :=
-  rfl
-
 theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     ∃ c,
       ∀ q > (eval 0 p).natAbs, q.Prime →
@@ -238,7 +235,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_ofNat, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
     nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, ← h', zsmul_eq_mul, aeval_def,
-    eval₂_at_zero, eq_intCast, Int.cast_id, ← Int.coe_castRingHom', ← algebraMap_int_eq, ←
+    eval₂_at_zero, ← eq_intCast (algebraMap ℤ ℂ), ← IsScalarTower.algebraMap_apply, ←
     eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_left (c'0 r) (hc r hr) _)
 #align exp_polynomial_approx exp_polynomial_approx
