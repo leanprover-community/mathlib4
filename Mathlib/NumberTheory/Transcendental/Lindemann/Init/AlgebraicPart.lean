@@ -3,16 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Data.Complex.Exponential
-import Mathlib.FieldTheory.PolynomialGaloisGroup
-import Mathlib.RingTheory.Algebraic
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.FieldTheory.GalConj
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Order.Extension.Linear
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Data.Complex.Exponential
+import Mathlib.FieldTheory.GalConj
 
 /-!
 # The Lindemann-Weierstrass theorem
