@@ -90,6 +90,27 @@ instance (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
 
 section
 
+@[reassoc (attr := simp)]
+lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
+    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i₀ i₁ i₂ : ι) (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂) :
+    X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ (h₀₁.trans h₁₂) ≫
+      X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top =
+    X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ h₁₂ := by
+  rw [← cancel_epi (X.πAbutmentFiltration _ _)]
+  dsimp [πAbutmentFiltration, abutmentFiltrationToPageInfinity, EMapFourδ₂Toδ₁']
+  rw [π_imageToE_assoc, π_imageToE, X.πE_EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _
+    (fourδ₂Toδ₁' ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top) (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂) rfl,
+    ← assoc]
+  congr 1
+  rw [← cancel_mono (X.iCycles _ _ _ _ _), assoc, toCycles_i,
+    X.cyclesMap_i n₁ n₂ hn₂ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂) (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂) rfl,
+    toCycles_i_assoc, ← Functor.map_comp]
+  rfl
+
+end
+
+section
+
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i j : ι) (hij : i ≤ j)
 
 @[reassoc (attr := simp)]
@@ -186,13 +207,6 @@ lemma mapWithBot_pred_le_i₂ (n : σ) (i : WithBot (α n)) (j : α n) (hij : s.
     rw [← WithBot.coe_le_coe]
     change _ = WithBot.some i at hij
     simpa only [← hij] using s.pred'_le n j
-
---lemma comparable (n : σ) (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : κ) (hpq : s.position n j = pq) :
---    (data.i₁ pq ≤ hdata.mapWithBot n i) ∨ (hdata.mapWithBot n i ≤ data.i₁ pq) := by
---  obtain _|i := i
---  · exact Or.inr bot_le
---  · subst hpq
---    exact hdata.comparable' n i j hij _ rfl
 
 end CompatibleWithConvergenceStripes
 
@@ -429,7 +443,8 @@ lemma π_pageInfinityIso_hom_iso_hom :
     π X hdata n j pq hpq ≫ (pageInfinityIso X hdata n j pq hpq).hom ≫
       (iso X hdata n i j hij pq hpq h).hom =
         X.abutmentFiltrationToPageInfinity _ _ _ _ _ _ _ _ := by
-  sorry
+  subst hpq
+  simp [π, pageInfinityIso, iso, hom]
 
 end
 
@@ -454,7 +469,8 @@ lemma π_pageInfinityIso_hom :
     π X hdata n j pq hpq ≫ (pageInfinityIso X hdata n j pq hpq).hom =
       X.abutmentFiltrationToPageInfinity _ _ _ _ _ _ _ _ ≫
         (iso' X hdata n i j hij pq hpq h).inv := by
-  sorry
+  subst hpq
+  simp [π, pageInfinityIso, iso', hom']
 
 @[reassoc (attr := simp)]
 lemma π_pageInfinityIso_hom_iso'_hom :

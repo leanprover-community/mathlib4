@@ -38,6 +38,11 @@ noncomputable abbrev twoδ₂Toδ₁' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤
      mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
   twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl
 
+noncomputable abbrev threeδ₂Toδ₁' (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁)
+    (hi₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) :
+     mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans h₂₃)) ⟶ mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE h₂₃) :=
+  threeδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ rfl _ rfl
+
 noncomputable abbrev fourδ₁Toδ₀' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
     mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ⟶
