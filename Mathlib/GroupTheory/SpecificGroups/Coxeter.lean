@@ -97,9 +97,7 @@ instance : Group (Matrix.CoxeterGroup M) := by
 
 namespace CoxeterGroup
 
-def of (b : B) : Matrix.CoxeterGroup M := by
-  unfold Matrix.CoxeterGroup
-  exact PresentedGroup.of b
+def of (b : B) : Matrix.CoxeterGroup M := PresentedGroup.of b
 
 @[simp]
 lemma of_apply (b : B) : of M b = PresentedGroup.of (rels := Relations.toSet M) b :=
@@ -162,7 +160,7 @@ lemma ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
 
 @[simp]
 lemma map_relations_eq_reindex_relations (e : B ≃ B') :
-    (FreeGroup.freeGroupCongr e) '' CoxeterGroup.Relations.toSet M =
+    (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
     CoxeterGroup.Relations.toSet (reindex e e M) := by
   simp [CoxeterGroup.Relations.toSet, CoxeterGroup.Relations.ofMatrix]
   apply le_antisymm
@@ -179,10 +177,22 @@ lemma map_relations_eq_reindex_relations (e : B ≃ B') :
     exact ⟨by use (e.symm b1'); use (e.symm b2'); aesop, by aesop⟩
 
 /-- Coxeter groups of isomorphic types are isomorphic. -/
-def equivCoxeterGroup (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) := by
-  simp [CoxeterGroup]
-  have := PresentedGroup.equivPresentedGroup (rels := CoxeterGroup.Relations.toSet M) e
-  rwa [@map_relations_eq_reindex_relations B B' M e] at this
+def equivCoxeterGroup (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) :=
+  QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
+    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
+    (FreeGroup.freeGroupCongr e) (by
+      have := Subgroup.map_normalClosure (CoxeterGroup.Relations.toSet M)
+        (FreeGroup.freeGroupCongr e).toMonoidHom (FreeGroup.freeGroupCongr e).surjective
+      rwa [@map_relations_eq_reindex_relations B B' M e] at this)
+
+theorem equivCoxeterGroup_apply_of (b : B) (M : Matrix B B ℕ) (e : B ≃ B') :
+    (equivCoxeterGroup e) (CoxeterGroup.of M b) = CoxeterGroup.of (reindex e e M) (e b) :=
+  rfl
+
+theorem equivCoxeterGroup_symm_apply_of (b' : B') (M : Matrix B B ℕ) (e : B ≃ B') :
+    (equivCoxeterGroup e).symm (CoxeterGroup.of (reindex e e M) b') =
+    CoxeterGroup.of M (e.symm b') :=
+  rfl
 
 /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
 protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
@@ -192,8 +202,7 @@ protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
 @[simp]
 lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
     cs.reindex e b' = cs (e.symm b') :=
-  -- rfl -- This used to work...
-  sorry
+  rfl
 
 /-- Pushing a Coxeter system through a group isomorphism. -/
 protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
