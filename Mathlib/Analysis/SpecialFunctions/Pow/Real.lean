@@ -907,7 +907,7 @@ section Tactics
 -/
 namespace Mathlib.Meta.NormNum
 
-open Qq
+open Lean.Meta Qq
 
 theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
@@ -944,7 +944,8 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u α} e := do
-  let .app (.app _ (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
+  let .app (.app f (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := ℝ) (β := ℝ))
   haveI' : u =QL 0 := ⟨⟩
   haveI' : $α =Q ℝ := ⟨⟩
   haveI' : $e =Q $a ^ $b := ⟨⟩
