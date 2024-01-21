@@ -114,7 +114,7 @@ lemma continuous_compactOpen {f : X → C(Y, Z)} :
 
 section Functorial
 
-/-- `C(α, ·)` is a functor. -/
+/-- `C(X, ·)` is a functor. -/
 theorem continuous_comp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
