@@ -7,6 +7,7 @@ import Archive.Examples.PropEncodable
 import Archive.Hairer
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1960Q1
+import Archive.Imo.Imo1960Q2
 import Archive.Imo.Imo1962Q1
 import Archive.Imo.Imo1962Q4
 import Archive.Imo.Imo1964Q1
