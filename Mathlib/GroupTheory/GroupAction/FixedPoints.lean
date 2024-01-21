@@ -85,6 +85,16 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
   exact one_dvd j
 
+variable (α) in
+@[to_additive]
+theorem fixedBy_zpow_subset_of_dvd (g : G) {j k : ℤ} (dvd : j ∣ k):
+    fixedBy α (g ^ j) ⊆ fixedBy α (g ^ k) := by
+  intro a a_in_fixedBy
+  let ⟨n, eq⟩ := dvd
+  rw [eq, zpow_mul]
+  apply fixedBy_subset_fixedBy_zpow
+  exact a_in_fixedBy
+
 variable (M α) in
 @[to_additive (attr := simp)]
 theorem fixedBy_one_eq_univ : fixedBy α (1 : M) = Set.univ :=
