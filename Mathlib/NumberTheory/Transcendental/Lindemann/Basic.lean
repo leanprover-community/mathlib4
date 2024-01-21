@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.ExistsLargePrime
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
 
 /-!
 # The Lindemann-Weierstrass theorem
