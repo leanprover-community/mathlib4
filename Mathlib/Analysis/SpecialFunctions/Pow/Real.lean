@@ -964,9 +964,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       return .isNegNat sα' ne' q(isInt_rpow_pos $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      have pe' : Q(@IsRat ℝ instRingReal («$a» ^ «$nb») «$nume'» «$dene'») := pe'
-      have pe'' := q(isRat_rpow_pos $pb $pe')
-      return .isRat sα' qe' nume' dene' pe''
+      return .isRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
     let e' : Q(ℝ) := q(($a ^ (-($nb : ℤ))))
     match ← derive e' with
@@ -975,16 +973,12 @@ def evalRPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
+      let _ := q(instRingReal)
       assumeInstancesCommute
-      have pe' : Q(@IsInt ℝ instRingReal («$a» ^ Int.negOfNat «$nb») (Int.negOfNat «$ne'»)) := pe'
-      have pb : Q(@IsInt ℝ instRingReal «$b» (Int.negOfNat «$nb»)) := pb
-      have pe'' := q(isInt_rpow_neg $pb $pe')
-      return .isNegNat sα' ne' pe''
+      return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      have pe' : Q(IsRat («$a» ^ Int.negOfNat «$nb») $nume' $dene') := pe'
-      have pe'' := q(isRat_rpow_neg $pb $pe')
-      return .isRat sα' qe' nume' dene' pe''
+      return .isRat sα' qe' nume' dene' q(isRat_rpow_neg $pb $pe')
 
 end Mathlib.Meta.NormNum
 
