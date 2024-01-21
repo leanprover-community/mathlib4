@@ -768,6 +768,8 @@ lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → 
   hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
 
+-- Changed (2024-01-21): this lemma was generalised;
+-- the old version is now called `support_const_smul_subset`.
 lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g : α → M) :
     support (f • g) ⊆ support g :=
   fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
@@ -783,8 +785,7 @@ lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
 #align function.support_smul Function.support_smul
 
 lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
-    support (a • f) ⊆ support f := fun x hbf hf =>
-  hbf <| by rw [Pi.smul_apply, hf, smul_zero]
+    support (a • f) ⊆ support f := support_smul_subset_right (fun _ ↦ a) f
 #align function.support_smul_subset_right Function.support_const_smul_subset
 
 end Function
