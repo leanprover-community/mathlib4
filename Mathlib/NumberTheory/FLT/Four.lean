@@ -3,6 +3,7 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
@@ -101,7 +102,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
     (Fermat42.mul (Int.coe_nat_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
-  · exact Nat.one_lt_pow _ _ zero_lt_two (Nat.Prime.one_lt hp)
+  · exact Nat.one_lt_pow _ _ two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 #align fermat_42.coprime_of_minimal Fermat42.coprime_of_minimal
 
@@ -250,7 +251,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     rw [h1] at hs
     have h2 : b' ^ 2 ≤ 0 := by
       rw [hs, (by ring : -d ^ 2 * m = -(d ^ 2 * m))]
-      exact neg_nonpos.mpr ((zero_le_mul_right h4).mpr (sq_nonneg d))
+      exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
     have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
     exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
   replace hd : r * s = d ^ 2

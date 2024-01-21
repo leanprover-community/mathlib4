@@ -115,7 +115,7 @@ protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
 
 -- TODO: update `Nat.dvd_sub` in core
 theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  cases' le_total n m with H H
+  rcases le_total n m with H | H
   · exact dvd_sub H h₁ h₂
   · rw [tsub_eq_zero_iff_le.mpr H]
     exact dvd_zero k

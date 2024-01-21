@@ -252,7 +252,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     (∑ J in π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans _
   rw [add_mul, add_mul, one_mul]
   refine' add_le_add_three _ _ _
-  · /- Since each `f (Nx $ π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
+  · /- Since each `f (Nx <| π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
         the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
     refine' dist_sum_sum_le_of_le _ fun J _ => _; dsimp

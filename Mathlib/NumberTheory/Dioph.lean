@@ -98,14 +98,14 @@ namespace Poly
 
 section
 
-instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
-#align poly.fun_like Poly.funLike
+#align poly.fun_like Poly.instFunLike
 
 -- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there are too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
--- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
+-- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := DFunLike.hasCoeToFun
 
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
@@ -113,7 +113,7 @@ protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 
 /-- Extensionality for `Poly α` -/
 @[ext]
-theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
+theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := DFunLike.ext _ _
 #align poly.ext Poly.ext
 
 /-- The `i`th projection function, `x_i`. -/
@@ -341,7 +341,7 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
 
 variable (β)
 
-theorem reindex_dioph (f : α → β) : ∀ _ : Dioph S, Dioph {v | v ∘ f ∈ S}
+theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>
@@ -360,7 +360,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
   exact ⟨ULift Empty, [], fun _ => by simp⟩
-  simp? at d says simp only [imp_false, List.forall_cons] at d
+  simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
@@ -659,7 +659,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
               rintro rfl
-              cases' le_total y z with yz zy
+              rcases le_total y z with yz | zy
               · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
               · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
 #align dioph.sub_dioph Dioph.sub_dioph
@@ -765,7 +765,7 @@ theorem pow_dioph : DiophFn fun v => f v ^ g v := by
     let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
     ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
-    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 $ (D∃) 7 <| (D∃) 8 <| D_pell D∧
+    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <| D_pell D∧
     (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
     D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
     D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧

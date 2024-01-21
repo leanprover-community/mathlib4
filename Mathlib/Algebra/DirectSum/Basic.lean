@@ -23,7 +23,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
-open BigOperators
+open Function
+open scoped BigOperators
 
 universe u v w u₁
 
@@ -47,8 +48,8 @@ instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
-instance [∀ i, AddCommMonoid (β i)] : FunLike (DirectSum ι β) _ fun i : ι => β i :=
-  inferInstanceAs (FunLike (Π₀ i, β i) _ _)
+instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
+  inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
 
 instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
@@ -183,7 +184,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem addHom_ext' {γ : Type*} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
-  addHom_ext fun i => FunLike.congr_fun <| H i
+  addHom_ext fun i => DFunLike.congr_fun <| H i
 #align direct_sum.add_hom_ext' DirectSum.addHom_ext'
 
 variable {γ : Type u₁} [AddCommMonoid γ]
@@ -212,6 +213,12 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
+
+lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
+  DFinsupp.liftAddHom.injective
+
+@[simp] lemma toAddMonoid_inj {f g : ∀ i, β i →+ γ} : toAddMonoid f = toAddMonoid g ↔ f = g :=
+  toAddMonoid_injective.eq_iff
 
 end ToAddMonoid
 

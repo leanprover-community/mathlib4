@@ -88,19 +88,13 @@ end TensorProduct
 section Units
 
 example (α : Type _) [Monoid α] :
-    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction αˣ (α × α)) =
-      Prod.mulAction :=
-  rfl
+    (Units.instMulAction : MulAction αˣ (α × α)) = Prod.mulAction := rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β i)] :
-    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction Rˣ (∀ i, β i)) =
-      Pi.mulAction _ :=
-  rfl
+    (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := rfl
 
 example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : DistribMulAction Rˣ α[X])
-      = Polynomial.distribMulAction :=
-  rfl
+    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := rfl
 
 /-!
 TODO: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/units.2Emul_action'.20diamond/near/246402813
@@ -156,7 +150,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
     (Finsupp.comapSMul : SMul k (k →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : k, hu⟩ := exists_ne (1 : k)
   intro h
-  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
@@ -170,7 +164,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
   haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
   intro h
-  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
@@ -252,3 +246,27 @@ example : ZMod.commRing 0 = Int.instCommRingInt :=
   rfl
 
 end ZMod
+
+/-! ## Instances involving structures over `ℝ` and `ℂ`
+
+Given a scalar action on `ℝ`, we have an instance which produces the corresponding scalar action on
+`ℂ`. In the other direction, if there is a scalar action of `ℂ` on some type, we can get a
+corresponding action of `ℝ` on that type via `RestrictScalars`.
+
+Obviously, this has the potential to cause diamonds when we can go in both directions. This shows
+that at least some potential diamonds are avoided. -/
+
+section complexToReal
+
+-- the two ways to get `Algebra ℝ ℂ` are definitionally equal
+example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraComplexInstSemiringComplex := rfl
+
+/- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this
+as an `ℝ`-algebra by restricting scalars agrees with the existing `ℝ`-algebra structure on the
+tensor product. -/
+open Algebra TensorProduct in
+example {A : Type*} [Ring A] [Algebra ℝ A]:
+    (leftAlgebra : Algebra ℂ (ℂ ⊗[ℝ] A)).complexToReal = leftAlgebra :=
+  rfl
+
+end complexToReal

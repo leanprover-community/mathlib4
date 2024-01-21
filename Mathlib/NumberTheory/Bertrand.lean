@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
 import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -92,7 +92,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
     apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg; norm_num1
+    apply rpow_nonneg; norm_num1
     apply rpow_pos_of_pos; norm_num1
     apply hf' 18; norm_num1
     norm_num1
@@ -178,13 +178,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow n2_pos ((Finset.card_le_of_subset fun x hx => _).trans this.le)
+    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le

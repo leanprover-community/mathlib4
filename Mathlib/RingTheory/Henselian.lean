@@ -121,16 +121,15 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
 theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     TFAE
       [HenselianLocalRing R,
-        ∀ (f : R[X]) (_ : f.Monic) (a₀ : ResidueField R) (_ : aeval a₀ f = 0)
-          (_ : aeval a₀ (derivative f) ≠ 0), ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
+        ∀ f : R[X], f.Monic → ∀ a₀ : ResidueField R, aeval a₀ f = 0 →
+          aeval a₀ (derivative f) ≠ 0 → ∃ a : R, f.IsRoot a ∧ residue R a = a₀,
         ∀ {K : Type u} [Field K],
-          ∀ (φ : R →+* K) (_ : Surjective φ) (f : R[X]) (_ : f.Monic) (a₀ : K)
-            (_ : f.eval₂ φ a₀ = 0) (_ : f.derivative.eval₂ φ a₀ ≠ 0),
-            ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
-  tfae_have _3_2 : 3 → 2;
+          ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
+            f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
+  tfae_have 3 → 2
   · intro H
     exact H (residue R) Ideal.Quotient.mk_surjective
-  tfae_have _2_1 : 2 → 1
+  tfae_have 2 → 1
   · intro H
     constructor
     intro f hf a₀ h₁ h₂
@@ -142,7 +141,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     refine' ⟨a, ha₁, _⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
-  tfae_have _1_3 : 1 → 3
+  tfae_have 1 → 3
   · intro hR K _K φ hφ f hf a₀ h₁ h₂
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
@@ -227,7 +226,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
           simp only [Finset.mem_Ico]
           rintro i ⟨h2i, _⟩
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
-          refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow aux _)
+          refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
           rw [pow_mul']
           refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
@@ -242,7 +241,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine' ih.add _
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
-        refine' Ideal.mul_mem_right _ _ (Ideal.pow_le_pow _ (hfcI _))
+        refine' Ideal.mul_mem_right _ _ (Ideal.pow_le_pow_right _ (hfcI _))
         rw [add_assoc]
         exact le_self_add
       -- hence the sequence converges to some limit point `a`, which is the `a` we are looking for
@@ -255,7 +254,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha ⊢
         refine' (ha.symm.eval f).trans _
         rw [SModEq.zero]
-        exact Ideal.pow_le_pow le_self_add (hfcI _)
+        exact Ideal.pow_le_pow_right le_self_add (hfcI _)
       · show a - a₀ ∈ I
         specialize ha 1
         rw [hc, pow_one, ← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one, sub_eq_add_neg] at ha

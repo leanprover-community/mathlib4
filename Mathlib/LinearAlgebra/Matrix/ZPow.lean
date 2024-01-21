@@ -242,7 +242,7 @@ theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
 
 set_option linter.deprecated false in
 theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
-  cases' le_total 0 n with nonneg nonpos
+  rcases le_total 0 n with nonneg | nonpos
   · exact zpow_add_of_nonneg nonneg nonneg
   · exact zpow_add_of_nonpos nonpos nonpos
 #align matrix.zpow_bit0 Matrix.zpow_bit0

@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Algebra.Periodic
-import Mathlib.Data.ZMod.Algebra
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Units
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 /-!
 # Dirichlet Characters

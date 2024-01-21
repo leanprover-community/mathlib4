@@ -133,7 +133,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     Continuous l := by
   -- `l` is either constant or surjective. If it is constant, the result is trivial.
   by_cases H : finrank 𝕜 (LinearMap.range l) = 0
-  · rw [finrank_eq_zero, LinearMap.range_eq_bot] at H
+  · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
     rw [H]
     exact continuous_zero
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
@@ -158,9 +158,8 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- is injective. Since `φ.symm` is linear, it is also a vector space topology.
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
-      refine'
-        unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
-          (continuousSMul_induced φ.symm.toLinearMap) _
+      refine' unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
+        (continuousSMul_induced φ.symm.toLinearMap) _
       -- Porting note: was `rw [t2Space_iff]`
       refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
@@ -225,7 +224,7 @@ private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [F
     have H₂ : ∀ f : E →ₗ[𝕜] 𝕜, Continuous f := by
       intro f
       by_cases H : finrank 𝕜 (LinearMap.range f) = 0
-      · rw [finrank_eq_zero, LinearMap.range_eq_bot] at H
+      · rw [Submodule.finrank_eq_zero, LinearMap.range_eq_bot] at H
         rw [H]
         exact continuous_zero
       · have : finrank 𝕜 (LinearMap.ker f) = n := by
