@@ -738,12 +738,12 @@ local notation "π" => @Quotient.mk _ α_mod_G
 
 variable {G}
 
-@[to_additive addQuotientMeasure_apply]
-lemma quotientMeasure_apply (s : Set α)
-    {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U)  :
-    (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
-  rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
-    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
+-- @[to_additive addQuotientMeasure_apply]
+-- lemma quotientMeasure_apply (s : Set α)
+--     {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U)  :
+--     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
+--   rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+--     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
 @[to_additive IsAddFundamentalDomain.addQuotientMeasure_invariant]
 lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s t : Set α}
@@ -751,7 +751,10 @@ lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpa
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
-  rw [quotientMeasure_apply μ s meas_U, quotientMeasure_apply μ t meas_U]
+  rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U),
+    Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   · exact measurableSet_quotient.mp meas_U
   · intro g
@@ -1001,8 +1004,10 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     covolume G α ν < ∞ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
   have H : μ univ < ∞ := IsFiniteMeasure.measure_univ_lt_top
-  rw [h𝓕.eq_quotientMeasure μ, quotientMeasure_apply _ 𝓕 MeasurableSet.univ]
-    at H
+  rw [h𝓕.eq_quotientMeasure μ,
+    Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) MeasurableSet.univ,
+    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' univ))
+      (measurableSet_quotient.mp MeasurableSet.univ)] at H
   simpa [h𝓕.covolume_eq_volume] using H
 
 end QuotientMeasureEqMeasurePreimage
