@@ -90,24 +90,22 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonneg_iff, this]
     rw [one_le_div] <;> norm_num1
-    apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
-    apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg; norm_num1
-    apply rpow_pos_of_pos; norm_num1
-    apply hf' 18; norm_num1
-    norm_num1
+    · positivity
+    · positivity
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
+    rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one]
     · conv in 512 => equals 2 ^ 9 => norm_num1
-      conv in 1024 => equals 2 ^ 10 => norm_num1
+      conv in 2 * 512 => equals 2 ^ 10 => norm_num1
       conv in 32 => rw [← Nat.cast_ofNat]
       rw [rpow_nat_cast, ← pow_mul, ← pow_add]
       conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
       rw [← rpow_mul, ← rpow_nat_cast]
       apply rpow_le_rpow_of_exponent_le
       all_goals norm_num1
-    · apply rpow_pos_of_pos four_pos
+    · positivity
+    · positivity
+    · positivity
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
