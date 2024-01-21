@@ -1393,12 +1393,11 @@ end OpenEmbedding
 /- inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens
 
-variable (s : Opens α) (hs : (s : Set α).Nonempty)
+variable (s : Opens α) (hs : Nonempty s)
 
 /-- The inclusion of an open subset `s` of a space `α` into `α` is a partial homeomorphism from the
 subtype `s` to `α`. -/
 noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s α :=
-  have : Nonempty s := nonempty_coe_sort.mpr hs
   OpenEmbedding.toPartialHomeomorph _ s.2.openEmbedding_subtype_val
 #align topological_space.opens.local_homeomorph_subtype_coe TopologicalSpace.Opens.partialHomeomorphSubtypeCoe
 
@@ -1414,7 +1413,6 @@ theorem partialHomeomorphSubtypeCoe_source : (s.partialHomeomorphSubtypeCoe hs).
 
 @[simp, mfld_simps]
 theorem partialHomeomorphSubtypeCoe_target : (s.partialHomeomorphSubtypeCoe hs).target = s := by
-  have : Nonempty s := nonempty_coe_sort.mpr hs
   simp only [partialHomeomorphSubtypeCoe, Subtype.range_coe_subtype, mfld_simps]
   rfl
 #align topological_space.opens.local_homeomorph_subtype_coe_target TopologicalSpace.Opens.partialHomeomorphSubtypeCoe_target
@@ -1461,7 +1459,7 @@ open TopologicalSpace
 
 variable (e : PartialHomeomorph α β)
 
-variable (s : Opens α) (hs : (s : Set α).Nonempty)
+variable (s : Opens α) (hs : Nonempty s)
 
 /-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type
 produces a partial homeomorphism whose domain is the subtype `s`. -/
@@ -1512,7 +1510,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph α β) :
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
-theorem subtypeRestr_symm_eqOn (U : Opens α) (hU : (U : Set α).Nonempty) :
+theorem subtypeRestr_symm_eqOn (U : Opens α) (hU : Nonempty U) :
     EqOn e.symm (Subtype.val ∘ (e.subtypeRestr U hU).symm) (e.subtypeRestr U hU).target := by
   intro y hy
   rw [eq_comm, eq_symm_apply _ _ hy.1]
@@ -1520,9 +1518,8 @@ theorem subtypeRestr_symm_eqOn (U : Opens α) (hU : (U : Set α).Nonempty) :
     rw [← subtypeRestr_coe, (e.subtypeRestr U hU).right_inv hy]
   · have := map_target _ hy; rwa [subtypeRestr_source] at this
 
-theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} (hU : (U : Set α).Nonempty)
-    (hV : (V : Set α).Nonempty) (hUV : U ≤ V) :
-    EqOn (e.subtypeRestr V hV).symm (Set.inclusion hUV ∘ (e.subtypeRestr U hU).symm)
+theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} (hU : Nonempty U) (hV : Nonempty V)
+    (hUV : U ≤ V) : EqOn (e.subtypeRestr V hV).symm (Set.inclusion hUV ∘ (e.subtypeRestr U hU).symm)
       (e.subtypeRestr U hU).target := by
   set i := Set.inclusion hUV
   intro y hy
