@@ -1249,6 +1249,7 @@ inductive Dir'
   | stay
   deriving DecidableEq, Inhabited
 
+/-- Coerce from Dir to Dir' -/
 def toDir' : Dir → Dir'
   | Dir.left => Dir'.left
   | Dir.right => Dir'.right
@@ -1272,7 +1273,19 @@ local notation "CfgQ" => TM0.Cfg Γ Λ
 def trCfg : CfgQ → Cfg₀
   | ⟨q, T⟩ => ⟨(q, Dir'.stay), T⟩
 
--- TODO prove theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
+theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
+  fun a b ↦ trCfg a = b :=
+  fun_respects.2 fun ⟨q, T⟩ ↦ by
+  cases' e : MQ q T.1 with val
+  simp only [trCfg, TMQ.step,e,FRespects,Option.map]
+  simp [TM0.step,tr]
+  exact e
+  cases' val with q' s
+  simp only [trCfg,TMQ.step,e,Option.map,FRespects]
+
+--  simp only [trCfg,TMQ.step,e,FRespects,Option.map] --,TMQ.step,e,FRespects,TM0.step]
+
+--  simp only [trCfg] --, TMQ.step,FRespects,Option.map]
 
 end
 
