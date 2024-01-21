@@ -251,6 +251,7 @@ def homologicalStripesNat :
     ext1
     simpa using h
 
+@[simps]
 def mkDataE₂HomologicalNatCompatibility :
     mkDataE₂HomologicalNat.CompatibleWithConvergenceStripes
       homologicalStripesNat where
@@ -594,6 +595,64 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
           simpa using hij
         rw [← hpq]
         rfl
+
+instance (X : SpectralObject C ℤt) [X.IsThirdQuadrant] (n : ℕ) :
+    X.ConvergesInDegree mkDataE₂HomologicalNatCompatibility n where
+  isZero₁ := ⟨0, fun j hj => by
+    exfalso
+    dsimp at hj
+    change ⊥ = _ at hj
+    simp at hj⟩
+  isZero₂ := ⟨Fin.last _, X.isZero₁_of_isThirdQuadrant _ _ _ (by simp) _⟩
+  isIso₁ := by
+    rintro ⟨i, hi⟩ ⟨j, hj⟩ hij pq hpq _ _ _ rfl rfl rfl h
+    exfalso
+    apply ne_of_lt h
+    obtain _|j := j
+    · change ⊥ = _ at hij
+      simp at hij
+    · obtain rfl : j = i := by simpa using hij
+      rw [← hpq]
+      dsimp
+      congr 1
+      linarith [Nat.add_sub_of_le (show j.succ ≤ n by linarith),
+        Nat.add_sub_of_le (show j ≤ n by linarith)]
+  isIso₂ := by
+    rintro i ⟨j, hj⟩ hij pq hpq _ _ _ rfl rfl rfl h
+    obtain _|⟨i, hi⟩ := i
+    · dsimp at hpq h
+      subst hpq
+      obtain _|j := j
+      · intro n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        apply X.isIso_EMapFourδ₂Toδ₁'
+        · apply X.isIso_H_map_twoδ₁Toδ₀' n₁ n₂ hn₂
+          · apply X.isZero₂_of_isThirdQuadrant
+            subst hn₁'
+            rfl
+          · apply X.isZero₂_of_isThirdQuadrant
+            subst hn₁' hn₂
+            simp
+        · refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+          · apply X.isZero₂_of_isThirdQuadrant
+            exact bot_le
+          · apply X.isZero₂_of_isThirdQuadrant
+            subst hn₁' hn₂
+            simp
+      · change some _ = _ at hij
+        simp at hij
+    · exfalso
+      apply ne_of_lt h
+      obtain _|j := j
+      · change ⊥ = _ at hij
+        simp at hij
+      · obtain rfl : j = i := by
+          change some _ = some _ at hij
+          simpa using hij
+        rw [← hpq]
+        dsimp
+        congr 1
+        linarith [Nat.add_sub_of_le (show j.succ ≤ n by linarith),
+          Nat.add_sub_of_le (show j ≤ n by linarith)]
 
 end SpectralObject
 

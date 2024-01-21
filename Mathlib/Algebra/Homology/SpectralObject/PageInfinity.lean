@@ -646,6 +646,26 @@ instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where
 
 end
 
+section
+
+variable (Y : SpectralObject C ℤt) [Y.IsThirdQuadrant]
+
+instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂HomologicalNat pq where
+  exists_isZero₀ := ⟨pq.1, fun i j hij hj => by
+      apply isZero₂_of_isThirdQuadrant
+      refine' hj.trans _
+      dsimp
+      simp only [ℤt.mk_le_mk_iff]
+      linarith⟩
+  exists_isZero₃ := ⟨pq.2, fun i j hij hi => by
+      apply isZero₁_of_isThirdQuadrant
+      refine' lt_of_lt_of_le _ hi
+      dsimp
+      simp only [neg_add_cancel_comm_assoc, ℤt.mk_lt_mk_iff, sub_pos]
+      linarith⟩
+
+end
+
 end SpectralObject
 
 end Abelian
