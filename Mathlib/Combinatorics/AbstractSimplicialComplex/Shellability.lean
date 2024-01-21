@@ -3,8 +3,6 @@ import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
 
 /-! Add description.-/
 
-#check AbstractSimplicialComplex.exists_facet_of_wf
-
 universe u
 
 variable {α : Type u} {K : AbstractSimplicialComplex α} [DecidableEq α]
@@ -18,7 +16,8 @@ define `isShellingOrder r` to mean that `r` is such an order.
 We have two goals in this file: to show that a shellable complex is decomposable, and to show that
 a decomposable complex with a compatible well-order on its facets is shellable.-/
 
-open AbstractSimplicialComplex
+#check AbstractSimplicialComplex.pure_of_wf_and_dimension_facets
+#check exists_facet_of_wf
 
 namespace AbstractSimplicialComplex
 
@@ -106,8 +105,11 @@ contain `orderOnFacets_restriction r s`.-/
 lemma oldFace_does_not_contain_restriction (r : PartialOrder K.facets) (s : K.facets)
     (hof : Pure (oldFaces r s) ∧ (oldFaces r s).dimension = Finset.card s.1 - 2) {t : Finset α}
     (htof : t ∈ (oldFaces r s).faces) : ¬ orderOnFacets_restriction r s ⊆ t := by
-  obtain ⟨u, ⟨huf, htu⟩⟩ := exists_facet_of_wf (@Finite.to_wellFoundedGT K.faces
-    (oldFacesFinite r s) _).wf ⟨t, htof⟩
+  --obtain ⟨u, ⟨huf, htu⟩⟩ :=
+  have := exists_facet_of_wf
+  have := (@Finite.to_wellFoundedGT _ (finite_oldFaces r s) _).wf --⟨t, htof⟩
+
+ #exit
   have hus : u.1 ⊆ s.1 := by
                          rw [mem_facets_iff] at huf
                          erw [OldFaces_mem] at huf

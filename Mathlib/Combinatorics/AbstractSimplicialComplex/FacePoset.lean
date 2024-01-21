@@ -204,6 +204,8 @@ lemma isPrincipal_filter_facePoset [DecidableEq α] (F : Order.PFilter K.faces) 
   push_neg at hsb
   exact hsb hbs
 
+end AbstractSimplicalComplex
+
 #exit
 
 /- Note that every ideal is principal if and only if the face poset of K is a Noetherian poset,
