@@ -59,7 +59,7 @@ theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
 
 variable (α)
 
-theorem sum_adj_eq_degree [AddCommMonoidWithOne α] (i : V) :
+theorem degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
     (G.degree i : α) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
   rw [sum_boole, Set.toFinset_setOf]
@@ -75,7 +75,7 @@ theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
   rw [sub_mulVec]
   simp only [dotProduct_sub]
   rw [dotProduct_mulVec_degMatrix, dotProduct_mulVec_adjMatrix, ← sum_sub_distrib]
-  simp only [sum_adj_eq_degree, sum_mul, ← sum_sub_distrib, ite_mul, one_mul,
+  simp only [degree_eq_sum_if_adj, sum_mul, ← sum_sub_distrib, ite_mul, one_mul,
              zero_mul, ite_sub_ite, sub_zero]
   rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
   conv_lhs => arg 1; arg 2; arg 2; intro i; arg 2; intro j; rw [if_congr (adj_comm G i j) rfl rfl]
@@ -97,7 +97,7 @@ theorem isPosSemidef_lapMatrix [LinearOrderedField α] [StarOrderedRing α] [Tri
     · apply sq_nonneg
     · rfl
 
-theorem lapMatrix_toLinearMap₂'_apply'_zero_iff_adj [LinearOrderedField α] (x : V → α) :
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField α] (x : V → α) :
     Matrix.toLinearMap₂' (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   constructor
   · intro h i j
@@ -121,14 +121,14 @@ theorem lapMatrix_toLinearMap₂'_apply'_zero_iff_adj [LinearOrderedField α] (x
     refine Or.inl <| sum_eq_zero λ i _ ↦ (sum_eq_zero λ j _ ↦ ?_)
     simpa only [ite_eq_right_iff, zero_lt_two, pow_eq_zero_iff, sub_eq_zero] using h i j
 
-theorem lapMatrix_toLinearMap₂'_zero_iff_adj (x : V → ℝ) :
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (isPosSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff x, star_trivial,
-      lapMatrix_toLinearMap₂'_apply'_zero_iff_adj]
+      lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
-theorem lapMatrix_toLinearMap₂'_apply'_zero_iff_reachable (x : V → ℝ) :
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
-  rw [lapMatrix_toLinearMap₂'_apply'_zero_iff_adj]
+  rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   apply Iff.intro
   · intro h i j
     unfold Reachable
@@ -139,18 +139,18 @@ theorem lapMatrix_toLinearMap₂'_apply'_zero_iff_reachable (x : V → ℝ) :
     · exact (h i j hA).trans h'
   · exact fun h i j hA ↦ h i j (Adj.reachable hA)
 
-theorem ker_reachable_eq (x : V → ℝ) : Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔
-    ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (isPosSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
-      lapMatrix_toLinearMap₂'_apply'_zero_iff_reachable]
+      lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
 
 variable [DecidableEq G.ConnectedComponent]
 
-lemma lapMatrix_ker_basis_aux_well_defined {G : SimpleGraph V} [DecidableRel G.Adj]
+lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
     [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
     (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
       LinearMap.ker (toLin' (lapMatrix ℝ G)) := by
-  rw [LinearMap.mem_ker, ker_reachable_eq]
+  rw [LinearMap.mem_ker, lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable]
   intro i j h
   split_ifs with h₁ h₂ h₃
   · rfl
@@ -167,9 +167,9 @@ of the kernel of `lapMatrix G R` -/
 def lapMatrix_ker_basis_aux (c : G.ConnectedComponent) :
     LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ)) :=
   ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ)  else 0,
-    lapMatrix_ker_basis_aux_well_defined c⟩
+    mem_ker_toLin'_lapMatrix_of_connectedComponent c⟩
 
-lemma lapMatrix_ker_basis_aux_linearIndependent :
+lemma linearIndependent_lapMatrix_ker_basis_aux :
     LinearIndependent ℝ (lapMatrix_ker_basis_aux G) := by
   rw [Fintype.linearIndependent_iff]
   intro g h0
@@ -184,11 +184,12 @@ lemma lapMatrix_ker_basis_aux_linearIndependent :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
-lemma lapMatrix_ker_basis_aux_spanning :
+lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
   rw [mem_span_range_iff_exists_fun]
-  use Quot.lift x.val (by rw [← ker_reachable_eq G x, LinearMap.map_coe_ker])
+  use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
+   LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux, AddSubmonoid.coe_finset_sum, Submodule.coe_toAddSubmonoid,
     SetLike.val_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
@@ -199,7 +200,8 @@ lemma lapMatrix_ker_basis_aux_spanning :
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given
 connected component and `0` elsewhere. -/
 noncomputable def lapMatrix_ker_basis :=
-    Basis.mk (lapMatrix_ker_basis_aux_linearIndependent G) (lapMatrix_ker_basis_aux_spanning G)
+    Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
+     (top_le_span_range_lapMatrix_ker_basis_aux G)
 
 /-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
 theorem rank_ker_lapMatrix_eq_card_ConnectedComponent : Fintype.card G.ConnectedComponent =
