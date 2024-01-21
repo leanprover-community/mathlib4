@@ -379,7 +379,7 @@ theorem const_mul (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :
       const R (f₁ * f₂) (g₁ * g₂) U fun x hx => Submonoid.mul_mem _ (hu₁ x hx) (hu₂ x hx) :=
   Subtype.eq <|
     funext fun x =>
-      Eq.symm <| by convert IsLocalization.mk'_mul _ f₁ f₂ ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
+      Eq.symm <| IsLocalization.mk'_mul _ f₁ f₂ ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
 #align algebraic_geometry.structure_sheaf.const_mul AlgebraicGeometry.StructureSheaf.const_mul
 
 theorem const_ext {f₁ f₂ g₁ g₂ : R} {U hu₁ hu₂} (h : f₁ * g₂ = f₂ * g₁) :
