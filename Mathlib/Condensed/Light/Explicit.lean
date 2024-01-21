@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
+Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Sites.CoherentEquivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Light.Abelian
 /-!
@@ -23,39 +24,35 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) :
     IsSheaf (coherentTopology LightProfinite) F ↔
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
-  -- let e := equivSmallModel LightProfinite.{u}
-  rw [isSheaf_coherent_iff_regular_and_extensive]
+  let e := equivSmallModel LightProfinite.{u}
+  rw [← isSheaf_iff_isSheaf_of_type, e.precoherent_isSheaf_iff (Type u) F]
+  haveI : Preregular (SmallModel.{u, u, u+1} LightProfinite) := sorry
+  haveI : FinitaryExtensive (SmallModel.{u, u, u+1} LightProfinite) := sorry
+  haveI : HasPullbacks (SmallModel.{u, u, u+1} LightProfinite) := sorry
+  rw [isSheaf_iff_isSheaf_of_type, isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
-  · let J := (extensiveCoverage LightProfinite).toGrothendieck
-    have h₁ := isSheaf_iff_preservesFiniteProducts (F ⋙ uliftFunctor.{u+1})
-    have h₂ := Presheaf.isSheaf_of_isSheaf_comp J F uliftFunctor.{u+1}
-    have h₃ : GrothendieckTopology.HasSheafCompose J uliftFunctor.{u+1, u} := inferInstance
-    have : (Presheaf.IsSheaf _ (F ⋙ _)) ↔ Presheaf.IsSheaf _ F := ⟨h₂, h₃.isSheaf F⟩
-    rw [isSheaf_iff_isSheaf_of_type, isSheaf_iff_isSheaf_of_type] at this
-    rw [← this, h₁]
+  · rw [isSheaf_iff_preservesFiniteProducts]
+    have : IsEquivalence e.inverse.op := (inferInstance : IsEquivalence e.op.inverse)
+    have : IsEquivalence e.functor.op := (inferInstance : IsEquivalence e.op.functor)
     refine ⟨fun ⟨h⟩ ↦ ⟨⟨fun J _ ↦ ?_⟩⟩, fun ⟨h⟩ ↦ ⟨⟨fun J _ ↦ ?_⟩⟩⟩
-    · exact preservesLimitsOfShapeOfReflectsOfPreserves _ uliftFunctor
+    · have : PreservesLimitsOfShape (Discrete J) ((e.op.functor ⋙ e.op.inverse) ⋙ F) :=
+        (inferInstance : PreservesLimitsOfShape _ (e.functor.op ⋙ e.inverse.op ⋙ F))
+      exact preservesLimitsOfShapeOfNatIso (isoWhiskerRight e.op.unitIso F).symm
     · infer_instance
-  · exact EqualizerCondition.isSheaf_iff F
+  · rw [EqualizerCondition.isSheaf_iff]
+    sorry
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+1)} [Category.{u} A] (G : A ⥤ Type u)
     [h : HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : LightProfinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology LightProfinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
-  -- haveI : HasLimitsOfSize.{u, u+1} A := sorry (false in general)
-  -- have : PreservesLimitsOfSize.{u, u + 1} G := sorry
-  -- rw [Presheaf.isSheaf_iff_isSheaf_comp (s := G)]
-  let J := coherentTopology LightProfinite
-  have h₂ := Presheaf.isSheaf_of_isSheaf_comp J (F ⋙ G) uliftFunctor.{u+1}
-  -- have h₂' := Presheaf.isSheaf_of_isSheaf_comp J F (G ⋙ uliftFunctor.{u+1})
-  have h₃' : GrothendieckTopology.HasSheafCompose J (G ⋙ uliftFunctor.{u+1, u}) := inferInstance
-  have h₃ : GrothendieckTopology.HasSheafCompose J uliftFunctor.{u+1, u} := inferInstance
-  have : (Presheaf.IsSheaf _ (F ⋙ (G ⋙ uliftFunctor.{u+1}))) ↔ Presheaf.IsSheaf _ (F ⋙ G) :=
-    ⟨h₂, h₃.isSheaf (F ⋙ G)⟩
-  -- rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology LightProfinite) F (G ⋙ uliftFunctor.{u+1}),
-  --   isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-  sorry
+  let e := equivSmallModel LightProfinite.{u}
+  rw [e.precoherent_isSheaf_iff, Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology _)
+    (e.inverse.op ⋙ F) G]
+  change Presheaf.IsSheaf _ (e.inverse.op ⋙ F ⋙ G) ↔ _
+  rw [← e.precoherent_isSheaf_iff, isSheaf_iff_isSheaf_of_type,
+    isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 end LightProfinite
 

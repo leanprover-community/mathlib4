@@ -240,6 +240,158 @@ def EqualizerCondition (P : Cᵒᵖ ⥤ Type*) : Prop :=
     (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
     pullback.condition)
 
+theorem equalizerCondition_iff_bla_w (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
+    P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
+      P.map π.op ≫ P.map (pullback.snd).op := by
+  simp only [← Functor.map_comp, ← op_comp, pullback.condition]
+
+-- theorem equalizerCondition_iff_bla (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
+--     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
+--     (equalizer.lift (P.map π.op) (equalizerCondition_iff_bla_w P π)) := sorry
+
+theorem equalizerCondition_iff_bla (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
+    ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
+    (equalizer.lift (P.map π.op) (equalizerCondition_iff_bla_w P π)) := by
+  unfold EqualizerCondition
+  refine ⟨fun h X B π _ _ ↦ ?_, fun h X B π _ _ ↦ ?_⟩
+  · specialize h X B π
+    rw [← isIso_iff_bijective] at h
+    sorry
+  · specialize h X B π
+    sorry
+
+@[simps]
+noncomputable
+def preservesPullbackIso {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
+    {X B : D} (π : X ⟶ B) [HasPullback π π] [PreservesLimit (cospan π π) F] :
+    haveI := hasPullback_of_preservesPullback F π π
+    (equalizer (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
+      (P.map (pullback.snd).op)) ≅
+      equalizer ((F.op ⋙ P).map (pullback.fst (f := π) (g := π)).op)
+        ((F.op ⋙ P).map pullback.snd.op) where
+  hom := equalizer.lift (equalizer.ι _ _) (by
+    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op]
+    haveI := hasPullback_of_preservesPullback F π π
+    have h := equalizer.condition (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
+      (P.map (pullback.snd).op)
+    have h₁ := PreservesPullback.iso_hom_fst F π π
+    have h₂ := PreservesPullback.iso_hom_snd F π π
+    simp only [← h₁, ← h₂, op_comp, Functor.map_comp, ← Category.assoc, h])
+  inv := equalizer.lift (equalizer.ι _ _) (by
+    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op]
+    haveI := hasPullback_of_preservesPullback F π π
+    have h₁ := PreservesPullback.iso_inv_fst F π π
+    have h₂ := PreservesPullback.iso_inv_snd F π π
+    simp only [← h₁, ← h₂, op_comp, Functor.map_comp]
+    rw [← Category.assoc, equalizer.condition]
+    rfl)
+  hom_inv_id := by
+    apply equalizer.hom_ext
+    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op, Category.assoc, limit.lift_π, op_comp, id_eq, eq_mpr_eq_cast, cast_eq,
+      Fork.ofι_pt, Fork.ofι_π_app, Category.id_comp]
+    exact equalizer.lift_ι _ _
+  inv_hom_id := by
+    apply equalizer.hom_ext
+    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+      Quiver.Hom.unop_op, Category.assoc, Category.id_comp]
+    erw [equalizer.lift_ι, equalizer.lift_ι]
+
+
+  -- hom := pullback.lift pullback.fst pullback.snd (by
+  --   simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --     Quiver.Hom.unop_op]
+  --   have := hasPullback_of_preservesPullback F π π
+  --   rw [← PreservesPullback.iso_hom_fst F, ← PreservesPullback.iso_hom_snd F]
+  --   simp only [op_comp, Functor.map_comp, ← Category.assoc, pullback.condition])
+  -- inv := pullback.lift pullback.fst pullback.snd (by
+  --   simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --     Quiver.Hom.unop_op]
+  --   have := hasPullback_of_preservesPullback F π π
+  --   rw [← PreservesPullback.iso_inv_fst F π π]
+  --   simp only [op_comp, Functor.map_comp, ← Category.assoc, pullback.condition]
+  --   rw [← PreservesPullback.iso_inv_snd F π π]
+  --   simp only [op_comp, Functor.map_comp, ← Category.assoc, pullback.condition])
+  -- hom_inv_id := by
+  --   ext1
+  --   · simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --       Quiver.Hom.unop_op, Category.assoc, limit.lift_π, op_comp, id_eq, eq_mpr_eq_cast,
+  --       PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp]
+  --     exact pullback.lift_fst _ _ _
+  --   · simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --       Quiver.Hom.unop_op, Category.assoc, limit.lift_π, op_comp, id_eq, eq_mpr_eq_cast,
+  --       PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp]
+  --     exact pullback.lift_snd _ _ _
+  -- inv_hom_id := by
+  --   ext1
+  --   · simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --       Quiver.Hom.unop_op, Category.assoc, Category.id_comp]
+  --     erw [pullback.lift_fst, pullback.lift_fst]
+  --   · simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+  --       Quiver.Hom.unop_op, Category.assoc, Category.id_comp]
+  --     erw [pullback.lift_snd, pullback.lift_snd]
+
+theorem mapToEqualizer_pullback_comp {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
+    {X B : D} (π : X ⟶ B) [HasPullback π π] [PreservesLimit (cospan π π) F] :
+    haveI := hasPullback_of_preservesPullback F π π
+    (equalizer.lift ((F.op ⋙ P).map π.op)
+      (equalizerCondition_iff_bla_w (F.op ⋙ P) π)) =
+    (equalizer.lift (P.map (F.map π).op)
+      (equalizerCondition_iff_bla_w P (F.map π))) ≫ (preservesPullbackIso P F π).hom := by
+  simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+    Quiver.Hom.unop_op, preservesPullbackIso]
+  apply equalizer.hom_ext
+  simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
+    Quiver.Hom.unop_op, Category.assoc]
+  erw [equalizer.lift_ι, equalizer.lift_ι, equalizer.lift_ι]
+
+theorem equalizerCondition_precomp_of_preservesPullback {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*)
+    (F : D ⥤ C)
+    [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
+    [F.PreservesEffectiveEpis]
+    (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
+  rw [equalizerCondition_iff_bla] at hP ⊢
+  intro X B π _ _
+  have := hasPullback_of_preservesPullback F π π
+  have := hP (F.obj X) (F.obj B) (F.map π)
+  rw [mapToEqualizer_pullback_comp (F := F)]
+  exact IsIso.comp_isIso
+
+theorem equalizerCondition_of_natIso_aux
+    {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P') {X B : C} (π : X ⟶ B) [EffectiveEpi π]
+    [HasPullback π π] :
+    (equalizer.ι (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≫
+      i.hom.app (op X)) ≫ P'.map pullback.fst.op =
+      (equalizer.ι (P.map pullback.fst.op) (P.map pullback.snd.op) ≫ i.hom.app (op X)) ≫
+      P'.map (pullback.snd  (f := π) (g := π)).op := by
+  rw [Category.assoc, Category.assoc, ← i.hom.naturality (pullback.fst (f := π) (g := π)).op,
+    ← i.hom.naturality (pullback.snd (f := π) (g := π)).op, ← Category.assoc, equalizer.condition]
+  simp
+
+theorem equalizerCondition_of_natIso {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P')
+    (hP : EqualizerCondition P) :
+    EqualizerCondition P' := by
+  rw [equalizerCondition_iff_bla] at hP ⊢
+  intro X B π _ _
+  specialize hP X B π
+  have h : equalizer.lift (P'.map π.op) (equalizerCondition_iff_bla_w P' π) =
+      i.inv.app (op B) ≫
+      equalizer.lift (P.map π.op) (equalizerCondition_iff_bla_w P π) ≫
+      equalizer.lift (equalizer.ι _ _ ≫ i.hom.app (op X))
+      (equalizerCondition_of_natIso_aux i π) := by
+    apply equalizer.hom_ext
+    simp
+  rw [h]
+  sorry -- infer_instance
+
+theorem equalizerCondition_of_isEquivalence {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*)
+    (e : C ≌ D) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
+  ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
+    equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
+      (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
+
 lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
     {F : Cᵒᵖ ⥤ Type*}
     (hF : EqualizerCondition F) : S.IsSheafFor F := by

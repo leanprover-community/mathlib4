@@ -717,8 +717,9 @@ end Epi
 
 noncomputable section Equivalence
 
-variable {D : Type*} [Category D] (e : C ≌ D) {B : C} {α : Type*}
-  (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
+variable {D : Type*} [Category D] (e : C ≌ D) {B : C}
+
+variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
 
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)
     (h : ∀ {Z : D} (a₁ a₂ : α) (g₁ : Z ⟶ e.functor.obj (X a₁)) (g₂ : Z ⟶ e.functor.obj (X a₂)),
@@ -730,6 +731,7 @@ theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.f
   simp only [← Functor.map_comp, hg] at this
   simpa using congrArg e.inverse.map (this (by trivial))
 
+/-- Equivalences preserve effective epimorphic families -/
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))
     (fun a ↦ e.functor.map (π a)) where
   desc ε h := (e.toAdjunction.homEquiv _ _).symm
@@ -757,6 +759,12 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
         Functor.id_obj, Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
       erw [e.toAdjunction.left_triangle_components_assoc]
 
+instance (F : C ⥤ D) [IsEquivalence F] :
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a)) :=
+  ⟨⟨effectiveEpiFamilyStructOfEquivalence F.asEquivalence _ _⟩⟩
+
+example {X B : C} (π : X ⟶ B) (F : C ⥤ D) [IsEquivalence F] [EffectiveEpi π] :
+    EffectiveEpi <| F.map π := inferInstance
 
 end Equivalence
 
@@ -816,5 +824,30 @@ instance effectiveEpiFamilyIsoComp : EffectiveEpiFamily Y (fun a ↦ i a ≫ π 
   ⟨⟨effectiveEpiFamilyStructIsoComp X Y π i⟩⟩
 
 end IsoComp
+
+section Preserves
+
+variable {D : Type*} [Category D]
+
+namespace Functor
+
+/--
+A functor preserves effective epimorphisms if it maps effective epimorphisms to effective
+epimorphisms.
+-/
+class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
+  /-- A functor preserves epimorphisms if it maps epimorphisms to epimorphisms. -/
+  preserves : ∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], EffectiveEpi (F.map f)
+
+instance map_effectiveEpi (F : C ⥤ D) [F.PreservesEffectiveEpis] {X Y : C} (f : X ⟶ Y)
+    [EffectiveEpi f] : EffectiveEpi (F.map f) :=
+  PreservesEffectiveEpis.preserves f
+
+instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpis where
+  preserves _ := inferInstance
+
+end Functor
+
+end Preserves
 
 end CategoryTheory
