@@ -1,27 +1,27 @@
-import Mathlib
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+
+/-!
+# IMO 1961 Q3
+
+Solve the equation
+
+$\cos^n x - \sin^n x = 1$,
+
+where $n$ is a given positive integer.
+
+The solution is based on the one at the
+[Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1961_IMO_Problems/Problem_3)
+website.
+-/
 
 open Real
 
-namespace Real
-
-theorem cos_even_int_mul_pi {k : ℤ} (hk : Even k) : cos (k * π) = 1 := by
-  rcases hk with ⟨k, rfl⟩
-  convert cos_int_mul_two_pi k using 2
-  push_cast
-  ring
-
-theorem cos_odd_int_mul_pi {k : ℤ} (hk : Odd k) : cos (k * π) = -1 := by
-  rcases hk with ⟨k, rfl⟩
-  simpa [add_mul] using cos_even_int_mul_pi (even_two_mul k)
-
-@[simp]
-theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
-  cases k.even_or_odd with
-  | inl hk => simp [cos_even_int_mul_pi hk]
-  | inr hk => simp [cos_odd_int_mul_pi hk, abs]
-
-theorem cos_int_mul_pi_pow_even (k : ℤ) {n : ℕ} (hn : Even n) : (cos (k * π)) ^ n = 1 := by
-  rw [← hn.pow_abs, abs_cos_int_mul_pi, one_pow]
+#check sin_int_mul_pi
 
 theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
     (cos x) ^ n - (sin x) ^ n = 1 ↔
@@ -70,7 +70,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
             _ < 1 ^ m * cos x ^ 2 + 1 ^ m * sin x ^ 2 := by gcongr
             _ = 1 := by simp
   · rintro (⟨⟨k, rfl⟩, hn⟩ | ⟨⟨k, rfl⟩, -⟩ | ⟨⟨k, rfl⟩, hn⟩)
-    · rw [sin_int_mul_pi, zero_pow' _ h₀, sub_zero, cos_int_mul_pi_pow_even _ hn]
+    · rw [sin_int_mul_pi, zero_pow' _ h₀, sub_zero, ← hn.pow_abs, abs_cos_int_mul_pi, one_pow]
     · have : sin (k * (2 * π)) = 0 := by simpa [mul_assoc] using sin_int_mul_pi (k * 2)
       simp [h₀, this]
     · simp [hn.neg_pow, h₀]
