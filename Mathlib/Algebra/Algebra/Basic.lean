@@ -436,7 +436,8 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-instance id : Algebra R R :=
+-- if this instance applies, it's always what we want
+instance (priority := high) id : Algebra R R :=
   (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
