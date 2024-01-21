@@ -216,52 +216,31 @@ lemma toInjImmersion (h : SmoothEmbedding I I' f n) : InjImmersion I I' f n wher
 
 -- an injective immersion need not be an embedding: cue the standard example
 
-section missing -- TODO: move, #find_home says Mathlib.Topology.Algebra.Module.FiniteDimensio
-variable {E F : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [SeminormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {f : E →L[𝕜] F}
-
-/-- An injective linear endomorphism of a finite-dimensional space is a linear equivalence. -/
-def _root_.LinearEquiv.of_injective_endo_of_finiteDimensional {𝕜 E : Type*} [NormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-    {f : E →L[𝕜] E} (hf : Function.Injective f) : LinearEquiv (RingHom.id 𝕜) E E := sorry
-
-universe v v'
-/-- An injective linear map between finite-dimensional normed space of equal dimension
-  is a linear equivalence. -/
--- TODO: make the statement type-check
-def _root_.LinearEquiv.of_injective_of_finiteDimensional {𝕜 : Type v} {E : Type v} {F : Type v'} [NormedField 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F]
-    {f : E →L[𝕜] F} (hf : Function.Injective f) :
-    -- TODO: how to compare these ranks? live in different universes...
-    -- (hdim : Cardinal.lift.{v, max v v'} Module.rank 𝕜 E = Cardinal.lift.{v', max v v'} Module.rank 𝕜 F) :
-    LinearEquiv (RingHom.id 𝕜) E F := by
-  -- let r : Cardinal.{v} := Module.rank 𝕜 E
-  -- let r' : Cardinal.{v'} := Module.rank 𝕜 F
-  -- xxx how to compare these ranks?
-  sorry
-
-end missing
-
 /-- `TangentSpace I x` is defeq to `E`, hence also a normed additive abelian group. -/
 local instance (x : M) : NormedAddCommGroup (TangentSpace I x) := instE
 /-- `TangentSpace I x` is defeq to `E`, hence also a normed space. -/
 local instance (x : M) : NormedSpace 𝕜 (TangentSpace I x) := instE'
 
-/-- A surjective smooth embedding of finite-dimensional manifolds is a diffeomorphism:
-  in particular, its inverse map is smooth. -/
-def diffeomorph_of_surjective [ifin: FiniteDimensional 𝕜 E]
-    (h : SmoothEmbedding I I' f n) (hf : Surjective f) : Diffeomorph I I' M M' n := by
+/-- A surjective smooth embedding of finite-dimensional manifolds of the same dimension
+  is a diffeomorphism: in particular, its inverse map is smooth.
+  TODO: using invariance of domain, remove the equi-dimensionality assumption! -/
+def diffeomorph_of_surjective [ifin: FiniteDimensional 𝕜 E] [ifin': FiniteDimensional 𝕜 E']
+    (h : SmoothEmbedding I I' f n) (hf : Surjective f)
+    (hrank : FiniteDimensional.finrank 𝕜 E = FiniteDimensional.finrank 𝕜 E') : Diffeomorph I I' M M' n := by
   -- we follow Lee, Proposition 5.5.7 (but avoid passing to local charts)
   suffices h' : IsLocalDiffeomorph I I' n f from
     IsLocalDiffeomorph.diffeomorph_of_bijective h' ⟨h.toEmbedding.inj, hf⟩
   intro x
-  have aux : Injective (mfderiv I I' f x) := h.diff_injective x
+  have hinj : Injective (mfderiv I I' f x) := h.diff_injective x
   -- as E is finite-dimensional, the differential is also surjective
-  haveI : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := sorry -- ifin
-  -- let r := LinearEquiv.of_injective_of_finiteDimensional aux (𝕜 := 𝕜) --(E := TangentSpace)
-  have : Bijective (mfderiv I I' f x) := sorry -- LinearEquiv is bijective
-  exact IsLocalDiffeomorphAt.of_bijective_differential h.differentiable this
+  haveI : FiniteDimensional 𝕜 (TangentSpace I x) := ifin
+  haveI : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := ifin'
+  have aux2 : Surjective (mfderiv I I' f x) := by
+    refine (LinearMap.injective_iff_surjective_of_finrank_eq_finrank ?_).mp hinj
+    have h1 : TangentSpace I x = E := rfl
+    have h2 : TangentSpace I' (f x) = E' := rfl
+    sorry -- rw [h1, h2, hrank] "motive is not type correct"
+  exact IsLocalDiffeomorphAt.of_bijective_differential h.differentiable ⟨hinj, aux2⟩
 
 end SmoothEmbedding
 
