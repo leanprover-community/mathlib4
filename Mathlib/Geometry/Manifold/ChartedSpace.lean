@@ -1146,8 +1146,8 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 protected instance instChartedSpace : ChartedSpace H s where
-  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr s ⟨x, x.prop⟩}
-  chartAt x := (chartAt H x.1).subtypeRestr s ⟨x, x.prop⟩
+  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr s ⟨x⟩}
+  chartAt x := (chartAt H x.1).subtypeRestr s ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
@@ -1163,7 +1163,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
     refine G.eq_on_source ?_
-      (subtypeRestr_symm_trans_subtypeRestr s ⟨x, x.prop⟩ (chartAt H x) (chartAt H x'))
+      (subtypeRestr_symm_trans_subtypeRestr s ⟨x⟩ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
@@ -1172,21 +1172,21 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
 theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
   set e := chartAt H x.val
-  have heUx_nhds : (e.subtypeRestr U ⟨x, x.prop⟩).target ∈ 𝓝 (e x) := by
-    apply (e.subtypeRestr U ⟨x, x.prop⟩).open_target.mem_nhds
-    exact e.map_subtype_source ⟨x, x.prop⟩ (mem_chart_source _ _)
-  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn U ⟨x, x.prop⟩)
+  have heUx_nhds : (e.subtypeRestr U ⟨x⟩).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr U ⟨x⟩).open_target.mem_nhds
+    exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
+  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn U ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
     Set.inclusion hUV ∘ (chartAt H x).symm := by
   set e := chartAt H (x : M)
-  have heUx_nhds : (e.subtypeRestr U ⟨x, x.prop⟩).target ∈ 𝓝 (e x) := by
-    apply (e.subtypeRestr U ⟨x, x.prop⟩).open_target.mem_nhds
-    exact e.map_subtype_source ⟨x, x.prop⟩ (mem_chart_source _ _)
-  exact Filter.eventuallyEq_of_mem heUx_nhds <| e.subtypeRestr_symm_eqOn_of_le ⟨x, x.prop⟩
-    ⟨Set.inclusion hUV x, (Set.inclusion hUV x).prop⟩ hUV
+  have heUx_nhds : (e.subtypeRestr U ⟨x⟩).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr U ⟨x⟩).open_target.mem_nhds
+    exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
+  exact Filter.eventuallyEq_of_mem heUx_nhds <| e.subtypeRestr_symm_eqOn_of_le ⟨x⟩
+    ⟨Set.inclusion hUV x⟩ hUV
 #align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
 end TopologicalSpace.Opens
 
