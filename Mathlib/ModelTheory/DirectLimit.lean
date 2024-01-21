@@ -545,7 +545,7 @@ noncomputable def subEquiv_limit : M ≃ₚ[L] N := {
       (fun i ↦ (S i).sub_cod)
       (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
       (fun i ↦ (S i).equiv)
-      (fun _ _ hij _ ↦ equiv_inclusion (S.monotone hij) _)
+      (fun _ _ hij _ ↦ equiv_inclusion_apply (S.monotone hij) _)
   }
 
 @[simp]
@@ -560,7 +560,8 @@ theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
   refine ⟨by simp; apply le_iSup (f := fun i ↦ (S i).sub_dom), ?_⟩
   unfold subEquiv_limit
   ext x
-  simp only [OrderHom.coe_mk, Function.comp_apply, Equiv.comp_apply]
+  simp only [OrderHom.coe_mk, Embedding.comp_apply, Substructure.coe_inclusion,
+    Equiv.coe_toEmbedding, Equiv.comp_apply]
   refine DirectLimit.Equiv_isup_symm_inclusion
     { toFun := fun i ↦ (S i).sub_dom
       monotone' := monotone_dom.comp S.monotone} x ▸ ?_
@@ -569,7 +570,7 @@ theorem le_subEquiv_limit : ∀ i, S i ≤ subEquiv_limit S := by
       (fun i ↦ (S i).sub_cod)
       (fun _ _ hij ↦ Substructure.inclusion (le_cod (S.monotone hij)))
       (fun i ↦ (S i).equiv)
-      (fun _ _ hij _ ↦ equiv_inclusion (S.monotone hij) _)
+      (fun _ _ hij _ ↦ equiv_inclusion_apply (S.monotone hij) _)
       x ▸ ?_
   rw [DirectLimit.equiv_lift_of]
   refine DirectLimit.Equiv_isup_of

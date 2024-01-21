@@ -367,10 +367,7 @@ theorem extend_finite_SubEquiv :
     refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
     · rw [SubEquivalence.le_def]
       use dom_le_S
-      ext x
-      have := congr_fun (congr_arg FunLike.coe eq) x
-      simp only [Embedding.comp_apply, Equiv.coe_toEmbedding] at this
-      simp only [ Function.comp, this]
+      rw [eq]
       rfl
     · simp only [union_singleton]
       exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m

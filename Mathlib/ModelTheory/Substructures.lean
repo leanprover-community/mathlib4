@@ -1021,6 +1021,9 @@ def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
 #align first_order.language.substructure.inclusion FirstOrder.Language.Substructure.inclusion
 
 @[simp]
+theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl
+
+@[simp]
 theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     (inclusion h : S → T) = Set.inclusion h :=
   rfl
@@ -1063,41 +1066,46 @@ theorem symm_apply (f : M ≃ₚ[L] N) : ∀ x, f.symm.equiv x = f.equiv.symm x 
   fun _ ↦ rfl
 
 instance : LE (M ≃ₚ[L] N) := ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
-  subtype _ ∘ g.equiv ∘ (Substructure.inclusion h) = subtype _ ∘ f.equiv⟩
+  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
+    (subtype _).comp f.equiv.toEmbedding⟩
 
 theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃h : f.sub_dom ≤ g.sub_dom,
-  subtype _ ∘ g.equiv ∘ (Substructure.inclusion h) = subtype _ ∘ f.equiv :=
-    by rfl
+  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
+    (subtype _).comp f.equiv.toEmbedding :=
+      by rfl
 
 theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_dom ≤ g.sub_dom := fun ⟨le, _⟩ ↦ le
 
 theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.equiv.symm ⟨n, hn⟩
-  have  : (subtype _ ∘ f.equiv) m = n := by simp only [coeSubtype, Function.comp_apply,
-    Equiv.apply_symm_apply]
+  have  : ((subtype _).comp f.equiv.toEmbedding) m = n := by simp only [Embedding.comp_apply,
+    Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coeSubtype]
   rw [←this, ←eq_fun]
-  simp only [coeSubtype, coe_inclusion, Function.comp_apply, SetLike.coe_mem]
+  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+    SetLike.coe_mem]
 
 @[simp]
 theorem subtype_equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
-  subtype _ ∘ g.equiv ∘ (Substructure.inclusion (le_dom h)) = subtype _ ∘ f.equiv := by
-  let ⟨_, eq⟩ := h; exact eq
+  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion (le_dom h)))
+    = (subtype _).comp f.equiv.toEmbedding := by
+      let ⟨_, eq⟩ := h; exact eq
 
-theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
-  g.equiv (Substructure.inclusion (le_dom h) x) = Substructure.inclusion (le_cod h) (f.equiv x) := by
-  apply (subtype _).inj'
-  change (subtype _ ∘ g.equiv ∘ (inclusion _)) x = _
-  rw [subtype_equiv_inclusion]
-  rfl
-  assumption
+theorem equiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
+  g.equiv (Substructure.inclusion (le_dom h) x)
+  = Substructure.inclusion (le_cod h) (f.equiv x) := by
+    apply (subtype _).inj'
+    change (subtype _).comp (g.equiv.toEmbedding.comp (inclusion _)) x = _
+    rw [subtype_equiv_inclusion]
+    rfl
+    assumption
 
 theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
   ∃ le_dom : f.sub_dom ≤ g.sub_dom,
   ∃ le_cod : f.sub_cod ≤ g.sub_cod,
   ∀ x, inclusion le_cod (f.equiv x) = g.equiv (inclusion le_dom x) := by
     constructor
-    · exact fun h ↦ ⟨le_dom h, le_cod h, by intro x; apply (subtype _).inj'; rwa [equiv_inclusion]⟩
+    · exact fun h ↦ ⟨le_dom h, le_cod h, by intro x; apply (subtype _).inj'; rwa [equiv_inclusion_apply]⟩
     · rintro ⟨le_dom, le_cod, h_eq⟩
       rw [le_def]
       exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [←h_eq]; rfl⟩
@@ -1105,7 +1113,7 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
-  rw [←eq_fg, ←Function.comp.assoc (g := g.equiv), ←eq_gh]
+  rw [←eq_fg, ←Embedding.comp_assoc (g := g.equiv.toEmbedding), ←eq_gh]
   rfl
 
 nonrec theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f :=
@@ -1116,9 +1124,10 @@ nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g
   let ⟨dom_f, cod_f, equiv_f⟩ := f
   cases le_antisymm (le_dom le_fg) (le_dom le_gf)
   cases le_antisymm (le_cod le_fg) (le_cod le_gf)
-  cases FunLike.coe_injective' ((subtype g.sub_cod).inj'.comp_left
-    (subtype_equiv_inclusion le_fg)).symm
-  rfl
+  convert rfl
+  exact Equiv.injective_toEmbedding ((subtype _).injective_comp (subtype_equiv_inclusion le_fg))
+
+
 
 instance : PartialOrder (M ≃ₚ[L] N) := {
   le_refl := le_refl
@@ -1134,7 +1143,7 @@ theorem monotone_symm : Monotone (fun (f : M ≃ₚ[L] N) ↦ f.symm) := by
   apply g.equiv.injective
   change g.equiv (inclusion _ (f.equiv.symm x)) = g.equiv (g.equiv.symm _)
   rw [g.equiv.apply_symm_apply, (Equiv.apply_symm_apply f.equiv x).symm, f.equiv.symm_apply_apply]
-  exact equiv_inclusion hfg _
+  exact equiv_inclusion_apply hfg _
 
 theorem symm_le_iff (f : M ≃ₚ[L] N) (g : N ≃ₚ[L] M) : f.symm ≤ g ↔ f ≤ g.symm :=
   ⟨by intro h; rw [←f.symm_symm]; exact monotone_symm h,

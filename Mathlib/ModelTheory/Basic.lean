@@ -723,12 +723,23 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 #align first_order.language.embedding.comp_assoc FirstOrder.Language.Embedding.comp_assoc
 
+theorem injective_comp (h : N ↪[L] P) :
+  Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+    intro f g hfg
+    ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+
 @[simp]
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
     (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom := by
   ext
   simp only [coe_toHom, comp_apply, Hom.comp_apply]
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
+
+@[simp]
+theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := FunLike.coe_injective rfl
+
+@[simp]
+theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := FunLike.coe_injective rfl
 
 end Embedding
 
@@ -826,6 +837,10 @@ theorem coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
 theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
+
+@[simp]
+theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
+  intro _ _ h; apply FunLike.coe_injective; exact (congr_arg (FunLike.coe ∘ Embedding.toHom) h)
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   FunLike.coe_injective
