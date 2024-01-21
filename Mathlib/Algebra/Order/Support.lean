@@ -234,6 +234,8 @@ end CanonicallyOrderedCommMonoid
 section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup M]
 
+open scoped symmDiff
+
 lemma abs_indicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
     |indicator (s ∆ t) f x| = |indicator s f x - indicator t f x| :=
   apply_indicator_symmDiff abs_neg s t f x

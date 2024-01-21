@@ -1,3 +1,4 @@
+import Mathlib.Init.Core
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
@@ -6,7 +7,7 @@ set_option autoImplicit true
 
 open Polynomial
 
-/-- info: Try this: rw [@sub_eq_neg_add, ← @C_neg, @natDegree_C_add] -/
+/-- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg] -/
 #guard_msgs in
 example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
     natDegree (p - C a) = natDegree p := by

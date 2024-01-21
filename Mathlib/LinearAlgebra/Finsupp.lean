@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Finsupp.Encodable
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
+import Mathlib.Data.Set.Countable
 
 #align_import linear_algebra.finsupp from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
