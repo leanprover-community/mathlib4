@@ -40,7 +40,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
       exact preservesLimitsOfShapeOfNatIso (isoWhiskerRight e.op.unitIso F).symm
     · infer_instance
   · rw [EqualizerCondition.isSheaf_iff]
-    sorry
+    exact (equalizerCondition_iff_of_equivalence F e).symm
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+1)} [Category.{u} A] (G : A ⥤ Type u)
