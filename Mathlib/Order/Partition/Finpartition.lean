@@ -91,7 +91,8 @@ variable [Lattice α] [OrderBot α]
 /-- A `Finpartition` constructor which does not insist on `⊥` not being a part. -/
 @[simps]
 def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.SupIndep id)
-    (sup_parts : parts.sup id = a) : Finpartition a where
+    (sup_parts : parts.sup id = a) : Finpartition a
+    where
   parts := parts.erase ⊥
   supIndep := sup_indep.subset (erase_subset _ _)
   supParts := (sup_erase_bot _).trans sup_parts
@@ -110,7 +111,8 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
 
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
-def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
+def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
+    where
   parts := P.parts
   supIndep := P.supIndep
   supParts := h ▸ P.supParts
@@ -122,7 +124,7 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e
     Finpartition (e a) where
   parts := P.parts.map e
   supIndep u hu _ hb hbu _ hx hxu := by
-    rw [← symm_map_subset_iff] at hu
+    rw [← map_symm_subset] at hu
     simp only [mem_map_equiv] at hb
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
@@ -140,7 +142,8 @@ variable (α)
 
 /-- The empty finpartition. -/
 @[simps]
-protected def empty : Finpartition (⊥ : α) where
+protected def empty : Finpartition (⊥ : α)
+    where
   parts := ∅
   supIndep := supIndep_empty _
   supParts := Finset.sup_empty
@@ -159,7 +162,8 @@ variable {α} {a : α}
 
 /-- The finpartition in one part, aka indiscrete finpartition. -/
 @[simps]
-def indiscrete (ha : a ≠ ⊥) : Finpartition a where
+def indiscrete (ha : a ≠ ⊥) : Finpartition a
+    where
   parts := {a}
   supIndep := supIndep_singleton _ _
   supParts := Finset.sup_singleton
@@ -214,7 +218,8 @@ instance : Unique (Finpartition (⊥ : α)) :=
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
 @[reducible]
-def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
+def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
+    where
   default := indiscrete ha.1
   uniq P := by
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
@@ -260,7 +265,8 @@ instance : PartialOrder (Finpartition a) :=
         rwa [hbc.antisymm]
         rwa [Q.disjoint.eq_of_le hb hd (Q.ne_bot hb) (hbc.trans hcd)] }
 
-instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
+instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
+    where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
     split_ifs with h
@@ -376,7 +382,8 @@ variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 /-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps]
-def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a where
+def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a
+    where
   parts := P.parts.attach.biUnion fun i ↦ (Q i.1 i.2).parts
   supIndep := by
     rw [supIndep_iff_pairwiseDisjoint]
@@ -569,8 +576,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
            fun r2 => s.trans (s.trans d1.2 (s.symm d2.2)) r2⟩
   supParts := by
     ext a
-    simp only [sup_image, Function.comp.left_id, mem_univ, mem_sup, mem_filter, true_and,
-      iff_true]
+    simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
     use a; exact s.refl a
   not_bot_mem := by
     rw [bot_eq_empty, mem_image, not_exists]

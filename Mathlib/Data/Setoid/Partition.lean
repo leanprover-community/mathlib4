@@ -340,45 +340,6 @@ theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α
       f.supIndep.pairwiseDisjoint⟩
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
-open Fintype in
-/-- The equivalence between finpartitions of `α` and equivalence-class partitions
-defined by setoids over `α`. -/
-noncomputable def Finpartition.equivSubtypeSetoidIsPartition (α) [Fintype α] [DecidableEq α] :
-    Finpartition (Finset.univ : Finset α) ≃
-    {C : Finset (Set α) // Setoid.IsPartition (C : Set (Set α))} where
-  toFun P := by
-    refine' ⟨P.parts.map (finsetOrderIsoSet (α := α)), _⟩
-    let P' : Finpartition (Set.univ : Set α) := (P.map finsetOrderIsoSet).copy ?_
-    rw [Finset.coe_map]
-    constructor
-    · simp only [Set.mem_image, not_exists, not_and]
-      intro x hx
-      have hx' := P.ne_bot hx
-      contrapose! hx'
-      rw [← finsetOrderIsoSet.injective.eq_iff, OrderIso.map_bot]
-      exact hx'
-    intro a
-    refine' (P'.isPartition_parts.right a).imp (fun t => And.imp _ _)
-    · simp only [exists_unique_iff_exists, Finset.mem_coe, exists_prop, and_imp]
-      intro ht hat
-      rw [copy_parts] at ht
-      · simp only [parts_equiv, Finset.mem_map_equiv] at ht
-        refine' ⟨⟨finsetOrderIsoSet.symm t, ht, _⟩, hat⟩
-        exact Equiv.apply_symm_apply _ t
-      · rw [← Finset.top_eq_univ, OrderIso.map_top, Set.top_eq_univ]
-    simp
-  invFun s := by
-    refine' (s.2.finpartition.map finsetOrderIsoSet.symm).copy _
-    rw [coe_finsetOrderIsoSet_symm, finsetEquivSet_symm_apply, Set.toFinset_univ]
-  left_inv P := by
-    ext a
-    simp_rw [copy_parts, parts_equiv, Setoid.IsPartition.finpartition_parts, Finset.mem_map_equiv,
-      OrderIso.coe_symm, OrderIso.symm_symm, ← OrderIso.coe_symm, Equiv.symm_apply_apply]
-  right_inv s := by
-    ext a
-    simp_rw [copy_parts, parts_equiv, Setoid.IsPartition.finpartition_parts, Finset.mem_map_equiv,
-      OrderIso.coe_symm, OrderIso.symm_symm, ← OrderIso.coe_symm, Equiv.apply_symm_apply]
-
 /-- Constructive information associated with a partition of a type `α` indexed by another type `ι`,
 `s : ι → Set α`.
 
