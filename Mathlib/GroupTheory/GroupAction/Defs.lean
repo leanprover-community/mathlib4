@@ -680,9 +680,8 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
 #align vadd_zero_vadd vadd_zero_vadd
 
 @[to_additive]
-theorem MulAction.IsPretransitive.of_isScalarTower
-    {M N α : Type*} [Monoid M] [Monoid N] [MulAction M α] [MulAction N α] [MulAction M N]
-    [IsScalarTower M N α] [IsPretransitive M α] :
+theorem MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] :
     IsPretransitive N α :=
   of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
