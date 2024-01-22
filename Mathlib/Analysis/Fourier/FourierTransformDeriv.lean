@@ -46,13 +46,6 @@ variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 `v → (w → -2 * π * I * L(v, w) • f v)`. -/
 def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
-/-- Alternate description of `VectorFourier.mulL`. -/
-lemma mulL_eq_toSpanSingleton_comp : mul_L L f =
-    fun v ↦ ((ContinuousLinearMap.toSpanSingleton ℝ (-(2 * π * I) • f v)) ∘L L v) := by
-  ext v v'
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.toSpanSingleton_apply, smul_comm,
-    VectorFourier.mul_L, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
-
 /-- The `w`-derivative of the Fourier transform integrand. -/
 lemma hasFDerivAt_fourier_transform_integrand_right (v : V) (w : W) :
     HasFDerivAt (fun w' ↦ fourierChar [-L v w'] • f v) (fourierChar [-L v w] • mul_L L f v) w := by
@@ -133,12 +126,10 @@ abbrev integralFourier (f : V → E) (μ : Measure V := by volume_tac) :=
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
 theorem InnerProductSpace.hasFDerivAt_fourier {f : V → E} {μ : Measure V}
     (hf_int : Integrable f μ) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖) μ) (x : V) :
-    HasFDerivAt (integralFourier f μ) (integralFourier (fun v ↦
-      ((ContinuousLinearMap.toSpanSingleton ℝ (-(2 * π * I) • f v)) ∘L (innerSL ℝ) v)) μ x) x := by
+    HasFDerivAt (integralFourier f μ) (integralFourier (mul_L (innerSL ℝ) f) μ x) x := by
   haveI : SecondCountableTopologyEither V (V →L[ℝ] ℝ) :=
     secondCountableTopologyEither_of_left V _ -- for some reason it fails to synthesize this?
-  simpa only [VectorFourier.mulL_eq_toSpanSingleton_comp]
-    using VectorFourier.hasFDerivAt_fourier (innerSL ℝ) hf_int hvf_int x
+  exact VectorFourier.hasFDerivAt_fourier (innerSL ℝ) hf_int hvf_int x
 
 end inner
 
