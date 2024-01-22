@@ -68,9 +68,9 @@ def elabForHeartbeats (cmd : TSyntax `command) : CommandElabM Nat := do
   let start ← IO.getNumHeartbeats
   -- FIXME really should revert more state here:
   -- can someone advise how to roll back CommandElabM state?
-  let env ← getEnv
+  let s ← get
   elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
-  setEnv env
+  set s
   return (← IO.getNumHeartbeats) - start
 
 /-- Run a command `10` times, reporting the range in heartbeats, and the standard deviation. -/
