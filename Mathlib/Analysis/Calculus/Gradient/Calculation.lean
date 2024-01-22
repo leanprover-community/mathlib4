@@ -47,9 +47,7 @@ variable {L' : Filter 𝕜} {t : Set 𝕜}
 theorem HasGradientAtFilter.comp
     (hg : HasGradientAtFilter g g' (f x) L') (hf : HasGradientAtFilter f f' x L)
     (hL : Tendsto f L L') : HasGradientAtFilter (g ∘ f) (g' • f') x L := by
-  have eq : (starRingEnd 𝕜) g' • (toDual 𝕜 F) f' =
-    (toDual 𝕜 F) (g' • f') := by rw [map_smulₛₗ]
-  rw [HasGradientAtFilter, ← eq]
+  rw [HasGradientAtFilter, map_smulₛₗ]
   exact hg.hasDerivAtFilter.comp_hasFDerivAtFilter x hf hL
 
 theorem HasGradientWithinAt.comp
