@@ -16,7 +16,7 @@ This file defines equality modulo an element in a commutative group.
 
 ## Main definitions
 
-* `a ≡ b [PMOD p]`: `a` and `b` are congruent modulo a`p`.
+* `a ≡ b [PMOD p]`: `a` and `b` are congruent modulo `p`.
 
 ## See also
 
