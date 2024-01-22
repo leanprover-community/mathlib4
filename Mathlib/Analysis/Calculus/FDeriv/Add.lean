@@ -155,7 +155,7 @@ theorem DifferentiableOn.add (hf : DifferentiableOn 𝕜 f s) (hg : Differentiab
     DifferentiableOn 𝕜 (fun y => f y + g y) s := fun x hx => (hf x hx).add (hg x hx)
 #align differentiable_on.add DifferentiableOn.add
 
-@[simp, fprop]
+@[simp]
 theorem Differentiable.add (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 fun y => f y + g y := fun x => (hf x).add (hg x)
 #align differentiable.add Differentiable.add
@@ -369,7 +369,7 @@ theorem DifferentiableOn.sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
   DifferentiableWithinAt.sum fun i hi => h i hi x hx
 #align differentiable_on.sum DifferentiableOn.sum
 
-@[simp, fprop]
+@[simp]
 theorem Differentiable.sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
     Differentiable 𝕜 fun y => ∑ i in u, A i y := fun x => DifferentiableAt.sum fun i hi => h i hi x
 #align differentiable.sum Differentiable.sum
@@ -440,7 +440,6 @@ theorem differentiableOn_neg_iff : DifferentiableOn 𝕜 (fun y => -f y) s ↔ D
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 #align differentiable_on_neg_iff differentiableOn_neg_iff
 
-@[fprop]
 theorem Differentiable.neg (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun y => -f y := fun x =>
   (h x).neg
 #align differentiable.neg Differentiable.neg
@@ -506,7 +505,7 @@ theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : Differentiab
     DifferentiableOn 𝕜 (fun y => f y - g y) s := fun x hx => (hf x hx).sub (hg x hx)
 #align differentiable_on.sub DifferentiableOn.sub
 
-@[simp, fprop]
+@[simp]
 theorem Differentiable.sub (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 fun y => f y - g y := fun x => (hf x).sub (hg x)
 #align differentiable.sub Differentiable.sub

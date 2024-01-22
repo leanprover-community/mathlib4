@@ -197,7 +197,6 @@ def DifferentiableOn (f : E → F) (s : Set E) :=
 #align differentiable_on DifferentiableOn
 
 /-- `Differentiable 𝕜 f` means that `f` is differentiable at any point. -/
-@[fprop]
 def Differentiable (f : E → F) :=
   ∀ x, DifferentiableAt 𝕜 f x
 #align differentiable Differentiable

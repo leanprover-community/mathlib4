@@ -331,7 +331,6 @@ theorem continuous_fst : Continuous (@Prod.fst α β) :=
 #align continuous_fst continuous_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous -/
-@[fprop]
 theorem Continuous.fst {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).1 :=
   continuous_fst.comp hf
 #align continuous.fst Continuous.fst
@@ -369,7 +368,6 @@ theorem continuous_snd : Continuous (@Prod.snd α β) :=
 #align continuous_snd continuous_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous -/
-@[fprop]
 theorem Continuous.snd {f : α → β × γ} (hf : Continuous f) : Continuous fun a : α => (f a).2 :=
   continuous_snd.comp hf
 #align continuous.snd Continuous.snd
@@ -401,7 +399,7 @@ theorem ContinuousAt.snd'' {f : β → γ} {x : α × β} (hf : ContinuousAt f x
   hf.comp continuousAt_snd
 #align continuous_at.snd'' ContinuousAt.snd''
 
-@[continuity,fprop]
+@[continuity]
 theorem Continuous.prod_mk {f : γ → α} {g : γ → β} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (f x, g x) :=
   continuous_prod_mk.2 ⟨hf, hg⟩
@@ -872,7 +870,7 @@ theorem continuous_sum_elim {f : α → γ} {g : β → γ} :
   continuous_sum_dom
 #align continuous_sum_elim continuous_sum_elim
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.sum_elim {f : α → γ} {g : β → γ} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
   continuous_sum_elim.2 ⟨hf, hg⟩
@@ -886,12 +884,12 @@ theorem continuous_isLeft : Continuous (isLeft : α ⊕ β → Bool) :=
 theorem continuous_isRight : Continuous (isRight : α ⊕ β → Bool) :=
   continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
-@[continuity, fprop]
+@[continuity]
 -- porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
 theorem continuous_inl : Continuous (@inl α β) := ⟨fun _ => And.left⟩
 #align continuous_inl continuous_inl
 
-@[continuity, fprop]
+@[continuity]
 -- porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr α β) := ⟨fun _ => And.right⟩
 #align continuous_inr continuous_inr
@@ -970,7 +968,7 @@ theorem continuous_sum_map {f : α → β} {g : γ → δ} :
     embedding_inl.continuous_iff.symm.and embedding_inr.continuous_iff.symm
 #align continuous_sum_map continuous_sum_map
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.sum_map {f : α → β} {g : γ → δ} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sum_map.2 ⟨hf, hg⟩
@@ -1015,13 +1013,12 @@ theorem closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
   ⟨embedding_subtype_val, by rwa [Subtype.range_coe_subtype]⟩
 #align closed_embedding_subtype_coe closedEmbedding_subtype_val
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_subtype_val : Continuous (@Subtype.val α p) :=
   continuous_induced_dom
 #align continuous_subtype_val continuous_subtype_val
 #align continuous_subtype_coe continuous_subtype_val
 
-@[fprop]
 theorem Continuous.subtype_val {f : β → Subtype p} (hf : Continuous f) :
     Continuous fun x => (f x : α) :=
   continuous_subtype_val.comp hf
@@ -1124,18 +1121,18 @@ theorem ContinuousAt.restrictPreimage {f : α → β} {s : Set β} {x : f ⁻¹'
   h.restrict _
 #align continuous_at.restrict_preimage ContinuousAt.restrictPreimage
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.codRestrict {f : α → β} {s : Set β} (hf : Continuous f) (hs : ∀ a, f a ∈ s) :
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 #align continuous.cod_restrict Continuous.codRestrict
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.restrict {f : α → β} {s : Set α} {t : Set β} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.restrictPreimage {f : α → β} {s : Set β} (h : Continuous f) :
     Continuous (s.restrictPreimage f) :=
   h.restrict _
@@ -1173,12 +1170,12 @@ theorem quotientMap_quot_mk : QuotientMap (@Quot.mk α r) :=
   ⟨Quot.exists_rep, rfl⟩
 #align quotient_map_quot_mk quotientMap_quot_mk
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_quot_mk : Continuous (@Quot.mk α r) :=
   continuous_coinduced_rng
 #align continuous_quot_mk continuous_quot_mk
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_quot_lift {f : α → β} (hr : ∀ a b, r a b → f a = f b) (h : Continuous f) :
     Continuous (Quot.lift f hr : Quot r → β) :=
   continuous_coinduced_dom.2 h
@@ -1203,7 +1200,7 @@ theorem Continuous.quotient_liftOn' {f : α → β} (h : Continuous f)
   h.quotient_lift hs
 #align continuous.quotient_lift_on' Continuous.quotient_liftOn'
 
-@[continuity, fprop] theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
+@[continuity] theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
   (continuous_quotient_mk'.comp hf).quotient_lift _
 #align continuous.quotient_map' Continuous.quotient_map'
@@ -1219,12 +1216,12 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
   simp only [continuous_iInf_rng, continuous_induced_rng, comp]
 #align continuous_pi_iff continuous_pi_iff
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 #align continuous_pi continuous_pi
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
   continuous_iInf_dom continuous_induced_dom
 #align continuous_apply continuous_apply
@@ -1317,13 +1314,6 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
   continuous_fst.update i continuous_snd
 #align continuous_update continuous_update
-
-@[fprop]
-theorem continuous_update' [DecidableEq ι] (i : ι) {f : α → (∀ j, π j)} {v : α → π i}
-    (hf : Continuous f) (hv : Continuous v) :
-    Continuous fun x => update (f x) i (v x) :=
-  Continuous.comp (f:= fun x => (f x, v x)) (continuous_fst.update i continuous_snd) (by fprop)
-
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
 -- porting note: todo: restore @[continuity]
@@ -1514,7 +1504,7 @@ section Sigma
 variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, TopologicalSpace (σ i)]
   [∀ k, TopologicalSpace (τ k)] [TopologicalSpace α]
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
   continuous_iSup_rng continuous_coinduced_rng
 #align continuous_sigma_mk continuous_sigmaMk
@@ -1629,7 +1619,7 @@ theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁
   continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp]
 #align continuous_sigma_map continuous_sigma_map
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (hf : ∀ i, Continuous (f₂ i)) :
     Continuous (Sigma.map f₁ f₂) :=
   continuous_sigma_map.2 hf
@@ -1676,12 +1666,12 @@ theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
     IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
   rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=
   continuous_induced_dom
 #align continuous_ulift_down continuous_uLift_down
 
-@[continuity, fprop]
+@[continuity]
 theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α → ULift.{v, u} α) :=
   continuous_induced_rng.2 continuous_id
 #align continuous_ulift_up continuous_uLift_up

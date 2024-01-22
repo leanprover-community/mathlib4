@@ -174,7 +174,6 @@ theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn �
   fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
 #align differentiable_on.comp DifferentiableOn.comp
 
-@[fprop]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (g ∘ f) :=
   fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
@@ -194,7 +193,6 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
 #align has_strict_fderiv_at.comp HasStrictFDerivAt.comp
 
-@[fprop]
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :
     Differentiable 𝕜 f^[n] :=
   Nat.recOn n differentiable_id fun _ ihn => ihn.comp hf
