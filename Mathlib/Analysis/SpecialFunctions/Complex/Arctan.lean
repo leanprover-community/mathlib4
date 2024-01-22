@@ -85,27 +85,14 @@ theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   · exact Real.neg_pi_div_two_lt_arctan _
   · exact (Real.arctan_lt_pi_div_two _).le
 
-/-- The real part of `1 + z` for `z` in the open unit disc is always positive. -/
-lemma re_one_add_pos {z : ℂ} (hz : ‖z‖ < 1) : 0 < (1 + z).re := by
-  rw [add_re, one_re, ← neg_lt_iff_pos_add']
-  exact (abs_lt.mp ((abs_re_le_abs z).trans_lt (norm_eq_abs z ▸ hz))).1
-
 /-- The argument of `1 + z` for `z` in the open unit disc is always in `(-π / 2, π / 2)`. -/
-lemma arg_one_add_pos_mem_Ioo {z : ℂ} (hz : ‖z‖ < 1) :
-    (1 + z).arg ∈ Set.Ioo (-(π / 2)) (π / 2) := by
-  simp_rw [arg, (re_one_add_pos hz).le, ite_true]
-  have a : 0 < abs (1 + z) := (AbsoluteValue.pos_iff _).mpr
-    (mem_slitPlane_iff_arg.mp (mem_slitPlane_of_norm_lt_one hz)).2
-  -- Cut out ±π / 2 from the range of `arcsin`
-  have b : -1 < (1 + z).im / abs (1 + z) ∧ (1 + z).im / abs (1 + z) < 1 := by
-    rw [div_lt_iff a, lt_div_iff a, one_mul, neg_one_mul]
-    exact abs_lt.mp (abs_im_lt_abs.mpr (re_one_add_pos hz).ne')
-  constructor
-  · rw [Real.neg_pi_div_two_lt_arcsin]; exact b.1
-  · rw [Real.arcsin_lt_pi_div_two]; exact b.2
+lemma arg_one_add_mem_Ioo {z : ℂ} (hz : ‖z‖ < 1) : (1 + z).arg ∈ Set.Ioo (-(π / 2)) (π / 2) := by
+  rw [Set.mem_Ioo, ← abs_lt, abs_arg_lt_pi_div_two_iff, add_re, one_re, ← neg_lt_iff_pos_add']
+  exact Or.inl (abs_lt.mp ((abs_re_le_abs z).trans_lt (norm_eq_abs z ▸ hz))).1
 
-/-- We can combine the logs in `log (1 + z * I) + -log (1 - z * I)` into one. -/
-lemma log_add_neg_log_eq_arctan_log {z : ℂ} (hz : ‖z‖ < 1) :
+/-- We can combine the logs in `log (1 + z * I) + -log (1 - z * I)` into one.
+This is only used in `hasSum_arctan`. -/
+lemma hasSum_arctan_aux {z : ℂ} (hz : ‖z‖ < 1) :
     log (1 + z * I) + -log (1 - z * I) = log ((1 + z * I) / (1 - z * I)) := by
   have z₁ := mem_slitPlane_iff_arg.mp (mem_slitPlane_of_norm_lt_one (z := z * I) (by simpa))
   have z₂ := mem_slitPlane_iff_arg.mp (mem_slitPlane_of_norm_lt_one (z := -(z * I)) (by simpa))
@@ -113,11 +100,11 @@ lemma log_add_neg_log_eq_arctan_log {z : ℂ} (hz : ‖z‖ < 1) :
   rw [← log_inv _ z₂.1, ← (log_mul_eq_add_log_iff z₁.2 (inv_eq_zero.ne.mpr z₂.2)).mpr,
     div_eq_mul_inv]
   -- `log_mul_eq_add_log_iff` requires a bound on `arg (1 + z * I) + arg (1 - z * I)⁻¹`.
-  -- `arg_one_add_pos_mem_Ioo` provides sufficient bounds on both terms
-  have b₁ := arg_one_add_pos_mem_Ioo (z := z * I) (by simpa)
+  -- `arg_one_add_mem_Ioo` provides sufficiently tight bounds on both terms
+  have b₁ := arg_one_add_mem_Ioo (z := z * I) (by simpa)
   have b₂ : arg (1 - z * I)⁻¹ ∈ Set.Ioo (-(π / 2)) (π / 2) := by
     simp_rw [arg_inv, z₂.1, ite_false, Set.neg_mem_Ioo_iff, neg_neg, sub_eq_add_neg]
-    exact arg_one_add_pos_mem_Ioo (by simpa)
+    exact arg_one_add_mem_Ioo (by simpa)
   have c₁ := add_lt_add b₁.1 b₂.1
   have c₂ := add_lt_add b₁.2 b₂.2
   rw [show -(π / 2) + -(π / 2) = -π by ring] at c₁
@@ -129,7 +116,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)) (arctan z) := by
   have := ((hasSum_taylorSeries_log (z := z * I) (by simpa)).add
     (hasSum_taylorSeries_neg_log (z := z * I) (by simpa))).mul_left (-I / 2)
-  simp_rw [← add_div, ← add_one_mul, log_add_neg_log_eq_arctan_log hz] at this
+  simp_rw [← add_div, ← add_one_mul, hasSum_arctan_aux hz] at this
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this

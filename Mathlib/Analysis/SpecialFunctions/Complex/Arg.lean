@@ -375,11 +375,27 @@ lemma neg_pi_div_two_lt_arg_iff {z : ℂ} : -(π / 2) < arg z ↔ 0 < re z ∨ 0
   · simp [hre]
   · simp [hre, hre.le, hre.ne']
 
+lemma arg_lt_pi_div_two_iff {z : ℂ} : arg z < π / 2 ↔ 0 < re z ∨ im z < 0 ∨ z = 0 := by
+  rw [lt_iff_le_and_ne, arg_le_pi_div_two_iff, Ne, arg_eq_pi_div_two_iff]
+  rcases lt_trichotomy z.re 0 with hre | hre | hre
+  · have : z ≠ 0 := by simp [ext_iff, hre.ne]
+    simp [hre.ne, hre.not_le, hre.not_lt, this]
+  · have : z = 0 ↔ z.im = 0 := by simp [ext_iff, hre]
+    simp [hre, this, or_comm, le_iff_eq_or_lt]
+  · simp [hre, hre.le, hre.ne']
+
 @[simp]
 theorem abs_arg_le_pi_div_two_iff {z : ℂ} : |arg z| ≤ π / 2 ↔ 0 ≤ re z := by
   rw [abs_le, arg_le_pi_div_two_iff, neg_pi_div_two_le_arg_iff, ← or_and_left, ← not_le,
     and_not_self_iff, or_false_iff]
 #align complex.abs_arg_le_pi_div_two_iff Complex.abs_arg_le_pi_div_two_iff
+
+@[simp]
+theorem abs_arg_lt_pi_div_two_iff {z : ℂ} : |arg z| < π / 2 ↔ 0 < re z ∨ z = 0 := by
+  rw [abs_lt, arg_lt_pi_div_two_iff, neg_pi_div_two_lt_arg_iff, ← or_and_left]
+  rcases eq_or_ne z 0 with hz | hz
+  · simp [hz]
+  · simp_rw [hz, or_false, ← not_lt, not_and_self_iff, or_false]
 
 @[simp]
 theorem arg_conj_coe_angle (x : ℂ) : (arg (conj x) : Real.Angle) = -arg x := by
