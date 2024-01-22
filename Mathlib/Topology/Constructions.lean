@@ -212,7 +212,7 @@ instance Sum.discreteTopology [TopologicalSpace α] [TopologicalSpace β] [hα :
 
 instance Sigma.discreteTopology {β : α → Type v} [∀ a, TopologicalSpace (β a)]
     [h : ∀ a, DiscreteTopology (β a)] : DiscreteTopology (Sigma β) :=
-  ⟨iSup_eq_bot.2 <| fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+  ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
 section Topα
@@ -414,6 +414,12 @@ theorem Continuous.Prod.mk (a : α) : Continuous fun b : β => (a, b) :=
 theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
   continuous_id.prod_mk continuous_const
 #align continuous.prod.mk_left Continuous.Prod.mk_left
+
+/-- If `f x y` is continuous in `x` for all `y ∈ s`,
+then the set of `x` such that `f x` maps `s` to `t` is closed. -/
+lemma IsClosed.setOf_mapsTo {f : α → β → γ} {s : Set β} {t : Set γ} (ht : IsClosed t)
+    (hf : ∀ y ∈ s, Continuous (f · y)) : IsClosed {x | MapsTo (f x) s t} := by
+  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
 theorem Continuous.comp₂ {g : α × β → γ} (hg : Continuous g) {e : δ → α} (he : Continuous e)
     {f : δ → β} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
@@ -731,7 +737,7 @@ theorem isOpenMap_snd : IsOpenMap (@Prod.snd α β) :=
 empty -/
 theorem isOpen_prod_iff' {s : Set α} {t : Set β} :
     IsOpen (s ×ˢ t) ↔ IsOpen s ∧ IsOpen t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor
@@ -1650,6 +1656,16 @@ end Sigma
 
 section ULift
 
+theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
+  unfold ULift.topologicalSpace
+  erw [← Equiv.ulift.coinduced_symm]
+  rfl
+
+theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
+
 @[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=
   continuous_induced_dom
@@ -1689,3 +1705,27 @@ theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : 
   convert IsClosed.inter hδ hβ
 
 end Monad
+
+section NhdsSet
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
+  {s : Set X} {t : Set Y} {x : X}
+
+/-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
+formulated in terms of a filter inequality. -/
+theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
+  ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
+    (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
+
+theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
+    (∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q) ↔
+      ∀ x ∈ s, ∀ y ∈ t,
+          ∃ pa : X → Prop, (∀ᶠ x' in 𝓝 x, pa x') ∧ ∃ pb : Y → Prop, (∀ᶠ y' in 𝓝 y, pb y') ∧
+            ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y) :=
+  by simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+
+theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {pa : X → Prop} {pb : Y → Prop}
+    (hp : ∀ {x : X}, pa x → ∀ {y : Y}, pb y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, pa x)
+    (ht : ∀ᶠ y in 𝓝ˢ t, pb y) : ∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q :=
+  nhdsSet_prod_le _ _ (mem_of_superset (prod_mem_prod hs ht) fun _ ⟨hx, hy⟩ ↦ hp hx hy)
+
+end NhdsSet

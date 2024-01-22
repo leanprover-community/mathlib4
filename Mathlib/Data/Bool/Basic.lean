@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 
@@ -33,8 +32,8 @@ theorem decide_False {h} : @decide False h = false :=
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false $ λ j => by cases j
-  · exact decide_eq_true $ rfl
+  · exact decide_eq_false <| λ j => by cases j
+  · exact decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -47,8 +46,8 @@ theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
   coe_decide p
 #align bool.of_to_bool_iff Bool.of_decide_iff
 
-#align bool.tt_eq_to_bool_iff Bool.true_eq_decide_iff
-#align bool.ff_eq_to_bool_iff Bool.false_eq_decide_iff
+#align bool.tt_eq_to_bool_iff true_eq_decide_iff
+#align bool.ff_eq_to_bool_iff false_eq_decide_iff
 
 theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]

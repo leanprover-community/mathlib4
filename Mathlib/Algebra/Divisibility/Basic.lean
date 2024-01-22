@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -115,8 +115,7 @@ end map_dvd
 end Semigroup
 
 section Monoid
-
-variable [Monoid α] {a b : α}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -138,6 +137,20 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 
 alias Eq.dvd := dvd_of_eq
 #align eq.dvd Eq.dvd
+
+lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
+  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
+#align pow_dvd_pow pow_dvd_pow
+
+lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
+  | 0,     hn => (hn rfl).elim
+  | n + 1, _  => by rw [pow_succ]; exact hab.mul_right _
+#align dvd_pow dvd_pow
+
+alias Dvd.dvd.pow := dvd_pow
+
+lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
+#align dvd_pow_self dvd_pow_self
 
 end Monoid
 

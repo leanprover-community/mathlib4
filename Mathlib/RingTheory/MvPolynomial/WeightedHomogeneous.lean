@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.GradedMonoid
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Basic
 
 #align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -461,7 +461,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
     simp only [weightedDegree', LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne.def, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
-    simp only [FunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
+    simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
     obtain ⟨i, hi⟩ := hd
     exact ⟨i, hi, hw i⟩
 #align mv_polynomial.weighted_homogeneous_component_zero MvPolynomial.weightedHomogeneousComponent_zero

@@ -3,8 +3,10 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
+import Lean.Elab.PreDefinition.Basic
+import Lean.Util.Paths
 import Std.Tactic.Simpa
-import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 
 /-!
 #
@@ -38,7 +40,7 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
       Visibility.regular
     else
       Visibility.protected
-    isNoncomputable := if (env.find? $ nm.mkStr "_cstage1").isSome then false else true
+    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
     attrs := #[] }
@@ -251,8 +253,8 @@ def getPackageDir (pkg : String) : IO System.FilePath := do
   let root? ← sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
   if let some root := root? then return root
-  throw <| IO.userError s!"Could not find {pkg} directory. {
-    ""}Make sure the LEAN_SRC_PATH environment variable is set correctly."
+  throw <| IO.userError s!"Could not find {pkg} directory. \
+    Make sure the LEAN_SRC_PATH environment variable is set correctly."
 
 /-- Returns the mathlib root directory. -/
 def getMathlibDir := getPackageDir "Mathlib"

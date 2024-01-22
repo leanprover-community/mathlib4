@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
@@ -570,16 +570,16 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
     (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
-  Subtype.recOn a <| fun b hb => by
+  Subtype.recOn a fun b hb => by
     refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
     apply adjoin_induction hb
     · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
-    · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
+    · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
         ⟨add_mem hx' hy', Hadd _ _ hx hy⟩
     · exact ⟨_, H0⟩
-    · exact fun x y hx hy => Exists.elim hx <| fun hx' hx => Exists.elim hy <| fun hy' hy =>
+    · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
         ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩
-    · exact fun r x hx => Exists.elim hx <| fun hx' hx =>
+    · exact fun r x hx => Exists.elim hx fun hx' hx =>
         ⟨SMulMemClass.smul_mem r hx', Hsmul r _ hx⟩
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
@@ -974,7 +974,7 @@ def center : NonUnitalSubalgebra R A :=
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
-/-- The center of a non-unital algebra is a commutative and associative -/
+/-- The center of a non-unital algebra is commutative and associative -/
 instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
   NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
 

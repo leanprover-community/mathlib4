@@ -299,7 +299,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
           · rw [Fintype.card_units, Nat.cast_sub,
               cast_card_eq_zero, Nat.cast_one, zero_sub]
             show 1 ≤ q; exact Fintype.card_pos_iff.mpr ⟨0⟩
-        rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
+        rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
@@ -339,7 +339,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ (Nat.pos_of_ne_zero hn) hp
+  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
@@ -352,7 +352,7 @@ set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
 theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ (Nat.pos_of_ne_zero hn) hp
+  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
 

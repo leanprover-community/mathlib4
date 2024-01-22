@@ -213,7 +213,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         rintro b ⟨h, rfl⟩
         rw [pow_succ]
         exact (mul_lt_mul_right hp.pos).2 h
-      rw [card_sdiff h2, card_image_of_injOn (h1.injOn _), card_range, card_range, ←
+      rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 #align nat.totient_prime_pow_succ Nat.totient_prime_pow_succ
 

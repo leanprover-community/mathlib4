@@ -53,7 +53,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     exact support_monomial' _ _
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 

@@ -107,7 +107,7 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
 
 @[ext]
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
 
 theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
@@ -615,7 +615,7 @@ theorem mkPiAlgebraFin_apply (m : Fin n → A) :
 
 end Algebra
 
-section SmulRight
+section SMulRight
 
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] [TopologicalSpace R] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂]
@@ -629,6 +629,6 @@ def smulRight : ContinuousMultilinearMap R M₁ M₂ where
   cont := f.cont.smul continuous_const
 #align continuous_multilinear_map.smul_right ContinuousMultilinearMap.smulRight
 
-end SmulRight
+end SMulRight
 
 end ContinuousMultilinearMap
