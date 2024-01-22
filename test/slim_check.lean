@@ -399,4 +399,4 @@ example (q : ℕ) : q = 0 ∨ q ≥ 2 ∨
     8 = ∑ k in Finset.range 2, 5 ^ k * Nat.choose (2 * q + 1) (2 * k + 1) := by
   success_if_fail_with_msg "no goals to be solved"
     slim_check
-  sorry
+  admit
