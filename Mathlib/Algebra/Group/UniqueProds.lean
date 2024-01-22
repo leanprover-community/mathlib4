@@ -626,7 +626,7 @@ instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 @[to_additive "Any `FreeAddMonoid` has the `TwoUniqueSums` property."]
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) where
-  uniqueMul_of_one_lt_card := fun {A} {B} h => by
+  uniqueMul_of_one_lt_card {A} {B} h := by
     have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
         ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
       have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).max'_mem (hs.image _)
