@@ -7,7 +7,7 @@ import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.GDelta
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 
 #align_import topology.urysohns_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 #align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

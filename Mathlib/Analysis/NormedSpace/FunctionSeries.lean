@@ -5,11 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 #align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -19,7 +14,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 We show that series of functions are continuous when each individual function in the series is and
 additionally suitable uniform summable bounds are satisfied, in `continuous_tsum`.
 
-For smoothness of series of functions, see the file `Analysis.Calculus.SeriesSmooth`.
+For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSeries`.
 -/
 
 open Set Metric TopologicalSpace Function Filter
