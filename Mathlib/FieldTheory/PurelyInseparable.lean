@@ -7,15 +7,23 @@ import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
-# Purely inseparable extension
+# Purely inseparable extension and (relative) perfect closure
 
-This file contains basics about the purely inseparable extension of fields.
+This file contains basics about the purely inseparable extension and the (relative) perfect closure
+of fields.
 
 ## Main definitions
 
 - `IsPurelyInseparable`: typeclass for purely inseparable field extension: an algebraic extension
   `E / F` is purely inseparable if and only if the minimal polynomial of every element of `E ∖ F`
   is not separable.
+
+- `perfectClosure`: the (relative) perfect closure of `E / F`, consists of the elements `x` of `E`
+  such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in
+  `F`, where `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal
+  purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
+
+  This file only contains very basic results of the relative perfect closure.
 
 ## Main results
 
@@ -61,6 +69,9 @@ This file contains basics about the purely inseparable extension of fields.
 - `eq_separableClosure_iff`: if `E / F` is algebraic, then an intermediate field of `E / F` is equal
   to the (relative) separable closure of `E / F` if and only if it is separable over `F`, and `E`
   is purely inseparable over it.
+
+- `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the (relative) perfect
+  closure of `E / F` if and only if it is purely inseparable over `F`.
 
 - `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
@@ -219,7 +230,135 @@ theorem IsPurelyInseparable.pow_mem (q : ℕ) [ExpChar F q] [IsPurelyInseparable
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range :=
   (isPurelyInseparable_iff_pow_mem F q).1 (by assumption) x
 
-variable (E)
+end IsPurelyInseparable
+
+section perfectClosure
+
+/-- The (relative) perfect closure of `E / F`, consists of the elements `x` of `E` such that there
+exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in `F`, where
+`ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
+subextension of `E / F` (`le_perfectClosure_iff`). -/
+def perfectClosure : IntermediateField F E where
+  carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
+  zero_mem' := ⟨0, by rw [pow_zero, pow_one]; exact zero_mem _⟩
+  one_mem' := ⟨0, by rw [pow_zero, pow_one]; exact one_mem _⟩
+  add_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    have := expChar_of_injective_algebraMap (algebraMap F E).injective (ringExpChar F)
+    rw [add_pow_expChar_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact add_mem (pow_mem hx _) (pow_mem hy _)
+  mul_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact mul_mem (pow_mem hx _) (pow_mem hy _)
+  inv_mem' := by
+    rintro x ⟨n, hx⟩
+    use n; rw [inv_pow]
+    apply inv_mem (id hx : _ ∈ (⊥ : IntermediateField F E))
+  algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
+
+variable {F E}
+
+theorem mem_perfectClosure_iff {x : E} :
+    x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range := Iff.rfl
+
+theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
+    x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
+  rw [mem_perfectClosure_iff, ringExpChar.eq F q]
+
+/-- An element is contained in the (relative) perfect closure if and only if its mininal polynomial
+has separable degree one. -/
+theorem mem_perfectClosure_iff_natSepDegree_eq_one {x : E} :
+    x ∈ perfectClosure F E ↔ (minpoly F x).natSepDegree = 1 := by
+  rw [mem_perfectClosure_iff, minpoly.natSepDegree_eq_one_iff_pow_mem (ringExpChar F)]
+
+/-- A field extension `E / F` is purely inseparable if and only if its (relative) perfect closure
+is equal to `E`. -/
+theorem isPurelyInseparable_iff_perfectClosure_eq_top :
+    IsPurelyInseparable F E ↔ perfectClosure F E = ⊤ := by
+  rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
+  exact ⟨fun H ↦ top_unique fun x _ ↦ H x, fun H _ ↦ H.ge trivial⟩
+
+variable (F E)
+
+/-- The (relative) perfect closure of `E / F` is purely inseparable over `F`. -/
+instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := by
+  rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
+  exact fun ⟨_, n, y, h⟩ ↦ ⟨n, y, (algebraMap _ E).injective h⟩
+
+/-- The (relative) perfect closure of `E / F` is algebraic over `F`. -/
+theorem perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E) :=
+  IsPurelyInseparable.isAlgebraic F _
+
+/-- An intermediate field of `E / F` is contained in the (relative) perfect closure of `E / F`
+if it is purely inseparable over `F`. -/
+theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F L] :
+    L ≤ perfectClosure F E := by
+  rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)] at h
+  intro x hx
+  obtain ⟨n, y, hy⟩ := h ⟨x, hx⟩
+  exact ⟨n, y, congr_arg (algebraMap L E) hy⟩
+
+/-- An intermediate field of `E / F` is contained in the (relative) perfect closure of `E / F`
+if and only if it is purely inseparable over `F`. -/
+theorem le_perfectClosure_iff (L : IntermediateField F E) :
+    L ≤ perfectClosure F E ↔ IsPurelyInseparable F L := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ le_perfectClosure F E L⟩
+  rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
+  intro x
+  obtain ⟨n, y, hy⟩ := h x.2
+  exact ⟨n, y, (algebraMap L E).injective hy⟩
+
+variable {F E K}
+
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `i x` is contained in
+`perfectClosure F K` if and only if `x` is contained in `perfectClosure F E`. -/
+theorem map_mem_perfectClosure_iff (i : E →ₐ[F] K) {x : E} :
+    i x ∈ perfectClosure F K ↔ x ∈ perfectClosure F E := by
+  simp_rw [mem_perfectClosure_iff]
+  refine ⟨fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩, fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩⟩
+  · apply_fun i using i.injective
+    rwa [AlgHom.commutes, map_pow]
+  simpa only [AlgHom.commutes, map_pow] using congr_arg i h
+
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `perfectClosure F E` is equal to
+the preimage of `perfectClosure F K` under the map `i`. -/
+theorem perfectClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
+    perfectClosure F E = (perfectClosure F K).comap i := by
+  ext x
+  exact (map_mem_perfectClosure_iff i).symm
+
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `perfectClosure F K` contains
+the image of `perfectClosure F E` under the map `i`. -/
+theorem perfectClosure.map_le_of_algHom (i : E →ₐ[F] K) :
+    (perfectClosure F E).map i ≤ perfectClosure F K := fun x hx ↦ by
+  change x ∈ (_ : Set K) at hx
+  rw [coe_map, Set.mem_image] at hx
+  obtain ⟨y, hy, rfl⟩ := hx
+  exact (map_mem_perfectClosure_iff i).2 hy
+
+/-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `perfectClosure F K` is equal to
+the image of `perfectClosure F E` under the map `i`. -/
+theorem perfectClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
+    perfectClosure F K = (perfectClosure F E).map i.toAlgHom := by
+  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom i.toAlgHom)
+  change x ∈ (_ : Set K)
+  rw [coe_map, Set.mem_image]
+  exact ⟨i.symm.toAlgHom x,
+    (map_mem_perfectClosure_iff i.symm.toAlgHom).2 hx, i.apply_symm_apply x⟩
+
+/-- If `E` and `K` are isomorphic as `F`-algebras, then `perfectClosure F E` and
+`perfectClosure F K` are also isomorphic as `F`-algebras. -/
+def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
+    perfectClosure F E ≃ₐ[F] perfectClosure F K :=
+  ((perfectClosure F E).intermediateFieldMap i).trans
+    (equivOfEq (eq_map_of_algEquiv i).symm)
+
+end perfectClosure
+
+section IsPurelyInseparable
 
 /-- If `K / E / F` is a field extension tower such that `K / F` is purely inseparable,
 then `E / F` is also purely inseparable. -/
@@ -435,81 +574,34 @@ instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateFiel
 has separable degree one. -/
 theorem isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ (minpoly F x).natSepDegree = 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have := IsPurelyInseparable.natSepDegree_eq_one F (AdjoinSimple.gen F x)
-    rwa [minpoly_eq] at this
-  have hx : IsIntegral F x := by_contra fun h' ↦ by
-    simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at h
-  haveI := adjoin.finiteDimensional hx
-  rwa [isPurelyInseparable_iff_finSepDegree_eq_one _ _ (Algebra.IsAlgebraic.of_finite F F⟮x⟯),
-    finSepDegree_adjoin_simple_eq_natSepDegree _ _ hx.isAlgebraic]
+  rw [← le_perfectClosure_iff, adjoin_simple_le_iff, mem_perfectClosure_iff_natSepDegree_eq_one]
 
 /-- If `F` is of exponential characteristic `q`, then `F⟮x⟯ / F` is a purely inseparable extension
 if and only if `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
 theorem isPurelyInseparable_adjoin_simple_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
-  simp_rw [isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one,
-    minpoly.natSepDegree_eq_one_iff_pow_mem q]
-
-/-- If `F` is of exponential characteristic `q`, `S` is a finite subset of `E`, such that for any
-`x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`, then `F(S) / F` is a purely
-inseparable extension. It is a special case of
-`IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`, and is an
-intermediate result used to prove it. -/
-lemma isPurelyInseparable_adjoin_finset_of_pow_mem (q : ℕ) [hF : ExpChar F q]
-    (S : Finset E) (h : ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range) :
-    IsPurelyInseparable F (adjoin F (S : Set E)) := by
-  refine induction_on_adjoin_finset S (IsPurelyInseparable F ·) inferInstance fun L x hx hL ↦ ?_
-  -- I don't know why, but `simp only at hL` is not regarded as an instance
-  change IsPurelyInseparable F L at hL
-  obtain ⟨n, y, h⟩ := h x hx
-  haveI := expChar_of_injective_algebraMap (algebraMap F L).injective q
-  replace h := (isPurelyInseparable_adjoin_simple_iff_pow_mem L E q).2 ⟨n, (algebraMap F L) y, h⟩
-  exact IsPurelyInseparable.trans F L L⟮x⟯
+  rw [← le_perfectClosure_iff, adjoin_simple_le_iff, mem_perfectClosure_iff_pow_mem q]
 
 /-- If `F` is of exponential characteristic `q`, then `F(S) / F` is a purely inseparable extension
 if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
 theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S : Set E} :
     IsPurelyInseparable F (adjoin F S) ↔ ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
-  rw [isPurelyInseparable_iff_pow_mem _ q]
-  refine ⟨fun h x hx ↦ ?_, fun h x ↦ ?_⟩
-  · obtain ⟨n, y, h⟩ := h ⟨x, adjoin.mono F _ _ (Set.singleton_subset_iff.2 hx)
-      (mem_adjoin_simple_self F x)⟩
-    exact ⟨n, y, congr_arg (algebraMap _ E) h⟩
-  obtain ⟨T, h1, h2⟩ := exists_finset_of_mem_adjoin x.2
-  obtain ⟨n, y, hx⟩ := (isPurelyInseparable_iff_pow_mem F q).1
-    (isPurelyInseparable_adjoin_finset_of_pow_mem F E q T fun x hx ↦ h x (h1 hx)) ⟨x, h2⟩
-  refine ⟨n, y, ?_⟩
-  apply_fun algebraMap _ E using (algebraMap _ E).injective
-  exact show algebraMap F E y = x.1 ^ q ^ n from congr_arg (algebraMap _ E) hx
+  simp_rw [← le_perfectClosure_iff, adjoin_le_iff, ← mem_perfectClosure_iff_pow_mem q]
+  rfl
 
 /-- A compositum of two purely inseparable extensions is purely inseparable. -/
 instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
     [h1 : IsPurelyInseparable F L1] [h2 : IsPurelyInseparable F L2] :
     IsPurelyInseparable F (L1 ⊔ L2 : IntermediateField F E) := by
-  obtain ⟨q, _⟩ := ExpChar.exists F
-  rw [← adjoin_self F L1, isPurelyInseparable_adjoin_iff_pow_mem F E q] at h1
-  rw [← adjoin_self F L2, isPurelyInseparable_adjoin_iff_pow_mem F E q] at h2
-  rw [← adjoin_self F L1, ← adjoin_self F L2, ← gc.l_sup,
-    isPurelyInseparable_adjoin_iff_pow_mem F E q]
-  intro x h
-  simp only [Set.sup_eq_union, Set.mem_union] at h
-  rcases h with (h | h)
-  exacts [h1 x h, h2 x h]
+  rw [← le_perfectClosure_iff] at h1 h2 ⊢
+  exact sup_le h1 h2
 
 /-- A compositum of purely inseparable extensions is purely inseparable. -/
 instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
     [h : ∀ i, IsPurelyInseparable F (t i)] :
     IsPurelyInseparable F (⨆ i, t i : IntermediateField F E) := by
-  obtain ⟨q, _⟩ := ExpChar.exists F
-  rw [show (⨆ i, t i : IntermediateField F E) = (⨆ i, adjoin F (t i)) by simp_rw [adjoin_self],
-    ← gc.l_iSup, isPurelyInseparable_adjoin_iff_pow_mem F E q]
-  intro x hx
-  simp only [Set.iSup_eq_iUnion, Set.mem_iUnion] at hx
-  obtain ⟨i, hi⟩ := hx
-  replace h := h i
-  rw [← adjoin_self F (t i), isPurelyInseparable_adjoin_iff_pow_mem F E q] at h
-  exact h x hi
+  simp_rw [← le_perfectClosure_iff] at h ⊢
+  exact iSup_le h
 
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
