@@ -386,9 +386,7 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option (FVarId × Ar
     let f := f.appArg!
     let .fvar fvarId := f
       | return none
-    let type ← inferType f
-    -- this does not work for bundled morphisms
-    let n := type.forallArity
+    let n ← Mor.getArity f
     return .some (fvarId, Array.range n |>.toArraySet, n)
 
   let f := (← unfoldFunHeadRec? f).getD f
