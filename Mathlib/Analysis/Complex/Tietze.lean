@@ -15,6 +15,7 @@ We provide this result here in order to avoid pulling unnecessary imports into e
 
 universe u v w
 
+-- this is not an instance because Lean cannot determine `𝕜`.
 theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E : Type w}
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     [T2Space E] [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜] [TietzeExtension.{u, v} 𝕜] :
@@ -26,3 +27,9 @@ instance Complex.instTietzeExtension : TietzeExtension ℂ :=
 
 instance IsROrC.instTietzeExtension {𝕜 : Type*} [IsROrC 𝕜] : TietzeExtension 𝕜 :=
   TietzeExtension.of_tvs ℝ
+
+instance IsROrC.instTietzeExtensionTVS {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+    [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] :
+    TietzeExtension.{u, w} E :=
+  TietzeExtension.of_tvs 𝕜
