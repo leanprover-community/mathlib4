@@ -47,6 +47,9 @@ instance : Algebra (𝒜 0) A := Algebra.ofSubring (SetLike.GradeZero.subring �
 
 open BigOperators Pointwise
 
+/--
+If `A ≅ ⨁ᵢ, Aᵢ` is a noetherian graded ring, then `A` is a finite `A₀`-algebra.
+-/
 instance : Algebra.FiniteType (𝒜 0) A := by
   classical
   obtain ⟨S, hS1, (hS2 : _ = Ideal.span (α := A) S)⟩ := Ideal.fg_iff_homogeneously_fg _  |>.mp <|
