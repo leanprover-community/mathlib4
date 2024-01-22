@@ -658,7 +658,6 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
         have ⟨u, hu, v, hv, hne⟩ := hA'
         have hl : ∀ u ∈ A, u.length = x.length := fun u hu => le_antisymm (hx_spec u hu)
           (congrArg List.length (congrArg Prod.fst heq) ▸ hx'_spec u hu)
-        have : u.length = v.length := (hl u hu).trans (hl v hv).symm
         exact ⟨(u, y), Finset.mk_mem_product hu hy, (v, y), Finset.mk_mem_product hv hy,
           fun heq => hne (congrArg Prod.fst heq),
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
@@ -667,7 +666,6 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
         have ⟨u, hu, v, hv, hne⟩ := hB'
         have hl : ∀ u ∈ B, u.length = y.length := fun u hu => le_antisymm (hy_spec u hu)
           (congrArg List.length (congrArg Prod.snd heq) ▸ hy'_spec u hu)
-        have : u.length = v.length := (hl u hu).trans (hl v hv).symm
         refine ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
           fun heq => hne (congrArg Prod.snd heq),
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
