@@ -76,7 +76,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
 #align semigroup.to_is_associative Semigroup.to_isAssociative
 #align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
@@ -105,7 +105,7 @@ theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
 end Semigroup
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 #align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
 #align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 

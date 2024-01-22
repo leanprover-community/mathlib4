@@ -113,7 +113,7 @@ theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual 
 theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symmDiff_comm
 
-instance symmDiff_isCommutative : Commutative (α := α) (· ∆ ·) :=
+instance symmDiff_isCommutative : Std.Commutative (α := α) (· ∆ ·) :=
   ⟨symmDiff_comm⟩
 #align symm_diff_is_comm symmDiff_isCommutative
 
@@ -234,7 +234,7 @@ theorem ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDua
 theorem bihimp_comm : a ⇔ b = b ⇔ a := by simp only [(· ⇔ ·), inf_comm]
 #align bihimp_comm bihimp_comm
 
-instance bihimp_isCommutative : Commutative (α := α) (· ⇔ ·) :=
+instance bihimp_isCommutative : Std.Commutative (α := α) (· ⇔ ·) :=
   ⟨bihimp_comm⟩
 #align bihimp_is_comm bihimp_isCommutative
 
@@ -474,7 +474,7 @@ theorem symmDiff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
   rw [symmDiff_symmDiff_left, symmDiff_symmDiff_right]
 #align symm_diff_assoc symmDiff_assoc
 
-instance symmDiff_isAssociative : Associative (α := α)  (· ∆ ·) :=
+instance symmDiff_isAssociative : Std.Associative (α := α)  (· ∆ ·) :=
   ⟨symmDiff_assoc⟩
 #align symm_diff_is_assoc symmDiff_isAssociative
 
@@ -623,7 +623,7 @@ theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
   @symmDiff_assoc αᵒᵈ _ _ _ _
 #align bihimp_assoc bihimp_assoc
 
-instance bihimp_isAssociative : Associative (α := α) (· ⇔ ·) :=
+instance bihimp_isAssociative : Std.Associative (α := α) (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
 #align bihimp_is_assoc bihimp_isAssociative
 

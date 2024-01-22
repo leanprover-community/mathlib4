@@ -40,11 +40,11 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : LawfulIdentity (α := List α) Append.append [] where
+instance : Std.LawfulIdentity (α := List α) Append.append [] where
   left_id := nil_append
   right_id := append_nil
 
-instance : Associative (α := List α) Append.append where
+instance : Std.Associative (α := List α) Append.append where
   assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
@@ -2593,7 +2593,7 @@ theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 section FoldlEqFoldr
 
 -- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α} (hcomm : Mathlib.Commutative f) (hassoc : Mathlib.Associative f)
+variable {f : α → α → α} (hcomm : Commutative f) (hassoc : Associative f)
 
 theorem foldl1_eq_foldr1 : ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
@@ -2649,7 +2649,7 @@ end FoldlEqFoldlr'
 
 section
 
-variable {op : α → α → α} [ha : Associative op] [hc : Commutative op]
+variable {op : α → α → α} [ha : Std.Associative op] [hc : Std.Commutative op]
 
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b

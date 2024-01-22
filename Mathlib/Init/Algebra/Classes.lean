@@ -73,26 +73,26 @@ class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
 
 /-- A commutative binary operation. -/
 @[deprecated IsCommutative]
-abbrev IsCommutative (α : Type u) (op : α → α → α) := Commutative op
+abbrev IsCommutative (α : Type u) (op : α → α → α) := Std.Commutative op
 #align is_commutative IsCommutative
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
-    [Commutative op] : IsSymmOp α α op where symm_op := Commutative.comm
+    [Std.Commutative op] : IsSymmOp α α op where symm_op := Std.Commutative.comm
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
 
 /-- An associative binary operation. -/
 @[deprecated IsAssociative]
-abbrev IsAssociative (α : Type u) (op : α → α → α) := Associative op
+abbrev IsAssociative (α : Type u) (op : α → α → α) := Std.Associative op
 
 /-- A binary operation with a left identity. -/
 @[deprecated IsLeftId]
-abbrev IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) := LeftIdentity op o
-#align is_left_id LeftIdentity
+abbrev IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) := Std.LawfulLeftIdentity op o
+#align is_left_id Std.LawfulLeftIdentity
 
 /-- A binary operation with a right identity. -/
 @[deprecated IsRightId]
-abbrev IsRightId (α : Type u) (op : α → α → α) (o : outParam α) := RightIdentity op o
-#align is_right_id RightIdentity
+abbrev IsRightId (α : Type u) (op : α → α → α) (o : outParam α) := Std.LawfulRightIdentity op o
+#align is_right_id Std.LawfulRightIdentity
 
 -- class IsLeftNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
 --   left_null : ∀ a, op o a = o
@@ -110,9 +110,9 @@ class IsRightCancel (α : Type u) (op : α → α → α) : Prop where
   right_cancel : ∀ a b c, op a b = op c b → a = c
 #align is_right_cancel IsRightCancel
 
-@[deprecated Idempotent]
-abbrev IsIdempotent (α : Type u) (op : α → α → α) := Idempotent op
-#align is_idempotent Idempotent
+@[deprecated IsIdempotent]
+abbrev IsIdempotent (α : Type u) (op : α → α → α) := Std.IdempotentOp op
+#align is_idempotent Std.IdempotentOp
 
 -- class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
 --   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)

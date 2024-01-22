@@ -35,7 +35,7 @@ local notation a " <" m:51 "> " b => m a b
 
 /-- `IsUnital m e` expresses that `e : X` is a left and right unit
 for the binary operation `m : X → X → X`. -/
-structure IsUnital (m : X → X → X) (e : X) extends LawfulIdentity m e : Prop
+structure IsUnital (m : X → X → X) (e : X) extends Std.LawfulIdentity m e : Prop
 #align eckmann_hilton.is_unital EckmannHilton.IsUnital
 
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
@@ -76,7 +76,7 @@ theorem mul : m₁ = m₂ := by
 then these operations are commutative.
 
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
-theorem mul_comm : Commutative m₂ :=
+theorem mul_comm : Std.Commutative m₂ :=
   ⟨fun a b => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
 #align eckmann_hilton.mul_comm EckmannHilton.mul_comm
 
@@ -84,7 +84,7 @@ theorem mul_comm : Commutative m₂ :=
 then these operations are associative.
 
 In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
-theorem mul_assoc : Associative m₂ :=
+theorem mul_assoc : Std.Associative m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 #align eckmann_hilton.mul_assoc EckmannHilton.mul_assoc
 

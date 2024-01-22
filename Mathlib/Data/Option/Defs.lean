@@ -103,16 +103,16 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 
-instance liftOrGet_isCommutative (f : α → α → α) [Commutative f] : Commutative (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Commutative.comm]⟩
+instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] : Std.Commutative (liftOrGet f) :=
+  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [Associative f] : Associative (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Associative.assoc]⟩
+instance liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] : Std.Associative (liftOrGet f) :=
+  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Std.Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [Idempotent f] : Idempotent (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Idempotent.idempotent]⟩
+instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] : Std.IdempotentOp (liftOrGet f) :=
+  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Std.IdempotentOp.idempotent]⟩
 
-instance liftOrGet_isId (f : α → α → α) : LawfulIdentity (liftOrGet f) none where
+instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
   left_id a := by cases a <;> simp [liftOrGet]
   right_id a := by cases a <;> simp [liftOrGet]
 

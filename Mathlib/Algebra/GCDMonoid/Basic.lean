@@ -355,10 +355,10 @@ theorem gcd_assoc' [GCDMonoid α] (m n k : α) : Associated (gcd (gcd m n) k) (g
       ((gcd_dvd_right m (gcd n k)).trans (gcd_dvd_right n k)))
 #align gcd_assoc' gcd_assoc'
 
-instance [NormalizedGCDMonoid α] : Commutative (α := α) gcd where
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) gcd where
   comm := gcd_comm
 
-instance [NormalizedGCDMonoid α] : Associative (α := α) gcd where
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) gcd where
   assoc := gcd_assoc
 
 theorem gcd_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : gcd a b ∣ c)
@@ -783,10 +783,10 @@ theorem lcm_assoc' [GCDMonoid α] (m n k : α) : Associated (lcm (lcm m n) k) (l
       (lcm_dvd ((dvd_lcm_right _ _).trans (dvd_lcm_left _ _)) (dvd_lcm_right _ _)))
 #align lcm_assoc' lcm_assoc'
 
-instance [NormalizedGCDMonoid α] : Commutative (α := α) lcm where
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) lcm where
   comm := lcm_comm
 
-instance [NormalizedGCDMonoid α] : Associative (α := α) lcm where
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) lcm where
   assoc := lcm_assoc
 
 theorem lcm_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : lcm a b ∣ c)

@@ -206,13 +206,13 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 #align max_lt_max_right_iff max_lt_max_right_iff
 
 /-- An instance asserting that `max a a = a` -/
-instance max_idem : Idempotent (α := α) max where
+instance max_idem : Std.IdempotentOp (α := α) max where
   idempotent := by simp
 #align max_idem max_idem
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
-instance min_idem : Idempotent (α := α) min where
+instance min_idem : Std.IdempotentOp (α := α) min where
   idempotent := by simp
 #align min_idem min_idem
 
@@ -291,36 +291,36 @@ theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 #align le_of_max_le_right le_of_max_le_right
 
-theorem max_commutative : Mathlib.Commutative (max : α → α → α) :=
+theorem max_commutative : Commutative (max : α → α → α) :=
   max_comm
 #align max_commutative max_commutative
 
-theorem max_associative : Mathlib.Associative (max : α → α → α) :=
+theorem max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
-instance : Commutative (α := α) max where
+instance : Std.Commutative (α := α) max where
   comm := max_comm
 
-instance : Associative (α := α) max where
+instance : Std.Associative (α := α) max where
   assoc := max_assoc
 
 theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
   max_left_comm
 #align max_left_commutative max_left_commutative
 
-theorem min_commutative : Mathlib.Commutative (min : α → α → α) :=
+theorem min_commutative : Commutative (min : α → α → α) :=
   min_comm
 #align min_commutative min_commutative
 
-theorem min_associative : Mathlib.Associative (α := α) min :=
+theorem min_associative : Associative (α := α) min :=
   min_assoc
 #align min_associative min_associative
 
-instance : Commutative (α := α) min where
+instance : Std.Commutative (α := α) min where
   comm := min_comm
 
-instance : Associative (α := α) min where
+instance : Std.Associative (α := α) min where
   assoc := min_assoc
 
 theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
