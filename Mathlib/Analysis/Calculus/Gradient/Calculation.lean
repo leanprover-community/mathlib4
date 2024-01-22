@@ -118,9 +118,8 @@ variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
 theorem HasGradientAtFilter.add (hf : HasGradientAtFilter f f' x L)
     (hg : HasGradientAtFilter g g' x L) :
     HasGradientAtFilter (fun y => f y + g y) (f' + g') x L := by
-  rw [HasGradientAtFilter]; rw [HasGradientAtFilter] at hf hg
-  have : (toDual 𝕜 F) (f' + g') = (toDual 𝕜 F) f' + (toDual 𝕜 F) g' := by simp
-  rw [this]; exact hf.add hg
+  rw [HasGradientAtFilter, map_add]
+  exact HasFDerivAtFilter.add hf hg
 
 nonrec theorem HasGradientWithinAt.add (hf : HasGradientWithinAt f f' s x)
     (hg : HasGradientWithinAt g g' s x) : HasGradientWithinAt (fun y => f y + g y) (f' + g') s x :=
