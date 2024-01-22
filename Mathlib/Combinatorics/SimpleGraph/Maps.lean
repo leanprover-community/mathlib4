@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs
@@ -252,7 +253,7 @@ protected abbrev id : G →g G :=
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
 #align simple_graph.hom.coe_id SimpleGraph.Hom.coe_id
 
-instance [Subsingleton (V → W)] : Subsingleton (G →g H) := FunLike.coe_injective.subsingleton
+instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 
 instance [IsEmpty V] : Unique (G →g H) where
   default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
@@ -264,7 +265,7 @@ instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj
     { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
       left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
 
-instance [Finite V] [Finite W] : Finite (G →g H) := FunLike.finite _
+instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
 theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h

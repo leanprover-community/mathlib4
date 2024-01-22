@@ -189,7 +189,7 @@ namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+@[ext] theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
   h
 #align option_t.ext OptionTₓ.ext
 

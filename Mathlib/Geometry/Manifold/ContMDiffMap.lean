@@ -48,10 +48,10 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance funLike : FunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
+instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
-#align cont_mdiff_map.fun_like ContMDiffMap.funLike
+#align cont_mdiff_map.fun_like ContMDiffMap.instFunLike
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
@@ -65,22 +65,22 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
 @[simp]
 theorem coeFn_mk (f : M → M') (hf : ContMDiff I I' n f) :
-    FunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
+    DFunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
   rfl
 #align cont_mdiff_map.coe_fn_mk ContMDiffMap.coeFn_mk
 
 theorem coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g) : f = g :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cont_mdiff_map.coe_inj ContMDiffMap.coe_injective
 
 @[ext]
-theorem ext (h : ∀ x, f x = g x) : f = g := FunLike.ext _ _ h
+theorem ext (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 #align cont_mdiff_map.ext ContMDiffMap.ext
 
 instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where

@@ -3,8 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories

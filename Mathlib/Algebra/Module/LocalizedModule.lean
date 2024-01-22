@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.RingTheory.Localization.Basic
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -741,9 +740,9 @@ instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule
     where
   map_units s :=
     ⟨⟨algebraMap R (Module.End R (LocalizedModule S M)) s, LocalizedModule.divBy s,
-        FunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
-        FunLike.ext _ _ <| LocalizedModule.divBy_mul_by s⟩,
-      FunLike.ext _ _ fun p =>
+        DFunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
+        DFunLike.ext _ _ <| LocalizedModule.divBy_mul_by s⟩,
+      DFunLike.ext _ _ fun p =>
         p.induction_on <| by
           intros
           rfl⟩

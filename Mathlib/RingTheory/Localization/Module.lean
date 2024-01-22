@@ -35,8 +35,6 @@ section Localization
 
 variable {R : Type*} (Rₛ : Type*) [CommSemiring R] (S : Submonoid R)
 
--- include hT
-
 section IsLocalizedModule
 
 section AddCommMonoid
@@ -95,8 +93,8 @@ variable {M Mₛ : Type*} [AddCommGroup M] [AddCommGroup Mₛ] [Module R M] [Mod
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
 noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
-  Basis.mk (b.linearIndependent.of_isLocalizedModule Rₛ S f)
-  (by rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq])
+  .mk (b.linearIndependent.of_isLocalizedModule Rₛ S f) <| by
+    rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq]
 
 @[simp]
 theorem Basis.ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
@@ -107,7 +105,7 @@ theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
-    exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+    exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
