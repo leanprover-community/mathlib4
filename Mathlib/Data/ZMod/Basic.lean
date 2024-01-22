@@ -275,7 +275,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · rw [Nat.cast_sub h]
     congr
   · rfl
-#align zmod.coe_add_eq_ite ZMod.coe_add_eq_ite
+#align zmod.coe_add_eq_ite ZMod.cast_add_eq_ite
 
 section CharDvd
 
