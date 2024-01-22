@@ -245,7 +245,7 @@ partial def funTelescopeImpl {α} (f : Expr) (config : FunTelescopeConfig) (k : 
       k xs b 
     else
       try
-        let b' ← mkAppM `FunLike.coe #[b]
+        let b' ← mkAppM `DFunLike.coe #[b]
         funTelescopeImpl b' config fun xs' b'' => k (xs ++ xs') b''
       catch _ => 
         k xs b
@@ -274,7 +274,7 @@ where
   go : Expr → Nat → Nat
     | .mdata _ b, n => go b n
     | .app f _  , n => 
-      if f.isAppOfArity' ``FunLike.coe 5 then
+      if f.isAppOfArity' ``DFunLike.coe 5 then
         go f.appArg! (n + 1)
       else 
         go f (n + 1)
@@ -287,7 +287,7 @@ where
   go : Expr → Array Arg → Nat → α
     | .mdata _ b, as, i => go b as i
     | .app (.app c f) a  , as, i => 
-      if c.isAppOfArity' ``FunLike.coe 4 then
+      if c.isAppOfArity' ``DFunLike.coe 4 then
         go f (as.set! i ⟨a,.some c⟩) (i-1)
       else 
         go (.app c f) (as.set! i ⟨a,.none⟩) (i-1)
@@ -299,7 +299,7 @@ def getAppFn (e : Expr) : Expr :=
   match e with
   | .mdata _ b => getAppFn b
   | .app (.app c f) _ => 
-    if c.isAppOfArity' ``FunLike.coe 4 then
+    if c.isAppOfArity' ``DFunLike.coe 4 then
       getAppFn f
     else 
       getAppFn (.app c f)
@@ -318,7 +318,7 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
 private partial def getTypeArityAux (type : Expr) (n:Nat) : MetaM Nat := do
   forallTelescopeReducing type fun xs b => do
     try 
-      let c ← mkAppOptM ``FunLike.coe #[b,none,none,none]
+      let c ← mkAppOptM ``DFunLike.coe #[b,none,none,none]
       return ← getTypeArityAux (← inferType c) (xs.size-1 + n)
     catch _ => 
       return xs.size + n
