@@ -301,7 +301,7 @@ theorem lt_iff_exists_coe : ∀ {a b : WithBot α}, a < b ↔ ∃ p : α, b = p 
   | a, none => iff_of_false (not_lt_none _) <| by simp [none_eq_bot]
 #align with_bot.lt_iff_exists_coe WithBot.lt_iff_exists_coe
 
-theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a, x = ↑a → a < b
+theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a : α, x = ↑a → a < b
   | Option.some b => by simp [some_eq_coe, coe_eq_coe, coe_lt_coe]
   | none => by simp [none_eq_bot, bot_lt_coe]
 #align with_bot.lt_coe_iff WithBot.lt_coe_iff
@@ -1114,7 +1114,8 @@ theorem lt_iff_exists_coe {a b : WithTop α} : a < b ↔ ∃ p : α, a = p ∧ �
   exact exists_congr fun _ => and_congr_left' Iff.rfl
 #align with_top.lt_iff_exists_coe WithTop.lt_iff_exists_coe
 
-theorem coe_lt_iff {x : WithTop α} : ↑a < x ↔ ∀ b, x = ↑b → a < b := by simp
+theorem coe_lt_iff {x : WithTop α} : ↑a < x ↔ ∀ b : α, x = ↑b → a < b :=
+  WithBot.lt_coe_iff (α := αᵒᵈ)
 #align with_top.coe_lt_iff WithTop.coe_lt_iff
 
 /-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
