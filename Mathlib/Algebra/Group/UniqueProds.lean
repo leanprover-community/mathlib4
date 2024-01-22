@@ -644,17 +644,17 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
     have ⟨hA, hB⟩ : A.Nonempty ∧ B.Nonempty := by
       rw [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
       rintro (hA | hB)
-      . exact Nat.not_lt_zero 1 <| mul_eq_zero_of_left (show A.card = 0 from hA ▸ rfl) _ ▸ h
-      . exact Nat.not_lt_zero 1 <| mul_eq_zero_of_right _ (show B.card = 0 from hB ▸ rfl) ▸ h
+      · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_left (show A.card = 0 from hA ▸ rfl) _ ▸ h
+      · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_right _ (show B.card = 0 from hB ▸ rfl) ▸ h
     have ⟨x, hx, hx_spec⟩ := max_length hA
     have ⟨y, hy, hy_spec⟩ := max_length hB
     have ⟨x', hx', hx'_spec⟩ := min_length hA
     have ⟨y', hy', hy'_spec⟩ := min_length hB
     by_cases heq : (x, y) = (x', y')
-    . obtain (hA' | hB') : 1 < A.card ∨ 1 < B.card := by
+    · obtain (hA' | hB') : 1 < A.card ∨ 1 < B.card := by
         rw [← not_le, ← not_le, ← not_and_or]
         exact fun hp => Nat.not_le.mpr h <| mul_le_one' hp.left hp.right
-      . rw [Finset.one_lt_card] at hA'
+      · rw [Finset.one_lt_card] at hA'
         have ⟨u, hu, v, hv, hne⟩ := hA'
         have hl : ∀ u ∈ A, u.length = x.length := fun u hu => le_antisymm (hx_spec u hu)
           (congrArg List.length (congrArg Prod.fst heq) ▸ hx'_spec u hu)
@@ -663,7 +663,7 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
           fun heq => hne (congrArg Prod.fst heq),
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
-      . rw [Finset.one_lt_card] at hB'
+      · rw [Finset.one_lt_card] at hB'
         have ⟨u, hu, v, hv, hne⟩ := hB'
         have hl : ∀ u ∈ B, u.length = y.length := fun u hu => le_antisymm (hy_spec u hu)
           (congrArg List.length (congrArg Prod.snd heq) ▸ hy'_spec u hu)
@@ -674,11 +674,11 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
     refine ⟨(x, y), Finset.mk_mem_product hx hy, (x', y'), Finset.mk_mem_product hx' hy',
         heq, ?_, ?_⟩
-    . exact fun u v hu hv h => List.append_inj h <| And.left <| by
+    · exact fun u v hu hv h => List.append_inj h <| And.left <| by
         rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
-    . exact fun u v hu hv h => List.append_inj h <| And.left <| by
+    · exact fun u v hu hv h => List.append_inj h <| And.left <| by
         rewrite [eq_comm, ← add_eq_add_iff_eq_and_eq (hx'_spec u hu) (hy'_spec v hv), eq_comm,
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
