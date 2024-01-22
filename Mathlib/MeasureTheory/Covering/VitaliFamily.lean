@@ -219,30 +219,24 @@ variable (v : VitaliFamily μ)
 /-- Given a vitali family `v`, then `v.filterAt x` is the filter on `Set α` made of those families
 that contain all sets of `v.setsAt x` of a sufficiently small diameter. This filter makes it
 possible to express limiting behavior when sets in `v.setsAt x` shrink to `x`. -/
-def filterAt (x : α) : Filter (Set α) :=
-  ⨅ ε ∈ Ioi (0 : ℝ), 𝓟 ({ a ∈ v.setsAt x | a ⊆ closedBall x ε })
+def filterAt (x : α) : Filter (Set α) := (𝓝 x).smallSets ⊓ 𝓟 (v.setsAt x)
 #align vitali_family.filter_at VitaliFamily.filterAt
+
+theorem _root_.Filter.HasBasis.vitaliFamily {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {x : α}
+    (h : (𝓝 x).HasBasis p s) : (v.filterAt x).HasBasis p (fun i ↦ {t ∈ v.setsAt x | t ⊆ s i}) := by
+  simpa only [← Set.setOf_inter_eq_sep] using h.smallSets.inf_principal _
+
+theorem filterAt_basis_closedBall (x : α) :
+    (v.filterAt x).HasBasis (0 < ·) ({a ∈ v.setsAt x | a ⊆ closedBall x ·}) :=
+  nhds_basis_closedBall.vitaliFamily v
 
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
-  simp only [filterAt, exists_prop, gt_iff_lt]
-  rw [mem_biInf_of_directed]
-  · simp only [subset_def, and_imp, exists_prop, mem_sep_iff, mem_Ioi, mem_principal]
-  · simp only [DirectedOn, exists_prop, ge_iff_le, le_principal_iff, mem_Ioi, Order.Preimage,
-      mem_principal]
-    intro x hx y hy
-    refine' ⟨min x y, lt_min hx hy,
-      fun a ha => ⟨ha.1, ha.2.trans (closedBall_subset_closedBall (min_le_left _ _))⟩,
-      fun a ha => ⟨ha.1, ha.2.trans (closedBall_subset_closedBall (min_le_right _ _))⟩⟩
-  · exact ⟨(1 : ℝ), mem_Ioi.2 zero_lt_one⟩
+  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp]; rfl
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
-instance filterAt_neBot (x : α) : (v.filterAt x).NeBot := by
-  simp only [neBot_iff, ← empty_mem_iff_bot, mem_filterAt_iff, not_exists, exists_prop,
-    mem_empty_iff_false, and_true_iff, gt_iff_lt, not_and, Ne.def, not_false_iff, not_forall]
-  intro ε εpos
-  obtain ⟨w, w_sets, hw⟩ : ∃ w ∈ v.setsAt x, w ⊆ closedBall x ε := v.nontrivial x ε εpos
-  exact ⟨w, w_sets, hw⟩
+instance filterAt_neBot (x : α) : (v.filterAt x).NeBot :=
+  (v.filterAt_basis_closedBall x).neBot_iff.2 <| v.nontrivial _ _
 #align vitali_family.filter_at_ne_bot VitaliFamily.filterAt_neBot
 
 theorem eventually_filterAt_iff {x : α} {P : Set α → Prop} :
@@ -250,44 +244,34 @@ theorem eventually_filterAt_iff {x : α} {P : Set α → Prop} :
   v.mem_filterAt_iff
 #align vitali_family.eventually_filter_at_iff VitaliFamily.eventually_filterAt_iff
 
-theorem eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x := by
-  simp (config := { contextual := true }) only [eventually_filterAt_iff, exists_prop, and_true_iff,
-    gt_iff_lt, imp_true_iff]
-  exact ⟨1, zero_lt_one⟩
-#align vitali_family.eventually_filter_at_mem_sets VitaliFamily.eventually_filterAt_mem_sets
-
-theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
-    ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε := by
-  simp only [v.eventually_filterAt_iff]
-  exact ⟨ε, hε, fun a _ ha' => ha'⟩
-#align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
-
 theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x : α} :
     Tendsto f l (v.filterAt x) ↔
       (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
-  refine' ⟨fun H => ⟨H.eventually <| v.eventually_filterAt_mem_sets x,
-    fun ε hε => H.eventually <| v.eventually_filterAt_subset_closedBall x hε⟩,
-    fun H s hs => (_ : ∀ᶠ i in l, f i ∈ s)⟩
-  obtain ⟨ε, εpos, hε⟩ := v.mem_filterAt_iff.mp hs
-  filter_upwards [H.1, H.2 ε εpos] with i hi hiε using hε _ hi hiε
+  simp only [filterAt, tendsto_inf, nhds_basis_closedBall.smallSets.tendsto_right_iff,
+    tendsto_principal, and_comm, mem_powerset_iff]
 #align vitali_family.tendsto_filter_at_iff VitaliFamily.tendsto_filterAt_iff
 
+theorem eventually_filterAt_mem_setsAt (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x :=
+  (v.tendsto_filterAt_iff.mp tendsto_id).1
+#align vitali_family.eventually_filter_at_mem_sets VitaliFamily.eventually_filterAt_mem_setsAt
+
+theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
+    ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε :=
+  (v.tendsto_filterAt_iff.mp tendsto_id).2 ε hε
+#align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
+
 theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
-  filter_upwards [v.eventually_filterAt_mem_sets x] with _ ha using v.measurableSet _ _ ha
+  filter_upwards [v.eventually_filterAt_mem_setsAt x] with _ ha using v.measurableSet _ _ ha
 #align vitali_family.eventually_filter_at_measurable_set VitaliFamily.eventually_filterAt_measurableSet
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :
     (∃ᶠ a in v.filterAt x, P a) ↔ ∀ ε > (0 : ℝ), ∃ a ∈ v.setsAt x, a ⊆ closedBall x ε ∧ P a := by
-  simp only [Filter.Frequently, eventually_filterAt_iff, not_exists, exists_prop, not_and,
-    Classical.not_not, not_forall]
+  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc]; rfl
 #align vitali_family.frequently_filter_at_iff VitaliFamily.frequently_filterAt_iff
 
 theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ 𝓝 x) :
-    ∀ᶠ a in v.filterAt x, a ⊆ o := by
-  rw [eventually_filterAt_iff]
-  rcases Metric.mem_nhds_iff.1 hx with ⟨ε, εpos, hε⟩
-  exact ⟨ε / 2, half_pos εpos,
-    fun a _ ha => ha.trans ((closedBall_subset_ball (half_lt_self εpos)).trans hε)⟩
+    ∀ᶠ a in v.filterAt x, a ⊆ o :=
+  (eventually_smallSets_subset.2 hx).filter_mono inf_le_left
 #align vitali_family.eventually_filter_at_subset_of_nhds VitaliFamily.eventually_filterAt_subset_of_nhds
 
 theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
