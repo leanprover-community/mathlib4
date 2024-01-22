@@ -62,7 +62,7 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
       (fun _ f ihp => ihp ≫ φ.map f) Y f
-  map_id X := by rfl
+  map_id X := rfl
   map_comp f g := by
     induction' g with _ _ g' p ih _ _ _
     · rw [Category.comp_id]
@@ -235,7 +235,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind $ fun f => by
+      (Quot.ind fun f => by
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])

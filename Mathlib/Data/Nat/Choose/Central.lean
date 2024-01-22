@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 #align_import data.nat.choose.central from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
@@ -38,7 +40,7 @@ theorem centralBinom_eq_two_mul_choose (n : ℕ) : centralBinom n = (2 * n).choo
 #align nat.central_binom_eq_two_mul_choose Nat.centralBinom_eq_two_mul_choose
 
 theorem centralBinom_pos (n : ℕ) : 0 < centralBinom n :=
-  choose_pos (Nat.le_mul_of_pos_left zero_lt_two)
+  choose_pos (Nat.le_mul_of_pos_left _ zero_lt_two)
 #align nat.central_binom_pos Nat.centralBinom_pos
 
 theorem centralBinom_ne_zero (n : ℕ) : centralBinom n ≠ 0 :=
@@ -60,7 +62,7 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
 
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
   calc
-    2 ≤ 2 * n := le_mul_of_pos_right n_pos
+    2 ≤ 2 * n := Nat.le_mul_of_pos_right _ n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
 #align nat.two_le_central_binom Nat.two_le_centralBinom
@@ -90,7 +92,7 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
   · norm_num [centralBinom, choose]
   obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (Nat.not_eq_zero_of_lt hn)
   calc
-    4 ^ (n + 1) < 4 * (n * centralBinom n) := lt_of_eq_of_lt (pow_succ'' n 4) $
+    4 ^ (n + 1) < 4 * (n * centralBinom n) := lt_of_eq_of_lt pow_succ' <|
       (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
     _ ≤ 2 * (2 * n + 1) * centralBinom n := by rw [← mul_assoc]; linarith
     _ = (n + 1) * centralBinom (n + 1) := (succ_mul_centralBinom_succ n).symm
@@ -110,7 +112,7 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
     calc
       4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
       _ ≤ 2 * (n+4) * centralBinom (n+4) := by
-        rw [mul_assoc]; refine' le_mul_of_pos_left zero_lt_two
+        rw [mul_assoc]; refine' Nat.le_mul_of_pos_left _ zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
@@ -127,7 +129,7 @@ theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBino
 /-- A crucial lemma to ensure that Catalan numbers can be defined via their explicit formula
   `catalan n = n.centralBinom / (n + 1)`. -/
 theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom := by
-  have h_s : (n + 1).coprime (2 * n + 1) := by
+  have h_s : (n + 1).Coprime (2 * n + 1) := by
     rw [two_mul, add_assoc, coprime_add_self_right, coprime_self_add_left]
     exact coprime_one_left n
   apply h_s.dvd_of_dvd_mul_left

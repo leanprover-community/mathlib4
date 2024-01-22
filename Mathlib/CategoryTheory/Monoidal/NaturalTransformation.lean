@@ -19,8 +19,6 @@ an additional compatibility relation with the tensorators:
 themselves form a category.
 -/
 
-set_option autoImplicit false
-
 open CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -128,8 +126,8 @@ attribute [local simp] NatTrans.naturality MonoidalNatTrans.unit MonoidalNatTran
 /-- The cartesian product of two monoidal natural transformations is monoidal. -/
 @[simps]
 def prod {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor C E} (α : MonoidalNatTrans F G)
-    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K)
-    where app X := (α.app X, β.app X)
+    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K) where
+  app X := (α.app X, β.app X)
 #align category_theory.monoidal_nat_trans.prod CategoryTheory.MonoidalNatTrans.prod
 
 end
@@ -235,8 +233,7 @@ def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       erw [Iso.hom_inv_id_app, CategoryTheory.Functor.map_id]
       simp only [id_comp, CategoryTheory.Iso.inv_hom_id_app,
         CategoryTheory.IsIso.hom_inv_id_assoc]
-      erw [comp_id]
-      rfl }
+      erw [comp_id] }
 #align category_theory.monoidal_counit CategoryTheory.monoidalCounit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalCounit F) :=

@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
@@ -24,7 +24,7 @@ namespace Int
 
 open Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
 

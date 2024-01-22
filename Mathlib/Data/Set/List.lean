@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Fin.Basic
 
 #align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
@@ -18,7 +17,7 @@ In this file we prove lemmas about range of some operations on lists.
 
 open List
 
-variable {α β : Type _} (l : List α)
+variable {α β : Type*} (l : List α)
 
 namespace Set
 
@@ -47,7 +46,7 @@ theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :
   rw [← range_list_nthLe, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
-    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 <| fun k => ⟨_, get?_eq_get _⟩]
+    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]

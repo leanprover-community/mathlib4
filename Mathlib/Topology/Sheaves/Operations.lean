@@ -63,11 +63,11 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     rw [IsLocalization.map_comp_map]
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
--- Porting note : this is instance can't be synthesized
+-- Porting note : this instance can't be synthesized
 instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
   show Algebra _ (Localization (G.obj U)) from inferInstance
 
--- Porting note : this is instance can't be synthesized
+-- Porting note : this instance can't be synthesized
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
@@ -134,9 +134,9 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro x
   rw [map_zero]
   apply Submonoid.mem_iInf.mp hs x
-  -- Porting note : added `dsimp` to make `rw ←map_mul` work
+  -- Porting note : added `dsimp` to make `rw [← map_mul]` work
   dsimp
-  rw [←map_mul, e, map_zero]
+  rw [← map_mul, e, map_zero]
 
 end Presheaf
 

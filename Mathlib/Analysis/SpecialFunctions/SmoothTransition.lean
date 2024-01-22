@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.ExtendDeriv
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 
@@ -24,7 +23,6 @@ cannot have:
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 noncomputable section
 
 open scoped Classical Topology
@@ -37,7 +35,7 @@ open scoped Polynomial
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property
 is that it vanishes for `x ≤ 0`, it is positive for `x > 0`, and the junction between the two
 behaviors is flat enough to retain smoothness. The fact that this function is `C^∞` is proved in
-`expNegInvGlue.contDiff `. -/
+`expNegInvGlue.contDiff`. -/
 def expNegInvGlue (x : ℝ) : ℝ :=
   if x ≤ 0 then 0 else exp (-x⁻¹)
 #align exp_neg_inv_glue expNegInvGlue
@@ -64,7 +62,7 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 #align exp_neg_inv_glue.nonneg expNegInvGlue.nonneg
 
 -- porting note: new lemma
-@[simp] theorem zero_iff_nonpos : expNegInvGlue x = 0 ↔ x ≤ 0 :=
+@[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 
 /-!
@@ -230,4 +228,3 @@ protected theorem continuousAt : ContinuousAt smoothTransition x :=
 end smoothTransition
 
 end Real
-

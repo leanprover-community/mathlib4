@@ -35,7 +35,7 @@ open Finsupp
 
 open BigOperators Classical Pointwise
 
-variable {ι α : Type _} [Zero α] {s : Finset ι} {f : ι →₀ α}
+variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
 namespace Finset
 

@@ -1,22 +1,25 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Martin Dvorak
 -/
-import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.DeriveFintype
 
 #align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
 /-!
 # Languages
 
-This file contains the definition and operations on formal languages over an alphabet. Note strings
-are implemented as lists over the alphabet.
-The operations in this file define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
+This file contains the definition and operations on formal languages over an alphabet.
+Note that "strings" are implemented as lists over the alphabet.
+Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+In addition to that, we define a reversal of a language and prove that it behaves well
+with respect to other language operations.
 -/
 
 
@@ -24,7 +27,7 @@ open List Set Computability
 
 universe v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
@@ -45,14 +48,13 @@ variable {l m : Language α} {a b x : List α}
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
-  ⟨fun _ => False⟩
+  ⟨(∅ : Set _)⟩
 
 /-- `1 : Language α` contains only one element `[]`. -/
 instance : One (Language α) :=
-  ⟨fun l => l = []⟩
+  ⟨{[]}⟩
 
-instance : Inhabited (Language α) :=
-  ⟨fun _ => False⟩
+instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
@@ -110,7 +112,7 @@ theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ 
   Iff.rfl
 #align language.mem_add Language.mem_add
 
-theorem mem_mul : x ∈ l * m ↔ ∃ a b, a ∈ l ∧ b ∈ m ∧ a ++ b = x :=
+theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 #align language.mem_mul Language.mem_mul
 
@@ -130,7 +132,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
-instance : Semiring (Language α) where
+instance instSemiring : Semiring (Language α) where
   add := (· + ·)
   add_assoc := union_assoc
   zero := 0
@@ -173,24 +175,22 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
   simp [map, image_image]
 #align language.map_map Language.map_map
 
-theorem kstar_def_nonempty (l : Language α) :
-    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
-  ext x
+lemma mem_kstar_iff_exists_nonempty {x : List α} :
+    x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
-    simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     -- Porting note: The previous code was:
-    -- exact ⟨h y hy.1, hy.2⟩
-    --
-    -- The goal `y ≠ []` for the second argument cannot be resolved
-    -- by `hy.2 : isEmpty y = False`.
-    let ⟨hyl, hyr⟩ := hy
-    apply And.intro (h y hyl)
-    cases y <;> simp only [ne_eq, not_true, not_false_iff]
-    contradiction
+    -- rw [mem_filter, empty_iff_eq_nil] at hy
+    rw [mem_filter, decide_not, Bool.decide_coe, Bool.not_eq_true', ← Bool.bool_iff_false,
+      isEmpty_iff_eq_nil] at hy
+    exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
+
+theorem kstar_def_nonempty (l : Language α) :
+    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
+  ext x; apply mem_kstar_iff_exists_nonempty
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
@@ -238,22 +238,15 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · -- Porting note: The previous code was:
-      -- rintro ⟨_, rfl, rfl, _⟩
-      -- rfl
-      --
-      -- The code reports an error for the second `rfl`.
-      rintro ⟨_, rfl, h₀, _⟩
-      simp; intros _ h₁
-      rw [h₀] at h₁
-      contradiction
+    · rintro ⟨_, rfl, rfl, _⟩
+      rfl
   · simp only [pow_succ, mem_mul, ihn]
     constructor
-    · rintro ⟨a, b, ha, ⟨S, rfl, rfl, hS⟩, rfl⟩
+    · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
     · rintro ⟨_ | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
       rw [forall_mem_cons] at hS
-      exact ⟨a, _, hS.1, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
+      exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 #align language.mem_pow Language.mem_pow
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
@@ -289,7 +282,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiringLanguage, Set.completeAtomicBooleanAlgebra with
+  { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
@@ -306,7 +299,88 @@ instance : KleeneAlgebra (Language α) :=
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih
       · simp
-      rw [pow_succ, ←mul_assoc m l (l^n)]
+      rw [pow_succ, ← mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
 
+/-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
+def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
+
+@[simp]
+lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
+
+lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
+  rw [mem_reverse, List.reverse_reverse]
+
+lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
+  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+
+@[simp]
+lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
+
+@[simp]
+lemma reverse_one : (1 : Language α).reverse = 1 := by
+  simp [reverse, ← one_def]
+
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) :=
+  List.reverse_involutive.preimage
+
+lemma reverse_bijective : Function.Bijective (reverse : Language α → _) :=
+  reverse_involutive.bijective
+
+lemma reverse_injective : Function.Injective (reverse : Language α → _) :=
+  reverse_involutive.injective
+
+lemma reverse_surjective : Function.Surjective (reverse : Language α → _) :=
+  reverse_involutive.surjective
+
+@[simp]
+lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_involutive l
+
+@[simp]
+lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
+
+@[simp]
+lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
+  simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
+    List.reverse_append]
+  apply image2_swap
+
+@[simp]
+lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
+  preimage_iUnion
+
+@[simp]
+lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse :=
+  preimage_iInter
+
+variable (α) in
+/-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
+@[simps]
+def reverseIso : Language α ≃+* (Language α)ᵐᵒᵖ where
+  toFun l := .op l.reverse
+  invFun l' := l'.unop.reverse
+  left_inv := reverse_reverse
+  right_inv l' := MulOpposite.unop_injective <| reverse_reverse l'.unop
+  map_mul' l₁ l₂ := MulOpposite.unop_injective <| reverse_mul l₁ l₂
+  map_add' l₁ l₂ := MulOpposite.unop_injective <| reverse_add l₁ l₂
+
+@[simp]
+lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
+  MulOpposite.op_injective (map_pow (reverseIso α) l n)
+
+@[simp]
+lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
+  simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
+
 end Language
+
+/-- Symbols for use by all kinds of grammars. -/
+inductive Symbol (T N : Type*)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | nonterminal (n : N) : Symbol T N
+deriving
+  DecidableEq, Repr, Fintype
+
+attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

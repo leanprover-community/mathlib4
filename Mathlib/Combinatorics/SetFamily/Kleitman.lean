@@ -30,7 +30,7 @@ open Finset
 
 open Fintype (card)
 
-variable {ι α : Type _} [Fintype α] [DecidableEq α] [Nonempty α]
+variable {ι α : Type*} [Fintype α] [DecidableEq α] [Nonempty α]
 
 /-- **Kleitman's theorem**. An intersecting family on `n` elements contains at most `2ⁿ⁻¹` sets, and
 each further intersecting family takes at most half of the sets that are in no previous family. -/
@@ -42,7 +42,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
     infer_instance
   obtain hs | hs := le_total (Fintype.card α) s.card
   · rw [tsub_eq_zero_of_le hs, pow_zero]
-    refine' (card_le_of_subset <| biUnion_subset.2 fun i hi a ha ↦
+    refine' (card_le_card <| biUnion_subset.2 fun i hi a ha ↦
       mem_compl.2 <| not_mem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq _
     rw [card_compl, Fintype.card_finset, card_singleton]
   induction' s using Finset.cons_induction with i s hi ih generalizing f
@@ -58,7 +58,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
     refine' fun j hj ↦ (hf₁ _ hj).2.2.isUpperSet' ((hf₁ _ hj).2.2.is_max_iff_card_eq.2 _)
     rw [Fintype.card_finset]
     exact (hf₁ _ hj).2.1
-  refine' (card_le_of_subset <| biUnion_mono fun j hj ↦ (hf₁ _ hj).1).trans _
+  refine' (card_le_card <| biUnion_mono fun j hj ↦ (hf₁ _ hj).1).trans _
   nth_rw 1 [cons_eq_insert i]
   rw [biUnion_insert]
   refine' (card_mono <| @le_sup_sdiff _ _ _ <| f' i).trans ((card_union_le _ _).trans _)
@@ -79,8 +79,8 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine' mul_le_mul_left' _ _
   refine' (add_le_add_left
     (ih _ (fun i hi ↦ (hf₁ _ <| subset_cons _ hi).2.2)
-    ((card_le_of_subset <| subset_cons _).trans hs)) _).trans _
+    ((card_le_card <| subset_cons _).trans hs)) _).trans _
   rw [mul_tsub, two_mul, ← pow_succ,
-    ← add_tsub_assoc_of_le (pow_le_pow' (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
+    ← add_tsub_assoc_of_le (pow_le_pow_right' (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
     tsub_add_eq_add_tsub hs, card_cons, add_tsub_add_eq_tsub_right]
 #align finset.card_bUnion_le_of_intersecting Finset.card_biUnion_le_of_intersecting

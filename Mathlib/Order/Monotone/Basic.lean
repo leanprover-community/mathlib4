@@ -3,10 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Choose
 
 #align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
 
@@ -64,7 +66,7 @@ open Function OrderDual
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {π : ι → Type _}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
   {r : α → α → Prop}
 
 section MonotoneDef
@@ -122,19 +124,19 @@ variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
 instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f a ≤ f b)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
     Decidable (MonotoneOn f s) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f b ≤ f a)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
     Decidable (AntitoneOn f s) := i
 
 instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
 instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f a < f b)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
     Decidable (StrictMonoOn f s) := i
 
-instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f b < f a)] :
+instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
     Decidable (StrictAntiOn f s) := i
 
 end Decidable
@@ -238,91 +240,103 @@ theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f : α → βᵒ
   Iff.rfl
 #align strict_anti_on_to_dual_comp_iff strictAntiOn_toDual_comp_iff
 
-protected theorem Monotone.dual (hf : Monotone f) : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
-#align monotone.dual Monotone.dual
+theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Monotone f := by
+  rw [monotone_toDual_comp_iff, antitone_comp_ofDual_iff]
 
-protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
-#align antitone.dual Antitone.dual
+theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
+  rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
 
-protected theorem MonotoneOn.dual (hf : MonotoneOn f s) :
-    MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
-  swap₂ hf
-#align monotone_on.dual MonotoneOn.dual
+theorem monotoneOn_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
+  rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
 
-protected theorem AntitoneOn.dual (hf : AntitoneOn f s) :
-    AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
-  swap₂ hf
-#align antitone_on.dual AntitoneOn.dual
+theorem antitoneOn_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
+  rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
 
-protected theorem StrictMono.dual (hf : StrictMono f) :
-    StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
-#align strict_mono.dual StrictMono.dual
+theorem strictMono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictMono f := by
+  rw [strictMono_toDual_comp_iff, strictAnti_comp_ofDual_iff]
 
-protected theorem StrictAnti.dual (hf : StrictAnti f) :
-    StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
-  swap hf
-#align strict_anti.dual StrictAnti.dual
+theorem strictAnti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
+  rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
 
-protected theorem StrictMonoOn.dual (hf : StrictMonoOn f s) :
-    StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
-  swap₂ hf
-#align strict_mono_on.dual StrictMonoOn.dual
+theorem strictMonoOn_dual_iff :
+    StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
+  rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
 
-protected theorem StrictAntiOn.dual (hf : StrictAntiOn f s) :
-    StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
-  swap₂ hf
-#align strict_anti_on.dual StrictAntiOn.dual
+theorem strictAntiOn_dual_iff :
+    StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
+  rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
 
-alias antitone_comp_ofDual_iff ↔ _ Monotone.dual_left
+alias ⟨_, Monotone.dual_left⟩ := antitone_comp_ofDual_iff
 #align monotone.dual_left Monotone.dual_left
 
-alias monotone_comp_ofDual_iff ↔ _ Antitone.dual_left
+alias ⟨_, Antitone.dual_left⟩ := monotone_comp_ofDual_iff
 #align antitone.dual_left Antitone.dual_left
 
-alias antitone_toDual_comp_iff ↔ _ Monotone.dual_right
+alias ⟨_, Monotone.dual_right⟩ := antitone_toDual_comp_iff
 #align monotone.dual_right Monotone.dual_right
 
-alias monotone_toDual_comp_iff ↔ _ Antitone.dual_right
+alias ⟨_, Antitone.dual_right⟩ := monotone_toDual_comp_iff
 #align antitone.dual_right Antitone.dual_right
 
-alias antitoneOn_comp_ofDual_iff ↔ _ MonotoneOn.dual_left
+alias ⟨_, MonotoneOn.dual_left⟩ := antitoneOn_comp_ofDual_iff
 #align monotone_on.dual_left MonotoneOn.dual_left
 
-alias monotoneOn_comp_ofDual_iff ↔ _ AntitoneOn.dual_left
+alias ⟨_, AntitoneOn.dual_left⟩ := monotoneOn_comp_ofDual_iff
 #align antitone_on.dual_left AntitoneOn.dual_left
 
-alias antitoneOn_toDual_comp_iff ↔ _ MonotoneOn.dual_right
+alias ⟨_, MonotoneOn.dual_right⟩ := antitoneOn_toDual_comp_iff
 #align monotone_on.dual_right MonotoneOn.dual_right
 
-alias monotoneOn_toDual_comp_iff ↔ _ AntitoneOn.dual_right
+alias ⟨_, AntitoneOn.dual_right⟩ := monotoneOn_toDual_comp_iff
 #align antitone_on.dual_right AntitoneOn.dual_right
 
-alias strictAnti_comp_ofDual_iff ↔ _ StrictMono.dual_left
+alias ⟨_, StrictMono.dual_left⟩ := strictAnti_comp_ofDual_iff
 #align strict_mono.dual_left StrictMono.dual_left
 
-alias strictMono_comp_ofDual_iff ↔ _ StrictAnti.dual_left
+alias ⟨_, StrictAnti.dual_left⟩ := strictMono_comp_ofDual_iff
 #align strict_anti.dual_left StrictAnti.dual_left
 
-alias strictAnti_toDual_comp_iff ↔ _ StrictMono.dual_right
+alias ⟨_, StrictMono.dual_right⟩ := strictAnti_toDual_comp_iff
 #align strict_mono.dual_right StrictMono.dual_right
 
-alias strictMono_toDual_comp_iff ↔ _ StrictAnti.dual_right
+alias ⟨_, StrictAnti.dual_right⟩ := strictMono_toDual_comp_iff
 #align strict_anti.dual_right StrictAnti.dual_right
 
-alias strictAntiOn_comp_ofDual_iff ↔ _ StrictMonoOn.dual_left
+alias ⟨_, StrictMonoOn.dual_left⟩ := strictAntiOn_comp_ofDual_iff
 #align strict_mono_on.dual_left StrictMonoOn.dual_left
 
-alias strictMonoOn_comp_ofDual_iff ↔ _ StrictAntiOn.dual_left
+alias ⟨_, StrictAntiOn.dual_left⟩ := strictMonoOn_comp_ofDual_iff
 #align strict_anti_on.dual_left StrictAntiOn.dual_left
 
-alias strictAntiOn_toDual_comp_iff ↔ _ StrictMonoOn.dual_right
+alias ⟨_, StrictMonoOn.dual_right⟩ := strictAntiOn_toDual_comp_iff
 #align strict_mono_on.dual_right StrictMonoOn.dual_right
 
-alias strictMonoOn_toDual_comp_iff ↔ _ StrictAntiOn.dual_right
+alias ⟨_, StrictAntiOn.dual_right⟩ := strictMonoOn_toDual_comp_iff
 #align strict_anti_on.dual_right StrictAntiOn.dual_right
+
+alias ⟨_, Monotone.dual⟩ := monotone_dual_iff
+#align monotone.dual Monotone.dual
+
+alias ⟨_, Antitone.dual⟩ := antitone_dual_iff
+#align antitone.dual Antitone.dual
+
+alias ⟨_, MonotoneOn.dual⟩ := monotoneOn_dual_iff
+#align monotone_on.dual MonotoneOn.dual
+
+alias ⟨_, AntitoneOn.dual⟩ := antitoneOn_dual_iff
+#align antitone_on.dual AntitoneOn.dual
+
+alias ⟨_, StrictMono.dual⟩ := strictMono_dual_iff
+#align strict_mono.dual StrictMono.dual
+
+alias ⟨_, StrictAnti.dual⟩ := strictAnti_dual_iff
+#align strict_anti.dual StrictAnti.dual
+
+alias ⟨_, StrictMonoOn.dual⟩ := strictMonoOn_dual_iff
+#align strict_mono_on.dual StrictMonoOn.dual
+
+alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
+#align strict_anti_on.dual StrictAntiOn.dual
 
 end OrderDual
 
@@ -791,8 +805,8 @@ theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (h
   lt_of_not_ge fun h' ↦ h.not_le <| hf ha hb h'
 #align antitone_on.reflect_lt AntitoneOn.reflect_lt
 
-theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
-    : f a ≤ f b ↔ a ≤ b :=
+theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    f a ≤ f b ↔ a ≤ b :=
   ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_le h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 #align strict_mono_on.le_iff_le StrictMonoOn.le_iff_le
@@ -912,7 +926,7 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
-  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
+    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
   refine' Iff.symm ⟨_, _⟩
@@ -925,14 +939,14 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
     { exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩ } }
   obtain hac | hca := le_total a c
   { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans $ hfdb.trans_lt hfba, hfcd⟩⟩ }
+    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩ }
     obtain hfca | hfac := lt_or_le (f c) (f a)
     { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩ }
     obtain hbd | hdb := le_total b d
     { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
     { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
   { obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans $ hfdb.trans_lt hfba, hfba⟩⟩ }
+    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩ }
     obtain hfca | hfac := lt_or_le (f c) (f a)
     { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩ }
     obtain hbd | hdb := le_total b d
@@ -943,11 +957,11 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_lt_lt :
-  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
+    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
-  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
-  refine' exists₃_congr (fun a b c ↦ and_congr_left $
-    fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
+  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
+  refine' exists₃_congr (fun a b c ↦ and_congr_left <|
+    fun h ↦ (Ne.le_iff_lt _).and <| Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)
 #align not_monotone_not_antitone_iff_exists_lt_lt not_monotone_not_antitone_iff_exists_lt_lt
 

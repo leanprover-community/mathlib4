@@ -41,7 +41,7 @@ namespace Ordinal
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
-noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort _} (H0 : C 0)
+noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : ∀ o, C o := fun o ↦ by
     by_cases h : o = 0
     · rw [h]; exact H0
@@ -52,14 +52,14 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec
 
 @[simp]
-theorem CNFRec_zero {C : Ordinal → Sort _} (b : Ordinal) (H0 : C 0)
+theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @CNFRec b C H0 H 0 = H0 := by
   rw [CNFRec, dif_pos rfl]
   rfl
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_zero Ordinal.CNFRec_zero
 
-theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort _} (ho : o ≠ 0) (H0 : C 0)
+theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     @CNFRec b C H0 H o = H o ho (@CNFRec b C H0 H _) := by rw [CNFRec, dif_neg ho]
 set_option linter.uppercaseLean3 false in
@@ -162,11 +162,11 @@ set_option linter.uppercaseLean3 false in
 /-- The exponents of the Cantor normal form are decreasing. -/
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
-  · simp only [CNF_zero]
-  · cases' le_or_lt b 1 with hb hb
-    · simp only [CNF_of_le_one hb ho, map]
+  · simp only [gt_iff_lt, CNF_zero, map_nil, sorted_nil]
+  · rcases le_or_lt b 1 with hb | hb
+    · simp only [CNF_of_le_one hb ho, gt_iff_lt, map_cons, map, sorted_singleton]
     · cases' lt_or_le o b with hob hbo
-      · simp only [CNF_of_lt ho hob, map]
+      · simp only [CNF_of_lt ho hob, gt_iff_lt, map_cons, map, sorted_singleton]
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]
         refine' ⟨fun a H ↦ _, IH⟩
         rw [mem_map] at H

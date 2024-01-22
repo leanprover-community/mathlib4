@@ -34,7 +34,7 @@ open Function
 
 /-- The symmetrized algebra has the same underlying space as the original algebra.
 -/
-def SymAlg (α : Type _) : Type _ :=
+def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
@@ -43,7 +43,7 @@ postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
@@ -153,7 +153,7 @@ instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul α�
 @[to_additive existing]
 instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
 
-instance (R : Type _) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
+instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
 
 @[to_additive (attr := simp)]
 theorem sym_one [One α] : sym (1 : α) = 1 :=
@@ -198,11 +198,11 @@ theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
 #align sym_alg.unsym_neg SymAlg.unsym_neg
 
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := by rfl
+    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
 #align sym_alg.mul_def SymAlg.mul_def
 
 theorem unsym_mul [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := by rfl
+    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := rfl
 #align sym_alg.unsym_mul SymAlg.unsym_mul
 
 theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : α) :
@@ -223,12 +223,12 @@ theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
 #align sym_alg.unsym_inv SymAlg.unsym_inv
 
 @[simp]
-theorem sym_smul {R : Type _} [SMul R α] (c : R) (a : α) : sym (c • a) = c • sym a :=
+theorem sym_smul {R : Type*} [SMul R α] (c : R) (a : α) : sym (c • a) = c • sym a :=
   rfl
 #align sym_alg.sym_smul SymAlg.sym_smul
 
 @[simp]
-theorem unsym_smul {R : Type _} [SMul R α] (c : R) (a : αˢʸᵐ) : unsym (c • a) = c • unsym a :=
+theorem unsym_smul {R : Type*} [SMul R α] (c : R) (a : αˢʸᵐ) : unsym (c • a) = c • unsym a :=
   rfl
 #align sym_alg.unsym_smul SymAlg.unsym_smul
 
@@ -272,7 +272,7 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
 instance addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
   { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
-instance {R : Type _} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
+instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
   Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
 
 instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
@@ -293,13 +293,12 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
   { SymAlg.addCommMonoid with
     one := 1
     mul := (· * ·)
-    zero := 0
     zero_mul := fun _ => by
-      rw [mul_def, unsym_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, add_zero,
-        MulZeroClass.mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
+        mul_zero, sym_zero]
     mul_zero := fun _ => by
-      rw [mul_def, unsym_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, add_zero,
-        MulZeroClass.mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
+        mul_zero, sym_zero]
     mul_one := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
     one_mul := fun _ => by
@@ -337,8 +336,10 @@ theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertibl
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 #align sym_alg.mul_comm SymAlg.mul_comm
 
-instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
+instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
   mul_comm := SymAlg.mul_comm
+
+instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
       -- Porting note: mathlib3 used `bit0_left`
@@ -368,7 +369,7 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert MulZeroClass.mul_zero (⅟ (2 : α) * ⅟ (2 : α))
+      convert mul_zero (⅟ (2 : α) * ⅟ (2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
 

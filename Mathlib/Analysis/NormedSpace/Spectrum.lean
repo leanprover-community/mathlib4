@@ -47,17 +47,19 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 open scoped ENNReal NNReal
 
-/-- The *spectral radius* is the supremum of the `nnnorm` (`‖⬝‖₊`) of elements in the spectrum,
+open NormedSpace -- For `exp`.
+
+/-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
     case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
     not for Banach algebras, see `spectrum.is_bounded`, below).  In this case,
     `spectralRadius a = ∞`. -/
-noncomputable def spectralRadius (𝕜 : Type _) {A : Type _} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
+noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
 #align spectral_radius spectralRadius
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 namespace spectrum
 
@@ -129,23 +131,23 @@ theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closed
   fun k hk => by simp [norm_le_norm_of_mem hk]
 #align spectrum.subset_closed_ball_norm spectrum.subset_closedBall_norm
 
-theorem is_bounded (a : A) : Metric.Bounded (σ a) :=
-  (Metric.bounded_iff_subset_ball 0).mpr ⟨‖a‖ * ‖(1 : A)‖, subset_closedBall_norm_mul a⟩
-#align spectrum.is_bounded spectrum.is_bounded
+theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
+  Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
+#align spectrum.is_bounded spectrum.isBounded
 
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
-  Metric.isCompact_of_isClosed_bounded (spectrum.isClosed a) (is_bounded a)
+  Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 #align spectrum.is_compact spectrum.isCompact
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine' iSup₂_le fun k hk => _
-  exact_mod_cast norm_le_norm_of_mem hk
+  exact mod_cast norm_le_norm_of_mem hk
 #align spectrum.spectral_radius_le_nnnorm spectrum.spectralRadius_le_nnnorm
 
 theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty) :
     ∃ k ∈ σ a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (spectrum.isCompact a).exists_forall_ge ha continuous_nnnorm.continuousOn
-  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| by exact_mod_cast h)⟩
+  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
 #align spectrum.exists_nnnorm_eq_spectral_radius_of_nonempty spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty)
@@ -153,7 +155,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (h
   sSup_image.symm.trans_lt <|
     ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
           (ENNReal.continuous_coe.comp continuous_nnnorm).continuousOn (r : ℝ≥0∞)).mpr
-      (by dsimp only [(· ∘ ·)]; exact_mod_cast hr)
+      (by dsimp only [(· ∘ ·)]; exact mod_cast hr)
 #align spectrum.spectral_radius_lt_of_forall_lt_of_nonempty spectrum.spectralRadius_lt_of_forall_lt_of_nonempty
 
 open ENNReal Polynomial
@@ -173,7 +175,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
     simpa only [Real.toNNReal_mul (norm_nonneg _), norm_toNNReal, nnnorm_pow k (n + 1),
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
-  have hn : 0 < ((n + 1 : ℕ) : ℝ) := by exact_mod_cast Nat.succ_pos'
+  have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
   erw [coe_pow, ← rpow_nat_cast, ← rpow_mul, mul_one_div_cancel hn.ne', rpow_one]
@@ -183,8 +185,8 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
 theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine' ENNReal.le_of_forall_lt_one_mul_le fun ε hε => _
-  by_cases ε = 0
-  · simp only [h, MulZeroClass.zero_mul, zero_le']
+  by_cases h : ε = 0
+  · simp only [h, zero_mul, zero_le']
   have hε' : ε⁻¹ ≠ ∞ := fun h' =>
     h (by simpa only [inv_inv, inv_top] using congr_arg (fun x : ℝ≥0∞ => x⁻¹) h')
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
@@ -205,7 +207,7 @@ end SpectrumCompact
 
 section resolvent
 
-open Filter Asymptotics
+open Filter Asymptotics Bornology Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
@@ -220,45 +222,32 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 #align spectrum.has_deriv_at_resolvent spectrum.hasDerivAt_resolvent
 
-/- TODO: Once there is sufficient API for bornology, we should get a nice filter / asymptotics
-version of this, for example: `Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0)` or more specifically
-`(resolvent a) =O[cobounded 𝕜] (fun z ↦ z⁻¹)`. -/
-theorem norm_resolvent_le_forall (a : A) :
-    ∀ ε > 0, ∃ R > 0, ∀ z : 𝕜, R ≤ ‖z‖ → ‖resolvent a z‖ ≤ ε := by
-  obtain ⟨c, c_pos, hc⟩ := (@NormedRing.inverse_one_sub_norm A _ _).exists_pos
-  rw [isBigOWith_iff, eventually_iff, Metric.mem_nhds_iff] at hc
-  rcases hc with ⟨δ, δ_pos, hδ⟩
-  simp only [CstarRing.norm_one, mul_one] at hδ
-  intro ε hε
-  have ha₁ : 0 < ‖a‖ + 1 := lt_of_le_of_lt (norm_nonneg a) (lt_add_one _)
-  have min_pos : 0 < min (δ * (‖a‖ + 1)⁻¹) (ε * c⁻¹) :=
-    lt_min (mul_pos δ_pos (inv_pos.mpr ha₁)) (mul_pos hε (inv_pos.mpr c_pos))
-  refine' ⟨(min (δ * (‖a‖ + 1)⁻¹) (ε * c⁻¹))⁻¹, inv_pos.mpr min_pos, fun z hz => _⟩
-  have hnz : z ≠ 0 := norm_pos_iff.mp (lt_of_lt_of_le (inv_pos.mpr min_pos) hz)
-  replace hz := inv_le_of_inv_le min_pos hz
-  rcases (⟨Units.mk0 z hnz, Units.val_mk0 hnz⟩ : IsUnit z) with ⟨z, rfl⟩
-  have lt_δ : ‖z⁻¹ • a‖ < δ := by
-    rw [Units.smul_def, norm_smul, Units.val_inv_eq_inv_val, norm_inv]
-    calc
-      ‖(z : 𝕜)‖⁻¹ * ‖a‖ ≤ δ * (‖a‖ + 1)⁻¹ * ‖a‖ :=
-        mul_le_mul_of_nonneg_right (hz.trans (min_le_left _ _)) (norm_nonneg _)
-      _ < δ := by
-        conv => rw [mul_assoc]; rhs; rw [(mul_one δ).symm]
-        exact mul_lt_mul_of_pos_left
-          ((inv_mul_lt_iff ha₁).mpr ((mul_one (‖a‖ + 1)).symm ▸ lt_add_one _)) δ_pos
-  rw [← inv_smul_smul z (resolvent a (z : 𝕜)), units_smul_resolvent_self, resolvent,
-    Algebra.algebraMap_eq_smul_one, one_smul, Units.smul_def, norm_smul, Units.val_inv_eq_inv_val,
-    norm_inv]
+-- refactored so this result was no longer necessary or useful
+#noalign spectrum.norm_resolvent_le_forall
+
+theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
+  rw [atTop_basis_Ioi.cobounded_of_norm.eventually_iff]
+  exact ⟨‖a‖ * ‖(1 : A)‖, trivial, fun _ ↦ isUnit_resolvent.mp ∘ mem_resolventSet_of_norm_lt_mul⟩
+
+theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
+  have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
+    simpa [Function.comp_def, resolvent] using
+      (NormedRing.inverse_one_sub_norm (R := A)).comp_tendsto
+        (by simpa using (tendsto_inv₀_cobounded (α := 𝕜)).smul_const a)
   calc
-    _ ≤ ε * c⁻¹ * c :=
-      mul_le_mul (hz.trans (min_le_right _ _)) (hδ (mem_ball_zero_iff.mpr lt_δ)) (norm_nonneg _)
-        (mul_pos hε (inv_pos.mpr c_pos)).le
-    _ = _ := inv_mul_cancel_right₀ c_pos.ne.symm ε
-#align spectrum.norm_resolvent_le_forall spectrum.norm_resolvent_le_forall
+    resolvent a =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
+      filter_upwards [isBounded_singleton (x := 0)] with z hz
+      lift z to 𝕜ˣ using Ne.isUnit hz
+      simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
+    _ =O[cobounded 𝕜] (· ⁻¹) := .of_norm_right <| by
+      simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
+
+theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
+  resolvent_isBigO_inv a |>.trans_tendsto tendsto_inv₀_cobounded
 
 end resolvent
 
-section OneSubSmul
+section OneSubSMul
 
 open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
@@ -283,8 +272,8 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
       · refine'
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
-        · by_cases ‖a‖₊ = 0
-          · simp only [h, MulZeroClass.zero_mul, zero_le', pow_succ]
+        · by_cases h : ‖a‖₊ = 0
+          · simp only [h, zero_mul, zero_le', pow_succ]
           · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
             simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
@@ -330,7 +319,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
   exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 #align spectrum.differentiable_on_inverse_one_sub_smul spectrum.differentiableOn_inverse_one_sub_smul
 
-end OneSubSmul
+end OneSubSMul
 
 section GelfandFormula
 
@@ -377,7 +366,7 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
-  exact one_div_nonneg.mpr (by exact_mod_cast zero_le _)
+  exact one_div_nonneg.mpr (mod_cast zero_le _)
 #align spectrum.pow_norm_pow_one_div_tendsto_nhds_spectral_radius spectrum.pow_norm_pow_one_div_tendsto_nhds_spectralRadius
 
 end GelfandFormula
@@ -388,36 +377,17 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (
 
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
-  /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent`
+  /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`
     is differentiable on `ℂ`. -/
-  rw [Set.nonempty_iff_ne_empty]
-  by_contra h
+  by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
-  /- The norm of the resolvent is small for all sufficiently large `z`, and by compactness and
-    continuity it is bounded on the complement of a large ball, thus uniformly bounded on `ℂ`.
-    By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
-  have H₂ := norm_resolvent_le_forall (𝕜 := ℂ) a
-  have H₃ : ∀ z : ℂ, resolvent a z = resolvent a (0 : ℂ) := by
-    refine' fun z => H₁.apply_eq_apply_of_bounded (bounded_iff_forall_norm_le.mpr _) z 0
-    rcases H₂ 1 zero_lt_one with ⟨R, _, hR⟩
-    rcases (ProperSpace.isCompact_closedBall (0 : ℂ) R).exists_bound_of_continuousOn
-        H₁.continuous.continuousOn with
-      ⟨C, hC⟩
-    use max C 1
-    rintro _ ⟨w, rfl⟩
-    refine' Or.elim (em (‖w‖ ≤ R)) (fun hw => _) fun hw => _
-    · exact (hC w (mem_closedBall_zero_iff.mpr hw)).trans (le_max_left _ _)
-    · exact (hR w (not_le.mp hw).le).trans (le_max_right _ _)
-  -- `resolvent a 0 = 0`, which is a contradiction because it isn't a unit.
-  have H₅ : resolvent a (0 : ℂ) = 0 := by
-    refine' norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε hε => _) (norm_nonneg _))
-    rcases H₂ ε hε with ⟨R, _, hR⟩
-    simpa only [H₃ R] using (zero_add ε).symm.subst (hR R (by simp [le_abs_self]))
-  -- `not_isUnit_zero` is where we need `Nontrivial A`, it is unavoidable.
-  exact not_isUnit_zero
-    (H₅.subst (isUnit_resolvent.mp (mem_resolventSet_iff.mp (H₀.symm ▸ Set.mem_univ 0))))
+  /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
+  which contradicts that `resolvent a z` is invertible. -/
+  have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
+    simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
+  exact not_isUnit_zero <| H₃ ▸ (isUnit_resolvent.mp <| H₀.symm ▸ Set.mem_univ 0)
 #align spectrum.nonempty spectrum.nonempty
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the
@@ -443,11 +413,10 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
   map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 #align spectrum.map_polynomial_aeval spectrum.map_polynomial_aeval
 
--- Porting note: Replaced `x ^ n` with `HPow.hPow x n`
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
-    spectrum ℂ (a ^ n) = (fun x : ℂ => HPow.hPow x n) '' spectrum ℂ a := by
+    spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
   simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
 
@@ -498,11 +467,11 @@ theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
       sub_add_cancel]
   let b := ∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n
   have hb : Summable fun n : ℕ => ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n := by
-    refine' summable_of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) _
+    refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) _
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
     rw [norm_smul, mul_comm, norm_inv, IsROrC.norm_natCast, ← div_eq_mul_inv]
     exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
-      (by exact_mod_cast Nat.factorial_pos n) (by exact_mod_cast Nat.factorial_le (lt_add_one n).le)
+      (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
     simpa only [mul_smul_comm, pow_succ] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
@@ -526,7 +495,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type _} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 

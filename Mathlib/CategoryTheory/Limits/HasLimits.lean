@@ -5,6 +5,8 @@ Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.Logic.Equiv.Basic
 
 #align_import category_theory.limits.has_limits from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
@@ -217,12 +219,12 @@ def limit.coneMorphism {F : J ⥤ C} [HasLimit F] (c : Cone F) : c ⟶ limit.con
 
 @[simp]
 theorem limit.coneMorphism_hom {F : J ⥤ C} [HasLimit F] (c : Cone F) :
-    (limit.coneMorphism c).Hom = limit.lift F c :=
+    (limit.coneMorphism c).hom = limit.lift F c :=
   rfl
 #align category_theory.limits.limit.cone_morphism_hom CategoryTheory.Limits.limit.coneMorphism_hom
 
 theorem limit.coneMorphism_π {F : J ⥤ C} [HasLimit F] (c : Cone F) (j : J) :
-    (limit.coneMorphism c).Hom ≫ limit.π F j = c.π.app j := by simp
+    (limit.coneMorphism c).hom ≫ limit.π F j = c.π.app j := by simp
 #align category_theory.limits.limit.cone_morphism_π CategoryTheory.Limits.limit.coneMorphism_π
 
 @[reassoc (attr := simp)]
@@ -582,6 +584,13 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
       right_inv := by aesop_cat }
   unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } }
+  -- This used to be automatic before leanprover/lean4#2644
+  homEquiv_unit := by
+    -- Sad that aesop can no longer do this!
+    intros
+    dsimp
+    ext
+    simp
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
@@ -610,12 +619,17 @@ theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e
 
 variable (C)
 
+/-- A category that has larger limits also has smaller limits. -/
+theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
+    [HasLimitsOfSize.{v₁, u₁} C] : HasLimitsOfSize.{v₂, u₂} C where
+  has_limits_of_shape J {_} := hasLimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+
 /-- `hasLimitsOfSizeShrink.{v u} C` tries to obtain `HasLimitsOfSize.{v u} C`
 from some other `HasLimitsOfSize C`.
 -/
 theorem hasLimitsOfSizeShrink [HasLimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
-    HasLimitsOfSize.{v₁, u₁} C :=
-  ⟨fun J _ => hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v₂, u₂} J).symm⟩
+    HasLimitsOfSize.{v₁, u₁} C := hasLimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
 #align category_theory.limits.has_limits_of_size_shrink CategoryTheory.Limits.hasLimitsOfSizeShrink
 
 instance (priority := 100) hasSmallestLimitsOfHasLimits [HasLimits C] : HasLimitsOfSize.{0, 0} C :=
@@ -783,12 +797,12 @@ def colimit.coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) : colimit
 
 @[simp]
 theorem colimit.coconeMorphism_hom {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
-    (colimit.coconeMorphism c).Hom = colimit.desc F c :=
+    (colimit.coconeMorphism c).hom = colimit.desc F c :=
   rfl
 #align category_theory.limits.colimit.cocone_morphism_hom CategoryTheory.Limits.colimit.coconeMorphism_hom
 
 theorem colimit.ι_coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
-    colimit.ι F j ≫ (colimit.coconeMorphism c).Hom = c.ι.app j := by simp
+    colimit.ι F j ≫ (colimit.coconeMorphism c).hom = c.ι.app j := by simp
 #align category_theory.limits.colimit.ι_cocone_morphism CategoryTheory.Limits.colimit.ι_coconeMorphism
 
 @[reassoc (attr := simp)]
@@ -1190,17 +1204,22 @@ theorem hasColimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] 
 
 variable (C)
 
+/-- A category that has larger colimits also has smaller colimits. -/
+theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
+    [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfSize.{v₂, u₂} C where
+  has_colimits_of_shape J {_} := hasColimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+
 /-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
 from some other `HasColimitsOfSize C`.
 -/
-theorem hasColimitsOfSize_shrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
-    HasColimitsOfSize.{v₁, u₁} C :=
-  ⟨fun J _ => hasColimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v₂, u₂} J).symm⟩
-#align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSize_shrink
+theorem hasColimitsOfSizeShrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
+    HasColimitsOfSize.{v₁, u₁} C := hasColimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
+#align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSizeShrink
 
 instance (priority := 100) hasSmallestColimitsOfHasColimits [HasColimits C] :
     HasColimitsOfSize.{0, 0} C :=
-  hasColimitsOfSize_shrink.{0, 0} C
+  hasColimitsOfSizeShrink.{0, 0} C
 #align category_theory.limits.has_smallest_colimits_of_has_colimits CategoryTheory.Limits.hasSmallestColimitsOfHasColimits
 
 end Colimit
@@ -1269,14 +1288,14 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
       rfl
 #align category_theory.limits.is_colimit.unop CategoryTheory.Limits.IsColimit.unop
 
-/-- `t : Cone F` is a limit cone if and only is `t.op : Cocone F.op` is a colimit cocone.
+/-- `t : Cone F` is a limit cone if and only if `t.op : Cocone F.op` is a colimit cocone.
 -/
 def isLimitEquivIsColimitOp {t : Cone F} : IsLimit t ≃ IsColimit t.op :=
   equivOfSubsingletonOfSubsingleton IsLimit.op fun P =>
     P.unop.ofIsoLimit (Cones.ext (Iso.refl _))
 #align category_theory.limits.is_limit_equiv_is_colimit_op CategoryTheory.Limits.isLimitEquivIsColimitOp
 
-/-- `t : Cocone F` is a colimit cocone if and only is `t.op : Cone F.op` is a limit cone.
+/-- `t : Cocone F` is a colimit cocone if and only if `t.op : Cone F.op` is a limit cone.
 -/
 def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
   equivOfSubsingletonOfSubsingleton IsColimit.op fun P =>

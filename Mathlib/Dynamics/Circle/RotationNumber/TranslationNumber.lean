@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
@@ -164,15 +164,15 @@ theorem map_add_one : ∀ x, f (x + 1) = f x + 1 :=
 theorem map_one_add (x : ℝ) : f (1 + x) = 1 + f x := by rw [add_comm, map_add_one, add_comm 1]
 #align circle_deg1_lift.map_one_add CircleDeg1Lift.map_one_add
 
-#noalign circle_deg1_lift.coe_inj -- Use `FunLike.coe_inj`
+#noalign circle_deg1_lift.coe_inj -- Use `DFunLike.coe_inj`
 
 @[ext]
 theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align circle_deg1_lift.ext CircleDeg1Lift.ext
 
 theorem ext_iff {f g : CircleDeg1Lift} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align circle_deg1_lift.ext_iff CircleDeg1Lift.ext_iff
 
 instance : Monoid CircleDeg1Lift where
@@ -182,7 +182,7 @@ instance : Monoid CircleDeg1Lift where
   one := ⟨.id, fun _ => rfl⟩
   mul_one f := rfl
   one_mul f := rfl
-  mul_assoc f₁ f₂ f₃ := FunLike.coe_injective rfl
+  mul_assoc f₁ f₂ f₃ := DFunLike.coe_injective rfl
 
 instance : Inhabited CircleDeg1Lift := ⟨1⟩
 
@@ -659,7 +659,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
     (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
-  f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast h)
+  f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (mod_cast h)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀' CircleDeg1Lift.translationNumber_eq_of_tendsto₀'
 
 theorem transnumAuxSeq_zero : f.transnumAuxSeq 0 = f 0 := by simp [transnumAuxSeq]
@@ -783,7 +783,7 @@ theorem tendsto_translation_number₀' :
 #align circle_deg1_lift.tendsto_translation_number₀' CircleDeg1Lift.tendsto_translation_number₀'
 
 theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) atTop (𝓝 <| τ f) :=
-  (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast f.tendsto_translation_number₀')
+  (tendsto_add_atTop_iff_nat 1).1 (mod_cast f.tendsto_translation_number₀')
 #align circle_deg1_lift.tendsto_translation_number₀ CircleDeg1Lift.tendsto_translation_number₀
 
 /-- For any `x : ℝ` the sequence $\frac{f^n(x)-x}{n}$ tends to the translation number of `f`.
@@ -796,13 +796,13 @@ theorem tendsto_translationNumber (x : ℝ) :
 #align circle_deg1_lift.tendsto_translation_number CircleDeg1Lift.tendsto_translationNumber
 
 theorem tendsto_translation_number' (x : ℝ) :
-    Tendsto (fun n : ℕ => ((f ^ (n + 1) : CircleDeg1Lift) x - x) / (n + 1)) atTop (𝓝 <| τ f) := by
-  exact_mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
+    Tendsto (fun n : ℕ => ((f ^ (n + 1) : CircleDeg1Lift) x - x) / (n + 1)) atTop (𝓝 <| τ f) :=
+  mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
   le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n =>
-    div_le_div_of_le_of_nonneg (pow_mono h n 0) n.cast_nonneg
+    div_le_div_of_le n.cast_nonneg (pow_mono h n 0)
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=
@@ -927,10 +927,10 @@ theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz 
 such that `f x = x + τ f`. -/
 theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + τ f := by
   obtain ⟨a, ha⟩ : ∃ x, f x ≤ x + τ f := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.lt_translationNumber_of_forall_add_lt hf H)
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
   exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
 #align circle_deg1_lift.exists_eq_add_translation_number CircleDeg1Lift.exists_eq_add_translationNumber
@@ -963,7 +963,7 @@ orientation preserving circle homeomorphisms. Suppose that for each `g : G` the 
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homeomorphismes du cercle et
 cohomologie bornee][ghys87:groupes]. -/
-theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type _} [Group G]
+theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Group G]
     (f₁ f₂ : G →* CircleDeg1Lift) (h : ∀ g, τ (f₁ g) = τ (f₂ g)) :
     ∃ F : CircleDeg1Lift, ∀ g, Semiconj F (f₁ g) (f₂ g) := by
   -- Equality of translation number guarantees that for each `x`

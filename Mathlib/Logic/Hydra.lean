@@ -37,7 +37,7 @@ namespace Relation
 
 open Multiset Prod
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
   means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
@@ -59,7 +59,7 @@ def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
 
 variable {r : α → α → Prop}
 
-theorem cutExpand_le_invImage_lex [IsIrrefl α r] :
+theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')
@@ -110,10 +110,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s ↦ s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
   classical
-  -- Porting note: Originally `obtain ⟨ha, rfl⟩`
-  -- This is https://github.com/leanprover/std4/issues/62
-  obtain ⟨ha, hb⟩ := add_singleton_eq_iff.1 he
-  rw [hb]
+  obtain ⟨ha, rfl⟩ := add_singleton_eq_iff.1 he
   rw [add_assoc, mem_add] at ha
   obtain h | h := ha
   · refine' ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, _⟩, _⟩
@@ -128,9 +125,9 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   assuming `r` is irreflexive. -/
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
-  induction s using Multiset.induction
-  case empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
-  case cons a s ihs =>
+  induction s using Multiset.induction with
+  | empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
+  | @cons a s ihs =>
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)

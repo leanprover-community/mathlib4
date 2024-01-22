@@ -3,8 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
-import Std
+import Std.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -24,6 +23,8 @@ However, note that Unicode has a rather restricted character set for superscript
 (see `Mapping.superscript` and `Mapping.subscript` in this file), so you should not use this
 parser for complex expressions.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic
 open Lean Parser PrettyPrinter

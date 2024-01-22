@@ -23,6 +23,8 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
+set_option autoImplicit true
+
 
 universe uR uS uT uA
 
@@ -155,7 +157,8 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
-private irreducible_def natCast (n : ℕ) : RingQuot r :=
+-- can't be irreducible, causes diamonds in ℕ-algebras
+private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
 private irreducible_def zero : RingQuot r :=
@@ -192,12 +195,16 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- mysteriously doesn't work
             have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
             dsimp only at this
-            simp [mul_def] at this
+            simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)
         a⟩
 
-private irreducible_def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
+-- note: this cannot be irreducible, as otherwise diamonds don't commute.
+private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
+
+instance : NatCast (RingQuot r) :=
+  ⟨natCast r⟩
 
 instance : Zero (RingQuot r) :=
   ⟨zero r⟩
@@ -211,7 +218,7 @@ instance : Add (RingQuot r) :=
 instance : Mul (RingQuot r) :=
   ⟨mul r⟩
 
-instance : Pow (RingQuot r) ℕ :=
+instance : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
@@ -265,17 +272,17 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
   show smul r _ _ = _
-  rw [smul_def]
+  rw [smul]
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R] [IsScalarTower S T R] :
-    IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
+instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+    [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)
@@ -327,8 +334,8 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast := natCast r
-  natCast_zero := by simp [Nat.cast, natCast_def, ← zero_quot]
-  natCast_succ := by simp [Nat.cast, natCast_def, ← one_quot, add_quot]
+  natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
+  natCast_succ := by simp [Nat.cast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, left_distrib]
@@ -345,6 +352,10 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
                add_comm, add_quot]
   __ := instAddCommMonoid r
   __ := instMonoidWithZero r
+
+-- can't be irreducible, causes diamonds in ℤ-algebras
+private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
+  ⟨Quot.mk _ z⟩
 
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
@@ -365,7 +376,13 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, add_quot, add_mul, add_comm]
     zsmul_neg' := by
       rintro n ⟨⟨⟩⟩
-      simp [smul_quot, neg_quot, add_mul] }
+      simp [smul_quot, neg_quot, add_mul]
+    intCast := intCast r
+    intCast_ofNat := fun n => congrArg RingQuot.mk <| by
+      exact congrArg (Quot.mk _) (Int.cast_ofNat _)
+    intCast_negSucc := fun n => congrArg RingQuot.mk <| by
+      simp_rw [neg_def]
+      exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
   CommSemiring (RingQuot r) :=
@@ -377,10 +394,10 @@ instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
+instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]
@@ -409,7 +426,7 @@ theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r
 #align ring_quot.mk_ring_hom_rel RingQuot.mkRingHom_rel
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp [mkRingHom_def]
+  simp only [mkRingHom_def, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   rintro ⟨⟨⟩⟩
   simp
 #align ring_quot.mk_ring_hom_surjective RingQuot.mkRingHom_surjective
@@ -606,8 +623,9 @@ theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s
   rfl
 #align ring_quot.mk_alg_hom_coe RingQuot.mkAlgHom_coe
 
-theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) : mkAlgHom S s x = mkAlgHom S s y :=
-  by simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
+theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
+    mkAlgHom S s x = mkAlgHom S s y := by
+  simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
 #align ring_quot.mk_alg_hom_rel RingQuot.mkAlgHom_rel
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by

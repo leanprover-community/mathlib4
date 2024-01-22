@@ -13,7 +13,7 @@ import Mathlib.Algebra.Parity
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Fintype
 

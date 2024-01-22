@@ -33,17 +33,17 @@ We then use this isomorphism to deduce that as a complex of `k`-modules, the sta
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
 elsewhere.
 
-Putting this material together allows us to define `GroupCohomology.projectiveResolution`, the
+Putting this material together allows us to define `groupCohomology.projectiveResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
 
 ## Main definitions
 
- * `GroupCohomology.Resolution.actionDiagonalSucc`
- * `GroupCohomology.Resolution.diagonalSucc`
- * `GroupCohomology.Resolution.ofMulActionBasis`
+ * `groupCohomology.resolution.actionDiagonalSucc`
+ * `groupCohomology.resolution.diagonalSucc`
+ * `groupCohomology.resolution.ofMulActionBasis`
  * `classifyingSpaceUniversalCover`
- * `GroupCohomology.Resolution.forget₂ToModuleCatHomotopyEquiv`
- * `GroupCohomology.projectiveResolution`
+ * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
+ * `groupCohomology.projectiveResolution`
 
 ## Implementation notes
 
@@ -74,7 +74,7 @@ local notation "Gⁿ" => Fin n → G
 set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
-namespace GroupCohomology.Resolution
+namespace groupCohomology.resolution
 
 open Finsupp hiding lift
 open MonoidalCategory
@@ -101,9 +101,9 @@ def actionDiagonalSucc (G : Type u) [Group G] :
       tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫
         leftRegularTensorIso _ _ ≪≫
           tensorIso (Iso.refl _)
-            (mkIso (Equiv.piFinSuccAboveEquiv (fun _ => G) 0).symm.toIso fun _ => rfl)
+            (mkIso (Equiv.piFinSuccAbove (fun _ => G) 0).symm.toIso fun _ => rfl)
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.Action_diagonal_succ GroupCohomology.Resolution.actionDiagonalSucc
+#align group_cohomology.resolution.Action_diagonal_succ groupCohomology.resolution.actionDiagonalSucc
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
@@ -114,7 +114,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
         leftRegularTensorIso_hom_hom, tensorIso_hom, mkIso_hom_hom, Equiv.toIso_hom,
-        Action.tensorHom, Equiv.piFinSuccAboveEquiv_symm_apply, tensor_apply, types_id_apply,
+        Action.tensorHom, Equiv.piFinSuccAbove_symm_apply, tensor_apply, types_id_apply,
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
@@ -123,7 +123,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
       erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
       exact Fin.cases rfl (fun i => rfl) x
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.Action_diagonal_succ_hom_apply GroupCohomology.Resolution.actionDiagonalSucc_hom_apply
+#align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
@@ -146,13 +146,13 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
     funext x
     dsimp [actionDiagonalSucc]
-    erw [hn, Equiv.piFinSuccAboveEquiv_symm_apply]
+    erw [hn, Equiv.piFinSuccAbove_symm_apply]
     refine' Fin.cases _ (fun i => _) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
-    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ←mul_assoc]
+    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.Action_diagonal_succ_inv_apply GroupCohomology.Resolution.actionDiagonalSucc_inv_apply
+#align group_cohomology.resolution.Action_diagonal_succ_inv_apply groupCohomology.resolution.actionDiagonalSucc_inv_apply
 
 end Action
 
@@ -169,7 +169,7 @@ def diagonalSucc (n : ℕ) :
   (linearization k G).mapIso (actionDiagonalSucc G n) ≪≫
     (asIso ((linearization k G).μ (Action.leftRegular G) _)).symm ≪≫
       tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
-#align group_cohomology.resolution.diagonal_succ GroupCohomology.Resolution.diagonalSucc
+#align group_cohomology.resolution.diagonal_succ groupCohomology.resolution.diagonalSucc
 
 variable {k G n}
 
@@ -189,12 +189,13 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
       ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
   simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
-  rw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
   erw [lcongr_single]
   rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
   rfl
-#align group_cohomology.resolution.diagonal_succ_hom_single GroupCohomology.Resolution.diagonalSucc_hom_single
+#align group_cohomology.resolution.diagonal_succ_hom_single groupCohomology.resolution.diagonalSucc_hom_single
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
@@ -215,7 +216,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
   rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
     actionDiagonalSucc_inv_apply]
   rfl
-#align group_cohomology.resolution.diagonal_succ_inv_single_single GroupCohomology.Resolution.diagonalSucc_inv_single_single
+#align group_cohomology.resolution.diagonal_succ_inv_single_single groupCohomology.resolution.diagonalSucc_inv_single_single
 
 theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
@@ -226,14 +227,18 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      MulZeroClass.zero_mul, single_zero] -/
-  · rw [TensorProduct.tmul_zero, map_zero, map_zero]
+      zero_mul, single_zero] -/
+  · rw [TensorProduct.tmul_zero, map_zero]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.tmul_add, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single, smul_eq_mul, diagonalSucc_inv_single_single]
+    rw [TensorProduct.tmul_add, map_add]; erw [map_add, hx]
+    simp_rw [lift_apply, smul_single, smul_eq_mul]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [diagonalSucc_inv_single_single]
     rw [sum_single_index, mul_comm]
     · rw [zero_mul, single_zero]
-#align group_cohomology.resolution.diagonal_succ_inv_single_left GroupCohomology.Resolution.diagonalSucc_inv_single_left
+#align group_cohomology.resolution.diagonal_succ_inv_single_left groupCohomology.resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
@@ -243,21 +248,25 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero] -/
-  · rw [TensorProduct.zero_tmul, map_zero, map_zero]
+      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
+  · rw [TensorProduct.zero_tmul, map_zero]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.add_tmul, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single', diagonalSucc_inv_single_single]
+    rw [TensorProduct.add_tmul, map_add]; erw [map_add, hx]
+    simp_rw [lift_apply, smul_single']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [diagonalSucc_inv_single_single]
     rw [sum_single_index]
     · rw [zero_mul, single_zero]
-#align group_cohomology.resolution.diagonal_succ_inv_single_right GroupCohomology.Resolution.diagonalSucc_inv_single_right
+#align group_cohomology.resolution.diagonal_succ_inv_single_right groupCohomology.resolution.diagonalSucc_inv_single_right
 
 end Rep
 
 open scoped TensorProduct
 
 open Representation
-set_option maxHeartbeats 800000 in
+
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
 the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
@@ -267,7 +276,8 @@ def ofMulActionBasisAux :
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
 /- Porting note: broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -280,35 +290,35 @@ def ofMulActionBasisAux :
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · rw [smul_zero, map_zero]
-      · rw [TensorProduct.smul_tmul', smul_eq_mul, ←ofMulAction_self_smul_eq_mul]
+      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
       · rw [smul_add, hz, hy, map_add] }
-#align group_cohomology.resolution.of_mul_action_basis_aux GroupCohomology.Resolution.ofMulActionBasisAux
+#align group_cohomology.resolution.of_mul_action_basis_aux groupCohomology.resolution.ofMulActionBasisAux
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
 def ofMulActionBasis :
     Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  @Basis.map _ (MonoidAlgebra k G) (MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k)) _ _ _ _ _ _
-    (@Algebra.TensorProduct.basis.{u} k _ (MonoidAlgebra k G) _ _ ((Fin n → G) →₀ k) _ _ (Fin n → G)
-      ⟨LinearEquiv.refl k _⟩)
+  Basis.map
+    (Algebra.TensorProduct.basis (MonoidAlgebra k G)
+      (Finsupp.basisSingleOne : Basis (Fin n → G) k ((Fin n → G) →₀ k)))
     (ofMulActionBasisAux k G n)
-#align group_cohomology.resolution.of_mul_action_basis GroupCohomology.Resolution.ofMulActionBasis
+#align group_cohomology.resolution.of_mul_action_basis groupCohomology.resolution.ofMulActionBasis
 
 theorem ofMulAction_free :
     Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   Module.Free.of_basis (ofMulActionBasis k G n)
-#align group_cohomology.resolution.of_mul_action_free GroupCohomology.Resolution.ofMulAction_free
+#align group_cohomology.resolution.of_mul_action_free groupCohomology.resolution.ofMulAction_free
 
 end Basis
 
-end GroupCohomology.Resolution
+end groupCohomology.resolution
 
 namespace Rep
 
 variable (n) [Group G] (A : Rep k G)
 
-open GroupCohomology.Resolution
+open groupCohomology.resolution
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
@@ -342,7 +352,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 800000
+set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -365,9 +375,11 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom]
   -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
   -- are still not set up properly.
-  rw [ModuleCat.coe_comp]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ModuleCat.coe_comp]
   simp only [ModuleCat.coe_comp, Function.comp_apply]
-  rw [diagonalSucc_hom_single]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
   simp only [one_smul]
   erw [Representation.linHom_apply]
@@ -425,7 +437,6 @@ def cechNerveTerminalFromIso :
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
-    dsimp
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso
@@ -435,7 +446,7 @@ cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
   NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply _ _ _ _
+    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso_comp_forget classifyingSpaceUniversalCover.cechNerveTerminalFromIsoCompForget
 
 variable (k)
@@ -493,12 +504,12 @@ variable (k)
 
 /-- The standard resolution of `k` as a trivial representation, defined as the alternating
 face map complex of a simplicial `k`-linear `G`-representation. -/
-def GroupCohomology.resolution [Monoid G] :=
+def groupCohomology.resolution [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
     (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1)
-#align group_cohomology.resolution GroupCohomology.resolution
+#align group_cohomology.resolution groupCohomology.resolution
 
-namespace GroupCohomology.Resolution
+namespace groupCohomology.resolution
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory CategoryTheory.Limits
 
@@ -510,7 +521,7 @@ def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n �
   Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g =>
     (@Finset.univ (Fin (n + 1)) _).sum fun p =>
       Finsupp.single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
-#align group_cohomology.resolution.d GroupCohomology.Resolution.d
+#align group_cohomology.resolution.d groupCohomology.resolution.d
 
 variable {k G}
 
@@ -520,31 +531,31 @@ theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
   by simp [d]
-#align group_cohomology.resolution.d_of GroupCohomology.Resolution.d_of
+#align group_cohomology.resolution.d_of groupCohomology.resolution.d_of
 
 variable (k G)
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (GroupCohomology.resolution k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
+def xIso (n : ℕ) : (groupCohomology.resolution k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.X_iso GroupCohomology.Resolution.xIso
+#align group_cohomology.resolution.X_iso groupCohomology.resolution.xIso
 
-theorem x_projective (G : Type u) [Group G] (n : ℕ) :
-    Projective ((GroupCohomology.resolution k G).X n) :=
+instance x_projective (G : Type u) [Group G] (n : ℕ) :
+    Projective ((groupCohomology.resolution k G).X n) :=
   Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
       (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G (Fin (n + 1) → G)).asModule)
       _ (ofMulActionBasis k G n)
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.X_projective GroupCohomology.Resolution.x_projective
+#align group_cohomology.resolution.X_projective groupCohomology.resolution.x_projective
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
+theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
-  dsimp [GroupCohomology.resolution]
+  dsimp [groupCohomology.resolution]
 /- Porting note: broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
@@ -558,16 +569,16 @@ so using Finset.sum_congr to get rid of the binder -/
   erw [LinearMap.smul_apply]
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
   rfl
-#align group_cohomology.resolution.d_eq GroupCohomology.Resolution.d_eq
+#align group_cohomology.resolution.d_eq groupCohomology.resolution.d_eq
 
 section Exactness
 
 /-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
 def forget₂ToModuleCat :=
   ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj
-    (GroupCohomology.resolution k G)
+    (groupCohomology.resolution k G)
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.forget₂_to_Module GroupCohomology.Resolution.forget₂ToModuleCat
+#align group_cohomology.resolution.forget₂_to_Module groupCohomology.resolution.forget₂ToModuleCat
 
 /-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
 classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
@@ -576,16 +587,16 @@ is isomorphic to the standard resolution of the trivial `G`-representation `k` a
 def compForgetAugmentedIso :
     AlternatingFaceMapComplex.obj
         (SimplicialObject.Augmented.drop.obj (compForgetAugmented.toModule k G)) ≅
-      GroupCohomology.Resolution.forget₂ToModuleCat k G :=
+      groupCohomology.resolution.forget₂ToModuleCat k G :=
   eqToIso
     (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
       (classifyingSpaceUniversalCover G ⋙ (Rep.linearization k G).1.1))
-#align group_cohomology.resolution.comp_forget_augmented_iso GroupCohomology.Resolution.compForgetAugmentedIso
+#align group_cohomology.resolution.comp_forget_augmented_iso groupCohomology.resolution.compForgetAugmentedIso
 
 /-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
 def forget₂ToModuleCatHomotopyEquiv :
-    HomotopyEquiv (GroupCohomology.Resolution.forget₂ToModuleCat k G)
+    HomotopyEquiv (groupCohomology.resolution.forget₂ToModuleCat k G)
       ((ChainComplex.single₀ (ModuleCat k)).obj ((forget₂ (Rep k G) _).obj <| Rep.trivial k G k)) :=
   (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).symm).trans <|
     (SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv
@@ -595,7 +606,7 @@ def forget₂ToModuleCatHomotopyEquiv :
           (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
               Types.terminalIso.toEquiv.unique).toModuleIso)
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv GroupCohomology.Resolution.forget₂ToModuleCatHomotopyEquiv
+#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
@@ -605,7 +616,7 @@ def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
       Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
         Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.single _ _)
     simp only [Finsupp.mapDomain_single, Finsupp.total_single])
-#align group_cohomology.resolution.ε GroupCohomology.Resolution.ε
+#align group_cohomology.resolution.ε groupCohomology.resolution.ε
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
@@ -616,12 +627,12 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   simp only [HomologicalComplex.comp_f]
   dsimp
   convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
-  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso, map_alternatingFaceMapComplex]
+  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
-    erw [@Finsupp.lmapDomain_total (Fin 1 → G) k k (⊤_ Type u) k _ _ _ _ _ (fun _ => (1 : k))
-        (fun _ => (1 : k))
+    erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
+        (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
         LinearMap.id fun i => rfl,
@@ -629,81 +640,78 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     rfl
   · congr
     · ext x
-      dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
+      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+        Finsupp.LinearEquiv.finsuppUnique]
       rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
-        Finsupp.single_eq_same]
+        ChainComplex.single₀_map_f_zero, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+        Finsupp.equivFunOnFinite_apply, Finsupp.single_eq_same]
     · exact @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq GroupCohomology.Resolution.forget₂ToModuleCatHomotopyEquiv_f_0_eq
+#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv_f_0_eq
 
-theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
+theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
   refine' LinearMap.ext fun x => _
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
-      ←(forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
+      ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
   exact LinearMap.ext_iff.1 this _
-#align group_cohomology.resolution.d_comp_ε GroupCohomology.Resolution.d_comp_ε
+#align group_cohomology.resolution.d_comp_ε groupCohomology.resolution.d_comp_ε
 
 /-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
 degree zero. -/
 def εToSingle₀ :
-    GroupCohomology.resolution k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
-  ((GroupCohomology.resolution k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
-#align group_cohomology.resolution.ε_to_single₀ GroupCohomology.Resolution.εToSingle₀
+    groupCohomology.resolution k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
+  ((groupCohomology.resolution k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
+#align group_cohomology.resolution.ε_to_single₀ groupCohomology.resolution.εToSingle₀
 
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
-        (ChainComplex.single₀MapHomologicalComplex _).hom.app _ =
+        (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
-  refine' ChainComplex.to_single₀_ext _ _ _
   dsimp
-  rw [Category.comp_id]
-  exact (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
-#align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.Resolution.εToSingle₀_comp_eq
+  ext1
+  dsimp
+  simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
+#align group_cohomology.resolution.ε_to_single₀_comp_eq groupCohomology.resolution.εToSingle₀_comp_eq
 
-theorem quasiIsoOfForget₂εToSingle₀ :
+theorem quasiIso_forget₂_εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso _
+  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
   rw [← εToSingle₀_comp_eq k G] at h
-  haveI := h
-  exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
-#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.Resolution.quasiIsoOfForget₂εToSingle₀
+  exact quasiIso_of_comp_right (hφφ' := h)
+#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso_forget₂_εToSingle₀
 
-instance : QuasiIso (εToSingle₀ k G) :=
-  (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso _ (quasiIsoOfForget₂εToSingle₀ k G)
+instance : QuasiIso (εToSingle₀ k G) := by
+  rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
+  apply quasiIso_forget₂_εToSingle₀
 
 end Exactness
 
-end GroupCohomology.Resolution
+end groupCohomology.resolution
 
-open GroupCohomology.Resolution HomologicalComplex.Hom
+open groupCohomology.resolution HomologicalComplex.Hom
 
 variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-def GroupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) :=
-  toSingle₀ProjectiveResolution (εToSingle₀ k G) (x_projective k G)
+def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
+  π := εToSingle₀ k G
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.ProjectiveResolution GroupCohomology.projectiveResolution
+#align group_cohomology.ProjectiveResolution groupCohomology.projectiveResolution
 
 instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 
-set_option maxHeartbeats 1600000 in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k` called `GroupCohomology.resolution k G`. -/
-def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
+standard resolution of `k` called `groupCohomology.resolution k G`. -/
+def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (GroupCohomology.resolution k G)).homology
-          n).unop := by
-  let E := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-     (GroupCohomology.projectiveResolution k G)).unop.symm
-  exact E
+      ((groupCohomology.resolution k G).linearYonedaObj k V).homology n :=
+  (groupCohomology.projectiveResolution k G).isoExt n V
 set_option linter.uppercaseLean3 false in
-#align group_cohomology.Ext_iso GroupCohomology.extIso
+#align group_cohomology.Ext_iso groupCohomology.extIso

@@ -29,7 +29,7 @@ such that `a ≤ b` and `b ≤ a`.
 
 open Function OrderDual
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Relation
 
@@ -71,7 +71,7 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] {a b : α} : Antisymm
   antisymm_iff
 #align antisymm_rel_iff_eq antisymmRel_iff_eq
 
-alias antisymmRel_iff_eq ↔ AntisymmRel.eq _
+alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 #align antisymm_rel.eq AntisymmRel.eq
 
 end Relation
@@ -137,7 +137,7 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
   ⟨hf h.1, hf h.2⟩
 #align antisymm_rel.image AntisymmRel.image
 
-instance : PartialOrder (Antisymmetrization α (· ≤ ·)) where
+instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
   le a b :=
     (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
@@ -171,7 +171,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
-  { instPartialOrderAntisymmetrizationLeToLEInstIsPreorderLeToLE with
+  { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
     decidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
     decidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }

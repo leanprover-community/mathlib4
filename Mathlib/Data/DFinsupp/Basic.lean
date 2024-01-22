@@ -82,14 +82,14 @@ section Basic
 
 variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 
-instance funLike : FunLike (Π₀ i, β i) ι β :=
+instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
     congr
     apply Subsingleton.elim ⟩
-#align dfinsupp.fun_like DFinsupp.funLike
+#align dfinsupp.fun_like DFinsupp.instDFunLike
 
-/-- Helper instance for when there are too many metavariables to apply `FunLike.coeFunForall`
+/-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
 directly. -/
 instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
   inferInstance
@@ -101,17 +101,19 @@ theorem toFun_eq_coe (f : Π₀ i, β i) : f.toFun = f :=
 
 @[ext]
 theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align dfinsupp.ext DFinsupp.ext
 
-@[deprecated FunLike.ext_iff]
+@[deprecated DFunLike.ext_iff]
 theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align dfinsupp.ext_iff DFinsupp.ext_iff
 
-@[deprecated FunLike.coe_injective]
+lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
+
+@[deprecated DFunLike.coe_injective]
 theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
 
 instance : Zero (Π₀ i, β i) :=
@@ -120,14 +122,10 @@ instance : Zero (Π₀ i, β i) :=
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
 
-@[simp]
-theorem coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f :=
-  rfl
+@[simp, norm_cast] lemma coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f := rfl
 #align dfinsupp.coe_mk' DFinsupp.coe_mk'
 
-@[simp]
-theorem coe_zero : ⇑(0 : Π₀ i, β i) = 0 :=
-  rfl
+@[simp, norm_cast] lemma coe_zero : ⇑(0 : Π₀ i, β i) = 0 := rfl
 #align dfinsupp.coe_zero DFinsupp.coe_zero
 
 theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
@@ -239,31 +237,42 @@ theorem add_apply [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) (i : 
   rfl
 #align dfinsupp.add_apply DFinsupp.add_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ + g₂) = g₁ + g₂ :=
   rfl
 #align dfinsupp.coe_add DFinsupp.coe_add
 
 instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
-  FunLike.coe_injective.addZeroClass _ coe_zero coe_add
+  DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
+
+instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
+    IsLeftCancelAdd (Π₀ i, β i) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+
+instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
+    IsRightCancelAdd (Π₀ i, β i) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+
+instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
+    IsCancelAdd (Π₀ i, β i) where
 
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => nsmul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => nsmul_zero _⟩
 #align dfinsupp.has_nat_scalar DFinsupp.hasNatScalar
 
 theorem nsmul_apply [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.nsmul_apply DFinsupp.nsmul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_nsmul DFinsupp.coe_nsmul
 
 instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) :=
-  FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion from a `DFinsupp` to a pi type is an `AddMonoidHom`. -/
 def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i, β i
@@ -280,18 +289,18 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
 #align dfinsupp.eval_add_monoid_hom DFinsupp.evalAddMonoidHom
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
-  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
-    ⇑(∑ a in s, g a) = ∑ a in s, ⇑g a :=
-  (coeFnAddMonoidHom : _ →+ ∀ i, β i).map_sum g s
+    ⇑(∑ a in s, g a) = ∑ a in s, ⇑(g a) :=
+  map_sum coeFnAddMonoidHom g s
 #align dfinsupp.coe_finset_sum DFinsupp.coe_finset_sum
 
 @[simp]
 theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a in s, g a) i = ∑ a in s, g a i :=
-  (evalAddMonoidHom i : _ →+ β i).map_sum g s
+  map_sum (evalAddMonoidHom i) g s
 #align dfinsupp.finset_sum_apply DFinsupp.finset_sum_apply
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
@@ -301,9 +310,7 @@ theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i
   rfl
 #align dfinsupp.neg_apply DFinsupp.neg_apply
 
-@[simp]
-theorem coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g :=
-  rfl
+@[simp, norm_cast] lemma coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
 #align dfinsupp.coe_neg DFinsupp.coe_neg
 
 instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) :=
@@ -313,7 +320,7 @@ theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) 
   rfl
 #align dfinsupp.sub_apply DFinsupp.sub_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ - g₂) = g₁ - g₂ :=
   rfl
 #align dfinsupp.coe_sub DFinsupp.coe_sub
@@ -321,62 +328,62 @@ theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ 
 /-- Note the general `SMul` instance doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [∀ i, AddGroup (β i)] : SMul ℤ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => zsmul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => zsmul_zero _⟩
 #align dfinsupp.has_int_scalar DFinsupp.hasIntScalar
 
 theorem zsmul_apply [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.zsmul_apply DFinsupp.zsmul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_zsmul DFinsupp.coe_zsmul
 
 instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
-  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
 instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
-  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
 instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => smul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _⟩
 
 theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
     (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.smul_apply DFinsupp.smul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
     (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_smul DFinsupp.coe_smul
 
-instance smulCommClass {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
+instance smulCommClass {δ : Type*} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
     [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
-    SMulCommClass γ δ (Π₀ i, β i)
-    where smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
+    SMulCommClass γ δ (Π₀ i, β i) where
+  smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
 
-instance isScalarTower {δ : Type _} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
+instance isScalarTower {δ : Type*} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
     [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [SMul γ δ]
-    [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i)
-    where smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
+    [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i) where
+  smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
 
 instance isCentralScalar [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     [∀ i, DistribMulAction γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
-    IsCentralScalar γ (Π₀ i, β i)
-    where op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
+    IsCentralScalar γ (Π₀ i, β i) where
+  op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
 
 /-- Dependent functions with finite support inherit a `DistribMulAction` structure from such a
 structure on each coordinate. -/
 instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] :
     DistribMulAction γ (Π₀ i, β i) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom FunLike.coe_injective coe_smul
+  Function.Injective.distribMulAction coeFnAddMonoidHom DFunLike.coe_injective coe_smul
 
 /-- Dependent functions with finite support inherit a module structure from such a structure on
 each coordinate. -/
@@ -504,14 +511,14 @@ theorem subtypeDomain_apply [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePre
 @[simp]
 theorem subtypeDomain_add [∀ i, AddZeroClass (β i)] {p : ι → Prop} [DecidablePred p]
     (v v' : Π₀ i, β i) : (v + v').subtypeDomain p = v.subtypeDomain p + v'.subtypeDomain p :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_add DFinsupp.subtypeDomain_add
 
 @[simp]
 theorem subtypeDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
     {p : ι → Prop} [DecidablePred p] (r : γ) (f : Π₀ i, β i) :
     (r • f).subtypeDomain p = r • f.subtypeDomain p :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_smul DFinsupp.subtypeDomain_smul
 
 variable (γ β)
@@ -543,13 +550,13 @@ variable {γ β}
 @[simp]
 theorem subtypeDomain_neg [∀ i, AddGroup (β i)] {p : ι → Prop} [DecidablePred p] {v : Π₀ i, β i} :
     (-v).subtypeDomain p = -v.subtypeDomain p :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_neg DFinsupp.subtypeDomain_neg
 
 @[simp]
 theorem subtypeDomain_sub [∀ i, AddGroup (β i)] {p : ι → Prop} [DecidablePred p]
     {v v' : Π₀ i, β i} : (v - v').subtypeDomain p = v.subtypeDomain p - v'.subtypeDomain p :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.subtype_domain_sub DFinsupp.subtypeDomain_sub
 
 end FilterAndSubtypeDomain
@@ -599,11 +606,11 @@ theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := b
 #align dfinsupp.mk_injective DFinsupp.mk_injective
 
 instance unique [∀ i, Subsingleton (β i)] : Unique (Π₀ i, β i) :=
-  FunLike.coe_injective.unique
+  DFunLike.coe_injective.unique
 #align dfinsupp.unique DFinsupp.unique
 
 instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
-  FunLike.coe_injective.unique
+  DFunLike.coe_injective.unique
 #align dfinsupp.unique_of_is_empty DFinsupp.uniqueOfIsEmpty
 
 /-- Given `Fintype ι`, `equivFunOnFintype` is the `Equiv` between `Π₀ i, β i` and `Π i, β i`.
@@ -613,7 +620,7 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
     where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
-  left_inv _ := FunLike.coe_injective rfl
+  left_inv _ := DFunLike.coe_injective rfl
   right_inv _ := rfl
 #align dfinsupp.equiv_fun_on_fintype DFinsupp.equivFunOnFintype
 #align dfinsupp.equiv_fun_on_fintype_apply DFinsupp.equivFunOnFintype_apply
@@ -643,7 +650,7 @@ theorem single_apply {i i' b} :
 
 @[simp]
 theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
-  FunLike.coe_injective <| Pi.single_zero _
+  DFunLike.coe_injective <| Pi.single_zero _
 #align dfinsupp.single_zero DFinsupp.single_zero
 
 -- @[simp] -- Porting note: simp can prove this
@@ -656,7 +663,7 @@ theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i
 #align dfinsupp.single_eq_of_ne DFinsupp.single_eq_of_ne
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
-  Pi.single_injective β i <| FunLike.coe_injective.eq_iff.mpr H
+  Pi.single_injective β i <| DFunLike.coe_injective.eq_iff.mpr H
 #align dfinsupp.single_injective DFinsupp.single_injective
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
@@ -735,6 +742,21 @@ theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 #align dfinsupp.equiv_fun_on_fintype_symm_single DFinsupp.equivFunOnFintype_symm_single
 
+section SingleAndZipWith
+
+variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
+@[simp]
+theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
+    {i} (b₁ : β₁ i) (b₂ : β₂ i) :
+    zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
+  ext j
+  rw [zipWith_apply]
+  obtain rfl | hij := Decidable.eq_or_ne i j
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
+
+end SingleAndZipWith
+
 /-- Redefine `f i` to be `0`. -/
 def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun j ↦ if j = i then 0 else x.1 j,
@@ -761,7 +783,7 @@ theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
   · exact erase_ne h
 #align dfinsupp.piecewise_single_erase DFinsupp.piecewise_single_erase
 
-theorem erase_eq_sub_single {β : ι → Type _} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι) :
+theorem erase_eq_sub_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι) :
     f.erase i = f - single i (f i) := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
@@ -781,7 +803,7 @@ theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = 
 #align dfinsupp.filter_ne_eq_erase DFinsupp.filter_ne_eq_erase
 
 @[simp]
-theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter ((· ≠ ·) i) = f.erase i := by
+theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
   rw [← filter_ne_eq_erase f i]
   congr with j
   exact ne_comm
@@ -824,9 +846,7 @@ def update : Π₀ i, β i :=
 
 variable (j : ι)
 
-@[simp]
-theorem coe_update : (f.update i b : ∀ i : ι, β i) = Function.update f i b :=
-  rfl
+@[simp, norm_cast] lemma coe_update : (f.update i b : ∀ i : ι, β i) = Function.update f i b := rfl
 #align dfinsupp.coe_update DFinsupp.coe_update
 
 @[simp]
@@ -843,7 +863,7 @@ theorem update_eq_erase : f.update i 0 = f.erase i := by
   · simp [hi.symm]
 #align dfinsupp.update_eq_erase DFinsupp.update_eq_erase
 
-theorem update_eq_single_add_erase {β : ι → Type _} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
+theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = single i b + f.erase i := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
@@ -851,7 +871,7 @@ theorem update_eq_single_add_erase {β : ι → Type _} [∀ i, AddZeroClass (β
   · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
 #align dfinsupp.update_eq_single_add_erase DFinsupp.update_eq_single_add_erase
 
-theorem update_eq_erase_add_single {β : ι → Type _} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
+theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
@@ -859,7 +879,7 @@ theorem update_eq_erase_add_single {β : ι → Type _} [∀ i, AddZeroClass (β
   · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
 #align dfinsupp.update_eq_erase_add_single DFinsupp.update_eq_erase_add_single
 
-theorem update_eq_sub_add_single {β : ι → Type _} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
+theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
   rw [update_eq_erase_add_single f i b, erase_eq_sub_single f i]
 #align dfinsupp.update_eq_sub_add_single DFinsupp.update_eq_sub_add_single
@@ -874,11 +894,7 @@ variable [∀ i, AddZeroClass (β i)]
 
 @[simp]
 theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
-  ext fun i' => by
-    by_cases h : i = i'
-    · subst h
-      simp only [add_apply, single_eq_same]
-    · simp only [add_apply, single_eq_of_ne h, zero_add]
+  (zipWith_single_single (fun _ => (· + ·)) _ b₁ b₂).symm
 #align dfinsupp.single_add DFinsupp.single_add
 
 @[simp]
@@ -1024,7 +1040,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem addHom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=
-  addHom_ext fun x => FunLike.congr_fun (H x)
+  addHom_ext fun x => DFunLike.congr_fun (H x)
 #align dfinsupp.add_hom_ext' DFinsupp.addHom_ext'
 
 end AddMonoid
@@ -1174,10 +1190,7 @@ instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fun _ =>
   decidable_of_iff _ <| support_eq_empty.trans eq_comm
 #align dfinsupp.decidable_zero DFinsupp.decidableZero
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (i «expr ∉ » s) -/
-theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} :
-    ↑f.support ⊆ s ↔ ∀ (i) (_ : i ∉ s), f i = 0 := by
+theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
   simp [Set.subset_def]; exact forall_congr' fun i => not_imp_comm
 #align dfinsupp.support_subset_iff DFinsupp.support_subset_iff
 
@@ -1245,7 +1258,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  simp [h1]
+  simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
+    Finset.mem_erase, false_and]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 
@@ -1323,7 +1337,7 @@ section Equiv
 
 open Finset
 
-variable {κ : Type _}
+variable {κ : Type*}
 
 /-- Reindexing (and possibly removing) terms of a dfinsupp.-/
 noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h)
@@ -1445,9 +1459,9 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
 #align dfinsupp.equiv_congr_left DFinsupp.equivCongrLeft
 #align dfinsupp.equiv_congr_left_apply DFinsupp.equivCongrLeft_apply
 
-section Curry
+section SigmaCurry
 
-variable {α : ι → Type _} {δ : ∀ i, α i → Type v}
+variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
 -- lean can't find these instances -- Porting note: but Lean 4 can!!!
 instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
@@ -1470,66 +1484,49 @@ instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
   @DFinsupp.distribMulAction ι _ (fun i => Π₀ j, δ i j) _ _ _
 #align dfinsupp.distrib_mul_action₂ DFinsupp.distribMulAction₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.  -/
-noncomputable def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 i.2) :
-    Π₀ (i) (j), δ i j := by
-  classical!
-  exact mk (f.support.image fun i => i.1) fun i =>
-    mk (f.support.preimage (⟨i, ·⟩) $ sigma_mk_injective.injOn _) fun j => f ⟨i, j⟩
-#align dfinsupp.sigma_curry DFinsupp.sigmaCurry
+def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    Π₀ (i) (j), δ i j where
+  toFun := fun i ↦
+  { toFun := fun j ↦ f ⟨i, j⟩,
+    support' := f.support'.map (fun ⟨m, hm⟩ ↦
+      ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),
+        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
+  support' := f.support'.map (fun ⟨m, hm⟩ ↦
+    ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext
+      (fun j ↦ (hm ⟨i, j⟩).resolve_left (fun H ↦ (Multiset.mem_map.not.mp h) ⟨⟨i, j⟩, H, rfl⟩)))⟩)
 
 @[simp]
-theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 i.2) (i : ι) (j : α i) :
-    sigmaCurry f i j = f ⟨i, j⟩ := by
-  classical! -- Porting note: added
-  dsimp only [sigmaCurry]; by_cases h : f ⟨i, j⟩ = 0
-  · rw [h]
-    rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
-    split_ifs
-    · rw [mk_apply (dec := fun a b ↦ Classical.propDecidable (a = b))]
-      split_ifs
-      · exact h
-      · rfl
-    · rfl
-  · rw [mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b)) ?h₁,
-        mk_of_mem (dec := fun a b ↦ Classical.propDecidable (a = b))]
-    case h₁ =>
-      rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
-      refine' ⟨⟨i, j⟩, _, rfl⟩
-      convert (mem_support_toFun f _).2 h
-    · rw [mem_preimage]
-      convert (mem_support_toFun f _).2 h
+theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) (i : ι) (j : α i) :
+    sigmaCurry f i j = f ⟨i, j⟩ :=
+  rfl
 #align dfinsupp.sigma_curry_apply DFinsupp.sigmaCurry_apply
 
 @[simp]
-theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] : sigmaCurry (0 : Π₀ i : Σi, _, δ i.1 i.2) = 0 := by
-  ext i j
-  rw [sigmaCurry_apply]
+theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
+    sigmaCurry (0 : Π₀ (i : Σ _, _), δ i.1 i.2) = 0 :=
   rfl
 #align dfinsupp.sigma_curry_zero DFinsupp.sigmaCurry_zero
 
 @[simp]
-theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ i : Σi, α i, δ i.1 i.2) :
-    @sigmaCurry _ _ δ _ (f + g) = @sigmaCurry _ _ δ _ f + @sigmaCurry ι α δ _ g := by
-  ext i j
-  rw [@add_apply _ (fun i => Π₀ j, δ i j) _ (sigmaCurry _), add_apply, sigmaCurry_apply,
-    sigmaCurry_apply, sigmaCurry_apply, add_apply]
+theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    sigmaCurry (f + g) = sigmaCurry f + sigmaCurry g := by
+  ext (i j)
+  rfl
 #align dfinsupp.sigma_curry_add DFinsupp.sigmaCurry_add
 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
-    (r : γ) (f : Π₀ i : Σi, α i, δ i.1 i.2) :
-    @sigmaCurry _ _ δ _ (r • f) = r • @sigmaCurry _ _ δ _ f := by
-  ext i j
-  rw [@smul_apply _ _ (fun i => Π₀ j, δ i j) _ _ _ _ (sigmaCurry _), smul_apply, sigmaCurry_apply,
-    sigmaCurry_apply, smul_apply]
+    (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
+    sigmaCurry (r • f) = r • sigmaCurry f := by
+  ext (i j)
+  rfl
 #align dfinsupp.sigma_curry_smul DFinsupp.sigmaCurry_smul
 
 @[simp]
 theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
-    (ij : Σi, α i) (x : δ ij.1 ij.2) :
-    @sigmaCurry _ _ _ _ (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
+    (ij : Σ i, α i) (x : δ ij.1 ij.2) :
+    sigmaCurry (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
   obtain ⟨i, j⟩ := ij
   ext i' j'
   dsimp only
@@ -1587,7 +1584,7 @@ theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_add DFinsupp.sigmaUncurry_add
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1596,7 +1593,7 @@ theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i) (j), δ i j) : sigmaUncurry (r • f) = r • sigmaUncurry f :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_smul DFinsupp.sigmaUncurry_smul
 
 @[simp]
@@ -1621,7 +1618,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
-noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
+def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
     (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j
     where
@@ -1635,7 +1632,7 @@ noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     rw [sigmaCurry_apply, sigmaUncurry_apply]
 #align dfinsupp.sigma_curry_equiv DFinsupp.sigmaCurryEquiv
 
-end Curry
+end SigmaCurry
 
 variable {α : Option ι → Type v}
 
@@ -1727,6 +1724,13 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
 #align dfinsupp.prod DFinsupp.prod
 #align dfinsupp.sum DFinsupp.sum
 
+@[to_additive (attr := simp)]
+theorem _root_.map_dfinsupp_prod
+    {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+    [CommMonoid R] [CommMonoid S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
+    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
+  map_prod _ _ _
+
 @[to_additive]
 theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂} [∀ i, Zero (β₁ i)]
     [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
@@ -1773,7 +1777,7 @@ theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (
 #align dfinsupp.sum_neg_index DFinsupp.sum_neg_index
 
 @[to_additive]
-theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ : ι₂ → Type _} [DecidableEq ι₁]
+theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} [DecidableEq ι₁]
     [DecidableEq ι₂] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)]
     [∀ (i) (x : β₂ i), Decidable (x ≠ 0)] [CommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i)
     (h : ∀ i, β₁ i → ∀ i, β₂ i → γ) :
@@ -1787,7 +1791,7 @@ theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ : ι�
 theorem sum_apply {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)] {f : Π₀ i₁, β₁ i₁}
     {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {i₂ : ι} : (f.sum g) i₂ = f.sum fun i₁ b => g i₁ b i₂ :=
-  (evalAddMonoidHom i₂ : (Π₀ i, β i) →+ β i₂).map_sum _ f.support
+  map_sum (evalAddMonoidHom i₂) _ f.support
 #align dfinsupp.sum_apply DFinsupp.sum_apply
 
 theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
@@ -1821,7 +1825,7 @@ theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x
 @[to_additive (attr := simp)]
 theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommGroup γ]
     {f : Π₀ i, β i} {h : ∀ i, β i → γ} : (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
-  ((invMonoidHom : γ →* γ).map_prod _ f.support).symm
+  (map_prod (invMonoidHom : γ →* γ) _ f.support).symm
 #align dfinsupp.prod_inv DFinsupp.prod_inv
 #align dfinsupp.sum_neg DFinsupp.sum_neg
 
@@ -1832,7 +1836,7 @@ theorem prod_eq_one [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0
 #align dfinsupp.prod_eq_one DFinsupp.prod_eq_one
 #align dfinsupp.sum_eq_zero DFinsupp.sum_eq_zero
 
-theorem smul_sum {α : Type _} [Monoid α] [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem smul_sum {α : Type*} [Monoid α] [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] [DistribMulAction α γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} {c : α} :
     c • f.sum h = f.sum fun a b => c • h a b :=
   Finset.smul_sum
@@ -1860,7 +1864,7 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
 
 @[to_additive]
 theorem _root_.dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [CommMonoid γ] {S : Type _} [SetLike S γ] [SubmonoidClass S γ]
+    [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
     (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _ hi => h _ <| mem_support_iff.1 hi
@@ -1879,6 +1883,16 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   rw [hi, hf]
 #align dfinsupp.prod_eq_prod_fintype DFinsupp.prod_eq_prod_fintype
 #align dfinsupp.sum_eq_sum_fintype DFinsupp.sum_eq_sum_fintype
+
+section CommMonoidWithZero
+variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
+  [Π i, DecidableEq (β i)] {f : Π₀ i, β i} {g : Π i, β i → γ}
+
+@[simp]
+lemma prod_eq_zero_iff : f.prod g = 0 ↔ ∃ i ∈ f.support, g i (f i) = 0 := Finset.prod_eq_zero_iff
+lemma prod_ne_zero_iff : f.prod g ≠ 0 ↔ ∀ i ∈ f.support, g i (f i) ≠ 0 := Finset.prod_ne_zero_iff
+
+end CommMonoidWithZero
 
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
@@ -1956,7 +1970,7 @@ theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decida
   rw [not_not.mp h, AddMonoidHom.map_zero]
 #align dfinsupp.sum_add_hom_apply DFinsupp.sumAddHom_apply
 
-theorem _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type _}
+theorem _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
     [SetLike S γ] [AddSubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : DFinsupp.sumAddHom g f ∈ s := by
   classical
@@ -1984,7 +1998,7 @@ bounded `iSup` can be produced from taking a finite number of non-zero elements 
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    ⨆ (i) (_ : p i), S i = -- Porting note: Removing `h` results in a timeout
+    ⨆ (i) (_ : p i), S i =
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, _⟩
@@ -2019,7 +2033,7 @@ theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [Dec
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
 #align add_submonoid.mem_bsupr_iff_exists_dfinsupp AddSubmonoid.mem_bsupr_iff_exists_dfinsupp
 
-theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ : ι₂ → Type _} {γ : Type _}
+theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
     [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
     [AddCommMonoid γ] (f₁ : Π₀ i, β₁ i) (f₂ : Π₀ i, β₂ i) (h : ∀ i j, β₁ i →+ β₂ j →+ γ) :
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
@@ -2064,7 +2078,7 @@ theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (
 #align dfinsupp.lift_add_hom_comp_single DFinsupp.liftAddHom_comp_single
 
 /-- The `DFinsupp` version of `Finsupp.comp_liftAddHom`,-/
-theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
+theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
     (g : γ →+ δ) (f : ∀ i, β i →+ γ) :
     g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
   (liftAddHom (β := β)).symm_apply_eq.1 <|
@@ -2090,7 +2104,7 @@ theorem sumAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
   liftAddHom_singleAddHom
 #align dfinsupp.sum_add_hom_single_add_hom DFinsupp.sumAddHom_singleAddHom
 
-theorem comp_sumAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
+theorem comp_sumAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
     (g : γ →+ δ) (f : ∀ i, β i →+ γ) : g.comp (sumAddHom f) = sumAddHom fun a => g.comp (f a) :=
   comp_liftAddHom _ _
 #align dfinsupp.comp_sum_add_hom DFinsupp.comp_sumAddHom
@@ -2129,7 +2143,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
-  have := FunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
+  have := DFunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
 #align dfinsupp.sum_single DFinsupp.sum_single
@@ -2137,16 +2151,15 @@ theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable 
 @[to_additive]
 theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {v : Π₀ i, β i} {p : ι → Prop} [DecidablePred p] {h : ∀ i, β i → γ}
-    (hp : ∀ x ∈ v.support, p x) : ((v.subtypeDomain p).prod fun i b => h i b) = v.prod h :=
-  Finset.prod_bij (fun p _ => p) (by simp) (by simp) (fun ⟨a₀, ha₀⟩ ⟨a₁, ha₁⟩ => by simp)
-    fun i hi => ⟨⟨i, hp i hi⟩, by simpa using hi, rfl⟩
+    (hp : ∀ x ∈ v.support, p x) : (v.subtypeDomain p).prod (fun i b => h i b) = v.prod h := by
+  refine Finset.prod_bij (fun p _ ↦ p) ?_ ?_ ?_ ?_ <;> aesop
 #align dfinsupp.prod_subtype_domain_index DFinsupp.prod_subtypeDomain_index
 #align dfinsupp.sum_subtype_domain_index DFinsupp.sum_subtypeDomain_index
 
 theorem subtypeDomain_sum [∀ i, AddCommMonoid (β i)] {s : Finset γ} {h : γ → Π₀ i, β i}
     {p : ι → Prop} [DecidablePred p] :
     (∑ c in s, h c).subtypeDomain p = ∑ c in s, (h c).subtypeDomain p :=
-  (subtypeDomainAddMonoidHom β p).map_sum _ s
+  map_sum (subtypeDomainAddMonoidHom β p) _ s
 #align dfinsupp.subtype_domain_sum DFinsupp.subtypeDomain_sum
 
 theorem subtypeDomain_finsupp_sum {δ : γ → Type x} [DecidableEq γ] [∀ c, Zero (δ c)]
@@ -2261,25 +2274,21 @@ variable [DecidableEq ι]
 
 namespace MonoidHom
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
-@[to_additive (attr := simp)]
-theorem map_dfinsupp_prod [CommMonoid R] [CommMonoid S] (h : R →* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align monoid_hom.map_dfinsupp_prod MonoidHom.map_dfinsupp_prod
-#align add_monoid_hom.map_dfinsupp_sum AddMonoidHom.map_dfinsupp_sum
+#align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align add_monoid_hom.map_dfinsupp_sum map_dfinsupp_sumₓ
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
-    ⇑(f.prod g) = f.prod fun a b => ⇑g a b :=
+    ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 #align monoid_hom.coe_dfinsupp_prod MonoidHom.coe_dfinsupp_prod
 #align add_monoid_hom.coe_dfinsupp_sum AddMonoidHom.coe_dfinsupp_sum
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
@@ -2288,47 +2297,17 @@ theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : �
 
 end MonoidHom
 
-namespace RingHom
-
-variable {R S : Type _}
-
-variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-
-@[simp]
-theorem map_dfinsupp_prod [CommSemiring R] [CommSemiring S] (h : R →+* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align ring_hom.map_dfinsupp_prod RingHom.map_dfinsupp_prod
-
-@[simp]
-theorem map_dfinsupp_sum [NonAssocSemiring R] [NonAssocSemiring S] (h : R →+* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.sum g) = f.sum fun a b => h (g a b) :=
-  h.map_sum _ _
-#align ring_hom.map_dfinsupp_sum RingHom.map_dfinsupp_sum
-
-end RingHom
-
-namespace MulEquiv
-
-variable {R S : Type _}
-
-variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-
-@[to_additive (attr := simp)]
-theorem map_dfinsupp_prod [CommMonoid R] [CommMonoid S] (h : R ≃* S) (f : Π₀ i, β i)
-    (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  h.map_prod _ _
-#align mul_equiv.map_dfinsupp_prod MulEquiv.map_dfinsupp_prod
-#align add_equiv.map_dfinsupp_sum AddEquiv.map_dfinsupp_sum
-
-end MulEquiv
+#align ring_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align ring_hom.map_dfinsupp_sum map_dfinsupp_sumₓ
+#align mul_equiv.map_dfinsupp_prod map_dfinsupp_prodₓ
+#align add_equiv.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 /-! The above lemmas, repeated for `DFinsupp.sumAddHom`. -/
 
 
 namespace AddMonoidHom
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open DFinsupp
 
@@ -2336,16 +2315,16 @@ open DFinsupp
 theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
-  FunLike.congr_fun (comp_liftAddHom h g) f
+  DFunLike.congr_fun (comp_liftAddHom h g) f
 #align add_monoid_hom.map_dfinsupp_sum_add_hom AddMonoidHom.map_dfinsupp_sumAddHom
 
-@[simp]
 theorem dfinsupp_sumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
     (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
   map_dfinsupp_sumAddHom (eval r) f g
 #align add_monoid_hom.dfinsupp_sum_add_hom_apply AddMonoidHom.dfinsupp_sumAddHom_apply
 
+@[simp, norm_cast]
 theorem coe_dfinsupp_sumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
@@ -2356,7 +2335,7 @@ end AddMonoidHom
 
 namespace RingHom
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open DFinsupp
 
@@ -2364,14 +2343,14 @@ open DFinsupp
 theorem map_dfinsupp_sumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  FunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 #align ring_hom.map_dfinsupp_sum_add_hom RingHom.map_dfinsupp_sumAddHom
 
 end RingHom
 
 namespace AddEquiv
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open DFinsupp
 
@@ -2379,7 +2358,7 @@ open DFinsupp
 theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  FunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 #align add_equiv.map_dfinsupp_sum_add_hom AddEquiv.map_dfinsupp_sumAddHom
 
 end AddEquiv

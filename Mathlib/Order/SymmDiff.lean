@@ -54,7 +54,7 @@ Heyting
 
 open Function OrderDual
 
-variable {ι α β : Type _} {π : ι → Type _}
+variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
 def symmDiff [Sup α] [SDiff α] (a b : α) : α :=
@@ -67,13 +67,13 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
-/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
-infixl:100 " ∆ " => symmDiff
+scoped[symmDiff] infixl:100 " ∆ " => symmDiff
 
 /-- Notation for bihimp -/
-infixl:100 " ⇔ " => bihimp
+scoped[symmDiff] infixl:100 " ⇔ " => bihimp
+
+open scoped symmDiff
 
 theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
@@ -506,7 +506,7 @@ theorem symmDiff_left_involutive (a : α) : Involutive (· ∆ a) :=
   symmDiff_symmDiff_cancel_right _
 #align symm_diff_left_involutive symmDiff_left_involutive
 
-theorem symmDiff_right_involutive (a : α) : Involutive ((· ∆ ·) a) :=
+theorem symmDiff_right_involutive (a : α) : Involutive (a ∆ ·) :=
   symmDiff_symmDiff_cancel_left _
 #align symm_diff_right_involutive symmDiff_right_involutive
 
@@ -514,7 +514,7 @@ theorem symmDiff_left_injective (a : α) : Injective (· ∆ a) :=
   Function.Involutive.injective (symmDiff_left_involutive a)
 #align symm_diff_left_injective symmDiff_left_injective
 
-theorem symmDiff_right_injective (a : α) : Injective ((· ∆ ·) a) :=
+theorem symmDiff_right_injective (a : α) : Injective (a ∆ ·) :=
   Function.Involutive.injective (symmDiff_right_involutive _)
 #align symm_diff_right_injective symmDiff_right_injective
 
@@ -522,7 +522,7 @@ theorem symmDiff_left_surjective (a : α) : Surjective (· ∆ a) :=
   Function.Involutive.surjective (symmDiff_left_involutive _)
 #align symm_diff_left_surjective symmDiff_left_surjective
 
-theorem symmDiff_right_surjective (a : α) : Surjective ((· ∆ ·) a) :=
+theorem symmDiff_right_surjective (a : α) : Surjective (a ∆ ·) :=
   Function.Involutive.surjective (symmDiff_right_involutive _)
 #align symm_diff_right_surjective symmDiff_right_surjective
 
@@ -653,7 +653,7 @@ theorem bihimp_left_involutive (a : α) : Involutive (· ⇔ a) :=
   bihimp_bihimp_cancel_right _
 #align bihimp_left_involutive bihimp_left_involutive
 
-theorem bihimp_right_involutive (a : α) : Involutive ((· ⇔ ·) a) :=
+theorem bihimp_right_involutive (a : α) : Involutive (a ⇔ ·) :=
   bihimp_bihimp_cancel_left _
 #align bihimp_right_involutive bihimp_right_involutive
 
@@ -661,7 +661,7 @@ theorem bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
   @symmDiff_left_injective αᵒᵈ _ _
 #align bihimp_left_injective bihimp_left_injective
 
-theorem bihimp_right_injective (a : α) : Injective ((· ⇔ ·) a) :=
+theorem bihimp_right_injective (a : α) : Injective (a ⇔ ·) :=
   @symmDiff_right_injective αᵒᵈ _ _
 #align bihimp_right_injective bihimp_right_injective
 
@@ -669,7 +669,7 @@ theorem bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
   @symmDiff_left_surjective αᵒᵈ _ _
 #align bihimp_left_surjective bihimp_left_surjective
 
-theorem bihimp_right_surjective (a : α) : Surjective ((· ⇔ ·) a) :=
+theorem bihimp_right_surjective (a : α) : Surjective (a ⇔ ·) :=
   @symmDiff_right_surjective αᵒᵈ _ _
 #align bihimp_right_surjective bihimp_right_surjective
 

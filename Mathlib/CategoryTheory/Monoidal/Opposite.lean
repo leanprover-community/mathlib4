@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 #align_import category_theory.monoidal.opposite from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -170,8 +171,11 @@ open Opposite MonoidalCategory
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
+  whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
+  whiskerRight f X := (f.unop ▷ X.unop).op
   tensorHom f g := (f.unop ⊗ g.unop).op
-  tensorUnit' := op (𝟙_ C)
+  tensorHom_def f g := Quiver.Hom.unop_inj (tensorHom_def' _ _)
+  tensorUnit := op (𝟙_ C)
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
@@ -192,8 +196,11 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
 
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
+  whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
+  whiskerRight f X := (X.unmop ◁ f.unmop).mop
   tensorHom f g := (g.unmop ⊗ f.unmop).mop
-  tensorUnit' := mop (𝟙_ C)
+  tensorHom_def f g := unmop_inj (tensorHom_def' _ _)
+  tensorUnit := mop (𝟙_ C)
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop

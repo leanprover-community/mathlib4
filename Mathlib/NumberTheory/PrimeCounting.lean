@@ -3,11 +3,9 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Finset.LocallyFinite
-import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Nth
+import Mathlib.NumberTheory.SmoothNumbers
 
 #align_import number_theory.prime_counting from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
@@ -75,6 +73,12 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
 
+/-- The cardinality of the finset `primesBelow n` equals the counting function
+`primeCounting'` at `n`. -/
+lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+  simp only [primesBelow, primeCounting']
+  exact (count_eq_card_filter_range Prime n).symm
+
 /-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
@@ -85,8 +89,8 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       apply card_union_le
     _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
       rw [primeCounting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filter (coprime a)).card := by
-      refine' add_le_add_left (card_le_of_subset _) k.primeCounting'
+    _ ≤ π' k + ((Ico k (k + n)).filter (Coprime a)).card := by
+      refine' add_le_add_left (card_le_card _) k.primeCounting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime
       constructor

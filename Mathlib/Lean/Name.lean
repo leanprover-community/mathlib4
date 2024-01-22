@@ -3,15 +3,13 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.HashMap
-import Mathlib.Lean.SMap
-import Mathlib.Lean.Expr.Basic
+import Std.Data.HashMap.Basic
+import Std.Lean.SMap
 
 /-!
 # Additional functions on `Lean.Name`.
 
-We provide `Name.getModule : Name → CoreM (Option Name)`,
-and `allNames` and `allNamesByModule`.
+We provide `allNames` and `allNamesByModule`.
 -/
 
 open Lean Meta Elab
@@ -19,7 +17,7 @@ open Lean Meta Elab
 private def isBlackListed (declName : Name) : CoreM Bool := do
   if declName.toString.startsWith "Lean" then return true
   let env ← getEnv
-  pure $ declName.isInternal'
+  pure <| declName.isInternalDetail
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
@@ -48,3 +46,9 @@ def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name))
       | none => return names.insert m #[n]
     else
       return names
+
+/-- Decapitalize the last component of a name. -/
+def Lean.Name.decapitalize (n : Name) : Name :=
+  n.modifyBase fun
+    | .str p s => .str p s.decapitalize
+    | n       => n

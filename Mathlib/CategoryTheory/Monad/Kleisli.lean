@@ -128,7 +128,7 @@ instance Cokleisli.category : Category (Cokleisli U) where
   comp {X} {Y} {Z} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
   id_comp f := by dsimp; rw [U.right_counit_assoc]
   assoc {X} {Y} {Z} {W} f g h := by
-    -- Porting note: working around lack of of unfold_projs
+    -- Porting note: working around lack of unfold_projs
     change U.δ.app X ≫ U.map (U.δ.app X ≫ U.map f ≫ g) ≫ h =
       U.δ.app X ≫ U.map f ≫ (U.δ.app Y ≫ U.map g ≫ h)
     -- Porting note: something was broken here and was easier just to redo from scratch

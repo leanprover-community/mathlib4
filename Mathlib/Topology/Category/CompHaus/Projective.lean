@@ -35,9 +35,9 @@ open CategoryTheory Function
 
 namespace CompHaus
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
-instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
+instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
@@ -53,7 +53,8 @@ instance projective_ultrafilter (X : Type _) : Projective (of <| Ultrafilter X)
     -- The next two lines should not be needed.
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
-    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
 set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
 

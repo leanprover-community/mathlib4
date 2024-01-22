@@ -43,7 +43,7 @@ alternating group permutation
 
 open Equiv Equiv.Perm Subgroup Fintype
 
-variable (α : Type _) [Fintype α] [DecidableEq α]
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
@@ -244,9 +244,8 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-          ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h)
-      --Porting note : added `: _`
-          : _))
+        --Porting note : added `: _`
+        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
@@ -263,6 +262,7 @@ theorem normalClosure_swap_mul_swap_five :
       ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ := by
     rw [Subtype.ext_iff]
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
+    decide
   rw [eq_top_iff, ← normalClosure_finRotate_five]
   refine' normalClosure_le_normal _
   rw [Set.singleton_subset_iff, SetLike.mem_coe, ← h5]
@@ -281,7 +281,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf)) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf; decide)) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, Units.ext_iff, Units.val_one,
@@ -300,7 +300,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contrapose! ha
-    simp [h_1]
+    decide
 #align alternating_group.is_conj_swap_mul_swap_of_cycle_type_two alternatingGroup.isConj_swap_mul_swap_of_cycleType_two
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
@@ -348,7 +348,6 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       have con := mem_alternatingGroup.1 gA
       contrapose! con
       rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng]
-      dsimp only
       decide
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine' (isConj_iff_cycleType_eq.2 _).normalClosure_eq_top_of normalClosure_finRotate_five

@@ -29,7 +29,7 @@ noncomputable section
 universe u
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type _) [Zero R] :=
+abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
@@ -135,9 +135,8 @@ instance of_powerSeries_localization [CommRing R] :
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
       rfl
-    · simp
-  surj' := by
-    intro z
+    · dsimp; rw [ofPowerSeries_X_pow]
+  surj' z := by
     by_cases h : 0 ≤ z.order
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
@@ -149,21 +148,10 @@ instance of_powerSeries_localization [CommRing R] :
       refine' congr rfl _
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
       exact le_of_not_ge h
-  eq_iff_exists' := by
-    intro x y
+  exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
-    constructor
-    · rintro rfl
-      exact ⟨1, rfl⟩
-    · rintro ⟨⟨_, n, rfl⟩, hc⟩
-      rw [← sub_eq_zero, ← mul_sub, PowerSeries.ext_iff] at hc
-      rw [← sub_eq_zero, PowerSeries.ext_iff]
-      intro m
-      have h := hc (m + n)
-      simp only at h
-      rwa [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
-        add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
-        one_mul] at h
+    rintro rfl
+    exact ⟨1, rfl⟩
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
@@ -179,7 +167,7 @@ namespace PowerSeries
 
 open LaurentSeries
 
-variable {R' : Type _} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
+variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note: simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
@@ -236,7 +224,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
+theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]

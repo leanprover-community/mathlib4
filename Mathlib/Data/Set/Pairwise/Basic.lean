@@ -32,7 +32,7 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 
 open Function Order Set
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
 
 section Pairwise
 
@@ -94,7 +94,7 @@ theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 #align set.pairwise_iff_of_refl Set.pairwise_iff_of_refl
 
-alias pairwise_iff_of_refl ↔ Pairwise.of_refl _
+alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
 #align set.pairwise.of_refl Set.Pairwise.of_refl
 
 theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.Nonempty) :
@@ -135,7 +135,7 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 #align set.pairwise_eq_iff_exists_eq Set.pairwise_eq_iff_exists_eq
 
 theorem pairwise_union :
-  (s ∪ t).Pairwise r ↔
+    (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
@@ -206,9 +206,19 @@ theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α
   ⟨fun h _a ha _b hb => h.eq ha hb id, fun h => h.pairwise _⟩
 #align set.pairwise_bot_iff Set.pairwise_bot_iff
 
-alias pairwise_bot_iff ↔ Pairwise.subsingleton _
+alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 #align set.pairwise.subsingleton Set.Pairwise.subsingleton
 
+/-- See also `Function.injective_iff_pairwise_ne` -/
+lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f ·) := by
+  simp only [InjOn, Set.Pairwise, not_imp_not]
+
+alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
+
+protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' s).Pairwise r :=
+  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
+
+/-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
   simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
@@ -223,7 +233,7 @@ theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) 
   simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne.def, Subtype.ext_iff, Subtype.coe_mk]
 #align pairwise_subtype_iff_pairwise_set pairwise_subtype_iff_pairwise_set
 
-alias pairwise_subtype_iff_pairwise_set ↔ Pairwise.set_of_subtype Set.Pairwise.subtype
+alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 #align pairwise.set_of_subtype Pairwise.set_of_subtype
 #align set.pairwise.subtype Set.Pairwise.subtype
 
@@ -368,7 +378,7 @@ theorem PairwiseDisjoint.prod {f : ι → Set α} {g : ι' → Set β} (hs : s.P
     hij <| Prod.ext (hs.elim_set hi hj _ hai haj) <| ht.elim_set hi' hj' _ hbi hbj
 #align set.pairwise_disjoint.prod Set.PairwiseDisjoint.prod
 
-theorem pairwiseDisjoint_pi {ι' α : ι → Type _} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
+theorem pairwiseDisjoint_pi {ι' α : ι → Type*} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
     (hs : ∀ i, (s i).PairwiseDisjoint (f i)) :
     ((univ : Set ι).pi s).PairwiseDisjoint fun I => (univ : Set ι).pi fun i => f _ (I i) :=
   fun _ hI _ hJ hIJ =>
@@ -408,7 +418,40 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 #align set.pairwise_disjoint_image_left_iff Set.pairwiseDisjoint_image_left_iff
 
+lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
+    {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
+    ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ ∃ x : α, x ∈ f i ∩ f j := by
+  change ¬ ∀ i, i ∈ s → ∀ j, j ∈ s → i ≠ j → ∀ t, t ≤ f i → t ≤ f j → t ≤ ⊥ at h
+  simp only [not_forall] at h
+  obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
+  replace ht : t.Nonempty := by
+    rwa [le_bot_iff, bot_eq_empty, ← Ne.def, ← nonempty_iff_ne_empty] at ht
+  obtain ⟨x, hx⟩ := ht
+  exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
+
+lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
+    {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
+    ∃ i ∈ s, ∃ j ∈ s, i < j ∧ ∃ x, x ∈ f i ∩ f j := by
+  obtain ⟨i, hi, j, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+  cases' lt_or_lt_iff_ne.mpr hne with h_lt h_lt
+  · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
+  · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
+
 end Set
+
+lemma exists_ne_mem_inter_of_not_pairwise_disjoint
+    {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
+    ∃ i j : ι, i ≠ j ∧ ∃ x, x ∈ f i ∩ f j := by
+  rw [← pairwise_univ] at h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+  exact ⟨i, j, h⟩
+
+lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
+    {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
+    ∃ i j : ι, i < j ∧ ∃ x, x ∈ f i ∩ f j := by
+  rw [← pairwise_univ] at h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_lt_mem_inter_of_not_pairwiseDisjoint h
+  exact ⟨i, j, h⟩
 
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
   pairwise_univ.1 <| Set.pairwiseDisjoint_fiber f univ

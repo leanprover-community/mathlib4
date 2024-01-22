@@ -69,16 +69,16 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                          (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
     /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)
     but when doing that would then find the instance and say it was not definitionally equal to
-    to the provide one (the same thing factored out) -/
+    the provided one (the same thing factored out) -/
 #align category_theory.limits.has_finite_limits_of_has_finite_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasFiniteLimits_of_size
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`
@@ -101,7 +101,7 @@ instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) 
 instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
     HasFiniteColimits C where
   out := fun J hJ hJ' =>
-    haveI := hasColimitsOfSize_shrink.{0, 0} C
+    haveI := hasColimitsOfSizeShrink.{0, 0} C
     let F := @FinCategory.equivAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ'
     @hasColimitsOfShape_of_equivalence (@FinCategory.AsType J (@FinCategory.fintypeObj J hJ hJ'))
     (@FinCategory.categoryAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ') _ _ J hJ F _
@@ -114,9 +114,9 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     HasFiniteColimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasColimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
@@ -134,7 +134,8 @@ instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
 
-instance (j j' : WalkingParallelPair) : Fintype (WalkingParallelPairHom j j') where
+instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
+    Fintype (WalkingParallelPairHom j j') where
   elems :=
     WalkingParallelPair.recOn j
       (WalkingParallelPair.recOn j' [WalkingParallelPairHom.id zero].toFinset
@@ -174,7 +175,7 @@ instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j')
     · cases' j with j
       · exact {Hom.id none}
       · exact {Hom.term j}
-    · by_cases some j' = j
+    · by_cases h : some j' = j
       · rw [h]
         exact {Hom.id j}
       · exact ∅
@@ -198,7 +199,7 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
     · cases' j' with j'
       · exact {Hom.id none}
       · exact {Hom.init j'}
-    · by_cases some j = j'
+    · by_cases h : some j = j'
       · rw [h]
         exact {Hom.id j'}
       · exact ∅

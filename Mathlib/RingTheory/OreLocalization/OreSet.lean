@@ -5,6 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import ring_theory.ore_localization.ore_set from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -28,7 +29,7 @@ section Monoid
 /-- A submonoid `S` of a monoid `R` is (right) Ore if common factors on the left can be turned
 into common factors on the right, and if each pair of `r : R` and `s : S` admits an Ore numerator
 `v : R` and an Ore denominator `u : S` such that `r * u = s * v`. -/
-class OreSet {R : Type _} [Monoid R] (S : Submonoid R) where
+class OreSet {R : Type*} [Monoid R] (S : Submonoid R) where
   /-- Common factors on the left can be turned into common factors on the right, a weak form of
 cancellability. -/
   ore_left_cancel : ∀ (r₁ r₂ : R) (s : S), ↑s * r₁ = s * r₂ → ∃ s' : S, r₁ * s' = r₂ * s'
@@ -40,7 +41,7 @@ cancellability. -/
   ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s
 #align ore_localization.ore_set OreLocalization.OreSet
 
-variable {R : Type _} [Monoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 
 /-- Common factors on the left can be turned into common factors on the right, a weak form of
 cancellability. -/
@@ -101,7 +102,7 @@ end Monoid
 
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_left_cancel`
 condition of an ore set. -/
-def oreSetOfCancelMonoidWithZero {R : Type _} [CancelMonoidWithZero R] {S : Submonoid R}
+def oreSetOfCancelMonoidWithZero {R : Type*} [CancelMonoidWithZero R] {S : Submonoid R}
     (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s) : OreSet S :=
   { ore_left_cancel := fun _ _ s h => ⟨s, mul_eq_mul_right_iff.mpr (mul_eq_mul_left_iff.mp h)⟩
@@ -112,7 +113,7 @@ def oreSetOfCancelMonoidWithZero {R : Type _} [CancelMonoidWithZero R] {S : Subm
 
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/
-def oreSetOfNoZeroDivisors {R : Type _} [Ring R] [NoZeroDivisors R] {S : Submonoid R}
+def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoid R}
     (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), r * oreDenom r s = s * oreNum r s) : OreSet S :=
   letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero

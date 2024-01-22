@@ -7,7 +7,7 @@ import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.Algebra.GroupRingAction.Basic
 
-#align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
+#align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # Conjugation action of a group on itself
@@ -34,7 +34,7 @@ is that some theorems about the group actions will not apply when since this
 -/
 
 
-variable (α M G G₀ R K : Type _)
+variable (α M G G₀ R K : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
@@ -82,7 +82,7 @@ def toConjAct : G ≃* ConjAct G :=
 #align conj_act.to_conj_act ConjAct.toConjAct
 
 /-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
-protected def rec {C : ConjAct G → Sort _} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
+protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec
 
@@ -178,8 +178,8 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
 
 
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
-    SMulCommClass α (ConjAct Mˣ) M
-    where smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct Mˣ) M where
+  smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
 instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
@@ -235,8 +235,8 @@ instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
 instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass α (ConjAct G₀) G₀
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G₀) G₀ where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
 instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
@@ -267,6 +267,8 @@ end DivisionRing
 
 variable [Group G]
 
+-- todo: this file is not in good order; I will refactor this after the PR
+
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
 instance : MulDistribMulAction (ConjAct G) G where
@@ -279,13 +281,9 @@ instance : MulDistribMulAction (ConjAct G) G where
     simp only [smul_def]
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 
--- porting note: type class inference fails on `stabilizer_eq_centralizer` below without this
--- shortcut instance
-instance : MulAction (ConjAct G) G := MulDistribMulAction.toMulAction
-
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
-    SMulCommClass α (ConjAct G) G
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G) G where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class ConjAct.smulCommClass
 
 instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
@@ -313,7 +311,13 @@ theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
-theorem stabilizer_eq_centralizer (g : G) : stabilizer (ConjAct G) g = (zpowers g).centralizer :=
+theorem orbit_eq_carrier_conjClasses [Group G] (g : G) :
+    orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
+  ext h
+  rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
+
+theorem stabilizer_eq_centralizer (g : G) :
+    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
 #align conj_act.stabilizer_eq_centralizer ConjAct.stabilizer_eq_centralizer
@@ -373,3 +377,31 @@ instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K 
 #align conj_act.normal_of_characteristic_of_normal ConjAct.normal_of_characteristic_of_normal
 
 end ConjAct
+
+section Units
+
+variable [Monoid M]
+
+/-- The stabilizer of `Mˣ` acting on itself by conjugation at `x : Mˣ` is exactly the
+units of the centralizer of `x : M`. -/
+@[simps! apply_coe_val symm_apply_val_coe]
+def unitsCentralizerEquiv (x : Mˣ) :
+    (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
+  MulEquiv.symm
+  { toFun := MonoidHom.toHomUnits <|
+      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+          rintro x ⟨rfl⟩
+          have : (u : ConjAct Mˣ) • x = x := u.2
+          rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
+        map_one' := rfl,
+        map_mul' := fun a b ↦ rfl }
+    invFun := fun u ↦
+      ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
+      change _ • _ = _
+      simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
+      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+    left_inv := fun _ ↦ by ext; rfl
+    right_inv := fun _ ↦ by ext; rfl
+    map_mul' := map_mul _ }
+
+end Units

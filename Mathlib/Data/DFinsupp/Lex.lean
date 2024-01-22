@@ -16,7 +16,7 @@ This file defines the lexicographic order on `DFinsupp`.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -63,20 +63,22 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   exact lex_lt_of_lt_of_preorder r hlt
 #align dfinsupp.lex_lt_of_lt DFinsupp.lex_lt_of_lt
 
-instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
+variable [LinearOrder ι]
+
+instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
   { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
     trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ @trans _ _ i.toIsTrans _ _ _ }
 #align dfinsupp.lex.is_strict_order DFinsupp.Lex.isStrictOrder
 
-variable [LinearOrder ι]
-
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) :=
-  PartialOrder.lift (fun x ↦ toLex (⇑(ofLex x)))
-    (FunLike.coe_injective (F := DFinsupp fun i => α i))
+instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
+  lt := (· < ·)
+  le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
+  __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
+    (DFunLike.coe_injective (F := DFinsupp α))
 #align dfinsupp.lex.partial_order DFinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -85,7 +87,7 @@ variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
-private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort _}
+private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort*}
     (h_lt : ∀ {f g}, toLex f < toLex g → P (toLex f) (toLex g))
     (h_eq : ∀ {f g}, toLex f = toLex g → P (toLex f) (toLex g))
     (h_gt : ∀ {f g}, toLex g < toLex f → P (toLex f) (toLex g)) : ∀ f g, P f g :=
@@ -100,7 +102,7 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLE : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
-    (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
+    (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 #align dfinsupp.lex.decidable_le DFinsupp.Lex.decidableLE
 
@@ -111,16 +113,16 @@ irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
 instance : DecidableEq (Lex (Π₀ i, α i)) :=
-  lt_trichotomy_rec (fun h ↦ isFalse fun h' => h'.not_lt h) (fun h ↦ isTrue h)
-    fun h ↦ isFalse fun h' => h'.symm.not_lt h
+  lt_trichotomy_rec (fun h ↦ isFalse fun h' ↦ h'.not_lt h) isTrue
+    fun h ↦ isFalse fun h' ↦ h'.symm.not_lt h
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
-  { Lex.partialOrder with
-    le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-    decidableLT := decidableLT
-    decidableLE := decidableLE
-    decidableEq := inferInstance }
+instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
+  __ := Lex.partialOrder
+  le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
+  decidableLT := decidableLT
+  decidableLE := decidableLE
+  decidableEq := inferInstance
 #align dfinsupp.lex.linear_order DFinsupp.Lex.linearOrder
 
 end LinearOrder
@@ -164,7 +166,7 @@ instance Lex.covariantClass_lt_left :
 
 instance Lex.covariantClass_le_left :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· ≤ ·) :=
-  Add.to_covariantClass_left _
+  covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_left DFinsupp.Lex.covariantClass_le_left
 
 end Left
@@ -181,11 +183,42 @@ instance Lex.covariantClass_lt_right :
 
 instance Lex.covariantClass_le_right :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· ≤ ·) :=
-  Add.to_covariantClass_right _
+  covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_right DFinsupp.Lex.covariantClass_le_right
 
 end Right
 
 end Covariants
+
+section OrderedAddMonoid
+
+variable [LinearOrder ι]
+
+instance Lex.orderBot [∀ i, CanonicallyOrderedAddCommMonoid (α i)] :
+    OrderBot (Lex (Π₀ i, α i)) where
+  bot := 0
+  bot_le _ := DFinsupp.toLex_monotone bot_le
+
+instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
+    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
+
+instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
+    OrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  add_le_add_left _ _ := add_le_add_left
+
+instance Lex.linearOrderedCancelAddCommMonoid
+    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
+    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
+  __ : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) := inferInstance
+
+instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
+    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
+  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
+  add_le_add_left _ _ := add_le_add_left
+
+end OrderedAddMonoid
 
 end DFinsupp

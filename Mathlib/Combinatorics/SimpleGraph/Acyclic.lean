@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Tactic.Linarith
 
 #align_import combinatorics.simple_graph.acyclic from "leanprover-community/mathlib"@"b07688016d62f81d14508ff339ea3415558d6353"
 
@@ -43,6 +44,8 @@ universe u v
 
 namespace SimpleGraph
 
+open Walk
+
 variable {V : Type u} (G : SimpleGraph V)
 
 /-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
@@ -60,8 +63,10 @@ structure IsTree : Prop where
 
 variable {G}
 
+@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
+
 theorem isAcyclic_iff_forall_adj_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge ⟦(v, w)⟧ := by
+    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
   constructor
   · intro ha v w hvw
@@ -94,7 +99,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     specialize h ph
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
-    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse'] at h
+    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     cases' h with h h
     · cases q with
       | nil => simp [Walk.isPath_def] at hp
@@ -129,7 +134,7 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
-  rw [IsTree_iff, isAcyclic_iff_path_unique]
+  rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
     refine ⟨hc.nonempty, ?_⟩
@@ -148,5 +153,58 @@ theorem isTree_iff_existsUnique_path :
     · rintro v w ⟨p, hp⟩ ⟨q, hq⟩
       simp only [ExistsUnique.unique (h v w) hp hq]
 #align simple_graph.is_tree_iff_exists_unique_path SimpleGraph.isTree_iff_existsUnique_path
+
+lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
+  (isTree_iff_existsUnique_path.1 hG).2
+
+lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
+    Finset.card G.edgeFinset + 1 = Fintype.card V := by
+  have := hG.isConnected.nonempty
+  inhabit V
+  classical
+  have : Finset.card ({default} : Finset V)ᶜ + 1 = Fintype.card V := by
+    rw [Finset.card_compl, Finset.card_singleton, Nat.sub_add_cancel Fintype.card_pos]
+  rw [← this, add_left_inj]
+  choose f hf hf' using (hG.existsUnique_path · default)
+  refine Eq.symm <| Finset.card_congr
+          (fun w hw => ((f w).firstDart <| ?notNil).edge)
+          (fun a ha => ?memEdges) ?inj ?surj
+  case notNil => exact not_nil_of_ne (by simpa using hw)
+  case memEdges => simp
+  case inj =>
+    intros a b ha hb h
+    wlog h' : (f a).length ≤ (f b).length generalizing a b
+    · exact Eq.symm (this _ _ hb ha h.symm (le_of_not_le h'))
+    rw [dart_edge_eq_iff] at h
+    obtain (h | h) := h
+    · exact (congrArg (·.fst) h)
+    · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
+        congrArg (·.snd) h
+      have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
+      rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
+      · exfalso
+        linarith
+      · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
+        exact (hf _).tail _
+  case surj =>
+    simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
+    intros x y h
+    wlog h' : (f x).length ≤ (f y).length generalizing x y
+    · rw [Sym2.eq_swap]
+      exact this y x h.symm (le_of_not_le h')
+    refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
+    · rintro rfl
+      rw [← hf' _ nil IsPath.nil, length_nil,
+          ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
+          length_cons, length_nil] at h'
+      simp [le_zero_iff, Nat.one_ne_zero] at h'
+    rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
+    rfl
+    case contra =>
+      suffices : (f x).takeUntil y hy = .cons h .nil
+      · rw [← take_spec _ hy] at h'
+        simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
+      refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
+      simp [h.ne]
 
 end SimpleGraph

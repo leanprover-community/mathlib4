@@ -1,0 +1,44 @@
+- attributes:
+    description: build
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
+    rusage_properties: ['maxrss']
+    cmd: |
+      bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
+    parse_output: true
+    runs: 1
+- attributes:
+    description: lint
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'instructions:u']
+    cmd: |
+      make lint
+    runs: 1
+- attributes:
+    description: open Mathlib
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'task-clock', 'instructions:u']
+    rusage_properties: ['maxrss']
+    cmd: |
+      # run lake+lean like the file worker would
+      LEAN_PATH=$(lake setup-file --no-build Mathlib Mathlib | jq -r '.paths.oleanPath | join(":")') lean Mathlib.lean
+    runs: 5
+- attributes:
+    description: size
+  run_config:
+    cmd: |
+      bash -c "
+      set -euxo pipefail &&
+      echo -n '.lean|lines: ' &&
+      find Mathlib -name '*.lean' -print0 | wc -l --files0-from=- | tail -1 | cut -d' ' -f 1
+      echo -n '.olean|bytes: ' &&
+      find .lake/build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
+      "
+    runs: 1
+    runner: output

@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.Monotone
@@ -55,7 +55,7 @@ open scoped BigOperators NNReal ENNReal Topology UniformConvergence
 open Set MeasureTheory Filter
 
 -- porting note: sectioned variables because a `wlog` was broken due to extra variables in context
-variable {α : Type _} [LinearOrder α] {E : Type _} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
 the supremum of the sum of `edist (f (u (i+1))) (f (u i))` over all finite increasing
@@ -107,7 +107,7 @@ theorem sum_le (f : α → E) {s : Set α} (n : ℕ) {u : ℕ → α} (hu : Mono
 theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Icc m n)) (us : ∀ i ∈ Icc m n, u i ∈ s) :
     (∑ i in Finset.Ico m n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
-  cases' le_total n m with hnm hmn
+  rcases le_total n m with hnm | hmn
   · simp [Finset.Ico_eq_empty_of_le hnm]
   let π := projIcc m n hmn
   let v i := u (π i)
@@ -187,7 +187,7 @@ protected theorem subsingleton (f : α → E) {s : Set α} (hs : s.Subsingleton)
   constant_on (hs.image f)
 #align evariation_on.subsingleton eVariationOn.subsingleton
 
-theorem lowerSemicontinuous_aux {ι : Type _} {F : ι → α → E} {p : Filter ι} {f : α → E} {s : Set α}
+theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter ι} {f : α → E} {s : Set α}
     (Ffs : ∀ x ∈ s, Tendsto (fun i => F i x) p (𝓝 (f x))) {v : ℝ≥0∞} (hv : v < eVariationOn f s) :
     ∀ᶠ n : ι in p, v < eVariationOn (F n) s := by
   obtain ⟨⟨n, ⟨u, um, us⟩⟩, hlt⟩ :
@@ -222,7 +222,7 @@ theorem lowerSemicontinuous_uniformOn (s : Set α) :
   exact fun x xs => (this s rfl).mono (singleton_subset_iff.mpr xs)
 #align evariation_on.lower_semicontinuous_uniform_on eVariationOn.lowerSemicontinuous_uniformOn
 
-theorem _root_.BoundedVariationOn.dist_le {E : Type _} [PseudoMetricSpace E] {f : α → E}
+theorem _root_.BoundedVariationOn.dist_le {E : Type*} [PseudoMetricSpace E] {f : α → E}
     {s : Set α} (h : BoundedVariationOn f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     dist (f x) (f y) ≤ (eVariationOn f s).toReal := by
   rw [← ENNReal.ofReal_le_ofReal_iff ENNReal.toReal_nonneg, ENNReal.ofReal_toReal h, ← edist_dist]
@@ -516,7 +516,7 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
 
 section Monotone
 
-variable {β : Type _} [LinearOrder β]
+variable {β : Type*} [LinearOrder β]
 
 theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
     (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s :=
@@ -530,7 +530,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
-    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy),
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
   dsimp only [Subtype.coe_mk]
@@ -554,17 +554,6 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   rw [← eq_of_eqOn (ψφs.comp_left : EqOn (f ∘ φ ∘ ψ) (f ∘ id) (φ '' t))]
   exact comp_le_of_monotoneOn _ ψ hψ ψts
 #align evariation_on.comp_eq_of_monotone_on eVariationOn.comp_eq_of_monotoneOn
-
--- porting note: move to file `data.set.intervals.basic` once the port is over,
--- and use it in theorem `polynomialFunctions_closure_eq_top`
--- in the file `topology/continuous_function/weierstrass.lean`
-theorem _root_.Set.subsingleton_Icc_of_ge {α : Type _} [PartialOrder α] {a b : α} (h : b ≤ a) :
-    Set.Subsingleton (Icc a b) := by
-  rintro c ⟨ac, cb⟩ d ⟨ad, db⟩
-  cases le_antisymm (cb.trans h) ac
-  cases le_antisymm (db.trans h) ad
-  rfl
-#align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
 
 theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
@@ -782,7 +771,7 @@ protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : Locall
 
 #align variation_on_from_to.sub_self_monotone_on variationOnFromTo.sub_self_monotoneOn
 
-protected theorem comp_eq_of_monotoneOn {β : Type _} [LinearOrder β] (f : α → E) {t : Set β}
+protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α → E) {t : Set β}
     (φ : β → α) (hφ : MonotoneOn φ t) {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     variationOnFromTo (f ∘ φ) t x y = variationOnFromTo f (φ '' t) (φ x) (φ y) := by
   rcases le_total x y with (h | h)
@@ -810,7 +799,7 @@ theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → �
 
 section LipschitzOnWith
 
-variable {F : Type _} [PseudoEMetricSpace F]
+variable {F : Type*} [PseudoEMetricSpace F]
 
 theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Set E}
     (h : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t) :
@@ -864,7 +853,7 @@ end LipschitzOnWith
 
 /-! ## Almost everywhere differentiability of functions with locally bounded variation -/
 
-variable {V : Type _} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
 
 namespace LocallyBoundedVariationOn
 
@@ -872,9 +861,8 @@ namespace LocallyBoundedVariationOn
 `ae_differentiableWithinAt_of_mem`. -/
 theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  obtain ⟨p, q, hp, hq, fpq⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
+  obtain ⟨p, q, hp, hq, rfl⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
     h.exists_monotoneOn_sub_monotoneOn
-  subst f -- porting note: TODO: `rfl` instead of `fpq` doesn't work
   filter_upwards [hp.ae_differentiableWithinAt_of_mem, hq.ae_differentiableWithinAt_of_mem] with
     x hxp hxq xs
   exact (hxp xs).sub (hxq xs)
@@ -882,7 +870,7 @@ theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
 
 /-- A bounded variation function into a finite dimensional product vector space is differentiable
 almost everywhere. Superseded by `ae_differentiableWithinAt_of_mem`. -/
-theorem ae_differentiableWithinAt_of_mem_pi {ι : Type _} [Fintype ι] {f : ℝ → ι → ℝ} {s : Set ℝ}
+theorem ae_differentiableWithinAt_of_mem_pi {ι : Type*} [Fintype ι] {f : ℝ → ι → ℝ} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   have A : ∀ i : ι, LipschitzWith 1 fun x : ι → ℝ => x i := fun i => LipschitzWith.eval i
   have : ∀ i : ι, ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (fun x : ℝ => f x i) s x := fun i ↦ by
@@ -900,7 +888,7 @@ theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
   suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x
   · filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by
-      simp only [ContinuousLinearEquiv.symm_comp_self, Function.comp.left_id]
+      simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
@@ -927,23 +915,27 @@ theorem ae_differentiableAt {f : ℝ → V} (h : LocallyBoundedVariationOn f uni
 end LocallyBoundedVariationOn
 
 /-- A real function into a finite dimensional real vector space which is Lipschitz on a set
-is differentiable almost everywhere in this set . -/
-theorem LipschitzOnWith.ae_differentiableWithinAt_of_mem {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
+is differentiable almost everywhere in this set. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzOnWith.ae_differentiableWithinAt_of_mem`.
+-/
+theorem LipschitzOnWith.ae_differentiableWithinAt_of_mem_real {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
     (h : LipschitzOnWith C f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x :=
   h.locallyBoundedVariationOn.ae_differentiableWithinAt_of_mem
-#align lipschitz_on_with.ae_differentiable_within_at_of_mem LipschitzOnWith.ae_differentiableWithinAt_of_mem
+#align lipschitz_on_with.ae_differentiable_within_at_of_mem LipschitzOnWith.ae_differentiableWithinAt_of_mem_real
 
 /-- A real function into a finite dimensional real vector space which is Lipschitz on a set
-is differentiable almost everywhere in this set. -/
-theorem LipschitzOnWith.ae_differentiableWithinAt {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
+is differentiable almost everywhere in this set. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzOnWith.ae_differentiableWithinAt`. -/
+theorem LipschitzOnWith.ae_differentiableWithinAt_real {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
     (h : LipschitzOnWith C f s) (hs : MeasurableSet s) :
     ∀ᵐ x ∂volume.restrict s, DifferentiableWithinAt ℝ f s x :=
   h.locallyBoundedVariationOn.ae_differentiableWithinAt hs
-#align lipschitz_on_with.ae_differentiable_within_at LipschitzOnWith.ae_differentiableWithinAt
+#align lipschitz_on_with.ae_differentiable_within_at LipschitzOnWith.ae_differentiableWithinAt_real
 
 /-- A real Lipschitz function into a finite dimensional real vector space is differentiable
-almost everywhere. -/
-theorem LipschitzWith.ae_differentiableAt {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
+almost everywhere. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`.-/
+theorem LipschitzWith.ae_differentiableAt_real {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
     ∀ᵐ x, DifferentiableAt ℝ f x :=
   (h.locallyBoundedVariationOn univ).ae_differentiableAt
-#align lipschitz_with.ae_differentiable_at LipschitzWith.ae_differentiableAt
+#align lipschitz_with.ae_differentiable_at LipschitzWith.ae_differentiableAt_real

@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Data.Real.Cardinality
 
 #align_import analysis.complex.cauchy_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -96,7 +96,7 @@ $\frac{\partial f}{\partial \bar z}$ over the interior of this box. In particula
 differentiable function, the latter derivative is zero, hence the integral over the boundary of a
 rectangle is zero. Thus we get the Cauchy-Goursat theorem for a rectangle in `ℂ`.
 
-Next, we apply the this theorem to the function $F(z)=f(c+e^{z})$ on the rectangle
+Next, we apply this theorem to the function $F(z)=f(c+e^{z})$ on the rectangle
 $[\ln r, \ln R]\times [0, 2\pi]$ to prove that
 $$
   \oint_{|z-c|=r}\frac{f(z)\,dz}{z-c}=\oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}
@@ -144,7 +144,6 @@ function is analytic on the open ball.
 
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
-
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -291,10 +290,10 @@ theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w 
       inter_subset_inter (preimage_mono Ioo_subset_Icc_self) (preimage_mono Ioo_subset_Icc_self)
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on Complex.integral_boundary_rect_eq_zero_of_differentiableOn
 
-/-- If `f : ℂ → E` is continuous the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`, and is complex
-differentiable at all but countably many points of its interior, then the integrals of
-`f z / (z - c)` (formally, `(z - c)⁻¹ • f z`) over the circles `‖z - c‖ = r` and `‖z - c‖ = R` are
-equal to each other. -/
+/-- If `f : ℂ → E` is continuous on the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`,
+and is complex differentiable at all but countably many points of its interior,
+then the integrals of `f z / (z - c)` (formally, `(z - c)⁻¹ • f z`)
+over the circles `‖z - c‖ = r` and `‖z - c‖ = R` are equal to each other. -/
 theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable {c : ℂ}
     {r R : ℝ} (h0 : 0 < r) (hle : r ≤ R) {f : ℂ → E} {s : Set ℂ} (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R \ ball c r))
@@ -314,7 +313,7 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
       div_eq_mul_inv, mul_div_cancel_left _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]
   set R := [[a, b]] ×ℂ [[0, 2 * π]]
-  set g : ℂ → ℂ := (· + ·) c ∘ exp
+  set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
   have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [dist_eq, abs_exp, hle] using h.symm
@@ -605,7 +604,7 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOn hs).contDiffOn
 
@@ -618,7 +617,7 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
 protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
     ContDiff ℂ n f :=
-  contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
+  contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with `0 < R`. -/

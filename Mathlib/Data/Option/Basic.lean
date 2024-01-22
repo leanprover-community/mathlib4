@@ -7,7 +7,8 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
+import Aesop
 
 #align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
@@ -32,9 +33,11 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
+universe u
+
 namespace Option
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
@@ -42,6 +45,14 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
 
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
+
+-- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
+theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
+    f a ∈ o.map f ↔ a ∈ o := by
+  aesop
 
 theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
@@ -63,7 +74,7 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
-theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
+theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 #align option.some_injective Option.some_injective
 
 /-- `Option.map f` is injective if `f` is injective. -/
@@ -92,18 +103,15 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
   by cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
-theorem bind_eq_none' {o : Option α} {f : α → Option β} :
-    o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
-  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
-#align option.bind_eq_bind Option.bind_eq_bind
+#align option.bind_eq_bind Option.bind_eq_bind'
 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
@@ -132,7 +140,7 @@ theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
 #align option.map_eq_id Option.map_eq_id
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
-  (a : α) :
+    (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 #align option.map_comm Option.map_comm
 
@@ -394,7 +402,7 @@ section
 
 open Classical
 
-theorem choice_eq_none (α : Type _) [IsEmpty α] : choice α = none :=
+theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
 #align option.choice_eq_none Option.choice_eq_none
 
@@ -407,5 +415,15 @@ end
 theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
   funext fun o ↦ by cases o <;> rfl
 #align option.elim_none_some Option.elim_none_some
+
+theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
+    (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
+
+theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ → β} {y : β}
+    {i : Option γ} : (i.elim (h x y) fun j => h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
+  cases i <;> rfl
+
+theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
+    i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 end Option

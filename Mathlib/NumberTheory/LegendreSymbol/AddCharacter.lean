@@ -95,16 +95,12 @@ def toMonoidHom : AddChar R R' → Multiplicative R →* R' :=
 
 open Multiplicative
 
--- Porting note: added.
-@[coe]
-def toFun (ψ : AddChar R R') (x : R) : R' := ψ.toMonoidHom (ofAdd x)
-
 /-- Define coercion to a function so that it includes the move from `R` to `Multiplicative R`.
 After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
 when we want to apply an additive character. -/
-instance hasCoeToFun : CoeFun (AddChar R R') fun _ => R → R' where
-  coe := toFun
-#align add_char.has_coe_to_fun AddChar.hasCoeToFun
+instance instFunLike : FunLike (AddChar R R') R R' :=
+  inferInstanceAs (FunLike (Multiplicative R →* R') R R')
+#noalign add_char.has_coe_to_fun
 
 theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (ofAdd a) :=
   rfl
@@ -118,9 +114,8 @@ theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
 @[simp]
 theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
 
-instance monoidHomClass : MonoidHomClass (AddChar R R') (Multiplicative R) R' :=
-  MonoidHom.monoidHomClass
-#align add_char.monoid_hom_class AddChar.monoidHomClass
+-- this instance was a bad idea and conflicted with `instFunLike` above
+#noalign add_char.monoid_hom_class
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
 @[ext]
@@ -195,7 +190,7 @@ def IsNontrivial (ψ : AddChar R R') : Prop :=
 /-- An additive character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff_ne_trivial (ψ : AddChar R R') : IsNontrivial ψ ↔ ψ ≠ 1 := by
   refine' not_forall.symm.trans (Iff.not _)
-  rw [FunLike.ext_iff]
+  rw [DFunLike.ext_iff]
   rfl
 #align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
 
@@ -392,7 +387,7 @@ noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n 
 of the target is different from that of `F`.
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type _) [Field F] [Fintype F] [Field F']
+noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
@@ -449,11 +444,11 @@ theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, MulZeroClass.mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
+    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]
-    exact_mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
+    exact mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
 #align add_char.sum_mul_shift AddChar.sum_mulShift
 
 end Additive

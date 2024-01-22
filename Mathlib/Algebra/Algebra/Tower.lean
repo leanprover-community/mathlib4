@@ -30,28 +30,50 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 variable {A}
 
+
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
-on the `R`-module `M`.
+on the `B`-module `M`.
 
 This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
-called `Algebra.toModuleEnd`. -/
-def lsmul : A →ₐ[R] Module.End R M where
-  toFun := DistribMulAction.toLinearMap R M
+called `Algebra.toModuleEnd`.
+
+The typeclasses correspond to the situation where the types act on each other as
+```
+R ----→ B
+| ⟍     |
+|   ⟍   |
+↓     ↘ ↓
+A ----→ M
+```
+where the diagram commutes, the action by `R` commutes with everything, and the action by `A` and
+`B` on `M` commute.
+
+Typically this is most useful with `B = R` as `Algebra.lsmul R R A : A →ₐ[R] Module.End R M`.
+However this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and
+vice versa, as
+```lean
+example : A →ₐ[R] Module.End Aᵐᵒᵖ A := Algebra.lsmul R Aᵐᵒᵖ A
+example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
+```
+respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
+-/
+def lsmul : A →ₐ[R] Module.End B M where
+  toFun := DistribMulAction.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
   map_add' _a _b := LinearMap.ext fun _ => add_smul _ _ _
   commutes' r := LinearMap.ext <| algebraMap_smul A r
-#align algebra.lsmul Algebra.lsmul
+#align algebra.lsmul Algebra.lsmulₓ
 
 @[simp]
-theorem lsmul_coe (a : A) : (lsmul R M a : M → M) = (· • ·) a := rfl
+theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
 #align algebra.lsmul_coe Algebra.lsmul_coe
 
 end Algebra
@@ -135,8 +157,8 @@ variable {R S A B}
 
 @[simp]
 theorem _root_.AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) :
-    f (algebraMap R A r) = algebraMap R B r :=
-  by rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
+    f (algebraMap R A r) = algebraMap R B r := by
+  rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
 #align alg_hom.map_algebra_map AlgHom.map_algebraMap
 
 variable (R)
@@ -153,12 +175,12 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance (priority := 999) of_ring_hom {R A B : Type _} [CommSemiring R] [CommSemiring A]
+instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
-#align is_scalar_tower.of_ring_hom IsScalarTower.of_ring_hom
+#align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
 
 end Semiring
 
@@ -277,44 +299,36 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.mem_smul.2 ⟨c, x, hc, hx, rfl⟩)
+  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
     (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
     fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
 #align submodule.smul_mem_span_smul_of_mem Submodule.smul_mem_span_smul_of_mem
 
-variable [SMulCommClass R S A]
-
-theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
-    (hx : x ∈ span R t) : k • x ∈ span R (s • t) :=
-  span_induction hx (fun x hx => smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hx)
-    (by rw [smul_zero]; exact zero_mem _)
-    (fun x y ihx ihy => by rw [smul_add]; exact add_mem ihx ihy)
-    fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
-#align submodule.smul_mem_span_smul Submodule.smul_mem_span_smul
-
-theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
-    (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) :=
-  span_induction hx
-    (fun x hx => by
-      let ⟨p, q, _hp, hq, hpq⟩ := Set.mem_smul.1 hx
-      rw [← hpq, smul_smul]
-      exact smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hq)
-    (by rw [smul_zero]; exact zero_mem _)
-    (fun x y ihx ihy => by rw [smul_add]; exact add_mem ihx ihy)
-    fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
-#align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
-
 theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
   le_antisymm
-    (span_le.2 fun _x hx =>
-      let ⟨p, _q, _hps, hqt, hpqx⟩ := Set.mem_smul.1 hx
-      hpqx ▸ (span S t).smul_mem p (subset_span hqt))
-    fun _p hp =>
-    span_induction hp (fun x hx => one_smul S x ▸ smul_mem_span_smul hs (subset_span hx))
-      (zero_mem _) (fun _ _ => add_mem) fun _k _x hx => smul_mem_span_smul' hs hx
+    (span_le.2 fun _x ⟨p, _hps, _q, hqt, hpqx⟩ ↦ hpqx ▸ (span S t).smul_mem p (subset_span hqt))
+    fun p hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
+      refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
+        (fun x hx ↦ subset_span ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
+      · rw [zero_smul]; apply zero_mem
+      · intro _ _; rw [add_smul]; apply add_mem
+      · intro r s0 hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
 #align submodule.span_smul_of_span_eq_top Submodule.span_smul_of_span_eq_top
+
+-- The following two lemmas were originally used to prove `span_smul_of_span_eq_top`
+-- but are now not needed.
+theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
+    (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) := by
+  rw [span_smul_of_span_eq_top hs] at hx ⊢; exact (span S t).smul_mem k hx
+#align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
+
+theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
+    (hx : x ∈ span R t) : k • x ∈ span R (s • t) := by
+  rw [span_smul_of_span_eq_top hs]
+  exact (span S t).smul_mem k (span_le_restrictScalars R S t hx)
+#align submodule.smul_mem_span_smul Submodule.smul_mem_span_smul
 
 end Module
 
@@ -330,14 +344,14 @@ theorem span_algebraMap_image (a : Set R) :
   (Submodule.span_image <| Algebra.linearMap R S).trans rfl
 #align submodule.span_algebra_map_image Submodule.span_algebraMap_image
 
-theorem span_algebraMap_image_of_tower {S T : Type _} [CommSemiring S] [Semiring T] [Module R S]
-    [IsScalarTower R S S] [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
+theorem span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
     Submodule.span R (algebraMap S T '' a) =
       (Submodule.span R a).map ((Algebra.linearMap S T).restrictScalars R) :=
   (Submodule.span_image <| (Algebra.linearMap S T).restrictScalars R).trans rfl
 #align submodule.span_algebra_map_image_of_tower Submodule.span_algebraMap_image_of_tower
 
-theorem map_mem_span_algebraMap_image {S T : Type _} [CommSemiring S] [Semiring T] [Algebra R S]
+theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
     (hx : x ∈ Submodule.span R a) : algebraMap S T x ∈ Submodule.span R (algebraMap S T '' a) := by
   rw [span_algebraMap_image_of_tower, mem_map]
@@ -354,13 +368,13 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-
-variable [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
-    Function.Injective (lsmul R M x) :=
-  smul_right_injective _ hx
+    Function.Injective (lsmul R B M x) :=
+  smul_right_injective M hx
 #align algebra.lsmul_injective Algebra.lsmul_injective
 
 end Algebra

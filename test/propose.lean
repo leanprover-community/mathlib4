@@ -6,15 +6,28 @@ import Mathlib.Algebra.Associated
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true
 -- set_option trace.Meta.Tactic.solveByElim true
+set_option autoImplicit true
 
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
+/--
+info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+---
+info: Try this: have : List.Disjoint M L := List.disjoint_symm w
+-/
+#guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   have? using w
   -- have : List.Disjoint K M := List.disjoint_of_subset_left m w
   -- have : List.Disjoint M L := List.disjoint_symm w
   trivial
 
+/--
+info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+---
+info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+-/
+#guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   have? using w, m
   -- have : List.Disjoint K M := List.disjoint_of_subset_left m w
@@ -28,20 +41,46 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
+/--
+info: Try this: let a : ℕ × String := bar p.1 p.2
+---
+info: Try this: let _ : ℕ × String := bar p.1 p.2
+-/
+#guard_msgs in
 example (p : Nat × String) : True := by
   fail_if_success have? using p
-  have? : Nat × String using p.1, p.2
+  have? a : Nat × String using p.1, p.2
   have? : Nat × _ using p.1, p.2
   trivial
 
+/--
+info: Try this: have : List.Disjoint M L := List.disjoint_symm w
+---
+info: Try this: have : a ∉ M := foo L M w m
+-/
+#guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
   have?! using w
   guard_hyp List.disjoint_symm : List.Disjoint M L := _root_.List.disjoint_symm w
   have : a ∉ M := by assumption
   trivial
 
+/--
+info: Try this: have : IsUnit p := isUnit_of_dvd_one h
+---
+info: Try this: have : ¬IsUnit p := not_unit hp
+---
+info: Try this: have : ¬p ∣ 1 := not_dvd_one hp
+---
+info: Try this: have : p ≠ 0 := ne_zero hp
+---
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+---
+info: Try this: have : p ≠ 1 := ne_one hp
+-/
+#guard_msgs in
 -- From Mathlib.Algebra.Associated:
-variable {α : Type} [CommMonoidWithZero α]
+variable {α : Type} [CommMonoidWithZero α] in
 open Prime in
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction' n with n ih

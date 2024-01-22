@@ -5,7 +5,7 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Std.Data.Rat
+import Std.Data.Rat.Basic
 import Mathlib.Data.Rat.Init
 
 #align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
@@ -52,7 +52,7 @@ open Function Set
 
 universe u
 
-variable {α β K : Type _}
+variable {α β K : Type*}
 
 /-- The default definition of the coercion `(↑(a : ℚ) : K)` for a division ring `K`
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
@@ -71,7 +71,7 @@ def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
 #align qsmul_rec qsmulRec
 
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements. -/
-class DivisionSemiring (α : Type _) extends Semiring α, GroupWithZero α
+class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α
 #align division_semiring DivisionSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
@@ -106,11 +106,11 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
-  { ‹DivisionRing α›, (inferInstance : Semiring α) with }
+  { ‹DivisionRing α› with }
 #align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
-class Semifield (α : Type _) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
+class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
@@ -149,7 +149,7 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x :=
 #align rat.smul_def Rat.smul_def
 
 @[simp]
-theorem smul_one_eq_coe (A : Type _) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
+theorem smul_one_eq_coe (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
 #align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
@@ -170,82 +170,17 @@ variable [Field K]
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield : Semifield K :=
-  { ‹Field K›, (inferInstance : Semiring K) with }
+  { ‹Field K› with }
 #align field.to_semifield Field.toSemifield
 
 end Field
 
-section IsField
-
-/-- A predicate to express that a (semi)ring is a (semi)field.
-
-This is mainly useful because such a predicate does not contain data,
-and can therefore be easily transported along ring isomorphisms.
-Additionally, this is useful when trying to prove that
-a particular ring structure extends to a (semi)field. -/
-structure IsField (R : Type u) [Semiring R] : Prop where
-  /-- For a semiring to be a field, it must have two distinct elements. -/
-  exists_pair_ne : ∃ x y : R, x ≠ y
-  /-- Fields are commutative. -/
-  mul_comm : ∀ x y : R, x * y = y * x
-  /-- Nonzero elements have multiplicative inverses. -/
-  mul_inv_cancel : ∀ {a : R}, a ≠ 0 → ∃ b, a * b = 1
-#align is_field IsField
-
-/-- Transferring from `Semifield` to `IsField`. -/
-theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
-  { ‹Semifield R› with
-    mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
-#align semifield.to_is_field Semifield.toIsField
-
-/-- Transferring from `Field` to `IsField`. -/
-theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
-  Semifield.toIsField _
-#align field.to_is_field Field.toIsField
-
-@[simp]
-theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
-  ⟨h.exists_pair_ne⟩
-#align is_field.nontrivial IsField.nontrivial
-
-@[simp]
-theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
-  fun h =>
-  let ⟨_, _, h⟩ := h.exists_pair_ne
-  h (Subsingleton.elim _ _)
-#align not_is_field_of_subsingleton not_isField_of_subsingleton
-
-open Classical
-
-/-- Transferring from `IsField` to `Semifield`. -/
-noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R :=
-  { ‹Semiring R›, h with
-    inv := fun a => if ha : a = 0 then 0 else Classical.choose (IsField.mul_inv_cancel h ha),
-    inv_zero := dif_pos rfl,
-    mul_inv_cancel := fun a ha => by
-      convert Classical.choose_spec (IsField.mul_inv_cancel h ha)
-      exact dif_neg ha }
-#align is_field.to_semifield IsField.toSemifield
-
-/-- Transferring from `IsField` to `Field`. -/
-noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with }
-#align is_field.to_field IsField.toField
-
-/-- For each field, and for each nonzero element of said field, there is a unique inverse.
-Since `IsField` doesn't remember the data of an `inv` function and as such,
-a lemma that there is a unique inverse could be useful.
+/-
+`NeZero` should not be needed in the basic algebraic hierarchy.
 -/
-theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
-    ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
-  intro x hx
-  apply exists_unique_of_exists_of_unique
-  · exact hf.mul_inv_cancel hx
-  · intro y z hxy hxz
-    calc
-      y = y * (x * z) := by rw [hxz, mul_one]
-      _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]
-      _ = z := by rw [hxy, one_mul]
-#align uniq_inv_of_is_field uniq_inv_of_isField
+assert_not_exists NeZero
 
-end IsField
+/-
+Check that we have not imported `Mathlib.Tactic.Common` yet.
+-/
+assert_not_exists Mathlib.Tactic.LibrarySearch.librarySearch

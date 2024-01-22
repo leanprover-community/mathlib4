@@ -3,12 +3,14 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Vector
 import Mathlib.Data.Nat.Basic
 
+set_option autoImplicit true
+
 example [AddZeroClass G] {a : G} (h : a = a): a = (a + 0) := by
-  nth_rewrite 2 [←add_zero a] at h
+  nth_rewrite 2 [← add_zero a] at h
   exact h
 
 example [AddZeroClass G] {a : G} : a + a = a + (a + 0) := by
-  nth_rw 2 [←add_zero a]
+  nth_rw 2 [← add_zero a]
 
 structure F :=
   (a : ℕ)
@@ -55,8 +57,8 @@ axiom bar' : [[5],[5]] = [[6],[6]]
 example : [[7],[6]] = [[5],[5]] := by
   nth_rewrite 1 [foo']
   nth_rewrite 1 [bar']
-  nth_rewrite 1 [←foo']
-  nth_rewrite 1 [←foo']
+  nth_rewrite 1 [← foo']
+  nth_rewrite 1 [← foo']
   rfl
 
 -- Porting note:
@@ -78,7 +80,7 @@ example : [[7],[6]] = [[5],[5]] := by
 
 -- example : [(3, 3), (5, 9), (5, 9)] = [(4, 5), (3, 6), (1, 1)] := by
 --   nth_rewrite 1 [wowzer]
---   nth_rewrite 3 [←pchew]
+--   nth_rewrite 3 [← pchew]
 --   nth_rewrite 1 [pchew]
 
 --   nth_rewrite 1 [smash]

@@ -25,7 +25,7 @@ All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
 
 
-variable {α N : Type _}
+variable {α N : Type*}
 
 namespace Finsupp
 
@@ -53,7 +53,7 @@ theorem Lex.wellFounded' [IsTrichotomous α r] (hr : WellFounded (Function.swap 
 #align finsupp.lex.well_founded' Finsupp.Lex.wellFounded'
 
 instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
-    [CanonicallyOrderedAddMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
+    [CanonicallyOrderedAddCommMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Lex.wellFounded' (fun n => (zero_le n).not_lt) hN.wf hα.wf⟩
 #align finsupp.lex.well_founded_lt Finsupp.Lex.wellFoundedLT
 
@@ -74,7 +74,7 @@ protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : 
   ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
-instance wellFoundedLT' {N} [CanonicallyOrderedAddMonoid N] [WellFoundedLT N] :
+instance wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
 #align finsupp.well_founded_lt' Finsupp.wellFoundedLT'

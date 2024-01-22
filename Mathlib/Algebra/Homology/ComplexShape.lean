@@ -41,9 +41,9 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
-open Classical
-
 noncomputable section
+
+open Classical
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -58,7 +58,7 @@ This means that the shape consists of some union of lines, rays, intervals, and 
 Below we define `c.next` and `c.prev` which provide these related elements.
 -/
 @[ext]
-structure ComplexShape (ι : Type _) where
+structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
     on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
@@ -72,14 +72,14 @@ structure ComplexShape (ι : Type _) where
 
 namespace ComplexShape
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The complex shape where only differentials from each `X.i` to itself are allowed.
 
 This is mostly only useful so we can describe the relation of "related in `k` steps" below.
 -/
 @[simps]
-def refl (ι : Type _) : ComplexShape ι where
+def refl (ι : Type*) : ComplexShape ι where
   Rel i j := i = j
   next_eq w w' := w.symm.trans w'
   prev_eq w w' := w.trans w'.symm
@@ -101,6 +101,10 @@ theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
   ext
   simp
 #align complex_shape.symm_symm ComplexShape.symm_symm
+
+theorem symm_bijective :
+    Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- The "composition" of two `ComplexShape`s.
 
@@ -164,7 +168,7 @@ theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def up' {α : Type _} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
   prev_eq hi hj := add_right_cancel (hi.trans hj.symm)
@@ -175,21 +179,21 @@ def up' {α : Type _} [AddRightCancelSemigroup α] (a : α) : ComplexShape α wh
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def down' {α : Type _} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 #align complex_shape.down' ComplexShape.down'
 #align complex_shape.down'_rel ComplexShape.down'_Rel
 
-theorem down'_mk {α : Type _} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
-  (down' a).Rel i j := h
+theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+    (down' a).Rel i j := h
 #align complex_shape.down'_mk ComplexShape.down'_mk
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
 @[simps!]
-def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def up (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   up' 1
 #align complex_shape.up ComplexShape.up
 #align complex_shape.up_rel ComplexShape.up_Rel
@@ -197,14 +201,36 @@ def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
-def down (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   down' 1
 #align complex_shape.down ComplexShape.down
 #align complex_shape.down_rel ComplexShape.down_Rel
 
-theorem down_mk {α : Type _} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
-  (down α).Rel i j :=
+theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+    (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk
+
+end ComplexShape
+
+end
+
+namespace ComplexShape
+
+variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
+
+instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
+  fun _ _ => by dsimp; infer_instance
+
+instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
+  fun _ _ => by dsimp; infer_instance
+
+variable [One α]
+
+instance : DecidableRel (ComplexShape.up α).Rel := by
+  dsimp [ComplexShape.up]; infer_instance
+
+instance : DecidableRel (ComplexShape.down α).Rel := by
+  dsimp [ComplexShape.down]; infer_instance
 
 end ComplexShape

@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
 -/
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
@@ -117,7 +117,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
     ext U
     dsimp
-    erw [NatTrans.comp_app, sheafedSpaceMap_c_app, PresheafedSpace.id_c_app, comap_id]; swap
+    erw [PresheafedSpace.id_c_app, comap_id]; swap
     · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
     simp [eqToHom_map]
 set_option linter.uppercaseLean3 false in
@@ -189,14 +189,14 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
   ext : 1
   · exact w
   · apply
-      ((TopCat.Sheaf.pushforward β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
+      ((TopCat.Sheaf.pushforward _ β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
     -- Porting note : was a one-liner `simpa using h r`
     specialize h r
     simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
       sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ←h]
+    rw [NatTrans.comp_app, ← h]
     congr
     simp
 set_option linter.uppercaseLean3 false in
@@ -241,7 +241,8 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        rw [stalkIso_hom, stalkIso_inv, comp_apply, comp_apply, localizationToStalk_of]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
@@ -261,9 +262,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat} (f : R ⟶ S) :
       replace ha := (stalkIso S p).hom.isUnit_map ha
       rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
         Iso.inv_hom_id, id_apply] at ha
-      -- Porting note : `R` had to be made explicit
+      -- Porting note : `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
-        (R := Localization.AtPrime (PrimeSpectrum.comap f p).asIdeal) _ ha
+        (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
       erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
         Iso.hom_inv_id, id_apply]
@@ -308,6 +309,9 @@ def toSpecΓ (R : CommRingCat) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.to_Spec_Γ AlgebraicGeometry.toSpecΓ
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
+
 instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
 set_option linter.uppercaseLean3 false in
@@ -316,7 +320,7 @@ set_option linter.uppercaseLean3 false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note : `ext` failed to pickup one the three lemmas
+  -- Porting note : `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
@@ -328,7 +332,7 @@ def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents (fun R =>
     -- Porting note : In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
-    asIso (toSpecΓ R)) fun {X Y} f => by exact Spec_Γ_naturality (R := X) (S := Y) f
+    asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.SpecΓIdentity
 
@@ -446,7 +450,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
   · apply isLocalizedModule_toPushforwardStalkAlgHom_aux
   · intro x hx
-    rw [toPushforwardStalkAlgHom_apply, ←(toPushforwardStalk (algebraMap R S) p).map_zero,
+    rw [toPushforwardStalkAlgHom_apply, ← (toPushforwardStalk (algebraMap R S) p).map_zero,
       toPushforwardStalk] at hx
     -- Porting note : this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)

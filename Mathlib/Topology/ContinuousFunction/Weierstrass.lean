@@ -53,7 +53,7 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  by_cases h : a < b
+  cases' lt_or_le a b with h h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
@@ -75,11 +75,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    -- so all subalgebras are the same anyway.
-    haveI : Subsingleton (Set.Icc a b) :=
-      ⟨fun x y =>
-        le_antisymm ((x.2.2.trans (not_lt.mp h)).trans y.2.1)
-          ((y.2.2.trans (not_lt.mp h)).trans x.2.1)⟩
+    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_Icc_of_ge h).coe_sort
     apply Subsingleton.elim
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 

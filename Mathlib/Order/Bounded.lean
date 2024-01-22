@@ -18,7 +18,7 @@ different general ideas.
 
 namespace Set
 
-variable {α : Type _} {r : α → α → Prop} {s t : Set α}
+variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 
 /-! ### Subsets of bounded and unbounded sets -/
 

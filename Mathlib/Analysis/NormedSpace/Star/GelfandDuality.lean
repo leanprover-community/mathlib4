@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.Algebra
 import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 
 #align_import analysis.normed_space.star.gelfand_duality from "leanprover-community/mathlib"@"e65771194f9e923a70dfb49b6ca7be6e400d8b6f"
@@ -22,12 +23,21 @@ the Gelfand transform is actually spectrum-preserving (`spectrum.gelfandTransfor
 when `A` is a commutative C⋆-algebra over `ℂ`, then the Gelfand transform is a surjective isometry,
 and even an equivalence between C⋆-algebras.
 
+Consider the contravariant functors between compact Hausdorff spaces and commutative unital
+C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and
+`G : CommCStarAlg → Cpct := A → characterSpace ℂ A` whose actions on morphisms are given by
+`WeakDual.CharacterSpace.compContinuousMap` and `ContinuousMap.compStarAlgHom'`, respectively.
+
+Then `η₁ : id → F ∘ G := gelfandStarTransform` and
+`η₂ : id → G ∘ F := WeakDual.CharacterSpace.homeoEval` are the natural isomorphisms implementing
+**Gelfand Duality**, i.e., the (contravariant) equivalence of these categories.
+
 ## Main definitions
 
 * `Ideal.toCharacterSpace` : constructs an element of the character space from a maximal ideal in
   a commutative complex Banach algebra
-* `WeakDual.CharacterSpace.compContinuousMap`: The functorial map taking `ψ : A →⋆ₐ[ℂ] B` to a
-  continuous function `characterSpace ℂ B → characterSpace ℂ A` given by pre-composition with `ψ`.
+* `WeakDual.CharacterSpace.compContinuousMap`: The functorial map taking `ψ : A →⋆ₐ[𝕜] B` to a
+  continuous function `characterSpace 𝕜 B → characterSpace 𝕜 A` given by pre-composition with `ψ`.
 
 ## Main statements
 
@@ -37,6 +47,8 @@ and even an equivalence between C⋆-algebras.
   commutative (unital) C⋆-algebra over `ℂ`.
 * `gelfandTransform_bijective` : the Gelfand transform is bijective when the algebra is a
   commutative (unital) C⋆-algebra over `ℂ`.
+* `gelfandStarTransform_naturality`: The `gelfandStarTransform` is a natural isomorphism
+* `WeakDual.CharacterSpace.homeoEval_naturality`: This map implements a natural isomorphism
 
 ## TODO
 
@@ -46,7 +58,7 @@ and even an equivalence between C⋆-algebras.
 * From the previous result, construct the **continuous functional calculus**.
 * Show that if `X` is a compact Hausdorff space, then `X` is (canonically) homeomorphic to
   `characterSpace ℂ C(X, ℂ)`.
-* Conclude using the previous fact that the functors `C(⬝, ℂ)` and `characterSpace ℂ ⬝` along with
+* Conclude using the previous fact that the functors `C(·, ℂ)` and `characterSpace ℂ ·` along with
   the canonical homeomorphisms described above constitute a natural contravariant equivalence of
   the categories of compact Hausdorff spaces (with continuous maps) and commutative unital
   C⋆-algebras (with unital ⋆-algebra homomorphisms); this is known as **Gelfand duality**.
@@ -65,7 +77,7 @@ section ComplexBanachAlgebra
 
 open Ideal
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
   [Ideal.IsMaximal I]
 
 /-- Every maximal ideal in a commutative complex Banach algebra gives rise to a character on that
@@ -128,7 +140,7 @@ end ComplexBanachAlgebra
 
 section ComplexCstarAlgebra
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
@@ -149,7 +161,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
-  rw [map_mul, (IsSelfAdjoint.star_mul_self _).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
+  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
@@ -159,31 +171,33 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩
-  suffices (gelfandTransform ℂ A).range = ⊤ by
-    exact fun x => ((gelfandTransform ℂ A).mem_range).mp (this.symm ▸ Algebra.mem_top)
+  /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
+    hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
+    nontrivial result. -/
+  let rng : StarSubalgebra ℂ C(characterSpace ℂ A, ℂ) :=
+    { toSubalgebra := (gelfandTransform ℂ A).range
+      star_mem' := by
+        rintro - ⟨a, rfl⟩
+        use star a
+        ext1 φ
+        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply, map_star,
+          IsROrC.star_def, ContinuousMap.star_apply] }
+  suffices rng = ⊤ from
+    fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
-  have h : (gelfandTransform ℂ A).range.topologicalClosure = (gelfandTransform ℂ A).range :=
-    le_antisymm
-      (Subalgebra.topologicalClosure_minimal _ le_rfl
-        (gelfandTransform_isometry A).closedEmbedding.closed_range)
-      (Subalgebra.le_topologicalClosure _)
-  refine' h ▸ ContinuousMap.subalgebra_isROrC_topologicalClosure_eq_top_of_separatesPoints
-    _ (fun _ _ => _) fun f hf => _
+  have h : rng.topologicalClosure = rng := le_antisymm
+    (StarSubalgebra.topologicalClosure_minimal le_rfl
+      (gelfandTransform_isometry A).closedEmbedding.closed_range)
+    (StarSubalgebra.le_topologicalClosure _)
+  refine' h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
+    _ (fun _ _ => _)
   /- Separating points just means that elements of the `characterSpace` which agree at all points
     of `A` are the same functional, which is just extensionality. -/
-  · contrapose!
-    exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
-      h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
-  /- If `f = gelfandTransform ℂ A a`, then `star f` is also in the range of `gelfandTransform ℂ A`
-    using the argument `star a`. The key lemma below may be hard to spot; it's `map_star` coming
-    from `WeakDual.Complex.instStarHomClass`, which is a nontrivial result. -/
-  · obtain ⟨f, ⟨a, rfl⟩, rfl⟩ := Subalgebra.mem_map.mp hf
-    refine' ⟨star a, ContinuousMap.ext fun ψ => _⟩
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply,
-      AlgEquiv.toAlgHom_eq_coe, AlgHom.compLeftContinuous_apply_apply, AlgHom.coe_coe,
-      IsROrC.conjAe_coe, map_star, starRingEnd_apply]
+  contrapose!
+  exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
+    h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
 #align gelfand_transform_bijective gelfandTransform_bijective
 
 /-- The Gelfand transform as a `StarAlgEquiv` between a commutative unital C⋆-algebra over `ℂ`
@@ -204,23 +218,20 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable {A B C : Type _}
-
-variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-
-variable [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B]
-
-variable [NormedRing C] [NormedAlgebra ℂ C] [CompleteSpace C] [StarRing C]
+variable {A B C 𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] [StarRing A]
+variable [NormedRing B] [NormedAlgebra 𝕜 B] [CompleteSpace B] [StarRing B]
+variable [NormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]
 
 /-- The functorial map taking `ψ : A →⋆ₐ[ℂ] B` to a continuous function
 `characterSpace ℂ B → characterSpace ℂ A` obtained by pre-composition with `ψ`. -/
 @[simps]
-noncomputable def compContinuousMap (ψ : A →⋆ₐ[ℂ] B) : C(characterSpace ℂ B, characterSpace ℂ A)
+noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) : C(characterSpace 𝕜 B, characterSpace 𝕜 A)
     where
   toFun φ := equivAlgHom.symm ((equivAlgHom φ).comp ψ.toAlgHom)
   continuous_toFun :=
     Continuous.subtype_mk
-      (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform ℂ B (ψ a)) _
+      (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 #align weak_dual.character_space.comp_continuous_map WeakDual.CharacterSpace.compContinuousMap
 
 variable (A)
@@ -228,7 +239,7 @@ variable (A)
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
 theorem compContinuousMap_id :
-    compContinuousMap (StarAlgHom.id ℂ A) = ContinuousMap.id (characterSpace ℂ A) :=
+    compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
 #align weak_dual.character_space.comp_continuous_map_id WeakDual.CharacterSpace.compContinuousMap_id
 
@@ -236,7 +247,7 @@ variable {A}
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]
-theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[ℂ] C) (ψ₁ : A →⋆ₐ[ℂ] B) :
+theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[𝕜] C) (ψ₁ : A →⋆ₐ[𝕜] B) :
     compContinuousMap (ψ₂.comp ψ₁) = (compContinuousMap ψ₁).comp (compContinuousMap ψ₂) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
 #align weak_dual.character_space.comp_continuous_map_comp WeakDual.CharacterSpace.compContinuousMap_comp
@@ -246,3 +257,64 @@ end CharacterSpace
 end WeakDual
 
 end Functoriality
+
+open CharacterSpace in
+/--
+Consider the contravariant functors between compact Hausdorff spaces and commutative unital
+C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and
+`G : CommCStarAlg → Cpct := A → characterSpace ℂ A` whose actions on morphisms are given by
+`WeakDual.CharacterSpace.compContinuousMap` and `ContinuousMap.compStarAlgHom'`, respectively.
+
+Then `η : id → F ∘ G := gelfandStarTransform` is a natural isomorphism implementing (half of)
+the duality between these categories. That is, for commutative unital C⋆-algebras `A` and `B` and
+`φ : A →⋆ₐ[ℂ] B` the following diagram commutes:
+
+```
+A  --- η A ---> C(characterSpace ℂ A, ℂ)
+
+|                     |
+
+φ                  (F ∘ G) φ
+
+|                     |
+V                     V
+
+B  --- η B ---> C(characterSpace ℂ B, ℂ)
+```
+-/
+theorem gelfandStarTransform_naturality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A]
+    [CompleteSpace A] [StarRing A] [CstarRing A] [StarModule ℂ A] [NormedCommRing B]
+    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B] [StarModule ℂ B]
+    (φ : A →⋆ₐ[ℂ] B) :
+    (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
+      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
+  rfl
+
+/--
+Consider the contravariant functors between compact Hausdorff spaces and commutative unital
+C⋆algebras `F : Cpct → CommCStarAlg := X ↦ C(X, ℂ)` and
+`G : CommCStarAlg → Cpct := A → characterSpace ℂ A` whose actions on morphisms are given by
+`WeakDual.CharacterSpace.compContinuousMap` and `ContinuousMap.compStarAlgHom'`, respectively.
+
+Then `η : id → G ∘ F := WeakDual.CharacterSpace.homeoEval` is a natural isomorphism implementing
+(half of) the duality between these categories. That is, for compact Hausdorff spaces `X` and `Y`,
+`f : C(X, Y)` the following diagram commutes:
+
+```
+X  --- η X ---> characterSpace ℂ C(X, ℂ)
+
+|                     |
+
+f                  (G ∘ F) f
+
+|                     |
+V                     V
+
+Y  --- η Y ---> characterSpace ℂ C(Y, ℂ)
+```
+-/
+lemma WeakDual.CharacterSpace.homeoEval_naturality {X Y 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+    [CompactSpace X] [T2Space X] [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] (f : C(X, Y)) :
+    (homeoEval Y 𝕜 : C(_, _)).comp f =
+      (f.compStarAlgHom' 𝕜 𝕜 |> compContinuousMap).comp (homeoEval X 𝕜 : C(_, _)) :=
+  rfl

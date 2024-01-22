@@ -5,6 +5,7 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -29,7 +30,7 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
@@ -53,7 +54,7 @@ theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.
 #align euclidean_geometry.continuous_at_angle EuclideanGeometry.continuousAt_angle
 
 @[simp]
-theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type _} [NormedAddCommGroup V₂]
+theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂]
     [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) : ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
   simp_rw [angle, ← AffineIsometry.map_vsub, LinearIsometry.angle_map]
@@ -193,7 +194,7 @@ nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h :
   exact angle_add_angle_eq_pi_of_angle_eq_pi _ h
 #align euclidean_geometry.angle_add_angle_eq_pi_of_angle_eq_pi EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
-/-- Vertical Angles Theorem: angles opposite each other, formed by two intersecting straight
+/-- **Vertical Angles Theorem**: angles opposite each other, formed by two intersecting straight
 lines, are equal. -/
 theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc : ∠ p1 p5 p3 = π)
     (hbpd : ∠ p2 p5 p4 = π) : ∠ p1 p5 p2 = ∠ p3 p5 p4 := by
@@ -248,7 +249,8 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π := by
-  simp [angle, hp1p2, -zero_lt_one]
+  simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
+    angle_smul_right_of_pos, angle_smul_left_of_pos]
   rw [← neg_vsub_eq_vsub_rev p1 p2]
   apply angle_self_neg_of_nonzero
   simpa only [ne_eq, vsub_eq_zero_iff_eq]

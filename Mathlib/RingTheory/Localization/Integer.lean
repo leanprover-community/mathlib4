@@ -24,9 +24,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] {M : Submonoid R} {S : Type _} [CommRing S]
+variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 open Function
 
@@ -42,25 +42,25 @@ variable (R)
 /-- Given `a : S`, `S` a localization of `R`, `IsInteger R a` iff `a` is in the image of
 the localization map from `R` to `S`. -/
 def IsInteger (a : S) : Prop :=
-  a ∈ (algebraMap R S).range
+  a ∈ (algebraMap R S).rangeS
 #align is_localization.is_integer IsLocalization.IsInteger
 
 end
 
 theorem isInteger_zero : IsInteger R (0 : S) :=
-  Subring.zero_mem _
+  Subsemiring.zero_mem _
 #align is_localization.is_integer_zero IsLocalization.isInteger_zero
 
 theorem isInteger_one : IsInteger R (1 : S) :=
-  Subring.one_mem _
+  Subsemiring.one_mem _
 #align is_localization.is_integer_one IsLocalization.isInteger_one
 
 theorem isInteger_add {a b : S} (ha : IsInteger R a) (hb : IsInteger R b) : IsInteger R (a + b) :=
-  Subring.add_mem _ ha hb
+  Subsemiring.add_mem _ ha hb
 #align is_localization.is_integer_add IsLocalization.isInteger_add
 
 theorem isInteger_mul {a b : S} (ha : IsInteger R a) (hb : IsInteger R b) : IsInteger R (a * b) :=
-  Subring.mul_mem _ ha hb
+  Subsemiring.mul_mem _ ha hb
 #align is_localization.is_integer_mul IsLocalization.isInteger_mul
 
 theorem isInteger_smul {a : R} {b : S} (hb : IsInteger R b) : IsInteger R (a • b) := by
@@ -91,14 +91,14 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 #align is_localization.exists_integer_multiple IsLocalization.exists_integer_multiple
 
 /-- We can clear the denominators of a `Finset`-indexed family of fractions. -/
-theorem exist_integer_multiples {ι : Type _} (s : Finset ι) (f : ι → S) :
+theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
   refine' ⟨∏ i in s, (sec M (f i)).2, fun i hi => ⟨_, _⟩⟩
   · exact (∏ j in s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
-  refine' _root_.trans _ ((Submonoid.subtype M).map_prod _ _).symm
+  refine' _root_.trans _ (map_prod (Submonoid.subtype M) _ _).symm
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
     ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),
@@ -107,7 +107,7 @@ theorem exist_integer_multiples {ι : Type _} (s : Finset ι) (f : ι → S) :
 #align is_localization.exist_integer_multiples IsLocalization.exist_integer_multiples
 
 /-- We can clear the denominators of a finite indexed family of fractions. -/
-theorem exist_integer_multiples_of_finite {ι : Type _} [Finite ι] (f : ι → S) :
+theorem exist_integer_multiples_of_finite {ι : Type*} [Finite ι] (f : ι → S) :
     ∃ b : M, ∀ i, IsLocalization.IsInteger R ((b : R) • f i) := by
   cases nonempty_fintype ι
   obtain ⟨b, hb⟩ := exist_integer_multiples M Finset.univ f
@@ -121,18 +121,18 @@ theorem exist_integer_multiples_of_finset (s : Finset S) :
 #align is_localization.exist_integer_multiples_of_finset IsLocalization.exist_integer_multiples_of_finset
 
 /-- A choice of a common multiple of the denominators of a `Finset`-indexed family of fractions. -/
-noncomputable def commonDenom {ι : Type _} (s : Finset ι) (f : ι → S) : M :=
+noncomputable def commonDenom {ι : Type*} (s : Finset ι) (f : ι → S) : M :=
   (exist_integer_multiples M s f).choose
 #align is_localization.common_denom IsLocalization.commonDenom
 
 /-- The numerator of a fraction after clearing the denominators
 of a `Finset`-indexed family of fractions. -/
-noncomputable def integerMultiple {ι : Type _} (s : Finset ι) (f : ι → S) (i : s) : R :=
+noncomputable def integerMultiple {ι : Type*} (s : Finset ι) (f : ι → S) (i : s) : R :=
   ((exist_integer_multiples M s f).choose_spec i i.prop).choose
 #align is_localization.integer_multiple IsLocalization.integerMultiple
 
 @[simp]
-theorem map_integerMultiple {ι : Type _} (s : Finset ι) (f : ι → S) (i : s) :
+theorem map_integerMultiple {ι : Type*} (s : Finset ι) (f : ι → S) (i : s) :
     algebraMap R S (integerMultiple M s f i) = commonDenom M s f • f i :=
   ((exist_integer_multiples M s f).choose_spec _ i.prop).choose_spec
 #align is_localization.map_integer_multiple IsLocalization.map_integerMultiple

@@ -20,6 +20,7 @@ In order for the definition of the average element to make sense, we need to ass
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
 
+suppress_compilation
 
 open scoped BigOperators
 
@@ -29,7 +30,7 @@ open Representation
 
 namespace GroupAlgebra
 
-variable (k G : Type _) [CommSemiring k] [Group G]
+variable (k G : Type*) [CommSemiring k] [Group G]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -69,7 +70,7 @@ section Invariants
 
 open GroupAlgebra
 
-variable {k G V : Type _} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
 
 variable (ρ : Representation k G V)
 
@@ -89,6 +90,10 @@ theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v :
 theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
   ext; simp [Function.IsFixedPt]
 #align representation.invariants_eq_inter Representation.invariants_eq_inter
+
+theorem invariants_eq_top [ρ.IsTrivial] :
+    invariants ρ = ⊤ :=
+eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -138,7 +143,7 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
   exact comm
 #align representation.lin_hom.mem_invariants_iff_comm Representation.linHom.mem_invariants_iff_comm
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
@@ -157,7 +162,7 @@ section FdRep
 
 variable {k : Type u} [Field k] {G : GroupCat.{u}}
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
   rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]

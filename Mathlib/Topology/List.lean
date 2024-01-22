@@ -18,7 +18,7 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
@@ -26,23 +26,23 @@ instance : TopologicalSpace (List α) :=
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
   refine' nhds_mkOfNhds _ _ _ _
   · intro l
-    induction l
-    case nil => exact le_rfl
-    case cons a l ih =>
+    induction l with
+    | nil => exact le_rfl
+    | cons a l ih =>
       suffices List.cons <$> pure a <*> pure l ≤ List.cons <$> 𝓝 a <*> traverse 𝓝 l by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
-    rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
+    rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
-    induction hu generalizing s
-    case nil _hs =>
+    induction hu generalizing s with
+    | nil =>
       exists []
       simp only [List.forall₂_nil_left_iff, exists_eq_left]
       exact ⟨trivial, hus⟩
     -- porting note -- renamed reordered variables based on previous types
-    case cons a s as ss hts h ht _ ih =>
+    | cons ht _ ih =>
       rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
       rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
       exact
@@ -76,7 +76,7 @@ theorem List.tendsto_cons {a : α} {l : List α} :
   rw [nhds_cons, Tendsto, Filter.map_prod]; exact le_rfl
 #align list.tendsto_cons List.tendsto_cons
 
-theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
+theorem Filter.Tendsto.cons {α : Type*} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
     {l : List β} (hf : Tendsto f a (𝓝 b)) (hg : Tendsto g a (𝓝 l)) :
     Tendsto (fun a => List.cons (f a) (g a)) a (𝓝 (b::l)) :=
   List.tendsto_cons.comp (Tendsto.prod_mk hf hg)
@@ -84,20 +84,20 @@ theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {
 
 namespace List
 
-theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
+theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
     Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ˢ 𝓝 l) b := by
   have : 𝓝 (a::l) = (𝓝 a ×ˢ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
     simp [-Filter.map_def, (· ∘ ·), functor_norm]
-  rw [this, Filter.tendsto_map'_iff]; dsimp; rfl
+  rw [this, Filter.tendsto_map'_iff]; rfl
 #align list.tendsto_cons_iff List.tendsto_cons_iff
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=
   continuous_iff_continuousAt.mpr fun ⟨_x, _y⟩ => continuousAt_fst.cons continuousAt_snd
 #align list.continuous_cons List.continuous_cons
 
-theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter β}
+theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter β}
     (h_nil : Tendsto f (pure []) (r []))
     (h_cons :
       ∀ l a,
@@ -197,7 +197,7 @@ theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
       Tendsto (fun p : α × Vector α n => insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth a i l))
   | ⟨l, hl⟩ => by
     rw [insertNth, tendsto_subtype_rng]
-    simp [insertNth_val]
+    simp only [insertNth_val]
     exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 #align vector.tendsto_insert_nth Vector.tendsto_insertNth
 

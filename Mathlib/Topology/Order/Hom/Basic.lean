@@ -15,7 +15,7 @@ This file defines continuous order homomorphisms, that is maps which are both co
 monotone. They are also called Priestley homomorphisms because they are the morphisms of the
 category of Priestley spaces.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -30,10 +30,10 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of continuous monotone maps from `α` to `β`, aka Priestley homomorphisms. -/
-structure ContinuousOrderHom (α β : Type _) [Preorder α] [Preorder β] [TopologicalSpace α]
+structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [TopologicalSpace α]
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
@@ -47,7 +47,7 @@ section
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
-class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] extends
     ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f
@@ -70,6 +70,8 @@ instance (priority := 100) toOrderHomClass  :
 -- for the original coercion. The original one directly exposed
 -- ContinuousOrderHom.mk which allowed simp to apply more eagerly than in all
 -- the other results in `Topology.Order.Hom.Esakia`.
+/-- Turn an element of a type `F` satisfying `ContinuousOrderHomClass F α β` into an actual
+`ContinuousOrderHom`. This is declared as the default coercion from `F` to `α →Co β`. -/
 @[coe]
 def toContinuousOrderHom (f : F) : α →Co β :=
     { toFun := f
@@ -113,7 +115,7 @@ theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
 
 @[ext]
 theorem ext {f g : α →Co β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align continuous_order_hom.ext ContinuousOrderHom.ext
 
 /-- Copy of a `ContinuousOrderHom` with a new `ContinuousMap` equal to the old one. Useful to fix
@@ -128,7 +130,7 @@ theorem coe_copy (f : α →Co β) (f' : α → β) (h : f' = f) : ⇑(f.copy f'
 #align continuous_order_hom.coe_copy ContinuousOrderHom.coe_copy
 
 theorem copy_eq (f : α →Co β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align continuous_order_hom.copy_eq ContinuousOrderHom.copy_eq
 
 variable (α)
@@ -184,11 +186,13 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_order_hom.id_comp ContinuousOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -200,7 +204,6 @@ instance : Preorder (α →Co β) :=
 end Preorder
 
 instance [PartialOrder β] : PartialOrder (α →Co β) :=
-  PartialOrder.lift ((↑) : (α →Co β) → α → β) FunLike.coe_injective
+  PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom
-

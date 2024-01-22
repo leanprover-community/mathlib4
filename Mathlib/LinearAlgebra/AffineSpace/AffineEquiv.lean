@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Invertible
 
 #align_import linear_algebra.affine_space.affine_equiv from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
@@ -44,7 +43,7 @@ and inverse maps are affine.
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
 --@[nolint has_nonempty_instance]
-structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
   linear : V₁ ≃ₗ[k] V₂
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
@@ -52,7 +51,7 @@ structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddC
 
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
-variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [AddCommGroup V₃]
   [Module k V₃] [AddTorsor V₃ P₃] [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
 
@@ -77,8 +76,8 @@ theorem linear_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : e.toAffineMap.linear = e.
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) → P₁ →ᵃ[k] P₂) := by
   rintro ⟨e, el, h⟩ ⟨e', el', h'⟩ H
-  -- porting note: added `()`s and `AffineMap.mk.injEq`
-  simp only [(toAffineMap_mk), (AffineMap.mk.injEq), Equiv.coe_inj,
+  -- porting note: added `AffineMap.mk.injEq`
+  simp only [toAffineMap_mk, AffineMap.mk.injEq, Equiv.coe_inj,
     LinearEquiv.toLinearMap_inj] at H
   congr
   exacts [H.1, H.2]
@@ -94,11 +93,11 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   inv f := f.invFun
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective' _ _ h _ := toAffineMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
 #align affine_equiv.equiv_like AffineEquiv.equivLike
 
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
@@ -133,15 +132,15 @@ theorem coe_linear (e : P₁ ≃ᵃ[k] P₂) : (e : P₁ →ᵃ[k] P₂).linear 
 
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align affine_equiv.ext AffineEquiv.ext
 
 theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align affine_equiv.coe_fn_injective AffineEquiv.coeFn_injective
 
 @[norm_cast]
--- Porting note: removed `simp`: proof is `simp only [FunLike.coe_fn_eq]`
+-- Porting note: removed `simp`: proof is `simp only [DFunLike.coe_fn_eq]`
 theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' :=
   coeFn_injective.eq_iff
 #align affine_equiv.coe_fn_inj AffineEquiv.coeFn_inj
@@ -168,13 +167,10 @@ def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗ[k] V₂) (p : P₁) (h : ∀ p' : 
     P₁ ≃ᵃ[k] P₂ where
   toFun := e
   invFun := fun q' : P₂ => e'.symm (q' -ᵥ e p) +ᵥ p
-  -- Porting note: `simp` needs `()`
-  left_inv p' := by simp [h p', (vadd_vsub), (vsub_vadd)]
-  -- Porting note: `simp` needs `()`
-  right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), (vadd_vsub), (vsub_vadd)]
+  left_inv p' := by simp [h p', vadd_vsub, vsub_vadd]
+  right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), vadd_vsub, vsub_vadd]
   linear := e'
-  -- Porting note: `simp` needs `()`
-  map_vadd' p' v := by simp [h p', h (v +ᵥ p'), (vadd_vsub_assoc), (vadd_vadd)]
+  map_vadd' p' v := by simp [h p', h (v +ᵥ p'), vadd_vsub_assoc, vadd_vadd]
 #align affine_equiv.mk' AffineEquiv.mk'
 
 @[simp]
@@ -328,8 +324,7 @@ def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] 
   toEquiv := e.toEquiv.trans e'.toEquiv
   linear := e.linear.trans e'.linear
   map_vadd' p v := by
-    -- porting note: added `()`
-    simp only [LinearEquiv.trans_apply, (coe_toEquiv), (· ∘ ·), Equiv.coe_trans, (map_vadd)]
+    simp only [LinearEquiv.trans_apply, coe_toEquiv, (· ∘ ·), Equiv.coe_trans, map_vadd]
 #align affine_equiv.trans AffineEquiv.trans
 
 @[simp]
@@ -456,12 +451,11 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
 def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
-  -- porting note: added `coe_constVSub` and `()`s
-  map_vadd' p' v := by simp [(Equiv.coe_constVSub), (vsub_vadd_eq_vsub_sub), neg_add_eq_sub]
+  map_vadd' p' v := by simp [vsub_vadd_eq_vsub_sub, neg_add_eq_sub]
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
-theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 #align affine_equiv.coe_const_vsub AffineEquiv.coe_constVSub
 
@@ -517,7 +511,7 @@ theorem constVAdd_zsmul (z : ℤ) (v : V₁) : constVAdd k P₁ (z • v) = cons
 
 section Homothety
 
-variable {R V P : Type _} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
+variable {R V P : Type*} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
 
 /-- Fixing a point in affine space, homothety about this point gives a group homomorphism from (the
 centre of) the units of the scalars into the group of affine equivalences. -/
@@ -647,11 +641,10 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
   (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
 #align affine_map.vadd_line_map AffineMap.vadd_lineMap
 
-variable {R' : Type _} [CommRing R'] [Module R' V₁]
+variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
-  -- porting note: added `()`, `_`, and `neg_vsub_eq_vsub_rev`
-  simp [(homothety_apply), pointReflection_apply _, (neg_vsub_eq_vsub_rev)]
+  simp [homothety_apply, pointReflection_apply]
 #align affine_map.homothety_neg_one_apply AffineMap.homothety_neg_one_apply
 
 end AffineMap

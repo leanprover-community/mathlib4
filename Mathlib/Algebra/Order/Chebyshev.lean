@@ -41,12 +41,12 @@ open Equiv Equiv.Perm Finset Function OrderDual
 
 open BigOperators
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/
 
 
-section Smul
+section SMul
 
 variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [OrderedSMul α β]
   {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
@@ -90,7 +90,7 @@ theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
   refine (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
 #align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
 
-end Smul
+end SMul
 
 /-!
 ### Multiplication versions

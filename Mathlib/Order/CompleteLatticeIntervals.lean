@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.LatticeIntervals
 import Mathlib.Data.Set.Intervals.OrdConnected
 
 #align_import order.complete_lattice_intervals from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -26,19 +27,19 @@ open Classical
 
 open Set
 
-variable {α : Type _} (s : Set α)
+variable {α : Type*} (s : Set α)
 
 section SupSet
 
-variable [SupSet α]
+variable [Preorder α] [SupSet α]
 
-/-- `SupSet` structure on a nonempty subset `s` of an object with `SupSet`. This definition is
+/-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
 noncomputable def subsetSupSet [Inhabited s] : SupSet s where
   sSup t :=
-    if ht : sSup ((↑) '' t : Set α) ∈ s
-    then ⟨sSup ((↑) '' t : Set α), ht⟩
+    if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
+    then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
     else default
 #align subset_has_Sup subsetSupSet
 
@@ -47,29 +48,38 @@ attribute [local instance] subsetSupSet
 @[simp]
 theorem subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
-      if ht : sSup ((↑) '' t : Set α) ∈ s
-      then ⟨sSup ((↑) '' t : Set α), ht⟩
+      if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
+      then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
       else default :=
   rfl
 #align subset_Sup_def subset_sSup_def
 
-theorem subset_sSup_of_within [Inhabited s] {t : Set s} (h : sSup ((↑) '' t : Set α) ∈ s) :
-    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos h]
+theorem subset_sSup_of_within [Inhabited s] {t : Set s}
+    (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
+    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Sup_of_within subset_sSup_of_within
+
+theorem subset_sSup_emptyset [Inhabited s] :
+    sSup (∅ : Set s) = default := by
+  simp [sSup]
+
+theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
+    sSup t = default := by
+  simp [sSup, ht]
 
 end SupSet
 
 section InfSet
 
-variable [InfSet α]
+variable [Preorder α] [InfSet α]
 
-/-- `InfSet` structure on a nonempty subset `s` of an object with `InfSet`. This definition is
+/-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
 noncomputable def subsetInfSet [Inhabited s] : InfSet s where
   sInf t :=
-    if ht : sInf ((↑) '' t : Set α) ∈ s
-    then ⟨sInf ((↑) '' t : Set α), ht⟩
+    if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
+    then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩
     else default
 #align subset_has_Inf subsetInfSet
 
@@ -78,17 +88,28 @@ attribute [local instance] subsetInfSet
 @[simp]
 theorem subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
-      if ht : sInf ((↑) '' t : Set α) ∈ s
-      then ⟨sInf ((↑) '' t : Set α), ht⟩ else
+      if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
+      then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩ else
       default :=
   rfl
 #align subset_Inf_def subset_sInf_def
 
-theorem subset_sInf_of_within [Inhabited s] {t : Set s} (h : sInf ((↑) '' t : Set α) ∈ s) :
-    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos h]
+theorem subset_sInf_of_within [Inhabited s] {t : Set s}
+    (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
+    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Inf_of_within subset_sInf_of_within
 
+theorem subset_sInf_emptyset [Inhabited s] :
+    sInf (∅ : Set s) = default := by
+  simp [sInf]
+
+theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
+    sInf t = default := by
+  simp [sInf, ht]
+
 end InfSet
+
+section OrdConnected
 
 variable [ConditionallyCompleteLinearOrder α]
 
@@ -105,29 +126,26 @@ noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
-  { -- The following would be a more natural way to finish, but gives a "deep recursion" error:
-      -- simpa [subset_Sup_of_within (h_Sup t)] using
-      --   (strict_mono_coe s).monotone.le_cSup_image hct h_bdd,
-    subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
+  { subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
     le_csSup := by
       rintro t c h_bdd hct
-      rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s (h_Sup ⟨c, hct⟩ h_bdd)]
+      rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s ⟨c, hct⟩ h_bdd (h_Sup ⟨c, hct⟩ h_bdd)]
       exact (Subtype.mono_coe _).le_csSup_image hct h_bdd
     csSup_le := by
       rintro t B ht hB
-      rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s (h_Sup ht ⟨B, hB⟩)]
+      rw [← Subtype.coe_le_coe, ← subset_sSup_of_within s ht ⟨B, hB⟩ (h_Sup ht ⟨B, hB⟩)]
       exact (Subtype.mono_coe s).csSup_image_le ht hB
     le_csInf := by
       intro t B ht hB
-      rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s (h_Inf ht ⟨B, hB⟩)]
+      rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s ht ⟨B, hB⟩ (h_Inf ht ⟨B, hB⟩)]
       exact (Subtype.mono_coe s).le_csInf_image ht hB
     csInf_le := by
       rintro t c h_bdd hct
-      rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s (h_Inf ⟨c, hct⟩ h_bdd)]
-      exact (Subtype.mono_coe s).csInf_image_le hct h_bdd }
+      rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s ⟨c, hct⟩ h_bdd (h_Inf ⟨c, hct⟩ h_bdd)]
+      exact (Subtype.mono_coe s).csInf_image_le hct h_bdd
+    csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]
+    csInf_of_not_bddBelow := fun t ht ↦ by simp [ht] }
 #align subset_conditionally_complete_linear_order subsetConditionallyCompleteLinearOrder
-
-section OrdConnected
 
 /-- The `sSup` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
@@ -161,3 +179,65 @@ noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhab
 #align ord_connected_subset_conditionally_complete_linear_order ordConnectedSubsetConditionallyCompleteLinearOrder
 
 end OrdConnected
+
+section Icc
+
+/-- Complete lattice structure on `Set.Icc` -/
+noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
+    {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
+  __ := Set.Icc.boundedOrder h
+  sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
+    refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    obtain ⟨c, hc⟩ := hS
+    exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
+  le_sSup S c hc := by
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · simp [hS] at hc
+    · exact le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩
+  sSup_le S c hc := by
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · exact c.2.1
+    · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
+  sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
+    refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
+    obtain ⟨c, hc⟩ := hS
+    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
+  sInf_le S c hc := by
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · simp [hS] at hc
+    · exact csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩
+  le_sInf S c hc := by
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · exact c.2.2
+    · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
+
+/-- Complete linear order structure on `Set.Icc` -/
+noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
+    {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
+  { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
+
+lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+    {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h
+    ↑(sSup S) = sSup ((↑) '' S : Set α) :=
+  congrArg Subtype.val (dif_neg hS.ne_empty)
+
+lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+    {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h
+    ↑(sInf S) = sInf ((↑) '' S : Set α) :=
+  congrArg Subtype.val (dif_neg hS.ne_empty)
+
+lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    ↑(iSup S) = (⨆ i, S i : α) :=
+  (Set.Icc.coe_sSup h (range_nonempty S)).trans (congrArg sSup (range_comp Subtype.val S).symm)
+
+lemma Set.Icc.coe_iInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    ↑(iInf S) = (⨅ i, S i : α) :=
+  (Set.Icc.coe_sInf h (range_nonempty S)).trans (congrArg sInf (range_comp Subtype.val S).symm)
+
+end Icc

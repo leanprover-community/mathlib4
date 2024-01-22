@@ -29,7 +29,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type _} [dec : DecidableEq α]
+variable {α β γ : Type*} [dec : DecidableEq α]
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
@@ -238,7 +238,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
+  · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
   · repeat' rw [rmatch]
     rw [deriv_add]
     exact ih _ _
@@ -252,7 +252,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · intro h
       refine' ⟨[], [], rfl, _⟩
       rw [rmatch, rmatch]
-      rwa [Bool.and_coe_iff] at h
+      rwa [Bool.coe_and_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht
@@ -315,12 +315,12 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         constructor
         · simp [hs, hsum]
         · intro t' ht'
-          cases ht'
-          case head ht' =>
+          cases ht' with
+          | head ht' =>
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
-          case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩; dsimp
+          | tail _ ht' => exact helem t' ht'
+    · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -347,59 +347,30 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) :
-    ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
-  intro x
-  induction P generalizing x
-  all_goals
-    try rw [zero_def]
-    try rw [one_def]
-    try rw [plus_def]
-    try rw [comp_def]
-  case zero =>
-    rw [zero_rmatch]
+theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
+    P.rmatch x ↔ x ∈ P.matches' := by
+  induction P generalizing x with
+  | zero =>
+    rw [zero_def, zero_rmatch]
     tauto
-  case epsilon =>
-    rw [one_rmatch_iff]
+  | epsilon =>
+    rw [one_def, one_rmatch_iff]
     rfl
-  case char =>
+  | char =>
     rw [char_rmatch_iff]
     rfl
-  case plus _ _ ih₁ ih₂ =>
-    rw [add_rmatch_iff, ih₁, ih₂]
+  | plus _ _ ih₁ ih₂ =>
+    rw [plus_def, add_rmatch_iff, ih₁, ih₂]
     rfl
-  case comp P Q ih₁ ih₂ =>
-    simp only [mul_rmatch_iff, comp_def, Language.mul_def, exists_and_left, Set.mem_image2,
-      Set.image_prod]
-    constructor
-    · rintro ⟨x, y, hsum, hmatch₁, hmatch₂⟩
-      rw [ih₁] at hmatch₁
-      rw [ih₂] at hmatch₂
-      exact ⟨x, y, hmatch₁, hmatch₂, hsum.symm⟩
-    · rintro ⟨x, y, hmatch₁, hmatch₂, hsum⟩
-      rw [← ih₁] at hmatch₁
-      rw [← ih₂] at hmatch₂
-      exact ⟨x, y, hsum.symm, hmatch₁, hmatch₂⟩
-  case star _ ih =>
-    rw [star_rmatch_iff]
-    simp only [ne_eq, matches', Language.kstar_def_nonempty, mem_setOf_eq]
-    constructor
-    all_goals
-      rintro ⟨S, hx, hS⟩
-      refine' ⟨S, hx, _⟩
-      intro y
-      specialize hS y
-    · rw [← ih y]
-      tauto
-    · rw [ih y]
-      tauto
+  | comp P Q ih₁ ih₂ =>
+    simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, *]
+    tauto
+  | star _ ih =>
+    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
-instance (P : RegularExpression α) : DecidablePred P.matches' := by
-  intro x
-  change Decidable (x ∈ P.matches')
-  rw [← rmatch_iff_matches']
-  exact instDecidableEqBool (rmatch P x) True
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+  decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]
@@ -416,7 +387,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
-  | n + 1 => (congr_arg ((· * ·) (map f P)) (RegularExpression.map_pow f P n) : _)
+  | n + 1 => (congr_arg (map f P * ·) (RegularExpression.map_pow f P n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]

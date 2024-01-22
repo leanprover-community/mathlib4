@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Sign
 
 #align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -68,6 +68,9 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrderedAddCommMonoid EReal :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
 
+instance : AddCommMonoidWithOne EReal :=
+  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
+
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
@@ -77,10 +80,10 @@ instance : DenselyOrdered EReal :=
 
 namespace EReal
 
--- things unify with `WithBot.decidableLT` later if we we don't provide this explicitly.
-instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+-- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
+instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
-#align ereal.decidable_lt EReal.decidableLt
+#align ereal.decidable_lt EReal.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
 instance : Top EReal := ⟨some ⊤⟩
@@ -141,7 +144,7 @@ directly will unfold `EReal` to `Option` which is undesirable.
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim]
-protected def rec {C : EReal → Sort _} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
+protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
   | (a : ℝ) => h_real a
@@ -169,7 +172,7 @@ theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y :=
   rfl
 #align ereal.coe_mul EReal.coe_mul
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. -/
 @[elab_as_elim]
 theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x)
@@ -197,7 +200,7 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
   | ⊤, ⊤ => top_top
 #align ereal.induction₂ EReal.induction₂
 
-/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+/-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
 theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
@@ -442,6 +445,144 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
     exact ⟨x.toReal, coe_toReal_le h⟩
 #align ereal.eq_bot_iff_forall_lt EReal.eq_bot_iff_forall_lt
 
+/-! ### Intervals and coercion from reals -/
+
+lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
+  obtain ⟨a, ha₁, ha₂⟩ := exists_between h
+  induction' a using EReal.rec with a₀
+  · exact (not_lt_bot ha₁).elim
+  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
+  · exact (not_top_lt ha₂).elim
+
+@[simp]
+lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Icc, WithBot.image_coe_Icc]
+  rfl
+
+@[simp]
+lemma image_coe_Ico (x y : ℝ) : Real.toEReal '' Ico x y = Ico ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ico, WithBot.image_coe_Ico]
+  rfl
+
+@[simp]
+lemma image_coe_Ici (x : ℝ) : Real.toEReal '' Ici x = Ico ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ici, WithBot.image_coe_Ico]
+  rfl
+
+@[simp]
+lemma image_coe_Ioc (x y : ℝ) : Real.toEReal '' Ioc x y = Ioc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioc, WithBot.image_coe_Ioc]
+  rfl
+
+@[simp]
+lemma image_coe_Ioo (x y : ℝ) : Real.toEReal '' Ioo x y = Ioo ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioo, WithBot.image_coe_Ioo]
+  rfl
+
+@[simp]
+lemma image_coe_Ioi (x : ℝ) : Real.toEReal '' Ioi x = Ioo ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioi, WithBot.image_coe_Ioo]
+  rfl
+
+@[simp]
+lemma image_coe_Iic (x : ℝ) : Real.toEReal '' Iic x = Ioc ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iic, WithBot.image_coe_Iic]
+  rfl
+
+@[simp]
+lemma image_coe_Iio (x : ℝ) : Real.toEReal '' Iio x = Ioo ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iio, WithBot.image_coe_Iio]
+  rfl
+
+@[simp]
+lemma preimage_coe_Ici (x : ℝ) : Real.toEReal ⁻¹' Ici x = Ici x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ici (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ici, WithTop.preimage_coe_Ici]
+
+@[simp]
+lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
+
+@[simp]
+lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Iic (y : ℝ) : Real.toEReal ⁻¹' Iic y = Iic y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iic (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
+
+@[simp]
+lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
+
+@[simp]
+lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
+
+@[simp]
+lemma preimage_coe_Icc (x y : ℝ) : Real.toEReal ⁻¹' Icc x y = Icc x y := by
+  simp_rw [← Ici_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ico (x y : ℝ) : Real.toEReal ⁻¹' Ico x y = Ico x y := by
+  simp_rw [← Ici_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioc (x y : ℝ) : Real.toEReal ⁻¹' Ioc x y = Ioc x y := by
+  simp_rw [← Ioi_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo (x y : ℝ) : Real.toEReal ⁻¹' Ioo x y = Ioo x y := by
+  simp_rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ico_top (x : ℝ) : Real.toEReal ⁻¹' Ico x ⊤ = Ici x := by
+  rw [← Ici_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_top (x : ℝ) : Real.toEReal ⁻¹' Ioo x ⊤ = Ioi x := by
+  rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioc_bot (y : ℝ) : Real.toEReal ⁻¹' Ioc ⊥ y = Iic y := by
+  rw [← Ioi_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_bot (y : ℝ) : Real.toEReal ⁻¹' Ioo ⊥ y = Iio y := by
+  rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_bot_top : Real.toEReal ⁻¹' Ioo ⊥ ⊤ = univ := by
+  rw [← Ioi_inter_Iio]
+  simp
+
 /-! ### ennreal coercion -/
 
 @[simp]
@@ -623,9 +764,9 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
   left_inv := fun ⟨x, hx⟩ => by
-      lift x to ℝ
-      · simpa [not_or, and_comm] using hx
-      · simp
+    lift x to ℝ
+    · simpa [not_or, and_comm] using hx
+    · simp
   right_inv x := by simp
 #align ereal.ne_top_bot_equiv_real EReal.neTopBotEquivReal
 
@@ -712,13 +853,22 @@ theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hb
 assumptions. -/
 theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x + z < y + t :=
-  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') <| fun ht' => (ht ht').elim
+  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
 #align ereal.add_lt_add_of_lt_of_le EReal.add_lt_add_of_lt_of_le
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ := by
   rw [← EReal.top_add_top]
   exact EReal.add_lt_add hx.lt_top hy.lt_top
 #align ereal.add_lt_top EReal.add_lt_top
+
+/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
+the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
+instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
+  le_top := by simp
+  top_add' := by
+    rw [OrderDual.forall]
+    intro x
+    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
 
 /-! ### Negation -/
 
@@ -1112,7 +1262,7 @@ theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
-  simp only [sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
+  simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
 #align ereal.sign_coe EReal.sign_coe
 
 @[simp, norm_cast]
@@ -1203,6 +1353,7 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 end EReal
 
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 /-
 namespace Tactic
 

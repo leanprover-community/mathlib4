@@ -32,7 +32,7 @@ to the notation `E →L[R] F` for `ContinuousLinearMap R E F`.
 
 
 /-- A continuous map of affine spaces. -/
-structure ContinuousAffineMap (R : Type _) {V W : Type _} (P Q : Type _) [Ring R] [AddCommGroup V]
+structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
   [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
   cont : Continuous toFun
@@ -43,7 +43,7 @@ notation:25 P " →A[" R "] " Q => ContinuousAffineMap R P Q
 
 namespace ContinuousAffineMap
 
-variable {R V W P Q : Type _} [Ring R]
+variable {R V W P Q : Type*} [Ring R]
 
 variable [AddCommGroup V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
 
@@ -61,32 +61,32 @@ theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g
 
 instance : ContinuousMapClass (P →A[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := to_affineMap_injective <| FunLike.coe_injective h
+  coe_injective' _ _ h := to_affineMap_injective <| DFunLike.coe_injective h
   map_continuous := cont
 
 /-- Helper instance for when there's too many metavariables to apply
-`FunLike.hasCoeToFun` directly. -/
+`DFunLike.hasCoeToFun` directly. -/
 instance : CoeFun (P →A[R] Q) fun _ ↦ P → Q :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe
 
 theorem coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align continuous_affine_map.coe_injective ContinuousAffineMap.coe_injective
 
 @[ext]
 theorem ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_affine_map.ext ContinuousAffineMap.ext
 
 theorem ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align continuous_affine_map.ext_iff ContinuousAffineMap.ext_iff
 
 theorem congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align continuous_affine_map.congr_fun ContinuousAffineMap.congr_fun
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
@@ -154,7 +154,7 @@ theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
-variable {R P} {W₂ Q₂ : Type _}
+variable {R P} {W₂ Q₂ : Type*}
 
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
@@ -173,7 +173,7 @@ theorem comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x =
 
 section ModuleValuedMaps
 
-variable {S : Type _}
+variable {S : Type*}
 
 variable [TopologicalSpace W]
 
@@ -262,7 +262,7 @@ end ContinuousAffineMap
 
 namespace ContinuousLinearMap
 
-variable {R V W : Type _} [Ring R]
+variable {R V W : Type*} [Ring R]
 
 variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
 

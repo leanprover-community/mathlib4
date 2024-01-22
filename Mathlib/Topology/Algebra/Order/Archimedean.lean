@@ -27,13 +27,13 @@ open Set
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
 theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
+    [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
 #align rat.dense_range_cast Rat.denseRange_cast
 
 namespace AddSubgroup
 
-variable {G : Type _} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTopology G]
+variable {G : Type*} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTopology G]
   [Archimedean G]
 
 /-- An additive subgroup of an archimedean linear ordered additive commutative group with order

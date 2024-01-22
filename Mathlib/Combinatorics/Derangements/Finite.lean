@@ -3,6 +3,7 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
@@ -31,14 +32,14 @@ open derangements Equiv Fintype
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] [Fintype α]
+variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
 -- porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
-theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq α] [Fintype β]
+theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
@@ -107,7 +108,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
-theorem card_derangements_eq_numDerangements (α : Type _) [Fintype α] [DecidableEq α] :
+theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements
@@ -115,7 +116,7 @@ theorem card_derangements_eq_numDerangements (α : Type _) [Fintype α] [Decidab
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
-      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial k (n - k) := by
+      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
     Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ, neg_one_mul, sub_eq_add_neg,
@@ -123,6 +124,6 @@ theorem numDerangements_sum (n : ℕ) :
   -- show that (n + 1) * (-1)^x * asc_fac x (n - x) = (-1)^x * asc_fac x (n.succ - x)
   intro x hx
   have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
-  rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_tsub_cancel_of_le h_le, Int.ofNat_mul,
-    Int.ofNat_succ, mul_left_comm]
+  rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
+    Int.ofNat_mul, Int.ofNat_succ, mul_left_comm]
 #align num_derangements_sum numDerangements_sum

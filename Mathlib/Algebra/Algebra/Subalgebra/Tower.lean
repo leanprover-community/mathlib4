@@ -43,7 +43,7 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 variable {A}
 
-theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R A x :=
+theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
 #align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 
@@ -100,7 +100,7 @@ theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A)
 
 @[simp]
 theorem restrictScalars_top : restrictScalars R (⊤ : Subalgebra S A) = ⊤ :=
-  SetLike.coe_injective $ by dsimp -- porting note: why does `rfl` not work instead of `by dsimp`?
+  SetLike.coe_injective <| by dsimp -- porting note: why does `rfl` not work instead of `by dsimp`?
 #align subalgebra.restrict_scalars_top Subalgebra.restrictScalars_top
 
 @[simp]
@@ -128,6 +128,19 @@ def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScala
 #align subalgebra.of_restrict_scalars Subalgebra.ofRestrictScalars
 
 end Semiring
+
+section CommSemiring
+
+@[simp]
+lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
+    [Algebra R A] (S : Subalgebra R A) :
+    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
+  ext
+  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
+    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
+  rfl
+
+end CommSemiring
 
 end Subalgebra
 

@@ -8,11 +8,13 @@ notation, basic datatypes and type classes
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
 import Std.Classes.Dvd
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
+import Std.Tactic.Relation.Rfl
+import Std.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 
 /-! ### alignments from lean 3 `init.core` -/
+
+set_option autoImplicit true
 
 #align id id -- align this first so idDelta doesn't take priority
 #align id_delta id
@@ -26,7 +28,7 @@ import Mathlib.Tactic.Relation.Trans
 #align unit Unit
 #align unit.star Unit.unit
 
-#align thunk Thunkₓ
+#align thunk Thunk
 
 #align true True
 #align false False

@@ -106,7 +106,7 @@ structure PComp : Type where
   /-- The set of original assumptions which have been used in constructing this comparison. -/
   history : RBSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
-  i.e. the by running the elimination algorithm on that variable. -/
+  i.e. by running the elimination algorithm on that variable. -/
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
@@ -321,7 +321,7 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map $ fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
 
 /--
 `produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`

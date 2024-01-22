@@ -36,7 +36,7 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 -/
 
 
-variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type _} [CommRing R]
+variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type*} [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
@@ -129,7 +129,7 @@ theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coe
   calc
     (x + y).coeff n = z.coeff n := by rw [← hx, ← hy, select_add_select_not P z]
     _ = x.coeff n + y.coeff n := by
-      simp [mk]
+      simp only [mk._eq_1]
       split_ifs with y0
       · rw [y0, add_zero]
       · rw [h n |>.resolve_right y0, zero_add]

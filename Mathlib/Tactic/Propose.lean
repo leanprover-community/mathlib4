@@ -6,10 +6,9 @@ Authors: Scott Morrison
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -34,21 +33,27 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 ```
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.propose
 
-initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
-  DeclCache.mk "have?: init cache" {} fun name constInfo lemmas => do
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
+initialize proposeLemmas : DeclCache (DiscrTree Name) ←
+  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        lemmas := lemmas.insertIfSpecific (← DiscrTree.mkPath (← inferType m)) name
+        let path ← DiscrTree.mkPath (← inferType m) discrTreeConfig
+        lemmas := lemmas.insertIfSpecific path name discrTreeConfig
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
@@ -66,16 +71,16 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and
-can by unified with the given `type` (which may contain metavariables, which we avoid assigning).
+can be unified with the given `type` (which may contain metavariables, which we avoid assigning).
 We look up candidate lemmas from a discrimination tree using the first such expression.
 
 Returns an array of pairs, containing the names of found lemmas and the resulting application.
 -/
-def propose (lemmas : DiscrTree Name s) (type : Expr) (required : Array Expr)
+def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
     (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
   guard !required.isEmpty
   let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
-  let candidates ← lemmas.getMatch ty
+  let candidates ← lemmas.getMatch ty discrTreeConfig
   candidates.filterMapM fun lem : Name =>
     try
       trace[Tactic.propose] "considering {lem}"
@@ -107,11 +112,12 @@ only the types of the lemmas in the `using` clause.
 
 Suggestions are printed as `have := f a b c`.
 -/
-syntax (name := propose') "have?" "!"? (" : " term)? " using " (colGt term),+ : tactic
+syntax (name := propose') "have?" "!"? (ident)? (" : " term)? " using " (colGt term),+ : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
-  | `(tactic| have?%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+  | `(tactic| have?%$tk $[!%$lucky]? $[$h:ident]? $[ : $type:term]? using $[$terms:term],*) => do
+    let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
       let required ← terms.mapM (elabTerm · none)
@@ -123,7 +129,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (← inferType p.2) p.2
+        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do
@@ -131,6 +137,9 @@ elab_rules : tactic
         replaceMainGoal [g]
 
 @[inherit_doc propose'] syntax "have?!" (" : " term)? " using " (colGt term),+ : tactic
+@[inherit_doc propose'] syntax "have!?" (" : " term)? " using " (colGt term),+ : tactic
 macro_rules
   | `(tactic| have?!%$tk $[: $type]? using $terms,*) =>
+    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+  | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)

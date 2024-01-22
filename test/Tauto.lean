@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.SplitIfs
 
+set_option autoImplicit true
 section tauto₀
 variable (p q r : Prop)
 variable (h : p ∧ q ∨ p ∧ r)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Order.Support
 
 #align_import analysis.normed_space.indicator_function from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -18,7 +18,7 @@ indicator, norm
 -/
 
 
-variable {α E : Type _} [SeminormedAddCommGroup E] {s t : Set α} (f : α → E) (a : α)
+variable {α E : Type*} [SeminormedAddCommGroup E] {s t : Set α} (f : α → E) (a : α)
 
 open Set
 

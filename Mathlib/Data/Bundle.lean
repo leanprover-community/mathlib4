@@ -3,7 +3,7 @@ Copyright © 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import data.bundle from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -12,7 +12,7 @@ import Mathlib.Algebra.Module.Basic
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
-We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
+We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
 
 We define `Bundle.TotalSpace F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E b`.
 This type is isomorphic to `Σ x, E x` and uses an extra argument `F` for reasons explained below. In
@@ -21,8 +21,8 @@ general, the constructions of fiber bundles we will make will be of this form.
 ## Main Definitions
 
 * `Bundle.TotalSpace` the total space of a bundle.
-* `bundle.total_space.proj` the projection from the total space to the base space.
-* `bundle.total_space.mk` the constructor for the total space.
+* `Bundle.TotalSpace.proj` the projection from the total space to the base space.
+* `Bundle.TotalSpace.mk` the constructor for the total space.
 
 ## Implementation Notes
 
@@ -31,7 +31,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
 
 - The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
-  constructions (e.g., `bundle.continuous_linear_map.vector_bundle`) we need access to the atlas of
+  constructions (e.g., `Bundle.ContinuousLinearMap.vectorBundle`) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
 
@@ -43,13 +43,13 @@ open Function Set
 
 namespace Bundle
 
-variable {B F : Type _} (E : B → Type _)
+variable {B F : Type*} (E : B → Type*)
 
 /-- `Bundle.TotalSpace F E` is the total space of the bundle. It consists of pairs
 `(proj : B, snd : E proj)`.
 -/
 @[ext]
-structure TotalSpace (F : Type _) (E : B → Type _) where
+structure TotalSpace (F : Type*) (E : B → Type*) where
   /-- `Bundle.TotalSpace.proj` is the canonical projection `Bundle.TotalSpace F E → B` from the
   total space to the base space. -/
   proj : B
@@ -64,7 +64,7 @@ variable {E}
 @[inherit_doc]
 scoped notation:max "π" F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
 
-abbrev TotalSpace.mk' (F : Type _) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
+abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
@@ -104,17 +104,17 @@ notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
-def Trivial (B : Type _) (F : Type _) : B → Type _ := fun _ => F
+def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ => F
 #align bundle.trivial Bundle.Trivial
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
-def TotalSpace.trivialSnd (B : Type _) (F : Type _) : TotalSpace F (Bundle.Trivial B F) → F :=
+def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial B F) → F :=
   TotalSpace.snd
 #align bundle.total_space.trivial_snd Bundle.TotalSpace.trivialSnd
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
-@[simps (config := { attrs := [`simp, `mfld_simps] })]
-def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F where
+@[simps (config := { attrs := [`mfld_simps] })]
+def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
   left_inv := fun ⟨_, _⟩ => rfl
@@ -123,11 +123,11 @@ def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F 
 
 section Pullback
 
-variable {B' : Type _}
+variable {B' : Type*}
 
 /-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
 `Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-def Pullback (f : B' → B) (E : B → Type _) : B' → Type _ := fun x => E (f x)
+def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
 
 @[inherit_doc]
@@ -143,7 +143,7 @@ def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' 
 #align bundle.pullback_total_space_embedding Bundle.pullbackTotalSpaceEmbedding
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
-@[simps (config := { isSimp := true, attrs := [`mfld_simps] })]
+@[simps (config := { attrs := [`mfld_simps] })]
 def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
 #align bundle.pullback.lift Bundle.Pullback.lift
 

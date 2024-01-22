@@ -3,10 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Linarith.Frontend
 
 #align_import algebra.quadratic_discriminant from "leanprover-community/mathlib"@"e085d1df33274f4b32f611f483aae678ba0b42df"
 
@@ -39,7 +39,7 @@ open Filter
 
 section Ring
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- Discriminant of a quadratic -/
 def discrim [Ring R] (a b c : R) : R :=
@@ -80,7 +80,7 @@ end Ring
 
 section Field
 
-variable {K : Type _} [Field K] [NeZero (2 : K)] {a b c x : K}
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c x : K}
 
 /-- Roots of a quadratic equation. -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
@@ -104,7 +104,7 @@ theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * 
 /-- Root of a quadratic when its discriminant equals zero -/
 theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = -b / (2 * a) := by
-  have : discrim a b c = 0 * 0 := by rw [h, MulZeroClass.mul_zero]
+  have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 #align quadratic_eq_zero_iff_of_discrim_eq_zero quadratic_eq_zero_iff_of_discrim_eq_zero
 
@@ -112,7 +112,7 @@ end Field
 
 section LinearOrderedField
 
-variable {K : Type _} [LinearOrderedField K] {a b c : K}
+variable {K : Type*} [LinearOrderedField K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
 theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 := by
@@ -123,7 +123,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
       tendsto_atBot_add_const_right _ c
         ((tendsto_atBot_add_const_right _ b (tendsto_id.neg_const_mul_atTop ha)).atBot_mul_atTop
           tendsto_id)
-    rcases(this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
+    rcases (this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
     exact False.elim ((h x).not_lt <| by rwa [← add_mul])
   -- if a = 0
   · rcases eq_or_ne b 0 with (rfl | hb)
@@ -134,7 +134,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
     convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
-    field_simp [ha.ne']
+    field_simp
     ring
 #align discrim_le_zero discrim_le_zero
 

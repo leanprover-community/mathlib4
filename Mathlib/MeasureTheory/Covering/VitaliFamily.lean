@@ -52,7 +52,7 @@ open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open Filter MeasureTheory Topology
 
-variable {α : Type _} [MetricSpace α]
+variable {α : Type*} [MetricSpace α]
 
 /-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
@@ -66,15 +66,22 @@ differentiations of measure that apply in both contexts.
 -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
-  setsAt : ∀ _ : α, Set (Set α)
-  MeasurableSet' : ∀ x : α, ∀ a : Set α, a ∈ setsAt x → MeasurableSet a
-  nonempty_interior : ∀ x : α, ∀ y : Set α, y ∈ setsAt x → (interior y).Nonempty
-  Nontrivial : ∀ (x : α), ∀ ε > (0 : ℝ), ∃ y ∈ setsAt x, y ⊆ closedBall x ε
-  covering : ∀ (s : Set α) (f : ∀ _ : α, Set (Set α)),
+  /-- Sets of the family "centered" at a given point. -/
+  setsAt :  α → Set (Set α)
+  /-- All sets of the family are measurable. -/
+  measurableSet : ∀ x : α, ∀ s ∈ setsAt x, MeasurableSet s
+  /-- All sets of the family have nonempty interior. -/
+  nonempty_interior : ∀ x : α, ∀ s ∈ setsAt x, (interior s).Nonempty
+  /-- For any closed ball around `x`, there exists a set of the family contained in this ball. -/
+  nontrivial : ∀ (x : α), ∀ ε > (0 : ℝ), ∃ s ∈ setsAt x, s ⊆ closedBall x ε
+  /-- Consider a (possibly non-measurable) set `s`,
+  and for any `x` in `s` a subfamily `f x` of `setsAt x`
+  containing sets of arbitrarily small diameter.
+  Then one can extract a disjoint subfamily covering almost all `s`. -/
+  covering : ∀ (s : Set α) (f : α → Set (Set α)),
     (∀ x ∈ s, f x ⊆ setsAt x) → (∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ f x, a ⊆ closedBall x ε) →
-    ∃ t : Set (α × Set α),
-      (∀ p : α × Set α, p ∈ t → p.1 ∈ s) ∧ (t.PairwiseDisjoint fun p => p.2) ∧
-      (∀ p : α × Set α, p ∈ t → p.2 ∈ f p.1) ∧ μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0
+    ∃ t : Set (α × Set α), (∀ p ∈ t, p.1 ∈ s) ∧ (t.PairwiseDisjoint fun p ↦ p.2) ∧
+      (∀ p ∈ t, p.2 ∈ f p.1) ∧ μ (s \ ⋃ p ∈ t, p.2) = 0
 #align vitali_family VitaliFamily
 
 namespace VitaliFamily
@@ -84,13 +91,10 @@ variable {m0 : MeasurableSpace α} {μ : Measure α}
 /-- A Vitali family for a measure `μ` is also a Vitali family for any measure absolutely continuous
 with respect to `μ`. -/
 def mono (v : VitaliFamily μ) (ν : Measure α) (hν : ν ≪ μ) : VitaliFamily ν where
-  setsAt := v.setsAt
-  MeasurableSet' := v.MeasurableSet'
-  nonempty_interior := v.nonempty_interior
-  Nontrivial := v.Nontrivial
-  covering s f h h' := by
-    rcases v.covering s f h h' with ⟨t, ts, disj, mem_f, hμ⟩
-    exact ⟨t, ts, disj, mem_f, hν hμ⟩
+  __ := v
+  covering s f h h' :=
+    let ⟨t, ts, disj, mem_f, hμ⟩ := v.covering s f h h'
+    ⟨t, ts, disj, mem_f, hν hμ⟩
 #align vitali_family.mono VitaliFamily.mono
 
 /-- Given a Vitali family `v` for a measure `μ`, a family `f` is a fine subfamily on a set `s` if
@@ -159,7 +163,7 @@ theorem index_countable [SecondCountableTopology α] : h.index.Countable :=
 
 protected theorem measurableSet_u {p : α × Set α} (hp : p ∈ h.index) :
     MeasurableSet (h.covering p) :=
-  v.MeasurableSet' p.1 _ (h.covering_mem_family hp)
+  v.measurableSet p.1 _ (h.covering_mem_family hp)
 #align vitali_family.fine_subfamily_on.measurable_set_u VitaliFamily.FineSubfamilyOn.measurableSet_u
 
 theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology α] {ρ : Measure α}
@@ -185,15 +189,15 @@ contained in a `δ`-neighborhood on `x`. This does not change the local filter a
 can be convenient to get a nicer global behavior. -/
 def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ where
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
-  MeasurableSet' x a ha := by
+  measurableSet x a ha := by
     cases' ha with ha ha
-    exacts [v.MeasurableSet' _ _ ha, ha.1]
+    exacts [v.measurableSet _ _ ha, ha.1]
   nonempty_interior x a ha := by
     cases' ha with ha ha
     exacts [v.nonempty_interior _ _ ha, ha.2.1]
-  Nontrivial := by
+  nontrivial := by
     intro x ε εpos
-    rcases v.Nontrivial x ε εpos with ⟨a, ha, h'a⟩
+    rcases v.nontrivial x ε εpos with ⟨a, ha, h'a⟩
     exact ⟨a, mem_union_left _ ha, h'a⟩
   covering := by
     intro s f fset ffine
@@ -237,7 +241,7 @@ instance filterAt_neBot (x : α) : (v.filterAt x).NeBot := by
   simp only [neBot_iff, ← empty_mem_iff_bot, mem_filterAt_iff, not_exists, exists_prop,
     mem_empty_iff_false, and_true_iff, gt_iff_lt, not_and, Ne.def, not_false_iff, not_forall]
   intro ε εpos
-  obtain ⟨w, w_sets, hw⟩ : ∃ w ∈ v.setsAt x, w ⊆ closedBall x ε := v.Nontrivial x ε εpos
+  obtain ⟨w, w_sets, hw⟩ : ∃ w ∈ v.setsAt x, w ⊆ closedBall x ε := v.nontrivial x ε εpos
   exact ⟨w, w_sets, hw⟩
 #align vitali_family.filter_at_ne_bot VitaliFamily.filterAt_neBot
 
@@ -258,18 +262,18 @@ theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε)
   exact ⟨ε, hε, fun a _ ha' => ha'⟩
 #align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
 
-theorem tendsto_filterAt_iff {ι : Type _} {l : Filter ι} {f : ι → Set α} {x : α} :
+theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x : α} :
     Tendsto f l (v.filterAt x) ↔
       (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
   refine' ⟨fun H => ⟨H.eventually <| v.eventually_filterAt_mem_sets x,
     fun ε hε => H.eventually <| v.eventually_filterAt_subset_closedBall x hε⟩,
     fun H s hs => (_ : ∀ᶠ i in l, f i ∈ s)⟩
   obtain ⟨ε, εpos, hε⟩ := v.mem_filterAt_iff.mp hs
-  filter_upwards [H.1, H.2 ε εpos]with i hi hiε using hε _ hi hiε
+  filter_upwards [H.1, H.2 ε εpos] with i hi hiε using hε _ hi hiε
 #align vitali_family.tendsto_filter_at_iff VitaliFamily.tendsto_filterAt_iff
 
 theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
-  filter_upwards [v.eventually_filterAt_mem_sets x]with _ ha using v.MeasurableSet' _ _ ha
+  filter_upwards [v.eventually_filterAt_mem_sets x] with _ ha using v.measurableSet _ _ ha
 #align vitali_family.eventually_filter_at_measurable_set VitaliFamily.eventually_filterAt_measurableSet
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :

@@ -47,7 +47,7 @@ open Function Set
 
 open Affine Classical
 
-variable {𝕜 E F ι : Type _} {π : ι → Type _}
+variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
 section SMul
 
@@ -107,7 +107,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
   ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 #align is_extreme.mono IsExtreme.mono
 
-theorem isExtreme_iInter {ι : Sort _} [Nonempty ι] {F : ι → Set E}
+theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
@@ -123,27 +123,24 @@ theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F,
 #align is_extreme_bInter isExtreme_biInter
 
 theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
-    IsExtreme 𝕜 A (⋂₀ F) := by
-  obtain ⟨B, hB⟩ := hF
-  refine' ⟨(sInter_subset_of_mem hB).trans (hAF B hB).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
-  simp_rw [mem_sInter] at hxF ⊢
-  have h := fun B hB ↦ (hAF B hB).2 hx₁A hx₂A (hxF B hB) hx
-  exact ⟨fun B hB ↦ (h B hB).1, fun B hB ↦ (h B hB).2⟩
+    IsExtreme 𝕜 A (⋂₀ F) := by simpa [sInter_eq_biInter] using isExtreme_biInter hF hAF
 #align is_extreme_sInter isExtreme_sInter
 
 theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
-    x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
+    x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
   Iff.rfl
 #align mem_extreme_points mem_extremePoints
 
 /-- x is an extreme point to A iff {x} is an extreme set of A. -/
-theorem mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔ IsExtreme 𝕜 A {x} := by
-  refine' ⟨_, fun hx ↦ ⟨singleton_subset_iff.1 hx.1, fun x₁ hx₁ x₂ hx₂ ↦ hx.2 hx₁ hx₂ rfl⟩⟩
+@[simp] lemma isExtreme_singleton : IsExtreme 𝕜 A {x} ↔ x ∈ A.extremePoints 𝕜 := by
+  refine ⟨fun hx ↦ ⟨singleton_subset_iff.1 hx.1, fun x₁ hx₁ x₂ hx₂ ↦ hx.2 hx₁ hx₂ rfl⟩, ?_⟩
   rintro ⟨hxA, hAx⟩
   use singleton_subset_iff.2 hxA
   rintro x₁ hx₁A x₂ hx₂A y (rfl : y = x)
   exact hAx hx₁A hx₂A
-#align mem_extreme_points_iff_extreme_singleton mem_extremePoints_iff_extreme_singleton
+#align mem_extreme_points_iff_extreme_singleton isExtreme_singleton
+
+alias ⟨IsExtreme.mem_extremePoints, _⟩ := isExtreme_singleton
 
 theorem extremePoints_subset : A.extremePoints 𝕜 ⊆ A :=
   fun _ hx ↦ hx.1
@@ -167,8 +164,7 @@ theorem inter_extremePoints_subset_extremePoints_of_subset (hBA : B ⊆ A) :
 
 theorem IsExtreme.extremePoints_subset_extremePoints (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 ⊆ A.extremePoints 𝕜 :=
-  fun _ hx ↦ mem_extremePoints_iff_extreme_singleton.2
-    (hAB.trans (mem_extremePoints_iff_extreme_singleton.1 hx))
+  fun _ ↦ by simpa only [← isExtreme_singleton] using hAB.trans
 #align is_extreme.extreme_points_subset_extreme_points IsExtreme.extremePoints_subset_extremePoints
 
 theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
@@ -199,12 +195,12 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
     refine' (h (mk_mem_prod hx₁ hx.2) (mk_mem_prod hx₂ hx.2) _).imp (congr_arg Prod.fst)
         (congr_arg Prod.fst)
     rw [← Prod.image_mk_openSegment_left]
-    exact ⟨_, hx_fst, Prod.mk.eta⟩
+    exact ⟨_, hx_fst, rfl⟩
   · rintro x₁ hx₁ x₂ hx₂ hx_snd
     refine' (h (mk_mem_prod hx.1 hx₁) (mk_mem_prod hx.1 hx₂) _).imp (congr_arg Prod.snd)
         (congr_arg Prod.snd)
     rw [← Prod.image_mk_openSegment_right]
-    exact ⟨_, hx_snd, Prod.mk.eta⟩
+    exact ⟨_, hx_snd, rfl⟩
   · rintro x₁ hx₁ x₂ hx₂ ⟨a, b, ha, hb, hab, hx'⟩
     simp_rw [Prod.ext_iff]
     exact and_and_and_comm.1
@@ -236,6 +232,21 @@ theorem extremePoints_pi (s : ∀ i, Set (π i)) :
 
 end OrderedSemiring
 
+section OrderedRing
+variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [LinearEquivClass L 𝕜 E F]
+
+lemma image_extremePoints (f : L) (s : Set E) :
+    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
+  ext b
+  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
+  have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
+    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
+  simp only [mem_extremePoints, (EquivLike.surjective f).forall,
+    (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
+
+end OrderedRing
+
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -245,7 +256,7 @@ variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
 theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
-    x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
+    x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
   refine' and_congr_right fun hxA ↦ forall₄_congr fun x₁ h₁ x₂ h₂ ↦ _
   constructor
   · rw [← insert_endpoints_openSegment]
@@ -258,11 +269,11 @@ theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
 
 theorem Convex.mem_extremePoints_iff_convex_diff (hA : Convex 𝕜 A) :
     x ∈ A.extremePoints 𝕜 ↔ x ∈ A ∧ Convex 𝕜 (A \ {x}) := by
-  use fun hx ↦ ⟨hx.1, (mem_extremePoints_iff_extreme_singleton.1 hx).convex_diff hA⟩
+  use fun hx ↦ ⟨hx.1, (isExtreme_singleton.2 hx).convex_diff hA⟩
   rintro ⟨hxA, hAx⟩
   refine' mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx ↦ _⟩
   rw [convex_iff_segment_subset] at hAx
-  by_contra' h
+  by_contra! h
   exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singleton_iff.2 hx₁)⟩
       ⟨hx₂, fun hx₂ ↦ h.2 (mem_singleton_iff.2 hx₂)⟩ hx).2 rfl
 #align convex.mem_extreme_points_iff_convex_diff Convex.mem_extremePoints_iff_convex_diff

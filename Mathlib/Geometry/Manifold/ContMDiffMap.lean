@@ -3,8 +3,7 @@ Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiff
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 #align_import geometry.manifold.cont_mdiff_map from "leanprover-community/mathlib"@"86c29aefdba50b3f33e86e52e3b2f51a0d8f0282"
 
@@ -15,17 +14,17 @@ In this file we define the type `ContMDiffMap` of `n` times continuously differe
 bundled maps.
 -/
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type _}
-  [TopologicalSpace H] {H' : Type _} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
-  (I' : ModelWithCorners 𝕜 E' H') (M : Type _) [TopologicalSpace M] [ChartedSpace H M] (M' : Type _)
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type _} [NormedAddCommGroup E'']
-  [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M'']
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
+  (I' : ModelWithCorners 𝕜 E' H') (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
+  [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a manifold `N` over the pair `(F, G)`.
-  {F : Type _}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type _} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type _} [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
+  {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
 
 /-- Bundled `n` times continuously differentiable maps. -/
 def ContMDiffMap :=
@@ -49,10 +48,10 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance funLike : FunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
+instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
-#align cont_mdiff_map.fun_like ContMDiffMap.funLike
+#align cont_mdiff_map.fun_like ContMDiffMap.instFunLike
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
@@ -66,22 +65,22 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
 @[simp]
 theorem coeFn_mk (f : M → M') (hf : ContMDiff I I' n f) :
-    FunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
+    DFunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
   rfl
 #align cont_mdiff_map.coe_fn_mk ContMDiffMap.coeFn_mk
 
 theorem coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g) : f = g :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cont_mdiff_map.coe_inj ContMDiffMap.coe_injective
 
 @[ext]
-theorem ext (h : ∀ x, f x = g x) : f = g := FunLike.ext _ _ h
+theorem ext (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 #align cont_mdiff_map.ext ContMDiffMap.ext
 
 instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where

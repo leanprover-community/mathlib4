@@ -15,14 +15,13 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-
 open BigOperators
 
 namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D)
     where
@@ -37,30 +36,37 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
         apply add_assoc
       zero_add := by
         intros
+        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
+        dsimp
         ext
         apply add_zero
       add_comm := by
         intros
+        dsimp
         ext
         apply add_comm
       sub_eq_add_neg := by
         intros
+        dsimp
         ext
         apply sub_eq_add_neg
       add_left_neg := by
         intros
+        dsimp
         ext
         apply add_left_neg }
   add_comp := by
     intros
+    dsimp
     ext
     apply add_comp
   comp_add := by
     intros
+    dsimp
     ext
     apply comp_add
 #align category_theory.functor_category_preadditive CategoryTheory.functorCategoryPreadditive
@@ -110,7 +116,7 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 #align category_theory.nat_trans.app_zsmul CategoryTheory.NatTrans.app_zsmul
 
 @[simp]
-theorem app_sum {ι : Type _} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
+theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum

@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Module.Algebra
 
 #align_import linear_algebra.matrix.finite_dimensional from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
@@ -35,7 +36,7 @@ namespace Matrix
 
 section FiniteDimensional
 
-variable {m n : Type _} {R : Type v} [Field R]
+variable {m n : Type*} {R : Type v} [Field R]
 
 instance finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
   Module.Finite.matrix
@@ -46,17 +47,17 @@ end Matrix
 
 namespace LinearMap
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
-variable {V : Type _} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
-variable {W : Type _} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
+variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
-  Module.Finite.linearMap _ _
+  Module.Finite.linearMap _ _ _ _
 #align linear_map.finite_dimensional LinearMap.finiteDimensional
 
-variable {A : Type _} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
+variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [Module A W]
   [IsScalarTower K A W]
 
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and

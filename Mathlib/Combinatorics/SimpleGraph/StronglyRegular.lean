@@ -1,8 +1,10 @@
 /-
 Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alena Gusakov
+Authors: Alena Gusakov, Jeremy Tan
 -/
+import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Set.Finite
 
@@ -20,11 +22,12 @@ import Mathlib.Data.Set.Finite
   * The number of common neighbors between any two adjacent vertices in `G` is `ℓ`
   * The number of common neighbors between any two nonadjacent vertices in `G` is `μ`
 
-## TODO
-- Prove that the parameters of a strongly regular graph
-  obey the relation `(n - k - 1) * μ = k * (k - ℓ - 1)`
-- Prove that if `I` is the identity matrix and `J` is the all-one matrix,
-  then the adj matrix `A` of SRG obeys relation `A^2 = kI + ℓA + μ(J - I - A)`
+## Main theorems
+
+* `IsSRGWith.compl`: the complement of a strongly regular graph is strongly regular.
+* `IsSRGWith.param_eq`: `k * (k - ℓ - 1) = (n - k - 1) * μ` when `0 < n`.
+* `IsSRGWith.matrix_eq`: let `A` and `C` be `G`'s and `Gᶜ`'s adjacency matrices respectively and
+  `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
 
 
@@ -47,7 +50,7 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k
   of_adj : ∀ v w : V, G.Adj v w → Fintype.card (G.commonNeighbors v w) = ℓ
-  of_not_adj : ∀ v w : V, v ≠ w → ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
+  of_not_adj : Pairwise fun v w => ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with SimpleGraph.IsSRGWith
 
@@ -99,7 +102,7 @@ adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
 theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (hne : v ≠ w) (ha : ¬G.Adj v w) :
     (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - μ := by
-  rw [← h.of_not_adj v w hne ha]
+  rw [← h.of_not_adj hne ha]
   apply h.card_neighborFinset_union_eq
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_not_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_not_adj
@@ -132,14 +135,14 @@ theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
 #align simple_graph.sdiff_compl_neighbor_finset_inter_eq SimpleGraph.sdiff_compl_neighborFinset_inter_eq
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
-  Gᶜ.IsRegularOfDegree (n - k - 1) := by
+    Gᶜ.IsRegularOfDegree (n - k - 1) := by
   rw [← h.card, Nat.sub_sub, add_comm, ← Nat.sub_sub]
   exact h.regular.compl
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.compl_is_regular SimpleGraph.IsSRGWith.compl_is_regular
 
 theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
-    (ha : Gᶜ.Adj v w) : Fintype.card (↥(Gᶜ.commonNeighbors v w)) = n - (2 * k - μ) - 2 := by
+    (ha : Gᶜ.Adj v w) : Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp_rw [compl_neighborFinset_sdiff_inter_eq]
@@ -156,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
     (hn : v ≠ w) (hna : ¬Gᶜ.Adj v w) :
-    Fintype.card (↥Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
+    Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp only [not_and, Classical.not_not, compl_adj] at hna
@@ -175,5 +178,56 @@ theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
   of_not_adj := fun _v _w hn hna => h.card_commonNeighbors_eq_of_not_adj_compl hn hna
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.compl SimpleGraph.IsSRGWith.compl
+
+/-- The parameters of a strongly regular graph with at least one vertex satisfy
+`k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
+theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
+    k * (k - ℓ - 1) = (n - k - 1) * μ := by
+  rw [← h.card, Fintype.card_pos_iff] at hn
+  obtain ⟨v⟩ := hn
+  convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
+  · simp [h.regular v]
+  · simp [h.compl.regular v]
+  · intro w hw
+    rw [mem_neighborFinset] at hw
+    simp_rw [bipartiteAbove, show G.Adj w = fun a => G.Adj w a by rfl, ← mem_neighborFinset,
+      filter_mem_eq_inter]
+    have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
+      rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
+      exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩
+    rw [inter_comm, neighborFinset_compl, inter_sdiff, ← sdiff_eq_inter_compl, card_sdiff s,
+      card_singleton, ← sdiff_inter_self_left, card_sdiff (by apply inter_subset_left)]
+    congr
+    · simp [h.regular w]
+    · simp_rw [inter_comm, neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw,
+        ← Set.toFinset_card]
+      congr!
+  · intro w hw
+    simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
+      ← Ne.def] at hw
+    simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
+      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
+      ← Set.toFinset_card]
+    congr!
+
+/-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
+and its complement respectively and `I` be the identity matrix,
+then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`
+more often found in the literature, where `J` is the all-ones matrix. -/
+theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
+    G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
+  ext v w
+  simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
+    adjMatrix_apply, compl_adj]
+  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
+  obtain rfl | hn := eq_or_ne v w
+  · rw [← Set.toFinset_card]
+    simp [commonNeighbors, ← neighborFinset_def, h.regular v]
+  · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
+    by_cases ha : G.Adj v w <;>
+      simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one,
+        not_true_eq_false, not_false_eq_true, and_false, and_self]
+    · rw [h.of_adj v w ha]
+    · rw [h.of_not_adj hn ha]
 
 end SimpleGraph

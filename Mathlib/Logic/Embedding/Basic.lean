@@ -13,6 +13,8 @@ import Mathlib.Logic.Equiv.Basic
 # Injective functions
 -/
 
+set_option autoImplicit true
+
 
 universe u v w x
 
@@ -20,7 +22,7 @@ namespace Function
 
 -- port note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
-structure Embedding (α : Sort _) (β : Sort _) where
+structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
   toFun : α → β
   /-- An embedding is an injective function. Use `Function.Embedding.injective` instead. -/
@@ -38,7 +40,12 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 initialize_simps_projections Embedding (toFun → apply)
 
 -- porting note: this needs `tactic.lift`.
---instance {α β : Sort _} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+--instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+
+theorem exists_surjective_iff :
+    (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
+  ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
+    (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
 end Function
 
@@ -72,6 +79,9 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
+theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
+
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
@@ -91,17 +101,17 @@ namespace Function
 namespace Embedding
 
 theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `FunLike.ext_iff.symm` works
+-- port note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (FunLike.ext_iff)
+  Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
@@ -115,7 +125,7 @@ theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
 #align function.embedding.coe_fn_mk Function.Embedding.coeFn_mk
 
 @[simp]
-theorem mk_coe {α β : Type _} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
+theorem mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
   rfl
 #align function.embedding.mk_coe Function.Embedding.mk_coe
 
@@ -129,7 +139,7 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
 
 /-- The identity map as a `Function.Embedding`. -/
 @[refl, simps (config := { simpRhs := true })]
-protected def refl (α : Sort _) : α ↪ α :=
+protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 #align function.embedding.refl Function.Embedding.refl
 #align function.embedding.refl_apply Function.Embedding.refl_apply
@@ -144,14 +154,14 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp]
-theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort _} (e : α ≃ β) :
+theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
   ext
   simp
 #align function.embedding.equiv_to_embedding_trans_symm_to_embedding Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
 
 @[simp]
-theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort _} (e : α ≃ β) :
+theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
   ext
   simp
@@ -190,10 +200,10 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
-        (try simp only [f.injective.eq_iff] at *)
+        (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
-    · rw[h₅,←h]
+    · rw[h₅, ← h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h
@@ -206,7 +216,7 @@ theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 #align function.embedding.some Function.Embedding.some
@@ -217,7 +227,7 @@ protected def some {α} : α ↪ Option α :=
 #align function.embedding.coe_option Function.Embedding.some
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 #align function.embedding.option_map Function.Embedding.optionMap
@@ -244,7 +254,7 @@ theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
 #align function.embedding.coe_quotient_out Function.Embedding.coe_quotientOut
 
 /-- Choosing an element `b : β` gives an embedding of `PUnit` into `β`. -/
-def punit {β : Sort _} (b : β) : PUnit ↪ β :=
+def punit {β : Sort*} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
@@ -264,19 +274,19 @@ def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 #align function.embedding.sectr Function.Embedding.sectr
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply
 
-/-- If `e₁` and `e₂` are embeddings, then so is `prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
-def prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
+/-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
+def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.Prod_map e₂.injective⟩
 #align function.embedding.prod_map Function.Embedding.prodMap
 
 @[simp]
-theorem coe_prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
+theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
 
 /-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
-def pprodMap {α β γ δ : Sort _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
+def pprodMap {α β γ δ : Sort*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
   ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 #align function.embedding.pprod_map Function.Embedding.pprodMap
 
@@ -285,7 +295,7 @@ section Sum
 open Sum
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Sum.map e₁ e₂`. -/
-def sumMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
+def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α γ ↪ Sum β δ :=
   ⟨Sum.map e₁ e₂, e₁.injective.sum_map e₂.injective⟩
 #align function.embedding.sum_map Function.Embedding.sumMap
 
@@ -296,14 +306,14 @@ theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap 
 
 /-- The embedding of `α` into the sum `α ⊕ β`. -/
 @[simps]
-def inl {α β : Type _} : α ↪ Sum α β :=
+def inl {α β : Type*} : α ↪ Sum α β :=
   ⟨Sum.inl, fun _ _ => Sum.inl.inj⟩
 #align function.embedding.inl Function.Embedding.inl
 #align function.embedding.inl_apply Function.Embedding.inl_apply
 
 /-- The embedding of `β` into the sum `α ⊕ β`. -/
 @[simps]
-def inr {α β : Type _} : β ↪ Sum α β :=
+def inr {α β : Type*} : β ↪ Sum α β :=
   ⟨Sum.inr, fun _ _ => Sum.inr.inj⟩
 #align function.embedding.inr Function.Embedding.inr
 #align function.embedding.inr_apply Function.Embedding.inr_apply
@@ -312,7 +322,7 @@ end Sum
 
 section Sigma
 
-variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
+variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 
 /-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
@@ -334,7 +344,7 @@ end Sigma
 /-- Define an embedding `(Π a : α, β a) ↪ (Π a : α, γ a)` from a family of embeddings
 `e : Π a, (β a ↪ γ a)`. This embedding sends `f` to `fun a ↦ e a (f a)`. -/
 @[simps]
-def piCongrRight {α : Sort _} {β γ : α → Sort _} (e : ∀ a, β a ↪ γ a) : (∀ a, β a) ↪ ∀ a, γ a :=
+def piCongrRight {α : Sort*} {β γ : α → Sort*} (e : ∀ a, β a ↪ γ a) : (∀ a, β a) ↪ ∀ a, γ a :=
   ⟨fun f a => e a (f a), fun _ _ h => funext fun a => (e a).injective (congr_fun h a)⟩
 #align function.embedding.Pi_congr_right Function.Embedding.piCongrRight
 #align function.embedding.Pi_congr_right_apply Function.Embedding.piCongrRight_apply
@@ -369,12 +379,12 @@ protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪
 
 open Set
 
-theorem swap_apply {α β : Type _} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
+theorem swap_apply {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y z : α) :
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) :=
   f.injective.swap_apply x y z
 #align function.embedding.swap_apply Function.Embedding.swap_apply
 
-theorem swap_comp {α β : Type _} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
+theorem swap_comp {α β : Type*} [DecidableEq α] [DecidableEq β] (f : α ↪ β) (x y : α) :
     Equiv.swap (f x) (f y) ∘ f = f ∘ Equiv.swap x y :=
   f.injective.swap_comp x y
 #align function.embedding.swap_comp Function.Embedding.swap_comp
@@ -397,7 +407,7 @@ def asEmbedding {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
 
 /-- The type of embeddings `α ↪ β` is equivalent to
     the subtype of all injective functions `α → β`. -/
-def subtypeInjectiveEquivEmbedding (α β : Sort _) :
+def subtypeInjectiveEquivEmbedding (α β : Sort*) :
     { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
@@ -409,7 +419,7 @@ def subtypeInjectiveEquivEmbedding (α β : Sort _) :
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]
-def embeddingCongr {α β γ δ : Sort _} (h : α ≃ β) (h' : γ ≃ δ) : (α ↪ γ) ≃ (β ↪ δ) where
+def embeddingCongr {α β γ δ : Sort*} (h : α ≃ β) (h' : γ ≃ δ) : (α ↪ γ) ≃ (β ↪ δ) where
   toFun f := f.congr h h'
   invFun f := f.congr h.symm h'.symm
   left_inv x := by
@@ -422,13 +432,13 @@ def embeddingCongr {α β γ δ : Sort _} (h : α ≃ β) (h' : γ ≃ δ) : (α
 #align equiv.embedding_congr_apply Equiv.embeddingCongr_apply
 
 @[simp]
-theorem embeddingCongr_refl {α β : Sort _} :
+theorem embeddingCongr_refl {α β : Sort*} :
     embeddingCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ↪ β) :=
   rfl
 #align equiv.embedding_congr_refl Equiv.embeddingCongr_refl
 
 @[simp]
-theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
+theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort*} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
     (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     embeddingCongr (e₁.trans e₂) (e₁'.trans e₂') =
       (embeddingCongr e₁ e₁').trans (embeddingCongr e₂ e₂') :=
@@ -436,12 +446,12 @@ theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e�
 #align equiv.embedding_congr_trans Equiv.embeddingCongr_trans
 
 @[simp]
-theorem embeddingCongr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem embeddingCongr_symm {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (embeddingCongr e₁ e₂).symm = embeddingCongr e₁.symm e₂.symm :=
   rfl
 #align equiv.embedding_congr_symm Equiv.embeddingCongr_symm
 
-theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
+theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
     (ec : γ₁ ≃ γ₂) (f : α₁ ↪ β₁) (g : β₁ ↪ γ₁) :
     Equiv.embeddingCongr ea ec (f.trans g) =
       (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
@@ -450,12 +460,12 @@ theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _
 #align equiv.embedding_congr_apply_trans Equiv.embeddingCongr_apply_trans
 
 @[simp]
-theorem refl_toEmbedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
+theorem refl_toEmbedding {α : Type*} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
   rfl
 #align equiv.refl_to_embedding Equiv.refl_toEmbedding
 
 @[simp]
-theorem trans_toEmbedding {α β γ : Type _} (e : α ≃ β) (f : β ≃ γ) :
+theorem trans_toEmbedding {α β γ : Type*} (e : α ≃ β) (f : β ≃ γ) :
     (e.trans f).toEmbedding = e.toEmbedding.trans f.toEmbedding :=
   rfl
 #align equiv.trans_to_embedding Equiv.trans_toEmbedding
@@ -464,7 +474,7 @@ end Equiv
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` can be injectively split
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/

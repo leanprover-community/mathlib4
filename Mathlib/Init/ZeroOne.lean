@@ -8,6 +8,8 @@ import Mathlib.Mathport.Rename
 
 /-! ## Classes for `Zero` and `One` -/
 
+set_option autoImplicit true
+
 class Zero.{u} (α : Type u) where
   zero : α
 #align has_zero Zero

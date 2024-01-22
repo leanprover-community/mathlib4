@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Group
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Data.Finite.Defs
+import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
@@ -38,12 +38,12 @@ variable {α : Type u} {β : Type v}
 
 /-- If `α` carries some multiplicative structure, then `Additive α` carries the corresponding
 additive structure. -/
-def Additive (α : Type _) := α
+def Additive (α : Type*) := α
 #align additive Additive
 
 /-- If `α` carries some additive structure, then `Multiplicative α` carries the corresponding
 multiplicative structure. -/
-def Multiplicative (α : Type _) := α
+def Multiplicative (α : Type*) := α
 #align multiplicative Multiplicative
 
 namespace Additive
@@ -115,11 +115,17 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
+instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
+
 instance [Inhabited α] : Inhabited (Additive α) :=
   ⟨ofMul default⟩
 
 instance [Inhabited α] : Inhabited (Multiplicative α) :=
   ⟨ofAdd default⟩
+
+instance [Unique α] : Unique (Additive α) := toMul.unique
+instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)
@@ -127,17 +133,21 @@ instance [Finite α] : Finite (Additive α) :=
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
 
-instance [h: Infinite α] : Infinite (Additive α) := h
+instance [h : Infinite α] : Infinite (Additive α) := h
 
-instance [h: Infinite α] : Infinite (Multiplicative α) := h
+instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
-instance [Nontrivial α] : Nontrivial (Additive α) :=
+instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
+
+instance [h : DecidableEq α] : DecidableEq (Additive α) := h
+
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
-#align additive.nontrivial instNontrivialAdditive
+#align additive.nontrivial Additive.instNontrivial
 
-instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
-#align multiplicative.nontrivial instNontrivialMultiplicative
+#align multiplicative.nontrivial Multiplicative.instNontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)
@@ -217,7 +227,7 @@ theorem ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
 #align of_mul_one ofMul_one
 
 @[simp]
-theorem ofMul_eq_zero {A : Type _} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
+theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
 #align of_mul_eq_zero ofMul_eq_zero
 
 @[simp]
@@ -233,7 +243,7 @@ theorem ofAdd_zero [Zero α] : @Multiplicative.ofAdd α 0 = 1 :=
 #align of_add_zero ofAdd_zero
 
 @[simp]
-theorem ofAdd_eq_one {A : Type _} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
+theorem ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
   Iff.rfl
 #align of_add_eq_one ofAdd_eq_one
 
@@ -256,39 +266,53 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
-    zero := 0
-    add := (· + ·)
     nsmul := @Monoid.npow α h
     nsmul_zero := @Monoid.npow_zero α h
     nsmul_succ := @Monoid.npow_succ α h }
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    one := 1
-    mul := (· * ·)
     npow := @AddMonoid.nsmul α h
     npow_zero := @AddMonoid.nsmul_zero α h
     npow_succ := @AddMonoid.nsmul_succ α h }
 
+@[simp]
+theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
+  rfl
+#align of_mul_pow ofMul_pow
+
+@[simp]
+theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
+  rfl
+
+@[simp]
+theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+  rfl
+#align of_add_nsmul ofAdd_nsmul
+
+@[simp]
+theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
+  rfl
+
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addLeftCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addLeftCancelSemigroup with }
 
 instance Multiplicative.leftCancelMonoid [AddLeftCancelMonoid α] :
     LeftCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with }
 
 instance Additive.addRightCancelMonoid [RightCancelMonoid α] : AddRightCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addRightCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addRightCancelSemigroup with }
 
 instance Multiplicative.rightCancelMonoid [AddRightCancelMonoid α] :
     RightCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with }
 
 instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addCommSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addCommSemigroup with }
 
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.commSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd (toMul x)⁻¹⟩
@@ -365,6 +389,24 @@ instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplic
     zpow_zero' := @SubNegMonoid.zsmul_zero' α _
     zpow_succ' := @SubNegMonoid.zsmul_succ' α _
     zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+
+@[simp]
+theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
+  rfl
+#align of_mul_zpow ofMul_zpow
+
+@[simp]
+theorem toMul_zsmul [DivInvMonoid α] (z : ℤ) (a : Additive α) : toMul (z • a) = toMul a ^ z :=
+  rfl
+
+@[simp]
+theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
+  rfl
+#align of_add_zsmul ofAdd_zsmul
+
+@[simp]
+theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
+  rfl
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
   { Additive.subNegMonoid, Additive.involutiveNeg with
@@ -500,7 +542,7 @@ then `Additive α` should also coerce to the same function.
 This allows `Additive` to be used on bundled function types with a multiplicative structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Additive.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
+instance Additive.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Additive α) fun a => β (toMul a) :=
   ⟨fun a => CoeFun.coe (toMul a)⟩
 #align additive.has_coe_to_fun Additive.coeToFun
@@ -511,7 +553,7 @@ then `Multiplicative α` should also coerce to the same function.
 This allows `Multiplicative` to be used on bundled function types with an additive structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
-instance Multiplicative.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
+instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β] :
     CoeFun (Multiplicative α) fun a => β (toAdd a) :=
   ⟨fun a => CoeFun.coe (toAdd a)⟩
 #align multiplicative.has_coe_to_fun Multiplicative.coeToFun

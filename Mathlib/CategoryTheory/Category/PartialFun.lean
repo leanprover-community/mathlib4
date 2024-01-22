@@ -33,22 +33,22 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
-  Type _
+  Type*
 set_option linter.uppercaseLean3 false
 #align PartialFun PartialFun
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type _) :=
+instance : CoeSort PartialFun (Type*) :=
   ⟨id⟩
 
 -- porting note: removed `@[nolint has_nonempty_instance]`
 /-- Turns a type into a `PartialFun`. -/
-def of : Type _ → PartialFun :=
+def of : Type* → PartialFun :=
   id
 #align PartialFun.of PartialFun.of
 
@@ -56,7 +56,7 @@ def of : Type _ → PartialFun :=
 #noalign PartialFun.coe_of
 
 instance : Inhabited PartialFun :=
-  ⟨Type _⟩
+  ⟨Type*⟩
 
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom := PFun
@@ -93,7 +93,7 @@ instance : Faithful typeToPartialFun where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
-This the computable part of the equivalence `PartialFunEquivPointed`. -/
+This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
@@ -112,7 +112,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 #align Pointed_to_PartialFun pointedToPartialFun
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
-pointed types. This the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
+pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
 @[simps map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by

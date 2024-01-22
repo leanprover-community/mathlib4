@@ -30,7 +30,7 @@ then decompositions of an object as a biproduct of the family have uniquely defi
 We state this as:
 ```
 theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
-  (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
+    (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
 ```
 
 This is preliminary to defining semisimple categories.
@@ -49,18 +49,17 @@ variable {C : Type u} [Category.{v} C]
 there is at most one morphism between distinct objects.
 
 (In a category with zero morphisms, that must be the zero morphism.) -/
-def HomOrthogonal {ι : Type _} (s : ι → C) : Prop :=
-  ∀ i j, i ≠ j → Subsingleton (s i ⟶ s j)
+def HomOrthogonal {ι : Type*} (s : ι → C) : Prop :=
+  Pairwise fun i j => Subsingleton (s i ⟶ s j)
 #align category_theory.hom_orthogonal CategoryTheory.HomOrthogonal
 
 namespace HomOrthogonal
 
-variable {ι : Type _} {s : ι → C}
+variable {ι : Type*} {s : ι → C}
 
 theorem eq_zero [HasZeroMorphisms C] (o : HomOrthogonal s) {i j : ι} (w : i ≠ j) (f : s i ⟶ s j) :
-    f = 0 := by
-  haveI := o i j w
-  apply Subsingleton.elim
+    f = 0 :=
+  (o w).elim _ _
 #align category_theory.hom_orthogonal.eq_zero CategoryTheory.HomOrthogonal.eq_zero
 
 section
@@ -100,7 +99,6 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
   right_inv z := by
     ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
     split_ifs with h
     · simp
     · exfalso
@@ -146,7 +144,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintype α] [Fintype β]
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
-    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
+    o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
@@ -168,7 +166,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
 
 section
 
-variable {R : Type _} [Semiring R] [Linear R C]
+variable {R : Type*} [Semiring R] [Linear R C]
 
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]

@@ -5,6 +5,7 @@ Authors: Bolton Bailey
 -/
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Interval
 
 #align_import data.nat.periodic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -25,7 +26,7 @@ theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
   simp only [forall_const, gcd_add_self_right, eq_self_iff_true, Periodic]
 #align nat.periodic_gcd Nat.periodic_gcd
 
-theorem periodic_coprime (a : ℕ) : Periodic (coprime a) a := by
+theorem periodic_coprime (a : ℕ) : Periodic (Coprime a) a := by
   simp only [coprime_add_self_right, forall_const, iff_self_iff, eq_iff_iff, Periodic]
 #align nat.periodic_coprime Nat.periodic_coprime
 
@@ -33,7 +34,7 @@ theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
   simp only [forall_const, eq_self_iff_true, add_mod_right, Periodic]
 #align nat.periodic_mod Nat.periodic_mod
 
-theorem _root_.Function.Periodic.map_mod_nat {α : Type _} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
+theorem _root_.Function.Periodic.map_mod_nat {α : Type*} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
     ∀ n, f (n % a) = f n := fun n => by
   conv_rhs => rw [← Nat.mod_add_div n a, mul_comm, ← Nat.nsmul_eq_mul, hf.nsmul]
 #align function.periodic.map_mod_nat Function.Periodic.map_mod_nat

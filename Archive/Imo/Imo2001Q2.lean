@@ -32,8 +32,6 @@ open Real
 
 variable {a b c : ℝ}
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 namespace Imo2001Q2
 
 theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
@@ -43,7 +41,7 @@ theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
       = a ^ 3 * (a * sqrt ((a ^ 3) ^ 2 + (8:ℝ) * b ^ 3 * c ^ 3)) := by ring
     _ ≤ a ^ 3 * (a ^ 4 + b ^ 4 + c ^ 4) := ?_
   gcongr
-  apply le_of_pow_le_pow _ (by positivity) zero_lt_two
+  apply le_of_pow_le_pow_left two_ne_zero (by positivity)
   rw [mul_pow, sq_sqrt (by positivity), ← sub_nonneg]
   calc
     (a ^ 4 + b ^ 4 + c ^ 4) ^ 2 - a ^ 2 * ((a ^ 3) ^ 2 + 8 * b ^ 3 * c ^ 3)
@@ -69,7 +67,7 @@ open Imo2001Q2
 theorem imo2001_q2 (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : ↑1 ≤
     a / sqrt (a ^ 2 + ↑8 * b * c) + b / sqrt (b ^ 2 + ↑8 * c * a) + c / sqrt (c ^ 2 + ↑8 * a * b) :=
   have h3 : ∀ {x : ℝ}, 0 < x → (x ^ (3 : ℝ)⁻¹) ^ 3 = x := fun hx =>
-    show ↑3 = (3 : ℝ) by norm_num ▸ rpow_nat_inv_pow_nat hx.le three_ne_zero
+    show ↑3 = (3 : ℝ) by norm_num ▸ rpow_inv_natCast_pow hx.le three_ne_zero
   calc
     1 ≤ _ := imo2001_q2' (rpow_pos_of_pos ha _) (rpow_pos_of_pos hb _) (rpow_pos_of_pos hc _)
     _ = _ := by rw [h3 ha, h3 hb, h3 hc]

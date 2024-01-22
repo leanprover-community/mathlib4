@@ -3,7 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.Defs
 
 #align_import data.list.to_finsupp from "leanprover-community/mathlib"@"06a655b5fcfbda03502f9158bbf6c0f1400886f9"
 
@@ -34,7 +34,7 @@ elements are beyond the dec-eq terms of casted values from `ℕ, ℤ, ℚ`.
 
 namespace List
 
-variable {M : Type _} [Zero M] (l : List M) [DecidablePred (getD l · 0 ≠ 0)] (n : ℕ)
+variable {M : Type*} [Zero M] (l : List M) [DecidablePred (getD l · 0 ≠ 0)] (n : ℕ)
 
 /-- Indexing into a `l : List M`, as a finitely-supported function,
 where the support are all the indices within the length of the list
@@ -108,7 +108,7 @@ theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
 #align list.to_finsupp_cons_apply_succ List.toFinsupp_cons_apply_succ
 
 -- porting note: new theorem
-theorem toFinsupp_append {R : Type _} [AddZeroClass R] (l₁ l₂ : List R)
+theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
     [DecidablePred (getD l₂ · 0 ≠ 0)] :
     toFinsupp (l₁ ++ l₂) =
@@ -125,7 +125,7 @@ theorem toFinsupp_append {R : Type _} [AddZeroClass R] (l₁ l₂ : List R)
     rw [getD_append_right _ _ _ _ h, add_tsub_cancel_left, getD_eq_default _ _ h, zero_add]
     exact Eq.symm (Finsupp.embDomain_apply _ _ _)
 
-theorem toFinsupp_cons_eq_single_add_embDomain {R : Type _} [AddZeroClass R] (x : R) (xs : List R)
+theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
     toFinsupp (x::xs) =
       Finsupp.single 0 x + (toFinsupp xs).embDomain ⟨Nat.succ, Nat.succ_injective⟩ := by
@@ -136,7 +136,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type _} [AddZeroClass R] (x 
       exact add_comm n 1
 #align list.to_finsupp_cons_eq_single_add_emb_domain List.toFinsupp_cons_eq_single_add_embDomain
 
-theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type _} [AddZeroClass R] (x : R) (xs : List R)
+theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred fun i => getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
     toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x := by
   classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,
@@ -144,7 +144,7 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type _} [AddZeroClass R] (
 #align list.to_finsupp_concat_eq_to_finsupp_add_single List.toFinsupp_concat_eq_toFinsupp_add_single
 
 
-theorem toFinsupp_eq_sum_map_enum_single {R : Type _} [AddMonoid R] (l : List R)
+theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
     toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).sum := by
   /- porting note: todo: `induction` fails to substitute `l = []` in

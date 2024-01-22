@@ -47,7 +47,7 @@ namespace UniformSpace.Completion
 open DenseInducing UniformSpace Function
 
 section one_and_mul
-variable (α : Type _) [Ring α] [UniformSpace α]
+variable (α : Type*) [Ring α] [UniformSpace α]
 
 instance one : One (Completion α) :=
   ⟨(1 : α)⟩
@@ -62,7 +62,7 @@ theorem coe_one : ((1 : α) : Completion α) = 1 :=
 
 end one_and_mul
 
-variable {α : Type _} [Ring α] [UniformSpace α] [TopologicalRing α]
+variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
@@ -82,7 +82,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
   convert di.extend_Z_bilin di this
 #align uniform_space.completion.continuous_mul UniformSpace.Completion.continuous_mul
 
-theorem Continuous.mul {β : Type _} [TopologicalSpace β] {f g : β → Completion α}
+theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
   Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
@@ -186,12 +186,12 @@ def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
 
 section Algebra
 
-variable (A : Type _) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalRing A] (R : Type _)
+variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalRing A] (R : Type*)
   [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
-    Completion.map ((· • ·) r) = (· * ·) (algebraMap R A r : Completion A) := by
+    Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
   refine' Completion.induction_on x _ fun a => _
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
@@ -215,7 +215,7 @@ end Algebra
 
 section CommRing
 
-variable (R : Type _) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
+variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with
@@ -234,7 +234,7 @@ end UniformSpace.Completion
 
 namespace UniformSpace
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     separationSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
@@ -274,11 +274,11 @@ end UniformSpace
 
 section UniformExtension
 
-variable {α : Type _} [UniformSpace α] [Semiring α]
+variable {α : Type*} [UniformSpace α] [Semiring α]
 
-variable {β : Type _} [UniformSpace β] [Semiring β] [TopologicalSemiring β]
+variable {β : Type*} [UniformSpace β] [Semiring β] [TopologicalSemiring β]
 
-variable {γ : Type _} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
+variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
 
 variable [T2Space γ] [CompleteSpace γ]
 

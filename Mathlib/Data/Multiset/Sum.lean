@@ -23,7 +23,7 @@ open Sum
 
 namespace Multiset
 
-variable {α β : Type _} (s : Multiset α) (t : Multiset β)
+variable {α β : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (Sum α β) :=

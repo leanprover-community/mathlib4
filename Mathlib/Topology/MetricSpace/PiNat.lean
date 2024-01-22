@@ -56,9 +56,9 @@ open Classical Topology Filter
 
 open TopologicalSpace Set Metric Filter Function
 
-attribute [local simp] pow_le_pow_iff one_lt_two inv_le_inv zero_le_two zero_lt_two
+attribute [local simp] pow_le_pow_iff_right one_lt_two inv_le_inv zero_le_two zero_lt_two
 
-variable {E : ℕ → Type _}
+variable {E : ℕ → Type*}
 
 namespace PiNat
 
@@ -90,7 +90,7 @@ theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by
-  by_contra' H
+  by_contra! H
   rw [lt_min_iff] at H
   refine apply_firstDiff_ne h ?_
   calc
@@ -154,7 +154,7 @@ theorem mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : �
     x ∈ cylinder y i ↔ i ≤ firstDiff x y := by
   constructor
   · intro h
-    by_contra'
+    by_contra!
     exact apply_firstDiff_ne hne (h _ this)
   · intro hi j hj
     exact apply_eq_of_lt_firstDiff (hj.trans_le hi)
@@ -191,7 +191,7 @@ theorem update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y 
 
 section Res
 
-variable {α : Type _}
+variable {α : Type*}
 
 open List
 
@@ -295,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
   simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
-    not_false_iff, le_max_iff, pow_le_pow_iff, one_lt_two, pow_pos,
+    not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
 
@@ -308,7 +308,6 @@ protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + d
 protected theorem eq_of_dist_eq_zero (x y : ∀ n, E n) (hxy : dist x y = 0) : x = y := by
   rcases eq_or_ne x y with (rfl | h); · rfl
   simp [dist_eq_of_ne h] at hxy
-  exact (two_ne_zero (pow_eq_zero hxy)).elim
 #align pi_nat.eq_of_dist_eq_zero PiNat.eq_of_dist_eq_zero
 
 theorem mem_cylinder_iff_dist_le {x y : ∀ n, E n} {n : ℕ} :
@@ -318,7 +317,7 @@ theorem mem_cylinder_iff_dist_le {x y : ∀ n, E n} {n : ℕ} :
   suffices (∀ i : ℕ, i < n → y i = x i) ↔ n ≤ firstDiff y x by simpa [dist_eq_of_ne hne]
   constructor
   · intro hy
-    by_contra' H
+    by_contra! H
     exact apply_firstDiff_ne hne (hy _ H)
   · intro h i hi
     exact apply_eq_of_lt_firstDiff (hi.trans_le h)
@@ -329,14 +328,14 @@ theorem apply_eq_of_dist_lt {x y : ∀ n, E n} {n : ℕ} (h : dist x y < (1 / 2)
   rcases eq_or_ne x y with (rfl | hne)
   · rfl
   have : n < firstDiff x y := by
-    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff, one_lt_two] using h
+    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff_right, one_lt_two] using h
   exact apply_eq_of_lt_firstDiff (hi.trans_lt this)
 #align pi_nat.apply_eq_of_dist_lt PiNat.apply_eq_of_dist_lt
 
 /-- A function to a pseudo-metric-space is `1`-Lipschitz if and only if points in the same cylinder
 of length `n` are sent to points within distance `(1/2)^n`.
 Not expressed using `LipschitzWith` as we don't have a metric space structure -/
-theorem lipschitz_with_one_iff_forall_dist_image_le_of_mem_cylinder {α : Type _}
+theorem lipschitz_with_one_iff_forall_dist_image_le_of_mem_cylinder {α : Type*}
     [PseudoMetricSpace α] {f : (∀ n, E n) → α} :
     (∀ x y : ∀ n, E n, dist (f x) (f y) ≤ dist x y) ↔
       ∀ x y n, y ∈ cylinder x n → dist (f x) (f y) ≤ (1 / 2) ^ n := by
@@ -364,7 +363,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 
 theorem isTopologicalBasis_cylinders :
     IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
-  apply isTopologicalBasis_of_open_of_nhds
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder
   · intro x u hx u_open
@@ -421,7 +420,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 /-- Metric space structure on `Π (n : ℕ), E n` when the spaces `E n` have the discrete uniformity,
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
-protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type _} [∀ n, UniformSpace (E n)]
+protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
@@ -470,7 +469,7 @@ protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
   intro u hu
   refine' ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => _⟩
   refine' tendsto_const_nhds.congr' _
-  filter_upwards [Filter.Ici_mem_atTop i]with n hn
+  filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 #align pi_nat.complete_space PiNat.completeSpace
 
@@ -503,7 +502,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
-def shortestPrefixDiff {E : ℕ → Type _} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
+def shortestPrefixDiff {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   if h : ∃ n, Disjoint s (cylinder x n) then Nat.find h else 0
 #align pi_nat.shortest_prefix_diff PiNat.shortestPrefixDiff
 
@@ -528,7 +527,7 @@ theorem shortestPrefixDiff_pos {s : Set (∀ n, E n)} (hs : IsClosed s) (hne : s
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `longestPrefix x s` if the largest `n` for which there is an element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, use `0` by convention. -/
-def longestPrefix {E : ℕ → Type _} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
+def longestPrefix {E : ℕ → Type*} (x : ∀ n, E n) (s : Set (∀ n, E n)) : ℕ :=
   shortestPrefixDiff x s - 1
 #align pi_nat.longest_prefix PiNat.longestPrefix
 
@@ -719,7 +718,7 @@ open PiNat
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
-theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [MetricSpace α]
+theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [MetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [Nonempty α] :
     ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f := by
   /- First, we define a surjective map from a closed subset `s` of `ℕ → ℕ`. Then, we compose
@@ -745,7 +744,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     have dist' : dist x y = dist x.1 y.1 := rfl
     let n := firstDiff x.1 y.1 - 1
     have diff_pos : 0 < firstDiff x.1 y.1 := by
-      by_contra' h
+      by_contra! h
       apply apply_firstDiff_ne hne'
       rw [le_zero_iff.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
@@ -782,11 +781,11 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     have L : Tendsto (fun n : ℕ => diam (closedBall (u (x n)) ((1 / 2) ^ n))) atTop (𝓝 0) := by
       have : Tendsto (fun n : ℕ => (2 : ℝ) * (1 / 2) ^ n) atTop (𝓝 (2 * 0)) :=
         (tendsto_pow_atTop_nhds_0_of_lt_1 I0.le I1).const_mul _
-      rw [MulZeroClass.mul_zero] at this
+      rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
     refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
-      (fun n => bounded_closedBall) (fun N ↦ ?_) L
+      (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
@@ -812,7 +811,7 @@ namespace PiCountable
 -/
 
 
-variable {ι : Type _} [Encodable ι] {F : ι → Type _} [∀ i, MetricSpace (F i)]
+variable {ι : Type*} [Encodable ι] {F : ι → Type*} [∀ i, MetricSpace (F i)]
 
 open Encodable
 
@@ -832,7 +831,7 @@ theorem dist_eq_tsum (x y : ∀ i, F i) :
 
 theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine summable_of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
+  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 #align pi_countable.dist_summable PiCountable.dist_summable

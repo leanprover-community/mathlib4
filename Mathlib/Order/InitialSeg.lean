@@ -39,8 +39,10 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
+set_option autoImplicit true
 
-variable {α : Type _} {β : Type _} {γ : Type _} {r : α → α → Prop} {s : β → β → Prop}
+
+variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 open Function
@@ -48,7 +50,7 @@ open Function
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
-structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The order embedding is an initial segment -/
   init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
@@ -73,7 +75,7 @@ instance : EmbeddingLike (r ≼i s) α β :=
     injective' := fun f => f.inj' }
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]
@@ -232,7 +234,7 @@ segments.
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
-structure PrincipalSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment -/
   top : β
   /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
@@ -376,17 +378,18 @@ theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → �
 #align principal_seg.top_lt_top PrincipalSeg.topLTTop
 
 /-- Any element of a well order yields a principal segment -/
-def ofElement {α : Type _} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
 #align principal_seg.of_element PrincipalSeg.ofElement
 
-@[simp]
-theorem ofElement_apply {α : Type _} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
+theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 #align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
 
 @[simp]
-theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
+theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
@@ -398,12 +401,17 @@ noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
       (funext fun _ ↦ propext f.down.symm))),
     map_rel_iff' := f.map_rel_iff }
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
+
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
@@ -455,7 +463,7 @@ end PrincipalSeg
 In this lemma we use `Subrel` to indicate its principal segments because it's usually more
 convenient to use.
 -/
-theorem wellFounded_iff_wellFounded_subrel {β : Type _} {s : β → β → Prop} [IsTrans β s] :
+theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
   refine'
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
@@ -505,7 +513,7 @@ noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i 
 @[simp]
 theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
-  delta InitialSeg.leLT; cases' h : f.ltOrEq with f' f'
+  delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
   · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
 #align initial_seg.le_lt_apply InitialSeg.leLT_apply
@@ -565,3 +573,5 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 
 end RelEmbedding
+attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
+  PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply

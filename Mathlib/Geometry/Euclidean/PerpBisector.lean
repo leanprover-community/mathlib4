@@ -23,7 +23,7 @@ euclidean geometry, perpendicular, perpendicular bisector, line segment bisector
 open Set
 open scoped BigOperators RealInnerProductSpace
 
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 noncomputable section
@@ -106,7 +106,7 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
   rw [perpBisector_comm, right_mem_perpBisector, eq_comm]
 
 @[simp] theorem perpBisector_self (p : P) : perpBisector p p = ⊤ :=
-  top_unique <| fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
+  top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 
 @[simp] theorem perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ perpBisector_self _⟩
@@ -133,7 +133,7 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
 
 end EuclideanGeometry
 
-variable [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
+variable {V' P' : Type*} [NormedAddCommGroup V'] [InnerProductSpace ℝ V'] [MetricSpace P']
 variable [NormedAddTorsor V' P']
 
 theorem Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :

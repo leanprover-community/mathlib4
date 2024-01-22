@@ -41,7 +41,7 @@ open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω} [TopologicalSpace β] [Preorder ι]
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω} [TopologicalSpace β] [Preorder ι]
   {u v : ι → Ω → β} {f : Filtration ι m}
 
 /-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,

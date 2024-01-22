@@ -26,7 +26,7 @@ open Filter
 
 open Filter Set
 
-variable {α β : Type _} {ι : Sort _}
+variable {α β : Type*} {ι : Sort*}
 
 namespace Filter
 
@@ -42,7 +42,7 @@ theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset
   rfl
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
-theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
+protected theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis l.smallSets p fun i => 𝒫 s i :=
   h.lift' monotone_powerset
 #align filter.has_basis.small_sets Filter.HasBasis.smallSets
@@ -58,19 +58,16 @@ theorem tendsto_smallSets_iff {f : α → Set β} :
   (hasBasis_smallSets lb).tendsto_right_iff
 #align filter.tendsto_small_sets_iff Filter.tendsto_smallSets_iff
 
--- porting note: the proof was `eventually_lift'_iff monotone_powerset`
--- but it timeouts in Lean 4
 theorem eventually_smallSets {p : Set α → Prop} :
-    (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, ∀ t, t ⊆ s → p t := by
-  rw [smallSets, eventually_lift'_iff]; rfl
-  exact monotone_powerset
+    (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, ∀ t, t ⊆ s → p t :=
+  eventually_lift'_iff monotone_powerset
 #align filter.eventually_small_sets Filter.eventually_smallSets
 
-theorem eventually_small_sets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
+theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
     (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, p s :=
   eventually_smallSets.trans <|
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
-#align filter.eventually_small_sets' Filter.eventually_small_sets'
+#align filter.eventually_small_sets' Filter.eventually_smallSets'
 
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
@@ -80,6 +77,16 @@ theorem frequently_smallSets {p : Set α → Prop} :
 theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
   frequently_smallSets.2 fun t ht => ⟨t, Subset.rfl, ht⟩
 #align filter.frequently_small_sets_mem Filter.frequently_smallSets_mem
+
+@[simp]
+lemma tendsto_image_smallSets {f : α → β} :
+    Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
+  rw [tendsto_smallSets_iff]
+  refine forall₂_congr fun u hu ↦ ?_
+  rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
+  simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
+
+alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets
 
 theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) : Tendsto s atTop l.smallSets :=
@@ -153,7 +160,7 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ᶠ x in l', x ∈ s → p x) ↔ ∀ᶠ x in l ⊓ l', p x :=
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
-      eventually_small_sets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
+      eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually
@@ -164,7 +171,7 @@ theorem eventually_smallSets_forall {p : α → Prop} :
   simpa only [inf_top_eq, eventually_top] using @eventually_smallSets_eventually α l ⊤ p
 #align filter.eventually_small_sets_forall Filter.eventually_smallSets_forall
 
-alias eventually_smallSets_forall ↔ Eventually.of_smallSets Eventually.smallSets
+alias ⟨Eventually.of_smallSets, Eventually.smallSets⟩ := eventually_smallSets_forall
 #align filter.eventually.of_small_sets Filter.Eventually.of_smallSets
 #align filter.eventually.small_sets Filter.Eventually.smallSets
 

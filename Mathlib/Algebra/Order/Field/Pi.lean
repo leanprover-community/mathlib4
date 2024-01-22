@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 #align_import algebra.order.field.pi from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -15,7 +16,7 @@ We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness
 -/
 
 
-variable {α ι : Type _} [LinearOrderedSemifield α]
+variable {α ι : Type*} [LinearOrderedSemifield α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}
     (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i := by

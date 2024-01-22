@@ -35,7 +35,7 @@ directly transfer to minima over multisets or finsets.
 
 open BigOperators
 
-variable {R S : Type _}
+variable {R S : Type*}
 
 open Tropical Finset
 
@@ -142,5 +142,5 @@ theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → T
 as it is simply not true on conditionally complete lattices! -/
 theorem Finset.untrop_sum [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i in s, f i) = ⨅ i : s, untrop (f i) := by
-  simpa [← _root_.untrop_sum] using sum_attach.symm
+  simpa [← _root_.untrop_sum] using (sum_attach _ _).symm
 #align finset.untrop_sum Finset.untrop_sum

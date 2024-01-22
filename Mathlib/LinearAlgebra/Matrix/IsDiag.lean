@@ -26,7 +26,7 @@ diag, diagonal, matrix
 
 namespace Matrix
 
-variable {α β R n m : Type _}
+variable {α β R n m : Type*}
 
 open Function
 
@@ -34,7 +34,7 @@ open Matrix Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=
-  ∀ ⦃i j⦄, i ≠ j → A i j = 0
+  Pairwise fun i j => A i j = 0
 #align matrix.is_diag Matrix.IsDiag
 
 @[simp]
@@ -189,12 +189,12 @@ theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n 
 #align matrix.is_diag.from_blocks_of_is_symm Matrix.IsDiag.fromBlocks_of_isSymm
 
 theorem mul_transpose_self_isDiag_iff_hasOrthogonalRows [Fintype n] [Mul α] [AddCommMonoid α]
-    {A : Matrix m n α} : (A ⬝ Aᵀ).IsDiag ↔ A.HasOrthogonalRows :=
+    {A : Matrix m n α} : (A * Aᵀ).IsDiag ↔ A.HasOrthogonalRows :=
   Iff.rfl
 #align matrix.mul_transpose_self_is_diag_iff_has_orthogonal_rows Matrix.mul_transpose_self_isDiag_iff_hasOrthogonalRows
 
 theorem transpose_mul_self_isDiag_iff_hasOrthogonalCols [Fintype m] [Mul α] [AddCommMonoid α]
-    {A : Matrix m n α} : (Aᵀ ⬝ A).IsDiag ↔ A.HasOrthogonalCols :=
+    {A : Matrix m n α} : (Aᵀ * A).IsDiag ↔ A.HasOrthogonalCols :=
   Iff.rfl
 #align matrix.transpose_mul_self_is_diag_iff_has_orthogonal_cols Matrix.transpose_mul_self_isDiag_iff_hasOrthogonalCols
 

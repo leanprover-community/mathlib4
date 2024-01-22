@@ -42,7 +42,7 @@ open Option List Nat Function
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
 inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `Denumerable` if you
 wish to enforce infiniteness. -/
-class Encodable (α : Type _) where
+class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
   --Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
@@ -57,7 +57,7 @@ attribute [simp] Encodable.encodek
 
 namespace Encodable
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 universe u
 
@@ -75,7 +75,7 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
-theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
+theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
     Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
 #align encodable.surjective_decode_iget Encodable.surjective_decode_iget
@@ -155,7 +155,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
 /-- If `α` is encodable, then so is `Option α`. -/
-instance _root_.Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
+instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
     cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
@@ -228,7 +228,7 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
 #align encodable.encodek₂ Encodable.encodek₂
 
 /-- The encoding function has decidable range. -/
-def decidableRangeEncode (α : Type _) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
+def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
     ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
@@ -236,7 +236,7 @@ def decidableRangeEncode (α : Type _) [Encodable α] : DecidablePred (· ∈ Se
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α _)
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
     where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
@@ -341,7 +341,7 @@ noncomputable instance _root_.Prop.encodable : Encodable Prop :=
 
 section Sigma
 
-variable {γ : α → Type _} [Encodable α] [∀ a, Encodable (γ a)]
+variable {γ : α → Type*} [Encodable α] [∀ a, Encodable (γ a)]
 
 /-- Explicit encoding function for `Sigma γ` -/
 def encodeSigma : Sigma γ → ℕ
@@ -455,7 +455,7 @@ noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Enco
 #align encodable.of_inj Encodable.ofInj
 
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
-noncomputable def ofCountable (α : Type _) [Countable α] : Encodable α :=
+noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
     ⟨ofInj f hf⟩
@@ -469,7 +469,7 @@ theorem nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
 end Encodable
 
 /-- See also `nonempty_fintype`, `nonempty_denumerable`. -/
-theorem nonempty_encodable (α : Type _) [Countable α] : Nonempty (Encodable α) :=
+theorem nonempty_encodable (α : Type*) [Countable α] : Nonempty (Encodable α) :=
   ⟨Encodable.ofCountable _⟩
 #align nonempty_encodable nonempty_encodable
 
@@ -481,21 +481,21 @@ section ULower
 attribute [local instance] Encodable.decidableRangeEncode
 
 /-- `ULower α : Type` is an equivalent type in the lowest universe, given `Encodable α`. -/
-def ULower (α : Type _) [Encodable α] : Type :=
+def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type _} [Encodable α] : DecidableEq (ULower α) :=
+instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
   by delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type _} [Encodable α] : Encodable (ULower α) :=
+instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
   by delta ULower; infer_instance
 
 end ULower
 
 namespace ULower
 
-variable (α : Type _) [Encodable α]
+variable (α : Type*) [Encodable α]
 
 /-- The equivalence between the encodable type `α` and `ULower α : Type`. -/
 def equiv : α ≃ ULower α :=
@@ -548,15 +548,15 @@ end ULower
 Choice function for encodable types and decidable predicates.
 We provide the following API
 
-choose      {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
-choose_spec {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
+choose      {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
+choose_spec {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
   p (choose ex) :=
 -/
 namespace Encodable
 
 section FindA
 
-variable {α : Type _} (p : α → Prop) [Encodable α] [DecidablePred p]
+variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
 private def good : Option α → Prop
   | some a => p a
@@ -592,13 +592,13 @@ theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
 end FindA
 
 /-- A constructive version of `Classical.axiom_of_choice` for `Encodable` types. -/
-theorem axiom_of_choice {α : Type _} {β : α → Type _} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
+theorem axiom_of_choice {α : Type*} {β : α → Type*} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (R x y)] (H : ∀ x, ∃ y, R x y) : ∃ f : ∀ a, β a, ∀ x, R x (f x) :=
   ⟨fun x => choose (H x), fun x => choose_spec (H x)⟩
 #align encodable.axiom_of_choice Encodable.axiom_of_choice
 
 /-- A constructive version of `Classical.skolem` for `Encodable` types. -/
-theorem skolem {α : Type _} {β : α → Type _} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
+theorem skolem {α : Type*} {β : α → Type*} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (P x y)] : (∀ x, ∃ y, P x y) ↔ ∃ f : ∀ a, β a, ∀ x, P x (f x) :=
   ⟨axiom_of_choice, fun ⟨_, H⟩ x => ⟨_, H x⟩⟩
 #align encodable.skolem Encodable.skolem
@@ -626,7 +626,7 @@ namespace Directed
 
 open Encodable
 
-variable {α : Type _} {β : Type _} [Encodable α] [Inhabited α]
+variable {α : Type*} {β : Type*} [Encodable α] [Inhabited α]
 
 /-- Given a `Directed r` function `f : α → β` defined on an encodable inhabited type,
 construct a noncomputable sequence such that `r (f (x n)) (f (x (n + 1)))`
@@ -644,7 +644,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' h : (decode n: Option α) with a
+  cases' (decode n : Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
@@ -671,7 +671,7 @@ section Quotient
 
 open Encodable Quotient
 
-variable {α : Type _} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
+variable {α : Type*} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
 
 /-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/

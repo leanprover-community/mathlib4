@@ -37,6 +37,9 @@ these results are found in `CategoryTheory/Abelian/Exact.lean`.
   categories?)
 * Two adjacent maps in a chain complex are exact iff the homology vanishes
 
+Note: It is planned that the definition in this file will be replaced by the new
+homology API, in particular by the content of `Algebra.Homology.ShortComplex.Exact`.
+
 -/
 
 
@@ -84,22 +87,22 @@ open ZeroObject
 /-- In any preadditive category,
 composable morphisms `f g` are exact iff they compose to zero and the homology vanishes.
 -/
-theorem Preadditive.exact_iff_homology_zero {A B C : V} (f : A ⟶ B) (g : B ⟶ C) :
-    Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology f g w ≅ 0) :=
+theorem Preadditive.exact_iff_homology'_zero {A B C : V} (f : A ⟶ B) (g : B ⟶ C) :
+    Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology' f g w ≅ 0) :=
   ⟨fun h => ⟨h.w, ⟨by
     haveI := h.epi
     exact cokernel.ofEpi _⟩⟩,
    fun h => by
     obtain ⟨w, ⟨i⟩⟩ := h
     exact ⟨w, Preadditive.epi_of_cokernel_zero ((cancel_mono i.hom).mp (by ext))⟩⟩
-#align category_theory.preadditive.exact_iff_homology_zero CategoryTheory.Preadditive.exact_iff_homology_zero
+#align category_theory.preadditive.exact_iff_homology_zero CategoryTheory.Preadditive.exact_iff_homology'_zero
 
 theorem Preadditive.exact_of_iso_of_exact {A₁ B₁ C₁ A₂ B₂ C₂ : V} (f₁ : A₁ ⟶ B₁) (g₁ : B₁ ⟶ C₁)
     (f₂ : A₂ ⟶ B₂) (g₂ : B₂ ⟶ C₂) (α : Arrow.mk f₁ ≅ Arrow.mk f₂) (β : Arrow.mk g₁ ≅ Arrow.mk g₂)
     (p : α.hom.right = β.hom.left) (h : Exact f₁ g₁) : Exact f₂ g₂ := by
-  rw [Preadditive.exact_iff_homology_zero] at h ⊢
+  rw [Preadditive.exact_iff_homology'_zero] at h ⊢
   rcases h with ⟨w₁, ⟨i⟩⟩
-  suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
+  suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
   rw [← cancel_epi α.hom.left, ← cancel_mono β.inv.right, comp_zero, zero_comp, ← w₁]
   have eq₁ := β.inv.w
   have eq₂ := α.hom.w
@@ -147,7 +150,7 @@ theorem imageToKernel_isIso_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B 
     IsIso (imageToKernel f g (comp_eq_zero_of_image_eq_kernel f g p)) := by
   refine' ⟨⟨Subobject.ofLE _ _ p.ge, _⟩⟩
   dsimp [imageToKernel]
-  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl]
+  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl, and_self]
 #align category_theory.image_to_kernel_is_iso_of_image_eq_kernel CategoryTheory.imageToKernel_isIso_of_image_eq_kernel
 
 -- We'll prove the converse later, when `V` is abelian.
@@ -355,7 +358,7 @@ variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an
     exact pair is itself exact. -/
-class ReflectsExactSequences (F : V ⥤ W) where
+class ReflectsExactSequences (F : V ⥤ W) : Prop where
   reflects : ∀ {A B C : V} (f : A ⟶ B) (g : B ⟶ C), Exact (F.map f) (F.map g) → Exact f g
 #align category_theory.functor.reflects_exact_sequences CategoryTheory.Functor.ReflectsExactSequences
 

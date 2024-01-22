@@ -140,7 +140,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
 theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
-  Subtype.ext <| ext.mpr ⟨hx, hy⟩
+  Subtype.ext <| Zsqrtd.ext _ _ hx hy
 #align pell.solution₁.ext Pell.Solution₁.ext
 
 /-- Construct a solution from `x`, `y` and a proof that the equation is satisfied. -/
@@ -161,7 +161,7 @@ theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
 
 @[simp]
 theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
-  Zsqrtd.ext.mpr ⟨x_mk x y prop, y_mk x y prop⟩
+  Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
 @[simp]
@@ -211,8 +211,6 @@ theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 
   contrapose! h
   have h1 := sq_pos_of_ne_zero a.x h.1
   have h2 := sq_pos_of_ne_zero a.y h.2
-  -- Porting note: added this to help `nlinarith`
-  obtain ⟨d', rfl⟩ : ∃ d', d = -d' := ⟨-d, by exact Iff.mp neg_eq_iff_eq_neg rfl⟩
   nlinarith
 #align pell.solution₁.eq_zero_of_d_neg Pell.Solution₁.eq_zero_of_d_neg
 
@@ -220,7 +218,7 @@ theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 
 theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
   intro hx
   have h : 0 ≤ d * a.y ^ 2 := mul_nonneg h₀ (sq_nonneg _)
-  rw [a.prop_y, hx, sq, MulZeroClass.zero_mul, zero_sub] at h
+  rw [a.prop_y, hx, sq, zero_mul, zero_sub] at h
   exact not_le.mpr (neg_one_lt_zero : (-1 : ℤ) < 0) h
 #align pell.solution₁.x_ne_zero Pell.Solution₁.x_ne_zero
 
@@ -228,7 +226,7 @@ theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
 theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := by
   intro hy
   have prop := a.prop
-  rw [hy, sq (0 : ℤ), MulZeroClass.zero_mul, MulZeroClass.mul_zero, sub_zero] at prop
+  rw [hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero] at prop
   exact lt_irrefl _ (((one_lt_sq_iff <| zero_le_one.trans ha.le).mpr ha).trans_eq prop)
 #align pell.solution₁.y_ne_zero_of_one_lt_x Pell.Solution₁.y_ne_zero_of_one_lt_x
 
@@ -258,7 +256,7 @@ theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) :
 theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
   refine' ⟨fun H => H.elim (fun h => by simp [h]) fun h => by simp [h], fun H => _⟩
   have prop := a.prop
-  rw [H, sq (0 : ℤ), MulZeroClass.mul_zero, MulZeroClass.mul_zero, sub_zero, sq_eq_one_iff] at prop
+  rw [H, sq (0 : ℤ), mul_zero, mul_zero, sub_zero, sq_eq_one_iff] at prop
   exact prop.imp (fun h => ext h H) fun h => ext h H
 #align pell.solution₁.eq_one_or_neg_one_iff_y_eq_zero Pell.Solution₁.eq_one_or_neg_one_iff_y_eq_zero
 
@@ -269,11 +267,11 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
     sub_pos]
   ring_nf
-  cases' le_or_lt 0 d with h h
+  rcases le_or_lt 0 d with h | h
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
-    -- rw [zero_pow two_pos, zero_add, MulZeroClass.zero_mul, zero_add]
+    -- rw [zero_pow two_pos, zero_add, zero_mul, zero_add]
     -- exact one_pos
     -- but this relied on the exact output of `ring_nf`
     simp
@@ -378,7 +376,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
     refine' Infinite.mono (fun q h => _) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
-    have h1 : (q.num : ℝ) / (q.den : ℝ) = q := by exact_mod_cast q.num_div_den
+    have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ, ← div_lt_div_right (abs_pos_of_pos h0)]
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel _ h0.ne', ← div_pow, h1, ←
@@ -433,7 +431,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ring
   · qify [hd₂]
     refine' div_ne_zero_iff.mpr ⟨_, hm₀⟩
-    exact_mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
+    exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 #align pell.exists_of_not_is_square Pell.exists_of_not_isSquare
 
 /-- If `d` is a positive integer, then there is a nontrivial solution
@@ -528,7 +526,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   -- to avoid having to show that the predicate is decidable
   let x₁ := Nat.find P
   obtain ⟨hx, y₁, hy₀, hy₁⟩ := Nat.find_spec P
-  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact_mod_cast hx, hy₀, fun {b} hb => _⟩
+  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact mod_cast hx, hy₀, fun {b} hb => _⟩
   rw [x_mk]
   have hb' := (Int.toNat_of_nonneg <| zero_le_one.trans hb.le).symm
   have hb'' := hb
@@ -551,10 +549,10 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
       add_pos_of_pos_of_nonneg (mul_pos (x_zpow_pos h.x_pos _) h.2.1)
         (mul_nonneg _ (by rw [sub_nonneg]; exact h.1.le))
     rcases hn.eq_or_lt with (rfl | hn)
-    · simp only [zpow_zero, y_one]
+    · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine' strictMono_int_of_lt_succ fun n => _
-  cases' le_or_lt 0 n with hn hn
+  rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
@@ -666,13 +664,13 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   -- Porting note: added
   clear hax
   induction' ax using Nat.strong_induction_on with x ih generalizing a
-  cases' hay.eq_or_lt with hy hy
+  rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine' ⟨0, _⟩
     simp only [pow_zero]
     ext <;> simp only [x_one, y_one]
     · have prop := a.prop
-      rw [← hy, sq (0 : ℤ), MulZeroClass.zero_mul, MulZeroClass.mul_zero, sub_zero,
+      rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
         sq_eq_one_iff] at prop
       refine' prop.resolve_right fun hf => _
       have := (hax.trans_eq hax').le.trans_eq hf
@@ -685,7 +683,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
     -- Porting note: `ih` has its arguments in a different order compared to lean 3.
-    obtain ⟨n, hn⟩ := ih x' (by exact_mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
+    obtain ⟨n, hn⟩ := ih x' (mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ, ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
 #align pell.is_fundamental.eq_pow_of_nonneg Pell.IsFundamental.eq_pow_of_nonneg
 
@@ -695,7 +693,7 @@ theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a :
   obtain ⟨b, hbx, hby, hb⟩ := exists_pos_variant h.d_pos a
   obtain ⟨n, hn⟩ := h.eq_pow_of_nonneg hbx hby
   rcases hb with (rfl | rfl | rfl | hb)
-  · exact ⟨n, Or.inl (by exact_mod_cast hn)⟩
+  · exact ⟨n, Or.inl (mod_cast hn)⟩
   · exact ⟨-n, Or.inl (by simp [hn])⟩
   · exact ⟨n, Or.inr (by simp [hn])⟩
   · rw [Set.mem_singleton_iff] at hb

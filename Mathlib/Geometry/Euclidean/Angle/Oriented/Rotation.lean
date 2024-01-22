@@ -30,7 +30,7 @@ namespace Orientation
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-variable {V V' : Type _}
+variable {V V' : Type*}
 
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
 
@@ -128,7 +128,7 @@ theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| by
     -- porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
-    -- in mathlib3 this was just `units.ext $ o.det_rotation θ`
+    -- in mathlib3 this was just `units.ext <| o.det_rotation θ`
     simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 #align orientation.linear_equiv_det_rotation Orientation.linearEquiv_det_rotation
 
@@ -258,7 +258,7 @@ theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 #align orientation.oangle_rotation_self_right Orientation.oangle_rotation_self_right
 
-/-- Rotating the first vector by the angle between the two vectors results an an angle of 0. -/
+/-- Rotating the first vector by the angle between the two vectors results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x y) x) y = 0 := by
   by_cases hx : x = 0
@@ -269,7 +269,7 @@ theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x
 #align orientation.oangle_rotation_oangle_left Orientation.oangle_rotation_oangle_left
 
 /-- Rotating the first vector by the angle between the two vectors and swapping the vectors
-results an an angle of 0. -/
+results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_right (x y : V) : o.oangle y (o.rotation (o.oangle x y) x) = 0 := by
   rw [oangle_rev]
@@ -439,7 +439,7 @@ zero. -/
 @[simp]
 theorem inner_smul_rotation_pi_div_two_left (x : V) (r : ℝ) :
     ⟪r • o.rotation (π / 2 : ℝ) x, x⟫ = 0 := by
-  rw [inner_smul_left, inner_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_left, inner_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_smul_rotation_pi_div_two_left Orientation.inner_smul_rotation_pi_div_two_left
 
 /-- The inner product between a vector and a multiple of a `π / 2` rotation of that vector is
@@ -455,7 +455,7 @@ zero. -/
 @[simp]
 theorem inner_rotation_pi_div_two_left_smul (x : V) (r : ℝ) :
     ⟪o.rotation (π / 2 : ℝ) x, r • x⟫ = 0 := by
-  rw [inner_smul_right, inner_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_right, inner_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_rotation_pi_div_two_left_smul Orientation.inner_rotation_pi_div_two_left_smul
 
 /-- The inner product between a multiple of a vector and a `π / 2` rotation of that vector is
@@ -471,7 +471,7 @@ that vector is zero. -/
 @[simp]
 theorem inner_smul_rotation_pi_div_two_smul_left (x : V) (r₁ r₂ : ℝ) :
     ⟪r₁ • o.rotation (π / 2 : ℝ) x, r₂ • x⟫ = 0 := by
-  rw [inner_smul_right, inner_smul_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_right, inner_smul_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_smul_rotation_pi_div_two_smul_left Orientation.inner_smul_rotation_pi_div_two_smul_left
 
 /-- The inner product between a multiple of a vector and a multiple of a `π / 2` rotation of

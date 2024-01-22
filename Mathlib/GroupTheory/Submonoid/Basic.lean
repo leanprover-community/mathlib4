@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.GroupTheory.Subsemigroup.Basic
 
@@ -57,9 +57,9 @@ submonoid, submonoids
 
 -- Only needed for notation
 -- Only needed for notation
-variable {M : Type _} {N : Type _}
+variable {M : Type*} {N : Type*}
 
-variable {A : Type _}
+variable {A : Type*}
 
 section NonAssoc
 
@@ -68,7 +68,7 @@ variable [MulOneClass M] {s : Set M}
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type _) (M : Type _) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type*) (M : Type*) [One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 #align one_mem_class OneMemClass
@@ -76,7 +76,7 @@ class OneMemClass (S : Type _) (M : Type _) [One M] [SetLike S M] : Prop where
 export OneMemClass (one_mem)
 
 /-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type _) (M : Type _) [Zero M] [SetLike S M] : Prop where
+class ZeroMemClass (S : Type*) (M : Type*) [Zero M] [SetLike S M] : Prop where
   /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 #align zero_mem_class ZeroMemClass
@@ -85,10 +85,12 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
+attribute [aesop safe apply (rule_sets [SetLike])] one_mem zero_mem
+
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
-structure Submonoid (M : Type _) [MulOneClass M] extends Subsemigroup M where
+structure Submonoid (M : Type*) [MulOneClass M] extends Subsemigroup M where
   /-- A submonoid contains `1`. -/
   one_mem' : (1 : M) ∈ carrier
 #align submonoid Submonoid
@@ -101,7 +103,7 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type _) (M : Type _) [MulOneClass M] [SetLike S M] extends
+class SubmonoidClass (S : Type*) (M : Type*) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 #align submonoid_class SubmonoidClass
 
@@ -109,7 +111,7 @@ section
 
 /-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
   closed under addition. -/
-structure AddSubmonoid (M : Type _) [AddZeroClass M] extends AddSubsemigroup M where
+structure AddSubmonoid (M : Type*) [AddZeroClass M] extends AddSubsemigroup M where
   /-- An additive submonoid contains `0`. -/
   zero_mem' : (0 : M) ∈ carrier
 #align add_submonoid AddSubmonoid
@@ -123,13 +125,13 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M] extends
+class AddSubmonoidClass (S : Type*) (M : Type*) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 #align add_submonoid_class AddSubmonoidClass
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -172,20 +174,19 @@ theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
 #align add_submonoid.mem_carrier AddSubmonoid.mem_carrier
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set M} {x : M} (h_one) (h_mul) : x ∈ mk ⟨s, h_mul⟩ h_one ↔ x ∈ s :=
+theorem mem_mk {s : Subsemigroup M} {x : M} (h_one) : x ∈ mk s h_one ↔ x ∈ s :=
   Iff.rfl
 #align submonoid.mem_mk Submonoid.mem_mk
 #align add_submonoid.mem_mk AddSubmonoid.mem_mk
 
 @[to_additive (attr := simp)]
-theorem coe_set_mk {s : Set M} (h_one) (h_mul) : (mk ⟨s, h_mul⟩ h_one : Set M) = s :=
+theorem coe_set_mk {s : Subsemigroup M} (h_one) : (mk s h_one : Set M) = s :=
   rfl
 #align submonoid.coe_set_mk Submonoid.coe_set_mk
 #align add_submonoid.coe_set_mk AddSubmonoid.coe_set_mk
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Set M} (h_one) (h_mul) (h_one') (h_mul') :
-    mk ⟨s, h_mul⟩ h_one ≤ mk ⟨t, h_mul'⟩ h_one' ↔ s ⊆ t :=
+theorem mk_le_mk {s t : Subsemigroup M} (h_one) (h_one') : mk s h_one ≤ mk t h_one' ↔ s ≤ t :=
   Iff.rfl
 #align submonoid.mk_le_mk Submonoid.mk_le_mk
 #align add_submonoid.mk_le_mk AddSubmonoid.mk_le_mk
@@ -322,13 +323,13 @@ theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S,
 #align add_submonoid.mem_Inf AddSubmonoid.mem_sInf
 
 @[to_additive]
-theorem mem_iInf {ι : Sort _} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align submonoid.mem_infi Submonoid.mem_iInf
 #align add_submonoid.mem_infi AddSubmonoid.mem_iInf
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_iInf {ι : Sort _} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set M) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align submonoid.coe_infi Submonoid.coe_iInf
 #align add_submonoid.coe_infi AddSubmonoid.coe_iInf
@@ -394,7 +395,8 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 #align add_submonoid.mem_closure AddSubmonoid.mem_closure
 
 /-- The submonoid generated by a set includes the set. -/
-@[to_additive (attr := simp) "The `AddSubmonoid` generated by a set includes the set."]
+@[to_additive (attr := simp, aesop safe 20 apply (rule_sets [SetLike]))
+  "The `AddSubmonoid` generated by a set includes the set."]
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align submonoid.subset_closure Submonoid.subset_closure
 #align add_submonoid.subset_closure AddSubmonoid.subset_closure
@@ -528,6 +530,10 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 #align add_submonoid.closure_union AddSubmonoid.closure_union
 
 @[to_additive]
+theorem sup_eq_closure (N N' : Submonoid M) : N ⊔ N' = closure ((N : Set M) ∪ (N' : Set M)) := by
+  simp_rw [closure_union, closure_eq]
+
+@[to_additive]
 theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Submonoid.gi M).gc.l_iSup
 #align submonoid.closure_Union Submonoid.closure_iUnion
@@ -541,7 +547,7 @@ theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤
 #align add_submonoid.closure_singleton_le_iff_mem AddSubmonoid.closure_singleton_le_iff_mem
 
 @[to_additive]
-theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
+theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
   rw [← closure_singleton_le_iff_mem, le_iSup_iff]
   simp only [closure_singleton_le_iff_mem]
@@ -549,7 +555,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
 #align add_submonoid.mem_supr AddSubmonoid.mem_iSup
 
 @[to_additive]
-theorem iSup_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
+theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
     ⨆ i, p i = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_iUnion, Submonoid.closure_eq]
 #align submonoid.supr_eq_closure Submonoid.iSup_eq_closure
@@ -625,7 +631,7 @@ section IsUnit
 
 /-- The submonoid consisting of the units of a monoid -/
 @[to_additive "The additive submonoid consisting of the additive units of an additive monoid"]
-def IsUnit.submonoid (M : Type _) [Monoid M] : Submonoid M where
+def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
   carrier := setOf IsUnit
   one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
   mul_mem' := by
@@ -636,7 +642,7 @@ def IsUnit.submonoid (M : Type _) [Monoid M] : Submonoid M where
 #align is_add_unit.add_submonoid IsAddUnit.addSubmonoid
 
 @[to_additive]
-theorem IsUnit.mem_submonoid_iff {M : Type _} [Monoid M] (a : M) :
+theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
   change a ∈ setOf IsUnit ↔ IsUnit a
   rw [Set.mem_setOf_eq]

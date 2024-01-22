@@ -40,8 +40,9 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+open scoped symmDiff
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
@@ -56,14 +57,12 @@ variable [BooleanRing α] (a b : α)
 instance : IsIdempotent α (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_self : a * a = a :=
   BooleanRing.mul_self _
 #align mul_self mul_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -73,8 +72,7 @@ theorem add_self : a + a = 0 := by
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
@@ -88,8 +86,7 @@ theorem add_eq_zero' : a + b = 0 ↔ a = b :=
     _ ↔ a = b := by rw [neg_eq]
 #align add_eq_zero' add_eq_zero'
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
@@ -100,8 +97,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 #align sub_eq_add sub_eq_add
 
@@ -126,7 +122,7 @@ instance : BooleanRing PUnit :=
 section RingToAlgebra
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolAlg (α : Type _) :=
+def AsBoolAlg (α : Type*) :=
   α
 #align as_boolalg AsBoolAlg
 
@@ -255,7 +251,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
                                                      add_assoc, add_self, add_zero]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [MulZeroClass.zero_mul, zero_add, add_zero]
+    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
@@ -263,7 +259,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self]
+      norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
@@ -306,7 +302,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
   rfl
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
-private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
+private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc
     (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
       by ring
@@ -315,7 +311,7 @@ private theorem of_boolalg_symm_diff_aux (a b : α) : (a + b + a * b) * (1 + a *
 @[simp]
 theorem ofBoolAlg_symmDiff (a b : AsBoolAlg α) : ofBoolAlg (a ∆ b) = ofBoolAlg a + ofBoolAlg b := by
   rw [symmDiff_eq_sup_sdiff_inf]
-  exact of_boolalg_symm_diff_aux _ _
+  exact of_boolalg_symmDiff_aux _ _
 #align of_boolalg_symm_diff ofBoolAlg_symmDiff
 
 @[simp]
@@ -347,7 +343,7 @@ theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg
 
 @[simp]
 theorem toBoolAlg_add (a b : α) : toBoolAlg (a + b) = toBoolAlg a ∆ toBoolAlg b :=
-  (ofBoolAlg_symmDiff _ _).symm
+  (ofBoolAlg_symmDiff a b).symm
 #align to_boolalg_add toBoolAlg_add
 
 /-- Turn a ring homomorphism from Boolean rings `α` to `β` into a bounded lattice homomorphism
@@ -382,7 +378,7 @@ end RingToAlgebra
 section AlgebraToRing
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolRing (α : Type _) :=
+def AsBoolRing (α : Type*) :=
   α
 #align as_boolring AsBoolRing
 
@@ -553,7 +549,7 @@ protected def BoundedLatticeHom.asBoolRing (f : BoundedLatticeHom α β) :
   toFun := toBoolRing ∘ f ∘ ofBoolRing
   map_zero' := f.map_bot'
   map_one' := f.map_top'
-  map_add' := map_symm_diff' f
+  map_add' := map_symmDiff' f
   map_mul' := f.map_inf'
 #align bounded_lattice_hom.as_boolring BoundedLatticeHom.asBoolRing
 
@@ -576,7 +572,7 @@ end AlgebraToRing
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/
 @[simps!]
-def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
+def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
   ⟨ofBoolAlg.trans ofBoolRing,
    ofBoolRing_le_ofBoolRing_iff.trans ofBoolAlg_mul_ofBoolAlg_eq_left_iff⟩
 #align order_iso.as_boolalg_as_boolring OrderIso.asBoolAlgAsBoolRing
@@ -584,7 +580,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
 `α`. -/
 @[simps!]
-def RingEquiv.asBoolRingAsBoolAlg (α : Type _) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
+def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
     map_mul' := fun _a _b => rfl
     map_add' := ofBoolAlg_symmDiff }

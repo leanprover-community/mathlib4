@@ -30,7 +30,7 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology
 
-variable {α : Type _} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
+variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
@@ -165,10 +165,10 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
   have hRp : 0 ≤ R₁ := fun i => le_max_left 0 (r₁ i)
   replace hMr : ∀ᶠ i in atTop, M * R₁ i ≤ R₂ i
   · refine' hMr.mono fun i hi => _
-    rw [mul_max_of_nonneg _ _ hM.le, MulZeroClass.mul_zero]
+    rw [mul_max_of_nonneg _ _ hM.le, mul_zero]
     exact max_le_max (le_refl 0) hi
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
-  cases' le_or_lt 1 M with hM' hM'
+  rcases le_or_lt 1 M with hM' | hM'
   · apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
     refine' mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono _ (s i))
@@ -200,7 +200,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
         (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
-      convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [MulZeroClass.mul_zero]
+      convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
     refine' eventuallyLE_antisymm_iff.mpr ⟨_, _⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
         (eventually_of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
@@ -282,7 +282,8 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
       blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
     refine' blimsup_congr' (eventually_of_forall fun i h => _)
-    replace h : 0 < r i; · rw [← zero_lt_mul_left hM]; contrapose! h; apply thickening_of_nonpos h
+    replace h : 0 < r i
+    · rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
     simp only [h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (eventually_of_forall fun i hi => hi.2)

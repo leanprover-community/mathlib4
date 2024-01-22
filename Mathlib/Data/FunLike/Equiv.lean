@@ -16,13 +16,13 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 A typical type of morphisms should be declared as:
 ```
-structure MyIso (A B : Type _) [MyClass A] [MyClass B]
+structure MyIso (A B : Type*) [MyClass A] [MyClass B]
   extends Equiv A B :=
 (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
 
-variables (A B : Type _) [MyClass A] [MyClass B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
 instance : EquivLike (MyIso A B) A (λ _, B) :=
@@ -33,9 +33,9 @@ instance : EquivLike (MyIso A B) A (λ _, B) :=
     coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
-instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
+instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
 
-@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -63,7 +63,7 @@ Continuing the example above:
 
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
-class MyIsoClass (F : Type _) (A B : outParam <| Type _) [MyClass A] [MyClass B]
+class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
   extends EquivLike F A (λ _, B), MyHomClass F A B
 
 end
@@ -84,20 +84,20 @@ The second step is to add instances of your new `MyIsoClass` for all types exten
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type _) [CoolClass A] [CoolClass B]
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B]
   extends MyIso A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
-class CoolerIsoClass (F : Type _) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
+class CoolerIsoClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
   extends MyIsoClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type _} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 CoolerIsoClass.map_cool
 
@@ -114,7 +114,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
-lemma do_something {F : Type _} [MyIsoClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type*} [MyIsoClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,
@@ -130,7 +130,7 @@ injective coercion to bijections between `α` and `β`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
-class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
+class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
   /-- The coercion to a function in the forward direction. -/
   coe : E → α → β
   /-- The coercion to a function in the backwards direction. -/
@@ -147,7 +147,7 @@ class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
 
 namespace EquivLike
 
-variable {E F α β γ : Sort _} [iE : EquivLike E α β] [iF : EquivLike F β γ]
+variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
@@ -228,7 +228,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-  ⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
+  ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike

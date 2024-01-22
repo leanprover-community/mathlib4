@@ -66,7 +66,7 @@ open Topology
 
 section NormedAddCommGroup
 
-variable {α β : Type _} [NormedAddCommGroup β]
+variable {α β : Type*} [NormedAddCommGroup β]
 
 /-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l` when
     `u x - v x = o(v x)` as `x` converges along `l`. -/
@@ -139,7 +139,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  simp_rw [IsEquivalent, const, isLittleO_const_iff h]
+  simp (config := { unfoldPartialApp := true }) only [IsEquivalent, const, isLittleO_const_iff h]
   constructor <;> intro h
   · have := h.sub (tendsto_const_nhds (a := -c))
     simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
@@ -196,7 +196,7 @@ open Asymptotics
 
 section NormedField
 
-variable {α β : Type _} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
     u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
@@ -242,9 +242,9 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
 
 end NormedField
 
-section Smul
+section SMul
 
-theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
@@ -281,11 +281,11 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
     _ = c * ‖v x‖ := by ring
 #align asymptotics.is_equivalent.smul Asymptotics.IsEquivalent.smul
 
-end Smul
+end SMul
 
 section mul_inv
 
-variable {α β : Type _} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
 
 theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
@@ -309,7 +309,7 @@ end mul_inv
 
 section NormedLinearOrderedField
 
-variable {α β : Type _} [NormedLinearOrderedField β] {u v : α → β} {l : Filter α}
+variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Filter α}
 
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
@@ -342,7 +342,7 @@ open Filter Asymptotics
 
 open Asymptotics
 
-variable {α β β₂ : Type _} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
+variable {α β β₂ : Type*} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
 
 theorem Filter.EventuallyEq.isEquivalent {u v : α → β} (h : u =ᶠ[l] v) : u ~[l] v :=
   IsEquivalent.congr_right (isLittleO_refl_left _ _) h

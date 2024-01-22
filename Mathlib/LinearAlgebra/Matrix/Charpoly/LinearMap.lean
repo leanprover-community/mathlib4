@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 # Cayley-Hamilton theorem for f.g. modules.
 
-Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
+Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
 with `f` via the projection `(ι → R) →ₗ[R] M` given by `b`.
 
@@ -23,9 +23,9 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 -/
 
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
-variable {M : Type _} [AddCommGroup M] (R : Type _) [CommRing R] [Module R M] (I : Ideal R)
+variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
@@ -146,6 +146,10 @@ theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.
   rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
 
+theorem Matrix.Represents.algebraMap (r : R) :
+    (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
+  simpa only [Algebra.algebraMap_eq_smul_one] using Matrix.Represents.one.smul r
+
 theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : A.Represents b f') : f = f' :=
   PiToModule.fromEnd_injective R b hb (h.symm.trans h')
@@ -161,7 +165,7 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   one_mem' := ⟨1, Matrix.Represents.one⟩
   add_mem' := fun ⟨f₁, e₁⟩ ⟨f₂, e₂⟩ => ⟨f₁ + f₂, e₁.add e₂⟩
   zero_mem' := ⟨0, Matrix.Represents.zero⟩
-  algebraMap_mem' r := ⟨r • (1 : Module.End R M), Matrix.Represents.one.smul r⟩
+  algebraMap_mem' r := ⟨algebraMap _ _ r, .algebraMap _⟩
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
@@ -173,7 +177,7 @@ noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b �
   map_zero' := (0 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.zero
   map_add' A₁ A₂ := (A₁ + A₂).2.choose_spec.eq hb (A₁.2.choose_spec.add A₂.2.choose_spec)
   commutes' r :=
-    (r • (1 : Matrix.isRepresentation R b)).2.choose_spec.eq hb (Matrix.Represents.one.smul r)
+    (algebraMap _ (Matrix.isRepresentation R b) r).2.choose_spec.eq hb (.algebraMap r)
 #align matrix.is_representation.to_End Matrix.isRepresentation.toEnd
 
 theorem Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
