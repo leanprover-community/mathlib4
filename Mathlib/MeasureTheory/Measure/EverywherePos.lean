@@ -34,7 +34,7 @@ assuming additionally that `s` has finite measure.
   measures.
 -/
 
-open scoped Topology ENNReal
+open scoped Topology ENNReal NNReal
 open Set Filter
 
 namespace MeasureTheory.Measure
@@ -71,7 +71,7 @@ lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
   have B : w ∈ 𝓝 x := w_open.mem_nhds xw
   exact mem_of_superset B A
 
-variable {μ : Measure α} {s k : Set α}
+variable {μ ν : Measure α} {s k : Set α}
 
 protected lemma _root_.MeasurableSet.everywherePosSubset [OpensMeasurableSpace α]
     (hs : MeasurableSet s) :
@@ -161,6 +161,39 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
 
+lemma IsEverywherePos.smul_measure (hs : IsEverywherePos μ s) {c : ℝ≥0∞} (hc : c ≠ 0) :
+    IsEverywherePos (c • μ) s :=
+  fun x hx n hn ↦ by simpa [hc.bot_lt, hs x hx n hn] using hc.bot_lt
+
+lemma IsEverywherePos.smul_measure_nnreal (hs : IsEverywherePos μ s) {c : ℝ≥0} (hc : c ≠ 0) :
+    IsEverywherePos (c • μ) s :=
+  hs.smul_measure (by simpa using hc)
+
+/-- If two measures coincide locally, then a set which is everywhere positive for the former is
+also everywhere positive for the latter. -/
+lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
+    (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
+  intro x hx n hn
+  rcases h x hx with ⟨t, t_mem, ht⟩
+  apply lt_of_lt_of_le _ (measure_mono (inter_subset_left n t))
+  rw [ht _ (inter_subset_right n t)]
+  exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
+
+/-- If two measures coincide locally, then a set is everywhere positive for the former iff it is
+everywhere positive for the latter. -/
+lemma isEverywherePos_iff_of_forall_exists_nhds_eq (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) :
+    IsEverywherePos ν s ↔ IsEverywherePos μ s := by
+  refine ⟨fun H ↦ H.of_forall_exists_nhds_eq ?_, fun H ↦ H.of_forall_exists_nhds_eq h⟩
+  intro x hx
+  rcases h x hx with ⟨t, ht, h't⟩
+  exact ⟨t, ht, fun u hu ↦ (h't u hu).symm⟩
+
+/-- An open set is everywhere positive for a measure which is positive on open sets. -/
+lemma _root_.IsOpen.isEverywherePos [IsOpenPosMeasure μ] (hs : IsOpen s) : IsEverywherePos μ s := by
+  intro x xs n hn
+  rcases mem_nhdsWithin.1 hn with ⟨u, u_open, xu, hu⟩
+  apply lt_of_lt_of_le _ (measure_mono hu)
+  exact (u_open.inter hs).measure_pos μ ⟨x, ⟨xu, xs⟩⟩
 
 section TopologicalGroup
 
@@ -236,7 +269,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
   exact lt_irrefl _ (C.le.trans_lt this)
 
-/-- ** Halmos' theorem: Haar measure is completion regular. ** More precisely, any finite measure
+/-- **Halmos' theorem: Haar measure is completion regular.** More precisely, any finite measure
 set can be approximated from inside by a level set of a continuous function with compact support. -/
 @[to_additive innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_addGroup]
 theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
