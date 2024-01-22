@@ -15,13 +15,15 @@ import Mathlib.Analysis.Calculus.Gradient.Basic
 
 This file contains the following parts of gradient.
 * the chain rule for the `g : 𝕜 → 𝕜` composed with `f : F → 𝕜`.
+* the gradient for the product of a constant and a function.
 * the gradient for the sum of two functions.
 * the gradient for finite sum of functions.
+* the gradient for the negative of functions.
 * the gradient for the sum of a constant and a function.
 * the gradient for the difference of two functions.
 * the gradient for the difference of a constant and a function.
 * the gradient for the product of two functions.
-* the gradient for the product of a constant and a function.
+
 -/
 
 noncomputable section
