@@ -326,6 +326,18 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
   dsimp at H₁ H₂
   erw [H, H₁, H₂, h _ hji]
 
+/-- The `(δ i).toOrderHom j`th subface of the `i`-th horn, such that `j:Fin (n+1)` sequentially
+labels the subfaces which exist. -/
+def face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+1)) : (Λ[n+1, i]: SSet) _[n] :=by
+    refine face i ((δ i).toOrderHom j) ?_
+    unfold δ
+    simp
+    unfold Fin.succAbove
+    by_contra h
+    split at h
+    all_goals
+      subst h
+      simp_all only [lt_self_iff_false,Fin.castSucc_lt_succ_iff, le_refl, not_true_eq_false]
 
 /-- Every `face` can be written as a `face'`.-/
 lemma face_eq_face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+2)) (h: j≠i): face i j h
@@ -383,37 +395,44 @@ lemma face'_factor {n : ℕ} (i: Fin (n+2)) (j: Fin (n+1)) : factor_δ (face'.{u
         · exact δ_comp_σ_self
 
 
+namespace FactorMinFace
+variable {X : SimplexCategoryᵒᵖ } {n: ℕ }{i : Fin (n+3)} ( α : Λ[n+2,i].obj X)
 
-namespace HomMk₃
+def  minAsNat (l : ℕ )  :  ℕ  :=
+        if l > n+1 then  (n+2) -- Default case (never occurs)
+        else if ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l
+         then l-- Found the index satisfying the condition
+         else minAsNat (l+1) -- Check the next index
+termination_by _ l => (n+2) - l
+decreasing_by
+    simp_wf
+    rename_i h1 h2
+    push_neg at h1 h2
+    rw [Nat.succ_sub h1]
+    exact Nat.lt.base (n + 1 - l)
 
-variable {i : Fin 4}
-lemma range_include01_exclude2 {X : SimplexCategoryᵒᵖ } ( α : Λ[3,i].obj X)
-    (include_0 : ¬∀ k, α.val.down.toOrderHom k ≠ (δ i).toOrderHom  0)
-    (include_1 : ¬∀ k, α.val.down.toOrderHom k ≠ (δ i).toOrderHom  1 ) :
-    ∀ k,  α.val.down.toOrderHom k ≠ (δ i).toOrderHom  2 := by
-  let hα :=  (α.prop)∘Set.eq_univ_iff_forall.mpr
-  simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
-    not_forall, not_or, not_exists] at hα
-  obtain ⟨x1,hx1⟩ :=  hα
-  intro x
-  by_contra hXp
-  fin_cases x1
-  all_goals fin_cases i
-  all_goals tauto
+lemma minAsNat_lt (l : ℕ ) : minAsNat α l < n+3 := by
+    unfold minAsNat
+    simp_all only [gt_iff_lt, len_mk, ne_eq]
+    split
+    · exact Nat.lt.base (n + 2)
+    · simp_all only [not_lt, yoneda_obj_obj, len_mk]
+      split
+      · rename_i h1 h2
+        linarith
+      · apply minAsNat_lt
+termination_by _ l => (n+2) - l
+decreasing_by
+    simp_wf
+    rename_i h1 h2
+    push_neg at h1 h2
+    rw [Nat.succ_sub h1]
+    exact Nat.lt.base (n + 1 - l)
 
 
-
-variable {i1 i2 : Fin 3} (i1_lt_i2: i1 < i2)
-variable {X Y :SimplexCategoryᵒᵖ}
-variable {α : Λ[3,i].obj X } {φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop]}
-variable (exclude_i1 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i1)
-variable (exclude_i2 :  ∀ k, (φ ≫ α.val.down).toOrderHom k ≠ (δ i).toOrderHom i2)
-
-lemma factorization_of_φ_comp_α_i1:
-    (factor_δ (factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1))
-    (Fin.predAbove 0 ((δ i).toOrderHom i2))) ≫ δ (Fin.predAbove 0 ((δ i).toOrderHom i2))
-    = factor_δ (φ ≫ α.val.down) ((δ i).toOrderHom i1) := by
-  fin_cases i1, i2
+lemma lt_minAsNat_of_succ (l: ℕ)  (hl:  l<n+2): l< minAsNat α (l+1):= by
+    unfold minAsNat
+    split
     · exact hl
     · split
       · exact Nat.lt.base l
@@ -584,7 +603,7 @@ lemma minAsNat_eq_minAsNat_of_self (l:ℕ)  (hl: l= (minAsNat α 0)) :(minAsNat 
       let h4:= (in_range_if_lt_minAsNat_zero α lm1 hl1).left
       rw [h3]
       have hf:  minAsNat α lm1 =
-          (if lm1 > n + 1 then n + 2  else if ∀ l, α.1.down.toOrderHom l ≠ (δ i).toOrderHom lm1
+      (if lm1 > n + 1 then n + 2  else if ∀ l, α.1.down.toOrderHom l ≠ (δ i).toOrderHom lm1
          then lm1
          else minAsNat α (lm1+1) ):= by
             rw [minAsNat]
