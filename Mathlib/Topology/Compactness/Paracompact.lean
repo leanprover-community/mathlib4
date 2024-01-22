@@ -112,20 +112,18 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 #align precise_refinement_set precise_refinement_set
 
--- porting note: new lemma
 theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
     ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
     simp only [← hU] at hu ⊢
     have heU : range e ⊆ ⋃ i, U i := by
-      simpa only [range_subset_iff, mem_unionᵢ, unionᵢ_eq_univ_iff] using hu
+      simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using hu
     rcases precise_refinement_set he.closed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
-    simpa only [range_subset_iff, mem_unionᵢ, unionᵢ_eq_univ_iff] using heV
+    simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
--- porting note: new lemma
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
 
@@ -139,27 +137,27 @@ instance (priority := 200) [CompactSpace X] [ParacompactSpace Y] : ParacompactSp
   locallyFinite_refinement α s ho hu := by
     have : ∀ (x : X) (y : Y), ∃ (a : α) (U : Set X) (V : Set Y),
         IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ y ∈ V ∧ U ×ˢ V ⊆ s a := fun x y ↦
-      (unionᵢ_eq_univ_iff.1 hu (x, y)).imp fun a ha ↦ isOpen_prod_iff.1 (ho a) x y ha
+      (iUnion_eq_univ_iff.1 hu (x, y)).imp fun a ha ↦ isOpen_prod_iff.1 (ho a) x y ha
     choose a U V hUo hVo hxU hyV hUV using this
     choose T hT using fun y ↦ CompactSpace.elim_nhds_subcover (U · y) fun x ↦
       (hUo x y).mem_nhds (hxU x y)
     set W : Y → Set Y := fun y ↦ ⋂ x ∈ T y, V x y
-    have hWo : ∀ y, IsOpen (W y) := fun y ↦ isOpen_binterᵢ_finset fun _ _ ↦ hVo _ _
-    have hW : ∀ y, y ∈ W y := fun _ ↦ mem_interᵢ₂.2 fun _ _ ↦ hyV _ _
-    rcases precise_refinement W hWo (unionᵢ_eq_univ_iff.2 fun y ↦ ⟨y, hW y⟩)
+    have hWo : ∀ y, IsOpen (W y) := fun y ↦ isOpen_biInter_finset fun _ _ ↦ hVo _ _
+    have hW : ∀ y, y ∈ W y := fun _ ↦ mem_iInter₂.2 fun _ _ ↦ hyV _ _
+    rcases precise_refinement W hWo (iUnion_eq_univ_iff.2 fun y ↦ ⟨y, hW y⟩)
       with ⟨E, hEo, hE, hEf, hEA⟩
     refine ⟨Σ y, T y, fun z ↦ U z.2.1 z.1 ×ˢ E z.1, fun _ ↦ (hUo _ _).prod (hEo _),
-      unionᵢ_eq_univ_iff.2 fun (x, y) ↦ ?_, fun (x, y) ↦ ?_, fun ⟨y, x, hx⟩ ↦ ?_⟩
-    · rcases unionᵢ_eq_univ_iff.1 hE y with ⟨b, hb⟩
-      rcases unionᵢ₂_eq_univ_iff.1 (hT b) x with ⟨a, ha, hx⟩
+      iUnion_eq_univ_iff.2 fun (x, y) ↦ ?_, fun (x, y) ↦ ?_, fun ⟨y, x, hx⟩ ↦ ?_⟩
+    · rcases iUnion_eq_univ_iff.1 hE y with ⟨b, hb⟩
+      rcases iUnion₂_eq_univ_iff.1 (hT b) x with ⟨a, ha, hx⟩
       exact ⟨⟨b, a, ha⟩, hx, hb⟩
     · rcases hEf y with ⟨t, ht, htf⟩
       refine ⟨univ ×ˢ t, prod_mem_nhds univ_mem ht, ?_⟩
-      refine (htf.bunionᵢ fun y _ ↦ finite_range (Sigma.mk y)).subset ?_
+      refine (htf.biUnion fun y _ ↦ finite_range (Sigma.mk y)).subset ?_
       rintro ⟨b, a, ha⟩ ⟨⟨c, d⟩, ⟨-, hd : d ∈ E b⟩, -, hdt : d ∈ t⟩
-      exact mem_unionᵢ₂.2 ⟨b, ⟨d, hd, hdt⟩, mem_range_self _⟩
+      exact mem_iUnion₂.2 ⟨b, ⟨d, hd, hdt⟩, mem_range_self _⟩
     · refine ⟨a x y, (Set.prod_mono Subset.rfl ?_).trans (hUV x y)⟩
-      exact (hEA _).trans (interᵢ₂_subset x hx)
+      exact (hEA _).trans (iInter₂_subset x hx)
 
 instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSpace (X × Y) :=
   (Homeomorph.prodComm X Y).paracompactSpace_iff.2 inferInstance
