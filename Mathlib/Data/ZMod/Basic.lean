@@ -148,7 +148,7 @@ variable [AddGroupWithOne R]
 /-- Cast an integer modulo `n` to another semiring.
 This function is a morphism if the characteristic of `R` divides `n`.
 See `ZMod.castHom` for a bundled version. -/
-@[coe] def cast : ∀ {n : ℕ}, ZMod n → R
+def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
   | _ + 1 => fun i => i.val
 #align zmod.cast ZMod.cast
