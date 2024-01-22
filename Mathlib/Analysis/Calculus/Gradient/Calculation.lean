@@ -93,7 +93,7 @@ nonrec theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
     HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x := by
   exact  h.const_smul c
 
-theorem Gradient_const_smul (h : DifferentiableAt 𝕜 f x) (c : 𝕜) :
+theorem gradient_const_smul (h : DifferentiableAt 𝕜 f x) (c : 𝕜) :
     ∇ (fun y => c • f y) x = (starRingEnd 𝕜) c • ∇ f x :=
   (h.hasGradientAt.const_smul c).gradient
 
