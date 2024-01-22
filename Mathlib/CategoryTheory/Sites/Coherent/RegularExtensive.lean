@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.CategoryTheory.Sites.Coherent.Coherent
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Preserves
 /-!
 

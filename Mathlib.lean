@@ -1276,7 +1276,8 @@ import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Closed
-import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Sites.Coherent.RegularExtensive
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
@@ -1299,7 +1300,6 @@ import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
-import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
