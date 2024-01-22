@@ -5,10 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Rat.Order
-import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI

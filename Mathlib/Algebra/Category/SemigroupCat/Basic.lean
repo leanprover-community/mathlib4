@@ -7,7 +7,6 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Elementwise
 
 #align_import algebra.category.Semigroup.basic from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -99,7 +98,7 @@ theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
     (@DFunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
-      ConcreteCategory.instDFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
@@ -184,7 +183,7 @@ theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
     (@DFunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
-      ConcreteCategory.instDFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `SemigroupCat`. -/
