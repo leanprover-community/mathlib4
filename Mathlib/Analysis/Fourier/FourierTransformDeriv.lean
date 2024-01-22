@@ -43,7 +43,7 @@ variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
 
 /-- Send a function `f : V → E` to the function `f : V → Hom (W, E)` given by
-`v → (w → -2 * π * I * L(v, w) • f v)`. -/
+`v ↦ (w ↦ -2 * π * I * L(v, w) • f v)`. -/
 def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
 /-- The `w`-derivative of the Fourier transform integrand. -/
