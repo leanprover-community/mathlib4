@@ -89,9 +89,9 @@ theorem HasGradientAtFilter.const_smul (h : HasGradientAtFilter f f' x L) (c : �
   rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
   exact h.const_smul c
 
-nonrec theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x) (c : 𝕜) :
+theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x) (c : 𝕜) :
     HasGradientWithinAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') s x := by
-  exact h.const_smul c
+  exact HasGradientAtFilter.const_smul h c
 
 nonrec theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
     HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x := by
