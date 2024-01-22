@@ -737,23 +737,6 @@ mutual
             return none
 
     | _ => throwError "fprop bug: non-lambda case"
-    -- | .mvar _ => do
-    --   fprop (← instantiateMVars e)
-    -- | f => 
-    --   let fn := Mor.getAppFn f
-    --   let nargs := Mor.getAppNumArgs f
-    --   match fn with 
-    --   | .fvar .. => do
-    --     fvarAppCase fpropDecl e f fprop
-    --   | .const n _ => do
-    --     match compare (← constArity n) (nargs+1) with
-    --     | .eq => constAppCase fpropDecl e f fprop
-    --     | .gt => applyPiRule fpropDecl e f fprop
-    --     | .lt => removeArgRule fpropDecl e f fprop
-    --   | .proj .. => do
-    --     constAppCase fpropDecl e f fprop
-    --   | _ => 
-    --     trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{e}"
-    --     return none
 
 end
+

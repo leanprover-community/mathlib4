@@ -20,6 +20,8 @@ structure ArraySet (α : Type _) [ord : Ord α] where
   isSet : data.sortAndDeduplicate = data
 deriving Hashable
 
+instance {α} [Ord α] : Inhabited (ArraySet α) := ⟨⟨#[], sorry⟩⟩
+
 namespace ArraySet 
 
   variable {α} [ord : Ord α]
