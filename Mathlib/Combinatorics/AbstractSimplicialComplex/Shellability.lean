@@ -16,9 +16,6 @@ define `isShellingOrder r` to mean that `r` is such an order.
 We have two goals in this file: to show that a shellable complex is decomposable, and to show that
 a decomposable complex with a compatible well-order on its facets is shellable.-/
 
-#check AbstractSimplicialComplex.pure_of_wf_and_dimension_facets
-#check exists_facet_of_wf
-
 namespace AbstractSimplicialComplex
 
 /-- Let `r` be a linear order on the facets of `K`. It is called a shelling order if it is a
@@ -98,6 +95,17 @@ lemma oldFace_of_not_contains_restriction (r : PartialOrder K.facets) (s : K.fac
   apply (oldFaces r s).down_closed haR.2 ?_ (K.nonempty_of_mem t.2)
   rw [Finset.subset_erase]
   exact ⟨hts, hat⟩
+
+lemma exists_facet_of_wf (hwf : WellFounded (fun (s t : K.faces) ↦ t < s)) (t : K.faces) :
+    ∃ (s : K.facets), t.1 ≤ s.1 := by
+  have hne : {u : K.faces | t ≤ u}.Nonempty := ⟨t, by simp only [Set.mem_setOf_eq, le_refl]⟩
+  set s := WellFounded.min hwf {u : K.faces | t ≤ u} hne
+  have hts : t ≤ s := Set.mem_setOf.mp (WellFounded.min_mem hwf {u : K.faces | t ≤ u} hne)
+  refine ⟨⟨s, (mem_facets_iff K s.1).mpr ⟨s.2, ?_⟩⟩, hts⟩
+  exact fun u huf hsu ↦ eq_of_le_of_not_lt hsu (WellFounded.not_lt_min hwf {u : K.faces | t ≤ u}
+    hne (x := ⟨u, huf⟩) (le_trans hts hsu))
+
+#exit
 
 /-- If `r` is a partial order on the facets of `K`, `s` is a facet such that the complex of old
 faces `oldFaces r s` is pure of dimension `s.card - 2`, then faces of `oldFaces r s` do not
