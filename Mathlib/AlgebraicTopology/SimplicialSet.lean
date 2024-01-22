@@ -339,8 +339,8 @@ def  minAsNat (l : ℕ )  :  ℕ  :=
 termination_by _ l => (n+2) - l
 decreasing_by
     simp_wf
-    rename_i h1 h2
-    push_neg at h1 h2
+    rename  ¬l > n + 1 =>  h1
+    push_neg at h1
     rw [Nat.succ_sub h1]
     exact Nat.lt.base (n + 1 - l)
 
@@ -357,8 +357,8 @@ lemma minAsNat_lt (l : ℕ ) : minAsNat α l < n+3 := by
 termination_by _ l => (n+2) - l
 decreasing_by
     simp_wf
-    rename_i h1 h2
-    push_neg at h1 h2
+    rename  ¬n+1<l =>  h1
+    push_neg at h1
     rw [Nat.succ_sub h1]
     exact Nat.lt.base (n + 1 - l)
 
@@ -380,8 +380,8 @@ lemma lt_minAsNat_of_succ (l: ℕ)  (hl:  l<n+2): l< minAsNat α (l+1):= by
 termination_by _  => (n+2) - l
 decreasing_by
     simp_wf
-    rename_i h1 h2
-    push_neg at h1 h2
+    rename  ¬l + 1 > n + 1 =>  h1
+    push_neg at h1
     apply tsub_lt_tsub_right_of_le
     exact Nat.lt_succ.mp hl
     exact Nat.lt.base (n + 1)
@@ -406,9 +406,6 @@ lemma in_range_if_neq_self (l: ℕ)  (hl:  l<n+2) (heq: minAsNat α l≠ l) :
       have h1 : ¬ (l >n+1) := by
          linarith
       simp [h1] at heq
-      let h3:= lt_minAsNat_of_succ α l hl
-      have h2: minAsNat α (l+1) ≠ l := by
-        exact Nat.ne_of_gt h3
       tauto
 
 lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) : (¬ ∀ k, α.1.down.toOrderHom k ≠
