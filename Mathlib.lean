@@ -1336,6 +1336,12 @@ import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Combinatorics.AbstractSimplicialComplex.Basic
+import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
+import Mathlib.Combinatorics.AbstractSimplicialComplex.EulerPoincareCharacteristic
+import Mathlib.Combinatorics.AbstractSimplicialComplex.FacePoset
+import Mathlib.Combinatorics.AbstractSimplicialComplex.OrderOnFacets
+import Mathlib.Combinatorics.AbstractSimplicialComplex.Shellability
 import Mathlib.Combinatorics.Additive.Behrend
 import Mathlib.Combinatorics.Additive.ETransform
 import Mathlib.Combinatorics.Additive.Energy
