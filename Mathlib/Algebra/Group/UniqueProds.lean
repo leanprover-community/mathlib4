@@ -639,32 +639,32 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
       obtain ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
       rw [Finset.card_pos] at hA hB
       exact ⟨hA, hB, hAB⟩
-    have ⟨x, hx, hx_spec⟩ := max_length hA
-    have ⟨y, hy, hy_spec⟩ := max_length hB
-    have ⟨x', hx', hx'_spec⟩ := min_length hA
-    have ⟨y', hy', hy'_spec⟩ := min_length hB
+    have ⟨x, hxA, hx⟩ := max_length hA
+    have ⟨y, hyB, hy⟩ := max_length hB
+    have ⟨x', hx'A, hx'⟩ := min_length hA
+    have ⟨y', hy'B, hy'⟩ := min_length hB
     by_cases heq : (x, y) = (x', y')
     · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
       obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
       · have hl : ∀ u ∈ A, u.length = x.length := fun u hu =>
-          le_antisymm (hx_spec u hu) (congrArg (·.1.length) heq ▸ hx'_spec u hu)
-        exact ⟨(u, y), Finset.mk_mem_product hu hy, (v, y), Finset.mk_mem_product hv hy,
+          le_antisymm (hx u hu) (congrArg (·.1.length) heq ▸ hx' u hu)
+        exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
           fun heq => hne (congrArg Prod.fst heq),
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
       · have hl : ∀ u ∈ B, u.length = y.length := fun u hu =>
-          le_antisymm (hy_spec u hu) (congrArg (·.2.length) heq ▸ hy'_spec u hu)
-        exact ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
+          le_antisymm (hy u hu) (congrArg (·.2.length) heq ▸ hy' u hu)
+        exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
           fun heq => hne (congrArg Prod.snd heq),
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
-    refine ⟨(x, y), Finset.mk_mem_product hx hy, (x', y'), Finset.mk_mem_product hx' hy',
+    refine ⟨(x, y), Finset.mk_mem_product hxA hyB, (x', y'), Finset.mk_mem_product hx'A hy'B,
         heq, fun u v hu hv h => ?_, fun u v hu hv h => ?_⟩
     · exact List.append_inj h <| And.left <| by
-        rw [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
+        rw [← add_eq_add_iff_eq_and_eq (hx u hu) (hy v hv),
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
     · exact List.append_inj h <| And.left <| by
-        rw [eq_comm, ← add_eq_add_iff_eq_and_eq (hx'_spec u hu) (hy'_spec v hv), eq_comm,
+        rw [eq_comm, ← add_eq_add_iff_eq_and_eq (hx' u hu) (hy' v hv), eq_comm,
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
