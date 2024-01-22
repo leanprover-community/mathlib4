@@ -305,4 +305,30 @@ proof_wanted getLsb'_negOne : getLsb' (-1) i = true
 
 end
 
+/-!
+### Distributivity of `Std.BitVec.getMsb'`
+-/
+
+section
+variable (x y : BitVec w) (i : Fin w)
+
+@[simp] lemma getMsb'_and : (x &&& y).getMsb' i = (x.getMsb' i && y.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_and]
+
+@[simp] lemma getMsb'_or : (x ||| y).getMsb' i = (x.getMsb' i || y.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_or]
+
+@[simp] lemma getMsb'_xor : (x ^^^ y).getMsb' i = (xor (x.getMsb' i) (y.getMsb' i)) := by
+  simp only [← getLsb'_rev, getLsb'_xor]
+
+@[simp] lemma getMsb'_not : (~~~x).getMsb' i = !(x.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_not]
+
+@[simp] lemma getMsb'_ofNat_zero : getMsb' 0#w i = false := by
+  simp only [← getLsb'_rev, getLsb'_ofNat_zero]
+
+proof_wanted getMsb'_negOne : getMsb' (-1) i = true
+
+end
+
 end Std.BitVec
