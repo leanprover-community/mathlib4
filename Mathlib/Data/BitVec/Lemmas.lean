@@ -248,7 +248,7 @@ instance : CommSemiring (BitVec w) :=
 -/
 
 /-- If two bitvectors agree on all in-bound bits, then they agree on all bits -/
-theorem getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i = y.getLsb' i) :
+private lemma getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i = y.getLsb' i) :
     ∀ (i : ℕ), x.getLsb i = y.getLsb i := by
   simp only [getLsb, testBit]
   intro i
