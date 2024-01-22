@@ -809,48 +809,31 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 
 end
 
-variable (𝕜 ι)
-
-/-- The canonical continuous multilinear map on `𝕜^ι`, associating to `m` the product of all the
-`m i` (multiplied by a fixed reference element `z` in the target module) -/
-protected def mkPiField (z : G) : ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G :=
-  MultilinearMap.mkContinuous (MultilinearMap.mkPiRing 𝕜 ι z) ‖z‖ fun m => by
-    simp only [MultilinearMap.mkPiRing_apply, norm_smul, norm_prod, mul_comm, le_rfl]
-#align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiField
-
-variable {𝕜 ι}
+@[simp]
+theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+    ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
+  refine le_antisymm ?_ ?_
+  · refine (op_nnnorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
+    rw [mul_right_comm]
+    gcongr
+    exact le_op_nnnorm _ _
+  · obtain hz | hz := eq_or_ne ‖z‖₊ 0
+    · simp [hz]
+    rw [←NNReal.le_div_iff hz, op_nnnorm_le_iff]
+    intro m
+    rw [div_mul_eq_mul_div, NNReal.le_div_iff hz]
+    refine le_trans ?_ ((f.smulRight z).le_op_nnnorm m)
+    rw [smulRight_apply, nnnorm_smul]
 
 @[simp]
-theorem mkPiField_apply (z : G) (m : ι → 𝕜) :
-    (ContinuousMultilinearMap.mkPiField 𝕜 ι z : (ι → 𝕜) → G) m = (∏ i, m i) • z :=
-  rfl
-#align continuous_multilinear_map.mk_pi_field_apply ContinuousMultilinearMap.mkPiField_apply
-
-theorem mkPiField_apply_one_eq_self (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G) :
-    ContinuousMultilinearMap.mkPiField 𝕜 ι (f fun _ => 1) = f :=
-  toMultilinearMap_injective f.toMultilinearMap.mkPiRing_apply_one_eq_self
-#align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiField_apply_one_eq_self
+theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+    ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
+  congr_arg NNReal.toReal (nnnorm_smulRight f z)
 
 @[simp]
-theorem norm_mkPiField (z : G) : ‖ContinuousMultilinearMap.mkPiField 𝕜 ι z‖ = ‖z‖ :=
-  (MultilinearMap.mkContinuous_norm_le _ (norm_nonneg z) _).antisymm <| by
-    simpa using (ContinuousMultilinearMap.mkPiField 𝕜 ι z).le_op_norm fun _ => 1
-#align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiField
-
-theorem mkPiField_eq_iff {z₁ z₂ : G} :
-    ContinuousMultilinearMap.mkPiField 𝕜 ι z₁ = ContinuousMultilinearMap.mkPiField 𝕜 ι z₂ ↔
-      z₁ = z₂ := by
-  rw [← toMultilinearMap_injective.eq_iff]
-  exact MultilinearMap.mkPiRing_eq_iff
-#align continuous_multilinear_map.mk_pi_field_eq_iff ContinuousMultilinearMap.mkPiField_eq_iff
-
-theorem mkPiField_zero : ContinuousMultilinearMap.mkPiField 𝕜 ι (0 : G) = 0 := by
-  ext; rw [mkPiField_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
-#align continuous_multilinear_map.mk_pi_field_zero ContinuousMultilinearMap.mkPiField_zero
-
-theorem mkPiField_eq_zero_iff (z : G) : ContinuousMultilinearMap.mkPiField 𝕜 ι z = 0 ↔ z = 0 := by
-  rw [← mkPiField_zero, mkPiField_eq_iff]
-#align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiField_eq_zero_iff
+theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
+  rw [ContinuousMultilinearMap.mkPiRing, norm_smulRight, norm_mkPiAlgebra, one_mul]
+#align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiRing
 
 variable (𝕜 ι G)
 
@@ -859,7 +842,7 @@ continuous multilinear map is completely determined by its value on the constant
 ones. We register this bijection as a linear isometry in
 `ContinuousMultilinearMap.piFieldEquiv`. -/
 protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
-  toFun z := ContinuousMultilinearMap.mkPiField 𝕜 ι z
+  toFun z := ContinuousMultilinearMap.mkPiRing 𝕜 ι z
   invFun f := f fun i => 1
   map_add' z z' := by
     ext m
@@ -868,8 +851,8 @@ protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fu
     ext m
     simp [smul_smul, mul_comm]
   left_inv z := by simp
-  right_inv f := f.mkPiField_apply_one_eq_self
-  norm_map' := norm_mkPiField
+  right_inv f := f.mkPiRing_apply_one_eq_self
+  norm_map' := norm_mkPiRing
 #align continuous_multilinear_map.pi_field_equiv ContinuousMultilinearMap.piFieldEquiv
 
 end ContinuousMultilinearMap
