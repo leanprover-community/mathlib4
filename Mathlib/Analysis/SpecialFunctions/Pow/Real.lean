@@ -967,8 +967,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
-    let e' : Q(ℝ) := q(($a ^ (-($nb : ℤ))))
-    match ← derive e' with
+    match ← derive q($a ^ (-($nb : ℤ))) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
       assumeInstancesCommute
