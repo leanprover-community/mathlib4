@@ -126,17 +126,57 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
   UniformEquicontinuous ((↑) : H → β → α)
 #align set.uniform_equicontinuous Set.UniformEquicontinuous
 
+/-!
+### Empty index type
+-/
+
+@[simp]
 lemma equicontinuousAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
     EquicontinuousAt F x₀ :=
   fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
 
+@[simp]
 lemma equicontinuous_empty [IsEmpty ι] (F : ι → X → α) :
     Equicontinuous F :=
   equicontinuousAt_empty F
 
+@[simp]
 lemma uniformEquicontinuous_empty [h : IsEmpty ι] (F : ι → β → α) :
     UniformEquicontinuous F :=
   fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+
+/-!
+### Finite index type
+-/
+
+theorem equicontinuousAt_finite [Finite ι] {F : ι → X → α} {x₀ : X} :
+    EquicontinuousAt F x₀ ↔ ∀ i, ContinuousAt (F i) x₀ := by
+  simp [EquicontinuousAt, ContinuousAt, (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff,
+    UniformSpace.ball, @forall_swap _ ι]
+
+theorem equicontinuous_finite [Finite ι] {F : ι → X → α} :
+    Equicontinuous F ↔ ∀ i, Continuous (F i) := by
+  simp only [Equicontinuous, equicontinuousAt_finite, continuous_iff_continuousAt, @forall_swap ι]
+
+theorem uniformEquicontinuous_finite [Finite ι] {F : ι → β → α} :
+    UniformEquicontinuous F ↔ ∀ i, UniformContinuous (F i) := by
+  simp only [UniformEquicontinuous, eventually_all, @forall_swap _ ι]; rfl
+
+/-!
+### Index type with a unique element
+-/
+
+theorem equicontinuousAt_unique [Unique ι] {F : ι → X → α} {x : X} :
+    EquicontinuousAt F x ↔ ContinuousAt (F default) x :=
+  equicontinuousAt_finite.trans Unique.forall_iff
+
+theorem equicontinuous_unique [Unique ι] {F : ι → X → α} :
+    Equicontinuous F ↔ Continuous (F default) :=
+  equicontinuous_finite.trans Unique.forall_iff
+
+theorem uniformEquicontinuous_unique [Unique ι] {F : ι → β → α} :
+    UniformEquicontinuous F ↔ UniformContinuous (F default) :=
+  uniformEquicontinuous_finite.trans Unique.forall_iff
 
 /-- Reformulation of equicontinuity at `x₀` comparing two variables near `x₀` instead of comparing
 only one with `x₀`. -/
@@ -148,7 +188,7 @@ theorem equicontinuousAt_iff_pair {F : ι → X → α} {x₀ : X} :
     refine' ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel _ (hy i))⟩
     exact hVsymm.mk_mem_comm.mp (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
-    filter_upwards [hV]using fun x hx i => hVU x₀ (mem_of_mem_nhds hV) x hx i
+    filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhds hV) x hx i
 #align equicontinuous_at_iff_pair equicontinuousAt_iff_pair
 
 /-- Uniform equicontinuity implies equicontinuity. -/
@@ -159,11 +199,8 @@ theorem UniformEquicontinuous.equicontinuous {F : ι → β → α} (h : Uniform
 
 /-- Each function of a family equicontinuous at `x₀` is continuous at `x₀`. -/
 theorem EquicontinuousAt.continuousAt {F : ι → X → α} {x₀ : X} (h : EquicontinuousAt F x₀) (i : ι) :
-    ContinuousAt (F i) x₀ := by
-  intro U hU
-  rw [UniformSpace.mem_nhds_iff] at hU
-  rcases hU with ⟨V, hV₁, hV₂⟩
-  exact mem_map.mpr (mem_of_superset (h V hV₁) fun x hx => hV₂ (hx i))
+    ContinuousAt (F i) x₀ :=
+  (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦ (h U hU).mono fun _x hx ↦ hx i
 #align equicontinuous_at.continuous_at EquicontinuousAt.continuousAt
 
 protected theorem Set.EquicontinuousAt.continuousAt_of_mem {H : Set <| X → α} {x₀ : X}
@@ -226,9 +263,8 @@ protected theorem Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : 
 /-- A family `𝓕 : ι → X → α` is equicontinuous at `x₀` iff `range 𝓕` is equicontinuous at `x₀`,
 i.e the family `(↑) : range F → X → α` is equicontinuous at `x₀`. -/
 theorem equicontinuousAt_iff_range {F : ι → X → α} {x₀ : X} :
-    EquicontinuousAt F x₀ ↔ EquicontinuousAt ((↑) : range F → X → α) x₀ :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _,
-   fun h => h.comp (rangeFactorization F)⟩
+    EquicontinuousAt F x₀ ↔ EquicontinuousAt ((↑) : range F → X → α) x₀ := by
+  simp only [EquicontinuousAt, forall_subtype_range_iff]
 #align equicontinuous_at_iff_range equicontinuousAt_iff_range
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous iff `range 𝓕` is equicontinuous,
@@ -282,7 +318,7 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
     {x₀ : X} :
     @EquicontinuousAt _ _ _ _ (⨅ k, u k) F x₀ ↔ ∀ k, @EquicontinuousAt _ _ _ _ (u k) F x₀ := by
-  simp [@equicontinuousAt_iff_continuousAt _ _ _ _ _, UniformFun.topologicalSpace]
+  simp only [@equicontinuousAt_iff_continuousAt _ _ _ _ _, topologicalSpace]
   unfold ContinuousAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
@@ -299,7 +335,8 @@ theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α
 theorem equicontinuousAt_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {x₀ : X'} {k : κ} (hk : @EquicontinuousAt _ _ _ (t k) _ F x₀) :
     @EquicontinuousAt _ _ _ (⨅ k, t k) _ F x₀ := by
-  simp [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
+  simp? [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢ says
+    simp only [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
   unfold ContinuousAt at hk ⊢
   rw [nhds_iInf]
   exact tendsto_iInf' k hk
@@ -316,8 +353,6 @@ theorem uniform_equicontinuous_infi_dom {β' : Type*} {u : κ → UniformSpace �
   simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _ _] at hk ⊢
   exact uniformContinuous_iInf_dom hk
 
--- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
--- second one when parsing expressions like `∃ δ > 0, _`.
 theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type*} {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p s) :
     EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ k, p k ∧ ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
@@ -335,8 +370,6 @@ theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type*} {p : κ → Prop
   rfl
 #align filter.has_basis.equicontinuous_at_iff_right Filter.HasBasis.equicontinuousAt_iff_right
 
--- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
--- second one when parsing expressions like `∃ δ > 0, _`.
 theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop} {s₁ : κ₁ → Set X}
     {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p₁ s₁)
     (hα : (𝓤 α).HasBasis p₂ s₂) :
@@ -348,8 +381,6 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type*} {p₁ : κ₁
   rfl
 #align filter.has_basis.equicontinuous_at_iff Filter.HasBasis.equicontinuousAt_iff
 
--- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
--- second one when parsing expressions like `∃ δ > 0, _`.
 theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type*} {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} (hβ : (𝓤 β).HasBasis p s) :
     UniformEquicontinuous F ↔
@@ -368,8 +399,6 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type*} {p : κ →
   rfl
 #align filter.has_basis.uniform_equicontinuous_iff_right Filter.HasBasis.uniformEquicontinuous_iff_right
 
--- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
--- second one when parsing expressions like `∃ δ > 0, _`.
 theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : κ₁ → Prop}
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     (hβ : (𝓤 β).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
@@ -385,7 +414,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : 
 `x₀ : X` iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is
 equicontinuous at `x₀`. -/
 theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((· ∘ ·) u ∘ F) x₀ := by
+    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
   have := (UniformFun.postcomp_uniformInducing (α := ι) hu).inducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
@@ -394,21 +423,16 @@ theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous iff the
 family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is equicontinuous. -/
 theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
-    Equicontinuous F ↔ Equicontinuous ((· ∘ ·) u ∘ F) := by
-  have : ∀ x, EquicontinuousAt F x ↔ EquicontinuousAt ((fun x x_1 => x ∘ x_1) u ∘ F) x := by
-    intro
-    rw [hu.equicontinuousAt_iff]
-  exact ⟨fun h x => (this x).mp (h x), fun h x => (this x).mpr (h x)⟩
-  -- Porting note: proof was:
-  -- congrm (∀ x, _ : Prop)
-  -- rw [hu.equicontinuousAt_iff]
+    Equicontinuous F ↔ Equicontinuous ((u ∘ ·) ∘ F) := by
+  congrm ∀ x, ?_
+  rw [hu.equicontinuousAt_iff]
 #align uniform_inducing.equicontinuous_iff UniformInducing.equicontinuous_iff
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
 iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is uniformly
 equicontinuous. -/
 theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α → γ}
-    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((· ∘ ·) u ∘ F) := by
+    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((u ∘ ·) ∘ F) := by
   have := UniformFun.postcomp_uniformInducing (α := ι) hu
   rw [uniformEquicontinuous_iff_uniformContinuous, uniformEquicontinuous_iff_uniformContinuous,
     this.uniformContinuous_iff]
@@ -417,14 +441,14 @@ theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
+embedding than continuity, but in practice this will mostly be applied to `DFunLike` types where
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
     EquicontinuousAt (u ∘ (↑) : closure A → X → α) x₀ := by
   intro U hU
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
-  filter_upwards [hA V hV]with x hx
+  filter_upwards [hA V hV] with x hx
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
   refine' (closure_minimal hx <| hVclosed.preimage <| _).trans (preimage_mono hVU)
@@ -433,7 +457,7 @@ theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
 
 /-- If a set of functions is equicontinuous at some `x₀`, its closure for the product topology is
 also equicontinuous at `x₀`. -/
-theorem EquicontinuousAt.closure {A : Set <| X → α} {x₀ : X} (hA : A.EquicontinuousAt x₀) :
+protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA : A.EquicontinuousAt x₀) :
     (closure A).EquicontinuousAt x₀ :=
   EquicontinuousAt.closure' (u := id) hA continuous_id
 #align equicontinuous_at.closure EquicontinuousAt.closure
@@ -449,7 +473,7 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
 
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
+embedding than continuity, but in practice this will mostly be applied to `DFunLike` types where
 the coercion is injective. -/
 theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     (hA : Equicontinuous (u ∘ (↑) : A → X → α)) (hu : Continuous u) :
@@ -464,14 +488,14 @@ theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous, then the limit is continuous. -/
-theorem Filter.Tendsto.continuous_of_equicontinuous_at {l : Filter ι} [l.NeBot] {F : ι → X → α}
+theorem Filter.Tendsto.continuous_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
-#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuous_at
+#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuousAt
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
-on the embedding than continuity, but in practice this will mostly be applied to `FunLike` types
+on the embedding than continuity, but in practice this will mostly be applied to `DFunLike` types
 where the coercion is injective. -/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :
@@ -501,6 +525,35 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
   (uniformEquicontinuous_at_iff_range.mp h₂).closure.uniformContinuous
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
+
+/-- If `F : ι → X → α` is a family of functions equicontinuous at `x`,
+it tends to `f y` along a filter `l` for any `y ∈ s`,
+the limit function `f` tends to `z` along `𝓝[s] x`, and `x ∈ closure s`,
+then `(F · x)` tends to `z` along `l`.
+
+In some sense, this is a converse of `EquicontinuousAt.closure`. -/
+theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X → α} {f : X → α}
+    {s : Set X} {x : X} {z : α} (hF : EquicontinuousAt F x) (hf : Tendsto f (𝓝[s] x) (𝓝 z))
+    (hs : ∀ y ∈ s, Tendsto (F · y) l (𝓝 (f y))) (hx : x ∈ closure s) :
+    Tendsto (F · x) l (𝓝 z) := by
+  rw [(nhds_basis_uniformity (𝓤 α).basis_sets).tendsto_right_iff] at hf ⊢
+  intro U hU
+  rcases comp_comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVs, hVU⟩
+  rw [mem_closure_iff_nhdsWithin_neBot] at hx
+  have : ∀ᶠ y in 𝓝[s] x, y ∈ s ∧ (∀ i, (F i x, F i y) ∈ V) ∧ (f y, z) ∈ V :=
+    eventually_mem_nhdsWithin.and <| ((hF V hV).filter_mono nhdsWithin_le_nhds).and (hf V hV)
+  rcases this.exists with ⟨y, hys, hFy, hfy⟩
+  filter_upwards [hs y hys (ball_mem_nhds _ hV)] with i hi
+  exact hVU ⟨_, ⟨_, hFy i, (mem_ball_symmetry hVs).2 hi⟩, hfy⟩
+
+/-- If `F : ι → X → α` is an equicontinuous family of functions,
+`f : X → α` is a continuous function, and `l` is a filter on `ι`,
+then `{x | Filter.Tendsto (F · x) l (𝓝 (f x))}` is a closed set. -/
+theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
+    (hF : Equicontinuous F) (hf : Continuous f) :
+    IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} :=
+  closure_subset_iff_isClosed.mp fun x hx ↦
+    (hF x).tendsto_of_mem_closure (hf.continuousAt.mono_left inf_le_left) (fun _ ↦ id) hx
 
 end
 

@@ -28,24 +28,13 @@ theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedd
 #align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
 
 @[simp]
-theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
-  ext i
-  simp only [mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
-  constructor
-  · refine' cases _ _ i
-    · rintro ⟨⟨⟩⟩
-    · intro j _
-      use j
-      simp only [val_succEmbedding, and_self, RelEmbedding.coe_toEmbedding]
-  · rintro ⟨i, _, rfl⟩
-    exact succ_pos _
+theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding :=
+  coe_injective <| by ext; simp [pos_iff_ne_zero]
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
-  apply Finset.map_injective Fin.valEmbedding
-  rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
-  exact map_valEmbedding_univ.symm
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding :=
+  coe_injective <| by ext; simp [lt_def]
 #align fin.Iio_last_eq_map Fin.Iio_last_eq_map
 
 @[simp]
@@ -87,7 +76,7 @@ theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : V
   induction' v using Vector.inductionOn with n x xs hxs
   · simp
   · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Function.comp,
-      Vector.get_cons_succ, hxs, List.count_cons', add_comm (ite (a = x) 1 0)]
+      Vector.get_cons_succ, hxs, List.count_cons, add_comm (ite (a = x) 1 0)]
 #align fin.card_filter_univ_eq_vector_nth_eq_count Fin.card_filter_univ_eq_vector_get_eq_count
 
 end Fin

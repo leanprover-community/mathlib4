@@ -322,6 +322,11 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
 #align group.fg_iff_monoid.fg Group.fg_iff_monoid_fg
 #align add_group.fg_iff_add_monoid.fg AddGroup.fg_iff_addMonoid_fg
 
+@[to_additive (attr := simp)]
+theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
+  (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
+    (Subgroup.fg_iff_submonoid_fg _).symm
+
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
   ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
 #align group_fg.iff_add_fg GroupFG.iff_add_fg

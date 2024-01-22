@@ -41,7 +41,7 @@ variable [Semiring R] [Fintype n]
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c := by
   rw [dotProduct, Finset.sum_eq_single i, LinearMap.stdBasis_same]
-  exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, MulZeroClass.mul_zero]
+  exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, mul_zero]
   exact fun hi => False.elim (hi <| Finset.mem_univ _)
 #align matrix.dot_product_std_basis_eq_mul Matrix.dotProduct_stdBasis_eq_mul
 
@@ -70,6 +70,23 @@ theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v
 
 end Semiring
 
+section OrderedSemiring
+
+variable [OrderedSemiring R] [Fintype n]
+
+lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
+  Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
+
+lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
+    dotProduct u w ≤ dotProduct v w :=
+  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i))
+
+lemma dotProduct_le_dotProduct_of_nonneg_left {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
+    dotProduct w u ≤ dotProduct w v :=
+  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_left (huv i) (hw i))
+
+end OrderedSemiring
+
 section Self
 
 variable [Fintype m] [Fintype n] [Fintype p]
@@ -94,7 +111,7 @@ theorem dotProduct_star_self_eq_zero {v : n → R} : dotProduct (star v) v = 0 �
 /-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
 @[simp]
 theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
-  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@star_mul_self_nonneg' _ _ _ _ (v i) : _)).trans <|
+  (Finset.sum_eq_zero_iff_of_nonneg fun i _ => (@mul_star_self_nonneg _ _ _ _ (v i) : _)).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_self_star_eq_zero Matrix.dotProduct_self_star_eq_zero
 

@@ -13,7 +13,7 @@ import Mathlib.Order.BoundedOrder
 
 This file defines (bounded) order homomorphisms.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -36,7 +36,7 @@ variable {F α β γ δ : Type*}
 
 /-- The type of `⊤`-preserving functions from `α` to `β`. -/
 structure TopHom (α β : Type*) [Top α] [Top β] where
-  /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
+  /-- The underlying function. The preferred spelling is `DFunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
   map_top' : toFun ⊤ = ⊤
@@ -44,7 +44,7 @@ structure TopHom (α β : Type*) [Top α] [Top β] where
 
 /-- The type of `⊥`-preserving functions from `α` to `β`. -/
 structure BotHom (α β : Type*) [Bot α] [Bot β] where
-  /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
+  /-- The underlying function. The preferred spelling is `DFunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the bottom element. The preferred spelling is `map_bot`. -/
   map_bot' : toFun ⊥ = ⊥
@@ -65,7 +65,7 @@ section
 
 You should extend this class when you extend `TopHom`. -/
 class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
-  FunLike F α fun _ => β where
+  DFunLike F α fun _ => β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align top_hom_class TopHomClass
@@ -74,7 +74,7 @@ class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] exte
 
 You should extend this class when you extend `BotHom`. -/
 class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
-  FunLike F α fun _ => β where
+  DFunLike F α fun _ => β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bot_hom_class BotHomClass
@@ -120,7 +120,7 @@ instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
-  { --⟨λ f, le_bot_iff.1 $ (le_map_inv_iff f).1 bot_le⟩
+  { --⟨λ f, le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le⟩
     show OrderHomClass F α β from inferInstance with
     map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
@@ -205,7 +205,7 @@ initialize_simps_projections TopHom (toFun → apply)
 
 @[ext]
 theorem ext {f g : TopHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align top_hom.ext TopHom.ext
 
 /-- Copy of a `TopHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -222,7 +222,7 @@ theorem coe_copy (f : TopHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f
 #align top_hom.coe_copy TopHom.coe_copy
 
 theorem copy_eq (f : TopHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align top_hom.copy_eq TopHom.copy_eq
 
 instance : Inhabited (TopHom α β) :=
@@ -280,11 +280,13 @@ theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
   TopHom.ext fun _ => rfl
 #align top_hom.id_comp TopHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => TopHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
+  ⟨fun h => TopHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
 #align top_hom.cancel_right TopHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => TopHom.ext fun a => hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
@@ -294,10 +296,10 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 end Top
 
 instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
-  Preorder.lift (FunLike.coe : TopHom α β → α → β)
+  Preorder.lift (DFunLike.coe : TopHom α β → α → β)
 
 instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 section OrderTop
 
@@ -327,7 +329,7 @@ instance : Inf (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
-  (FunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -349,7 +351,7 @@ instance : Sup (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
-  (FunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -364,10 +366,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 end SemilatticeSup
 
 instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
-  FunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
-  FunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 end TopHom
 
@@ -395,7 +397,7 @@ initialize_simps_projections BotHom (toFun → apply)
 
 @[ext]
 theorem ext {f g : BotHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align bot_hom.ext BotHom.ext
 
 /-- Copy of a `BotHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -412,7 +414,7 @@ theorem coe_copy (f : BotHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f
 #align bot_hom.coe_copy BotHom.coe_copy
 
 theorem copy_eq (f : BotHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align bot_hom.copy_eq BotHom.copy_eq
 
 instance : Inhabited (BotHom α β) :=
@@ -470,11 +472,13 @@ theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
   BotHom.ext fun _ => rfl
 #align bot_hom.id_comp BotHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BotHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h => BotHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align bot_hom.cancel_right BotHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => BotHom.ext fun a => hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
@@ -484,10 +488,10 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 end Bot
 
 instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
-  Preorder.lift (FunLike.coe : BotHom α β → α → β)
+  Preorder.lift (DFunLike.coe : BotHom α β → α → β)
 
 instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 section OrderBot
 
@@ -517,7 +521,7 @@ instance : Inf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
-  (FunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -539,7 +543,7 @@ instance : Sup (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
-  (FunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -554,10 +558,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 end SemilatticeSup
 
 instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
-  FunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 instance [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
-  FunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 end BotHom
 
@@ -594,7 +598,7 @@ instance : BoundedOrderHomClass (BoundedOrderHom α β) α
 
 @[ext]
 theorem ext {f g : BoundedOrderHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align bounded_order_hom.ext BoundedOrderHom.ext
 
 /-- Copy of a `BoundedOrderHom` with a new `toFun` equal to the old one. Useful to fix
@@ -609,7 +613,7 @@ theorem coe_copy (f : BoundedOrderHom α β) (f' : α → β) (h : f' = f) : ⇑
 #align bounded_order_hom.coe_copy BoundedOrderHom.coe_copy
 
 theorem copy_eq (f : BoundedOrderHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align bounded_order_hom.copy_eq BoundedOrderHom.copy_eq
 
 variable (α)
@@ -684,12 +688,14 @@ theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f
   BoundedOrderHom.ext fun _ => rfl
 #align bounded_order_hom.id_comp BoundedOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
+  ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
    congr_arg (fun g => comp g f)⟩
 #align bounded_order_hom.cancel_right BoundedOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h =>

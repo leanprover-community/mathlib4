@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Eric Rodriguez
 -/
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Localization.NormTrace
 
 #align_import number_theory.number_field.norm from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -25,6 +25,18 @@ rings of integers.
 open scoped NumberField BigOperators
 
 open Finset NumberField Algebra FiniteDimensional
+
+section Rat
+
+variable {K : Type*} [Field K] [NumberField K] (x : 𝓞 K)
+
+theorem Algebra.coe_norm_int : (Algebra.norm ℤ x : ℚ) = Algebra.norm ℚ (x : K) :=
+  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
+theorem Algebra.coe_trace_int : (Algebra.trace ℤ _ x : ℚ) = Algebra.trace ℚ K x :=
+  (Algebra.trace_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
+end Rat
 
 namespace RingOfIntegers
 
@@ -58,7 +70,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
   refine' @isUnit_of_mul_isUnit_right (𝓞 L) _
     ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x,
-      prod_mem fun σ _ => map_isIntegral (σ : L →+* L).toIntAlgHom x.2⟩ _ _
+      prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ _
   convert hx using 1
   ext
   push_cast
@@ -74,7 +86,7 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   classical
   have hint : ∏ σ : L ≃ₐ[K] L in univ.erase AlgEquiv.refl, σ x ∈ 𝓞 L :=
     Subalgebra.prod_mem _ fun σ _ =>
-      (mem_ringOfIntegers _ _).2 (map_isIntegral σ (RingOfIntegers.isIntegral_coe x))
+      (mem_ringOfIntegers _ _).2 ((RingOfIntegers.isIntegral_coe x).map σ)
   refine' ⟨⟨_, hint⟩, Subtype.ext _⟩
   rw [coe_algebraMap_norm K x, norm_eq_prod_automorphisms]
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
@@ -89,12 +101,13 @@ theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimen
 
 variable {F}
 
+set_option synthInstance.maxHeartbeats 60000 in
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
   haveI : IsAlgClosure K (AlgebraicClosure F) :=
-    IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F) (Algebra.isAlgebraic_of_finite K F)
+    IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F) (Algebra.IsAlgebraic.of_finite K F)
   haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
   calc
     IsUnit (norm K x) ↔ IsUnit ((norm K) x ^ finrank F L) :=

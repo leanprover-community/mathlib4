@@ -190,7 +190,7 @@ theorem typesGrothendieckTopology_eq_canonical :
   have : (fun _ => ULift.up true) = fun _ => ULift.up false :=
     (hs PUnit fun _ => x).isSeparatedFor.ext
       fun β f hf => funext fun y => hsx.elim <| S.2 hf fun _ => y
-  simp at this
+  simp [Function.funext_iff] at this
 #align category_theory.types_grothendieck_topology_eq_canonical CategoryTheory.typesGrothendieckTopology_eq_canonical
 
 end CategoryTheory

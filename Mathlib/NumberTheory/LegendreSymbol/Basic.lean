@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 #align_import number_theory.legendre_symbol.basic from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
@@ -113,7 +112,7 @@ namespace legendreSym
 
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
-  cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
+  rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
         zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1))]
@@ -194,7 +193,7 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 #align legendre_sym.eq_one_iff legendreSym.eq_one_iff
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
-    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact_mod_cast ha0
+    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact mod_cast ha0
 #align legendre_sym.eq_one_iff' legendreSym.eq_one_iff'
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
@@ -230,7 +229,7 @@ of the equation `x^2 - a*y^2 = 0` with `y ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
     {x y : ZMod p} (hy : y ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   apply_fun (· * y⁻¹ ^ 2) at hxy
-  simp only [MulZeroClass.zero_mul] at hxy
+  simp only [zero_mul] at hxy
   rw [(by ring : (x ^ 2 - ↑a * y ^ 2) * y⁻¹ ^ 2 = (x * y⁻¹) ^ 2 - a * (y * y⁻¹) ^ 2),
     mul_inv_cancel hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
@@ -242,7 +241,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha 
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   haveI hy : y ≠ 0 := by
     rintro rfl
-    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero, pow_eq_zero_iff
+    rw [zero_pow' 2 (by norm_num), mul_zero, sub_zero, pow_eq_zero_iff
         (by norm_num : 0 < 2)] at hxy
     exact hx hxy
   exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy
@@ -255,7 +254,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
   have ha : (a : ZMod p) ≠ 0 := by
     intro hf
     rw [(eq_zero_iff p a).mpr hf] at h
-    exact Int.zero_ne_neg_of_ne zero_ne_one h
+    simp at h
   by_contra hf
   cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
@@ -266,7 +265,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
-    (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2 ) : ↑p ∣ x ∧ ↑p ∣ y := by
+    (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
   push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
@@ -312,7 +311,7 @@ theorem mod_four_ne_three_of_sq_eq_neg_sq' {x y : ZMod p} (hy : y ≠ 0) (hxy : 
   @mod_four_ne_three_of_sq_eq_neg_one p _ (x / y)
     (by
       apply_fun fun z => z / y ^ 2 at hxy
-      rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy )
+      rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy)
 #align zmod.mod_four_ne_three_of_sq_eq_neg_sq' ZMod.mod_four_ne_three_of_sq_eq_neg_sq'
 
 theorem mod_four_ne_three_of_sq_eq_neg_sq {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 = -y ^ 2) :

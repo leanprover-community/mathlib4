@@ -23,9 +23,9 @@ statement is false.
 We achieve this by considering the ring `R=ℤ/4ℤ`. We first give the two element set `ι = {0, 1}` a
 structure of linear ordered additive commutative monoid by setting `0 + 0 = 0` and `_ + _ = 1` and
 `0 < 1`. Then we use `ι` to grade `R²` by setting `{(a, a) | a ∈ R}` to have grade `0`; and
-`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(0, 2)} ⊆ ℤ/4ℤ` is homogeneous and not
-prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements then
-`(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
+`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(2, 2)} ⊆ ℤ/4ℤ × ℤ/4ℤ` is homogeneous
+and not prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements
+then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 
 
 ## Tags
@@ -58,14 +58,14 @@ instance : LinearOrderedAddCommMonoid Two :=
       delta Two WithZero; decide }
 section
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-- The grade 0 part of `R²` is `{(a, a) | a ∈ R}`. -/
 def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
   add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
-  smul_mem' a _ hb := congr_arg ((· * ·) a) hb
+  smul_mem' a _ hb := congr_arg (a * ·) hb
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_z Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleZ
 
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
@@ -89,9 +89,9 @@ theorem grading.mul_mem :
       a * b ∈ grading R (i + j)
   | 0, 0, a, b, (ha : a.1 = a.2), (hb : b.1 = b.2) => show a.1 * b.1 = a.2 * b.2 by rw [ha, hb]
   | 0, 1, a, b, (_ : a.1 = a.2), (hb : b.1 = 0) =>
-    show a.1 * b.1 = 0 by rw [hb, MulZeroClass.mul_zero]
-  | 1, 0, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, MulZeroClass.zero_mul]
-  | 1, 1, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, MulZeroClass.zero_mul]
+    show a.1 * b.1 = 0 by rw [hb, mul_zero]
+  | 1, 0, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
+  | 1, 1, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.mul_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.mul_mem
 
 end
@@ -175,7 +175,7 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
   -- Porting note: added `h2` for later use; the proof is hideous
   have h2 : Prime (2:R) := by
     unfold Prime
-    simp only [true_and]
+    refine ⟨by decide, by decide, ?_⟩
     intro a b
     have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
     have aux3 : (Fin.mk 3 _ : R) = -1 := rfl

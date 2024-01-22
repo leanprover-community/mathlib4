@@ -55,18 +55,13 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
-    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
-    use closure U
-    use (closure U)ᶜ
-    refine ⟨ExtremallyDisconnected.open_closure U hUV.1,
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
+    refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
-    simp only [Set.mem_compl_iff]
-    rw [mem_closure_iff]
+    rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
     refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
-    rw [Set.nonempty_iff_ne_empty]
-    simp only [not_not]
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
@@ -95,7 +90,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
   refine' ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
-  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, comp.left_id]
+  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
 #align stone_cech.projective StoneCech.projective
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
@@ -156,8 +151,9 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
-    exact eq_univ_of_coe_eq <|
-      E_min E₀ ⟨E₀_closed.trans E_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
+    exact eq_univ_of_image_val_eq <|
+      E_min E₀ ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
+        image_val_subset
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
   -- prove intersection of chain is closed
@@ -209,7 +205,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
 in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
 then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
-lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_IsOpen [ExtremallyDisconnected A]
+lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
@@ -234,7 +230,7 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
       image_univ_of_surjective ρ_surj]
   -- apply Lemma 2.2 to prove their closures are disjoint
   have disj'' : Disjoint (closure (ρ '' G₁ᶜ)ᶜ) (closure (ρ '' G₂ᶜ)ᶜ) :=
-    disjoint_closure_of_disjoint_IsOpen disj' G₁_open' G₂_open'
+    disjoint_closure_of_disjoint_isOpen disj' G₁_open' G₂_open'
   -- apply Lemma 2.1 to prove $\rho(x_1) = \rho(x_2)$ lies in their intersection
   have hx₁' := image_subset_closure_compl_image_compl_of_isOpen ρ_cont ρ_surj zorn_subset G₁_open <|
     mem_image_of_mem ρ hx₁
@@ -278,7 +274,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
   refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
   suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
-    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp.right_id]
+    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm
 
@@ -297,19 +293,15 @@ instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace
   rw [isOpen_sigma_iff] at hs ⊢
   intro i
   rcases h₀ i with ⟨h₀⟩
-  have h₁ : IsOpen (closure (Sigma.mk i ⁻¹' s))
-  · apply h₀
-    exact hs i
-  suffices h₂ : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
-  · rwa [h₂]
+  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
+  · rw [h]
+    exact h₀ _ (hs i)
   apply IsOpenMap.preimage_closure_eq_closure_preimage
-  intro U _
-  · rw [isOpen_sigma_iff]
+  · intro U _
+    rw [isOpen_sigma_iff]
     intro j
     by_cases ij : i = j
-    · rw [← ij]
-      rw [sigma_mk_preimage_image_eq_self]
-      assumption
+    · rwa [← ij, sigma_mk_preimage_image_eq_self]
     · rw [sigma_mk_preimage_image' ij]
-      apply isOpen_empty
+      exact isOpen_empty
   · continuity

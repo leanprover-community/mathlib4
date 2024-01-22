@@ -92,9 +92,9 @@ instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_neg_eq_map f := f.neg'
 #align ring_seminorm.ring_seminorm_class RingSeminorm.ringSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance : CoeFun (RingSeminorm R) fun _ => R → ℝ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
@@ -103,15 +103,15 @@ theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) =
 
 @[ext]
 theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align ring_seminorm.ext RingSeminorm.ext
 
 instance : Zero (RingSeminorm R) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
-    fun _ _ => (MulZeroClass.zero_mul _).ge }⟩
+    fun _ _ => (zero_mul _).ge }⟩
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align ring_seminorm.eq_zero_iff RingSeminorm.eq_zero_iff
 
 theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by simp [eq_zero_iff]
@@ -156,7 +156,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   obtain hp0 | hp0 := (map_nonneg p (1 : R)).eq_or_gt
   · exfalso
     refine h (ext fun x => (map_nonneg _ _).antisymm' ?_)
-    simpa only [hp0, mul_one, MulZeroClass.mul_zero] using map_mul_le_mul p x 1
+    simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 #align ring_seminorm.seminorm_one_eq_one_iff_ne_zero RingSeminorm.seminorm_one_eq_one_iff_ne_zero
@@ -191,7 +191,7 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align ring_norm.ring_norm_class RingNorm.ringNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
@@ -202,7 +202,7 @@ instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
 
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align ring_norm.ext RingNorm.ext
 
 variable (R)
@@ -241,9 +241,9 @@ instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ w
   map_neg_eq_map f := f.neg'
 #align mul_ring_seminorm.mul_ring_seminorm_class MulRingSeminorm.mulRingSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance : CoeFun (MulRingSeminorm R) fun _ => R → ℝ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
@@ -252,7 +252,7 @@ theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ
 
 @[ext]
 theorem ext {p q : MulRingSeminorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align mul_ring_seminorm.ext MulRingSeminorm.ext
 
 variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
@@ -299,7 +299,7 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align mul_ring_norm.mul_ring_norm_class MulRingNorm.mulRingNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
   ⟨fun p => p.toFun⟩
 
@@ -310,7 +310,7 @@ instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
 
 @[ext]
 theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align mul_ring_norm.ext MulRingNorm.ext
 
 variable (R)
@@ -345,7 +345,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
           le_antisymm
             (le_trans (map_mul_le_mul f _ _)
               (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx,
-                MulZeroClass.zero_mul]))
+                zero_mul]))
             (map_nonneg f _)
       exact hc hc0 }
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm

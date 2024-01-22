@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.Common
 
 #align_import category_theory.category.basic from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -22,9 +22,9 @@ Introduces notations in the `CategoryTheory` scope
 * `𝟙 X` for the identity morphism on `X` (type as `\b1`),
 * `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
 
-Users may like to add `f ⊚ g` for composition in the standard convention, using
+Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation f ` ⊚ `:80 g:80 := category.comp g f    -- type as \oo
+local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
 ```
 
 ## Porting note
@@ -117,6 +117,7 @@ use in auto-params.
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
+            (simp_options := { decide := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
@@ -139,6 +140,9 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+
+-- We turn on the mathlib version of `rfl` inside `aesop_cat`.
+attribute [aesop safe tactic (rule_sets [CategoryTheory])] Mathlib.Tactic.rflTac
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
@@ -215,14 +219,12 @@ scoped infixr:80 " ≫= " => whisker_eq
 
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
 
 theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
@@ -237,12 +239,12 @@ theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
 
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
 
 theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
 
 theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :

@@ -94,14 +94,14 @@ theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   intro v w mem_w_orthogonal
   rcases coercive with ⟨C, C_pos, coercivity⟩
   obtain rfl : w = 0 := by
-    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', MulZeroClass.mul_zero, ←
+    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', mul_zero, ←
       mul_assoc]
     apply le_antisymm
     · calc
         C * ‖w‖ * ‖w‖ ≤ B w w := coercivity w
         _ = ⟪B♯ w, w⟫_ℝ := (continuousLinearMapOfBilin_apply B w w).symm
         _ = 0 := mem_w_orthogonal _ ⟨w, rfl⟩
-    · exact mul_nonneg (mul_nonneg C_pos.le (norm_nonneg w)) (norm_nonneg w)
+    · positivity
   exact inner_zero_left _
 #align is_coercive.range_eq_top IsCoercive.range_eq_top
 

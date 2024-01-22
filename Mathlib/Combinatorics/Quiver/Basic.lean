@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 -/
 import Mathlib.Data.Opposite
+import Mathlib.Tactic.Cases
 
 #align_import combinatorics.quiver.basic from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
 
@@ -16,7 +17,7 @@ is a very permissive notion of directed graph.
 
 ## Implementation notes
 
-Currently `Quiver` is defined with `arrow : V → V → Sort v`.
+Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,

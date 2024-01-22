@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Data.IsROrC.Lemmas
@@ -38,7 +38,9 @@ namespace Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- Hahn-Banach theorem for continuous linear functions over `ℝ`. -/
+/-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
+See also `exists_extension_norm_eq` in the root namespace for a more general version
+that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
     ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
@@ -63,34 +65,38 @@ section IsROrC
 
 open IsROrC
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [IsROrC 𝕜] {E F : Type*}
+  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
-theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
-    ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F
-  letI : IsScalarTower ℝ 𝕜 F := RestrictScalars.isScalarTower _ _ _
-  letI : NormedSpace ℝ F := NormedSpace.restrictScalars _ 𝕜 _
+/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
+theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
+    ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
+  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
   let fr := reClm.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
-  -- we'll call `g : F →L[ℝ] ℝ`.
+  -- we'll call `g : E →L[ℝ] ℝ`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
-  -- Now `g` can be extended to the `F →L[𝕜] 𝕜` we need.
+  -- Now `g` can be extended to the `E →L[𝕜] 𝕜` we need.
   refine' ⟨g.extendTo𝕜, _⟩
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
-    rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
     have : (fr x : 𝕜) - I * ↑(fr (I • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
       rfl
-    rw [this]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [this]
     apply ext
     · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
-        I_im', MulZeroClass.zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
-        mul_re, MulZeroClass.mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        I_im', zero_mul, ofReal_re, eq_self_iff_true, sub_zero, mul_neg, ofReal_neg,
+        mul_re, mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
     · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
-        MulZeroClass.zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
+        zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine' ⟨h, le_antisymm _ _⟩
@@ -101,6 +107,34 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
       _ = ‖f‖ := by rw [reClm_norm, one_mul]
   · exact f.op_norm_le_bound g.extendTo𝕜.op_norm_nonneg fun x => h x ▸ g.extendTo𝕜.le_op_norm x
 #align exists_extension_norm_eq exists_extension_norm_eq
+
+open FiniteDimensional
+
+/-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
+from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
+with a finite dimensional range,
+then `f` admits an extension to a continuous linear map `E → F`.
+
+Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
+we provide no estimates on the norm of the extension.
+-/
+lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
+    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
+    ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
+  set b := finBasis 𝕜 (LinearMap.range f)
+  set e := b.equivFunL
+  set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
+    (f.codRestrict _ <| LinearMap.mem_range_self _)
+  choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
+  use (LinearMap.range f).subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
+  ext x
+  simp [hgf]
+
+/-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
+lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
+    [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
+  let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
+  ⟨g, DFunLike.congr_fun hg.symm⟩
 
 end IsROrC
 

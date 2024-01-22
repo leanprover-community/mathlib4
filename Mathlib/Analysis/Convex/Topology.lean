@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
 
@@ -24,7 +24,7 @@ We prove the following facts:
 
 assert_not_exists Norm
 
-open Metric Set Pointwise Convex
+open Metric Bornology Set Pointwise Convex
 
 variable {ι 𝕜 E : Type*}
 
@@ -32,7 +32,7 @@ theorem Real.convex_iff_isPreconnected {s : Set ℝ} : Convex ℝ s ↔ IsPrecon
   convex_iff_ordConnected.trans isPreconnected_iff_ordConnected.symm
 #align real.convex_iff_is_preconnected Real.convex_iff_isPreconnected
 
-alias Real.convex_iff_isPreconnected ↔ _ IsPreconnected.convex
+alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 #align is_preconnected.convex IsPreconnected.convex
 
 /-! ### Standard simplex -/
@@ -43,8 +43,7 @@ section stdSimplex
 variable [Fintype ι]
 
 /-- Every vector in `stdSimplex 𝕜 ι` has `max`-norm at most `1`. -/
-theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := by
-  intro f hf
+theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := fun f hf ↦ by
   rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
   intro x
   rw [Pi.zero_apply, Real.dist_0_eq_abs, abs_of_nonneg <| hf.1 x]
@@ -54,8 +53,8 @@ theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0
 variable (ι)
 
 /-- `stdSimplex ℝ ι` is bounded. -/
-theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
-  (Metric.bounded_iff_subset_ball 0).2 ⟨1, stdSimplex_subset_closedBall⟩
+theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
+  (Metric.isBounded_iff_subset_closedBall 0).2 ⟨1, stdSimplex_subset_closedBall⟩
 #align bounded_std_simplex bounded_stdSimplex
 
 /-- `stdSimplex ℝ ι` is closed. -/
@@ -69,6 +68,9 @@ theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
   Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
 #align is_compact_std_simplex isCompact_stdSimplex
+
+instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
+  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
 end stdSimplex
 
@@ -97,9 +99,8 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 @[simp]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact
-    (image_closure_of_isCompact (bounded_Ioo _ _).isCompact_closure <|
-        Continuous.continuousOn <| by continuity).symm
+  exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
+    Continuous.continuousOn <| by continuity).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace
@@ -335,16 +336,20 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
+theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
+  convert h
+  rw [segment_eq_image ℝ x y]
+
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  have H := hconv.segment_subset x_in y_in
-  rw [segment_eq_image_lineMap] at H
-  exact
-    JoinedIn.ofLine AffineMap.lineMap_continuous.continuousOn (lineMap_apply_zero _ _)
-      (lineMap_apply_one _ _) H
+  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/

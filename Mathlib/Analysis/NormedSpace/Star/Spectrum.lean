@@ -21,7 +21,7 @@ section
 
 open scoped Topology ENNReal
 
-open Filter ENNReal spectrum CstarRing
+open Filter ENNReal spectrum CstarRing NormedSpace
 
 section UnitarySpectrum
 
@@ -33,12 +33,12 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
   nontriviality E
   refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
-  · rw [← unitary.toUnits_apply_val u] at hk
+  · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
     have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ :=
       by simpa only [norm_inv] using norm_le_norm_of_mem hk
-    simpa [←Units.inv_eq_val_inv] using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
+    simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
@@ -91,7 +91,7 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelf
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
   have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : _root_.exp ℂ (I • z) ∈ spectrum ℂ (_root_.exp ℂ (I • a)) := by
+  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
@@ -170,7 +170,7 @@ variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [S
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   coe φ := φ
-  coe_injective' := FunLike.coe_injective'
+  coe_injective' := DFunLike.coe_injective'
   map_star φ a := by
     suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
     · rw [← realPart_add_I_smul_imaginaryPart a]

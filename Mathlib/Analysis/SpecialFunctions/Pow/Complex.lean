@@ -13,8 +13,6 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Classical Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex
@@ -60,7 +58,7 @@ theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧
   constructor
   · intro hyp
     simp only [cpow_def, eq_self_iff_true, if_true] at hyp
-    by_cases x = 0
+    by_cases h : x = 0
     · subst h
       simp only [if_true, eq_self_iff_true] at hyp
       right
@@ -112,63 +110,107 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 #align complex.cpow_neg_one Complex.cpow_neg_one
 
+/-- See also `Complex.cpow_int_mul'`. -/
+lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · rcases eq_or_ne n 0 with rfl | hn
+    · simp
+    · rcases eq_or_ne y 0 with rfl | hy <;> simp [*, zero_zpow]
+  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_int_mul]
+
+lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
+
+lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n :=
+  mod_cast cpow_int_mul x n y
+
+/-- See Note [no_index around OfNat.ofNat] -/
+lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) [n.AtLeastTwo] (y : ℂ) :
+    x ^ (no_index (OfNat.ofNat n) * y) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
+  cpow_nat_mul x n y
+
+lemma cpow_mul_nat (x y : ℂ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [mul_comm, cpow_nat_mul]
+
+/-- See Note [no_index around OfNat.ofNat] -/
+lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (y * no_index (OfNat.ofNat n)) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
+  cpow_mul_nat x y n
+
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = x ^ n
-  | 0 => by simp
-  | n + 1 =>
-    if hx : x = 0 then by
-      simp only [hx, pow_succ, Complex.zero_cpow (Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)),
-        MulZeroClass.zero_mul]
-    else by simp [cpow_add, hx, pow_add, cpow_nat_cast x n]
+theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
+/-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
-theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := by
-  rw [← cpow_nat_cast]
-  simp only [Nat.cast_ofNat]
+lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (no_index (OfNat.ofNat n) : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
+  cpow_nat_cast x n
+
+theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 #align complex.cpow_two Complex.cpow_two
 
-open Int in
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = x ^ n
-  | (n : ℕ) => by simp
-  | -[n+1] => by
-    rw [zpow_negSucc]
-    simp only [Int.negSucc_coe, Int.cast_neg, Complex.cpow_neg, inv_eq_one_div, Int.cast_ofNat,
-      cpow_nat_cast]
+theorem cpow_int_cast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
 #align complex.cpow_int_cast Complex.cpow_int_cast
 
+@[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
-  suffices im (log x * (n⁻¹ : ℂ)) ∈ Ioc (-π) π by
-    rw [← cpow_nat_cast, ← cpow_mul _ this.1 this.2, inv_mul_cancel, cpow_one]
-    exact_mod_cast hn
-  rw [mul_comm, ← ofReal_nat_cast, ← ofReal_inv, ofReal_mul_im, ← div_eq_inv_mul]
-  rw [← pos_iff_ne_zero] at hn
-  have hn' : 0 < (n : ℝ) := by assumption_mod_cast
-  have hn1 : 1 ≤ (n : ℝ) := by exact_mod_cast Nat.succ_le_iff.2 hn
-  constructor
-  · rw [lt_div_iff hn']
-    calc
-      -π * n ≤ -π * 1 := mul_le_mul_of_nonpos_left hn1 (neg_nonpos.2 Real.pi_pos.le)
-      _ = -π := (mul_one _)
-      _ < im (log x) := neg_pi_lt_log_im _
-
-  · rw [div_le_iff hn']
-    calc
-      im (log x) ≤ π := log_im_le_pi _
-      _ = π * 1 := (mul_one π).symm
-      _ ≤ π * n := mul_le_mul_of_nonneg_left hn1 Real.pi_pos.le
-
+  rw [← cpow_nat_mul, mul_inv_cancel, cpow_one]
+  assumption_mod_cast
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
+
+/-- See Note [no_index around OfNat.ofNat] -/
+@[simp]
+lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [h : n.AtLeastTwo] :
+    (x ^ ((no_index (OfNat.ofNat n) : ℂ)⁻¹)) ^ (no_index (OfNat.ofNat n) : ℕ) = x :=
+  cpow_nat_inv_pow _ (two_pos.trans_le h.1).ne'
+
+/-- A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
+
+The assumptions on the arguments are needed
+because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
+lemma cpow_int_mul' {x : ℂ} {n : ℤ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
+    x ^ (n * y) = (x ^ n) ^ y := by
+  rw [mul_comm] at hlt hle
+  rw [cpow_mul, cpow_int_cast] <;> simpa [log_im]
+
+/-- A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
+
+The assumptions on the arguments are needed
+because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
+lemma cpow_nat_mul' {x : ℂ} {n : ℕ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
+    x ^ (n * y) = (x ^ n) ^ y :=
+  cpow_int_mul' hlt hle y
+
+lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -π < OfNat.ofNat n * x.arg)
+    (hle : OfNat.ofNat n * x.arg ≤ π) (y : ℂ) :
+    x ^ (OfNat.ofNat n * y) = (x ^ (OfNat.ofNat n : ℕ)) ^ y :=
+  cpow_nat_mul' hlt hle y
+
+lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x.arg) (hle : x.arg ≤ π / n) :
+    (x ^ n) ^ (n⁻¹ : ℂ) = x := by
+  rw [← cpow_nat_mul', mul_inv_cancel (Nat.cast_ne_zero.2 h₀), cpow_one]
+  · rwa [← div_lt_iff' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
+  · rwa [← le_div_iff' (Nat.cast_pos.2 h₀.bot_lt)]
+
+lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [h : n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
+    (hle : x.arg ≤ π / OfNat.ofNat n) :
+    (x ^ (OfNat.ofNat n : ℕ)) ^ ((OfNat.ofNat n : ℂ)⁻¹) = x :=
+  pow_cpow_nat_inv (two_pos.trans_le h.1).ne' hlt hle
+
+/-- See also `Complex.pow_cpow_ofNat_inv` for a version that also works for `x * I`, `0 ≤ x`. -/
+lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : ℂ) = x :=
+  pow_cpow_ofNat_inv (neg_pi_div_two_lt_arg_iff.2 <| .inl hx)
+    (arg_le_pi_div_two_iff.2 <| .inl hx.le)
 
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp only [cpow_zero, mul_one]
   rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [ofReal_zero, MulZeroClass.zero_mul, zero_cpow hr, MulZeroClass.zero_mul]
+  · rw [ofReal_zero, zero_mul, zero_cpow hr, zero_mul]
   rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [ofReal_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
+  · rw [ofReal_zero, mul_zero, zero_cpow hr, mul_zero]
   have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
   have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
   rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,

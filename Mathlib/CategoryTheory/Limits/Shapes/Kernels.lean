@@ -165,6 +165,14 @@ def KernelFork.IsLimit.ofι {W : C} (g : W ⟶ X) (eq : g ≫ f = 0)
     uniq s.ι s.condition
 #align category_theory.limits.kernel_fork.is_limit.of_ι CategoryTheory.Limits.KernelFork.IsLimit.ofι
 
+/-- This is a more convenient formulation to show that a `KernelFork` of the form
+`KernelFork.ofι i _` is a limit cone when we know that `i` is a monomorphism. -/
+def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
+    (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
+    IsLimit (KernelFork.ofι i w) :=
+  ofι _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+    rw [← cancel_mono i, (h k hk).2, hm])
+
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
 def isKernelCompMono {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : Mono g] {h : X ⟶ Z}
     (hh : h = f ≫ g) : IsLimit (KernelFork.ofι c.ι (by simp [hh]) : KernelFork h) :=
@@ -213,6 +221,35 @@ lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
   exact IsIso.of_isIso_comp_left e.inv c.ι
 
 end
+
+namespace KernelFork
+
+variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
+
+/-- The morphism between points of kernel forks induced by a morphism
+in the category of arrows. -/
+def mapOfIsLimit (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') : kf.pt ⟶ kf'.pt :=
+  hf'.lift (KernelFork.ofι (kf.ι ≫ φ.left) (by simp))
+
+@[reassoc (attr := simp)]
+lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') :
+    kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
+  hf'.fac _ _
+
+/-- The isomorphism between points of limit kernel forks induced by an isomorphism
+in the category of arrows. -/
+@[simps]
+def mapIsoOfIsLimit {kf : KernelFork f} {kf' : KernelFork f'}
+    (hf : IsLimit kf) (hf' : IsLimit kf')
+    (φ : Arrow.mk f ≅ Arrow.mk f') : kf.pt ≅ kf'.pt where
+  hom := kf.mapOfIsLimit hf' φ.hom
+  inv := kf'.mapOfIsLimit hf φ.inv
+  hom_inv_id := Fork.IsLimit.hom_ext hf (by simp)
+  inv_hom_id := Fork.IsLimit.hom_ext hf' (by simp)
+
+end KernelFork
 
 section
 
@@ -504,7 +541,7 @@ def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s)
     Cones.ext i.symm fun j => by
       cases j
       · exact (Iso.eq_inv_comp i).2 h
-      · dsimp; rw[←h]; simp
+      · dsimp; rw[← h]; simp
 #align category_theory.limits.is_kernel.iso_kernel CategoryTheory.Limits.IsKernel.isoKernel
 
 /-- If `i` is an isomorphism such that `i.hom ≫ kernel.ι f = l`, then `l` is a kernel of `f`. -/
@@ -602,6 +639,14 @@ def CokernelCofork.IsColimit.ofπ {Z : C} (g : Y ⟶ Z) (eq : f ≫ g = 0)
     uniq s.π s.condition
 #align category_theory.limits.cokernel_cofork.is_colimit.of_π CategoryTheory.Limits.CokernelCofork.IsColimit.ofπ
 
+/-- This is a more convenient formulation to show that a `CokernelCofork` of the form
+`CokernelCofork.ofπ p _` is a colimit cocone when we know that `p` is an epimorphism. -/
+def CokernelCofork.IsColimit.ofπ' {X Y Q : C} {f : X ⟶ Y} (p : Y ⟶ Q) (w : f ≫ p = 0)
+    (h : ∀ {A : C} (k : Y ⟶ A) (_ : f ≫ k = 0), { l : Q ⟶ A // p ≫ l = k}) [hp : Epi p] :
+    IsColimit (CokernelCofork.ofπ p w) :=
+  ofπ _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+    rw [← cancel_epi p, (h k hk).2, hm])
+
 /-- Every cokernel of `f` induces a cokernel of `g ≫ f` if `g` is epi. -/
 def isCokernelEpiComp {c : CokernelCofork f} (i : IsColimit c) {W} (g : W ⟶ X) [hg : Epi g]
     {h : W ⟶ Y} (hh : h = g ≫ f) :
@@ -664,6 +709,36 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
 
 end
 
+namespace CokernelCofork
+
+variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
+
+/-- The morphism between points of cokernel coforks induced by a morphism
+in the category of arrows. -/
+def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') : cc.pt ⟶ cc'.pt :=
+  hf.desc (CokernelCofork.ofπ (φ.right ≫ cc'.π) (by
+    erw [← Arrow.w_assoc φ, condition, comp_zero]))
+
+@[reassoc (attr := simp)]
+lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') :
+    cc.π ≫ mapOfIsColimit hf cc' φ = φ.right ≫ cc'.π :=
+  hf.fac _ _
+
+/-- The isomorphism between points of limit cokernel coforks induced by an isomorphism
+in the category of arrows. -/
+@[simps]
+def mapIsoOfIsColimit {cc : CokernelCofork f} {cc' : CokernelCofork f'}
+    (hf : IsColimit cc) (hf' : IsColimit cc')
+    (φ : Arrow.mk f ≅ Arrow.mk f') : cc.pt ≅ cc'.pt where
+  hom := mapOfIsColimit hf cc' φ.hom
+  inv := mapOfIsColimit hf' cc φ.inv
+  hom_inv_id := Cofork.IsColimit.hom_ext hf (by simp)
+  inv_hom_id := Cofork.IsColimit.hom_ext hf' (by simp)
+
+end CokernelCofork
+
 section
 
 variable [HasCokernel f]
@@ -709,7 +784,7 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
 -- porting note: added to ease the port of `Abelian.Exact`
 @[reassoc (attr := simp)]
 lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
-    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f]:
+    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
   aesop_cat
@@ -739,7 +814,7 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
     (w : f ≫ q = p ≫ f') : cokernel f ⟶ cokernel f' :=
   cokernel.desc f (q ≫ cokernel.π f') (by
     have : f ≫ q ≫ π f' = p ≫ f' ≫ π f' := by
-      simp only [←Category.assoc]
+      simp only [← Category.assoc]
       apply congrArg (· ≫ π f') w
     simp [this])
 #align category_theory.limits.cokernel.map CategoryTheory.Limits.cokernel.map
@@ -1055,7 +1130,7 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
   IsColimit.ofIsoColimit hs <|
     Cocones.ext i fun j => by
       cases j
-      · dsimp; rw [←h]; simp
+      · dsimp; rw [← h]; simp
       · exact h
 #align category_theory.limits.is_cokernel.cokernel_iso CategoryTheory.Limits.IsCokernel.cokernelIso
 

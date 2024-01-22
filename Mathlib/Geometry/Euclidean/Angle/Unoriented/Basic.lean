@@ -192,13 +192,13 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
   by_cases h : ‖x‖ * ‖y‖ = 0
-  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, MulZeroClass.mul_zero,
-      MulZeroClass.mul_zero, zero_sub]
+  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
+      mul_zero, zero_sub]
     cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
     · rw [norm_eq_zero] at hx
-      rw [hx, inner_zero_left, MulZeroClass.zero_mul, neg_zero]
+      rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
-      rw [hy, inner_zero_right, MulZeroClass.zero_mul, neg_zero]
+      rw [hy, inner_zero_right, zero_mul, neg_zero]
   · field_simp [h]
     ring_nf
 #align inner_product_geometry.sin_angle_mul_norm_mul_norm InnerProductGeometry.sin_angle_mul_norm_mul_norm

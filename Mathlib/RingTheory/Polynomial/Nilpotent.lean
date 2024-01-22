@@ -3,7 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.Nilpotent
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Div
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Nilpotency in polynomial rings.
@@ -18,7 +21,7 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 namespace Polynomial
 
-variable {R : Type _} {r : R}
+variable {R : Type*} {r : R}
 
 section Semiring
 
@@ -72,21 +75,27 @@ protected lemma isNilpotent_iff :
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
       refine' isNilpotent_C_iff.mpr ⟨k, _⟩
       simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
-    cases' i with i; simpa [hp₀] using hr
+    cases' i with i
+    · simpa [hp₀] using hr
     simp only [coeff_add, coeff_C_succ, add_zero]
     apply hp
     simpa using Commute.isNilpotent_sub (Commute.all _ _) hpr hr
-  · cases' i with i; simp
+  · cases' i with i
+    · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
-@[simp] lemma isNilpotent_reverse_iff :
-    IsNilpotent P.reverse ↔ IsNilpotent P := by
+@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N):
+    IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> cases' le_or_lt i P.natDegree with hi hi
-  · simpa [tsub_tsub_cancel_of_le hi] using h (P.natDegree - i)
-  · simp [coeff_eq_zero_of_natDegree_lt hi]
-  · simpa only [hi, revAt_le] using h (P.natDegree - i)
-  · simpa only [revAt_eq_self_of_lt hi] using h i
+  refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> rcases le_or_lt i N with hi | hi
+  · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
+  · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
+  · simpa [hi, revAt_le] using h (N - i)
+  · simpa [revAt_eq_self_of_lt hi] using h i
+
+@[simp] lemma isNilpotent_reverse_iff :
+    IsNilpotent P.reverse ↔ IsNilpotent P :=
+  isNilpotent_reflect_iff (le_refl _)
 
 /-- Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
 nilpotent, then `P` is a unit.
@@ -134,7 +143,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     have hcoeff : (f P).coeff n = 0 := by
       refine' coeff_eq_zero_of_degree_lt _
       rw [hPQ.1]
-      exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
+      exact WithBot.coe_pos.2 hn.bot_lt
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
     exact hcoeff
 
@@ -155,8 +164,8 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
 
 lemma isUnit_iff' :
     IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by
-  suffices : P = C (eval 0 P) + X * (P /ₘ X)
-  · conv_lhs => rw [this]; simp
+  suffices P = C (eval 0 P) + X * (P /ₘ X) by
+    conv_lhs => rw [this]; simp
   conv_lhs => rw [← modByMonic_add_div P monic_X]
   simp [modByMonic_X]
 

@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
@@ -73,7 +72,7 @@ open Structure Fin
 /-- A term on `α` is either a variable indexed by an element of `α`
   or a function symbol applied to simpler terms. -/
 inductive Term (α : Type u') : Type max u u'
-  | var : ∀ _a : α, Term α
+  | var : α → Term α
   | func : ∀ {l : ℕ} (_f : L.Functions l) (_ts : Fin l → Term α), Term α
 #align first_order.language.term FirstOrder.Language.Term
 export Term (var func)
@@ -208,7 +207,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (Sum γ α) :=
     · cases n
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
-        · simp [constantsToVars, varsToConstants, Constants.term]
+        · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
       · cases' f with f f
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
@@ -645,7 +644,6 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
-@[simp]
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
   φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
     (fun _ => id) fun _ => id
@@ -668,6 +666,15 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 #align first_order.language.bounded_formula.to_formula FirstOrder.Language.BoundedFormula.toFormula
+
+/-- take the disjunction of a finite set of formulas -/
+noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊔ .) ⊥
+
+/-- take the conjunction of a finite set of formulas -/
+noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊓ .) ⊤
+
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
 
@@ -1028,6 +1035,22 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
+
+/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+
+/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

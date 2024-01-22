@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.ZeroOne
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.nonempty from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -171,7 +171,7 @@ theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingl
 #align subsingleton_of_not_nonempty subsingleton_of_not_nonempty
 
 theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
-      Nonempty α :=
+    Nonempty α :=
   let ⟨y⟩ := h
   let ⟨x, _⟩ := hf y
   ⟨x⟩

@@ -63,7 +63,6 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
 #align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
 
-set_option maxHeartbeats 250000 in
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
@@ -162,7 +161,7 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
-  RingEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
+  MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 #align ideal.is_domain_map_C_quotient Ideal.isDomain_map_C_quotient
 
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.

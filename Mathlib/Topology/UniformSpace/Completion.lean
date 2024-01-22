@@ -350,7 +350,7 @@ instance completeSpace_separation [h : CompleteSpace α] :
   constructor
   intro f hf
   have : Cauchy (f.comap fun x => ⟦x⟧) :=
-    hf.comap' comap_quotient_le_uniformity <| hf.left.comap_of_surj (surjective_quotient_mk _)
+    hf.comap' comap_quotient_le_uniformity <| hf.left.comap_of_surj (surjective_quotient_mk' _)
   let ⟨x, (hx : (f.comap fun x => ⟦x⟧) ≤ 𝓝 x)⟩ := CompleteSpace.complete this
   exact ⟨⟦x⟧,
     (comap_le_comap_iff <| by simp).1

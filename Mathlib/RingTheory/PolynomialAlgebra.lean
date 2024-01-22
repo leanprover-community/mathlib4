@@ -19,7 +19,7 @@ Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
 ```
 def matPolyEquiv :
-  Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
+    Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
@@ -86,7 +86,7 @@ theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.c
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     a₁ * a₂ * (algebraMap R A) ((p₁ * p₂).coeff k) =
-      (Finset.Nat.antidiagonal k).sum fun x =>
+      (Finset.antidiagonal k).sum fun x =>
         a₁ * (algebraMap R A) (coeff p₁ x.1) * (a₂ * (algebraMap R A) (coeff p₂ x.2)) := by
   simp_rw [mul_assoc, Algebra.commutes, ← Finset.mul_sum, mul_assoc, ← Finset.mul_sum]
   congr
@@ -102,25 +102,23 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne.def]
     conv_rhs => rw [coeff_mul]
     simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne.def, mul_ite,
-      MulZeroClass.mul_zero, ite_mul, MulZeroClass.zero_mul]
-    simp_rw [ite_mul_zero_left (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
-    simp_rw [ite_mul_zero_right (¬coeff p₂ _ = 0) _ (_ * _)]
+      mul_zero, ite_mul, zero_mul]
+    simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
+    simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul PolyEquivTensor.toFunLinear_mul_tmul_mul
 
-theorem toFunLinear_algebraMap_tmul_one (r : R) :
-    (toFunLinear R A) ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R A[X]) r := by
-  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, algebraMap_smul,
-    Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one] -- porting note: had to
-  -- add extra `Algebra.algebraMap_eq_smul_one`
-#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_algebraMap_tmul_one
+theorem toFunLinear_one_tmul_one :
+    toFunLinear R A (1 ⊗ₜ[R] 1) = 1 := by
+  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, one_smul]
+#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_one_tmul_oneₓ
 
 /-- (Implementation detail).
 The algebra homomorphism `A ⊗[R] R[X] →ₐ[R] A[X]`.
 -/
 def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
   algHomOfLinearMapTensorProduct (toFunLinear R A) (toFunLinear_mul_tmul_mul R A)
-    (toFunLinear_algebraMap_tmul_one R A)
+    (toFunLinear_one_tmul_one R A)
 #align poly_equiv_tensor.to_fun_alg_hom PolyEquivTensor.toFunAlgHom
 
 @[simp]
@@ -227,6 +225,23 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
     (polyEquivTensor R (Matrix n n R)).symm
 #align mat_poly_equiv matPolyEquiv
 
+@[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
+  simp [matPolyEquiv, ← C_eq_algebraMap]
+
+@[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
+  rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
+
+@[simp] theorem matPolyEquiv_symm_X :
+    matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
+  suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = diagonal fun _ : n => (X : R[X]) by
+    simpa [matPolyEquiv]
+  rw [← Matrix.diagonal_one]
+  simp [-Matrix.diagonal_one]
+
+@[simp] theorem matPolyEquiv_diagonal_X :
+    matPolyEquiv (diagonal fun _ : n => (X : R[X])) = X := by
+  rw [← matPolyEquiv_symm_X, AlgEquiv.apply_symm_apply]
+
 open Finset
 
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
@@ -285,6 +300,11 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv_coeff_apply]
   split_ifs <;> simp <;> rename_i h <;> simp [h]
 #align mat_poly_equiv_smul_one matPolyEquiv_smul_one
+
+@[simp]
+lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
+    matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
+  rw [← one_mul M, ← smul_mul_assoc, _root_.map_mul, matPolyEquiv_smul_one, one_mul]
 
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by

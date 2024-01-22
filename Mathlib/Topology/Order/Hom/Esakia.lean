@@ -13,7 +13,7 @@ import Mathlib.Topology.Order.Hom.Basic
 
 This file defines pseudo-epimorphisms and Esakia morphisms.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -116,10 +116,10 @@ instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
   map_rel f _ _ h := f.monotone' h
   exists_map_eq_of_map_le := PseudoEpimorphism.exists_map_eq_of_map_le'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
@@ -129,7 +129,7 @@ theorem toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) :
 
 @[ext]
 theorem ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align pseudo_epimorphism.ext PseudoEpimorphism.ext
 
 /-- Copy of a `PseudoEpimorphism` with a new `toFun` equal to the old one. Useful to fix
@@ -143,7 +143,7 @@ theorem coe_copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : �
 #align pseudo_epimorphism.coe_copy PseudoEpimorphism.coe_copy
 
 theorem copy_eq (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align pseudo_epimorphism.copy_eq PseudoEpimorphism.copy_eq
 
 variable (α)
@@ -208,11 +208,13 @@ theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f
   ext fun _ => rfl
 #align pseudo_epimorphism.id_comp PseudoEpimorphism.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align pseudo_epimorphism.cancel_right PseudoEpimorphism.cancel_right
 
+@[simp]
 theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -242,10 +244,10 @@ instance : EsakiaHomClass (EsakiaHom α β) α β where
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (EsakiaHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 -- Porting note: introduced this to appease simpNF linter with `toFun_eq_coe`
 @[simp]
@@ -258,7 +260,7 @@ theorem toFun_eq_coe {f : EsakiaHom α β} : f.toFun = (f : α → β) := rfl
 
 @[ext]
 theorem ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align esakia_hom.ext EsakiaHom.ext
 
 /-- Copy of an `EsakiaHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -273,7 +275,7 @@ theorem coe_copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : ⇑(f.cop
 #align esakia_hom.coe_copy EsakiaHom.coe_copy
 
 theorem copy_eq (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align esakia_hom.copy_eq EsakiaHom.copy_eq
 
 variable (α)
@@ -346,15 +348,16 @@ theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
   ext fun _ => rfl
 #align esakia_hom.id_comp EsakiaHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align esakia_hom.cancel_right EsakiaHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align esakia_hom.cancel_left EsakiaHom.cancel_left
 
 end EsakiaHom
-

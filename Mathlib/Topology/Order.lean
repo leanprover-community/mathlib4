@@ -81,8 +81,8 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
   letI := generateFrom g
   rw [nhds_def]
-  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) ?_
-  refine le_iInf₂ fun s ⟨ha, hs⟩ => ?_; clear ‹s ∈ { s | a ∈ s ∧ IsOpen s }›
+  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
+  rintro s ⟨ha, hs⟩
   induction hs with
   | basic _ hs => exact iInf₂_le _ ⟨ha, hs⟩
   | univ => exact le_top.trans_eq principal_univ.symm
@@ -92,10 +92,12 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     exact (hS t htS hat).trans (principal_mono.2 <| subset_sUnion_of_mem htS)
 #align topological_space.nhds_generate_from TopologicalSpace.nhds_generateFrom
 
-theorem tendsto_nhds_generateFrom {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)} {b : β}
-    (h : ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f) : Tendsto m f (@nhds β (generateFrom g) b) := by
-  rw [nhds_generateFrom]
-  exact tendsto_iInf.2 fun s => tendsto_iInf.2 fun ⟨hbs, hsg⟩ => tendsto_principal.2 <| h s hsg hbs
+lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
+    {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
+  simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
+    tendsto_principal]; rfl
+
+@[deprecated] alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
 #align topological_space.tendsto_nhds_generate_from TopologicalSpace.tendsto_nhds_generateFrom
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
@@ -156,7 +158,7 @@ variable {α : Type u} {β : Type v}
 /-- The ordering on topologies on the type `α`. `t ≤ s` if every set open in `s` is also open in `t`
 (`t` is finer than `s`). -/
 instance : PartialOrder (TopologicalSpace α) :=
-  { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => topologicalSpace_eq) with
+  { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
     le := fun s t => ∀ U, IsOpen[t] U → IsOpen[s] U }
 
 protected theorem le_def {α} {t s : TopologicalSpace α} : t ≤ s ↔ IsOpen[s] ≤ IsOpen[t] :=
@@ -181,7 +183,7 @@ protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s)
 
 theorem mkOfClosure_sets {s : Set (Set α)} {hs : { u | GenerateOpen s u } = s} :
     TopologicalSpace.mkOfClosure s hs = generateFrom s :=
-  topologicalSpace_eq hs.symm
+  TopologicalSpace.ext hs.symm
 #align topological_space.mk_of_closure_sets TopologicalSpace.mkOfClosure_sets
 
 theorem gc_generateFrom (α) :
@@ -359,6 +361,15 @@ theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
   simp only [discreteTopology_iff_singleton_mem_nhds, nhdsWithin, inf_principal_eq_bot, compl_compl]
 #align discrete_topology_iff_nhds_ne discreteTopology_iff_nhds_ne
 
+/-- If the codomain of a continuous injective function has discrete topology,
+then so does the domain.
+
+See also `Embedding.discreteTopology` for an important special case. -/
+theorem DiscreteTopology.of_continuous_injective
+    {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
+    (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
+  forall_open_iff_discrete.1 fun s ↦ hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
+
 end Lattice
 
 section GaloisConnection
@@ -478,17 +489,16 @@ theorem coinduced_iSup {ι : Sort w} {t : ι → TopologicalSpace α} :
 #align coinduced_supr coinduced_iSup
 
 theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
-  topologicalSpace_eq <|
+  TopologicalSpace.ext <|
     funext fun s => propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
 #align induced_id induced_id
 
 theorem induced_compose [tγ : TopologicalSpace γ] {f : α → β} {g : β → γ} :
     (tγ.induced g).induced f = tγ.induced (g ∘ f) :=
-  topologicalSpace_eq <|
-    funext fun _ =>
-      propext <|
-        ⟨fun ⟨_, ⟨s, hs, h₂⟩, h₁⟩ => h₁ ▸ h₂ ▸ ⟨s, hs, rfl⟩, fun ⟨s, hs, h⟩ =>
-          ⟨preimage g s, ⟨s, hs, rfl⟩, h ▸ rfl⟩⟩
+  TopologicalSpace.ext <|
+    funext fun _ => propext
+      ⟨fun ⟨_, ⟨s, hs, h₂⟩, h₁⟩ => h₁ ▸ h₂ ▸ ⟨s, hs, rfl⟩,
+        fun ⟨s, hs, h⟩ => ⟨preimage g s, ⟨s, hs, rfl⟩, h ▸ rfl⟩⟩
 #align induced_compose induced_compose
 
 theorem induced_const [t : TopologicalSpace α] {x : α} : (t.induced fun _ : β => x) = ⊤ :=
@@ -496,12 +506,12 @@ theorem induced_const [t : TopologicalSpace α] {x : α} : (t.induced fun _ : β
 #align induced_const induced_const
 
 theorem coinduced_id [t : TopologicalSpace α] : t.coinduced id = t :=
-  topologicalSpace_eq rfl
+  TopologicalSpace.ext rfl
 #align coinduced_id coinduced_id
 
 theorem coinduced_compose [tα : TopologicalSpace α] {f : α → β} {g : β → γ} :
     (tα.coinduced f).coinduced g = tα.coinduced (g ∘ f) :=
-  topologicalSpace_eq rfl
+  TopologicalSpace.ext rfl
 #align coinduced_compose coinduced_compose
 
 theorem Equiv.induced_symm {α β : Type*} (e : α ≃ β) :
@@ -712,10 +722,11 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
   Iff.trans continuous_iff_coinduced_le (gc_coinduced_induced f _ _)
 #align continuous_iff_le_induced continuous_iff_le_induced
 
-theorem continuous_generateFrom {t : TopologicalSpace α} {b : Set (Set β)}
-    (h : ∀ s ∈ b, IsOpen (f ⁻¹' s)) :
-    Continuous[t, generateFrom b] f :=
-  continuous_iff_coinduced_le.2 <| le_generateFrom h
+lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
+    Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
+  rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]; rfl
+
+@[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
 @[continuity]

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relation
 import Mathlib.Init.Set
 import Mathlib.Tactic.Common
 
@@ -47,7 +46,7 @@ theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ �
   forall₂_congr fun _i _j => not_imp_not.symm
 #align function.injective_iff_pairwise_ne Function.injective_iff_pairwise_ne
 
-alias Function.injective_iff_pairwise_ne ↔ Function.Injective.pairwise_ne _
+alias ⟨Function.Injective.pairwise_ne, _⟩ := Function.injective_iff_pairwise_ne
 #align function.injective.pairwise_ne Function.Injective.pairwise_ne
 
 namespace Set

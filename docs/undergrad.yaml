@@ -71,7 +71,7 @@ Linear algebra:
     examples: ''
   Exponential:
     endomorphism exponential: ''
-    matrix exponential: 'exp'
+    matrix exponential: 'NormedSpace.exp'
 
 # 2.
 Group Theory:
@@ -144,7 +144,7 @@ Ring Theory:
     unique factorisation domain (UFD): 'UniqueFactorizationMonoid'
     greatest common divisor: 'GCDMonoid.gcd'
     least common multiple: 'GCDMonoid.lcm'
-    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.instUniqueFactorizationMonoidMvPolynomialToCommSemiringToCancelCommMonoidWithZeroCommSemiringInstIsDomainMvPolynomialToCommSemiringToSemiringCommSemiring'
+    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
     principal ideal domain: 'Submodule.IsPrincipal'
     Euclidean rings: 'EuclideanDomain'
     Euclid's' algorithm: 'Nat.xgcd'
@@ -422,7 +422,7 @@ Topology:
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     norms $\lVert\cdot\rVert_p$ on $\R^n$ and $\C^n$: 'PiLp.normedSpace'
-    absolutely convergent series in Banach spaces: 'summable_of_summable_norm'
+    absolutely convergent series in Banach spaces: 'Summable.of_norm'
     continuous linear maps: 'ContinuousLinearMap'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     uniform convergence norm (sup-norm): 'EMetric.tendstoUniformlyOn_iff'
@@ -434,7 +434,7 @@ Topology:
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
     orthogonal projection onto closed vector subspaces: 'orthogonalProjection'
-    dual space: 'NormedSpace.instNormedSpaceDualToNormedFieldInstSeminormedAddCommGroupDual'
+    dual space: 'NormedSpace.Dual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
     its completeness: 'lp.instCompleteSpace'
@@ -549,7 +549,7 @@ Probability Theory:
     conditional probability: 'ProbabilityTheory.cond'
     law of total probability: ''
   Random variables and their laws:
-    discrete law: 'Pmf'
+    discrete law: 'PMF'
     absolute continuity of probability laws: ''
     probability density function: 'MeasureTheory.HasPDF'
     law of joint probability: ''
@@ -558,7 +558,7 @@ Probability Theory:
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     transfer theorem: ''
     moments: 'ProbabilityTheory.moment'
-    Bernoulli law: 'Pmf.bernoulli'
+    Bernoulli law: 'PMF.bernoulli'
     binomial law: ''
     geometric law: ''
     Poisson law: ''

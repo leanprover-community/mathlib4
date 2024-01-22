@@ -71,7 +71,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
+instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
   ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
@@ -193,8 +193,8 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
           have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
           rw [hm, map_mul]
           norm_cast
-        · simp only [hy, not_false_iff, dif_neg, MulZeroClass.mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, MulZeroClass.zero_mul]
+        · simp only [hy, not_false_iff, dif_neg, mul_zero]
+      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, zero_mul]
   map_nonunit' := by
     intro a ha
     simp only [ha, not_false_iff, dif_neg]
@@ -236,6 +236,10 @@ theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ
 theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
 #align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
+
+@[simp]
+lemma coe_toMonoidHom [CommMonoid R] (χ : MulChar R R')
+    (x : R) : χ.toMonoidHom x = χ x := rfl
 
 /-!
 ### Commutative group structure on multiplicative characters
@@ -330,9 +334,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
-    -- Porting note: was
-    -- apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    apply IsUnit.mul_right_injective h
+    apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
     -- Porting note: was
     -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]

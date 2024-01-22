@@ -3,11 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Init.CCLemmas
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
-import Mathlib.Algebra.Hom.Equiv.Basic
 
 #align_import algebra.ring.equiv from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -99,7 +102,7 @@ instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring
     [h : RingEquivClass F R S] : RingHomClass F R S :=
   { h with
     coe := h.coe
-    coe_injective' := FunLike.coe_injective
+    coe_injective' := DFunLike.coe_injective
     map_zero := map_zero
     map_one := map_one }
 #align ring_equiv_class.to_ring_hom_class RingEquivClass.toRingHomClass
@@ -109,7 +112,7 @@ instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
   { h with
     coe := h.coe
-    coe_injective' := FunLike.coe_injective
+    coe_injective' := DFunLike.coe_injective
     map_zero := map_zero }
 #align ring_equiv_class.to_non_unital_ring_hom_class RingEquivClass.toNonUnitalRingHomClass
 
@@ -117,8 +120,8 @@ instance (priority := 100) toNonUnitalRingHomClass [NonUnitalNonAssocSemiring R]
 `RingEquiv`. This is declared as the default coercion from `F` to `α ≃+* β`. -/
 @[coe]
 def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [RingEquivClass F α β] (f : F) :
-  α ≃+* β :=
-{ (f : α ≃* β), (f : α ≃+ β) with }
+    α ≃+* β :=
+  { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
 
@@ -141,8 +144,8 @@ instance : RingEquivClass (R ≃+* S) R S where
     cases f
     congr
     apply Equiv.coe_fn_injective h₁
-  map_add := map_add'
-  map_mul := map_mul'
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
@@ -173,7 +176,7 @@ protected theorem map_add (e : R ≃+* S) (x y : R) : e (x + y) = e x + e y :=
     same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
 @[simp]
@@ -190,15 +193,15 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 #align ring_equiv.mk_coe RingEquiv.mk_coe
 
 protected theorem congr_arg {f : R ≃+* S} {x x' : R} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align ring_equiv.congr_arg RingEquiv.congr_arg
 
 protected theorem congr_fun {f g : R ≃+* S} (h : f = g) (x : R) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align ring_equiv.congr_fun RingEquiv.congr_fun
 
 protected theorem ext_iff {f g : R ≃+* S} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align ring_equiv.ext_iff RingEquiv.ext_iff
 
 @[simp]
@@ -292,8 +295,8 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 #align ring_equiv.coe_to_equiv_symm RingEquiv.coe_toEquiv_symm
 
-theorem symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S ≃+* R) :=
-  Equiv.bijective ⟨RingEquiv.symm, RingEquiv.symm, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (RingEquiv.symm : (R ≃+* S) → S ≃+* R) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align ring_equiv.symm_bijective RingEquiv.symm_bijective
 
 @[simp]
@@ -795,8 +798,8 @@ def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssoc
     R ≃+* S where
   toFun := hom
   invFun := inv
-  left_inv := FunLike.congr_fun hom_inv_id
-  right_inv := FunLike.congr_fun inv_hom_id
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv' RingEquiv.ofHomInv'
@@ -814,8 +817,8 @@ def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [RingHo
     R ≃+* S where
   toFun := hom
   invFun := inv
-  left_inv := FunLike.congr_fun hom_inv_id
-  right_inv := FunLike.congr_fun inv_hom_id
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv RingEquiv.ofHomInv
@@ -870,24 +873,34 @@ theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
   ext e.right_inv
 #align ring_equiv.symm_trans_self RingEquiv.symm_trans_self
 
+end RingEquiv
+
+namespace MulEquiv
+
 /-- If two rings are isomorphic, and the second doesn't have zero divisors,
 then so does the first. -/
-protected theorem noZeroDivisors {A : Type*} (B : Type*) [Ring A] [Ring B] [NoZeroDivisors B]
-    (e : A ≃+* B) : NoZeroDivisors A :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} hxy => by
-      have : e x * e y = 0 := by rw [← e.map_mul, hxy, e.map_zero]
-      simpa using eq_zero_or_eq_zero_of_mul_eq_zero this }
-#align ring_equiv.no_zero_divisors RingEquiv.noZeroDivisors
+protected theorem noZeroDivisors {A : Type*} (B : Type*) [MulZeroClass A] [MulZeroClass B]
+    [NoZeroDivisors B] (e : A ≃* B) : NoZeroDivisors A :=
+  e.injective.noZeroDivisors e (map_zero e) (map_mul e)
+#noalign ring_equiv.no_zero_divisors
 
 /-- If two rings are isomorphic, and the second is a domain, then so is the first. -/
-protected theorem isDomain {A : Type*} (B : Type*) [Ring A] [Ring B] [IsDomain B] (e : A ≃+* B) :
-    IsDomain A := by
-  haveI : Nontrivial A := ⟨⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩⟩
-  haveI := e.noZeroDivisors B
-  exact NoZeroDivisors.to_isDomain _
-#align ring_equiv.is_domain RingEquiv.isDomain
+protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [IsDomain B]
+    (e : A ≃* B) : IsDomain A :=
+  { e.injective.isLeftCancelMulZero e (map_zero e) (map_mul e),
+    e.injective.isRightCancelMulZero e (map_zero e) (map_mul e) with
+    exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
+#noalign ring_equiv.is_domain
 
-end RingEquiv
+protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
+    (e : A ≃* B) : IsField A where
+  exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
+  mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]
+  mul_inv_cancel := fun h => by
+    obtain ⟨a', he⟩ := hB.mul_inv_cancel ((e.injective.ne h).trans_eq <| map_zero e)
+    exact ⟨e.symm a', e.injective <| by rw [map_mul, map_one, e.apply_symm_apply, he]⟩
+
+end MulEquiv
 
 -- guard against import creep
 assert_not_exists Fintype

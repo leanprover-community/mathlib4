@@ -3,6 +3,7 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Nat.Prime
@@ -30,8 +31,6 @@ Then `p = 2n + k ≥ 2n + √(p - 4) = 2n + √(2n + k - 4) > √(2n)` and we ar
 
 
 open Real
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Imo2008Q3
 
@@ -64,10 +63,10 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hreal₂ : (p : ℝ) > 20 := by assumption_mod_cast
   have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
   have hreal₅ : (k : ℝ) > 4 := by
-    refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
+    refine' lt_of_pow_lt_pow_left 2 k.cast_nonneg _
     linarith only [hreal₂, hreal₃]
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
-    refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
+    refine' lt_of_pow_lt_pow_left 2 k.cast_nonneg _
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩

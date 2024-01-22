@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.BigOperators.Ring
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
@@ -185,7 +186,7 @@ theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin 
 
 @[to_additive]
 theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
-    (∏ i : Fin a, f (castIso h i)) = ∏ i : Fin b, f i := by
+    (∏ i : Fin a, f (cast h i)) = ∏ i : Fin b, f i := by
   subst h
   congr
 #align fin.prod_congr' Fin.prod_congr'
@@ -230,7 +231,7 @@ theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [pa
 @[to_additive]
 theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt, ← Option.coe_def]
+  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt]
 #align fin.partial_prod_succ Fin.partialProd_succ
 #align fin.partial_sum_succ Fin.partialSum_succ
 
@@ -353,7 +354,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
     (finFunctionFinEquiv (Pi.single i j) : ℕ) = j * m ^ (i : ℕ) := by
   rw [finFunctionFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
 #align fin_function_fin_equiv_single finFunctionFinEquiv_single
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
@@ -417,7 +418,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         /-
         refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
-        · convert Fin.prod_univ_succ (Fin.cons x xs : ∀ _, ℕ)
+        · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
           simp_rw [Fin.cons_succ]
         congr with i
         congr with j
@@ -437,7 +438,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
       j * ∏ j, n (Fin.castLE i.is_lt.le j) := by
   rw [finPiFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
 #align fin_pi_fin_equiv_single finPiFinEquiv_single
 
 namespace List

@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Equivalence
 
-#align_import algebraic_topology.dold_kan.compatibility from "leanprover-community/mathlib"@"18ee599842a5d17f189fe572f0ed8cb1d064d772"
+#align_import algebraic_topology.dold_kan.compatibility from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! Tools for compatibilities between Dold-Kan equivalences
 

@@ -69,7 +69,7 @@ instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
 variable (R)
 
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff isPrincipalIdealRing_iff]
+@[mk_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
@@ -173,12 +173,12 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
-      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S)
-      case inl h =>
+      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
+      | inl h =>
         have hTS : T ≤ S
         rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
-      case inr h =>
+      | inr h =>
         cases' (mem_iff_generator_dvd _).1 h with y hy
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz
@@ -199,8 +199,8 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
 #align mod_mem_iff mod_mem_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R
-    where principal S :=
+instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
+  principal S :=
     ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
         have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
         have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
@@ -290,7 +290,7 @@ theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincip
 
 theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R} (ha : a ≠ 0)
     (hfac : ∀ b ∈ factors a, b ∈ s) (hunit : ∀ c : Rˣ, (c : R) ∈ s) : a ∈ s := by
-  rcases(factors_spec a ha).2 with ⟨c, hc⟩
+  rcases (factors_spec a ha).2 with ⟨c, hc⟩
   rw [← hc]
   exact mul_mem (multiset_prod_mem _ hfac) (hunit _)
 #align principal_ideal_ring.mem_submonoid_of_factors_subset_of_units_subset PrincipalIdealRing.mem_submonoid_of_factors_subset_of_units_subset
@@ -362,9 +362,9 @@ theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) :=
   · rw [dvd_gcd_iff]
     constructor <;> rw [← Ideal.mem_span_singleton, ← hd, Ideal.mem_span_pair]
     · use 1, 0
-      rw [one_mul, MulZeroClass.zero_mul, add_zero]
+      rw [one_mul, zero_mul, add_zero]
     · use 0, 1
-      rw [one_mul, MulZeroClass.zero_mul, zero_add]
+      rw [one_mul, zero_mul, zero_add]
   · obtain ⟨r, s, rfl⟩ : ∃ r s, r * x + s * y = d := by
       rw [← Ideal.mem_span_pair, hd, Ideal.mem_span_singleton]
     apply dvd_add <;> apply dvd_mul_of_dvd_right

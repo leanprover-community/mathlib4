@@ -126,7 +126,7 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 @[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 end NNReal
 
@@ -150,7 +150,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
 
 /- TODO(Mario): finish the proof
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-  mk ⟨sqrt_aux f, h⟩ = x :=
+    mk ⟨sqrt_aux f, h⟩ = x :=
 begin
   rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
   suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,
@@ -208,7 +208,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : sqrt (x * x) = x :=
 theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    cases' le_or_lt 0 x with hle hlt
+    rcases le_or_lt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -351,7 +351,7 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
 end Real
@@ -380,7 +380,7 @@ def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
+  let ra ← catchNone <| core zα' pα' a
   assertInstancesCommute
   match ra with
   | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
@@ -417,7 +417,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
-  cases' le_or_lt x 0 with h h
+  rcases le_or_lt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt

@@ -474,7 +474,7 @@ theorem aestronglyMeasurable'_condexpL1Clm (f : α →₁[μ] F') :
     refine' AEStronglyMeasurable'.congr _ (coeFn_add _ _).symm
     exact AEStronglyMeasurable'.add hfm hgm
   · have : {f : Lp F' 1 μ | AEStronglyMeasurable' m (condexpL1Clm F' hm μ f) μ} =
-        condexpL1Clm F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := by rfl
+        condexpL1Clm F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := rfl
     rw [this]
     refine' IsClosed.preimage (condexpL1Clm F' hm μ).continuous _
     exact isClosed_aeStronglyMeasurable' hm

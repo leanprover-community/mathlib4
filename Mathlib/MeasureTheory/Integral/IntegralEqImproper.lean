@@ -3,6 +3,7 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Bhavik Mehta
 -/
+import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Order.Filter.AtTopBot
@@ -340,7 +341,7 @@ theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AE
 -- porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
-  ae_eventually_mem := hφ.ae_eventually_mem.mono <| fun x h ↦ by
+  ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by
     simpa only [mem_iInter, mem_Ici, eventually_forall_ge_atTop]
   measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
 #align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.biInter_Ici_aecover
@@ -392,7 +393,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => _
   rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases(eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
+  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
   exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
 #align measure_theory.ae_cover.supr_lintegral_eq_of_countably_generated MeasureTheory.AECover.iSup_lintegral_eq_of_countably_generated
 
@@ -665,10 +666,15 @@ variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`.-/
-theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Ici a))
+on `(a, +∞)` and continuity at `a⁺`.-/
+theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a))
     (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
+  have hcont : ContinuousOn f (Ici a) := by
+    intro x hx
+    rcases hx.out.eq_or_lt with rfl|hx
+    · exact hcont
+    · exact (hderiv x hx).continuousAt.continuousWithinAt
   refine' tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) _
   apply Tendsto.congr' _ (hf.sub_const _)
   filter_upwards [Ioi_mem_atTop a] with x hx
@@ -677,7 +683,7 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Ici a))
   apply
     intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x (hcont.mono Icc_subset_Ici_self)
       fun y hy => hderiv y hy.1
-  rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x]
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
   exact f'int.mono (fun y hy => hy.1) le_rfl
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto
 
@@ -688,17 +694,32 @@ on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     ∫ x in Ioi a, f' x = m - f a := by
-  refine integral_Ioi_of_hasDerivAt_of_tendsto (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le)
+  refine integral_Ioi_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv x hx).continuousAt.continuousWithinAt
+  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto' MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto'
+
+/-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
+compact support. -/
+theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
+  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
+  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
+  exact h2f.filter_mono atTop_le_cocompact |>.tendsto
 
 /-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
 is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`. -/
-theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousOn g (Ici a))
+on `(a, +∞)` and continuity at `a⁺`. -/
+theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
+  have hcont : ContinuousOn g (Ici a) := by
+    intro x hx
+    rcases hx.out.eq_or_lt with rfl|hx
+    · exact hcont
+    · exact (hderiv x hx).continuousAt.continuousWithinAt
   refine integrableOn_Ioi_of_intervalIntegral_norm_tendsto (l - g a) a (fun x => ?_) tendsto_id ?_
   · exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
       (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
@@ -710,7 +731,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousOn g (Ici a))
       symm
       apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x
         (hcont.mono Icc_subset_Ici_self) fun y hy => hderiv y hy.1
-      rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x]
+      rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
       exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
         (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
@@ -726,15 +747,15 @@ is automatically integrable on `(a, +∞)`. Version assuming differentiability
 on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  refine integrableOn_Ioi_deriv_of_nonneg (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le) g'pos hg
-  exact (hderiv x hx).continuousAt.continuousWithinAt
+  refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
+  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
 #align measure_theory.integrable_on_Ioi_deriv_of_nonneg' MeasureTheory.integrableOn_Ioi_deriv_of_nonneg'
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
 `integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
-continuity on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousOn g (Ici a))
+continuity at `a⁺`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
     (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
@@ -752,8 +773,8 @@ theorem integral_Ioi_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDeri
 
 /-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
 is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`. -/
-theorem integrableOn_Ioi_deriv_of_nonpos (hcont : ContinuousOn g (Ici a))
+on `(a, +∞)` and continuity at `a⁺`. -/
+theorem integrableOn_Ioi_deriv_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   apply integrable_neg_iff.1
@@ -766,15 +787,15 @@ is automatically integrable on `(a, +∞)`. Version assuming differentiability
 on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  refine integrableOn_Ioi_deriv_of_nonpos (fun x hx ↦ ?_) (fun x hx ↦ hderiv x hx.out.le) g'neg hg
-  exact (hderiv x hx).continuousAt.continuousWithinAt
+  refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
+  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
 #align measure_theory.integrable_on_Ioi_deriv_of_nonpos' MeasureTheory.integrableOn_Ioi_deriv_of_nonpos'
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
 `integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
-continuity on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousOn g (Ici a))
+continuity at `a⁺`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
     (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
@@ -792,13 +813,61 @@ theorem integral_Ioi_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDeri
 
 end IoiFTC
 
+section IicFTC
+
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
+integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+on `(-∞, a)` and continuity at `a⁻`. -/
+theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
+    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+  have hcont : ContinuousOn f (Iic a) := by
+    intro x hx
+    rcases hx.out.eq_or_lt with rfl|hx
+    · exact hcont
+    · exact (hderiv x hx).continuousAt.continuousWithinAt
+  refine' tendsto_nhds_unique (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) _
+  apply Tendsto.congr' _ (hf.const_sub _)
+  filter_upwards [Iic_mem_atBot a] with x hx
+  symm
+  apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hx
+    (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
+  exact f'int.mono (fun y hy => hy.2) le_rfl
+
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
+integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+on `(-∞, a]`. -/
+theorem integral_Iic_of_hasDerivAt_of_tendsto'
+    (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
+    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+  refine integral_Iic_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
+    f'int hf
+  exact (hderiv a right_mem_Iic).continuousAt.continuousWithinAt
+
+/-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
+compact support. -/
+theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
+  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
+  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
+  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
+
+end IicFTC
+
 section IoiChangeVariables
 
 open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -863,7 +932,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
   rw [a3] at this; rw [this]
   refine' set_integral_congr measurableSet_Ioi _
   intro x hx; dsimp only
-  rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]
+  rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 #align measure_theory.integral_comp_rpow_Ioi MeasureTheory.integral_comp_rpow_Ioi
 
 theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
@@ -921,7 +990,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
   rw [a3] at this
   rw [this]
   refine' integrableOn_congr_fun (fun x hx => _) measurableSet_Ioi
-  simp_rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]
+  simp_rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 #align measure_theory.integrable_on_Ioi_comp_rpow_iff MeasureTheory.integrableOn_Ioi_comp_rpow_iff
 
 /-- The substitution `y = x ^ p` in integrals over `Ioi 0` preserves integrability (version
@@ -944,7 +1013,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (x * a)) (Ioi c) ↔ IntegrableOn f (Ioi <| c * a) := by
-  simpa only [mul_comm, MulZeroClass.mul_zero] using integrableOn_Ioi_comp_mul_left_iff f c ha
+  simpa only [mul_comm, mul_zero] using integrableOn_Ioi_comp_mul_left_iff f c ha
 #align measure_theory.integrable_on_Ioi_comp_mul_right_iff MeasureTheory.integrableOn_Ioi_comp_mul_right_iff
 
 end IoiIntegrability

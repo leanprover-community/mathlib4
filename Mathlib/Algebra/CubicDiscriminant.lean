@@ -135,7 +135,7 @@ theorem toPoly_injective (P Q : Cubic R) : P.toPoly = Q.toPoly ↔ P = Q :=
 #align cubic.to_poly_injective Cubic.toPoly_injective
 
 theorem of_a_eq_zero (ha : P.a = 0) : P.toPoly = C P.b * X ^ 2 + C P.c * X + C P.d := by
-  rw [toPoly, ha, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [toPoly, ha, C_0, zero_mul, zero_add]
 #align cubic.of_a_eq_zero Cubic.of_a_eq_zero
 
 theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
@@ -143,7 +143,7 @@ theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
 #align cubic.of_a_eq_zero' Cubic.of_a_eq_zero'
 
 theorem of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly = C P.c * X + C P.d := by
-  rw [of_a_eq_zero ha, hb, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_a_eq_zero ha, hb, C_0, zero_mul, zero_add]
 #align cubic.of_b_eq_zero Cubic.of_b_eq_zero
 
 theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
@@ -151,7 +151,7 @@ theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
 #align cubic.of_b_eq_zero' Cubic.of_b_eq_zero'
 
 theorem of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) : P.toPoly = C P.d := by
-  rw [of_b_eq_zero ha hb, hc, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_b_eq_zero ha hb, hc, C_0, zero_mul, zero_add]
 #align cubic.of_c_eq_zero Cubic.of_c_eq_zero
 
 theorem of_c_eq_zero' : toPoly ⟨0, 0, 0, d⟩ = C d :=

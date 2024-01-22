@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
 
@@ -39,8 +40,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 
 
 open Finset
-
-open BigOperators
+open scoped BigOperators
 
 namespace SimpleGraph
 
@@ -120,7 +120,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even (univ.filter fun v => Odd (G.degree v)).card := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.nat_cast_self, MulZeroClass.zero_mul, Nat.cast_mul] at h
+    simp only [ZMod.nat_cast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne.def] at h
@@ -141,7 +141,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
       use v
       simp only [true_and_iff, mem_filter, mem_univ]
       exact h
-    rwa [← card_pos, hg, ← two_mul, zero_lt_mul_left] at hh
+    rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
   have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w

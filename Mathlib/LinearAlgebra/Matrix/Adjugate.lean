@@ -154,7 +154,7 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
     (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
-  (LinearMap.map_sum (cramer A)).symm
+  (map_sum (cramer A) ..).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
@@ -223,7 +223,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   apply Finset.sum_congr rfl
   intro σ _
   congr 1
-  by_cases i = σ j
+  by_cases h : i = σ j
   · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'
@@ -372,7 +372,7 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A]
 
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
-  cases' (Fintype.card n).eq_zero_or_pos with h_card h_card
+  rcases (Fintype.card n).eq_zero_or_pos with h_card | h_card
   · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
     rw [h_card, Nat.zero_sub, pow_zero, adjugate_subsingleton, det_one]
   replace h_card := tsub_add_cancel_of_le h_card.nat_succ_le
@@ -404,11 +404,11 @@ theorem adjugate_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
   ext i j
   rw [adjugate_apply, det_fin_two]
   fin_cases i <;> fin_cases j <;>
-    simp [one_mul, Fin.one_eq_zero_iff, Pi.single_eq_same, MulZeroClass.mul_zero, sub_zero,
+    simp [one_mul, Fin.one_eq_zero_iff, Pi.single_eq_same, mul_zero, sub_zero,
       Pi.single_eq_of_ne, Ne.def, not_false_iff, updateRow_self, updateRow_ne, cons_val_zero,
       of_apply, Nat.succ_succ_ne_one, Pi.single_eq_of_ne, updateRow_self, Pi.single_eq_of_ne,
       Ne.def, Fin.zero_eq_one_iff, Nat.succ_succ_ne_one, not_false_iff, updateRow_ne,
-      Fin.one_eq_zero_iff, MulZeroClass.zero_mul, Pi.single_eq_same, one_mul, zero_sub, of_apply,
+      Fin.one_eq_zero_iff, zero_mul, Pi.single_eq_same, one_mul, zero_sub, of_apply,
       cons_val', cons_val_fin_one, cons_val_one, head_fin_const, neg_inj, eq_self_iff_true,
       cons_val_zero, head_cons, mul_one]
 #align matrix.adjugate_fin_two Matrix.adjugate_fin_two
@@ -422,7 +422,7 @@ theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (F
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
   simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
   rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
-  rw [Pi.single_eq_of_ne hjk, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hjk, mul_zero, zero_mul]
 #align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
 
 theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :

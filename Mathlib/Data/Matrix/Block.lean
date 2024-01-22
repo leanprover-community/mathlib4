@@ -281,7 +281,7 @@ variable [Zero α]
 theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
     Matrix.toBlock (diagonal d) p p = diagonal fun i : Subtype p => d ↑i := by
   ext i j
-  by_cases i = j
+  by_cases h : i = j
   · simp [h]
   · simp [One.one, h, Subtype.val_injective.ne h]
 #align matrix.to_block_diagonal_self Matrix.toBlock_diagonal_self
@@ -299,6 +299,26 @@ theorem fromBlocks_diagonal (d₁ : l → α) (d₂ : m → α) :
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [diagonal]
 #align matrix.from_blocks_diagonal Matrix.fromBlocks_diagonal
+
+@[simp]
+lemma toBlocks₁₁_diagonal (v : l ⊕ m → α) :
+    toBlocks₁₁ (diagonal v) = diagonal (fun i => v (Sum.inl i)) := by
+  unfold toBlocks₁₁
+  funext i j
+  simp only [ne_eq, Sum.inl.injEq, of_apply, diagonal_apply]
+
+@[simp]
+lemma toBlocks₂₂_diagonal (v : l ⊕ m → α) :
+    toBlocks₂₂ (diagonal v) = diagonal (fun i => v (Sum.inr i)) := by
+  unfold toBlocks₂₂
+  funext i j
+  simp only [ne_eq, Sum.inr.injEq, of_apply, diagonal_apply]
+
+@[simp]
+lemma toBlocks₁₂_diagonal (v : l ⊕ m → α) : toBlocks₁₂ (diagonal v) = 0 := rfl
+
+@[simp]
+lemma toBlocks₂₁_diagonal (v : l ⊕ m → α) : toBlocks₂₁ (diagonal v) = 0 := rfl
 
 end Zero
 
@@ -758,7 +778,7 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   · simp only [if_pos, dif_pos] -- porting note: added
     split_ifs <;> simp
   · intro j' hj'
-    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, MulZeroClass.zero_mul]
+    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]
 #align matrix.block_diagonal'_mul Matrix.blockDiagonal'_mul
 
 section

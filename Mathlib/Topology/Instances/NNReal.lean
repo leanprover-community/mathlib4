@@ -20,7 +20,7 @@ Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
 * `TopologicalSemiring ℝ≥0`
-* `TopologicalSpace.SecondCountableTopology ℝ≥0`
+* `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
@@ -74,6 +74,8 @@ instance : OrderTopology ℝ≥0 :=
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+instance : ContinuousStar ℝ≥0 where
+  continuous_star := continuous_id
 section coe
 
 variable {α : Type*}
@@ -89,7 +91,7 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
 #align nnreal.continuous_coe NNReal.continuous_coe
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal
@@ -97,7 +99,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, FunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
 
 @[simp, norm_cast]
@@ -254,7 +256,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
-      strictMonoOn_pow hn.bot_lt (zero_le x) (zero_le y) h) <|
+      pow_left_strictMonoOn hn (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 #align nnreal.pow_order_iso NNReal.powOrderIso

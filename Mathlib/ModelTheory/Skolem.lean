@@ -3,7 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.ModelTheory.ElementarySubstructures
 
 #align_import model_theory.skolem from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -124,7 +124,7 @@ theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M
 
 variable {M}
 
-/-- The Downward Löwenheim–Skolem theorem :
+/-- The **Downward Löwenheim–Skolem theorem** :
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.  -/

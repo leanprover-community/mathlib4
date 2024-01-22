@@ -29,8 +29,6 @@ open Complex UpperHalfPlane
 
 open scoped UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
@@ -134,11 +132,11 @@ private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : 
   simp_rw [← smul_one_smul ℂ c f, ← smul_one_smul ℂ c (f ∣[k]A)]
   ext1
   simp_rw [slash]
-  simp only [slash, Algebra.id.smul_eq_mul, Matrix.GeneralLinearGroup.det_apply_val, Pi.smul_apply]
+  simp only [slash, Algebra.id.smul_eq_mul, Matrix.GeneralLinearGroup.val_det_apply, Pi.smul_apply]
   ring
 
 private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
-  funext fun _ => by simp only [slash, Pi.zero_apply, MulZeroClass.zero_mul]
+  funext fun _ => by simp only [slash, Pi.zero_apply, zero_mul]
 
 instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
   map := slash
@@ -178,13 +176,17 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺)
 set_option linter.uppercaseLean3 false in
 #align modular_form.SL_slash ModularForm.SL_slash
 
-/-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
--- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) := by
+theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
+    Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
   have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
   funext
   rw [SL_slash, slash_def, slash, zero_sub, this]
   simp
+
+/-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
+-- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
+theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
+  is_invariant_const _ _
 #align modular_form.is_invariant_one ModularForm.is_invariant_one
 
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
@@ -204,7 +206,7 @@ theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → �
 theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
   ext1 x
-  simp only [slash_def, slash, Matrix.GeneralLinearGroup.det_apply_val,
+  simp only [slash_def, slash, Matrix.GeneralLinearGroup.val_det_apply,
     Pi.mul_apply, Pi.smul_apply, Algebra.smul_mul_assoc, real_smul]
   set d : ℂ := ↑((↑ₘA).det : ℝ)
   have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
@@ -221,7 +223,6 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
   ring
 #align modular_form.mul_slash ModularForm.mul_slash
 
-set_option maxHeartbeats 1000000 in
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=

@@ -103,10 +103,10 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
       one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul, add_apply]
   · simp only [updateRow_self, transvection, ha, hb, StdBasisMatrix.apply_of_ne, Pi.add_apply,
       Ne.def, not_false_iff, Pi.smul_apply, and_false_iff, one_apply_ne, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero, add_apply]
+      mul_zero, add_apply]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
       Algebra.id.smul_eq_mul, Ne.def, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
-      MulZeroClass.mul_zero, false_and_iff, add_apply]
+      mul_zero, false_and_iff, add_apply]
 #align matrix.update_row_eq_transvection Matrix.updateRow_eq_transvection
 
 variable [Fintype n]
@@ -484,7 +484,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         rintro rfl
         cases i
         tauto
-      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq]
+      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
+        not_false_eq_true]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]

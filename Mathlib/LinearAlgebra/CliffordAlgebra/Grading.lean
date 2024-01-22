@@ -59,13 +59,11 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
-  intro z hz
-  obtain ⟨x, y, hx, hy, rfl⟩ := hz
-  obtain ⟨xi, hx'⟩ := Set.mem_iUnion.mp hx
-  obtain ⟨yi, hy'⟩ := Set.mem_iUnion.mp hy
-  refine' Set.mem_iUnion.mpr ⟨⟨xi + yi, by simp only [Nat.cast_add, xi.prop, yi.prop]⟩, _⟩
+  simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
+  rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
+  refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
   simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
-  exact Submodule.mul_mem_mul hx' hy'
+  exact Submodule.mul_mem_mul hx hy
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
@@ -123,7 +121,6 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
-set_option maxHeartbeats 300000 in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
@@ -139,7 +136,6 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     (by apply GradedAlgebra.lift_ι_eq Q)
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
-set_option maxHeartbeats 300000 in
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
@@ -175,26 +171,9 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
   apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
   refine' Subtype.rec _
-  -- porting note: was `simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]`
-  -- leanprover/lean4#1926 is to blame.
-  dsimp only [Subtype.coe_mk]
-  let hlean1926 : ∀ val : ℕ, ↑val = n ↔ ∃ k, val = 2 * k + ZMod.val n := by
-    intro val
-    simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
-  have := fun val : ℕ => forall_prop_congr'
-    (q := fun property => ∀ x (hx : x ∈ LinearMap.range (ι Q) ^ val),
-      P x (Submodule.mem_iSup_of_mem { val := val, property := property } hx))
-    (hq := fun property => Iff.rfl) (hp := hlean1926 val)
-  simp_rw [this]; clear this
-  -- end porting note
+  simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
-  -- porting note: was `simp_rw [pow_add, pow_mul]`
-  -- leanprover/lean4#1926 is to blame.
-  refine (forall_prop_congr' (hq := fun property => Iff.rfl) (
-    show xv ∈ LinearMap.range (ι Q) ^ (2 * k + ZMod.val n)
-        ↔ xv ∈ (LinearMap.range (ι Q) ^ 2) ^ k * LinearMap.range (ι Q) ^ ZMod.val n by
-      simp_rw [pow_add, pow_mul])).mpr ?_
-  -- end porting note
+  simp_rw [pow_add, pow_mul]
   intro hxv
   induction hxv using Submodule.mul_induction_on' with
   | hm a ha b hb =>
@@ -207,13 +186,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
       apply hadd ihx ihy
     | hmul x hx n'' y hy ihy =>
       revert hx
-      -- porting note: was `simp_rw [pow_two]`
-      -- leanprover/lean4#1926 is to blame.
-      let hlean1926'' : x ∈ LinearMap.range (ι Q) ^ 2
-          ↔ x ∈ LinearMap.range (ι Q) * LinearMap.range (ι Q) := by
-        rw [pow_two]
-      refine (forall_prop_congr' (hq := fun property => Iff.rfl) hlean1926'').mpr ?_
-      -- end porting note
+      simp_rw [pow_two]
       intro hx2
       induction hx2 using Submodule.mul_induction_on' with
       | hm m hm n hn =>

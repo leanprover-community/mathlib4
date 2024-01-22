@@ -42,7 +42,7 @@ and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
 def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
-  if let some (_, n) ← m.findM? $ fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
+  if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
     failure
@@ -217,7 +217,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 updating `e_map` and `monom_map` as it goes.
  -/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-      MetaM (List Comp × ExprMap × Map Monom ℕ)
+    MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm

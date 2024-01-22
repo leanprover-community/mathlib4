@@ -20,7 +20,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 ## TODO
 
- * The fact `inner_product_geometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
+ * The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
 
 -/
 
@@ -199,15 +199,15 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
 theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     (hs : s ⊆ closedBall x (|p| / 2)) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s := by
-  cases' le_or_lt (|p| / 2) ε with hε hε
+  rcases le_or_lt (|p| / 2) ε with hε | hε
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,
-        if_false, inter_eq_right_iff_subset]
+        if_false, inter_eq_right]
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
     -- Porting note: was
     -- simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
-    simp only [not_lt.mpr hε, ite_false, inter_eq_right_iff_subset]
+    simp only [not_lt.mpr hε, ite_false, inter_eq_right]
     rw [closedBall_eq_univ_of_half_period_le p hp (↑x : ℝ ⧸ zmultiples p) hε, preimage_univ]
     apply subset_univ
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by
@@ -228,7 +228,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       · have : p ≤ ↑z * p
         nlinarith
         linarith [abs_eq_self.mpr hp.le]
-    · simp only [MulZeroClass.mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
+    · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
       · have : -p ≤ ↑z * p
@@ -268,7 +268,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel' _ hu,
     mul_le_mul_left hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
-  simpa only [hu', Nat.cast_zero, zero_div, MulZeroClass.mul_zero, norm_eq_zero] using hn
+  simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
 #align add_circle.le_add_order_smul_norm_of_is_of_fin_add_order AddCircle.le_add_order_smul_norm_of_isOfFinAddOrder
 
 end FiniteOrderPoints

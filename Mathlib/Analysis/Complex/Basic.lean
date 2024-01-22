@@ -41,6 +41,7 @@ assert_not_exists Absorbs
 noncomputable section
 
 namespace Complex
+variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
@@ -51,6 +52,8 @@ instance : Norm ℂ :=
 theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
   rfl
 #align complex.norm_eq_abs Complex.norm_eq_abs
+
+lemma norm_I : ‖I‖ = 1 := abs_I
 
 theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
   simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
@@ -158,7 +161,7 @@ theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
 
 @[simp 1100]
 theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
-  abs_of_nat _
+  abs_natCast _
 #align complex.norm_nat Complex.norm_nat
 
 @[simp 1100]
@@ -194,9 +197,8 @@ theorem nnnorm_int (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ :=
   Subtype.ext norm_int
 #align complex.nnnorm_int Complex.nnnorm_int
 
-theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 := by
-  refine' (@pow_left_inj NNReal _ _ _ _ zero_le' zero_le' hn.bot_lt).mp _
-  rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
+  (pow_left_inj zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 #align complex.nnnorm_eq_one_of_pow_eq_one Complex.nnnorm_eq_one_of_pow_eq_one
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
@@ -233,6 +235,9 @@ def equivRealProdClm : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdClm
+
+theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 instance : ProperSpace ℂ :=
   (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdClm.toHomeomorph).properSpace
@@ -354,7 +359,7 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
     f = RingHom.id ℂ ∨ f = conj := by
-  simpa only [FunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
+  simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 #align complex.ring_hom_eq_id_or_conj_of_continuous Complex.ringHom_eq_id_or_conj_of_continuous
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
@@ -433,6 +438,18 @@ theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex
 theorem _root_.IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 #align is_R_or_C.im_eq_complex_im IsROrC.im_eq_complex_im
+
+-- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
+lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := IsROrC.mul_conj z
+lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := IsROrC.conj_mul z
+
+lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z := IsROrC.inv_eq_conj hz
+
+lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z :=
+  IsROrC.exists_norm_eq_mul_self _
+
+lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
+  IsROrC.exists_norm_mul_eq_self _
 
 section ComplexOrder
 
@@ -625,5 +642,63 @@ theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
 #align complex.has_sum_iff Complex.hasSum_iff
 
 end tsum
+
+section slitPlane
+
+/-!
+### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
+-/
+
+open scoped ComplexOrder
+
+/-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
+def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
+
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
+
+lemma isOpen_slitPlane : IsOpen slitPlane :=
+  (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)
+
+@[simp]
+lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
+
+@[simp]
+lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
+  simpa using ofReal_mem_slitPlane (x := -x)
+
+@[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
+
+@[simp]
+lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[simp]
+lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
+  simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
+
+@[simp]
+lemma ofNat_mem_slitPlane (n : ℕ) [h : n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+  nat_cast_mem_slitPlane.2 h.ne_zero
+
+lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
+  mem_slitPlane_iff.trans not_le_zero_iff.symm
+
+protected lemma compl_Iic_zero : (Set.Iic 0)ᶜ = slitPlane := Set.ext fun _ ↦
+  mem_slitPlane_iff_not_le_zero.symm
+
+lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
+  ne_of_mem_of_not_mem hz zero_not_mem_slitPlane
+
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|
+  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_abs _).trans_lt hz
+  by linarith
+
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=
+  ball_one_subset_slitPlane <| by simpa
+
+end slitPlane
 
 end Complex

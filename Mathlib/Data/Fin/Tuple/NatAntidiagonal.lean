@@ -33,7 +33,7 @@ the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Implementation notes
 
-While we could implement this by filtering `(Fintype.PiFinset $ fun _ ↦ range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset fun _ ↦ range (n + 1))` or similar,
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
@@ -83,7 +83,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
-    · simp
+    · decide
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]
@@ -91,7 +91,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     simp_rw [List.mem_bind, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
-      ←Prod.mk.inj_iff (a₁ := Prod.fst _), Prod.mk.eta, exists_eq_right]
+      ← Prod.mk.inj_iff (a₁ := Prod.fst _), exists_eq_right]
 #align list.nat.mem_antidiagonal_tuple List.Nat.mem_antidiagonalTuple
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
@@ -264,7 +264,7 @@ section EquivProd
 /-- The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
 `k`-tuple `Fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
 
-This is the tuple version of `Finset.Nat.sigmaAntidiagonalEquivProd`. -/
+This is the tuple version of `Finset.sigmaAntidiagonalEquivProd`. -/
 @[simps]
 def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ)
     where

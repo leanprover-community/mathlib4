@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
@@ -133,7 +134,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
       refine' ⟨_, norm_nonneg _⟩
-      rwa [← MulZeroClass.mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
+      rwa [← mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
   have QP_eq_QPQ : Q * P = Q * P * Q := by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
       calc
@@ -220,7 +221,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
 #align is_Lprojection.le_def IsLprojection.le_def
 
 instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
-  ⟨⟨0, ⟨by rw [IsIdempotentElem, MulZeroClass.zero_mul], fun x => by
+  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
 @[simp]
@@ -241,18 +242,18 @@ instance Subtype.boundedOrder [FaithfulSMul M X] :
   top := 1
   le_top P := (mul_one (P : M)).symm
   bot := 0
-  bot_le P := (MulZeroClass.zero_mul (P : M)).symm
+  bot_le P := (zero_mul (P : M)).symm
 
 @[simp]
 theorem coe_bot [FaithfulSMul M X] :
-  --porting note: Manual correction of name required here
+    --porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_bot IsLprojection.coe_bot
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
-  --porting note: Manual correction of name required here
+    --porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_top IsLprojection.coe_top
@@ -270,9 +271,9 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
   rw [add_mul, mul_add, mul_add, (mul_assoc _ (R : M) (↑Q * ↑R * ↑Pᶜ)),
     ← mul_assoc (R : M) (↑Q * ↑R) _, ← coe_inf Q, (Pᶜ.prop.commute R.prop).eq,
     ((Q ⊓ R).prop.commute Pᶜ.prop).eq, (R.prop.commute (Q ⊓ R).prop).eq, coe_inf Q,
-    mul_assoc (Q : M), ←mul_assoc, mul_assoc (R : M), (Pᶜ.prop.commute P.prop).eq, mul_compl_self,
-    MulZeroClass.zero_mul, MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
-    R.prop.proj.eq, ←coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
+    mul_assoc (Q : M), ← mul_assoc, mul_assoc (R : M), (Pᶜ.prop.commute P.prop).eq, mul_compl_self,
+    zero_mul, mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
+    R.prop.proj.eq, ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
     Pᶜ.prop.proj.eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
@@ -307,7 +308,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑Pᶜ := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
         mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
-        (Pᶜ.prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
+        (Pᶜ.prop.commute P.prop).eq, mul_compl_self, zero_mul, mul_zero,
         zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, Pᶜ.prop.proj.eq,
         mul_assoc, (Pᶜ.prop.commute R.prop).eq, ← mul_assoc]
     have e₂ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) * ↑(P ⊔ Q ⊓ R) = (P : M) + ↑Q * ↑R * ↑Pᶜ := by

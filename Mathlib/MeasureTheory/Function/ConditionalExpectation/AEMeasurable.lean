@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Order.Filter.IndicatorFunction
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 
 #align_import measure_theory.function.conditional_expectation.ae_measurable from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
@@ -568,8 +570,8 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedS
 theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : AEStronglyMeasurable' m f μ,
-      ∀ _ : AEStronglyMeasurable' m g μ, Disjoint (Function.support f) (Function.support g) →
+    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, AEStronglyMeasurable' m f μ →
+      AEStronglyMeasurable' m g μ → Disjoint (Function.support f) (Function.support g) →
         P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
     (h_closed : IsClosed {f : lpMeas F ℝ m p μ | P f}) :
     ∀ f : Lp F p μ, AEStronglyMeasurable' m f μ → P f := by
@@ -621,15 +623,15 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : StronglyMeasurable[m] f,
-      ∀ _ : StronglyMeasurable[m] g, Disjoint (Function.support f) (Function.support g) →
+    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, StronglyMeasurable[m] f →
+      StronglyMeasurable[m] g → Disjoint (Function.support f) (Function.support g) →
         P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
     (h_closed : IsClosed {f : lpMeas F ℝ m p μ | P f}) :
     ∀ f : Lp F p μ, AEStronglyMeasurable' m f μ → P f := by
   intro f hf
   suffices h_add_ae :
-    ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : AEStronglyMeasurable' m f μ,
-      ∀ _ : AEStronglyMeasurable' m g μ, Disjoint (Function.support f) (Function.support g) →
+    ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, AEStronglyMeasurable' m f μ →
+      AEStronglyMeasurable' m g μ → Disjoint (Function.support f) (Function.support g) →
         P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g)
   -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable_aux`, but
   -- it isn't?
@@ -691,7 +693,7 @@ theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ 
         P f → P g → P (f + g))
     (h_closed : IsClosed {f : lpMeas F ℝ m p μ | P f})
     (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → Memℒp f p μ → P f → P g) :
-    ∀ ⦃f : α → F⦄ (_ : Memℒp f p μ) (_ : AEStronglyMeasurable' m f μ), P f := by
+    ∀ ⦃f : α → F⦄, Memℒp f p μ → AEStronglyMeasurable' m f μ → P f := by
   intro f hf hfm
   let f_Lp := hf.toLp f
   have hfm_Lp : AEStronglyMeasurable' m f_Lp μ := hfm.congr hf.coeFn_toLp.symm

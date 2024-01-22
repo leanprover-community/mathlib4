@@ -78,7 +78,7 @@ theorem SuperpolynomialDecay.congr (hf : SuperpolynomialDecay l k f) (hfg : ∀ 
 
 @[simp]
 theorem superpolynomialDecay_zero (l : Filter α) (k : α → β) : SuperpolynomialDecay l k 0 :=
-  fun z => by simpa only [Pi.zero_apply, MulZeroClass.mul_zero] using tendsto_const_nhds
+  fun z => by simpa only [Pi.zero_apply, mul_zero] using tendsto_const_nhds
 #align asymptotics.superpolynomial_decay_zero Asymptotics.superpolynomialDecay_zero
 
 theorem SuperpolynomialDecay.add [ContinuousAdd β] (hf : SuperpolynomialDecay l k f)
@@ -88,12 +88,12 @@ theorem SuperpolynomialDecay.add [ContinuousAdd β] (hf : SuperpolynomialDecay l
 
 theorem SuperpolynomialDecay.mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f)
     (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f * g) := fun z => by
-  simpa only [mul_assoc, one_mul, MulZeroClass.mul_zero, pow_zero] using (hf z).mul (hg 0)
+  simpa only [mul_assoc, one_mul, mul_zero, pow_zero] using (hf z).mul (hg 0)
 #align asymptotics.superpolynomial_decay.mul Asymptotics.SuperpolynomialDecay.mul
 
 theorem SuperpolynomialDecay.mul_const [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
     SuperpolynomialDecay l k fun n => f n * c := fun z => by
-  simpa only [← mul_assoc, MulZeroClass.zero_mul] using Tendsto.mul_const c (hf z)
+  simpa only [← mul_assoc, zero_mul] using Tendsto.mul_const c (hf z)
 #align asymptotics.superpolynomial_decay.mul_const Asymptotics.SuperpolynomialDecay.mul_const
 
 theorem SuperpolynomialDecay.const_mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
@@ -182,7 +182,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
       (eventually_of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => _)
   calc
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
-    _ ≤ |k x ^ z| * |f x| := by gcongr; exact hx
+    _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
     _ = |k x ^ z * f x| := (abs_mul (k x ^ z) (f x)).symm
 #align asymptotics.superpolynomial_decay.trans_eventually_abs_le Asymptotics.SuperpolynomialDecay.trans_eventually_abs_le
 
@@ -228,7 +228,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
   obtain ⟨m, hm⟩ := h (z + 1)
   have h1 : Tendsto (fun _ : α => (0 : β)) l (𝓝 0) := tendsto_const_nhds
   have h2 : Tendsto (fun a : α => |(k a)⁻¹| * m) l (𝓝 0) :=
-    MulZeroClass.zero_mul m ▸
+    zero_mul m ▸
       Tendsto.mul_const m ((tendsto_zero_iff_abs_tendsto_zero _).1 hk.inv_tendsto_atTop)
   refine'
     tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (eventually_of_forall fun x => abs_nonneg _)
@@ -248,7 +248,7 @@ theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
   · have : Tendsto (fun a => k a ^ z) l (𝓝 0) :=
       Tendsto.comp (tendsto_zpow_atTop_zero (not_le.1 hz)) hk
     have h : Tendsto f l (𝓝 0) := by simpa using h 0
-    exact MulZeroClass.zero_mul (0 : β) ▸ this.mul h
+    exact zero_mul (0 : β) ▸ this.mul h
 #align asymptotics.superpolynomial_decay_iff_zpow_tendsto_zero Asymptotics.superpolynomialDecay_iff_zpow_tendsto_zero
 
 variable {f}

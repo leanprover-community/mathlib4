@@ -41,7 +41,7 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 
 In algebraic geometry, it is common to also ask that proper maps are *separated*, in the sense of
 [Stacks: definition OCY1](https://stacks.math.columbia.edu/tag/0CY1). We don't follow this
-convention because it is unclear wether it would give the right notion in all cases, and in
+convention because it is unclear whether it would give the right notion in all cases, and in
 particular for the theory of proper group actions. That means that our terminology does **NOT**
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
@@ -126,6 +126,12 @@ lemma isProperMap_iff_ultrafilter : IsProperMap f ↔ Continuous f ∧
     rcases H (tendsto_iff_comap.mpr <| hy.trans inf_le_left) with ⟨x, hxy, hx⟩
     exact ⟨x, hxy, 𝒰, le_inf hx (hy.trans inf_le_right)⟩
 
+lemma isProperMap_iff_ultrafilter_of_t2 [T2Space Y] : IsProperMap f ↔ Continuous f ∧
+    ∀ ⦃𝒰 : Ultrafilter X⦄, ∀ ⦃y : Y⦄, Tendsto f 𝒰 (𝓝 y) → ∃ x, 𝒰.1 ≤ 𝓝 x :=
+  isProperMap_iff_ultrafilter.trans <| and_congr_right fun hc ↦ forall₃_congr fun _𝒰 _y hy ↦
+    exists_congr fun x ↦ and_iff_right_of_imp fun h ↦
+      tendsto_nhds_unique ((hc.tendsto x).mono_left h) hy
+
 /-- If `f` is proper and converges to `y` along some ultrafilter `𝒰`, then `𝒰` converges to some
 `x` such that `f x = y`. -/
 lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : Ultrafilter X⦄ ⦃y : Y⦄
@@ -168,8 +174,8 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
   -- along `𝒰`.
   · intro 𝒰 y hy
   -- That means that each `f i` tends to `y i` along `map (eval i) 𝒰`.
-    have : ∀ i, Tendsto (f i) (Ultrafilter.map (eval i) 𝒰) (𝓝 (y i)) :=
-      by simpa [tendsto_pi_nhds] using hy
+    have : ∀ i, Tendsto (f i) (Ultrafilter.map (eval i) 𝒰) (𝓝 (y i)) := by
+      simpa [tendsto_pi_nhds] using hy
   -- Thus, by properness of all the `f i`s, we can choose some `x : Π i, X i` such that, for all
   -- `i`, `f i (x i) = y i` and `map (eval i) 𝒰` tends to  `x i`.
     choose x hxy hx using fun i ↦ (h i).2 (this i)
@@ -231,39 +237,42 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
   refine and_congr_right fun f_cont ↦ and_congr_right fun _ ↦
     ⟨fun H y ↦ (H y).compl_mem_cocompact, fun H y ↦ ?_⟩
   rcases mem_cocompact.mp (H y) with ⟨K, hK, hKy⟩
-  exact isCompact_of_isClosed_subset hK (isClosed_singleton.preimage f_cont)
+  exact hK.of_isClosed_subset (isClosed_singleton.preimage f_cont)
     (compl_le_compl_iff_le.mp hKy)
+
+/-- A continuous map from a compact space to a T₂ space is a proper map. -/
+theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
+  isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
 such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
+theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
   constructor <;> intro H
   -- The direct implication follows from the previous results
   · exact ⟨H.continuous, fun K hK ↦ H.isCompact_preimage hK⟩
-  · rw [isProperMap_iff_ultrafilter]
-  -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
+  · rw [isProperMap_iff_ultrafilter_of_t2]
+    -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
     refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-  -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
+    -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
     rcases exists_compact_mem_nhds y with ⟨K, hK, hKy⟩
-  -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
+    -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
     have : 𝒰 ≤ 𝓟 (f ⁻¹' K) := by
       simpa only [← comap_principal, ← tendsto_iff_comap] using
         hy.mono_right (le_principal_iff.mpr hKy)
-  -- By compactness of `(f ⁻¹' K)`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
+    -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
     rcases (H.2 hK).ultrafilter_le_nhds _ this with ⟨x, -, hx⟩
-  -- Finally, `f` tends to `f x` along `𝒰` by continuity, thus `f x = y`.
-    refine ⟨x, tendsto_nhds_unique ((H.1.tendsto _).comp hx) hy, hx⟩
+    exact ⟨x, hx⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [LocallyCompactSpace Y] :
+lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
   simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
     ← mem_preimage, eventually_mem_set, preimage_compl]
   refine and_congr_right fun f_cont ↦
     ⟨fun H K hK ↦ (H hK).compl_mem_cocompact, fun H K hK ↦ ?_⟩
   rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
-  exact isCompact_of_isClosed_subset hK' (hK.isClosed.preimage f_cont)
+  exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
     (compl_le_compl_iff_le.mp hK'y)
 
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
@@ -302,7 +311,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
       this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
         (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-  -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(f x, 𝒰) ∈ F`.
+  -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
   -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,

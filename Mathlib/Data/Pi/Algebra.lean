@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.Classical
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -339,7 +340,7 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  funext fun _ => Prod.mk.eta
+  rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
@@ -367,7 +368,7 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -381,7 +382,7 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
   funext x
   simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -395,7 +396,7 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp [Function.extend_def, apply_dite₂]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.

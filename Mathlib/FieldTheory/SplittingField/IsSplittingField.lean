@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.RingTheory.Adjoin.Field
 
@@ -73,15 +72,15 @@ variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
     Subalgebra.restrictScalars_injective F <| by
-      rw [rootSet, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
+      rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
-    Polynomial.Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
+    Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by -- Porting note: replaced term-mode proof
-    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, roots_map (algebraMap K L) h,
+    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
@@ -99,10 +98,9 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
         ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
-    rw [rootSet, Polynomial.map_mul,
-      roots_mul (mul_ne_zero (map_ne_zero hf : f.map (algebraMap F L) ≠ 0) (map_ne_zero hg)),
+    rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      IsScalarTower.algebraMap_eq F K L, ← map_map,
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
       roots_map (algebraMap K L) ((splits_id_iff_splits <| algebraMap F K).2 <| splits K f),
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,
@@ -113,7 +111,7 @@ end ScalarTower
 
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
 def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
-    (hf : Polynomial.Splits (algebraMap K F) f) : L →ₐ[K] F :=
+    (hf : Splits (algebraMap K F) f) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
@@ -124,17 +122,15 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
-    ⟨isAlgebraic_iff_isIntegral.1 ⟨f, hf0, this⟩,
+    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩,
       splits_of_splits_of_dvd _ hf0 hf <| minpoly.dvd _ _ this⟩)) Algebra.toTop
 #align polynomial.is_splitting_field.lift Polynomial.IsSplittingField.lift
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
   ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
-    adjoin_rootSet L f ▸ FG_adjoin_of_finite (Finset.finite_toSet _) fun y hy =>
+    adjoin_rootSet L f ▸ fg_adjoin_of_finite (Finset.finite_toSet _) fun y hy ↦
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
-      else
-        isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
-          (mem_roots <| map_ne_zero hf).1 (Multiset.mem_toFinset.mp hy)⟩⟩
+      else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
 #align polynomial.is_splitting_field.finite_dimensional Polynomial.IsSplittingField.finiteDimensional
 
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
@@ -146,27 +142,24 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 #align polynomial.is_splitting_field.of_alg_equiv Polynomial.IsSplittingField.of_algEquiv
 
+theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
+    Algebra.adjoin K (rootSet f F) = i.range :=
+  (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
+
 end IsSplittingField
 
 end Polynomial
 
-namespace IntermediateField
-
 open Polynomial
 
-variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
+variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
-theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
+theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
-  simp_rw [rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
-  rw [splits_iff_exists_multiset]
-  refine' ⟨Multiset.pmap Subtype.mk _ hF, map_injective _ (algebraMap F L).injective _⟩
-  conv_lhs =>
-    rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, eq_prod_roots_of_splits h, ←
-      Multiset.pmap_eq_map _ _ _ hF]
-  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
-    map_C, map_X]
-  rfl
+  simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
+  exact splits_of_comp _ F.val.toRingHom h hF
 #align intermediate_field.splits_of_splits IntermediateField.splits_of_splits
 
-end IntermediateField
+theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
+    {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
+  rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h

@@ -103,7 +103,7 @@ noncomputable def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
 @[to_additive "(Internal use only; use the limits API.)"]
 noncomputable def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget MonCatMax) (Types.limitConeIsLimit.{v,u} _)
-    (fun s => ⟨⟨_, ?_⟩, ?_⟩) (fun s => rfl) <;>
+    (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_ }) (fun s => rfl) <;>
   aesop_cat
 #align Mon.has_limits.limit_cone_is_limit MonCat.HasLimits.limitConeIsLimit
 #align AddMon.has_limits.limit_cone_is_limit AddMonCat.HasLimits.limitConeIsLimit

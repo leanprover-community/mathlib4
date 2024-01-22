@@ -3,8 +3,8 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Lean
 import Std.Tactic.OpenPrivate
+import Std.Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
@@ -21,40 +21,32 @@ def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α
 
 namespace Lean
 
-namespace Meta.DiscrTree
-
-partial def Trie.getElements : Trie α s → Array α
-  | Trie.node vs children =>
-    vs ++ children.concatMap fun (_, child) ↦ child.getElements
-
-def getElements (d : DiscrTree α s) : Array α :=
-  d.1.toList.toArray.concatMap fun (_, child) => child.getElements
-
-end Meta.DiscrTree
-
 namespace Meta.Simp
 open Elab.Tactic
 
 instance : ToFormat SimpTheorems where
   format s :=
 f!"pre:
-{s.pre.getElements.toList}
+{s.pre.values.toList}
 post:
-{s.post.getElements.toList}
+{s.post.values.toList}
 lemmaNames:
 {s.lemmaNames.toList.map (·.key)}
 toUnfold: {s.toUnfold.toList}
 erased: {s.erased.toList.map (·.key)}
 toUnfoldThms: {s.toUnfoldThms.toList}"
 
-def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
-  ({ expr := e, proof? := · }) <$>
-  match r.proof? with
-  | none => pure none
-  | some p => some <$> Meta.mkEqSymm p
-
-def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
-  mkAppM ``cast #[← r.getProof, e]
+/--
+Constructs a proof that the original expression is true
+given a simp result which simplifies the target to `True`.
+-/
+def Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
+  if r.expr.isConstOf ``True then
+    some <$> match r.proof? with
+    | some proof => mkOfEqTrue proof
+    | none => pure (mkConst ``True.intro)
+  else
+    pure none
 
 /-- Return all propositions in the local context. -/
 def getPropHyps : MetaM (Array FVarId) := do
@@ -65,43 +57,6 @@ def getPropHyps : MetaM (Array FVarId) := do
         result := result.push localDecl.fvarId
   return result
 
-export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
-
--- copied from core
-/--
-If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`,
-and `Meta.Simp.ConfigCtx` otherwise.
-If `ctx == false`, the `discharge` option must be none
--/
-def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
-    (kind := SimpKind.simp) (ctx := false) (ignoreStarArg : Bool := false) :
-    TacticM MkSimpContextResult := do
-  if ctx && !stx[2].isNone then
-    if kind == SimpKind.simpAll then
-      throwError "'simp_all' tactic does not support 'discharger' option"
-    if kind == SimpKind.dsimp then
-      throwError "'dsimp' tactic does not support 'discharger' option"
-  let dischargeWrapper ← mkDischargeWrapper stx[2]
-  let simpOnly := !stx[3].isNone
-  let simpTheorems ← if simpOnly then
-    simpOnlyBuiltins.foldlM (·.addConst ·) {}
-  else
-    pure simpTheorems
-  let congrTheorems ← Meta.getSimpCongrTheorems
-  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) (kind := kind) {
-    config       := (← elabSimpConfig stx[1] (kind := kind))
-    simpTheorems := #[simpTheorems], congrTheorems
-  }
-  if !r.starArg || ignoreStarArg then
-    return { r with dischargeWrapper }
-  else
-    let mut simpTheorems := r.ctx.simpTheorems
-    let hs ← getPropHyps
-    for h in hs do
-      unless simpTheorems.isErased (.fvar h) do
-        simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-    return { ctx := { r.ctx with simpTheorems }, dischargeWrapper }
-
 export private checkTypeIsProp shouldPreprocess preprocess mkSimpTheoremCore
   from Lean.Meta.Tactic.Simp.SimpTheorems
 
@@ -110,7 +65,7 @@ lemmas.
 Remark: either the length of the arrays is the same,
 or the length of the first one is 0 and the length of the second one is 1. -/
 def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio : Nat) :
-  MetaM (Array Name × Array SimpTheorem) := do
+    MetaM (Array Name × Array SimpTheorem) := do
   let cinfo ← getConstInfo declName
   let val := mkConst declName (cinfo.levelParams.map mkLevelParam)
   withReducible do
@@ -132,7 +87,7 @@ def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio 
 /-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
   simp-theorems. -/
 def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv : Bool)
-  (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
+    (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
   let (auxNames, simpThms) ← mkSimpTheoremsFromConst' declName post inv prio
   for simpThm in simpThms do
     ext.add (SimpEntry.thm simpThm) attrKind
@@ -141,7 +96,7 @@ def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv :
 /-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it doesn't require syntax,
   and returns an array of all auto-generated lemmas. -/
 def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-  (post : Bool) (prio : Nat) :
+    (post : Bool) (prio : Nat) :
     MetaM (Array Name) := do
   let info ← getConstInfo declName
   if (← isProp info.type) then
@@ -166,7 +121,7 @@ def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKin
 /-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it returns an array of all
   auto-generated lemmas. -/
 def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-  (stx : Syntax) : MetaM (Array Name) := do
+    (stx : Syntax) : MetaM (Array Name) := do
   let post := if stx[1].isNone then true else stx[1][0].getKind == ``Lean.Parser.Tactic.simpPost
   let prio ← getAttrParamOptPrio stx[2]
   addSimpAttr declName ext attrKind post prio

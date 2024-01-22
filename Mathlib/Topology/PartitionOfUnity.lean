@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
 
@@ -16,8 +16,9 @@ import Mathlib.Topology.UrysohnsLemma
 # Continuous partition of unity
 
 In this file we define `PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`
-to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : PartitionOfUnity
-ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`, such that
+to be a continuous partition of unity on `s` indexed by `ι`. More precisely,
+`f : PartitionOfUnity ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`,
+such that
 
 * the supports of `f i` form a locally finite family of sets;
 * each `f i` is nonnegative;
@@ -134,7 +135,7 @@ namespace PartitionOfUnity
 variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
-instance : FunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -174,6 +175,50 @@ theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   (single_le_finsum i (f.locallyFinite.point_finite x) fun j => f.nonneg j x).trans (f.sum_le_one x)
 #align partition_of_unity.le_one PartitionOfUnity.le_one
 
+section finsupport
+
+variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
+
+/-- The support of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `f i` doesn't vanish at `x₀`. -/
+def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
+
+@[simp]
+theorem coe_finsupport (x₀ : X) :
+    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
+  rw [finsupport, Finite.coe_toFinset, setOf_set]
+  rfl
+
+@[simp]
+theorem mem_finsupport (x₀ : X) {i} :
+    i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
+  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+
+variable {x₀ : X}
+
+theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i in ρ.finsupport x₀, ρ i x₀ = 1 := by
+  rw [← ρ.sum_eq_one hx₀, finsum_eq_sum_of_support_subset _ (ρ.coe_finsupport x₀).superset]
+
+theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport x₀ ⊆ I) :
+    ∑ i in I, ρ i x₀ = 1 := by
+  classical
+  rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
+  suffices ∑ i in I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i in I \ ρ.finsupport x₀, 0 by
+    rw [this, add_left_eq_self, Finset.sum_const_zero]
+  apply Finset.sum_congr rfl
+  rintro x hx
+  simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
+  exact hx.2
+
+theorem sum_finsupport_smul_eq_finsum {M : Type _} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+    ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
+  apply (finsum_eq_sum_of_support_subset _ _).symm
+  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) := rfl
+  rw [ρ.coe_finsupport x₀, this, support_smul]
+  exact inter_subset_left _ _
+
+end finsupport
+
 /-- If `f` is a partition of unity on `s : Set X` and `g : X → E` is continuous at every point of
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
 -/
@@ -201,14 +246,24 @@ def IsSubordinate (U : ι → Set X) : Prop :=
 
 variable {f}
 
+theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
+    ∃ I : Finset ι, (∀ᶠ x in 𝓝[s] x₀, ∑ i in I, ρ i x = 1) ∧
+      ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
+  rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
+  refine ⟨I, eventually_nhdsWithin_iff.mpr (hI.mono fun x hx x_in ↦ ?_), hI⟩
+  have : ∑ᶠ i : ι, ρ i x = ∑ i : ι in I, ρ i x := finsum_eq_sum_of_support_subset _ hx
+  rwa [eq_comm, ρ.sum_eq_one x_in] at this
+
+theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
+    ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i in I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
+  rcases ρ.exists_finset_nhd' x₀ with ⟨I, H⟩
+  use I
+  rwa [nhdsWithin_univ, ← eventually_and] at H
+
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι) (n : Set X) (_ : n ∈ 𝓝 x) (_ : n ⊆ ⋂ i ∈ is, U i),
-      ∀ z ∈ n, (support fun i => f i z) ⊆ is :=
-  -- Porting note: Original proof was simply
-  -- `f.locallyFinite.exists_finset_nhd_support_subset hso ho x`
-  let ⟨a, ⟨b, ⟨c, ⟨d, e⟩⟩⟩⟩ := f.locallyFinite.exists_finset_nhd_support_subset hso ho x
-  ⟨a, b, c, d, e⟩
+    ∃ (is : Finset ι),  ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
+  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
@@ -226,7 +281,7 @@ namespace BumpCovering
 
 variable {s : Set X} (f : BumpCovering ι X s)
 
-instance : FunLike (BumpCovering ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -321,7 +376,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
       (fun _ _ hs ht hd =>
-        (exists_continuous_zero_one_of_closed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
+        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
   ⟨f, hfU⟩
 #align bump_covering.exists_is_subordinate_of_locally_finite BumpCovering.exists_isSubordinate_of_locallyFinite
@@ -377,7 +432,7 @@ def toPOUFun (i : ι) (x : X) : ℝ :=
 #align bump_covering.to_pou_fun BumpCovering.toPOUFun
 
 theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x = 0 := by
-  rw [toPOUFun, h, MulZeroClass.zero_mul]
+  rw [toPOUFun, h, zero_mul]
 #align bump_covering.to_pou_fun_zero_of_zero BumpCovering.toPOUFun_zero_of_zero
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
