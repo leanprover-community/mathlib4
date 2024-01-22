@@ -78,7 +78,7 @@ elliptic curve, weierstrass equation, j invariant
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
-universe s u v w
+universe u v
 
 /-! ## Weierstrass curves -/
 
@@ -360,6 +360,8 @@ section BaseChange
 
 /-! ### Maps and base changes -/
 
+universe s w
+
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
 /-- The Weierstrass curve mapped over a ring homomorphism `φ : R →+* A`. -/
@@ -424,12 +426,15 @@ lemma map_id : W.map (RingHom.id R) = W :=
   rfl
 #align weierstrass_curve.base_change_self WeierstrassCurve.map_id
 
+lemma map_map {B : Type w} [CommRing B] (ψ : A →+* B) : (W.map φ).map ψ = W.map (ψ.comp φ) :=
+  rfl
+
 @[simp]
-lemma baseChange_map {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
     [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
     [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (W.baseChange A).map ψ = W.baseChange B :=
   congr_arg W.map <| ψ.comp_algebraMap_of_tower R
-#align weierstrass_curve.base_change_base_change WeierstrassCurve.baseChange_map
+#align weierstrass_curve.base_change_base_change WeierstrassCurve.map_baseChange
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
     Function.Injective <| map (φ := φ) := fun _ _ h => by
@@ -458,8 +463,12 @@ variable {A}
 lemma map_id : C.map (RingHom.id R) = C :=
   rfl
 
+lemma map_map {A : Type v} [CommRing A] (φ : R →+* A) {B : Type w} [CommRing B] (ψ : A →+* B) :
+    (C.map φ).map ψ = C.map (ψ.comp φ) :=
+  rfl
+
 @[simp]
-lemma baseChange_map {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
+lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
     [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
     [IsScalarTower R S B] (ψ : A →ₐ[S] B) : (C.baseChange A).map ψ = C.baseChange B :=
   congr_arg C.map <| ψ.comp_algebraMap_of_tower R
