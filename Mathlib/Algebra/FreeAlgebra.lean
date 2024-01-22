@@ -477,6 +477,9 @@ instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
 instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 
+instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
+  NoZeroDivisors.to_isDomain _
+
 section
 
 /-- The left-inverse of `algebraMap`. -/
