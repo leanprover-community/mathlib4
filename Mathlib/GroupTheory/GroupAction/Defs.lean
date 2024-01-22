@@ -657,7 +657,7 @@ theorem isPretransitive_compHom
 theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
     [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
     IsPretransitive N α :=
-  ⟨fun x y ↦ (exists_smul_eq x y).elim (fun m h ↦ ⟨f m, hf.trans h⟩)⟩
+  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩⟩
 
 @[to_additive]
 theorem IsPretransitive.of_compHom
@@ -678,6 +678,13 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 #align vadd_zero_vadd vadd_zero_vadd
+
+@[to_additive]
+theorem MulAction.IsPretransitive.of_isScalarTower
+    {M N α : Type*} [Monoid M] [Monoid N] [MulAction M α] [MulAction N α] [MulAction M N]
+    [IsScalarTower M N α] [IsPretransitive M α] :
+    IsPretransitive N α :=
+  of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 @[to_additive (attr := simp)]
 theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
