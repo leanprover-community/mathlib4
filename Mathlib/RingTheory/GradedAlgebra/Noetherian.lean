@@ -69,12 +69,11 @@ instance : Algebra.FiniteType (𝒜 0) A := by
   · use S
     refine le_antisymm le_top fun a _ ↦ ?_
     rw [← DirectSum.sum_support_decompose 𝒜 a]
-    exact Subalgebra.sum_mem _ fun j hj ↦ subset j <| Subtype.mem _
+    exact Subalgebra.sum_mem _ fun j _ ↦ subset j <| Subtype.mem _
 
   suffices (n : ℕ) :
     𝒜 n.succ = ⨆ (s : {s : S | deg s.1 s.2 ≤ n + 1 }), (s : A) • 𝒜 (n.succ - deg _ s.1.2)
-  ·
-    cases m with | zero => ?_ | succ m => ?_
+  · cases m with | zero => ?_ | succ m => ?_
     · simp only [Nat.zero_eq]
       intro x hx
       show _ ∈ Subsemiring.closure (_ ∪ _)
@@ -132,20 +131,19 @@ instance : Algebra.FiniteType (𝒜 0) A := by
     obtain ⟨f, hf, (eq0 : ∑ i in f.support, f i * i = x)⟩ := m
     replace eq0 :=
       calc x
-        = (DirectSum.decompose 𝒜 x (n + 1) : A)
-        := by simp only [DirectSum.of_eq_same, DirectSum.decompose_of_mem 𝒜 hx]
+        = (DirectSum.decompose 𝒜 x (n + 1) : A) :=
+          by simp only [DirectSum.of_eq_same, DirectSum.decompose_of_mem 𝒜 hx]
       _ = DirectSum.decompose 𝒜 (∑ a in f.support, f a * a) (n + 1) := by rw [eq0]
-      _ = ∑ a in f.support, (DirectSum.decompose 𝒜 (f a * a) (n + 1) : A)
-        := by change GradedRing.proj 𝒜 (n + 1) (∑ a in f.support, f a * a : A) = _
-              rw [map_sum]
-              rfl
-      _ = ∑ a in f.support.attach, (DirectSum.decompose 𝒜 (f a * a) (n + 1) : A)
-        := Finset.sum_attach _ _ |>.symm
+      _ = ∑ a in f.support, (DirectSum.decompose 𝒜 (f a * a) (n + 1) : A) :=
+          by change GradedRing.proj 𝒜 (n + 1) (∑ a in f.support, f a * a : A) = _
+             rw [map_sum]
+             rfl
+      _ = ∑ a in f.support.attach, (DirectSum.decompose 𝒜 (f a * a) (n + 1) : A) :=
+          Finset.sum_attach _ _ |>.symm
       _ = ∑ a in f.support.attach,
             if deg a (hf a.2) ≤ n + 1
             then (DirectSum.decompose 𝒜 (f a) ((n + 1) - deg a (hf a.2)) * a : A)
-            else 0
-        := Finset.sum_congr rfl fun a _ ↦
+            else 0 := Finset.sum_congr rfl fun a _ ↦
           DirectSum.coe_decompose_mul_of_right_mem 𝒜 (n + 1) (h_deg1 a (hf a.2)) (a := f a)
 
     rw [eq0]
