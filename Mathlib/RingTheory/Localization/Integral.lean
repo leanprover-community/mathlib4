@@ -232,9 +232,7 @@ theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
   obtain ⟨⟨s, ⟨u, hu⟩⟩, hx⟩ := surj (Algebra.algebraMapSubmonoid S M) x
   obtain ⟨v, hv⟩ := hu
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
-  refine'
-    @isIntegral_of_isIntegral_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' _
-      _
+  refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
     rw [RingHom.map_mul, RingHom.map_one, ← RingHom.comp_apply _ (algebraMap R Rₘ)] at hv'
     -- Porting note: added argument
@@ -333,9 +331,7 @@ theorem isFractionRing_of_algebraic (alg : IsAlgebraic A L)
         by
           simp only
           rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
-    eq_iff_exists' := fun {x y} =>
-      ⟨fun h => ⟨1, by simpa using algebraMap_injective C A L h⟩, fun ⟨c, hc⟩ =>
-        congr_arg (algebraMap _ L) (mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp c.2) hc)⟩ }
+    exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 #align is_integral_closure.is_fraction_ring_of_algebraic IsIntegralClosure.isFractionRing_of_algebraic
 
 variable (K L)
@@ -345,7 +341,7 @@ the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   isFractionRing_of_algebraic A C
-    (IsFractionRing.comap_isAlgebraic_iff.mpr (isAlgebraic_of_finite K L)) fun _ hx =>
+    (IsFractionRing.comap_isAlgebraic_iff.mpr (Algebra.IsAlgebraic.of_finite K L)) fun _ hx =>
     IsFractionRing.to_map_eq_zero_iff.mp
       ((_root_.map_eq_zero <|
           algebraMap K L).mp <| (IsScalarTower.algebraMap_apply _ _ _ _).symm.trans hx)
@@ -394,12 +390,11 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine' isIntegral_mul _ _
+    refine IsIntegral.mul ?_ ?_
     · rw [← isAlgebraic_iff_isIntegral]
-      refine'
-        _root_.isAlgebraic_of_larger_base_of_injective
-          (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) _
-      exact isAlgebraic_algebraMap_of_isAlgebraic (h a)
+      refine .tower_top_of_injective
+        (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) ?_
+      exact .algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor

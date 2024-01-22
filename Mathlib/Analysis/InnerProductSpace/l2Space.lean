@@ -88,8 +88,6 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {ι : Type*}
 
 variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}

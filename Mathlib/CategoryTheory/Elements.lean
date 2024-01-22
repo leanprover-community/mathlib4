@@ -273,7 +273,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · aesop
+  · simp [autoParam]
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
 
 end CategoryOfElements

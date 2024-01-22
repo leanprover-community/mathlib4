@@ -67,7 +67,7 @@ theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ 
 
 theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
-  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
 #align with_top.mul_lt_top' WithTop.mul_lt_top'
 
 theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=

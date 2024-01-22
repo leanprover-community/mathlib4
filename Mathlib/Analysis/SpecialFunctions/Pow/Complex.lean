@@ -13,8 +13,6 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Classical Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex

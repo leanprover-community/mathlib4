@@ -55,8 +55,6 @@ linear algebra, vector space, module
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Function
 
 open BigOperators Pointwise
@@ -328,8 +326,9 @@ theorem ker_le_comap {p : Submodule R₂ M₂} (f : M →ₛₗ[τ₁₂] M₂) 
     ker f ≤ p.comap f :=
   fun x hx ↦ by simp [mem_ker.mp hx]
 
-theorem disjoint_ker {f : F} {p : Submodule R M} : Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 :=
-  by simp [disjoint_def]
+theorem disjoint_ker {f : F} {p : Submodule R M} :
+    Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 := by
+  simp [disjoint_def]
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
 
 theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
@@ -1160,6 +1159,11 @@ theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ�
     ofBijective f hf x = f x :=
   rfl
 #align linear_equiv.of_bijective_apply LinearEquiv.ofBijective_apply
+
+@[simp]
+theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
+    (ofBijective f h).symm (f x) = x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end
 

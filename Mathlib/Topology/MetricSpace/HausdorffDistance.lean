@@ -162,8 +162,9 @@ theorem mem_iff_infEdist_zero_of_closed (h : IsClosed s) : x ∈ s ↔ infEdist 
 
 /-- The infimum edistance of a point to a set is positive if and only if the point is not in the
 closure of the set. -/
-theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} : 0 < infEdist x E ↔ x ∉ closure E :=
-  by rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
+theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} :
+    0 < infEdist x E ↔ x ∉ closure E := by
+  rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 #align emetric.inf_edist_pos_iff_not_mem_closure EMetric.infEdist_pos_iff_not_mem_closure
 
 theorem infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :

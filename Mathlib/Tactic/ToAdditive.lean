@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp

@@ -236,9 +236,9 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     rw [mul_add ((π : ℂ) * _), mul_one, exp_add, exp_pi_mul_I, mul_comm (_ : ℂ) (-1 : ℂ),
       neg_one_mul]
     simp_rw [mul_neg, ← neg_mul, ← ofReal_neg]
-    suffices HasDerivAt (fun y : ℝ => ↑(-y) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
+    suffices HasDerivAt (fun y : ℝ => (↑(-y) : ℂ) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
       convert this.neg.mul_const _ using 1; ring
-    suffices HasDerivAt (fun y : ℝ => ↑y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
+    suffices HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
       convert @HasDerivAt.scomp ℝ _ ℂ _ _ x ℝ _ _ _ _ _ _ _ _ this (hasDerivAt_neg x) using 1
       rw [real_smul, ofReal_neg 1, ofReal_one]; ring
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
@@ -329,7 +329,7 @@ lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
   (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
 
 lemma differentiableOn_rpow_const (p : ℝ) :
-    DifferentiableOn ℝ (fun x => x ^ p) {0}ᶜ :=
+    DifferentiableOn ℝ (fun x => (x : ℝ) ^ p) {0}ᶜ :=
   fun _ hx => (Real.differentiableAt_rpow_const_of_ne p hx).differentiableWithinAt
 
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these

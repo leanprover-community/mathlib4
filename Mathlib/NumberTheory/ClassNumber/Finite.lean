@@ -215,7 +215,8 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have dim_pos := Fintype.card_pos_iff.mpr bS.index_nonempty
   set ε : ℝ := normBound abv bS ^ (-1 / Fintype.card ι : ℝ) with ε_eq
   have hε : 0 < ε := Real.rpow_pos_of_pos (Int.cast_pos.mpr (normBound_pos abv bS)) _
-  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι := by
+  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ (Fintype.card ι : ℝ)
+                ≤ abv b ^ (Fintype.card ι : ℝ) := by
     have := normBound_pos abv bS
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
@@ -401,7 +402,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
     · exact IsIntegralClosure.algebraMap_injective _ R _
   let bS := b.map ((LinearMap.quotKerEquivRange _).symm ≪≫ₗ f)
   exact fintypeOfAdmissibleOfAlgebraic L bS adm (fun x =>
-    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.isAlgebraic_of_finite K _ x))
+    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.of_finite K _ x))
 #align class_group.fintype_of_admissible_of_finite ClassGroup.fintypeOfAdmissibleOfFinite
 
 end IsAdmissible

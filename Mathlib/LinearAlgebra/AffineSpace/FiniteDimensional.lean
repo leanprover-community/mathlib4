@@ -279,7 +279,7 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
 
 theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
-  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.Independent,
+  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
 #align affine.simplex.span_eq_top Affine.Simplex.span_eq_top
 
@@ -479,7 +479,8 @@ theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     -- Porting note: Originally `by decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp only at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) only at h₁₂ h₁₃ h₂₃ ⊢
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 #align affine_independent_iff_not_collinear_of_ne affineIndependent_iff_not_collinear_of_ne

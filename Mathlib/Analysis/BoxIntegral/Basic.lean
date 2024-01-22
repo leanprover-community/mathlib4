@@ -712,8 +712,6 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
 
 variable {l}
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/
 theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = false)

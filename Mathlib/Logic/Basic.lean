@@ -281,7 +281,8 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 
 /-! ### Declarations about `Xor'` -/
 
-@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by
+  simp (config := { unfoldPartialApp := true }) [Xor']
 #align xor_true xor_true
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']

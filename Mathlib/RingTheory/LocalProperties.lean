@@ -38,8 +38,6 @@ The following properties are covered:
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Pointwise Classical BigOperators
 
 universe u

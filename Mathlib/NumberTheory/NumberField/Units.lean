@@ -88,10 +88,10 @@ variable {K}
 
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
 
-theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
   exact map_zpow _ x n
 
@@ -227,7 +227,7 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(map_nonneg _ _ : 0 ≤ w x)]
-  · simp only [ne_eq, map_eq_zero, coe_ne_zero x]
+  · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
@@ -345,7 +345,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
-      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx]
+      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx, not_false_eq_true]
   intro _ _
   rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or, ZeroMemClass.coe_eq_zero]
   exact ⟨hx, by norm_num⟩
@@ -410,7 +410,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero]
+    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero, not_false_eq_true]
     · calc
         _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
           rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,

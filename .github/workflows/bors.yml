@@ -256,10 +256,11 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
+          git checkout toolchain/v4.3.0-rc2
           lake build
           ./test.sh
           cd ..
-          lake env lean4checker/build/bin/lean4checker
+          lake env lean4checker/.lake/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()

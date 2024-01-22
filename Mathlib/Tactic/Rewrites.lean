@@ -126,7 +126,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.Rewrites).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
 
 /--
 Retrieve the current cache of lemmas.

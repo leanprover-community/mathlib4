@@ -689,6 +689,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
   rfl
 #align ratfunc.coe_map_ring_hom_eq_coe_map RatFunc.coe_mapRingHom_eq_coe_map
 
+set_option maxHeartbeats 300000 in
 -- TODO: Generalize to `FunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non zero divisors to non zero divisors,
@@ -703,7 +704,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
   map_one' := by
     dsimp only -- porting note: force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk]
-    simp only [map_one, Submonoid.coe_one, div_one]
+    simp only [map_one, OneMemClass.coe_one, div_one]
   map_mul' x y := by
     cases' x with x
     cases' y with y
@@ -981,10 +982,9 @@ instance : IsFractionRing K[X] (RatFunc K) where
   map_units' y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
-  eq_iff_exists' {x y} := by
+  exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
-    exact (toFractionRingRingEquiv K).symm.injective.eq_iff.trans
-      (IsLocalization.eq_iff_exists _ _)
+    exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
   surj' := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z

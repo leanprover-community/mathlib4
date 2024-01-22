@@ -791,7 +791,7 @@ theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) :
   · rcases h with ⟨x, hx, _⟩
     exact hx
   · use f ⟨x, h⟩
-    simp only [h, exists_prop]
+    simp only [h, exists_const]
 
 theorem graph_map_snd_eq_range (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp

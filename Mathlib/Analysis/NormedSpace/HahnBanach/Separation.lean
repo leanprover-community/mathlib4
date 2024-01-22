@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex

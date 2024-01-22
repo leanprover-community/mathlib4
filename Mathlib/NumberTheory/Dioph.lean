@@ -372,7 +372,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
             ⟨m ⊗ n, by
               rw [show (v ⊗ m ⊗ n) ∘ (inl ⊗ inr ∘ inl) = v ⊗ m from
                     funext fun s => by cases' s with a b <;> rfl]; exact hm, by
-              refine List.Forall.imp (fun q hq => ?_) hn; dsimp [(· ∘ ·)]
+              refine List.Forall.imp (fun q hq => ?_) hn; dsimp [Function.comp_def]
               rw [show
                     (fun x : Sum α γ => (v ⊗ m ⊗ n) ((inl ⊗ fun x : γ => inr (inr x)) x)) = v ⊗ n
                     from funext fun s => by cases' s with a b <;> rfl]; exact hq⟩,
@@ -381,7 +381,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
                 rwa [show (v ⊗ t) ∘ (inl ⊗ inr ∘ inl) = v ⊗ t ∘ inl from
                     funext fun s => by cases' s with a b <;> rfl] at hl⟩,
               ⟨t ∘ inr, by
-                refine List.Forall.imp (fun q hq => ?_) hr; dsimp [(· ∘ ·)] at hq
+                refine List.Forall.imp (fun q hq => ?_) hr; dsimp [Function.comp_def] at hq
                 rwa [show
                     (fun x : Sum α γ => (v ⊗ t) ((inl ⊗ fun x : γ => inr (inr x)) x)) =
                       v ⊗ t ∘ inr

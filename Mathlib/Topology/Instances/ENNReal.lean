@@ -309,7 +309,7 @@ protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β �
 
 theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) (𝓝 (a, b)) (𝓝 (a - b))
-  | ⊤, ⊤, h => by simp only at h
+  | ⊤, ⊤, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
   | ⊤, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
@@ -346,11 +346,11 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a �
     refine' this.mono fun c hc => _
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
   induction a using recTopCoe with
-  | top => simp only [ne_eq, or_false] at hb; simp [ht b hb, top_mul hb]
+  | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
   | coe a =>
     induction b using recTopCoe with
     | top =>
-      simp only [ne_eq, or_false] at ha
+      simp only [ne_eq, or_false, not_true_eq_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
         using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ⊤))
     | coe b =>
@@ -1459,7 +1459,7 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
 #align continuous_of_le_add_edist continuous_of_le_add_edist
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
-  apply continuous_of_le_add_edist 2 (by norm_num)
+  apply continuous_of_le_add_edist 2 (by decide)
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _

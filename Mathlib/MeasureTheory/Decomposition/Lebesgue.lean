@@ -240,7 +240,8 @@ lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂�
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
 
-lemma rnDeriv_singularPart (μ ν : Measure α) : (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
+lemma rnDeriv_singularPart (μ ν : Measure α) :
+    (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
   rw [rnDeriv_eq_zero]
   exact mutuallySingular_singularPart μ ν
 

@@ -2114,7 +2114,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
         simp only [hx, h1, mfld_simps]
     have h2X : c' X = e (c (f.symm X)) := by
       rw [← hef hex]
-      dsimp only [Function.comp]
+      dsimp only [Function.comp_def]
       have hfX : f.symm X ∈ c.source := by simp only [hX, mfld_simps]
       rw [c.left_inv hfX, f.right_inv hX]
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by

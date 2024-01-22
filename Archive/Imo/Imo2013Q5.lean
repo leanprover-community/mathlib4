@@ -31,8 +31,6 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Imo2013Q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)

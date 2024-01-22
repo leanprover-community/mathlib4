@@ -274,8 +274,7 @@ def pi' : Measure (∀ i, α i) :=
 theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
   rw [pi']
-  simp only [TProd.elim'] -- Porting note: new step
-  erw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
+  rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
     MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
     List.prod_toFinset, sortedUniv_toFinset] <;>
   exact sortedUniv_nodup ι

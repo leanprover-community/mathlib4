@@ -46,8 +46,8 @@ section LE
 
 variable [LE α] {s t : NonemptyInterval α}
 
-theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
-  by cases s; cases t; congr
+theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
+  fun s t h => by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.

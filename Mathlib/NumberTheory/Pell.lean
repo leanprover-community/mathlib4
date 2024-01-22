@@ -551,7 +551,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
       add_pos_of_pos_of_nonneg (mul_pos (x_zpow_pos h.x_pos _) h.2.1)
         (mul_nonneg _ (by rw [sub_nonneg]; exact h.1.le))
     rcases hn.eq_or_lt with (rfl | hn)
-    · simp only [zpow_zero, y_one]
+    · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
   refine' strictMono_int_of_lt_succ fun n => _
   cases' le_or_lt 0 n with hn hn

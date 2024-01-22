@@ -45,7 +45,7 @@ end Universes
 
 section Topology
 
-/-- `CompHaus.toCondensed_aux` yields a functor. -/
+/-- The functor from `CompHaus` to `Condensed.{u} (Type u)` given by the Yoneda sheaf. -/
 def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) where
   obj S := {
     val := yoneda.obj S

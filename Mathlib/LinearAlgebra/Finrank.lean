@@ -436,7 +436,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
       refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
-      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff]
+      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left

@@ -33,8 +33,6 @@ sin, cos, tan, angle
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set
 
 namespace Real
@@ -108,7 +106,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
       simpa only [Ne.def, sub_eq_self, pow_eq_zero_iff, Nat.succ_pos'] using (sin_pos hy).ne'
-    rwa [one_div, lt_inv, inv_one]
+    rwa [lt_inv, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'
   have mono := Convex.strictMonoOn_of_deriv_pos (convex_Ico 0 (π / 2)) tan_minus_id_cts deriv_pos

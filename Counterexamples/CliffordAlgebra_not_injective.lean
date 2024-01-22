@@ -56,6 +56,7 @@ theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
+  contradiction
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
@@ -239,7 +240,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
-  norm_num [sub_zero, Ideal.span, Pi.single_apply]
+  simp (config := {decide := true}) [sub_zero, Ideal.span, Pi.single_apply]
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
