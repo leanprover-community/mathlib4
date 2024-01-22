@@ -520,6 +520,20 @@ instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot �
         | (b : α), hlt => ih _ (some_lt_some.1 hlt)
 #align with_bot.well_founded_lt WithBot.instWellFoundedLT
 
+instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
+  wf :=
+  have acc_some (a : α) : Acc ((· > ·) : WithBot α → WithBot α → Prop) a :=
+    (wellFounded_gt.1 a).rec fun _ _ ih =>
+      .intro _ fun
+        | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
+        | ⊥, hlt => absurd hlt (not_lt_none _)
+  .intro fun
+    | (a : α) => acc_some a
+    | ⊥ => .intro _ fun
+      | (b : α), _ => acc_some b
+      | ⊥, hlt => absurd hlt (not_lt_none _)
+#align with_bot.well_founded_gt WithBot.instWellFoundedGT
+
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
   ⟨fun a b =>
     match a, b with
@@ -1128,17 +1142,12 @@ end LT
 instance preorder [Preorder α] : Preorder (WithTop α) where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le := by simp [← toDual_lt_toDual_iff, lt_iff_le_not_le]
-  le_refl _ := toDual_le_toDual_iff.mp le_rfl
-  le_trans _ _ _ := by
-    simp_rw [← toDual_le_toDual_iff]
-    exact Function.swap le_trans
+  lt_iff_le_not_le := @lt_iff_le_not_le (WithBot αᵒᵈ)ᵒᵈ _
+  le_refl := @le_refl (WithBot αᵒᵈ)ᵒᵈ _
+  le_trans := @le_trans (WithBot αᵒᵈ)ᵒᵈ _
 
-instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) :=
-  { WithTop.preorder with
-    le_antisymm := fun _ _ => by
-      simp_rw [← toDual_le_toDual_iff]
-      exact Function.swap le_antisymm }
+instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
+  le_antisymm := @le_antisymm  (WithBot αᵒᵈ)ᵒᵈ _
 #align with_top.partial_order WithTop.partialOrder
 
 theorem coe_strictMono [Preorder α] : StrictMono (fun a : α => (a : WithTop α)) :=
@@ -1213,18 +1222,9 @@ theorem lt_untop'_iff [LT α] {a : WithTop α} {b c : α} (h : a = ⊤ → c < b
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
     inf := Option.liftOrGet (· ⊓ ·),
-    inf_le_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
-    inf_le_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
-    le_inf := fun o₁ o₂ o₃ h₁ h₂ a ha => by
-      cases' o₂ with b <;> cases' o₃ with c <;> cases ha
-      · exact h₂ a rfl
-
-      · exact h₁ a rfl
-
-      · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
-        simp at h₂
-        exact ⟨d, rfl, le_inf h₁' h₂⟩
-         }
+    inf_le_left := @inf_le_left (WithBot αᵒᵈ)ᵒᵈ _
+    inf_le_right := @inf_le_right (WithBot αᵒᵈ)ᵒᵈ _
+    le_inf := @le_inf (WithBot αᵒᵈ)ᵒᵈ _ }
 
 theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) = (a : WithTop α) ⊓ b :=
   rfl
@@ -1233,17 +1233,9 @@ theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) =
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) :=
   { WithTop.partialOrder with
     sup := Option.map₂ (· ⊔ ·),
-    le_sup_left := fun o₁ o₂ a ha => by
-      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
-      exact ⟨_, rfl, le_sup_left⟩,
-    le_sup_right := fun o₁ o₂ a ha => by
-      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
-      exact ⟨_, rfl, le_sup_right⟩,
-    sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
-      cases ha
-      rcases h₁ a rfl with ⟨b, ⟨⟩, ab⟩
-      rcases h₂ a rfl with ⟨c, ⟨⟩, ac⟩
-      exact ⟨_, rfl, sup_le ab ac⟩ }
+    le_sup_left := @le_sup_left (WithBot αᵒᵈ)ᵒᵈ _
+    le_sup_right := @le_sup_right (WithBot αᵒᵈ)ᵒᵈ _
+    sup_le := @sup_le (WithBot αᵒᵈ)ᵒᵈ _ }
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithTop α) = (a : WithTop α) ⊔ b :=
   rfl
@@ -1254,13 +1246,7 @@ instance lattice [Lattice α] : Lattice (WithTop α) :=
 
 instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
   { WithTop.lattice with
-    le_sup_inf := fun o₁ o₂ o₃ =>
-      match o₁, o₂, o₃ with
-      | ⊤, _, _ => le_rfl
-      | (a₁ : α), ⊤, ⊤ => le_rfl
-      | (a₁ : α), ⊤, (a₃ : α) => le_rfl
-      | (a₁ : α), (a₂ : α), ⊤ => le_rfl
-      | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
+    le_sup_inf := @le_sup_inf (WithBot αᵒᵈ)ᵒᵈ _ }
 
 -- porting note: added, previously this was found via unfolding `WithTop`
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
@@ -1295,46 +1281,15 @@ theorem coe_max [LinearOrder α] (x y : α) : (↑(max x y) : WithTop α) = max 
   rfl
 #align with_top.coe_max WithTop.coe_max
 
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
-  wf :=
-  have not_top_lt : ∀ a : WithTop α, ¬ ⊤ < a := (fun.)
-  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
-    (wellFounded_lt.1 a).rec fun _ _ ih =>
-      .intro _ fun
-        | (b : α), hlt => ih _ (some_lt_some.1 hlt)
-        | ⊤, hlt => nomatch not_top_lt _ hlt
-  .intro fun
-    | (a : α) => acc_some a
-    | ⊤ => .intro _ fun
-      | (b : α), _ => acc_some b
-      | ⊤, hlt => nomatch not_top_lt _ hlt
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
+  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
 #align with_top.well_founded_lt WithTop.instWellFoundedLT
 
 open OrderDual
 
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
-  wf := ⟨fun a => by
-    -- ideally, use RelHomClass.acc, but that is defined later
-    have : Acc (· < ·) (WithTop.toDual a) := wellFounded_lt.apply _
-    revert this
-    generalize ha : WithBot.toDual a = b
-    intro ac
-    induction' ac with _ H IH generalizing a
-    subst ha
-    exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
+  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
 #align with_top.well_founded_gt WithTop.instWellFoundedGT
-
-instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
-  wf := ⟨fun a => by
-    -- ideally, use RelHomClass.acc, but that is defined later
-    have : Acc (· < ·) (WithBot.toDual a) := wellFounded_lt.apply _
-    revert this
-    generalize ha : WithBot.toDual a = b
-    intro ac
-    induction' ac with _ H IH generalizing a
-    subst ha
-    exact ⟨_, fun a' h => IH (WithBot.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
-#align with_bot.well_founded_gt WithBot.instWellFoundedGT
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
