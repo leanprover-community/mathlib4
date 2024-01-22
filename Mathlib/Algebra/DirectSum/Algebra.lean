@@ -81,14 +81,14 @@ instance : Algebra R (⨁ i, A i) where
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
   commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = AddMonoidHom.mul.flip (DirectSum.of _ _ _) x
-    apply FunLike.congr_fun _ x
+    apply DFunLike.congr_fun _ x
     ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.mul_apply, AddMonoidHom.flip_apply]
     rw [of_mul_of, of_mul_of]
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.commutes r ⟨i, xi⟩)
   smul_def' r x := by
     change DistribMulAction.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
-    apply FunLike.congr_fun _ x
+    apply DFunLike.congr_fun _ x
     ext i xi : 2
     dsimp only [AddMonoidHom.comp_apply, DistribMulAction.toAddMonoidHom_apply,
       AddMonoidHom.mul_apply]
