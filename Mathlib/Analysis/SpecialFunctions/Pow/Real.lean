@@ -948,7 +948,8 @@ def evalRPow : NormNumExt where eval {u α} e := do
   guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := ℝ) (β := ℝ))
   haveI' : u =QL 0 := ⟨⟩
   haveI' : $α =Q ℝ := ⟨⟩
-  haveI' : $e =Q $a ^ $b := ⟨⟩
+  haveI' h : $e =Q $a ^ $b := ⟨⟩
+  h.check
   let (rb : Result b) ← derive (α := q(ℝ)) b
   match rb with
   | .isBool .. | .isRat _ .. => failure
