@@ -629,18 +629,12 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
   uniqueMul_of_one_lt_card := fun {A} {B} h => by
     have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
         ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
-      ⟨(s.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
-          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
-            Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
-        Finset.mem_toList.mp <| List.argmax_mem <| Option.get_mem _,
-        fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
+      let ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).max'_mem (hs.image _)
+      ⟨w, hws, fun u hu => hw ▸ Finset.le_max' _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
     have min_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
         ∃ w ∈ s, ∀ u ∈ s, w.length ≤ u.length :=
-      ⟨(s.toList.argmin (List.length ∘ FreeMonoid.toList)).get <|
-          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
-            Finset.toList_eq_nil.mp <| List.argmin_eq_none.mp h,
-        Finset.mem_toList.mp <| List.argmin_mem <| Option.get_mem _,
-        fun _ hu => List.le_of_mem_argmin (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
+      let ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).min'_mem (hs.image _)
+      ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
     have ⟨hA, hB⟩ : A.Nonempty ∧ B.Nonempty := by
       rewrite [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
       rintro (hA | hB)
