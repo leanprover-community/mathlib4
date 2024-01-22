@@ -455,7 +455,7 @@ lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z
   IsROrC.exists_norm_mul_eq_self _
 
 /-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
-`IsROrC.im IsROrC.I = `. -/
+`IsROrC.im IsROrC.I = 1`. -/
 @[simps]
 def _root_.IsROrC.complexRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : IsROrC.im (IsROrC.I : 𝕜) = 1) :
     𝕜 ≃+* ℂ where
