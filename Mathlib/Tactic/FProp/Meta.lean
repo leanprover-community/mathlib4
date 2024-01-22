@@ -330,6 +330,16 @@ def constArity (decl : Name) : MetaM Nat := do
   let info ← getConstInfo decl
   return ← getTypeArityAux info.type 0
 
+
+-- todo: provide faster implementation
+def headBeta (e : Expr) : Expr :=
+  Mor.withApp e fun f xs => 
+    xs.foldl (init := f) fun e x => 
+      match x.coe with
+      | none => e.beta #[x.expr]
+      | .some c => (c.app e).app x.expr
+
+
 end Mor
 
 

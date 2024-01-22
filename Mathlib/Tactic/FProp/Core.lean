@@ -64,12 +64,14 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
 
 ----------------------------------------------------------------------------------------------------
-#check Lean.Meta.SimpM
+
 /-- -/
 def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
   lambdaLetTelescope e fun xs b => do
     if let .some b' ← reduceRecMatcher? b then
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{b}\n==>\n{b'}"
+      -- preform some kind of reduction
+      let b' := Mor.headBeta b'
+      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
       return .some (← mkLambdaFVars xs b')
     return none
 
@@ -77,10 +79,12 @@ def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
 def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
   lambdaLetTelescope e fun xs b => do
     if let .some b' ← withTransparency .instances <| unfoldDefinition? b then
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{b}\n==>\n{b'}"
+      let b' := Mor.headBeta b'
+      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
       return .some (← mkLambdaFVars xs b')
     else if let .some b' ← reduceRecMatcher? b then
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{b}\n==>\n{b'}"
+      let b' := Mor.headBeta b'
+      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
       return .some (← mkLambdaFVars xs b')
 
     return none
