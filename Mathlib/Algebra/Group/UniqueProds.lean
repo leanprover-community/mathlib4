@@ -243,24 +243,6 @@ class UniqueProds (G) [Mul G] : Prop where
 
 attribute [to_additive] UniqueProds
 
-/-- Any `FreeMonoid` has the `UniqueProds` property. -/
-@[to_additive "Any `FreeAddMonoid` has the `UniqueSums` property."]
-instance FreeMonoid.instUniqueProds {κ : Type*} : UniqueProds (FreeMonoid κ) where
-  uniqueMul_of_nonempty := fun ha hb =>
-    have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
-      ⟨(s.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
-          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
-            Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
-        Finset.mem_toList.mp <| List.argmax_mem <| Option.get_mem _,
-        fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
-    have ⟨x, hx, hx_spec⟩ := max_length ha
-    have ⟨y, hy, hy_spec⟩ := max_length hb
-    ⟨x, hx, y, hy, fun u v hu hv h => List.append_inj h <| And.left <| by
-      rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
-        ← List.length_append, ← List.length_append]
-      exact congrArg List.length h⟩
-
 /-- Let `G` be a Type with addition. `TwoUniqueSums G` asserts that any two non-empty
 finite subsets of `G`, at least one of which is not a singleton, possesses at least two pairs
 of elements satisfying the `UniqueAdd` property. -/
@@ -640,3 +622,63 @@ instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G)
   `TwoUniqueSums` because it's ordered. -/
 instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
   TwoUniqueSums.addHom_image_of_injective _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
+
+/-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
+@[to_additive "Any `FreeAddMonoid` has the `TwoUniqueSums` property."]
+instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) where
+  uniqueMul_of_one_lt_card := fun {A} {B} h => by
+    have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
+        ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
+      ⟨(s.toList.argmax (List.length ∘ FreeMonoid.toList)).get <|
+          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
+            Finset.toList_eq_nil.mp <| List.argmax_eq_none.mp h,
+        Finset.mem_toList.mp <| List.argmax_mem <| Option.get_mem _,
+        fun _ hu => List.le_of_mem_argmax (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
+    have min_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
+        ∃ w ∈ s, ∀ u ∈ s, w.length ≤ u.length :=
+      ⟨(s.toList.argmin (List.length ∘ FreeMonoid.toList)).get <|
+          Option.ne_none_iff_isSome.mp <| fun h => (Finset.nonempty_iff_ne_empty.mp hs) <|
+            Finset.toList_eq_nil.mp <| List.argmin_eq_none.mp h,
+        Finset.mem_toList.mp <| List.argmin_mem <| Option.get_mem _,
+        fun _ hu => List.le_of_mem_argmin (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
+    have ⟨hA, hB⟩ : A.Nonempty ∧ B.Nonempty := by
+      rw [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
+      rintro (hA | hB)
+      . exact Nat.not_lt_zero 1 <| mul_eq_zero_of_left (show A.card = 0 from hA ▸ rfl) _ ▸ h
+      . exact Nat.not_lt_zero 1 <| mul_eq_zero_of_right _ (show B.card = 0 from hB ▸ rfl) ▸ h
+    have ⟨x, hx, hx_spec⟩ := max_length hA
+    have ⟨y, hy, hy_spec⟩ := max_length hB
+    have ⟨x', hx', hx'_spec⟩ := min_length hA
+    have ⟨y', hy', hy'_spec⟩ := min_length hB
+    by_cases heq : (x, y) = (x', y')
+    . obtain (hA' | hB') : 1 < A.card ∨ 1 < B.card := by
+        rw [← not_le, ← not_le, ← not_and_or]
+        exact fun hp => Nat.not_le.mpr h <| mul_le_one' hp.left hp.right
+      . rw [Finset.one_lt_card] at hA'
+        have ⟨u, hu, v, hv, hne⟩ := hA'
+        have hl : ∀ u ∈ A, u.length = x.length := fun u hu => le_antisymm (hx_spec u hu)
+          (congrArg List.length (congrArg Prod.fst heq) ▸ hx'_spec u hu)
+        have : u.length = v.length := (hl u hu).trans (hl v hv).symm
+        exact ⟨(u, y), Finset.mk_mem_product hu hy, (v, y), Finset.mk_mem_product hv hy,
+          fun heq => hne (congrArg Prod.fst heq),
+            fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
+            fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
+      . rw [Finset.one_lt_card] at hB'
+        have ⟨u, hu, v, hv, hne⟩ := hB'
+        have hl : ∀ u ∈ B, u.length = y.length := fun u hu => le_antisymm (hy_spec u hu)
+          (congrArg List.length (congrArg Prod.snd heq) ▸ hy'_spec u hu)
+        have : u.length = v.length := (hl u hu).trans (hl v hv).symm
+        refine ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
+          fun heq => hne (congrArg Prod.snd heq),
+            fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
+            fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
+    refine ⟨(x, y), Finset.mk_mem_product hx hy, (x', y'), Finset.mk_mem_product hx' hy',
+        heq, ?_, ?_⟩
+    . exact fun u v hu hv h => List.append_inj h <| And.left <| by
+        rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
+          ← List.length_append, ← List.length_append]
+        exact congrArg List.length h
+    . exact fun u v hu hv h => List.append_inj h <| And.left <| by
+        rewrite [eq_comm, ← add_eq_add_iff_eq_and_eq (hx'_spec u hu) (hy'_spec v hv), eq_comm,
+          ← List.length_append, ← List.length_append]
+        exact congrArg List.length h
