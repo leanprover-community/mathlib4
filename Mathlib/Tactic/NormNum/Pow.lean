@@ -161,6 +161,15 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn : ℕ} {ad b b' cd : ℕ} :
+    f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
+    Nat.pow an b' = cn → Nat.pow ad b' = cd →
+    IsNNRat (f a b) cn cd := by
+  rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
+  have := invertiblePow (ad:α) b
+  rw [← Nat.cast_pow] at this
+  use this; simp [invOf_pow, Commute.mul_pow, Nat.cast_commute]
+
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num (_ : α) ^ (_ : ℕ), Pow.pow _ (_ : ℕ)]
@@ -186,16 +195,16 @@ def evalPow : NormNumExt where eval {u α} e := do
       let ⟨za, na, pa⟩ ← ra.toInt rα
       have ⟨zc, c, r⟩ := evalIntPow za na nb
       return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isNNRat dα qa na da pa =>
+    | .isNNRat dα _qa na da pa =>
       assumeInstancesCommute
-      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
+      have ⟨nc, r1⟩ := evalNatPow na nb
       have ⟨dc, r2⟩ := evalNatPow da nb
-      let qc := mkRat zc dc.natLit!
-      return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+      let qc := ⟨mkRat nc.natLit! dc.natLit!, by sorry⟩
+      return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
     | .isNegNNRat dα qa na da pa =>
       assumeInstancesCommute
-      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
+      have ⟨zc, nc, r1⟩ := evalIntPow qa.num q(Int.negOfNat $na) nb
       have ⟨dc, r2⟩ := evalNatPow da nb
       let qc := mkRat zc dc.natLit!
-      return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+      return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
   core

@@ -209,6 +209,22 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       haveI' : Int.add $na $nb =Q $c := ⟨⟩
       return .isInt rα c zc q(isInt_add (f := $f) (.refl $f) $pa $pb (.refl $c))
+    let rec nnratArm (dα : Q(DivisionSemiring $α)) : Option (Result _) := do
+      haveI' : $e =Q $a + $b := ⟨⟩
+      haveI' : $f =Q HAdd.hAdd := ⟨⟩
+      let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dα
+      let qc := qa + qb
+      let dd := qa.den * qb.den
+      let k := dd / qc.den
+      have t1 : Q(ℕ) := mkRawNatLit (k * qc.num)
+      have t2 : Q(ℕ) := mkRawNatLit dd
+      have nc : Q(ℕ) := mkRawNatLit qc.num
+      have dc : Q(ℕ) := mkRawNatLit qc.den
+      have k : Q(ℕ) := mkRawNatLit k
+      let r1 : Q(Int.add (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
+        (q(Eq.refl $t1) : Expr)
+      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+      return .isNNRat dα qc nc dc q(isNNRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
     let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       haveI' : $e =Q $a + $b := ⟨⟩
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
@@ -227,8 +243,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isRat dα qc nc dc q(isRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
     match ra, rb with
     | .isBool .., _ | _, .isBool .. => failure
-    | .isNNRat dα .., _ | _, .isNNRat dα .. => ratArm dα
     | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
+    | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
     | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
     | .isNat _ na pa, .isNat sα nb pb =>
       haveI' : $e =Q $a + $b := ⟨⟩

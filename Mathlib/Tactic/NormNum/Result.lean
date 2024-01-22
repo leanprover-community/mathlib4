@@ -36,6 +36,9 @@ namespace Meta.NormNum
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
+def instAddMonoidWithOne' [Semiring α] : AddMonoidWithOne α := inferInstance
+
+/-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
@@ -390,6 +393,19 @@ def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_redu
     pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
   | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(.negOfNat $lit), proof⟩
   | _ => failure
+
+/--
+Extract from a `Result` the rational value (as both a term and an expression),
+and the proof that the original expression is equal to this rational number.
+-/
+def Result.toNNRat' {α : Q(Type u)} {e : Q($α)}
+    (_i : Q(DivisionSemiring $α) := by with_reducible assumption) :
+    Result e → Option (ℚ × (n : Q(ℕ)) × (d : Q(ℕ)) × Q(IsNNRat $e $n $d))
+  | .isNat _ lit proof =>
+    have proof : Q(@IsNat _ instAddMonoidWithOne' $e $lit) := proof
+    some ⟨lit.natLit!, q($lit), q(nat_lit 1), q(($proof).to_isNNRat)⟩
+  | .isNNRat _ q n d proof => some ⟨q, n, d, proof⟩
+  | _ => none
 
 /--
 Extract from a `Result` the rational value (as both a term and an expression),
