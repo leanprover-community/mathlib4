@@ -180,7 +180,7 @@ lemma Order.PFilter.generated_by_minimal_element {α : Type*} [Preorder α] (F :
     {a : α} (ha : a ∈ F ∧ ∀ (b : α), b ∈ F → b ≤ a → a ≤ b) : F = Order.PFilter.principal a := by
   suffices hdual : F.dual = @Order.Ideal.principal αᵒᵈ _ a by
     unfold Order.PFilter.principal
-    erw [←hdual]
+    erw [← hdual]
   apply Order.Ideal.generated_by_maximal_element F.dual
   change a ∈ F.dual ∧ _ at ha
   rw [and_iff_right ha.1]

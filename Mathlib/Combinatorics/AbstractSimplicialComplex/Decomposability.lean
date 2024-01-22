@@ -61,7 +61,7 @@ empty or a face.-/
 lemma isDecomposition_image_of_R {R : K.facets → Finset α}  {DF : K.faces → K.facets}
     (hdec : isDecomposition R DF) {s : K.facets} (hne : R s ≠ ∅) : R s ∈ K.faces :=
   K.down_closed (facets_subset s.2) (hdec.1 s)
-  (by rw [←Finset.nonempty_iff_ne_empty] at hne; exact hne)
+  (by rw [← Finset.nonempty_iff_ne_empty] at hne; exact hne)
 
 /-- Variant of the lemma `isDecomposition_image_of_R` where the conclusion is expressed as an
 `or`.-/
