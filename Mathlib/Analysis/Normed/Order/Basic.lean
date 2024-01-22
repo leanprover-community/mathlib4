@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Field.Basic
 
 #align_import analysis.normed.order.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
