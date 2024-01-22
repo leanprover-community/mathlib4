@@ -954,8 +954,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
   match rb with
   | .isBool .. | .isRat _ .. => failure
   | .isNat sβ nb pb =>
-    let e' : Q(ℝ) := q($a ^ $nb)
-    match ← derive e' with
+    match ← derive q($a ^ $nb) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
       assumeInstancesCommute
