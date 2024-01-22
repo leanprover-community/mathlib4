@@ -213,25 +213,20 @@ theorem Prime.not_dvd_one {p : ℕ} (pp : Prime p) : ¬p ∣ 1 :=
   Irreducible.not_dvd_one pp
 #align nat.prime.not_dvd_one Nat.Prime.not_dvd_one
 
-theorem not_prime_mul {a b : ℕ} (a1 : 1 < a) (b1 : 1 < b) : ¬Prime (a * b) := fun h =>
-  ne_of_lt (Nat.mul_lt_mul_of_pos_left b1 (lt_of_succ_lt a1)) <| by
-    simpa using (dvd_prime_two_le h a1).1 (dvd_mul_right _ _)
-#align nat.not_prime_mul Nat.not_prime_mul
-
-theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : 1 < a) (h₂ : 1 < b) : ¬Prime n := by
-  rw [← h]
-  exact not_prime_mul h₁ h₂
-#align nat.not_prime_mul' Nat.not_prime_mul'
-
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
   simp only [iff_self_iff, irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 #align nat.prime_mul_iff Nat.prime_mul_iff
 
+theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
+  simp [prime_mul_iff, _root_.not_or, *]
+#align nat.not_prime_mul Nat.not_prime_mul
+
+theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
+  h ▸ not_prime_mul h₁ h₂
+#align nat.not_prime_mul' Nat.not_prime_mul'
+
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
-  refine'
-    ⟨_, by
-      rintro rfl
-      rfl⟩
+  refine ⟨?_, by rintro rfl; rfl⟩
   rintro ⟨j, rfl⟩
   rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
   · exact mul_one _
