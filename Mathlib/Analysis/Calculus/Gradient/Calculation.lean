@@ -174,7 +174,7 @@ end Add
 
 section Sum
 
-/-! ### Derivative of a finite sum of functions -/
+/-! ### Gradient of a finite sum of functions -/
 
 
 open BigOperators Asymptotics
