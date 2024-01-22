@@ -5,6 +5,16 @@ Authors: Miguel Marco
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
+import Mathlib.Lean.Expr.ExtraRecognizers
+
+open Lean PrettyPrinter Delaborator SubExpr in
+@[delab app.Set.image]
+def delab_set_image_subtype : Delab := do
+  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let some _ := α.coeTypeSet? | failure
+  let e ← withAppArg delab
+  `(↑$e)
 
 /-!
 # Subsets as subtypes
@@ -71,23 +81,23 @@ lemma set_restrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   exact h x.2
 
 @[simp]
-lemma restrict_subset_restrict_iff: A ↓∩ B ⊆ A ↓∩ C ↔ B ∩ A ⊆ C ∩ A := by
+lemma restrict_subset_restrict_iff: A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
-  · rintro h x ⟨hxB,hxA⟩
+  · rintro h x ⟨hxA,hxB⟩
     constructor
+    · exact hxA
     · specialize h ?_
       · exact ⟨x,hxA⟩
       · exact hxB
       exact h
-    · exact hxA
   · rintro h ⟨x,hxA⟩ hx
     specialize h ?_
     · exact x
-    · exact ⟨hx,hxA⟩
-    exact h.1
+    · exact ⟨hxA,hx⟩
+    exact h.2
 
 @[simp]
-lemma set_restrict_eq_iff :  A ↓∩ B = A ↓∩ C ↔ B ∩ A = C ∩ A  := by
+lemma set_restrict_eq_iff :  A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C  := by
   simp only [subset_antisymm_iff, restrict_subset_restrict_iff, subset_inter_iff,
     inter_subset_right, and_true]
 
@@ -117,13 +127,13 @@ lemma set_restrict_sInter:  A ↓∩ (⋂₀ S)  = ⋂₀ {(A ↓∩ B) | B ∈ 
     mem_set_restrict_iff]
 
 lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
-  simp only [← inter_eq_left] at hB hC
+  simp only [← inter_eq_right] at hB hC
   simp only [set_restrict_eq_iff,hB,hC] at h
   exact h
 
 lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
-  simp only [restrict_subset_restrict_iff, subset_inter_iff, inter_subset_right, and_true]
-  apply subset_trans (inter_subset_left B A) h
+  simp only [restrict_subset_restrict_iff, subset_inter_iff, inter_subset_left, true_and]
+  apply subset_trans (inter_subset_right A B) h
 
 @[simp]
 lemma mem_coe_iff (x : α): x ∈  (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x  := by rfl
@@ -321,7 +331,7 @@ lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆  E := by
   exact h
 
 /-
-Relations between restricti_ _ _  x on and coercion.
+Relations between restriction and coercion.
 -/
 
 @[simp]
