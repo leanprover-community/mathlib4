@@ -11,7 +11,15 @@ import Mathlib.Condensed.Light.Abelian
 
 # The explicit sheaf condition for light condensed sets
 
+We give explicit description of light condensed sets:
 
+* `LightCondensed.ofSheafLightProfinite`: A finite-product-preserving presheaf on `LightProfinite`,
+  satisfying `EqualizerCondition`.
+
+The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive.lean`
+and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
+continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
+`F(X) ⇉ F(X ×_B X)`
 -/
 
 universe v u
@@ -26,9 +34,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
   let e := equivSmallModel LightProfinite.{u}
   rw [← isSheaf_iff_isSheaf_of_type, e.precoherent_isSheaf_iff (Type u) F]
-  haveI : Preregular (SmallModel.{u, u, u+1} LightProfinite) := sorry
-  haveI : FinitaryExtensive (SmallModel.{u, u, u+1} LightProfinite) := sorry
-  haveI : HasPullbacks (SmallModel.{u, u, u+1} LightProfinite) := sorry
+  haveI : HasFiniteCoproducts (SmallModel.{u, u, u+1} LightProfinite) :=
+    ⟨fun _ ↦ Adjunction.hasColimitsOfShape_of_equivalence e.inverse⟩
+  haveI : HasPullbacks (SmallModel.{u, u, u+1} LightProfinite) :=
+    Adjunction.hasLimitsOfShape_of_equivalence e.inverse
+  haveI : FinitaryExtensive (SmallModel.{u, u, u+1} LightProfinite) :=
+    finitaryExtensive_of_preserves_and_reflects e.inverse
   rw [isSheaf_iff_isSheaf_of_type, isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
   · rw [isSheaf_iff_preservesFiniteProducts]
@@ -74,51 +85,30 @@ noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [Pr
 
 end LightCondensed
 
-#exit
+namespace LightCondSet
 
-namespace CondensedSet
+/-- A `LightCondSet` version of `LightCondensed.ofSheafLightProfinite`. -/
+noncomputable abbrev ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
+    [PreservesFiniteProducts F] (hF : EqualizerCondition F) : LightCondSet :=
+  LightCondensed.ofSheafLightProfinite (𝟭 _) F hF
 
-/-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
-    CondensedSet :=
-  Condensed.ofSheafStonean (𝟭 _) F
+/-- A light condensed set satisfies the equalizer condition. -/
+theorem equalizerCondition (X : LightCondSet) : EqualizerCondition X.val :=
+  LightProfinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
+    (𝟭 _) X.val |>.mp X.cond |>.2
 
-/-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
-    [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
-  Condensed.ofSheafProfinite (𝟭 _) F hF
+/-- A light condensed set preserves finite products. -/
+noncomputable instance (X : LightCondSet) : PreservesFiniteProducts X.val :=
+  LightProfinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
+    (𝟭 _) X.val |>.mp X.cond |>.1.some
 
-/-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1))
-    [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
-  Condensed.ofSheafCompHaus (𝟭 _) F hF
+end LightCondSet
 
-/-- A condensed set satisfies the equalizer condition. -/
-theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
-  CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp X.cond |>.2
+namespace LightCondAb
 
-/-- A condensed set preserves finite products. -/
-noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
-  CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
-    X.cond |>.1.some
+/-- A `LightCondAb` version of `LightCondensed.ofSheafLightProfinite`. -/
+noncomputable abbrev ofSheafProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ AddCommGroupCat.{u})
+    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : LightCondAb :=
+  LightCondensed.ofSheafLightProfinite (forget _) F hF
 
-end CondensedSet
-
-namespace CondensedAb
-
-/-- A `CondensedAb` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] : CondensedAb :=
-  Condensed.ofSheafStonean (forget _) F
-
-/-- A `CondensedAb` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
-  Condensed.ofSheafProfinite (forget _) F hF
-
-/-- A `CondensedAb` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
-    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
-  Condensed.ofSheafCompHaus (forget _) F hF
-
-end CondensedAb
+end LightCondAb

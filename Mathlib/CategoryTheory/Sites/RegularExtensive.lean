@@ -104,6 +104,12 @@ def regularCoverage [Preregular C] : Coverage C where
       exact Presieve.singleton.mk
 
 /--
+The regular Grothendieck topology on a preregular category `C`.
+-/
+abbrev regularTopology [Preregular C] : GrothendieckTopology C :=
+  Coverage.toGrothendieck _ <| regularCoverage C
+
+/--
 The extensive coverage on an extensive category `C`
 
 TODO: use general colimit API instead of `IsIso (Sigma.desc π)`
@@ -123,6 +129,12 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
       rw [hS]
       exact Presieve.ofArrows.mk a
+
+/--
+The extensive Grothendieck topology on a finitary preextensive category `C`.
+-/
+abbrev extensiveTopology [FinitaryPreExtensive C] : GrothendieckTopology C :=
+  Coverage.toGrothendieck _ <| extensiveCoverage C
 
 theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Fintype α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
