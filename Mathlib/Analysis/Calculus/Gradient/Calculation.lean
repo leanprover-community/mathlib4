@@ -178,9 +178,7 @@ variable {ι : Type*} {u : Finset ι} {A : ι → F → 𝕜} {A' : ι → F}
 
 theorem HasGradientAtFilter.sum (h : ∀ i ∈ u, HasGradientAtFilter (A i) (A' i) x L) :
     HasGradientAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
-  have : ∑ i in u, (toDual 𝕜 F) (A' i) = (toDual 𝕜 F) (∑ i in u, A' i) := by
-    rw [map_sum]
-  rw [HasGradientAtFilter, ← this]; unfold HasGradientAtFilter at h
+  rw [HasGradientAtFilter, map_sum]
   exact HasFDerivAtFilter.sum h
 
 theorem HasGradientWithinAt.sum (h : ∀ i ∈ u, HasGradientWithinAt (A i) (A' i) s x) :
