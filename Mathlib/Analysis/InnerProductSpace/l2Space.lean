@@ -88,15 +88,13 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+variable {ι : Type*}
 
-variable {ι : Type _}
-
-variable {𝕜 : Type _} [IsROrC 𝕜] {E : Type _}
+variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
 
-variable {G : ι → Type _} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -111,7 +109,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine' summable_of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
+  refine' .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
   · rw [Real.isConjugateExponent_iff] <;> norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -216,7 +214,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
-      exact_mod_cast (hV.norm_sum f s).symm
+      exact mod_cast (hV.norm_sum f s).symm
 #align orthogonal_family.linear_isometry OrthogonalFamily.linearIsometry
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=
@@ -240,14 +238,9 @@ protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
   · simp [h]
 #align orthogonal_family.linear_isometry_apply_single OrthogonalFamily.linearIsometry_apply_single
 
-@[simp]
 protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  have :
-    hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
-      ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
-    hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [DFinsupp.sum, this]
+  simp
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -281,11 +274,11 @@ variable (𝕜 G)
 
 variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
-/-- Given a family of Hilbert spaces `G : ι → Type _`, a Hilbert sum of `G` consists of a Hilbert
+/-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
 `Φ : lp G 2 → E` is surjective.
 
-Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type _`, this is analogous
+Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type*`, this is analogous
 to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules. -/
 structure IsHilbertSum : Prop where
   ofSurjective ::
@@ -415,23 +408,22 @@ end
 
 namespace HilbertBasis
 
-instance {ι : Type _} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
+instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E
-    where coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
+instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
+  coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
-@[simp]
+-- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
 protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i :=
   rfl
 #align hilbert_basis.repr_symm_single HilbertBasis.repr_symm_single
 
--- porting note: removed `@[simp]` because `simp` can prove this
 protected theorem repr_self (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp
+  simp only [LinearIsometryEquiv.apply_symm_apply]
 #align hilbert_basis.repr_self HilbertBasis.repr_self
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
@@ -591,7 +583,8 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
   ⟨w, HilbertBasis.mkOfOrthogonalEqBot hw_ortho
-    (by simpa [maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
+    (by simpa only [Subtype.range_coe_subtype, Set.setOf_mem_eq,
+      maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
     hws, HilbertBasis.coe_mkOfOrthogonalEqBot _ _⟩
 #align orthonormal.exists_hilbert_basis_extension Orthonormal.exists_hilbertBasis_extension
 

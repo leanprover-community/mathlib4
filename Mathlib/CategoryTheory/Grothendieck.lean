@@ -40,7 +40,7 @@ universe u
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type*} [Category C] [Category D]
 
 variable (F : C ⥤ Cat)
 
@@ -196,7 +196,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
         dsimp at *
         simp
-        rfl )
+        rfl)
   counitIso :=
     NatIso.ofComponents
       (fun X => by

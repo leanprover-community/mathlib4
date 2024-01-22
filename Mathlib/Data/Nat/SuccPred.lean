@@ -18,6 +18,7 @@ In this file, we show that `ℕ` is both an archimedean `succOrder` and an archi
 open Function Order
 
 namespace Nat
+variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
 @[reducible]
@@ -66,25 +67,31 @@ theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
     exact congr_arg _ (pred_iterate a n)
 #align nat.pred_iterate Nat.pred_iterate
 
+lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
+
 instance : IsSuccArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
 
 instance : IsPredArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
+lemma forall_ne_zero_iff (P : ℕ → Prop) :
+    (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
+  SuccOrder.forall_ne_bot_iff P
+
 /-! ### Covering relation -/
 
 
-protected theorem covby_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
-  succ_eq_iff_covby.symm
-#align nat.covby_iff_succ_eq Nat.covby_iff_succ_eq
+protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
+  succ_eq_iff_covBy.symm
+#align nat.covby_iff_succ_eq Nat.covBy_iff_succ_eq
 
 end Nat
 
 @[simp, norm_cast]
-theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
+theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
-#align fin.coe_covby_iff Fin.coe_covby_iff
+#align fin.coe_covby_iff Fin.coe_covBy_iff
 
-alias Fin.coe_covby_iff ↔ _ Covby.coe_fin
-#align covby.coe_fin Covby.coe_fin
+alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
+#align covby.coe_fin CovBy.coe_fin

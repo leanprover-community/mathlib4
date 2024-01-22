@@ -42,8 +42,8 @@ we formulate the definitions and lemmas for any model.
 /-- Basic hypothesis to talk about a smooth (Lie) additive monoid or a smooth additive
 semigroup. A smooth additive monoid over `α`, for example, is obtained by requiring both the
 instances `AddMonoid α` and `SmoothAdd α`. -/
-class SmoothAdd {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
-    {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
+class SmoothAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
     [Add G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothManifoldWithCorners I G :
     Prop where
   smooth_add : Smooth (I.prod I) I fun p : G × G => p.1 + p.2
@@ -54,8 +54,8 @@ class SmoothAdd {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [Top
 A smooth monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
 and `SmoothMul I G`. -/
 @[to_additive]
-class SmoothMul {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
-    {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
+class SmoothMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
     [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothManifoldWithCorners I G :
     Prop where
   smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2
@@ -63,11 +63,11 @@ class SmoothMul {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [Top
 
 section SmoothMul
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type _} [Mul G]
-  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {E' : Type _} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [Mul G]
+  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
 section
 
@@ -198,7 +198,7 @@ set_option linter.uppercaseLean3 false in
 #align R_apply R_apply
 
 @[simp]
-theorem L_mul {G : Type _} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+theorem L_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑳 I (g * h) = (𝑳 I g).comp (𝑳 I h) := by
   ext
   simp only [ContMDiffMap.comp_apply, L_apply, mul_assoc]
@@ -206,7 +206,7 @@ set_option linter.uppercaseLean3 false in
 #align L_mul L_mul
 
 @[simp]
-theorem R_mul {G : Type _} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+theorem R_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑹 I (g * h) = (𝑹 I h).comp (𝑹 I g) := by
   ext
   simp only [ContMDiffMap.comp_apply, R_apply, mul_assoc]
@@ -215,7 +215,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable {G' : Type _} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H G'] [SmoothMul I G']
+variable {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H G'] [SmoothMul I G']
   (g' : G')
 
 theorem smoothLeftMul_one : (𝑳 I g') 1 = g' :=
@@ -230,11 +230,11 @@ end
 
 -- Instance of product
 @[to_additive]
-instance SmoothMul.prod {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (G : Type _) [TopologicalSpace G] [ChartedSpace H G] [Mul G]
-    [SmoothMul I G] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _}
-    [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') (G' : Type _) [TopologicalSpace G']
+instance SmoothMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G]
+    [SmoothMul I G] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+    [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') (G' : Type*) [TopologicalSpace G']
     [ChartedSpace H' G'] [Mul G'] [SmoothMul I' G'] : SmoothMul (I.prod I') (G × G') :=
   { SmoothManifoldWithCorners.prod G G' with
     smooth_mul :=
@@ -247,11 +247,11 @@ end SmoothMul
 
 section Monoid
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type _} [Monoid G]
-  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {H' : Type _} [TopologicalSpace H']
-  {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
-  {G' : Type _} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [SmoothMul I' G']
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [Monoid G]
+  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
+  {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [SmoothMul I' G']
 
 @[to_additive]
 theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
@@ -261,8 +261,8 @@ theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
 
 /-- Morphism of additive smooth monoids. -/
 structure SmoothAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
-    (G : Type _) [TopologicalSpace G] [ChartedSpace H G] [AddMonoid G] [SmoothAdd I G]
-    (G' : Type _) [TopologicalSpace G'] [ChartedSpace H' G'] [AddMonoid G']
+    (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [AddMonoid G] [SmoothAdd I G]
+    (G' : Type*) [TopologicalSpace G'] [ChartedSpace H' G'] [AddMonoid G']
     [SmoothAdd I' G'] extends G →+ G' where
   smooth_toFun : Smooth I I' toFun
 #align smooth_add_monoid_morphism SmoothAddMonoidMorphism
@@ -270,7 +270,7 @@ structure SmoothAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWit
 /-- Morphism of smooth monoids. -/
 @[to_additive]
 structure SmoothMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
-    (G : Type _) [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (G' : Type _)
+    (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (G' : Type*)
     [TopologicalSpace G'] [ChartedSpace H' G'] [Monoid G'] [SmoothMul I' G'] extends
     G →* G' where
   smooth_toFun : Smooth I I' toFun
@@ -289,7 +289,7 @@ instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
 @[to_additive]
 instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
   coe a := a.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
   map_one f := f.map_one
   map_mul f := f.map_mul
 
@@ -303,11 +303,11 @@ section CommMonoid
 
 open scoped BigOperators
 
-variable {ι 𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type _} [CommMonoid G]
-  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {E' : Type _} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M : Type _} [TopologicalSpace M] [ChartedSpace H' M] {s : Set M} {x : M} {t : Finset ι}
+variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [CommMonoid G]
+  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M] {s : Set M} {x : M} {t : Finset ι}
   {f : ι → M → G} {n : ℕ∞} {p : ι → Prop}
 
 @[to_additive]
@@ -461,7 +461,7 @@ end CommMonoid
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
 instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
@@ -472,12 +472,12 @@ end
 
 section DivConst
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
-  {G : Type _} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
-  {E' : Type _} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
+  {G : Type*} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+  {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
 variable {f : M → G} {s : Set M} {x : M} {n : ℕ∞} (c : G)
 

@@ -3,12 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.SubsetProperties
-import Mathlib.Topology.Connected
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.TFAE
+import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -28,7 +25,7 @@ This file sets up the theory of locally constant function from a topological spa
 -/
 
 
-variable {X Y Z α : Type _} [TopologicalSpace X]
+variable {X Y Z α : Type*} [TopologicalSpace X]
 
 open Set Filter
 
@@ -137,7 +134,7 @@ theorem prod_mk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 #align is_locally_constant.prod_mk IsLocallyConstant.prod_mk
 
-theorem comp₂ {Y₁ Y₂ Z : Type _} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
+theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
   (hf.prod_mk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
 #align is_locally_constant.comp₂ IsLocallyConstant.comp₂
@@ -213,7 +210,7 @@ theorem div [Div Y] ⦃f g : X → Y⦄ (hf : IsLocallyConstant f) (hg : IsLocal
 
 /-- If a composition of a function `f` followed by an injection `g` is locally
 constant, then the locally constant property descends to `f`. -/
-theorem desc {α β : Type _} (f : X → α) (g : α → β) (h : IsLocallyConstant (g ∘ f))
+theorem desc {α β : Type*} (f : X → α) (g : α → β) (h : IsLocallyConstant (g ∘ f))
     (inj : Function.Injective g) : IsLocallyConstant f := fun s => by
   rw [← preimage_image_eq s inj, preimage_preimage]
   exact h (g '' s)
@@ -241,7 +238,7 @@ theorem of_constant_on_preconnected_clopens [LocallyConnectedSpace X] {f : X →
 end IsLocallyConstant
 
 /-- A (bundled) locally constant function from a topological space `X` to a type `Y`. -/
-structure LocallyConstant (X Y : Type _) [TopologicalSpace X] where
+structure LocallyConstant (X Y : Type*) [TopologicalSpace X] where
   /-- The underlying function. -/
   protected toFun : X → Y
   /-- The map is locally constant. -/
@@ -253,7 +250,7 @@ namespace LocallyConstant
 instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
   ⟨⟨_, IsLocallyConstant.const default⟩⟩
 
-instance : FunLike (LocallyConstant X Y) X (fun _ => Y) where
+instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
   coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
@@ -273,15 +270,15 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
 #align locally_constant.coe_mk LocallyConstant.coe_mk
 
 theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align locally_constant.congr_fun LocallyConstant.congr_fun
 
 theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+  DFunLike.congr_arg f h
 #align locally_constant.congr_arg LocallyConstant.congr_arg
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
-  FunLike.ext'
+  DFunLike.ext'
 #align locally_constant.coe_injective LocallyConstant.coe_injective
 
 @[norm_cast]
@@ -291,10 +288,10 @@ theorem coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
 
 @[ext]
 theorem ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align locally_constant.ext LocallyConstant.ext
 
-theorem ext_iff {f g : LocallyConstant X Y} : f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
+theorem ext_iff {f g : LocallyConstant X Y} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
 #align locally_constant.ext_iff LocallyConstant.ext_iff
 
 section CodomainTopologicalSpace
@@ -327,7 +324,7 @@ theorem toContinuousMap_injective :
 end CodomainTopologicalSpace
 
 /-- The constant locally constant function on `X` with value `y : Y`. -/
-def const (X : Type _) {Y : Type _} [TopologicalSpace X] (y : Y) : LocallyConstant X Y :=
+def const (X : Type*) {Y : Type*} [TopologicalSpace X] (y : Y) : LocallyConstant X Y :=
   ⟨Function.const X y, IsLocallyConstant.const _⟩
 #align locally_constant.const LocallyConstant.const
 
@@ -337,7 +334,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
 #align locally_constant.coe_const LocallyConstant.coe_const
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
-def ofClopen {X : Type _} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
@@ -351,26 +348,26 @@ def ofClopen {X : Type _} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x 
       convert hU.2
       ext
       simp
-#align locally_constant.of_clopen LocallyConstant.ofClopen
+#align locally_constant.of_clopen LocallyConstant.ofIsClopen
 
 @[simp]
-theorem ofClopen_fiber_zero {X : Type _} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
-    (hU : IsClopen U) : ofClopen hU ⁻¹' ({0} : Set (Fin 2)) = U := by
+theorem ofIsClopen_fiber_zero {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+    (hU : IsClopen U) : ofIsClopen hU ⁻¹' ({0} : Set (Fin 2)) = U := by
   ext
-  simp only [ofClopen, mem_singleton_iff, Fin.one_eq_zero_iff, coe_mk, mem_preimage,
+  simp only [ofIsClopen, mem_singleton_iff, Fin.one_eq_zero_iff, coe_mk, mem_preimage,
     ite_eq_left_iff, Nat.succ_succ_ne_one]
   tauto
-#align locally_constant.of_clopen_fiber_zero LocallyConstant.ofClopen_fiber_zero
+#align locally_constant.of_clopen_fiber_zero LocallyConstant.ofIsClopen_fiber_zero
 
 @[simp]
-theorem ofClopen_fiber_one {X : Type _} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
-    (hU : IsClopen U) : ofClopen hU ⁻¹' ({1} : Set (Fin 2)) = Uᶜ := by
+theorem ofIsClopen_fiber_one {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
+    (hU : IsClopen U) : ofIsClopen hU ⁻¹' ({1} : Set (Fin 2)) = Uᶜ := by
   ext
-  simp only [ofClopen, mem_singleton_iff, coe_mk, Fin.zero_eq_one_iff, mem_preimage,
+  simp only [ofIsClopen, mem_singleton_iff, coe_mk, Fin.zero_eq_one_iff, mem_preimage,
     ite_eq_right_iff, mem_compl_iff, Nat.succ_succ_ne_one]
-#align locally_constant.of_clopen_fiber_one LocallyConstant.ofClopen_fiber_one
+#align locally_constant.of_clopen_fiber_one LocallyConstant.ofIsClopen_fiber_one
 
-theorem locallyConstant_eq_of_fiber_zero_eq {X : Type _} [TopologicalSpace X]
+theorem locallyConstant_eq_of_fiber_zero_eq {X : Type*} [TopologicalSpace X]
     (f g : LocallyConstant X (Fin 2)) (h : f ⁻¹' ({0} : Set (Fin 2)) = g ⁻¹' {0}) : f = g := by
   simp only [Set.ext_iff, mem_singleton_iff, mem_preimage] at h
   ext1 x
@@ -417,36 +414,36 @@ theorem map_id : @map X Y Y _ id = id := rfl
 #align locally_constant.map_id LocallyConstant.map_id
 
 @[simp]
-theorem map_comp {Y₁ Y₂ Y₃ : Type _} (g : Y₂ → Y₃) (f : Y₁ → Y₂) :
+theorem map_comp {Y₁ Y₂ Y₃ : Type*} (g : Y₂ → Y₃) (f : Y₁ → Y₂) :
     @map X _ _ _ g ∘ map f = map (g ∘ f) := rfl
 #align locally_constant.map_comp LocallyConstant.map_comp
 
 /-- Given a locally constant function to `α → β`, construct a family of locally constant
 functions with values in β indexed by α. -/
-def flip {X α β : Type _} [TopologicalSpace X] (f : LocallyConstant X (α → β)) (a : α) :
+def flip {X α β : Type*} [TopologicalSpace X] (f : LocallyConstant X (α → β)) (a : α) :
     LocallyConstant X β :=
   f.map fun f => f a
 #align locally_constant.flip LocallyConstant.flip
 
 /-- If α is finite, this constructs a locally constant function to `α → β` given a
 family of locally constant functions with values in β indexed by α. -/
-def unflip {X α β : Type _} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
+def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
     LocallyConstant X (α → β) where
   toFun x a := f a x
-  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 <| fun g => by
+  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g => by
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
-    exact isOpen_iInter fun a => (f a).isLocallyConstant _
+    exact isOpen_iInter_of_finite fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]
-theorem unflip_flip {X α β : Type _} [Finite α] [TopologicalSpace X]
+theorem unflip_flip {X α β : Type*} [Finite α] [TopologicalSpace X]
     (f : LocallyConstant X (α → β)) : unflip f.flip = f := rfl
 #align locally_constant.unflip_flip LocallyConstant.unflip_flip
 
 @[simp]
-theorem flip_unflip {X α β : Type _} [Finite α] [TopologicalSpace X]
+theorem flip_unflip {X α β : Type*} [Finite α] [TopologicalSpace X]
     (f : α → LocallyConstant X β) : (unflip f).flip = f := rfl
 #align locally_constant.flip_unflip LocallyConstant.flip_unflip
 
@@ -489,7 +486,7 @@ theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous
 @[simp]
 theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
   ext
-  simp only [continuous_id, id.def, Function.comp.right_id, coe_comap]
+  simp only [continuous_id, id.def, Function.comp_id, coe_comap]
 #align locally_constant.comap_id LocallyConstant.comap_id
 
 theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)
@@ -527,14 +524,14 @@ section Desc
 
 /-- If a locally constant function factors through an injection, then it factors through a locally
 constant function. -/
-def desc {X α β : Type _} [TopologicalSpace X] {g : α → β} (f : X → α) (h : LocallyConstant X β)
+def desc {X α β : Type*} [TopologicalSpace X] {g : α → β} (f : X → α) (h : LocallyConstant X β)
     (cond : g ∘ f = h) (inj : Function.Injective g) : LocallyConstant X α where
   toFun := f
   isLocallyConstant := IsLocallyConstant.desc _ g (cond.symm ▸ h.isLocallyConstant) inj
 #align locally_constant.desc LocallyConstant.desc
 
 @[simp]
-theorem coe_desc {X α β : Type _} [TopologicalSpace X] (f : X → α) (g : α → β)
+theorem coe_desc {X α β : Type*} [TopologicalSpace X] (f : X → α) (g : α → β)
     (h : LocallyConstant X β) (cond : g ∘ f = h) (inj : Function.Injective g) :
     ⇑(desc f h cond inj) = f :=
   rfl
@@ -544,14 +541,14 @@ end Desc
 
 section Indicator
 
-variable {R : Type _} [One R] {U : Set X} (f : LocallyConstant X R)
+variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
 open Classical
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
 @[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
-  `locally_constant.indicator` returns the locally constant function that is `f` on `U` and `0`
+  `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
   otherwise. "]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
@@ -590,17 +587,18 @@ section Equiv
 
 /-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
     homeomorphism `X ≃ₜ Y` -/
+@[simps]
 noncomputable
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
-  toFun := comap e.invFun
-  invFun := comap e.toFun
+  toFun := comap e.symm
+  invFun := comap e
   left_inv := by
-    intro x
-    rw [comap_comap _ _ e.continuous_toFun e.continuous_invFun x]
+    intro
+    rw [comap_comap _ _ e.continuous e.symm.continuous]
     simp
   right_inv := by
-    intro x
-    rw [comap_comap _ _ e.continuous_invFun e.continuous_toFun]
+    intro
+    rw [comap_comap _ _ e.symm.continuous e.continuous]
     simp
 
 end Equiv
@@ -609,11 +607,13 @@ section Piecewise
 
 /-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
     then if these two locally constant maps agree on the intersection, we get a piecewise defined
-    locally constant map on the whole space. -/
+    locally constant map on the whole space.
+
+TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
-    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
-    [∀ j, Decidable (j ∈ C₁)] : LocallyConstant X Z where
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
+    [DecidablePred (· ∈ C₁)] : LocallyConstant X Z where
   toFun i := if hi : i ∈ C₁ then f ⟨i, hi⟩ else g ⟨i, (Set.compl_subset_iff_union.mpr h) hi⟩
   isLocallyConstant := by
     let dZ : TopologicalSpace Z := ⊥
@@ -632,6 +632,66 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
         exact fun hx ↦ hfg x ⟨hx, x.prop⟩
       · simp only [cond_true, restrict_dite, Subtype.coe_eta]
         exact hf
+
+@[simp]
+lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
+    [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₁) :
+    piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
+  simp only [piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
+    coe_comap, Function.comp_apply, coe_mk]
+  rw [dif_pos hx]
+
+@[simp]
+lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
+    [DecidablePred (· ∈ C₁)] (x : X) (hx : x ∈ C₂) :
+    piecewise h₁ h₂ h f g hfg x = g ⟨x, hx⟩ := by
+  simp only [piecewise, Set.mem_preimage, continuous_subtype_val.restrictPreimage,
+    coe_comap, Function.comp_apply, coe_mk]
+  split_ifs with h
+  · exact hfg x ⟨h, hx⟩
+  · rfl
+
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
+
+TODO: Generalise this construction to `ContinuousMap`. -/
+noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+    (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
+    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
+    LocallyConstant C₀ Z :=
+  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
+    (by simpa [eq_univ_iff_forall] using h₀)
+    (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X)))
+    (f₂.comap (restrictPreimage C₂ ((↑) : C₀ → X))) <| by
+      rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
+      simp_rw [coe_comap_apply _ _ continuous_subtype_val.restrictPreimage]
+      exact hf x ⟨hx₁, hx₂⟩
+
+@[simp]
+lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+    (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
+    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
+    (x : C₀) (hx : x.val ∈ C₁) :
+    piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
+  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  rw [piecewise', piecewise_apply_left (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
+    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
+  rfl
+
+@[simp]
+lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+    (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
+    [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
+    (x : C₀) (hx : x.val ∈ C₂) :
+    piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
+  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  rw [piecewise', piecewise_apply_right (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
+    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
+  rfl
 
 end Piecewise
 

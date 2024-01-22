@@ -40,8 +40,9 @@ equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor
 assumption from the Leibniz rule when `M` is cancellative.
 
 TODO: update this when bimodules are defined. -/
-structure Derivation (R : Type _) (A : Type _) [CommSemiring R] [CommSemiring A] [Algebra R A]
-    (M : Type _) [AddCommMonoid M] [Module A M] [Module R M] extends A →ₗ[R] M where
+structure Derivation (R : Type*) (A : Type*) (M : Type*)
+    [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [Algebra R A] [Module A M] [Module R M]
+    extends A →ₗ[R] M where
   protected map_one_eq_zero' : toLinearMap 1 = 0
   protected leibniz' (a b : A) : toLinearMap (a * b) = a • toLinearMap b + b • toLinearMap a
 #align derivation Derivation
@@ -53,29 +54,34 @@ namespace Derivation
 
 section
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} {A : Type*} {B : Type*} {M : Type*}
+variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [AddCommMonoid M]
+variable [Algebra R A] [Algebra R B]
+variable [Module A M] [Module B M] [Module R M]
 
-variable {A : Type _} [CommSemiring A] [Algebra R A]
-
-variable {M : Type _} [AddCommMonoid M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
 instance : AddMonoidHomClass (Derivation R A M) A M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact FunLike.coe_injective h
+  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (Derivation R A M) fun _ => A → M :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 #align derivation.to_fun_eq_coe Derivation.toFun_eq_coe
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (D : Derivation R A M) : A → M := D
+
+initialize_simps_projections Derivation (toFun → apply)
 
 attribute [coe] toLinearMap
 
@@ -95,17 +101,17 @@ theorem coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
   rfl
 #align derivation.coe_fn_coe Derivation.coeFn_coe
 
-theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.coe :=
-  FunLike.coe_injective
+theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) DFunLike.coe :=
+  DFunLike.coe_injective
 #align derivation.coe_injective Derivation.coe_injective
 
 @[ext]
 theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align derivation.ext Derivation.ext
 
 theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
-  FunLike.congr_fun h a
+  DFunLike.congr_fun h a
 #align derivation.congr_fun Derivation.congr_fun
 
 protected theorem map_add : D (a + b) = D a + D b :=
@@ -126,12 +132,13 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-theorem map_sum {ι : Type _} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  D.toLinearMap.map_sum
+nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
+    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
+  map_sum D _ _
 #align derivation.map_sum Derivation.map_sum
 
 @[simp]
-theorem map_smul_of_tower {S : Type _} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
+theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
     (D : Derivation R A M) (r : S) (a : A) : D (r • a) = r • D a :=
   D.toLinearMap.map_smul_of_tower r a
 #align derivation.map_smul_of_tower Derivation.map_smul_of_tower
@@ -220,7 +227,7 @@ instance : Inhabited (Derivation R A M) :=
 
 section Scalar
 
-variable {S T : Type _}
+variable {S T : Type*}
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass S A M]
 
@@ -260,8 +267,9 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
 instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] : IsCentralScalar S (Derivation R A M)
-    where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
+    IsCentralScalar S (Derivation R A M) where
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
@@ -271,13 +279,13 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 
 end Scalar
 
-instance instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
+instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
 section PushForward
 
-variable {N : Type _} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A M]
+variable {N : Type*} [AddCommMonoid N] [Module A N] [Module R N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
 variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
@@ -323,9 +331,20 @@ def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
 
 end PushForward
 
+variable (A) in
+/-- For a tower `R → A → B` and an `R`-derivation `B → M`, we may compose with `A → B` to obtain an
+`R`-derivation `A → M`. -/
+@[simps!]
+def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    (d : Derivation R B M) : Derivation R A M where
+  map_one_eq_zero' := by simp
+  leibniz' a b := by simp
+  toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
+#align derivation.comp_algebra_map Derivation.compAlgebraMap
+
 section RestrictScalars
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
 
@@ -345,7 +364,7 @@ end
 
 section Cancel
 
-variable {R : Type _} [CommSemiring R] {A : Type _} [CommSemiring A] [Algebra R A] {M : Type _}
+variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}
   [AddCancelCommMonoid M] [Module R M] [Module A M]
 
 /-- Define `Derivation R A M` from a linear map when `M` is cancellative by verifying the Leibniz
@@ -370,13 +389,13 @@ end Cancel
 
 section
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {A : Type _} [CommRing A] [Algebra R A]
+variable {A : Type*} [CommRing A] [Algebra R A]
 
 section
 
-variable {M : Type _} [AddCommGroup M] [Module A M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
@@ -407,7 +426,7 @@ theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
-theorem leibniz_inv {K : Type _} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
+theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
     (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
@@ -458,5 +477,6 @@ instance : AddCommGroup (Derivation R A M) :=
 end
 
 end
+
 
 end Derivation

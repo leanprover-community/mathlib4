@@ -40,8 +40,6 @@ refined properties of the Gamma function using these relations.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Filter intervalIntegral Set Real MeasureTheory
@@ -54,8 +52,6 @@ section BetaIntegral
 
 
 namespace Complex
-
-notation "cexp" => Complex.exp
 
 /-- The Beta function `Β (u, v)`, defined as `∫ x:ℝ in 0..1, x ^ (u - 1) * (1 - x) ^ (v - 1)`. -/
 noncomputable def betaIntegral (u v : ℂ) : ℂ :=
@@ -75,8 +71,8 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     apply ContinuousAt.cpow
     · exact (continuous_const.sub continuous_ofReal).continuousAt
     · exact continuousAt_const
-    · rw [sub_re, one_re, ofReal_re, sub_pos]
-      exact Or.inl (hx.2.trans_lt (by norm_num : (1 / 2 : ℝ) < 1))
+    · norm_cast
+      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 #align complex.beta_integral_convergent_left Complex.betaIntegral_convergent_left
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
@@ -98,7 +94,9 @@ theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := b
   have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
     (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
   rw [inv_neg, inv_one, neg_one_smul, ← intervalIntegral.integral_symm] at this
-  simp at this
+  simp? at this says
+    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_cancel'', neg_neg,
+      mul_one, add_left_neg, mul_zero, zero_add] at this
   conv_lhs at this => arg 1; intro x; rw [add_comm, ← sub_eq_add_neg, mul_comm]
   exact this
 #align complex.beta_integral_symm Complex.betaIntegral_symm
@@ -190,7 +188,6 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
-  dsimp only at h_int
   rw [add_sub_cancel, add_sub_cancel] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
@@ -291,19 +288,19 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
-    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)) atTop
+    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
       (𝓝 <| Gamma s) := by
   rw [Gamma_eq_integral hs]
   -- We apply dominated convergence to the following function, which we will show is uniformly
   -- bounded above by the Gamma integrand `exp (-x) * x ^ (re s - 1)`.
   let f : ℕ → ℝ → ℂ := fun n =>
-    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)
+    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)
   -- integrability of f
   have f_ible : ∀ n : ℕ, Integrable (f n) (volume.restrict (Ioi 0)) := by
     intro n
     rw [integrable_indicator_iff (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)), IntegrableOn,
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self, ← IntegrableOn, ←
-      intervalIntegrable_iff_integrable_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
+      intervalIntegrable_iff_integrableOn_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
     apply IntervalIntegrable.continuousOn_mul
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
@@ -325,7 +322,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       refine' (Tendsto.comp (continuous_ofReal.tendsto _) _).const_mul _
       convert tendsto_one_plus_div_pow_exp (-x) using 1
       ext1 n
-      rw [neg_div, ← sub_eq_add_neg]; norm_cast
+      rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
   convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
@@ -342,7 +339,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg_of_nonneg (le_of_lt hx) _
+      exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_eq_abs,
         Complex.abs_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le hxn <| by positivity) _),
@@ -406,7 +403,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   rw [this, Finset.prod_range_succ', Finset.prod_range_succ, aux, ← Finset.prod_mul_distrib,
     Nat.cast_zero, add_zero, add_comm (1 - z) n, ← add_sub_assoc]
   have : ∀ j : ℕ, (z + ↑(j + 1)) * (↑1 - z + ↑j) =
-      ↑((j + 1) ^ 2) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
+      ((j + 1) ^ 2 :) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j
@@ -433,7 +430,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
     cases k
     · rw [Int.ofNat_eq_coe, Int.cast_ofNat, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel',
-        Complex.Gamma_neg_nat_eq_zero, MulZeroClass.mul_zero]
+        Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine' tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) _
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn =>
@@ -452,7 +449,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
   by_cases h_im : s.im = 0
   · have : s = ↑s.re := by
       conv_lhs => rw [← Complex.re_add_im s]
-      rw [h_im, ofReal_zero, MulZeroClass.zero_mul, add_zero]
+      rw [h_im, ofReal_zero, zero_mul, add_zero]
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine' Real.Gamma_ne_zero fun n => _
     specialize hs n
@@ -462,7 +459,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [ofReal_mul_im, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
@@ -532,29 +529,24 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
     (Gamma s)⁻¹ = s * (Gamma (s + 1))⁻¹ := by
   rcases ne_or_eq s 0 with (h | rfl)
   · rw [Gamma_add_one s h, mul_inv, mul_inv_cancel_left₀ h]
-  · rw [zero_add, Gamma_zero, inv_zero, MulZeroClass.zero_mul]
+  · rw [zero_add, Gamma_zero, inv_zero, zero_mul]
 #align complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one Complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one
 
-/-- The reciprocal of the Gamma function is differentiable everywhere (including the points where
-Gamma itself is not). -/
-theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := by
-  suffices : ∀ n : ℕ, ∀ (s : ℂ) (_ : -s.re < n), DifferentiableAt ℂ (fun u : ℂ => (Gamma u)⁻¹) s
-  exact fun s =>
-    let ⟨n, h⟩ := exists_nat_gt (-s.re)
-    this n s h
-  intro n
-  induction' n with m hm
-  · intro s hs
+/-- The reciprocal of the Gamma function is differentiable everywhere
+(including the points where Gamma itself is not). -/
+theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := fun s ↦ by
+  rcases exists_nat_gt (-s.re) with ⟨n, hs⟩
+  induction n generalizing s with
+  | zero =>
     rw [Nat.cast_zero, neg_lt_zero] at hs
     suffices : ∀ m : ℕ, s ≠ -↑m; exact (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
-    contrapose! hs
-    rcases hs with ⟨m, rfl⟩
-    simpa only [neg_re, ← ofReal_nat_cast, ofReal_re, neg_nonpos] using Nat.cast_nonneg m
-  · intro s hs
+    rintro m rfl
+    apply hs.not_le
+    simp
+  | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
-    specialize hm (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
-    refine' differentiableAt_id.mul (hm.comp s _)
-    exact differentiableAt_id.add (differentiableAt_const _)
+    specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
+    exact differentiableAt_id.mul (ihn.comp s <| differentiableAt_id.add_const _)
 #align complex.differentiable_one_div_Gamma Complex.differentiable_one_div_Gamma
 
 end Complex

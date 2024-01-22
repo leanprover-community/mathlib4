@@ -13,9 +13,11 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
+set_option autoImplicit true
+
 namespace MulOpposite
 
-variable (α : Type _)
+variable (α : Type*)
 
 @[to_additive]
 instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=
@@ -42,7 +44,7 @@ instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :
 
 instance divisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
   { MulOpposite.divisionSemiring α, MulOpposite.ring α, MulOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective $ by
+    ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
         Int.commute_cast, div_eq_mul_inv] }
 
@@ -61,7 +63,7 @@ instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :
 
 instance divisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
   { AddOpposite.ring α, AddOpposite.groupWithZero α, AddOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective $ by
+    ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
         div_eq_mul_inv] }
 

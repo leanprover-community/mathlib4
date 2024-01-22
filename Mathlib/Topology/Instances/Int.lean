@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Archimedean
 
 #align_import topology.instances.int from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -70,9 +72,13 @@ instance : ProperSpace ℤ :=
     exact (Set.finite_Icc _ _).isCompact⟩
 
 @[simp]
-theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
-  simp_rw [← comap_dist_right_atTop_eq_cocompact (0 : ℤ), dist_eq', sub_zero,
+theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
+  simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
+
+@[simp]
+theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
+  rw [← cobounded_eq_cocompact, cobounded_eq]
 #align int.cocompact_eq Int.cocompact_eq
 
 @[simp]
@@ -81,4 +87,3 @@ theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
 #align int.cofinite_eq Int.cofinite_eq
 
 end Int
-

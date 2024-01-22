@@ -3,7 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import order.well_founded from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
@@ -20,7 +20,7 @@ and an induction principle `WellFounded.induction_bot`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace WellFounded
 
@@ -43,7 +43,7 @@ theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded 
   Subrelation.wf (h _ _) hr
 #align well_founded.mono WellFounded.mono
 
-theorem onFun {α β : Sort _} {r : β → β → Prop} {f : α → β} :
+theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 #align well_founded.on_fun WellFounded.onFun
@@ -171,7 +171,7 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
 #align well_founded.eq_strict_mono_iff_eq_range WellFounded.eq_strictMono_iff_eq_range
 
 theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
-  by_contra' h₁
+  by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
 #align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strictMono

@@ -5,6 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+import Mathlib.FieldTheory.Finite.Basic
 
 #align_import ring_theory.roots_of_unity.minpoly from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -29,7 +31,7 @@ namespace IsPrimitiveRoot
 
 section CommRing
 
-variable {n : ℕ} {K : Type _} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
+variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 
 /-- `μ` is integral over `ℤ`. -/
 -- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this
@@ -61,7 +63,6 @@ set_option linter.uppercaseLean3 false in
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
-    simp [Polynomial.map_pow, map_X, Polynomial.map_one, Polynomial.map_sub]
     convert RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
@@ -173,7 +174,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
 /-- If `m : ℕ` is coprime with `n`,
 then the minimal polynomials of a primitive `n`-th root of unity `μ`
 and of `μ ^ m` are the same. -/
-theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.coprime m n) :
+theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
     minpoly ℤ μ = minpoly ℤ (μ ^ m) := by
   revert n hcop
   refine' UniqueFactorizationMonoid.induction_on_prime m _ _ _
@@ -185,11 +186,11 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.coprime m n) :
     simp [Nat.isUnit_iff.mp hunit]
   · intro a p _ hprime
     intro hind h hcop
-    rw [hind h (Nat.coprime.coprime_mul_left hcop)]; clear hind
+    rw [hind h (Nat.Coprime.coprime_mul_left hcop)]; clear hind
     replace hprime := hprime.nat_prime
-    have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.coprime.coprime_mul_right hcop)
+    have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.Coprime.coprime_mul_right hcop)
     haveI := Fact.mk hprime
-    rw [minpoly_eq_pow (h.pow_of_coprime a (Nat.coprime.coprime_mul_left hcop)) hdiv]
+    rw [minpoly_eq_pow (h.pow_of_coprime a (Nat.Coprime.coprime_mul_left hcop)) hdiv]
     congr 1
     ring
 #align is_primitive_root.minpoly_eq_pow_coprime IsPrimitiveRoot.minpoly_eq_pow_coprime
@@ -197,7 +198,7 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.coprime m n) :
 /-- If `m : ℕ` is coprime with `n`,
 then the minimal polynomial of a primitive `n`-th root of unity `μ`
 has `μ ^ m` as root. -/
-theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.coprime m n) :
+theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.Coprime m n) :
     IsRoot (map (Int.castRingHom K) (minpoly ℤ μ)) (μ ^ m) := by
   simp only [minpoly_eq_pow_coprime h hcop, IsRoot.def, eval_map]
   exact minpoly.aeval ℤ (μ ^ m)
@@ -226,7 +227,7 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
   -- minimal polynomial of `μ` sent to `K[X]`
   calc
     n.totient = (primitiveRoots n K).card := h.card_primitiveRoots.symm
-    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_of_subset (is_roots_of_minpoly h))
+    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_card (is_roots_of_minpoly h))
     _ ≤ Multiset.card P_K.roots := (Multiset.toFinset_card_le _)
     _ ≤ P_K.natDegree := (card_roots' _)
     _ ≤ P.natDegree := natDegree_map_le _ _

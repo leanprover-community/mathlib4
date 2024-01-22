@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D D₁ D₂ : Type _} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D]
   [Category D₁] [Category D₂]
 
 namespace Localization

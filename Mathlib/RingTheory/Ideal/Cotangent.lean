@@ -8,6 +8,8 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Filtration
+import Mathlib.RingTheory.Nakayama
 
 #align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
@@ -166,7 +168,7 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
   rfl
 #align ideal.cotangent_equiv_ideal_symm_apply Ideal.cotangentEquivIdeal_symm_apply
 
-variable {A B : Type _} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
@@ -196,7 +198,7 @@ end Ideal
 
 namespace LocalRing
 
-variable (R : Type _) [CommRing R] [LocalRing R]
+variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 @[reducible]
@@ -210,5 +212,51 @@ instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
+
+variable {R}
+
+lemma subsingleton_cotangentSpace_iff [IsNoetherianRing R] :
+    Subsingleton (CotangentSpace R) ↔ IsField R := by
+  refine (maximalIdeal R).cotangent_subsingleton_iff.trans ?_
+  rw [LocalRing.isField_iff_maximalIdeal_eq, Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
+  simp [(maximalIdeal.isMaximal R).ne_top]
+
+lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maximalIdeal R)} :
+    M.map (maximalIdeal R).toCotangent = ⊤ ↔ M = ⊤ := by
+  refine ⟨fun H ↦ eq_top_iff.mpr ?_, by rintro rfl; simp [Ideal.toCotangent_range]⟩
+  refine (Submodule.map_le_map_iff_of_injective (Submodule.injective_subtype _) _ _).mp ?_
+  rw [Submodule.map_top, Submodule.range_subtype]
+  apply Submodule.le_of_le_smul_of_le_jacobson_bot (IsNoetherian.noetherian _)
+    (LocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+  rw [smul_eq_mul, ← pow_two, ← Ideal.map_toCotangent_ker, ← Submodule.map_sup,
+    ← Submodule.comap_map_eq, H, Submodule.comap_top, Submodule.map_top, Submodule.range_subtype]
+
+lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maximalIdeal R)} :
+    Submodule.span (ResidueField R) ((maximalIdeal R).toCotangent '' s) = ⊤ ↔
+      Submodule.span R s = ⊤ := by
+  rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
+    Submodule.restrictScalars_span]
+  simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  exact Ideal.Quotient.mk_surjective
+
+open FiniteDimensional
+
+lemma finrank_cotangentSpace_eq_zero_iff [IsNoetherianRing R] :
+    finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by
+  rw [finrank_zero_iff, subsingleton_cotangentSpace_iff]
+
+lemma finrank_cotangentSpace_eq_zero (R) [Field R] :
+    finrank (ResidueField R) (CotangentSpace R) = 0 :=
+  finrank_cotangentSpace_eq_zero_iff.mpr (Field.toIsField R)
+
+open Submodule in
+theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
+    finrank (ResidueField R) (CotangentSpace R) ≤ 1 ↔ (maximalIdeal R).IsPrincipal := by
+  rw [Module.finrank_le_one_iff_top_isPrincipal, isPrincipal_iff,
+    (maximalIdeal R).toCotangent_surjective.exists, isPrincipal_iff]
+  simp_rw [← Set.image_singleton, eq_comm (a := ⊤), CotangentSpace.span_image_eq_top_iff,
+    ← (map_injective_of_injective (injective_subtype _)).eq_iff, map_span, Set.image_singleton,
+    Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]
+  exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
 end LocalRing

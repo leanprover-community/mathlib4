@@ -20,12 +20,12 @@ We also develop basic API about these equivalences.
 -/
 
 open scoped NNReal ENNReal
-open Function Set
+open Function Set Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
-variable (F : Type _) (X Y : outParam (Type _)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable (F : Type*) (X Y : outParam (Type*)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
@@ -33,13 +33,13 @@ class DilationEquivClass extends EquivLike F X Y where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X fun _ ↦ Y), ‹DilationEquivClass F X Y› with }
+  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
 /-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
 `r : ℝ≥0`, `r ≠ 0`. -/
-structure DilationEquiv (X Y : Type _) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
 infixl:25 " ≃ᵈ " => DilationEquiv
@@ -48,14 +48,14 @@ namespace DilationEquiv
 
 section PseudoEMetricSpace
 
-variable {X Y Z : Type _} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
+variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   coe f := f.1
   inv f := f.1.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact FunLike.ext' h
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
   edist_eq' f := f.edist_eq'
 
 instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
@@ -65,7 +65,7 @@ instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
 
 @[ext]
 protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
@@ -77,6 +77,10 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
       ENNReal.coe_one, one_mul]
 
 @[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
@@ -87,7 +91,7 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 
 /-- Identity map as a `DilationEquiv`. -/
 @[simps! (config := .asFn) apply]
-def refl (X : Type _) [PseudoEMetricSpace X] : X ≃ᵈ X where
+def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
@@ -173,5 +177,15 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
   rw [← coe_toEquiv, ← toPerm_apply, map_pow, Equiv.Perm.coe_pow]; rfl
 
 end PseudoEMetricSpace
+
+section PseudoMetricSpace
+
+variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] [DilationEquivClass F X Y]
+
+@[simp]
+lemma map_cobounded (e : F) : map e (cobounded X) = cobounded Y := by
+  rw [← Dilation.comap_cobounded e, map_comap_of_surjective (EquivLike.surjective e)]
+
+end PseudoMetricSpace
 
 end DilationEquiv

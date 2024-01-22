@@ -164,7 +164,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 400000 in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`.-/
 theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
@@ -197,9 +197,9 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
-      · refine (((@lequivProdOfRightSplitExact _ _ _ _ _ _ _ _ _ _ _ _
-          ((f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
-          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton.{u, u} (p ^ k i)
+      · refine (((lequivProdOfRightSplitExact
+          (g := (f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
+          (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
               (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)).comp
             ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans
@@ -243,7 +243,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
         Nonempty <| torsionBy R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
     haveI := fun i => isNoetherian_submodule' (torsionBy R N <| p i ^ e i)
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
@@ -266,7 +265,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
   haveI := isNoetherian_submodule' (torsion R N)
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=

@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Order.Hom.Basic
 
 #align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
@@ -19,8 +20,6 @@ This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers tha
 It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
@@ -141,7 +140,7 @@ instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
   Positive.contravariantClass_add_lt
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
   invFun := Nat.succPNat
@@ -152,7 +151,7 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
 #align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -272,7 +271,7 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 end deprecated
 
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -304,7 +303,7 @@ theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
-def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
+def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
@@ -318,7 +317,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
   · exact absurd h (by decide)
@@ -333,7 +332,7 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 #align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
   cases n <;> [exact absurd h (by decide); rfl]

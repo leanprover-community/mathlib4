@@ -37,7 +37,7 @@ and the set of factors of `a`.
 -/
 
 
-variable {M : Type _} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CancelCommMonoidWithZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
@@ -55,8 +55,7 @@ theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔
         fun ha =>
         absurd
           (show p ∣ b from
-            ⟨(ha.unit⁻¹ : Units _), by
-              simp [hab]; rw [mul_assoc]; rw [IsUnit.mul_val_inv ha]; rw [mul_one]⟩)
+            ⟨(ha.unit⁻¹ : Units _), by rw [hab, mul_assoc, IsUnit.mul_val_inv ha, mul_one]⟩)
           hb⟩⟩
 #align associates.is_atom_iff Associates.isAtom_iff
 
@@ -142,7 +141,7 @@ theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
       obtain ⟨i, hi⟩ := h₂.1 hr
       exact Finset.mem_image.2 ⟨i, Finset.mem_univ _, hi.symm⟩
     rw [← Finset.card_fin (n + 1)]
-    exact (Finset.card_le_of_subset fun x hx => mem_image x <| hm x hx).trans Finset.card_image_le
+    exact (Finset.card_le_card fun x hx => mem_image x <| hm x hx).trans Finset.card_image_le
 #align divisor_chain.card_subset_divisors_le_length_of_chain DivisorChain.card_subset_divisors_le_length_of_chain
 
 variable [UniqueFactorizationMonoid M]
@@ -195,7 +194,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
       _ = (Finset.univ.image c).card := (Finset.card_image_iff.mpr (h₁.injective.injOn _)).symm
       _ ≤ (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card :=
-        (Finset.card_le_of_subset ?_)
+        (Finset.card_le_card ?_)
       _ ≤ (Finset.univ : Finset (Fin (i + 1))).card := Finset.card_image_le
       _ = i + 1 := Finset.card_fin _
     intro r hr
@@ -220,7 +219,7 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
 
 end DivisorChain
 
-variable {N : Type _} [CancelCommMonoidWithZero N]
+variable {N : Type*} [CancelCommMonoidWithZero N]
 
 theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :

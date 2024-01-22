@@ -58,7 +58,7 @@ integral, torus
 
 variable {n : ℕ}
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
 
@@ -71,7 +71,6 @@ local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-!
 ### `torusMap`, a parametrization of a torus
@@ -179,7 +178,7 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
 #align torus_integral_sub torusIntegral_sub
 
-theorem torusIntegral_smul {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
+theorem torusIntegral_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 #align torus_integral_smul torusIntegral_smul
@@ -236,24 +235,24 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) := by
-  set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAboveEquiv (fun _ => ℝ) i).symm
+  set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAbove (fun _ => ℝ) i).symm
   have hem : MeasurePreserving e :=
-    (volume_preserving_piFinSuccAboveEquiv (fun _ : Fin (n + 1) => ℝ) i).symm _
+    (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) => ℝ) i).symm _
   have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
     ((OrderIso.piFinSuccAboveIso (fun _ => ℝ) i).symm.preimage_Icc _ _).trans (Icc_prod_eq _ _)
   rw [torusIntegral, ← hem.map_eq, set_integral_map_equiv, heπ, Measure.volume_eq_prod,
     set_integral_prod, circleIntegral_def_Icc]
   · refine' set_integral_congr measurableSet_Icc fun θ _ => _
-    simp only [torusIntegral, ← integral_smul, deriv_circleMap, i.prod_univ_succAbove _, smul_smul,
-      torusMap, circleMap_zero]
+    simp (config := { unfoldPartialApp := true }) only [torusIntegral, ← integral_smul,
+      deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine' set_integral_congr measurableSet_Icc fun Θ _ => _
-    simp only [MeasurableEquiv.piFinSuccAboveEquiv_symm_apply, i.insertNth_apply_same,
+    simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
       i.insertNth_apply_succAbove, (· ∘ ·)]
     congr 2
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
   · have := hf.function_integrable
-    rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this 
+    rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this
 #align torus_integral_succ_above torusIntegral_succAbove
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succAbove`. -/

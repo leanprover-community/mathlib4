@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Adam Topaz
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Fintype.Card
 
 #align_import category_theory.Fintype from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -37,11 +36,11 @@ set_option linter.uppercaseLean3 false in
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat (Type _) :=
+instance : CoeSort FintypeCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-def of (X : Type _) [Fintype X] : FintypeCat :=
+def of (X : Type*) [Fintype X] : FintypeCat :=
   Bundled.of X
 set_option linter.uppercaseLean3 false in
 #align Fintype.of FintypeCat.of
@@ -57,7 +56,7 @@ instance : Category FintypeCat :=
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
-def incl : FintypeCat ⥤ Type _ :=
+def incl : FintypeCat ⥤ Type* :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
 #align Fintype.incl FintypeCat.incl

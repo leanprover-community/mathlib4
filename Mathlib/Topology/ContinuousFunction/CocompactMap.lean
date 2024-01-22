@@ -41,7 +41,7 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
@@ -51,10 +51,17 @@ end
 
 namespace CocompactMapClass
 
-variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+
+/-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
+`CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
+@[coe]
+def toCocompactMap (f : F) : CocompactMap α β :=
+  { (f : C(α, β)) with
+    cocompact_tendsto' := cocompact_tendsto f }
 
 instance : CoeTC F (CocompactMap α β) :=
-  ⟨fun f => ⟨f, cocompact_tendsto f⟩⟩
+  ⟨toCocompactMap⟩
 
 end CocompactMapClass
 
@@ -64,7 +71,7 @@ namespace CocompactMap
 
 section Basics
 
-variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
 instance : CocompactMapClass (CocompactMap α β) α β where
@@ -77,10 +84,10 @@ instance : CocompactMapClass (CocompactMap α β) α β where
   cocompact_tendsto f := f.cocompact_tendsto'
 
 /- Porting note: not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (CocompactMap α β) fun _ => α → β :=
-  FunLike.hasCoeToFun-/
+  DFunLike.hasCoeToFun-/
 
 @[simp]
 theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
@@ -89,7 +96,7 @@ theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α �
 
 @[ext]
 theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align cocompact_map.ext CocompactMap.ext
 
 /-- Copy of a `CocompactMap` with a new `toFun` equal to the old one. Useful
@@ -110,7 +117,7 @@ theorem coe_copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : ⇑(f.
 #align cocompact_map.coe_copy CocompactMap.coe_copy
 
 theorem copy_eq (f : CocompactMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cocompact_map.copy_eq CocompactMap.copy_eq
 
 @[simp]
@@ -188,7 +195,7 @@ theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β�
             (cocompact_tendsto f <|
               mem_cocompact.mpr ⟨s, hs, compl_subset_compl.mpr (image_preimage_subset f _)⟩))
   exact
-    isCompact_of_isClosed_subset ht (hs.isClosed.preimage <| map_continuous f) (by simpa using hts)
+    ht.of_isClosed_subset (hs.isClosed.preimage <| map_continuous f) (by simpa using hts)
 #align cocompact_map.is_compact_preimage CocompactMap.isCompact_preimage
 
 end Basics
@@ -197,7 +204,7 @@ end CocompactMap
 
 /-- A homeomorphism is a cocompact map. -/
 @[simps]
-def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where
   toFun := f
   continuous_toFun := f.continuous

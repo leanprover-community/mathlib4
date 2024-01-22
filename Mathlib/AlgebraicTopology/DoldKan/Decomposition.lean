@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"9af20344b24ef1801b599d296aaed8b9fffdc360"
+#align_import algebraic_topology.dold_kan.decomposition from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -27,6 +27,8 @@ role in the proof that the functor
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -39,7 +41,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
 
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
@@ -50,7 +52,7 @@ the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
-        (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫ X.σ (Fin.revPerm i) := by
+        (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
   · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]
@@ -70,7 +72,7 @@ theorem decomposition_Q (n q : ℕ) :
       congr
       · have hnaq' : n = a + q := by linarith
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
-          q'.revPerm_eq hnaq', neg_neg]
+          q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
         simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
@@ -98,10 +100,10 @@ namespace MorphComponents
 
 variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
-/-- The morphism `X _[n+1] ⟶ Z ` associated to `f : MorphComponents X n Z`. -/
+/-- The morphism `X _[n+1] ⟶ Z` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
-  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫
-    f.b (Fin.revPerm i)
+  PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
+    f.b (Fin.rev i)
 #align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
 
 variable (X n)

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.Classical
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -25,7 +26,7 @@ universe u v₁ v₂ v₃
 variable {I : Type u}
 
 -- The indexing type
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
@@ -262,7 +263,7 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 -- Porting notes:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
 -- 2) Why do I have to specify the type of `(1 : I → β)`?
--- 3) Removed `{β : Sort _}` as `[One β]` converts it to a type anyways.
+-- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
 theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
@@ -299,7 +300,7 @@ theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 
 #align pi.apply_single₂ Pi.apply_single₂
 
 @[to_additive]
-theorem mulSingle_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → g i)
+theorem mulSingle_op {g : I → Type*} [∀ i, One (g i)] (op : ∀ i, f i → g i)
     (h : ∀ i, op i 1 = 1) (i : I) (x : f i) :
     mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
   Eq.symm <| funext <| apply_mulSingle op h i x
@@ -307,7 +308,7 @@ theorem mulSingle_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → 
 #align pi.single_op Pi.single_op
 
 @[to_additive]
-theorem mulSingle_op₂ {g₁ g₂ : I → Type _} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
+theorem mulSingle_op₂ {g₁ g₂ : I → Type*} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
     (op : ∀ i, g₁ i → g₂ i → f i) (h : ∀ i, op i 1 1 = 1) (i : I) (x₁ : g₁ i) (x₂ : g₂ i) :
     mulSingle i (op i x₁ x₂) = fun j => op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
   Eq.symm <| funext <| apply_mulSingle₂ op h i x₁ x₂
@@ -339,7 +340,7 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  funext fun _ => Prod.mk.eta
+  rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
@@ -367,7 +368,7 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -381,7 +382,7 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
   funext x
   simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -395,7 +396,7 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp [Function.extend_def, apply_dite₂]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -423,14 +424,14 @@ end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
 @[to_additive "If the zero function is surjective, the codomain is trivial."]
-def uniqueOfSurjectiveOne (α : Type _) {β : Type _} [One β] (h : Function.Surjective (1 : α → β)) :
+def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)
 #align unique_of_surjective_one uniqueOfSurjectiveOne
 #align unique_of_surjective_zero uniqueOfSurjectiveZero
 
 @[to_additive]
-theorem Subsingleton.pi_mulSingle_eq {α : Type _} [DecidableEq I] [Subsingleton I] [One α]
+theorem Subsingleton.pi_mulSingle_eq {α : Type*} [DecidableEq I] [Subsingleton I] [One α]
     (i : I) (x : α) : Pi.mulSingle i x = fun _ => x :=
   funext fun j => by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
 #align subsingleton.pi_mul_single_eq Subsingleton.pi_mulSingle_eq

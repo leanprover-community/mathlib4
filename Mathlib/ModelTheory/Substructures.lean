@@ -43,7 +43,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {M : Type w} {N P : Type _}
+variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 
@@ -138,7 +138,7 @@ end Substructure
 
 variable {S : L.Substructure M}
 
-theorem Term.realize_mem {α : Type _} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
+theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
   induction' t with a n f ts ih
   · exact h a
@@ -220,12 +220,12 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
   by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → L.Substructure M} :
+theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
     ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align first_order.language.substructure.coe_infi FirstOrder.Language.Substructure.coe_iInf
@@ -511,7 +511,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 #align first_order.language.substructure.map_sup FirstOrder.Language.Substructure.map_sup
 
-theorem map_iSup {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure M) :
+theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align first_order.language.substructure.map_supr FirstOrder.Language.Substructure.map_iSup
@@ -521,7 +521,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 #align first_order.language.substructure.comap_inf FirstOrder.Language.Substructure.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure N) :
+theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align first_order.language.substructure.comap_infi FirstOrder.Language.Substructure.comap_iInf
@@ -554,7 +554,7 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 
 section GaloisCoinsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
@@ -603,7 +603,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Surjective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
@@ -684,6 +684,21 @@ theorem coe_topEquiv :
     ⇑(topEquiv : (⊤ : L.Substructure M) ≃[L] M) = ((↑) : (⊤ : L.Substructure M) → M) :=
   rfl
 #align first_order.language.substructure.coe_top_equiv FirstOrder.Language.Substructure.coe_topEquiv
+
+@[simp]
+theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
+    {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
+    φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
+  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  simp
+#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
+
+@[simp]
+theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
+    φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
+  rw [← Substructure.topEquiv.realize_formula φ]
+  simp
+#align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
 
 /-- A dependent version of `Substructure.closure_induction`. -/
 @[elab_as_elim]

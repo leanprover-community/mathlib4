@@ -21,7 +21,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
@@ -30,7 +30,7 @@ variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
 def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
-  HasLimit (cospan a b) :=
+    HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
   let ⟨a', ha'⟩ :=
@@ -52,7 +52,8 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   HasLimit.mk
     { cone :=
         PullbackCone.mk a' b' <| by
-          simp at ha' hb'
+          simp? at ha' hb' says
+            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
           rw [ha', hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
@@ -188,7 +189,7 @@ variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
 /-- The pushout of two epimorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
 def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
-  HasColimit (span a b) :=
+    HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
   let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
   let ⟨a', ha'⟩ :=

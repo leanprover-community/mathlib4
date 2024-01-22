@@ -20,6 +20,8 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
+suppress_compilation
+
 -- Porting note: universe metavariables behave oddly
 universe w u v₁ v₂ v₃ v₄
 
@@ -131,7 +133,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
-theorem toMatrix_dualTensorHom {m : Type _} {n : Type _} [Fintype m] [Fintype n] [DecidableEq m]
+theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
   ext i' j'
@@ -165,7 +167,7 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
       ext f m
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
-        f.map_smul, (dualTensorHom R M N).map_sum, ← f.map_sum, b.sum_repr])
+        f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f, b.sum_repr])
     (by
       ext f m
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,

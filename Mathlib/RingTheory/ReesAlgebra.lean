@@ -41,7 +41,7 @@ def reesAlgebra : Subalgebra R R[X] where
     rw [coeff_mul]
     apply Ideal.sum_mem
     rintro ⟨j, k⟩ e
-    rw [← Finset.Nat.mem_antidiagonal.mp e, pow_add]
+    rw [← Finset.mem_antidiagonal.mp e, pow_add]
     exact Ideal.mul_mem_mul (hf j) (hg k)
   one_mem' i := by
     rw [coeff_one]

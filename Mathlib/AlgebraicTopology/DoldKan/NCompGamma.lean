@@ -6,18 +6,20 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
-#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e"
+#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
 In order to construct the unit isomorphism of the Dold-Kan equivalence,
 we first construct natural transformations
-`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (simplicial_object C)` and
+`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (SimplicialObject C)` and
 `Γ₂N₂.natTrans : N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`.
 It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 which reflects isomorphisms.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -31,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
@@ -86,7 +88,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   induction' Δ' using SimplexCategory.rec with n'
   dsimp
   -- We start with the case `i` is an identity
-  by_cases n = n'
+  by_cases h : n = n'
   · subst h
     simp only [SimplexCategory.eq_id_of_mono i, Γ₀.Obj.Termwise.mapMono_id, op_id, X.map_id]
     dsimp
@@ -149,14 +151,14 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
         apply (Γ₀.splitting K[X]).hom_ext
         intro n
         dsimp [N₁]
-        simp only [← Splitting.ιSummand_id, Splitting.ι_desc, comp_id, Splitting.ι_desc_assoc,
+        simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, comp_id, Splitting.ι_desc_assoc,
           assoc, PInfty_f_idem_assoc] }
   naturality {X Y} f := by
     ext1
     apply (Γ₀.splitting K[X]).hom_ext
     intro n
     dsimp [N₁, toKaroubi]
-    simp only [← Splitting.ιSummand_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
+    simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
       PInfty_f_idem_assoc, Karoubi.comp_f, NatTrans.comp_app, Γ₂_map_f_app,
       HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
@@ -170,43 +172,39 @@ end Γ₂N₁
 
 -- porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
-def compatibility_Γ₂N₁_Γ₂N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
-  eqToIso (by rw [← Functor.assoc, compatibility_N₁_N₂])
+def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
+  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
 set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂ AlgebraicTopology.DoldKan.compatibility_Γ₂N₁_Γ₂N₂
+#align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂ AlgebraicTopology.DoldKan.Γ₂N₂ToKaroubiIso
 
--- porting note: no @[simp] attribute because this would trigger a timeout
-lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
-    compatibility_Γ₂N₁_Γ₂N₂.hom.app X =
-      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
-  dsimp only [compatibility_Γ₂N₁_Γ₂N₂, CategoryTheory.eqToIso]
-  apply eqToHom_app
+@[simp]
+lemma Γ₂N₂ToKaroubiIso_hom_app (X : SimplicialObject C) :
+    Γ₂N₂ToKaroubiIso.hom.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.hom.app X) := by
+  simp [Γ₂N₂ToKaroubiIso]
+
+@[simp]
+lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
+    Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
+  simp [Γ₂N₂ToKaroubiIso]
 
 -- Porting note: added to speed up elaboration
-attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
-
-lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
-    compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
-      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
-  rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
-    compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
+attribute [irreducible] Γ₂N₂ToKaroubiIso
 
 namespace Γ₂N₂
 
 /-- The natural transformation `N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`. -/
 def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
-    (by exact compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans)
+    (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans AlgebraicTopology.DoldKan.Γ₂N₂.natTrans
 
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
-    Γ₂N₂.natTrans.app P = by
-      exact (N₂ ⋙ Γ₂).map P.decompId_i ≫
-        (compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
+    Γ₂N₂.natTrans.app P =
+      (N₂ ⋙ Γ₂).map P.decompId_i ≫
+        (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
-  rw [whiskeringLeft_obj_preimage_app
-    (compatibility_Γ₂N₁_Γ₂N₂.hom ≫ Γ₂N₁.natTrans : _ ⟶ toKaroubi _ ⋙ 𝟭 _) P, Functor.id_map]
+  simp only [whiskeringLeft_obj_preimage_app, Functor.id_map, assoc]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans_app_f_app AlgebraicTopology.DoldKan.Γ₂N₂.natTrans_app_f_app
 
@@ -217,7 +215,7 @@ end Γ₂N₂
 
 theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
-      (compatibility_Γ₂N₁_Γ₂N₂.app X).inv ≫
+      (Γ₂N₂ToKaroubiIso.app X).inv ≫
         Γ₂N₂.natTrans.app ((toKaroubi (SimplicialObject C)).obj X) := by
   rw [Γ₂N₂.natTrans_app_f_app]
   dsimp only [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi, Functor.comp_map,
@@ -228,23 +226,25 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
-  (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫ N₂.map (Γ₂N₂.natTrans.app P) =
-    𝟙 (N₂.obj P) := by
+    (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
+    N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
   ext n
   have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
-      (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) := by
+      ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
     simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
-  have eq₂ : (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) ≫
+  have eq₂ : ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫
       (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) := by
     dsimp
-    simp only [assoc, Γ₂N₂.natTrans_app_f_app, Functor.comp_map, NatTrans.comp_app,
-      Karoubi.comp_f, compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_refl, Karoubi.eqToHom_f,
-      PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Functor.comp_obj]
-    dsimp [N₂]
-    simp only [Splitting.ι_desc_assoc, assoc, id_comp, unop_op,
-      Splitting.IndexSet.id_fst, len_mk, Splitting.IndexSet.e,
-      Splitting.IndexSet.id_snd_coe, op_id, P.X.map_id, id_comp,
-      PInfty_f_naturality_assoc, PInfty_f_idem_assoc, app_idem]
+    rw [PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Γ₂N₂.natTrans_app_f_app]
+    dsimp
+    rw [Γ₂N₂ToKaroubiIso_hom_app, assoc, Splitting.ι_desc_assoc, assoc, assoc]
+    dsimp [toKaroubi]
+    rw [Splitting.ι_desc_assoc]
+    dsimp
+    simp only [assoc, Splitting.ι_desc_assoc, unop_op, Splitting.IndexSet.id_fst,
+      len_mk, NatTrans.naturality, PInfty_f_idem_assoc,
+      PInfty_f_naturality_assoc, app_idem_assoc]
+    erw [P.X.map_id, comp_id]
   simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_eq, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 set_option linter.uppercaseLean3 false in
@@ -252,7 +252,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
-  (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
+    (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
   ext P : 2
   dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,

@@ -3,7 +3,6 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Group.Prod
 
 #align_import data.nat.cast.prod from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
@@ -13,7 +12,7 @@ import Mathlib.Algebra.Group.Prod
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Prod
 

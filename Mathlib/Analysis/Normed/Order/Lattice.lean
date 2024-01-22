@@ -3,9 +3,9 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Order.Lattice
+import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Algebra.Order.LatticeGroup
+import Mathlib.Topology.Order.Lattice
 
 #align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -45,11 +45,11 @@ section SolidNorm
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
 and `b` in `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`.
 -/
-class HasSolidNorm (α : Type _) [NormedAddCommGroup α] [Lattice α] : Prop where
+class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop where
   solid : ∀ ⦃x y : α⦄, |x| ≤ |y| → ‖x‖ ≤ ‖y‖
 #align has_solid_norm HasSolidNorm
 
-variable {α : Type _} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
+variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
 
 theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
@@ -73,7 +73,7 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type _) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
+class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
   where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
@@ -84,23 +84,23 @@ instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
 -- see Note [lower instance priority]
 /-- A normed lattice ordered group is an ordered additive commutative group
 -/
-instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type*}
     [h : NormedLatticeAddCommGroup α] : OrderedAddCommGroup α :=
   { h with }
 #align normed_lattice_add_comm_group_to_ordered_add_comm_group NormedLatticeAddCommGroup.toOrderedAddCommGroup
 
-variable {α : Type _} [NormedLatticeAddCommGroup α]
+variable {α : Type*} [NormedLatticeAddCommGroup α]
 
-open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
+open HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
-  rw [abs_eq_sup_neg]
+  rw [abs]
   nth_rw 1 [← neg_neg a]
-  rw [← neg_inf_eq_sup_neg]
-  rw [abs_eq_sup_neg]
+  rw [← neg_inf]
+  rw [abs]
   nth_rw 1 [← neg_neg b]
-  rwa [← neg_inf_eq_sup_neg, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
+  rwa [← neg_inf, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
 #align dual_solid dual_solid
 
 -- see Note [lower instance priority]
@@ -118,7 +118,7 @@ theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
 theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
-  rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
+  rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊓ b - c ⊓ b| + |c ⊓ b - c ⊓ d| := (abs_add_le _ _)
@@ -132,7 +132,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
-  rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
+  rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊔ b - c ⊔ b| + |c ⊔ b - c ⊔ d| := (abs_add_le _ _)
@@ -157,7 +157,7 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
-  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_tendsto_zero.2 <| _⟩
+  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| _⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine' squeeze_zero (fun e => norm_nonneg _) this _
@@ -167,7 +167,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
 #align normed_lattice_add_comm_group_has_continuous_inf NormedLatticeAddCommGroup.continuousInf
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type*}
     [NormedLatticeAddCommGroup α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 #align normed_lattice_add_comm_group_has_continuous_sup NormedLatticeAddCommGroup.continuousSup
@@ -180,8 +180,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.toTopologicalLattice : Topo
   TopologicalLattice.mk
 #align normed_lattice_add_comm_group_topological_lattice NormedLatticeAddCommGroup.toTopologicalLattice
 
-theorem norm_abs_sub_abs (a b : α) : ‖|a| - |b|‖ ≤ ‖a - b‖ :=
-  solid (LatticeOrderedCommGroup.abs_abs_sub_abs_le _ _)
+theorem norm_abs_sub_abs (a b : α) : ‖|a| - |b|‖ ≤ ‖a - b‖ := solid (abs_abs_sub_abs_le _ _)
 #align norm_abs_sub_abs norm_abs_sub_abs
 
 theorem norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x - y‖ :=
@@ -198,28 +197,23 @@ theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
     exact norm_sup_sub_sup_le_norm x y z
 #align lipschitz_with_sup_right lipschitzWith_sup_right
 
-theorem lipschitzWith_pos : LipschitzWith 1 (PosPart.pos : α → α) :=
+lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
   lipschitzWith_sup_right 0
-#align lipschitz_with_pos lipschitzWith_pos
+#align lipschitz_with_pos lipschitzWith_posPart
 
-theorem continuous_pos : Continuous (PosPart.pos : α → α) :=
-  LipschitzWith.continuous lipschitzWith_pos
-#align continuous_pos continuous_pos
+lemma lipschitzWith_negPart : LipschitzWith 1 (negPart : α → α) := by
+  simpa [Function.comp] using lipschitzWith_posPart.comp LipschitzWith.id.neg
 
-theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
-  refine continuous_pos.comp <| @continuous_neg _ _ _ TopologicalAddGroup.toContinuousNeg
-  -- porting note: see the [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/can't.20infer.20.60ContinuousNeg.60)
-#align continuous_neg' continuous_neg'
+lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_posPart.continuous
+#align continuous_pos continuous_posPart
 
-theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
-  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)} by
-    rw [this]
-    exact IsClosed.preimage continuous_neg' isClosed_singleton
-  ext1 x
-  simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
-    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
-  -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
-  -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
+lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
+#align continuous_neg' continuous_negPart
+
+lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
+  have : {x : α | 0 ≤ x} = negPart ⁻¹' {0} := by ext; simp [negPart_eq_zero]
+  rw [this]
+  exact isClosed_singleton.preimage continuous_negPart
 #align is_closed_nonneg isClosed_nonneg
 
 theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]

@@ -47,9 +47,9 @@ dependencies are not general enough to unify them. We should refactor
 -/
 
 
-variable {n : Type _} [Fintype n] [DecidableEq n]
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
-variable {R : Type _} [Field R]
+variable {R : Type*} [Field R]
 
 variable {A : Matrix n n R}
 

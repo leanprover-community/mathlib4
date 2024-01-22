@@ -26,7 +26,7 @@ namespace LazyList
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-def listEquivLazyList (α : Type _) : List α ≃ LazyList α where
+def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by
@@ -82,7 +82,7 @@ instance : LawfulTraversable LazyList := by
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [List.traverse, map_pure]; rfl
-    · have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+    · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
       simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
       · rfl
     · apply ih

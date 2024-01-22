@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Projections
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
-#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
+#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -18,7 +18,8 @@ to the limit the projections `P q` defined in `Projections.lean`. This
 projection is a critical tool in this formalisation of the Dold-Kan correspondence,
 because in the case of abelian categories, `PInfty` corresponds to the
 projection on the normalized Moore subcomplex, with kernel the degenerate subcomplex.
-(See `Equivalence.lean` for the general strategy of proof.)
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -30,7 +31,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
 
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _[n] ⟶ _) = (P q).f n := by
@@ -190,7 +191,7 @@ set_option linter.uppercaseLean3 false in
 variable {C}
 
 @[simp]
-theorem map_PInfty_f {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) :=

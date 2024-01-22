@@ -3,8 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 #align_import linear_algebra.matrix.diagonal from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
@@ -30,7 +29,7 @@ namespace Matrix
 
 section CommSemiring -- porting note: generalized from `CommRing`
 
-variable {n : Type _} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
+variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
 theorem proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)) = w i • proj i :=
   LinearMap.ext fun _ => mulVec_diagonal _ _ _
@@ -51,7 +50,7 @@ end CommSemiring
 
 section Semifield
 
-variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
+variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
 
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
@@ -82,7 +81,7 @@ namespace LinearMap
 
 section Field
 
-variable {m n : Type _} [Fintype m] [Fintype n] {K : Type u} [Field K]
+variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by

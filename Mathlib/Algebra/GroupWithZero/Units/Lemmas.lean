@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Units
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import algebra.group_with_zero.units.lemmas from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -16,13 +18,13 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 -/
 
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 variable [MonoidWithZero M₀]
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a b c d : G₀}
 
 @[simp]
 theorem div_self (h : a ≠ 0) : a / a = 1 :=
@@ -146,6 +148,12 @@ theorem divp_mk0 (a : G₀) {b : G₀} (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = 
   divp_eq_div _ _
 #align divp_mk0 divp_mk0
 
+namespace Commute
+
+protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a / b = c / d ↔ a * d = c * b := hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
+
+end Commute
 end GroupWithZero
 
 section CommGroupWithZero
@@ -199,6 +207,9 @@ theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
 
+theorem div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
 end CommGroupWithZero
 
 section MonoidWithZero
@@ -247,7 +258,7 @@ end GroupWithZero
 
 /-- We define the inverse as a `MonoidWithZeroHom` by extending the inverse map by zero
 on non-units. -/
-noncomputable def MonoidWithZero.inverse {M : Type _} [CommMonoidWithZero M] :
+noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
     M →*₀ M where
   toFun := Ring.inverse
   map_zero' := Ring.inverse_zero _
@@ -256,19 +267,19 @@ noncomputable def MonoidWithZero.inverse {M : Type _} [CommMonoidWithZero M] :
 #align monoid_with_zero.inverse MonoidWithZero.inverse
 
 @[simp]
-theorem MonoidWithZero.coe_inverse {M : Type _} [CommMonoidWithZero M] :
+theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
     (MonoidWithZero.inverse : M → M) = Ring.inverse :=
   rfl
 #align monoid_with_zero.coe_inverse MonoidWithZero.coe_inverse
 
 @[simp]
-theorem MonoidWithZero.inverse_apply {M : Type _} [CommMonoidWithZero M] (a : M) :
+theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
     MonoidWithZero.inverse a = Ring.inverse a :=
   rfl
 #align monoid_with_zero.inverse_apply MonoidWithZero.inverse_apply
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
-def invMonoidWithZeroHom {G₀ : Type _} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
+def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
   { invMonoidHom with map_zero' := inv_zero }
 #align inv_monoid_with_zero_hom invMonoidWithZeroHom
 
@@ -279,8 +290,16 @@ variable [GroupWithZero G₀]
 variable {a b : G₀}
 
 @[simp]
-theorem smul_mk0 {α : Type _} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
+theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
   rfl
 #align units.smul_mk0 Units.smul_mk0
 
 end Units
+
+/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
+`n : ℤ`, to `(f x)^n`. -/
+@[simp]
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+    [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
+  map_zpow' f (map_inv₀ f) x n
+#align map_zpow₀ map_zpow₀

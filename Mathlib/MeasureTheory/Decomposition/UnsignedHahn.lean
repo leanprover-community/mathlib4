@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 
 #align_import measure_theory.decomposition.unsigned_hahn from "leanprover-community/mathlib"@"0f1becb755b3d008b242c622e248a70556ad19e6"
 
@@ -30,7 +30,7 @@ open Classical Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α] {μ ν : Measure α}
+variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
@@ -93,7 +93,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     exact MeasurableSet.biInter (to_countable _) fun i _ => he₁ _
   have f_subset_f : ∀ {a b c d}, a ≤ b → c ≤ d → f a d ⊆ f b c := by
     intro a b c d hab hcd
-    simp_rw [Finset.inf_eq_iInf, Finset.inf_eq_iInf]
+    simp_rw [Finset.inf_eq_iInf]
     exact biInter_subset_biInter_left (Finset.Ico_subset_Ico hab <| Nat.succ_le_succ hcd)
   have f_succ : ∀ n m, n ≤ m → f n (m + 1) = f n m ∩ e (m + 1) := by
     intro n m hnm
@@ -106,7 +106,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     · have := he₂ m
       simp_rw [Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
-    · intro n(hmn : m ≤ n)ih
+    · intro n (hmn : m ≤ n) ih
       have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
         calc
           γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤
@@ -131,7 +131,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
       suffices Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 (γ - 2 * 0)) by
-        simpa only [MulZeroClass.mul_zero, tsub_zero]
+        simpa only [mul_zero, tsub_zero]
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|

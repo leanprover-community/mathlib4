@@ -48,7 +48,7 @@ open Function hiding eval
 
 open Finset FiniteField
 
-variable {K σ ι : Type _} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
+variable {K σ ι : Type*} [Fintype K] [Field K] [Fintype σ] [DecidableEq σ]
 
 local notation "q" => Fintype.card K
 
@@ -64,7 +64,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   obtain ⟨i, hi⟩ : ∃ i, d i < q - 1; exact f.exists_degree_lt (q - 1) h hd
   calc
     (∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i) = f.coeff d * ∑ x : σ → K, ∏ i, x i ^ d i :=
-      mul_sum.symm
+      (mul_sum ..).symm
     _ = 0 := (mul_eq_zero.mpr ∘ Or.inr) ?_
   calc
     (∑ x : σ → K, ∏ i, x i ^ d i) =
@@ -78,7 +78,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
         ∑ a : K, ∏ j : σ, (e a : σ → K) j ^ d j := (e.sum_comp _).symm
     _ = ∑ a : K, (∏ j, x₀ j ^ d j) * a ^ d i := (Fintype.sum_congr _ _ ?_)
     _ = (∏ j, x₀ j ^ d j) * ∑ a : K, a ^ d i := by rw [mul_sum]
-    _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, MulZeroClass.mul_zero]
+    _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
   let e' : Sum { j // j = i } { j // j ≠ i } ≃ σ := Equiv.sumCompl _
   letI : Unique { j // j = i } :=
@@ -151,7 +151,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     F.totalDegree ≤ ∑ i in s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
     _ ≤ ∑ i in s, (q - 1) * (f i).totalDegree := (sum_le_sum fun i _ => ?_)
     -- see ↓
-    _ = (q - 1) * ∑ i in s, (f i).totalDegree := mul_sum.symm
+    _ = (q - 1) * ∑ i in s, (f i).totalDegree := (mul_sum ..).symm
     _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
   -- Now we prove the remaining step from the preceding calculation
   show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree

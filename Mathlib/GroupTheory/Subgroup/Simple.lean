@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.subgroup.simple from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -23,9 +23,9 @@ subgroup, subgroups
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {A : Type _} [AddGroup A]
+variable {A : Type*} [AddGroup A]
 
 section
 
@@ -57,13 +57,13 @@ theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn 
 namespace IsSimpleGroup
 
 @[to_additive]
-instance {C : Type _} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
+instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_comm.eq_bot_or_eq_top⟩
 
 open Subgroup
 
 @[to_additive]
-theorem isSimpleGroup_of_surjective {H : Type _} [Group H] [IsSimpleGroup G] [Nontrivial H]
+theorem isSimpleGroup_of_surjective {H : Type*} [Group H] [IsSimpleGroup G] [Nontrivial H]
     (f : G →* H) (hf : Function.Surjective f) : IsSimpleGroup H :=
   ⟨fun H iH => by
     refine' (iH.comap f).eq_bot_or_eq_top.imp (fun h => _) fun h => _

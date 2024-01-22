@@ -40,7 +40,7 @@ open GradedRing DirectSum SetLike Finset
 
 open BigOperators
 
-variable {ι σ A : Type _}
+variable {ι σ A : Type*}
 
 variable [CommRing A]
 
@@ -56,8 +56,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra rid
-    push_neg at rid
+    by_contra! rid
     obtain ⟨rid₁, rid₂⟩ := rid
     classical
       /-

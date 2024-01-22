@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Localization.Ideal
 
 ## Main definitions
 
- * `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type _)` expresses that `S` is a
+ * `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type*)` expresses that `S` is a
    localization at (the complement of) a prime ideal `P`, as an abbreviation of
    `IsLocalization P.prime_compl S`
 
@@ -32,9 +32,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemiring S]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 
-variable [Algebra R S] {P : Type _} [CommSemiring P]
+variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
 
@@ -120,7 +120,7 @@ end AtPrime
 
 namespace IsLocalization
 
-variable {A : Type _} [CommRing A] [IsDomain A]
+variable {A : Type*} [CommRing A] [IsDomain A]
 
 /-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
 -/
@@ -256,7 +256,7 @@ theorem localRingHom_id : localRingHom I I (RingHom.id R) (Ideal.comap_id I).sym
 #align localization.local_ring_hom_id Localization.localRingHom_id
 
 -- Porting note : simplifier won't pick up this lemma, so deleted @[simp]
-theorem localRingHom_comp {S : Type _} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
+theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=

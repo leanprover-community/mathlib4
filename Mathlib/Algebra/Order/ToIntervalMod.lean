@@ -36,7 +36,7 @@ noncomputable section
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
 
 /--
@@ -601,10 +601,10 @@ theorem modEq_iff_toIocMod_eq_right : a ≡ b [PMOD p] ↔ toIocMod hp a b = a +
   · rwa [add_one_zsmul, add_left_comm, ← sub_eq_iff_eq_add']
 #align add_comm_group.modeq_iff_to_Ioc_mod_eq_right AddCommGroup.modEq_iff_toIocMod_eq_right
 
-alias modEq_iff_toIcoMod_eq_left ↔ ModEq.toIcoMod_eq_left _
+alias ⟨ModEq.toIcoMod_eq_left, _⟩ := modEq_iff_toIcoMod_eq_left
 #align add_comm_group.modeq.to_Ico_mod_eq_left AddCommGroup.ModEq.toIcoMod_eq_left
 
-alias modEq_iff_toIocMod_eq_right ↔ ModEq.toIcoMod_eq_right _
+alias ⟨ModEq.toIcoMod_eq_right, _⟩ := modEq_iff_toIocMod_eq_right
 #align add_comm_group.modeq.to_Ico_mod_eq_right AddCommGroup.ModEq.toIcoMod_eq_right
 
 variable (a b)
@@ -679,7 +679,7 @@ theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [P
   simp_rw [toIcoMod_eq_toIcoMod, modEq_iff_eq_add_zsmul, sub_eq_iff_eq_add']
 #align to_Ico_mod_inj toIcoMod_inj
 
-alias toIcoMod_inj ↔ _ AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
+alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 #align add_comm_group.modeq.to_Ico_mod_eq_to_Ico_mod AddCommGroup.ModEq.toIcoMod_eq_toIcoMod
 
 theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
@@ -690,23 +690,23 @@ theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
     Classical.not_not]
 #align Ico_eq_locus_Ioc_eq_Union_Ioo Ico_eq_locus_Ioc_eq_iUnion_Ioo
 
-theorem toIocDiv_wcovby_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
+theorem toIocDiv_wcovBy_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
   suffices toIocDiv hp a b = toIcoDiv hp a b ∨ toIocDiv hp a b + 1 = toIcoDiv hp a b by
-    rwa [wcovby_iff_eq_or_covby, ← Order.succ_eq_iff_covby]
+    rwa [wcovBy_iff_eq_or_covBy, ← Order.succ_eq_iff_covBy]
   rw [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, eq_comm, ←
     modEq_iff_toIcoDiv_eq_toIocDiv_add_one]
   exact em' _
-#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovby_toIcoDiv
+#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovBy_toIcoDiv
 
 theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b := by
   rw [toIcoMod, toIocMod, sub_le_sub_iff_left]
-  exact zsmul_mono_left hp.le (toIocDiv_wcovby_toIcoDiv _ _ _).le
+  exact zsmul_mono_left hp.le (toIocDiv_wcovBy_toIcoDiv _ _ _).le
 #align to_Ico_mod_le_to_Ioc_mod toIcoMod_le_toIocMod
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
     (zsmul_strictMono_left hp).le_iff_le]
-  apply (toIocDiv_wcovby_toIcoDiv _ _ _).le_succ
+  apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 #align to_Ioc_mod_le_to_Ico_mod_add toIocMod_le_toIcoMod_add
 
 end IcoIoc
@@ -863,7 +863,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
-  cases' le_or_lt x₃' (x₁ + p) with h₃₁ h₁₃
+  rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
     · exact hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
@@ -877,7 +877,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
 private theorem toIxxMod_antisymm (h₁₂₃ : toIcoMod hp a b ≤ toIocMod hp a c)
     (h₁₃₂ : toIcoMod hp a c ≤ toIocMod hp a b) :
     b ≡ a [PMOD p] ∨ c ≡ b [PMOD p] ∨ a ≡ c [PMOD p] := by
-  by_contra' h
+  by_contra! h
   rw [modEq_comm] at h
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.2.2] at h₁₂₃
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.1] at h₁₃₂
@@ -989,7 +989,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable {α : Type _} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
+variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
   refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
@@ -1015,7 +1015,7 @@ theorem toIcoDiv_zero_one (b : α) : toIcoDiv (zero_lt_one' α) 0 b = ⌊b⌋ :=
 theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
-  field_simp [hp.ne.symm]
+  field_simp
   ring
 #align to_Ico_mod_eq_add_fract_mul toIcoMod_eq_add_fract_mul
 
@@ -1026,7 +1026,7 @@ theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p
 theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
-  field_simp [hp.ne.symm]
+  field_simp
   ring
 #align to_Ioc_mod_eq_sub_fract_mul toIocMod_eq_sub_fract_mul
 
@@ -1045,7 +1045,7 @@ open Set Int
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
@@ -1084,7 +1084,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedRing
 
-variable {α : Type _} [LinearOrderedRing α] [Archimedean α] (a : α)
+variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
 
 theorem iUnion_Ioc_add_int_cast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using

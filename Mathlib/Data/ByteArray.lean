@@ -2,6 +2,8 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Char
 import Mathlib.Data.UInt
 
+set_option autoImplicit true
+
 namespace Nat
 
 /- Up -/
@@ -50,7 +52,7 @@ def toArray : ByteSlice → ByteArray
 
 /-- The inner loop of the `forIn` implementation for byte slices. -/
 def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
-  (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
+    (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
   if h : i < _end then do
     match ← f (arr.get! i) b with
     | ForInStep.done b => pure b

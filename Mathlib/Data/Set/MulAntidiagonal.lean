@@ -12,7 +12,7 @@ import Mathlib.Order.WellFoundedSet
 
 namespace Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Mul
 
@@ -58,7 +58,7 @@ theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x :
 
 @[to_additive (attr := simp)]
 theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
-     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
+    x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
@@ -115,8 +115,8 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × �
 
 variable {s t}
 
-@[to_additive Set.AddAntidiagonal.finite_of_isPwo]
-theorem finite_of_isPwo (hs : s.IsPwo) (ht : t.IsPwo) (a) : (mulAntidiagonal s t a).Finite := by
+@[to_additive Set.AddAntidiagonal.finite_of_isPWO]
+theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
   refine' not_infinite.1 fun h => _
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
     hs (Prod.fst ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).1
@@ -127,17 +127,17 @@ theorem finite_of_isPwo (hs : s.IsPwo) (ht : t.IsPwo) (a) : (mulAntidiagonal s t
   obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
   refine' mn.ne (g.injective <| (h.natEmbedding _).injective _)
   exact eq_of_fst_le_fst_of_snd_le_snd _ _ _ (hg _ _ mn.le) h2'
-#align set.mul_antidiagonal.finite_of_is_pwo Set.MulAntidiagonal.finite_of_isPwo
-#align set.add_antidiagonal.finite_of_is_pwo Set.AddAntidiagonal.finite_of_isPwo
+#align set.mul_antidiagonal.finite_of_is_pwo Set.MulAntidiagonal.finite_of_isPWO
+#align set.add_antidiagonal.finite_of_is_pwo Set.AddAntidiagonal.finite_of_isPWO
 
 end OrderedCancelCommMonoid
 
-@[to_additive Set.AddAntidiagonal.finite_of_isWf]
-theorem finite_of_isWf [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWf) (ht : t.IsWf)
+@[to_additive Set.AddAntidiagonal.finite_of_isWF]
+theorem finite_of_isWF [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
     (a) : (mulAntidiagonal s t a).Finite :=
-  finite_of_isPwo hs.isPwo ht.isPwo a
-#align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWf
-#align set.add_antidiagonal.finite_of_is_wf Set.AddAntidiagonal.finite_of_isWf
+  finite_of_isPWO hs.isPWO ht.isPWO a
+#align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWF
+#align set.add_antidiagonal.finite_of_is_wf Set.AddAntidiagonal.finite_of_isWF
 
 end MulAntidiagonal
 

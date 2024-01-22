@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 #align_import linear_algebra.quadratic_form.isometry from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -22,11 +23,11 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 -/
 
 
-variable {ι R K M M₁ M₂ M₃ V : Type _}
+variable {ι R K M M₁ M₂ M₃ V : Type*}
 
 namespace QuadraticForm
 
-variable [Semiring R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 
@@ -97,6 +98,12 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
 
+/-- Isometric equivalences are isometric maps -/
+@[simps]
+def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
+  toFun x := g x
+  __ := g
+
 end IsometryEquiv
 
 namespace Equivalent
@@ -144,7 +151,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
-    (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
+    (hv₁ : (associated (R := K) Q).iIsOrtho v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine' ⟨iso, fun m => _⟩
@@ -163,11 +170,11 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 #align quadratic_form.equivalent_weighted_sum_squares QuadraticForm.equivalent_weightedSumSquares
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
-    (hQ : (associated (R₁ := K) Q).Nondegenerate) :
+    (hQ : (associated (R := K) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
-  simp_rw [IsOrtho, associated_eq_self_apply] at hv₂
+  simp_rw [BilinForm.IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 #align quadratic_form.equivalent_weighted_sum_squares_units_of_nondegenerate' QuadraticForm.equivalent_weightedSumSquares_units_of_nondegenerate'
 

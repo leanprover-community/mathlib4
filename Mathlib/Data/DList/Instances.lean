@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.DList.Basic
+import Mathlib.Data.DList.Defs
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
@@ -21,7 +21,7 @@ open Function Equiv
 
 namespace Std
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-- The natural equivalence between lists and difference lists, using
 `DList.ofList` and `DList.toList`. -/

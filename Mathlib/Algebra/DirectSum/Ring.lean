@@ -67,7 +67,7 @@ instances for:
 
 If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## tags
 
@@ -75,7 +75,7 @@ graded ring, filtered ring, direct sum, add_submonoid
 -/
 
 
-variable {ι : Type _} [DecidableEq ι]
+variable {ι : Type*} [DecidableEq ι]
 
 namespace DirectSum
 
@@ -86,7 +86,7 @@ open DirectSum
 
 section Defs
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-- A graded version of `NonUnitalNonAssocSemiring`. -/
 class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] extends
@@ -106,7 +106,7 @@ end Defs
 
 section Defs
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-- A graded version of `Semiring`. -/
 class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNonAssocSemiring A,
@@ -143,13 +143,13 @@ class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, 
 
 end Defs
 
-theorem of_eq_of_gradedMonoid_eq {A : ι → Type _} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
+theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
     {b : A j} (h : GradedMonoid.mk i a = GradedMonoid.mk j b) :
     DirectSum.of A i a = DirectSum.of A j b :=
   DFinsupp.single_eq_of_sigma_eq h
 #align direct_sum.of_eq_of_graded_monoid_eq DirectSum.of_eq_of_gradedMonoid_eq
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-! ### Instances for `⨁ i, A i` -/
 
@@ -158,7 +158,9 @@ section One
 
 variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
 
-instance : One (⨁ i, A i) where one := DirectSum.of (fun i => A i) 0 GradedMonoid.GOne.one
+instance : One (⨁ i, A i) where one := DirectSum.of A 0 GradedMonoid.GOne.one
+
+theorem one_def : 1 = DirectSum.of A 0 GradedMonoid.GOne.one := rfl
 
 end One
 
@@ -224,7 +226,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
 private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
-  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [mulHom_of_of]
@@ -233,7 +235,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
 
 -- Porting note: `suffices` is very slow here.
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
-  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [flip_apply, mulHom_of_of]
@@ -246,7 +248,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices (mulHom A).compHom.comp (mulHom A) =
       (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      have sol := FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
+      have sol := DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
       have aux : ∀ a b, (mulHom A) a b = a * b := fun _ _ ↦ rfl
       simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
         AddMonoidHom.flipHom_apply] at sol
@@ -310,8 +312,10 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- Porting note: I have no idea how the proof from ml3 worked it used to be
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
-  rw [mulHom,toAddMonoid,DFinsupp.liftAddHom_apply,DFinsupp.sumAddHom_apply,
-    AddMonoidHom.dfinsupp_sum_apply]
+  rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [DFinsupp.sumAddHom_apply]
+  rw [AddMonoidHom.dfinsupp_sum_apply]
   apply congrArg _
   funext x
   simp_rw [flip_apply]
@@ -345,10 +349,6 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
   { DirectSum.semiring A with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
     mul_comm := mul_comm A }
 #align direct_sum.comm_semiring DirectSum.commSemiring
 
@@ -361,11 +361,7 @@ variable [∀ i, AddCommGroup (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
 /-- The `Ring` derived from `GSemiring A`. -/
 instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring (⨁ i, A i)),
-    (inferInstance : AddCommGroup (⨁ i, A i)) with
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg }
+    (inferInstance : AddCommGroup (⨁ i, A i)) with }
 #align direct_sum.non_assoc_ring DirectSum.nonAssocRing
 
 end NonUnitalNonAssocRing
@@ -394,12 +390,7 @@ variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 /-- The `CommRing` derived from `GCommSemiring A`. -/
 instance commRing : CommRing (⨁ i, A i) :=
   { DirectSum.ring A,
-    DirectSum.commSemiring A with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg }
+    DirectSum.commSemiring A with }
 #align direct_sum.comm_ring DirectSum.commRing
 
 end CommRing
@@ -575,7 +566,7 @@ end GradeZero
 
 section ToSemiring
 
-variable {R : Type _} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
+variable {R : Type*} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
 
 variable {A}
 
@@ -652,7 +643,7 @@ def liftRingHom :
       rfl,
       by
       intros i j ai aj
-      simp [AddMonoidHom.comp_apply]
+      simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
     ext xi xv
@@ -676,7 +667,7 @@ section Uniform
 variable (ι)
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
-instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
+instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type*} [AddMonoid ι]
     [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
   { -- Porting note: removed Mul.gMul ι with and we seem ok
     mul_zero := mul_zero
@@ -686,7 +677,7 @@ instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type
 #align non_unital_non_assoc_semiring.direct_sum_gnon_unital_non_assoc_semiring NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
-instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
+instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
     DirectSum.GSemiring fun _ : ι => R :=
   { NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι,
     Monoid.gMonoid ι with
@@ -698,13 +689,13 @@ instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
 open DirectSum
 
 -- To check `Mul.gmul_mul` matches
-example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
+example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
     (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.
 -/
-instance CommSemiring.directSumGCommSemiring {R : Type _} [AddCommMonoid ι] [CommSemiring R] :
+instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
     DirectSum.GCommSemiring fun _ : ι => R :=
   { CommMonoid.gCommMonoid ι, Semiring.directSumGSemiring ι with }
 #align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGCommSemiring

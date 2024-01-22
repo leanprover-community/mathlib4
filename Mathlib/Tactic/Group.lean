@@ -34,19 +34,19 @@ open Lean.Elab.Tactic
 -- The next three lemmas are not general purpose lemmas, they are intended for use only by
 -- the `group` tactic.
 @[to_additive]
-theorem zpow_trick {G : Type _} [Group G] (a b : G) (n m : ℤ) :
+theorem zpow_trick {G : Type*} [Group G] (a b : G) (n m : ℤ) :
     a * b ^ n * b ^ m = a * b ^ (n + m) := by rw [mul_assoc, ← zpow_add]
 #align tactic.group.zpow_trick Mathlib.Tactic.Group.zpow_trick
 #align tactic.group.zsmul_trick Mathlib.Tactic.Group.zsmul_trick
 
 @[to_additive]
-theorem zpow_trick_one {G : Type _} [Group G] (a b : G) (m : ℤ) :
+theorem zpow_trick_one {G : Type*} [Group G] (a b : G) (m : ℤ) :
     a * b * b ^ m = a * b ^ (m + 1) := by rw [mul_assoc, mul_self_zpow]
 #align tactic.group.zpow_trick_one Mathlib.Tactic.Group.zpow_trick_one
 #align tactic.group.zsmul_trick_zero Mathlib.Tactic.Group.zsmul_trick_zero
 
 @[to_additive]
-theorem zpow_trick_one' {G : Type _} [Group G] (a b : G) (n : ℤ) :
+theorem zpow_trick_one' {G : Type*} [Group G] (a b : G) (n : ℤ) :
     a * b ^ n * b = a * b ^ (n + 1) := by rw [mul_assoc, mul_zpow_self]
 #align tactic.group.zpow_trick_one' Mathlib.Tactic.Group.zpow_trick_one'
 #align tactic.group.zsmul_trick_zero' Mathlib.Tactic.Group.zsmul_trick_zero'
@@ -56,14 +56,14 @@ syntax (name := aux_group₁) "aux_group₁" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₁ $[at $location]?) =>
-  `(tactic| simp (config := {decide := false}) only
+  `(tactic| simp (config := {decide := false, failIfUnchanged := false}) only
     [commutatorElement_def, mul_one, one_mul,
-      ←zpow_neg_one, ←zpow_ofNat, ←zpow_mul,
+      ← zpow_neg_one, ← zpow_ofNat, ← zpow_mul,
       Int.ofNat_add, Int.ofNat_mul,
       Int.mul_neg_eq_neg_mul_symm, Int.neg_mul_eq_neg_mul_symm, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
-      ←mul_assoc,
-      ←zpow_add, ←zpow_add_one, ←zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
+      ← mul_assoc,
+      ← zpow_add, ← zpow_add_one, ← zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
       tsub_self, sub_self, add_neg_self, neg_add_self]
   $[at $location]?)
 

@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
@@ -41,7 +42,7 @@ variable {T : ℝ} [hT : Fact (0 < T)]
 rational angles with denominators tending to infinity, then it must be almost empty or almost full.
 -/
 theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
-    (hs : NullMeasurableSet s volume) {ι : Type _} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
+    (hs : NullMeasurableSet s volume) {ι : Type*} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
     (hu₁ : ∀ i, (u i +ᵥ s : Set _) =ᵐ[volume] s) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
     s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ := by
   /- Sketch of proof:
@@ -57,7 +58,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have hT₀ : 0 < T := hT.out
   have hT₁ : ENNReal.ofReal T ≠ 0 := by simpa
   rw [ae_eq_empty, ae_eq_univ_iff_measure_eq hs, AddCircle.measure_univ]
-  cases' eq_or_ne (μ s) 0 with h h; · exact Or.inl h
+  rcases eq_or_ne (μ s) 0 with h | h; · exact Or.inl h
   right
   obtain ⟨d, -, hd⟩ : ∃ d, d ∈ s ∧ ∀ {ι'} {l : Filter ι'} (w : ι' → AddCircle T) (δ : ι' → ℝ),
     Tendsto δ l (𝓝[>] 0) → (∀ᶠ j in l, d ∈ closedBall (w j) (1 * δ j)) →

@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {J C : Type _} [Category J] [Category C] [HasZeroMorphisms C]
+variable {J C : Type*} [Category J] [Category C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}
 
 namespace ShortComplex

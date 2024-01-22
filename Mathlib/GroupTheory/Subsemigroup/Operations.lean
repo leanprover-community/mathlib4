@@ -65,7 +65,7 @@ subsemigroup, range, product, map, comap
 -/
 
 
-variable {M N P σ : Type _}
+variable {M N P σ : Type*}
 
 /-!
 ### Conversion to/from `Additive`/`Multiplicative`
@@ -109,18 +109,18 @@ theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
 
 theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
-      Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      Subsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := Additive M))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := Additive M))
 #align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end
 
 section
 
-variable {A : Type _} [Add A]
+variable {A : Type*} [Add A]
 
 /-- Additive subsemigroups of an additive semigroup `A` are isomorphic to
 multiplicative subsemigroups of `Multiplicative A`. -/
@@ -150,17 +150,17 @@ theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
-      AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
+      AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
 #align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
-    AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
+      AddSubsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
-      Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
-    (AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
+      Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
+    (AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
 #align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end
@@ -254,7 +254,10 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 #align subsemigroup.map_map Subsemigroup.map_map
 #align add_subsemigroup.map_map AddSubsemigroup.map_map
 
-@[to_additive]
+-- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
@@ -330,7 +333,7 @@ theorem map_sup (S T : Subsemigroup M) (f : M →ₙ* N) : (S ⊔ T).map f = S.m
 #align add_subsemigroup.map_sup AddSubsemigroup.map_sup
 
 @[to_additive]
-theorem map_iSup {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
+theorem map_iSup {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subsemigroup.map_supr Subsemigroup.map_iSup
@@ -343,7 +346,7 @@ theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f =
 #align add_subsemigroup.comap_inf AddSubsemigroup.comap_inf
 
 @[to_additive]
-theorem comap_iInf {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
+theorem comap_iInf {ι : Sort*} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subsemigroup.comap_infi Subsemigroup.comap_iInf
@@ -369,7 +372,7 @@ theorem map_id (S : Subsemigroup M) : S.map (MulHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type _} {f : M →ₙ* N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
 
 --include hf
 
@@ -440,7 +443,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type _} {f : M →ₙ* N} (hf : Function.Surjective f)
+variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
@@ -515,7 +518,7 @@ end Subsemigroup
 
 namespace MulMemClass
 
-variable {A : Type _} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
+variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 
 -- lower priority so other instances are found first
 /-- A submagma of a magma inherits a multiplication. -/
@@ -548,7 +551,7 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
-instance toSemigroup {M : Type _} [Semigroup M] {A : Type _} [SetLike A M] [MulMemClass A M]
+instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S :=
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
 #align mul_mem_class.to_semigroup MulMemClass.toSemigroup
@@ -556,7 +559,7 @@ instance toSemigroup {M : Type _} [Semigroup M] {A : Type _} [SetLike A M] [MulM
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
-instance toCommSemigroup {M} [CommSemigroup M] {A : Type _} [SetLike A M] [MulMemClass A M]
+instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S :=
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 #align mul_mem_class.to_comm_semigroup MulMemClass.toCommSemigroup
@@ -565,8 +568,8 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type _} [SetLike A M] [MulMe
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`."]
-def subtype : S' →ₙ* M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+def subtype : S' →ₙ* M where
+  toFun := Subtype.val; map_mul' := fun _ _ => rfl
 #align mul_mem_class.subtype MulMemClass.subtype
 #align add_mem_class.subtype AddMemClass.subtype
 
@@ -813,13 +816,13 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
 @[to_additive "Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain."]
-def restrict {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
+def restrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 #align mul_hom.restrict MulHom.restrict
 #align add_hom.restrict AddHom.restrict
 
 @[to_additive (attr := simp)]
-theorem restrict_apply {N : Type _} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
+theorem restrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
     (x : S) : f.restrict S x = f x :=
   rfl
 #align mul_hom.restrict_apply MulHom.restrict_apply
@@ -857,7 +860,7 @@ theorem srangeRestrict_surjective (f : M →ₙ* N) : Function.Surjective f.sran
 #align add_hom.srange_restrict_surjective AddHom.srangeRestrict_surjective
 
 @[to_additive prod_map_comap_prod']
-theorem prod_map_comap_prod' {M' : Type _} {N' : Type _} [Mul M'] [Mul N'] (f : M →ₙ* N)
+theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M →ₙ* N)
     (g : M' →ₙ* N') (S : Subsemigroup N) (S' : Subsemigroup N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _

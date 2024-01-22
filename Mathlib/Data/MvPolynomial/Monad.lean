@@ -55,9 +55,9 @@ namespace MvPolynomial
 
 open Finsupp
 
-variable {σ : Type _} {τ : Type _}
+variable {σ : Type*} {τ : Type*}
 
-variable {R S T : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
 `bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
@@ -202,7 +202,7 @@ theorem join₂_comp_map (f : R →+* MvPolynomial σ S) : join₂.comp (map f) 
 #align mv_polynomial.join₂_comp_map MvPolynomial.join₂_comp_map
 
 theorem aeval_id_rename (f : σ → MvPolynomial τ R) (p : MvPolynomial σ R) :
-    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.comp.left_id]
+    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.id_comp]
 #align mv_polynomial.aeval_id_rename MvPolynomial.aeval_id_rename
 
 @[simp]
@@ -221,12 +221,12 @@ theorem bind₂_id : bind₂ (RingHom.id (MvPolynomial σ R)) = join₂ :=
   rfl
 #align mv_polynomial.bind₂_id MvPolynomial.bind₂_id
 
-theorem bind₁_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R)
+theorem bind₁_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R)
     (φ : MvPolynomial σ R) : (bind₁ g) (bind₁ f φ) = bind₁ (fun i => bind₁ g (f i)) φ := by
   simp [bind₁, ← comp_aeval]
 #align mv_polynomial.bind₁_bind₁ MvPolynomial.bind₁_bind₁
 
-theorem bind₁_comp_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R) :
+theorem bind₁_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → MvPolynomial υ R) :
     (bind₁ g).comp (bind₁ f) = bind₁ fun i => bind₁ g (f i) := by
   ext1
   apply bind₁_bind₁
@@ -241,13 +241,13 @@ theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomia
   RingHom.congr_fun (bind₂_comp_bind₂ f g) φ
 #align mv_polynomial.bind₂_bind₂ MvPolynomial.bind₂_bind₂
 
-theorem rename_comp_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → υ) :
+theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (bind₁ f) = bind₁ fun i => rename g <| f i := by
   ext1 i
   simp
 #align mv_polynomial.rename_comp_bind₁ MvPolynomial.rename_comp_bind₁
 
-theorem rename_bind₁ {υ : Type _} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
+theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
     rename g (bind₁ f φ) = bind₁ (fun i => rename g <| f i) φ :=
   AlgHom.congr_fun (rename_comp_bind₁ f g) φ
 #align mv_polynomial.rename_bind₁ MvPolynomial.rename_bind₁
@@ -259,13 +259,13 @@ theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPoly
   simp only [Function.comp_apply, map_X]
 #align mv_polynomial.map_bind₂ MvPolynomial.map_bind₂
 
-theorem bind₁_comp_rename {υ : Type _} (f : τ → MvPolynomial υ R) (g : σ → τ) :
+theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) :
     (bind₁ f).comp (rename g) = bind₁ (f ∘ g) := by
   ext1 i
   simp
 #align mv_polynomial.bind₁_comp_rename MvPolynomial.bind₁_comp_rename
 
-theorem bind₁_rename {υ : Type _} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
+theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
     bind₁ f (rename g φ) = bind₁ (f ∘ g) φ :=
   AlgHom.congr_fun (bind₁_comp_rename f g) φ
 #align mv_polynomial.bind₁_rename MvPolynomial.bind₁_rename

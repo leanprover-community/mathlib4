@@ -134,7 +134,6 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
   apply Presieve.isSheafFor_subsieve_aux P this
   apply isSheafFor_bind _ _ _ hR hS
   · intro Y f hf Z g
-    dsimp
     rw [← pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf

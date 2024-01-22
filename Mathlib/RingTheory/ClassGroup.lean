@@ -30,7 +30,7 @@ identical no matter the choice of field of fractions for `R`.
 -/
 
 
-variable {R K L : Type _} [CommRing R]
+variable {R K L : Type*} [CommRing R]
 
 variable [Field K] [Field L] [DecidableEq L]
 
@@ -115,8 +115,10 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
-  rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
-      MonoidHom.comp_apply, MonoidHom.id_apply, QuotientGroup.mk'_apply]
+  rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [MonoidHom.comp_apply]
+  rw [MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
@@ -209,23 +211,26 @@ noncomputable def ClassGroup.equiv :
 #align class_group.equiv ClassGroup.equiv
 
 @[simp]
-theorem ClassGroup.equiv_mk (K' : Type _) [Field K'] [Algebra R K'] [IsFractionRing R K']
+theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.equiv K' (ClassGroup.mk I) =
       QuotientGroup.mk' _ (Units.mapEquiv (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) I) := by
-  rw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
   congr
   rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
 #align class_group.equiv_mk ClassGroup.equiv_mk
 
 @[simp]
-theorem ClassGroup.mk_canonicalEquiv (K' : Type _) [Field K'] [Algebra R K'] [IsFractionRing R K']
+theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk I := by
-  rw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _), ← Units.map_comp, ←
-      RingEquiv.coe_monoidHom_trans, FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _),
+      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
   rfl
 #align class_group.mk_canonical_equiv ClassGroup.mk_canonicalEquiv
 
@@ -242,14 +247,14 @@ theorem FractionalIdeal.coe_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
     (FractionalIdeal.mk0 K I : FractionalIdeal R⁰ K) = I := rfl
 #align fractional_ideal.coe_mk0 FractionalIdeal.coe_mk0
 
-theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type _) [Field K']
+theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
     FractionalIdeal.canonicalEquiv R⁰ K K' (FractionalIdeal.mk0 K I) = FractionalIdeal.mk0 K' I :=
   by simp only [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
 #align fractional_ideal.canonical_equiv_mk0 FractionalIdeal.canonicalEquiv_mk0
 
 @[simp]
-theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type _) [Field K']
+theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
     Units.map (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) (FractionalIdeal.mk0 K I) =
       FractionalIdeal.mk0 K' I :=
@@ -310,7 +315,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     have hy' : y ∈ R⁰ := mem_nonZeroDivisors_iff_ne_zero.mpr hy
     refine ⟨IsLocalization.mk' _ x ⟨y, hy'⟩, ?_, ?_⟩
     · contrapose! hx
-      rwa [mk'_eq_iff_eq_mul, MulZeroClass.zero_mul, ← (algebraMap R (FractionRing R)).map_zero,
+      rwa [mk'_eq_iff_eq_mul, zero_mul, ← (algebraMap R (FractionRing R)).map_zero,
         (IsFractionRing.injective R (FractionRing R)).eq_iff] at hx
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 #align class_group.mk0_eq_mk0_iff ClassGroup.mk0_eq_mk0_iff

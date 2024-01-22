@@ -15,7 +15,7 @@ import Mathlib.Algebra.Algebra.Basic
 
 namespace ZMod
 
-variable (R : Type _) [Ring R]
+variable (R : Type*) [Ring R]
 
 instance (p : ℕ) : Subsingleton (Algebra (ZMod p) R) :=
   ⟨fun _ _ => Algebra.algebra_ext _ _ <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
@@ -34,8 +34,7 @@ def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
       show (a * r : R) = r * a by
         rcases ZMod.int_cast_surjective a with ⟨k, rfl⟩
         show ZMod.castHom h R k * r = r * ZMod.castHom h R k
-        rw [map_intCast]
-        exact Commute.cast_int_left r k
+        rw [map_intCast, Int.cast_comm]
     smul_def' := fun a r => rfl }
 #align zmod.algebra' ZMod.algebra'
 

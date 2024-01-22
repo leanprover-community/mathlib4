@@ -20,7 +20,7 @@ topological space, opposite monoid, units
 -/
 
 
-variable {M X : Type _}
+variable {M X : Type*}
 
 open Filter Topology
 
@@ -56,8 +56,12 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
 #align add_opposite.op_homeomorph AddOpposite.opHomeomorph
 
 @[to_additive]
-instance [T2Space M] : T2Space Mᵐᵒᵖ :=
+instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
   opHomeomorph.symm.embedding.t2Space
+
+@[to_additive]
+instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
+  opHomeomorph.symm.embedding.discreteTopology
 
 @[to_additive (attr := simp)]
 theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
@@ -109,6 +113,14 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
 #align units.embedding_embed_product Units.embedding_embedProduct
 #align add_units.embedding_embed_product AddUnits.embedding_embedProduct
 
+@[to_additive]
+instance instT2Space [T2Space M] : T2Space Mˣ :=
+  embedding_embedProduct.t2Space
+
+@[to_additive]
+instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
+  embedding_embedProduct.discreteTopology
+
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
@@ -121,7 +133,7 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
 Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
-lemma embedding_val_mk' {M : Type _} [Monoid M] [TopologicalSpace M] {f : M → M}
+lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     Embedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, ext⟩
@@ -135,7 +147,7 @@ lemma embedding_val_mk' {M : Type _} [Monoid M] [TopologicalSpace M] {f : M → 
 Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
-lemma embedding_val_mk {M : Type _} [DivisionMonoid M] [TopologicalSpace M]
+lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
     (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : Embedding (val : Mˣ → M) :=
   embedding_val_mk' h fun u ↦ (val_inv_eq_inv_val u).symm
 #align units.embedding_coe_mk Units.embedding_val_mk

@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Order.Monoid.MinMax
 
 #align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
@@ -33,13 +32,14 @@ open Nat
 
 namespace List
 
-variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
 
 
 section Disjoint
 
+@[symm]
 theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
 #align list.disjoint.symm List.Disjoint.symm
 
@@ -133,12 +133,12 @@ theorem inter_nil (l : List α) : [] ∩ l = [] :=
 
 @[simp]
 theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
-  simp only [Inter.inter, List.inter, filter_cons_of_pos, h]
+  simp [Inter.inter, List.inter, h]
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
-  simp only [Inter.inter, List.inter, filter_cons_of_neg, h]
+  simp [Inter.inter, List.inter, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
@@ -149,7 +149,7 @@ theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simp
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
-  mem_filter_of_mem h₁ $ by simpa using h₂
+  mem_filter_of_mem h₁ <| by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff
@@ -238,11 +238,11 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons', count_cons', count_bagInter, count_erase, ←
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
         min_add_add_right]
       by_cases ab : a = b
       · rw [if_pos ab, @tsub_add_cancel_of_le]
-        rwa [succ_le_iff, count_pos, ab]
+        rwa [succ_le_iff, count_pos_iff_mem, ab]
       · rw [if_neg ab, tsub_zero, add_zero, add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b

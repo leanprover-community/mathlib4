@@ -35,13 +35,13 @@ variable (x y : ∀ i, f i) (i : I)
 namespace Pi
 
 @[to_additive]
-instance smul' {g : I → Type _} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) (∀ i : I, g i) :=
+instance smul' {g : I → Type*} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) (∀ i : I, g i) :=
   ⟨fun s x => fun i => s i • x i⟩
 #align pi.has_smul' Pi.smul'
 #align pi.has_vadd' Pi.vadd'
 
 @[to_additive (attr := simp)]
-theorem smul_apply' {g : I → Type _} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
+theorem smul_apply' {g : I → Type*} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i) (x : ∀ i, g i) :
     (s • x) i = s i • x i :=
   rfl
 #align pi.smul_apply' Pi.smul_apply'
@@ -49,14 +49,14 @@ theorem smul_apply' {g : I → Type _} [∀ i, SMul (f i) (g i)] (s : ∀ i, f i
 
 -- Porting note: `to_additive` fails to correctly translate name
 @[to_additive Pi.vaddAssocClass]
-instance isScalarTower {α β : Type _} [SMul α β] [∀ i, SMul β <| f i]
+instance isScalarTower {α β : Type*} [SMul α β] [∀ i, SMul β <| f i]
     [∀ i, SMul α <| f i] [∀ i, IsScalarTower α β (f i)] : IsScalarTower α β (∀ i : I, f i) :=
   ⟨fun x y z => funext fun i => smul_assoc x y (z i)⟩
 #align pi.is_scalar_tower Pi.isScalarTower
 #align pi.vadd_assoc_class Pi.vaddAssocClass
 
 @[to_additive Pi.vaddAssocClass']
-instance isScalarTower' {g : I → Type _} {α : Type _} [∀ i, SMul α <| f i]
+instance isScalarTower' {g : I → Type*} {α : Type*} [∀ i, SMul α <| f i]
     [∀ i, SMul (f i) (g i)] [∀ i, SMul α <| g i] [∀ i, IsScalarTower α (f i) (g i)] :
     IsScalarTower α (∀ i : I, f i) (∀ i : I, g i) :=
   ⟨fun x y z => funext fun i => smul_assoc x (y i) (z i)⟩
@@ -64,7 +64,7 @@ instance isScalarTower' {g : I → Type _} {α : Type _} [∀ i, SMul α <| f i]
 #align pi.vadd_assoc_class' Pi.vaddAssocClass'
 
 @[to_additive Pi.vaddAssocClass'']
-instance isScalarTower'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (f i) (g i)]
+instance isScalarTower'' {g : I → Type*} {h : I → Type*} [∀ i, SMul (f i) (g i)]
     [∀ i, SMul (g i) (h i)] [∀ i, SMul (f i) (h i)] [∀ i, IsScalarTower (f i) (g i) (h i)] :
     IsScalarTower (∀ i, f i) (∀ i, g i) (∀ i, h i) :=
   ⟨fun x y z => funext fun i => smul_assoc (x i) (y i) (z i)⟩
@@ -72,14 +72,14 @@ instance isScalarTower'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (f i
 #align pi.vadd_assoc_class'' Pi.vaddAssocClass''
 
 @[to_additive]
-instance smulCommClass {α β : Type _} [∀ i, SMul α <| f i] [∀ i, SMul β <| f i]
+instance smulCommClass {α β : Type*} [∀ i, SMul α <| f i] [∀ i, SMul β <| f i]
     [∀ i, SMulCommClass α β (f i)] : SMulCommClass α β (∀ i : I, f i) :=
   ⟨fun x y z => funext fun i => smul_comm x y (z i)⟩
 #align pi.smul_comm_class Pi.smulCommClass
 #align pi.vadd_comm_class Pi.vaddCommClass
 
 @[to_additive]
-instance smulCommClass' {g : I → Type _} {α : Type _} [∀ i, SMul α <| g i]
+instance smulCommClass' {g : I → Type*} {α : Type*} [∀ i, SMul α <| g i]
     [∀ i, SMul (f i) (g i)] [∀ i, SMulCommClass α (f i) (g i)] :
     SMulCommClass α (∀ i : I, f i) (∀ i : I, g i) :=
   ⟨fun x y z => funext fun i => smul_comm x (y i) (z i)⟩
@@ -87,7 +87,7 @@ instance smulCommClass' {g : I → Type _} {α : Type _} [∀ i, SMul α <| g i]
 #align pi.vadd_comm_class' Pi.vaddCommClass'
 
 @[to_additive]
-instance smulCommClass'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (g i) (h i)]
+instance smulCommClass'' {g : I → Type*} {h : I → Type*} [∀ i, SMul (g i) (h i)]
     [∀ i, SMul (f i) (h i)] [∀ i, SMulCommClass (f i) (g i) (h i)] :
     SMulCommClass (∀ i, f i) (∀ i, g i) (∀ i, h i) :=
   ⟨fun x y z => funext fun i => smul_comm (x i) (y i) (z i)⟩
@@ -95,7 +95,7 @@ instance smulCommClass'' {g : I → Type _} {h : I → Type _} [∀ i, SMul (g i
 #align pi.vadd_comm_class'' Pi.vaddCommClass''
 
 @[to_additive]
-instance isCentralScalar {α : Type _} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
+instance isCentralScalar {α : Type*} [∀ i, SMul α <| f i] [∀ i, SMul αᵐᵒᵖ <| f i]
     [∀ i, IsCentralScalar α (f i)] : IsCentralScalar α (∀ i, f i) :=
   ⟨fun _ _ => funext fun _ => op_smul_eq_smul _ _⟩
 
@@ -104,7 +104,7 @@ not an instance as `i` cannot be inferred. -/
 @[to_additive
   "If `f i` has a faithful additive action for a given `i`, then
   so does `Π i, f i`. This is not an instance as `i` cannot be inferred"]
-theorem faithfulSMul_at {α : Type _} [∀ i, SMul α <| f i] [∀ i, Nonempty (f i)] (i : I)
+theorem faithfulSMul_at {α : Type*} [∀ i, SMul α <| f i] [∀ i, Nonempty (f i)] (i : I)
     [FaithfulSMul α (f i)] : FaithfulSMul α (∀ i, f i) :=
   ⟨fun h =>
     eq_of_smul_eq_smul fun a : f i => by
@@ -117,7 +117,7 @@ theorem faithfulSMul_at {α : Type _} [∀ i, SMul α <| f i] [∀ i, Nonempty (
 #align pi.has_faithful_vadd_at Pi.faithfulVAdd_at
 
 @[to_additive]
-instance faithfulSMul {α : Type _} [Nonempty I] [∀ i, SMul α <| f i] [∀ i, Nonempty (f i)]
+instance faithfulSMul {α : Type*} [Nonempty I] [∀ i, SMul α <| f i] [∀ i, Nonempty (f i)]
     [∀ i, FaithfulSMul α (f i)] : FaithfulSMul α (∀ i, f i) :=
   let ⟨i⟩ := ‹Nonempty I›
   faithfulSMul_at i
@@ -134,7 +134,7 @@ instance mulAction (α) {m : Monoid α} [∀ i, MulAction α <| f i] :
 #align pi.add_action Pi.addAction
 
 @[to_additive]
-instance mulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} [∀ i, MulAction (f i) (g i)] :
+instance mulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} [∀ i, MulAction (f i) (g i)] :
     @MulAction (∀ i, f i) (∀ i : I, g i)
       (@Pi.monoid I f m) where
   smul := (· • ·)
@@ -148,7 +148,7 @@ instance smulZeroClass (α) {n : ∀ i, Zero <| f i} [∀ i, SMulZeroClass α <|
   smul_zero _ := funext fun _ => smul_zero _
 #align pi.smul_zero_class Pi.smulZeroClass
 
-instance smulZeroClass' {g : I → Type _} {n : ∀ i, Zero <| g i} [∀ i, SMulZeroClass (f i) (g i)] :
+instance smulZeroClass' {g : I → Type*} {n : ∀ i, Zero <| g i} [∀ i, SMulZeroClass (f i) (g i)] :
   @SMulZeroClass (∀ i, f i) (∀ i : I, g i) (@Pi.instZero I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
 #align pi.smul_zero_class' Pi.smulZeroClass'
@@ -159,7 +159,7 @@ instance distribSMul (α) {n : ∀ i, AddZeroClass <| f i} [∀ i, DistribSMul �
   smul_add _ _ _ := funext fun _ => smul_add _ _ _
 #align pi.distrib_smul Pi.distribSMul
 
-instance distribSMul' {g : I → Type _} {n : ∀ i, AddZeroClass <| g i}
+instance distribSMul' {g : I → Type*} {n : ∀ i, AddZeroClass <| g i}
   [∀ i, DistribSMul (f i) (g i)] :
   @DistribSMul (∀ i, f i) (∀ i : I, g i) (@Pi.addZeroClass I g n) where
   smul_zero := by intros; ext x; exact smul_zero _
@@ -171,7 +171,7 @@ instance distribMulAction (α) {m : Monoid α} {n : ∀ i, AddMonoid <| f i}
   { Pi.mulAction _, Pi.distribSMul _ with }
 #align pi.distrib_mul_action Pi.distribMulAction
 
-instance distribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, AddMonoid <| g i}
+instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ i, AddMonoid <| g i}
     [∀ i, DistribMulAction (f i) (g i)] :
     @DistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.addMonoid I g n) :=
   { Pi.mulAction', Pi.distribSMul' with }
@@ -179,7 +179,7 @@ instance distribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
-  single_op (fun i : I => ((· • ·) r : f i → f i)) (fun _ => smul_zero _) _ _
+  single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 #align pi.single_smul Pi.single_smul
 
 -- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
@@ -190,7 +190,7 @@ theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β]
   single_smul (f := fun _ => β) i r x
 #align pi.single_smul' Pi.single_smul'
 
-theorem single_smul₀ {g : I → Type _} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
+theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
     [∀ i, DistribMulAction (f i) (g i)] [DecidableEq I] (i : I) (r : f i) (x : g i) :
     single i (r • x) = single i r • single i x :=
   single_op₂ (fun i : I => ((· • ·) : f i → g i → g i)) (fun _ => smul_zero _) _ _ _
@@ -204,7 +204,7 @@ instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
     smul_mul := fun _ _ _ => funext fun _ => smul_mul' _ _ _ }
 #align pi.mul_distrib_mul_action Pi.mulDistribMulAction
 
-instance mulDistribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
+instance mulDistribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
     [∀ i, MulDistribMulAction (f i) (g i)] :
     @MulDistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.monoid I g n) where
   smul_mul := by
@@ -226,7 +226,7 @@ is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
   if this is not present."]
-instance hasSMul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
+instance hasSMul {ι R M : Type*} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
 #align function.has_smul Function.hasSMul
 #align function.has_vadd Function.hasVAdd
@@ -236,16 +236,16 @@ this is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
   instance if this is not present."]
-instance smulCommClass {ι α β M : Type _} [SMul α M] [SMul β M] [SMulCommClass α β M] :
+instance smulCommClass {ι α β M : Type*} [SMul α M] [SMul β M] [SMulCommClass α β M] :
     SMulCommClass α β (ι → M) :=
   Pi.smulCommClass
 #align function.smul_comm_class Function.smulCommClass
 #align function.vadd_comm_class Function.vaddCommClass
 
 @[to_additive]
-theorem update_smul {α : Type _} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
+theorem update_smul {α : Type*} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
     (i : I) (x₁ : f i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
-  funext fun j => (apply_update (β := f) (fun _ => (· • ·) c) f₁ i x₁ j).symm
+  funext fun j => (apply_update (β := f) (fun _ => (c • ·)) f₁ i x₁ j).symm
 #align function.update_smul Function.update_smul
 #align function.update_vadd Function.update_vadd
 
@@ -254,9 +254,9 @@ end Function
 namespace Set
 
 @[to_additive]
-theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+theorem piecewise_smul {α : Type*} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) f₁ _ fun _ => (c • ·)
 #align set.piecewise_smul Set.piecewise_smul
 #align set.piecewise_vadd Set.piecewise_vadd
 
@@ -265,7 +265,7 @@ end Set
 section Extend
 
 @[to_additive]
-theorem Function.extend_smul {R α β γ : Type _} [SMul R γ] (r : R) (f : α → β) (g : α → γ)
+theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α → β) (g : α → γ)
     (e : β → γ) : Function.extend f (r • g) (r • e) = r • Function.extend f g e :=
   funext fun x => by
   -- Porting note: Lean4 is unable to automatically call `Classical.propDecidable`

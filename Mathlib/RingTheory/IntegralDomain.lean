@@ -19,9 +19,10 @@ Assorted theorems about integral domains.
 * `isCyclic_of_subgroup_isDomain`: A finite subgroup of the units of an integral domain is cyclic.
 * `Fintype.fieldOfDomain`: A finite integral domain is a field.
 
-## TODO
+## Notes
 
-Prove Wedderburn's little theorem, which shows that all finite division rings are actually fields.
+Wedderburn's little theorem, which shows that all finite division rings are actually fields,
+is in `Mathlib.RingTheory.LittleWedderburn`.
 
 ## Tags
 
@@ -35,7 +36,7 @@ open Finset Polynomial Function BigOperators Nat
 section CancelMonoidWithZero
 
 -- There doesn't seem to be a better home for these right now
-variable {M : Type _} [CancelMonoidWithZero M] [Finite M]
+variable {M : Type*} [CancelMonoidWithZero M] [Finite M]
 
 theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => a * b :=
   Finite.injective_iff_bijective.1 <| mul_right_injective₀ ha
@@ -46,18 +47,18 @@ theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b
 #align mul_left_bijective_of_finite₀ mul_left_bijective_of_finite₀
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
-def Fintype.groupWithZeroOfCancel (M : Type _) [CancelMonoidWithZero M] [DecidableEq M] [Fintype M]
+def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [DecidableEq M] [Fintype M]
     [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp [Inv.inv, dif_neg ha]
+      simp only [Inv.inv, dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp [Inv.inv, dif_pos rfl] }
 #align fintype.group_with_zero_of_cancel Fintype.groupWithZeroOfCancel
 
-theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type _} [CommSemiring R] [IsDomain R]
+theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
@@ -69,9 +70,9 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type _} [CommSemiring R] [Is
 #align exists_eq_pow_of_mul_eq_pow_of_coprime exists_eq_pow_of_mul_eq_pow_of_coprime
 
 nonrec
-theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type _} [CommSemiring R] [IsDomain R]
+theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
-    (h : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → IsCoprime (f i) (f j))
+    (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i in s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
@@ -85,25 +86,21 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type _} [CommSemir
 
 end CancelMonoidWithZero
 
-variable {R : Type _} {G : Type _}
+variable {R : Type*} {G : Type*}
 
 section Ring
 
 variable [Ring R] [IsDomain R] [Fintype R]
 
-/-- Every finite domain is a division ring.
-
-TODO: Prove Wedderburn's little theorem,
-which shows a finite domain is in fact commutative, hence a field. -/
-def Fintype.divisionRingOfIsDomain (R : Type _) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
+/-- Every finite domain is a division ring. More generally, they are fields; this can be found in
+`Mathlib.RingTheory.LittleWedderburn`. -/
+def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R :=
   { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with }
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
-/-- Every finite commutative domain is a field.
-
-TODO: Prove Wedderburn's little theorem, which shows a finite domain is automatically commutative,
-dropping one assumption from this theorem. -/
+/-- Every finite commutative domain is a field. More generally, commutativity is not required: this
+can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain
@@ -120,7 +117,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 -- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
 -- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
-  {n : ℕ} (hn : 0 < n) (g₀ : G) :
+    {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
@@ -192,7 +189,7 @@ end EuclideanDivision
 
 variable [Fintype G]
 
-theorem card_fiber_eq_of_mem_range {H : Type _} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
+theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
     (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
     -- porting note: the `filter` had an index `ₓ` that I removed.
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
@@ -258,19 +255,17 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R))
         = ∑ n in range (orderOf x), ((x : Rˣ) : R) ^ n :=
         Eq.symm <|
-          sum_bij (fun n _ => x ^ n) (by simp only [mem_univ, forall_true_iff])
-            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
-                Units.val_pow_eq_pow_val])
-            (fun m n hm hn =>
-              pow_injective_of_lt_orderOf _ (by simpa only [mem_range] using hm)
-                (by simpa only [mem_range] using hn))
+          sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
+            (by simpa using pow_injOn_Iio_orderOf)
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
-               by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
+               by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
+            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+                Units.val_pow_eq_pow_val])
       _ = 0 := ?_
 
-    rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul]
+    rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
 #align sum_hom_units_eq_zero sum_hom_units_eq_zero

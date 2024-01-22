@@ -157,7 +157,7 @@ section Sum
 
 open BigOperators
 
-variable {ι : Type _} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
+variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) x L) :
     HasDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
@@ -282,6 +282,16 @@ theorem differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s
   DifferentiableOn.neg differentiableOn_id
 #align differentiable_on_neg differentiableOn_neg
 
+theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
+  intro h
+  have h₁ : deriv abs (0 : ℝ) = 1 :=
+    (uniqueDiffOn_Ici _ _ Set.left_mem_Ici).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
+      (hasDerivWithinAt_id _ _).congr_of_mem (fun _ h ↦ abs_of_nonneg h) Set.left_mem_Ici
+  have h₂ : deriv abs (0 : ℝ) = -1 :=
+    (uniqueDiffOn_Iic _ _ Set.right_mem_Iic).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
+      (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
+  linarith
+
 end Neg2
 
 section Sub
@@ -375,4 +385,3 @@ theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
 #align deriv_const_sub deriv_const_sub
 
 end Sub
-

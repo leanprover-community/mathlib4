@@ -24,7 +24,7 @@ noncomputable section
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w}
 
 open Function Set
 
@@ -50,19 +50,19 @@ theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : 
 #align isometry_iff_dist_eq isometry_iff_dist_eq
 
 /-- An isometry preserves distances. -/
-alias isometry_iff_dist_eq ↔ Isometry.dist_eq _
+alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
 #align isometry.dist_eq Isometry.dist_eq
 
 /-- A map that preserves distances is an isometry -/
-alias isometry_iff_dist_eq ↔ _ Isometry.of_dist_eq
+alias ⟨_, Isometry.of_dist_eq⟩ := isometry_iff_dist_eq
 #align isometry.of_dist_eq Isometry.of_dist_eq
 
 /-- An isometry preserves non-negative distances. -/
-alias isometry_iff_nndist_eq ↔ Isometry.nndist_eq _
+alias ⟨Isometry.nndist_eq, _⟩ := isometry_iff_nndist_eq
 #align isometry.nndist_eq Isometry.nndist_eq
 
 /-- A map that preserves non-negative distances is an isometry. -/
-alias isometry_iff_nndist_eq ↔ _ Isometry.of_nndist_eq
+alias ⟨_, Isometry.of_nndist_eq⟩ := isometry_iff_nndist_eq
 #align isometry.of_nndist_eq Isometry.of_nndist_eq
 
 namespace Isometry
@@ -101,7 +101,7 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
   simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod_map]
 #align isometry.prod_map Isometry.prod_map
 
-theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type _} [∀ i, PseudoEMetricSpace (α i)]
+theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq]
@@ -122,7 +122,7 @@ protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
   hf.antilipschitz.uniformInducing hf.uniformContinuous
 #align isometry.uniform_inducing Isometry.uniformInducing
 
-theorem tendsto_nhds_iff {ι : Type _} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
+theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.uniformInducing.inducing.tendsto_nhds_iff
 #align isometry.tendsto_nhds_iff Isometry.tendsto_nhds_iff
@@ -289,8 +289,8 @@ theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
 -- porting note: was @[nolint has_nonempty_instance]
-structure IsometryEquiv (α β : Type _) [PseudoEMetricSpace α] [PseudoEMetricSpace β] extends
-  α ≃ β where
+structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    extends α ≃ β where
   isometry_toFun : Isometry toFun
 #align isometry_equiv IsometryEquiv
 
@@ -317,7 +317,7 @@ instance : EquivLike (α ≃ᵢ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.left_inv
   right_inv e := e.right_inv
-  coe_injective' _ _ h _ := toEquiv_injective <| FunLike.ext' h
+  coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
 
 theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 #align isometry_equiv.coe_eq_to_equiv IsometryEquiv.coe_eq_toEquiv
@@ -347,12 +347,12 @@ protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = e
   h.isometry.edist_eq x y
 #align isometry_equiv.edist_eq IsometryEquiv.edist_eq
 
-protected theorem dist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
   h.isometry.dist_eq x y
 #align isometry_equiv.dist_eq IsometryEquiv.dist_eq
 
-protected theorem nndist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected theorem nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : nndist (h x) (h y) = nndist x y :=
   h.isometry.nndist_eq x y
 #align isometry_equiv.nndist_eq IsometryEquiv.nndist_eq
@@ -368,7 +368,7 @@ theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : EMetric.diam (h '' s) = EM
 
 @[ext]
 theorem ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align isometry_equiv.ext IsometryEquiv.ext
 
 /-- Alternative constructor for isometric bijections,
@@ -383,7 +383,7 @@ def mk' {α : Type u} [EMetricSpace α] (f : α → β) (g : β → α) (hfg : �
 #align isometry_equiv.mk' IsometryEquiv.mk'
 
 /-- The identity isometry of a space. -/
-protected def refl (α : Type _) [PseudoEMetricSpace α] : α ≃ᵢ α :=
+protected def refl (α : Type*) [PseudoEMetricSpace α] : α ≃ᵢ α :=
   { Equiv.refl α with isometry_toFun := isometry_id }
 #align isometry_equiv.refl IsometryEquiv.refl
 
@@ -419,6 +419,9 @@ initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_inv
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 #align isometry_equiv.symm_symm IsometryEquiv.symm_symm
+
+theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem apply_symm_apply (h : α ≃ᵢ β) (y : β) : h (h.symm y) = y :=
@@ -578,7 +581,7 @@ def funUnique [Unique ι] [Fintype ι] : (ι → α) ≃ᵢ α where
 
 /-- `piFinTwoEquiv` as an `IsometryEquiv`. -/
 @[simps!]
-def piFinTwo (α : Fin 2 → Type _) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
+def piFinTwo (α : Fin 2 → Type*) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   isometry_toFun x hx := by simp [edist_pi_def, Fin.univ_succ, Prod.edist_eq]
 #align isometry_equiv.pi_fin_two IsometryEquiv.piFinTwo

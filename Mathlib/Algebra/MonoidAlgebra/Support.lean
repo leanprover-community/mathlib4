@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Data.Finset.Pointwise
 
 #align_import algebra.monoid_algebra.support from "leanprover-community/mathlib"@"16749fc4661828cba18cd0f4e3c5eb66a8e80598"
 
@@ -11,6 +12,7 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 #  Lemmas about the support of a finitely supported function
 -/
 
+open scoped Pointwise
 
 universe u₁ u₂ u₃
 
@@ -20,41 +22,28 @@ open Finset Finsupp
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
+theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
+    (a * b).support ⊆ a.support * b.support :=
+  support_sum.trans <| biUnion_subset.2 fun _x hx ↦
+    support_sum.trans <| biUnion_subset.2 fun _y hy ↦
+      support_single_subset.trans <| singleton_subset_iff.2 <| mem_image₂_of_mem hx hy
+#align monoid_algebra.support_mul MonoidAlgebra.support_mul
+
 theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
-    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image ((· * ·) a) f.support := by
-  intro x hx
-  contrapose hx
-  have : ∀ y, a * y = x → f y = 0 := by
-    simpa only [not_and', mem_image, mem_support_iff, exists_prop, not_exists,
-      Classical.not_not] using hx
-  simp only [mem_support_iff, mul_apply, sum_single_index, zero_mul, ite_self, sum_zero,
-    Classical.not_not]
-  exact
-    Finset.sum_eq_zero
-      (by
-        simp (config := { contextual := true }) only [this, mem_support_iff, mul_zero, Ne.def,
-          ite_eq_right_iff, eq_self_iff_true, imp_true_iff])
+    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image (a * ·) f.support :=
+  (support_mul _ _).trans <| (Finset.image₂_subset_right support_single_subset).trans <| by
+    rw [Finset.image₂_singleton_left]
 #align monoid_algebra.support_single_mul_subset MonoidAlgebra.support_single_mul_subset
 
 theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
-    (f * single a r).support ⊆ Finset.image (· * a) f.support := by
-  intro x hx
-  contrapose hx
-  have : ∀ y, y * a = x → f y = 0 := by
-    simpa only [not_and', mem_image, mem_support_iff, exists_prop, not_exists,
-      Classical.not_not] using hx
-  simp only [mem_support_iff, mul_apply, sum_single_index, zero_mul, ite_self, sum_zero,
-    Classical.not_not]
-  exact
-    Finset.sum_eq_zero
-      (by
-        simp (config := { contextual := true }) only [this, sum_single_index, ite_eq_right_iff,
-          eq_self_iff_true, imp_true_iff, zero_mul])
+    (f * single a r).support ⊆ Finset.image (· * a) f.support :=
+  (support_mul _ _).trans <| (Finset.image₂_subset_left support_single_subset).trans <| by
+    rw [Finset.image₂_singleton_right]
 #align monoid_algebra.support_mul_single_subset MonoidAlgebra.support_mul_single_subset
 
 theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
-    (single x r * f : MonoidAlgebra k G).support = Finset.image ((· * ·) x) f.support := by
+    (single x r * f : MonoidAlgebra k G).support = Finset.image (x * ·) f.support := by
   refine' subset_antisymm (support_single_mul_subset f _ _) fun y hy => _
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
@@ -72,30 +61,30 @@ theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
     Finsupp.sum_ite_eq', Ne.def, not_false_iff, if_true, mul_zero, ite_self, sum_zero, rx.eq_iff]
 #align monoid_algebra.support_mul_single_eq_image MonoidAlgebra.support_mul_single_eq_image
 
-theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
-    (a * b).support ⊆ a.support.biUnion fun a₁ => b.support.biUnion fun a₂ => {a₁ * a₂} :=
-  Subset.trans support_sum <|
-    biUnion_mono fun _ _ =>
-      Subset.trans support_sum <| biUnion_mono fun _a₂ _ => support_single_subset
-#align monoid_algebra.support_mul MonoidAlgebra.support_mul
-
-theorem support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+theorem support_mul_single [Mul G] [IsRightCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
     ext
-    simp only [support_mul_single_eq_image f hr (isRightRegular_of_rightCancelSemigroup x),
+    simp only [support_mul_single_eq_image f hr (IsRightRegular.all x),
       mem_image, mem_map, mulRightEmbedding_apply]
 #align monoid_algebra.support_mul_single MonoidAlgebra.support_mul_single
 
-theorem support_single_mul [LeftCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+theorem support_single_mul [Mul G] [IsLeftCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
     (single x r * f : MonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
   classical
     ext
-    simp only [support_single_mul_eq_image f hr (isLeftRegular_of_leftCancelSemigroup x), mem_image,
+    simp only [support_single_mul_eq_image f hr (IsLeftRegular.all x), mem_image,
       mem_map, mulLeftEmbedding_apply]
 #align monoid_algebra.support_single_mul MonoidAlgebra.support_single_mul
+
+lemma support_one_subset [One G] : (1 : MonoidAlgebra k G).support ⊆ 1 :=
+  Finsupp.support_single_subset
+
+@[simp]
+lemma support_one [One G] [NeZero (1 : k)] : (1 : MonoidAlgebra k G).support = 1 :=
+  Finsupp.support_single_ne_zero _ one_ne_zero
 
 section Span
 
@@ -117,34 +106,40 @@ open Finset Finsupp MulOpposite
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
-theorem support_mul [DecidableEq G] [Add G] (a b : AddMonoidAlgebra k G) :
-    (a * b).support ⊆ a.support.biUnion fun a₁ => b.support.biUnion fun a₂ => {a₁ + a₂} :=
+theorem support_mul [DecidableEq G] [Add G] (a b : k[G]) :
+    (a * b).support ⊆ a.support + b.support :=
   @MonoidAlgebra.support_mul k (Multiplicative G) _ _ _ _ _
 #align add_monoid_algebra.support_mul AddMonoidAlgebra.support_mul
 
-theorem support_mul_single [AddRightCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
+theorem support_mul_single [Add G] [IsRightCancelAdd G] (f : k[G]) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
-    (f * single x r : AddMonoidAlgebra k G).support = f.support.map (addRightEmbedding x) :=
-  @MonoidAlgebra.support_mul_single k (Multiplicative G) _ _ _ _ hr _
+    (f * single x r : k[G]).support = f.support.map (addRightEmbedding x) :=
+  MonoidAlgebra.support_mul_single (G := Multiplicative G) _ _ hr _
 #align add_monoid_algebra.support_mul_single AddMonoidAlgebra.support_mul_single
 
-theorem support_single_mul [AddLeftCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
+theorem support_single_mul [Add G] [IsLeftCancelAdd G] (f : k[G]) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
-    (single x r * f : AddMonoidAlgebra k G).support = f.support.map (addLeftEmbedding x) :=
-  @MonoidAlgebra.support_single_mul k (Multiplicative G) _ _ _ _ hr _
+    (single x r * f : k[G]).support = f.support.map (addLeftEmbedding x) :=
+  MonoidAlgebra.support_single_mul (G := Multiplicative G) _ _ hr _
 #align add_monoid_algebra.support_single_mul AddMonoidAlgebra.support_single_mul
+
+lemma support_one_subset [Zero G] : (1 : k[G]).support ⊆ 0 := Finsupp.support_single_subset
+
+@[simp]
+lemma support_one [Zero G] [NeZero (1 : k)] : (1 : k[G]).support = 0 :=
+  Finsupp.support_single_ne_zero _ one_ne_zero
 
 section Span
 
-/-- An element of `AddMonoidAlgebra k G` is in the submodule generated by its support. -/
-theorem mem_span_support [AddZeroClass G] (f : AddMonoidAlgebra k G) :
+/-- An element of `k[G]` is in the submodule generated by its support. -/
+theorem mem_span_support [AddZeroClass G] (f : k[G]) :
     f ∈ Submodule.span k (of k G '' (f.support : Set G)) := by
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported]
 #align add_monoid_algebra.mem_span_support AddMonoidAlgebra.mem_span_support
 
-/-- An element of `AddMonoidAlgebra k G` is in the subalgebra generated by its support, using
+/-- An element of `k[G]` is in the subalgebra generated by its support, using
 unbundled inclusion. -/
-theorem mem_span_support' (f : AddMonoidAlgebra k G) :
+theorem mem_span_support' (f : k[G]) :
     f ∈ Submodule.span k (of' k G '' (f.support : Set G)) := by
   delta of'
   rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported]

@@ -35,7 +35,7 @@ open Set Function Filter MeasureTheory MeasureTheory.Measure
 
 open ENNReal
 
-variable {α : Type _} {m : MeasurableSpace α} (f : α → α) {s : Set α}
+variable {α : Type*} {m : MeasurableSpace α} (f : α → α) {s : Set α}
 
 /-- A map `f : α → α` is said to be pre-ergodic with respect to a measure `μ` if any measurable
 strictly invariant set is either almost empty or full. -/
@@ -84,7 +84,7 @@ end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
-variable {β : Type _} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
+variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
 
 theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : g ∘ f = f' ∘ g) : PreErgodic f' μ' :=
@@ -101,9 +101,9 @@ theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ 
   refine' ⟨fun hf => preErgodic_of_preErgodic_conjugate (h.symm e) hf _,
       fun hf => preErgodic_of_preErgodic_conjugate h hf _⟩
   · change (e.symm ∘ e) ∘ f ∘ e.symm = f ∘ e.symm
-    rw [MeasurableEquiv.symm_comp_self, comp.left_id]
+    rw [MeasurableEquiv.symm_comp_self, id_comp]
   · change e ∘ f = e ∘ f ∘ e.symm ∘ e
-    rw [MeasurableEquiv.symm_comp_self, comp.right_id]
+    rw [MeasurableEquiv.symm_comp_self, comp_id]
 #align measure_theory.measure_preserving.pre_ergodic_conjugate_iff MeasureTheory.MeasurePreserving.preErgodic_conjugate_iff
 
 theorem ergodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :

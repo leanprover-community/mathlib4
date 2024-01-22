@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.GroupTheory.MonoidLocalization
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.NoncommRing
 
@@ -44,7 +44,7 @@ open OreLocalization
 
 namespace OreLocalization
 
-variable (R : Type _) [Monoid R] (S : Submonoid R) [OreSet S]
+variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
 def oreEqv : Setoid (R × S) where
@@ -71,7 +71,7 @@ def oreEqv : Setoid (R × S) where
 end OreLocalization
 
 /-- The ore localization of a monoid and a submonoid fulfilling the ore condition. -/
-def OreLocalization (R : Type _) [Monoid R] (S : Submonoid R) [OreSet S] :=
+def OreLocalization (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S] :=
   Quotient (OreLocalization.oreEqv R S)
 #align ore_localization OreLocalization
 
@@ -79,7 +79,7 @@ namespace OreLocalization
 
 section Monoid
 
-variable {R : Type _} [Monoid R] {S : Submonoid R}
+variable {R : Type*} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
@@ -144,7 +144,7 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t 
 
 /-- A function or predicate over `R` and `S` can be lifted to `R[S⁻¹]` if it is invariant
 under expansion on the right. -/
-def liftExpand {C : Sort _} (P : R → S → C)
+def liftExpand {C : Sort*} (P : R → S → C)
     (hP : ∀ (r t : R) (s : S) (ht : (s : R) * t ∈ S), P r s = P (r * t) ⟨s * t, ht⟩) : R[S⁻¹] → C :=
   Quotient.lift (fun p : R × S => P p.1 p.2) fun (r₁, s₁) (r₂, s₂) ⟨u, v, hr₂, hs₂⟩ => by
     dsimp at *
@@ -158,7 +158,7 @@ def liftExpand {C : Sort _} (P : R → S → C)
 #align ore_localization.lift_expand OreLocalization.liftExpand
 
 @[simp]
-theorem liftExpand_of {C : Sort _} {P : R → S → C}
+theorem liftExpand_of {C : Sort*} {P : R → S → C}
     {hP : ∀ (r t : R) (s : S) (ht : (s : R) * t ∈ S), P r s = P (r * t) ⟨s * t, ht⟩} (r : R)
     (s : S) : liftExpand P hP (r /ₒ s) = P r s :=
   rfl
@@ -166,7 +166,7 @@ theorem liftExpand_of {C : Sort _} {P : R → S → C}
 
 /-- A version of `liftExpand` used to simultaneously lift functions with two arguments
 in `R[S⁻¹]`. -/
-def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
+def lift₂Expand {C : Sort*} (P : R → S → R → S → C)
     (hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
         (ht₂ : (s₂ : R) * t₂ ∈ S),
@@ -183,7 +183,7 @@ def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
 #align ore_localization.lift₂_expand OreLocalization.lift₂Expand
 
 @[simp]
-theorem lift₂Expand_of {C : Sort _} {P : R → S → R → S → C}
+theorem lift₂Expand_of {C : Sort*} {P : R → S → R → S → C}
     {hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
         (ht₂ : (s₂ : R) * t₂ ∈ S),
@@ -375,7 +375,7 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 
 section UMP
 
-variable {T : Type _} [Monoid T]
+variable {T : Type*} [Monoid T]
 
 variable (f : R →* T) (fS : S →* Units T)
 
@@ -436,7 +436,7 @@ end Monoid
 
 section CommMonoid
 
-variable {R : Type _} [CommMonoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [CommMonoid R] {S : Submonoid R} [OreSet S]
 
 theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r₁ * r₂ /ₒ (s₁ * s₂) := by
@@ -463,21 +463,16 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹]
     induction' z using OreLocalization.ind with r s
     use (r, s); dsimp
     rw [numeratorHom_apply, numeratorHom_apply]; simp
-  eq_iff_exists' r₁ r₂ := by
-    dsimp; constructor
-    · intro h
-      rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
-      rcases h with ⟨u, v, h₁, h₂⟩
-      dsimp at h₂
-      rw [one_mul, one_mul] at h₂
-      subst h₂
-      use u
-      simpa only [mul_comm] using h₁.symm
-    · rintro ⟨s, h⟩
-      rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff]
-      refine' ⟨s, s, _, _⟩
-      · simpa [mul_comm] using h.symm
-      · simp [one_mul]
+  exists_of_eq r₁ r₂ := by
+    dsimp
+    intro h
+    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
+    rcases h with ⟨u, v, h₁, h₂⟩
+    dsimp at h₂
+    rw [one_mul, one_mul] at h₂
+    subst h₂
+    use u
+    simpa only [mul_comm] using h₁.symm
 #align ore_localization.localization_map OreLocalization.localizationMap
 
 /-- If `R` is commutative, Ore localization and monoid localization are isomorphic. -/
@@ -489,7 +484,7 @@ end CommMonoid
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 private def add'' (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) : R[S⁻¹] :=
   (r₁ * oreDenom (s₁ : R) s₂ + r₂ * oreNum (s₁ : R) s₂) /ₒ (s₁ * oreDenom (s₁ : R) s₂)
@@ -736,7 +731,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
-  repeat' rw [oreDiv_mul_oreDiv]; simp only [add_mul, add_oreDiv]
+  repeat rw [oreDiv_mul_oreDiv]
+  simp only [add_mul, add_oreDiv]
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
@@ -749,7 +745,7 @@ instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
 
 section UMP
 
-variable {T : Type _} [Semiring T]
+variable {T : Type*} [Semiring T]
 
 variable (f : R →+* T) (fS : S →* Units T)
 
@@ -827,7 +823,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
 protected def neg : R[S⁻¹] → R[S⁻¹] :=
@@ -878,7 +874,7 @@ open nonZeroDivisors
 
 open Classical
 
-variable {R : Type _} [Ring R] [Nontrivial R] [OreSet R⁰]
+variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
 instance nontrivial : Nontrivial R[R⁰⁻¹] :=
   nontrivial_of_nonZeroDivisors (refl R⁰)

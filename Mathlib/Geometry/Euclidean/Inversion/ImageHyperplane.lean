@@ -27,7 +27,7 @@ inversion
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
-variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] {c x y : P} {R : ℝ}
 
 namespace EuclideanGeometry
@@ -82,5 +82,5 @@ theorem mapsTo_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hp : 
 /-- Inversion sends an affine subspace passing through the center to itself. -/
 theorem image_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hR : R ≠ 0) (hp : c ∈ p) :
     inversion c R '' p = p :=
-  (mapsTo_inversion_affineSubspace_of_mem hp).image_subset.antisymm <| fun x hx ↦
+  (mapsTo_inversion_affineSubspace_of_mem hp).image_subset.antisymm fun x hx ↦
     ⟨inversion c R x, mapsTo_inversion_affineSubspace_of_mem hp hx, inversion_inversion _ hR _⟩

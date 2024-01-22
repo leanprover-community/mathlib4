@@ -10,12 +10,12 @@ import Mathlib.Data.TypeVec
 
 /-!
 
-Functors between the category of tuples of types, and the category Type
+# Functors between the category of tuples of types, and the category Type
 
 Features:
 
-`MvFunctor n` : the type class of multivariate functors
-`f <$$> x`    : notation for map
+* `MvFunctor n` : the type class of multivariate functors
+* `f <$$> x`    : notation for map
 
 -/
 
@@ -26,7 +26,7 @@ open MvFunctor
 
 /-- Multivariate functors, i.e. functor between the category of type vectors
 and the category of Type -/
-class MvFunctor {n : ℕ} (F : TypeVec n → Type _) where
+class MvFunctor {n : ℕ} (F : TypeVec n → Type*) where
   /-- Multivariate map, if `f : α ⟹ β` and `x : F α` then `f <$$> x : F β`. -/
   map : ∀ {α β : TypeVec n}, α ⟹ β → F α → F β
 #align mvfunctor MvFunctor
@@ -67,7 +67,7 @@ end MvFunctor
 
 
 /-- laws for `MvFunctor` -/
-class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type _) [MvFunctor F] : Prop where
+class LawfulMvFunctor {n : ℕ} (F : TypeVec n → Type*) [MvFunctor F] : Prop where
   /-- `map` preserved identities, i.e., maps identity on `α` to identity on `F α` -/
   id_map : ∀ {α : TypeVec n} (x : F α), TypeVec.id <$$> x = x
   /-- `map` preserves compositions -/
@@ -121,10 +121,10 @@ section LiftP'
 variable (F)
 
 theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
-                                  (f : α ⟹ β) (g : β ⟹ α)
-                                  (h₀ : f ⊚ g = TypeVec.id)
-                                  (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
-      (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
+    (f : α ⟹ β) (g : β ⟹ α)
+    (h₀ : f ⊚ g = TypeVec.id)
+    (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
+    (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
   constructor <;> rintro ⟨u, h₂⟩
   · refine ⟨f <$$> u, ?_⟩
     apply (h₁ u).mp h₂
@@ -144,8 +144,9 @@ theorem LiftR_def (x y : F α) :
       ∃ u : F (Subtype_ R),
         (TypeVec.prod.fst ⊚ subtypeVal R) <$$> u = x ∧
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
-  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R)
-    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype']; simp [comp])
+  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R) (by
+    simp only [map_map, comp_assoc, subtypeVal_toSubtype']
+    simp (config := { unfoldPartialApp := true }) [comp])
 #align mvfunctor.liftr_def MvFunctor.LiftR_def
 
 end LiftP'
@@ -160,7 +161,7 @@ open TypeVec
 
 section LiftPLastPredIff
 
-variable {F : TypeVec.{u} (n + 1) → Type _} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
+variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
 
 open MvFunctor
 
@@ -192,7 +193,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
-    dsimp [(· ⊚ ·)]
+    dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
       by rw[this];
     ext i ⟨x, _⟩
@@ -228,7 +229,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp [MvFunctor.map_map, (· ⊚ ·)]
+    simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
     -- porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl

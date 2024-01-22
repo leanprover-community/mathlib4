@@ -36,13 +36,13 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 open TopologicalSpace Topology Function
 
 /-- The type of open subgroups of a topological additive group. -/
-structure OpenAddSubgroup (G : Type _) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where
+structure OpenAddSubgroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where
   isOpen' : IsOpen carrier
 #align open_add_subgroup OpenAddSubgroup
 
 /-- The type of open subgroups of a topological group. -/
 @[to_additive]
-structure OpenSubgroup (G : Type _) [Group G] [TopologicalSpace G] extends Subgroup G where
+structure OpenSubgroup (G : Type*) [Group G] [TopologicalSpace G] extends Subgroup G where
   isOpen' : IsOpen carrier
 #align open_subgroup OpenSubgroup
 
@@ -56,7 +56,7 @@ attribute [coe] OpenSubgroup.toSubgroup OpenAddSubgroup.toAddSubgroup
 
 namespace OpenSubgroup
 
-variable {G : Type _} [Group G] [TopologicalSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G]
 variable {U V : OpenSubgroup G} {g : G}
 
 @[to_additive]
@@ -185,7 +185,7 @@ theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :
 
 section
 
-variable {H : Type _} [Group H] [TopologicalSpace H]
+variable {H : Type*} [Group H] [TopologicalSpace H]
 
 /-- The product of two open subgroups as an open subgroup of the product group. -/
 @[to_additive "The product of two open subgroups as an open subgroup of the product group."]
@@ -259,7 +259,7 @@ theorem toSubgroup_le : (U : Subgroup G) ≤ (V : Subgroup G) ↔ U ≤ V :=
 #align open_subgroup.coe_subgroup_le OpenSubgroup.toSubgroup_le
 #align open_add_subgroup.coe_add_subgroup_le OpenAddSubgroup.toAddSubgroup_le
 
-variable {N : Type _} [Group N] [TopologicalSpace N]
+variable {N : Type*} [Group N] [TopologicalSpace N]
 
 /-- The preimage of an `OpenSubgroup` along a continuous `Monoid` homomorphism
   is an `OpenSubgroup`. -/
@@ -292,7 +292,7 @@ theorem mem_comap {H : OpenSubgroup N} {f : G →* N} {hf : Continuous f} {x : G
 #align open_add_subgroup.mem_comap OpenAddSubgroup.mem_comap
 
 @[to_additive]
-theorem comap_comap {P : Type _} [Group P] [TopologicalSpace P] (K : OpenSubgroup P) (f₂ : N →* P)
+theorem comap_comap {P : Type*} [Group P] [TopologicalSpace P] (K : OpenSubgroup P) (f₂ : N →* P)
     (hf₂ : Continuous f₂) (f₁ : G →* N) (hf₁ : Continuous f₁) :
     (K.comap f₂ hf₂).comap f₁ hf₁ = K.comap (f₂.comp f₁) (hf₂.comp hf₁) :=
   rfl
@@ -303,7 +303,7 @@ end OpenSubgroup
 
 namespace Subgroup
 
-variable {G : Type _} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgroup G)
+variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgroup G)
 
 @[to_additive]
 theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
@@ -342,7 +342,7 @@ end Subgroup
 
 namespace OpenSubgroup
 
-variable {G : Type _} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 @[to_additive]
 instance : Sup (OpenSubgroup G) :=
@@ -366,7 +366,7 @@ namespace Submodule
 
 open OpenAddSubgroup
 
-variable {R : Type _} {M : Type _} [CommRing R]
+variable {R : Type*} {M : Type*} [CommRing R]
 
 variable [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M] [Module R M]
 
@@ -379,13 +379,13 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable [TopologicalSpace R] [TopologicalRing R]
 
-theorem isOpen_of_open_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
+theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
     IsOpen (I : Set R) :=
   @Submodule.isOpen_mono R R _ _ _ _ Semiring.toModule _ _ h hU
-#align ideal.is_open_of_open_subideal Ideal.isOpen_of_open_subideal
+#align ideal.is_open_of_open_subideal Ideal.isOpen_of_isOpen_subideal
 
 end Ideal

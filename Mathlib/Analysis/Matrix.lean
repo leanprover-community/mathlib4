@@ -19,6 +19,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
   * `Matrix.normedSpace`
+  * `Matrix.boundedSMul`
 
 * The Frobenius norm:
 
@@ -27,12 +28,14 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusNormedSpace`
   * `Matrix.frobeniusNormedRing`
   * `Matrix.frobeniusNormedAlgebra`
+  * `Matrix.frobeniusBoundedSMul`
 
 * The $L^\infty$ operator norm:
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
   * `Matrix.linftyOpNormedSpace`
+  * `Matrix.linftyOpBoundedSMul`
   * `Matrix.linftyOpNonUnitalSemiNormedRing`
   * `Matrix.linftyOpSemiNormedRing`
   * `Matrix.linftyOpNonUnitalNormedRing`
@@ -41,10 +44,11 @@ In this file we provide the following non-instances for norms on matrices:
 
 These are not declared as instances because there are several natural choices for defining the norm
 of a matrix.
+
+The norm induced by the identification of `Matrix m n 𝕜` with
+`EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
+`Analysis.NormedSpace.Star.Matrix`. It is separated to avoid extraneous imports in this file.
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 
 noncomputable section
 
@@ -52,7 +56,7 @@ open scoped BigOperators NNReal Matrix
 
 namespace Matrix
 
-variable {R l m n α β : Type _} [Fintype l] [Fintype m] [Fintype n]
+variable {R l m n α β : Type*} [Fintype l] [Fintype m] [Fintype n]
 
 /-! ### The elementwise supremum norm -/
 
@@ -116,9 +120,8 @@ theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ =
 #align matrix.norm_map_eq Matrix.norm_map_eq
 
 @[simp]
-theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
-  simp_rw [Pi.nnnorm_def]
-  exact Finset.sup_comm _ _ _
+theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
+  Finset.sup_comm _ _ _
 #align matrix.nnnorm_transpose Matrix.nnnorm_transpose
 
 @[simp]
@@ -196,6 +199,11 @@ section NormedSpace
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
+/-- This applies to the sup norm of sup norm. -/
+protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
+  Pi.instBoundedSMul
+
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
@@ -238,6 +246,13 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
   (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n => α))
 #align matrix.linfty_op_normed_add_comm_group Matrix.linftyOpNormedAddCommGroup
 
+/-- This applies to the sup norm of L1 norm. -/
+@[local instance]
+protected theorem linftyOpBoundedSMul
+    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
+    BoundedSMul R (Matrix m n α) :=
+  (by infer_instance : BoundedSMul R (m → PiLp 1 fun j : n => α))
+
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
@@ -254,7 +269,7 @@ variable [SeminormedAddCommGroup α]
 theorem linfty_op_norm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- porting note: added
-  change ‖fun i => (PiLp.equiv 1 _).symm (A i)‖ = _
+  change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
 #align matrix.linfty_op_norm_def Matrix.linfty_op_norm_def
 
@@ -304,7 +319,7 @@ section NonUnitalSeminormedRing
 variable [NonUnitalSeminormedRing α]
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (k j) -/
-theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_op_nnnorm_def, Matrix.mul_apply]
   calc
     (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
@@ -322,7 +337,7 @@ theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
       rfl
 #align matrix.linfty_op_nnnorm_mul Matrix.linfty_op_nnnorm_mul
 
-theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_op_nnnorm_mul _ _
 #align matrix.linfty_op_norm_mul Matrix.linfty_op_norm_mul
 
@@ -390,6 +405,71 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 #align matrix.linfty_op_normed_algebra Matrix.linftyOpNormedAlgebra
 
+
+section
+variable [NormedDivisionRing α] [NormedAlgebra ℝ α] [CompleteSpace α]
+
+/-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
+private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
+
+private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
+  rw [unitOf]
+  split_ifs with h
+  · simp
+  · rw [← nnnorm_eq_zero] at h
+    rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
+
+private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
+  simp [unitOf]
+  split_ifs with h
+  · simp [h]
+  · rw [mul_smul_comm, mul_inv_cancel h, Algebra.algebraMap_eq_smul_one]
+
+end
+
+/-!
+For a matrix over a field, the norm defined in this section agrees with the operator norm on
+`ContinuousLinearMap`s between function types (which have the infinity norm).
+-/
+section
+variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
+
+lemma linfty_op_nnnorm_eq_op_nnnorm (A : Matrix m n α) :
+    ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
+  rw [ContinuousLinearMap.op_nnnorm_eq_of_bounds _ (linfty_op_nnnorm_mulVec _) fun N hN => ?_]
+  rw [linfty_op_nnnorm_def]
+  refine Finset.sup_le fun i _ => ?_
+  cases isEmpty_or_nonempty n
+  · simp
+  classical
+  let x : n → α := fun j => unitOf (A i j)
+  have hxn : ‖x‖₊ = 1 := by
+    simp_rw [Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
+  specialize hN x
+  rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
+  replace hN := hN i (Finset.mem_univ _)
+  dsimp [mulVec, dotProduct] at hN
+  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq, nnnorm_one,
+    mul_one] at hN
+  exact hN
+
+lemma linfty_op_norm_eq_op_norm (A : Matrix m n α) :
+    ‖A‖ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖ :=
+  congr_arg NNReal.toReal (linfty_op_nnnorm_eq_op_nnnorm A)
+
+variable [DecidableEq n]
+
+@[simp] lemma linfty_op_nnnorm_toMatrix (f : (n → α) →L[α] (m → α)) :
+    ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖₊ = ‖f‖₊ := by
+  rw [linfty_op_nnnorm_eq_op_nnnorm]
+  simp only [← toLin'_apply', toLin'_toMatrix']
+
+@[simp] lemma linfty_op_norm_toMatrix (f : (n → α) →L[α] (m → α)) :
+    ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=
+  congr_arg NNReal.toReal (linfty_op_nnnorm_toMatrix f)
+
+end
+
 end LinftyOp
 
 /-! ### The Frobenius norm
@@ -420,6 +500,13 @@ def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Ma
   (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 #align matrix.frobenius_normed_add_comm_group Matrix.frobeniusNormedAddCommGroup
 
+/-- This applies to the frobenius norm. -/
+@[local instance]
+theorem frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [BoundedSMul R α] :
+    BoundedSMul R (Matrix m n α) :=
+  (by infer_instance : BoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+
 /-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
@@ -435,10 +522,10 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  -- porting note: added, along with `PiLp.equiv_symm_apply` below
-  change ‖(PiLp.equiv 2 _).symm <| fun i => (PiLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
+  -- porting note: added, along with `WithLp.equiv_symm_pi_apply` below
+  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
-    PiLp.equiv_symm_apply]
+    WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_nnnorm_def Matrix.frobenius_nnnorm_def
 
 theorem frobenius_norm_def (A : Matrix m n α) :
@@ -486,30 +573,30 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
 #align matrix.frobenius_normed_star_group Matrix.frobenius_normedStarGroup
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖row v‖ = ‖(PiLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_row (v : m → α) : ‖row v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, PiLp.equiv_symm_apply]
+  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_row Matrix.frobenius_norm_row
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖row v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_row (v : m → α) : ‖row v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_row v
 #align matrix.frobenius_nnnorm_row Matrix.frobenius_nnnorm_row
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col v‖ = ‖(PiLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_col (v : n → α) : ‖col v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, PiLp.equiv_symm_apply]
+  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_col Matrix.frobenius_norm_col
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_col v
 #align matrix.frobenius_nnnorm_col Matrix.frobenius_nnnorm_col
 
 @[simp]
 theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖₊ = ‖(PiLp.equiv 2 _).symm v‖₊ := by
+    ‖diagonal v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
   let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
@@ -524,7 +611,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
 
 @[simp]
 theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖ = ‖(PiLp.equiv 2 _).symm v‖ :=
+    ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v : _).trans rfl
 #align matrix.frobenius_norm_diagonal Matrix.frobenius_norm_diagonal
 
@@ -544,23 +631,21 @@ section IsROrC
 
 variable [IsROrC α]
 
-theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
+theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
-  rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum, Finset.sum_product]
-  refine' NNReal.rpow_le_rpow _ one_half_pos.le
-  refine' Finset.sum_le_sum fun i _ => Finset.sum_le_sum fun j _ => _
+  rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum]
+  gcongr with i _ j
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel' (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
-  dsimp only
   have :=
-    @nnnorm_inner_le_nnnorm α _ _ _ _ ((PiLp.equiv 2 fun _ => α).symm fun j => star (A i j))
-      ((PiLp.equiv 2 fun _ => α).symm fun k => B k j)
-  simpa only [PiLp.equiv_symm_apply, PiLp.inner_apply, IsROrC.inner_apply, starRingEnd_apply,
+    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
+      ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
+  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, IsROrC.inner_apply, starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 #align matrix.frobenius_nnnorm_mul Matrix.frobenius_nnnorm_mul
 
-theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
+theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 #align matrix.frobenius_norm_mul Matrix.frobenius_norm_mul
 

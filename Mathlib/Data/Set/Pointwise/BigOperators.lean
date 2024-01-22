@@ -19,7 +19,7 @@ open BigOperators
 
 open Pointwise Function
 
-variable {ι α β F : Type _}
+variable {ι α β F : Type*}
 
 section Monoid
 
@@ -77,7 +77,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
           exact hg hj
       · rw [Finset.prod_update_of_not_mem hi, Function.update_same]
     · rintro ⟨g, hg, rfl⟩
-      exact ⟨g i, is.prod g, hg (is.mem_insert_self _),
+      exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
 #align set.mem_finset_prod Set.mem_finset_prod
 #align set.mem_finset_sum Set.mem_finset_sum
@@ -116,7 +116,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
 #align set.list_sum_subset_list_sum Set.list_sum_subset_list_sum
 
 @[to_additive]
-theorem list_prod_singleton {M : Type _} [CommMonoid M] (s : List M) :
+theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.list_prod_singleton Set.list_prod_singleton
@@ -143,7 +143,7 @@ theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι →
 #align set.multiset_sum_subset_multiset_sum Set.multiset_sum_subset_multiset_sum
 
 @[to_additive]
-theorem multiset_prod_singleton {M : Type _} [CommMonoid M] (s : Multiset M) :
+theorem multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_multiset_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.multiset_prod_singleton Set.multiset_prod_singleton
@@ -166,7 +166,7 @@ theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set �
 #align set.finset_sum_subset_finset_sum Set.finset_sum_subset_finset_sum
 
 @[to_additive]
-theorem finset_prod_singleton {M ι : Type _} [CommMonoid M] (s : Finset ι) (I : ι → M) :
+theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
     (∏ i : ι in s, ({I i} : Set M)) = {∏ i : ι in s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 #align set.finset_prod_singleton Set.finset_prod_singleton

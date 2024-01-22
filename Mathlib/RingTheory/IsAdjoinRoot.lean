@@ -197,14 +197,14 @@ theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 section lift
 
-variable {T : Type _} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
+variable {T : Type*} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
 
 /-- Auxiliary lemma for `IsAdjoinRoot.lift` -/
 theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[X])
     (hzw : h.map w = z) : (h.repr z).eval₂ i x = w.eval₂ i x := by
   rw [eq_comm, ← sub_eq_zero, ← h.map_repr z, ← map_sub, h.map_eq_zero_iff] at hzw
   obtain ⟨y, hy⟩ := hzw
-  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, MulZeroClass.zero_mul]
+  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, zero_mul]
 #align is_adjoin_root.eval₂_repr_eq_eval₂_of_map_eq IsAdjoinRoot.eval₂_repr_eq_eval₂_of_map_eq
 
 variable (i x)
@@ -503,7 +503,7 @@ theorem basis_one (h : IsAdjoinRootMonic S f) (hdeg : 1 < natDegree f) :
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
-def liftPolyₗ {T : Type _} [AddCommGroup T] [Module R T] (h : IsAdjoinRootMonic S f)
+def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (h : IsAdjoinRootMonic S f)
     (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
   g.comp h.modByMonicHom
 #align is_adjoin_root_monic.lift_polyₗ IsAdjoinRootMonic.liftPolyₗ
@@ -557,7 +557,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (f:= fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
+      _ = Pi.single (f := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · refine (Pi.single_eq_of_ne (f := fun _ => R) ?_ (1 : (fun _ => R) n)).symm
     rintro rfl
     simp [hi] at hn
@@ -628,7 +628,7 @@ end lift
 
 section Equiv
 
-variable {T : Type _} [CommRing T] [Algebra R T]
+variable {T : Type*} [CommRing T] [Algebra R T]
 
 /-- Adjoining a root gives a unique ring up to algebra isomorphism.
 
@@ -664,26 +664,26 @@ theorem aequiv_symm (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
 #align is_adjoin_root.aequiv_symm IsAdjoinRoot.aequiv_symm
 
 @[simp]
-theorem lift_aequiv {U : Type _} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
+theorem lift_aequiv {U : Type*} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
     (i : R →+* U) (x hx z) : h'.lift i x hx (h.aequiv h' z) = h.lift i x hx z := by
   rw [← h.map_repr z, aequiv_map, lift_map, lift_map]
 #align is_adjoin_root.lift_aequiv IsAdjoinRoot.lift_aequiv
 
 @[simp]
-theorem liftHom_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (x : U) (hx z) : h'.liftHom x hx (h.aequiv h' z) = h.liftHom x hx z :=
   h.lift_aequiv h' _ _ hx _
 #align is_adjoin_root.lift_hom_aequiv IsAdjoinRoot.liftHom_aequiv
 
 @[simp]
-theorem aequiv_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) (x) :
     (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x :=
   h.liftHom_aequiv _ _ h''.aeval_root _
 #align is_adjoin_root.aequiv_aequiv IsAdjoinRoot.aequiv_aequiv
 
 @[simp]
-theorem aequiv_trans {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_trans {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) :
     (h.aequiv h').trans (h'.aequiv h'') = h.aequiv h'' := by ext z; exact h.aequiv_aequiv h' h'' z
 #align is_adjoin_root.aequiv_trans IsAdjoinRoot.aequiv_trans
@@ -710,13 +710,13 @@ theorem ofEquiv_root (h : IsAdjoinRoot S f) (e : S ≃ₐ[R] T) : (h.ofEquiv e).
 #align is_adjoin_root.of_equiv_root IsAdjoinRoot.ofEquiv_root
 
 @[simp]
-theorem aequiv_ofEquiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (e : T ≃ₐ[R] U) : h.aequiv (h'.ofEquiv e) = (h.aequiv h').trans e := by
   ext a; rw [← h.map_repr a, aequiv_map, AlgEquiv.trans_apply, aequiv_map, ofEquiv_map_apply]
 #align is_adjoin_root.aequiv_of_equiv IsAdjoinRoot.aequiv_ofEquiv
 
 @[simp]
-theorem ofEquiv_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem ofEquiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot U f) (e : S ≃ₐ[R] T) :
     (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
   ext a

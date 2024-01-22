@@ -31,15 +31,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -53,9 +53,9 @@ variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
 
-section ConstSmul
+section ConstSMul
 
-variable {R : Type _} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
+variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
 /-! ### Derivative of a function multiplied by a constant -/
 
@@ -109,7 +109,7 @@ theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
   (h.hasFDerivAt.const_smul c).fderiv
 #align fderiv_const_smul fderiv_const_smul
 
-end ConstSmul
+end ConstSMul
 
 section Add
 
@@ -123,9 +123,9 @@ nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     abel
 #align has_strict_fderiv_at.add HasStrictFDerivAt.add
 
-nonrec theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
+theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
     (hg : HasFDerivAtFilter g g' x L) : HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
-  (hf.add hg).congr_left fun _ => by
+  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 #align has_fderiv_at_filter.add HasFDerivAtFilter.add
@@ -326,7 +326,7 @@ section Sum
 
 open BigOperators
 
-variable {ι : Type _} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
+variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
@@ -337,7 +337,7 @@ theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x L) :
     HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
-  dsimp [HasFDerivAtFilter] at *
+  simp only [hasFDerivAtFilter_iff_isLittleO] at *
   convert IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
 #align has_fderiv_at_filter.sum HasFDerivAtFilter.sum
@@ -541,6 +541,12 @@ nonrec theorem HasFDerivAt.sub_const (hf : HasFDerivAt f f' x) (c : F) :
   hf.sub_const c
 #align has_fderiv_at.sub_const HasFDerivAt.sub_const
 
+theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (id 𝕜 F) x :=
+  (hasStrictFDerivAt_id x).sub_const c
+
+theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (id 𝕜 F) x :=
+  (hasFDerivAt_id x).sub_const c
+
 theorem DifferentiableWithinAt.sub_const (hf : DifferentiableWithinAt 𝕜 f s x) (c : F) :
     DifferentiableWithinAt 𝕜 (fun y => f y - c) s x :=
   (hf.hasFDerivWithinAt.sub_const c).differentiableWithinAt
@@ -663,4 +669,3 @@ theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv �
 end Sub
 
 end
-

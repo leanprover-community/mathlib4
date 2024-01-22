@@ -3,7 +3,7 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Data.Int.Parity
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 #align_import number_theory.number_field.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -34,7 +34,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
-class NumberField (K : Type _) [Field K] : Prop where
+class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
 #align number_field NumberField
@@ -51,14 +51,17 @@ theorem Int.not_isField : ¬IsField ℤ := fun h =>
 
 namespace NumberField
 
-variable (K L : Type _) [Field K] [Field L] [nf : NumberField K]
+variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
 
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
 protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
-  Algebra.isAlgebraic_of_finite _ _
+  Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
+
+instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+  Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field. -/
@@ -72,7 +75,7 @@ theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
   Iff.rfl
 #align number_field.mem_ring_of_integers NumberField.mem_ringOfIntegers
 
-theorem isIntegral_of_mem_ringOfIntegers {K : Type _} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
+theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
     IsIntegral ℤ (⟨x, hx⟩ : 𝓞 K) := by
   obtain ⟨P, hPm, hP⟩ := hx
   refine' ⟨P, hPm, _⟩
@@ -112,13 +115,13 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
-theorem map_mem {F L : Type _} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
+theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
     (x : 𝓞 K) : f x ∈ 𝓞 L :=
   (mem_ringOfIntegers _ _).2 <| map_isIntegral_int f <| RingOfIntegers.isIntegral_coe x
 #align number_field.ring_of_integers.map_mem NumberField.RingOfIntegers.map_mem
 
 /-- The ring of integers of `K` are equivalent to any integral closure of `ℤ` in `K` -/
-protected noncomputable def equiv (R : Type _) [CommRing R] [Algebra R K]
+protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
     [IsIntegralClosure R ℤ K] : 𝓞 K ≃+* R :=
   (IsIntegralClosure.equiv ℤ R K _).symm.toRingEquiv
 #align number_field.ring_of_integers.equiv NumberField.RingOfIntegers.equiv
@@ -146,7 +149,7 @@ instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
-  IsIntegralClosure.isLocalization ℤ ℚ K (𝓞 K)
+  IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
 
 /-- A ℤ-basis of the ring of integers of `K`. -/
 noncomputable def basis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℤ (𝓞 K) :=

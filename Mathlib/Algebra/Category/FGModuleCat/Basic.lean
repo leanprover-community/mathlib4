@@ -213,14 +213,15 @@ instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
   (by infer_instance : Module.Finite K (V →ₗ[K] W))
 
 instance closedPredicateModuleFinite :
-    MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K => Module.Finite K V where
-  prop_ihom := @fun X Y hX hY => @Module.Finite.linearMap K X Y _ _ _ _ _ _ _ hX hY
+    MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
+  prop_ihom {X Y} _ _ := Module.Finite.linearMap K K X Y
 #align fgModule.closed_predicate_module_finite FGModuleCat.closedPredicateModuleFinite
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
   -- Porting note: was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory _
+  exact MonoidalCategory.fullMonoidalClosedSubcategory
+    (fun V : ModuleCat.{u} K => Module.Finite K V)
 
 variable (V W : FGModuleCat K)
 
@@ -263,17 +264,12 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
   contractLeft_apply f x
 #align fgModule.fgModule_evaluation_apply FGModuleCat.FGModuleCatEvaluation_apply
 
--- Porting note: extremely slow, was fast in mathlib3.
--- I tried many things using `dsimp` and `change`, but couldn't find anything faster than this.
-set_option maxHeartbeats 1600000 in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
 
--- Porting note: extremely slow, was fast in mathlib3.
-set_option maxHeartbeats 1600000 in
 private theorem evaluation_coevaluation :
     (FGModuleCatCoevaluation K V ⊗ 𝟙 V) ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =

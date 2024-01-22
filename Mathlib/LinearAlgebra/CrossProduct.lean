@@ -42,7 +42,7 @@ open Matrix
 
 open Matrix
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
@@ -73,7 +73,7 @@ theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
-alias cross_anticomm ← neg_cross
+alias neg_cross := cross_anticomm
 #align neg_cross neg_cross
 
 @[simp]
@@ -153,7 +153,7 @@ theorem cross_cross (u v w : Fin 3 → R) : u ×₃ v ×₃ w = u ×₃ (v ×₃
   lie_lie u v w
 #align cross_cross cross_cross
 
-/-- Jacobi identity: For a cross product of three vectors,
+/-- **Jacobi identity**: For a cross product of three vectors,
     their sum over the three even permutations is equal to the zero vector. -/
 theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×₃ u) + w ×₃ (u ×₃ v) = 0 :=
   lie_jacobi u v w

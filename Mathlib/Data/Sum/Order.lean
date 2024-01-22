@@ -27,7 +27,7 @@ type synonym.
 -/
 
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 namespace Sum
 
@@ -547,19 +547,19 @@ variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
 @[simps! apply]
-def sumComm (α β : Type _) [LE α] [LE β] : Sum α β ≃o Sum β α :=
+def sumComm (α β : Type*) [LE α] [LE β] : Sum α β ≃o Sum β α :=
   { Equiv.sumComm α β with map_rel_iff' := swap_le_swap_iff }
 #align order_iso.sum_comm OrderIso.sumComm
 #align order_iso.sum_comm_apply OrderIso.sumComm_apply
 
 @[simp]
-theorem sumComm_symm (α β : Type _) [LE α] [LE β] :
+theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
     (OrderIso.sumComm α β).symm = OrderIso.sumComm β α :=
   rfl
 #align order_iso.sum_comm_symm OrderIso.sumComm_symm
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
-def sumAssoc (α β γ : Type _) [LE α] [LE β] [LE γ] : Sum (Sum α β) γ ≃o Sum α (Sum β γ) :=
+def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : Sum (Sum α β) γ ≃o Sum α (Sum β γ) :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := @fun a b => by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
@@ -597,7 +597,7 @@ theorem sumAssoc_symm_apply_inr_inr : (sumAssoc α β γ).symm (inr (inr c)) = i
 #align order_iso.sum_assoc_symm_apply_inr_inr OrderIso.sumAssoc_symm_apply_inr_inr
 
 /-- `orderDual` is distributive over `⊕` up to an order isomorphism. -/
-def sumDualDistrib (α β : Type _) [LE α] [LE β] : (Sum α β)ᵒᵈ ≃o Sum αᵒᵈ βᵒᵈ :=
+def sumDualDistrib (α β : Type*) [LE α] [LE β] : (Sum α β)ᵒᵈ ≃o Sum αᵒᵈ βᵒᵈ :=
   { Equiv.refl _ with
     map_rel_iff' := by
       rintro (a | a) (b | b)
@@ -630,7 +630,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
 #align order_iso.sum_dual_distrib_symm_inr OrderIso.sumDualDistrib_symm_inr
 
 /-- `Equiv.SumAssoc` promoted to an order isomorphism. -/
-def sumLexAssoc (α β γ : Type _) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
+def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := @fun a b =>
       ⟨fun h =>
@@ -685,7 +685,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 #align order_iso.sum_lex_assoc_symm_apply_inr_inr OrderIso.sumLexAssoc_symm_apply_inr_inr
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
-def sumLexDualAntidistrib (α β : Type _) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
+def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
       rcases a with (a | a) <;> rcases b with (b | b); simp
@@ -737,10 +737,18 @@ namespace WithBot
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
-    rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
-    exact not_coe_le_bot _⟩
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
+    rcases a with (a | _) <;> rcases b with (b | _)
+    · simp only [elim_inr, lex_inl_inl, none_le]
+    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
+      exact not_coe_le_bot _
+    · simp only [elim_inl, lex_inr_inr, some_le_some]
+  ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
+
+
 
 @[simp]
 theorem orderIsoPUnitSumLex_bot : @orderIsoPUnitSumLex α _ ⊥ = toLex (inl PUnit.unit) :=
@@ -771,9 +779,16 @@ namespace WithTop
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
-    rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
-    exact not_top_le_coe _⟩
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
+    rcases a with (a | _) <;> rcases b with (b | _)
+    · simp only [lex_inr_inr, le_none]
+    · simp only [lex_inr_inl, false_iff]
+      exact not_top_le_coe _
+    · simp only [Lex.sep, le_none]
+    · simp only [lex_inl_inl, some_le_some]
+
+  ⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]

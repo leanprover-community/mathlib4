@@ -33,7 +33,7 @@ universe u v w
 
 section TopologicalAlgebra
 
-variable (R : Type _) (A : Type u)
+variable (R : Type*) (A : Type u)
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
@@ -79,23 +79,19 @@ end TopologicalAlgebra
 
 section TopologicalAlgebra
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 variable {A : Type u} [TopologicalSpace A]
 
 variable [Semiring A] [Algebra R A]
 
-instance Subalgebra.continuousSMul [TopologicalSpace R] [ContinuousSMul R A] (s : Subalgebra R A) :
-    ContinuousSMul R s :=
-  s.toSubmodule.continuousSMul
-#align subalgebra.has_continuous_smul Subalgebra.continuousSMul
+#align subalgebra.has_continuous_smul SMulMemClass.continuousSMul
 
 variable [TopologicalSemiring A]
 
 /-- The closure of a subalgebra in a topological algebra as a subalgebra. -/
 def Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A :=
-  {
-    s.toSubsemiring.topologicalClosure with
+  { s.toSubsemiring.topologicalClosure with
     carrier := closure (s : Set A)
     algebraMap_mem' := fun r => s.toSubsemiring.le_topologicalClosure (s.algebraMap_mem r) }
 #align subalgebra.topological_closure Subalgebra.topologicalClosure
@@ -134,7 +130,7 @@ but we don't have those, so we use the clunky approach of talking about
 an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
-theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type _}
+theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
     [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
@@ -148,7 +144,7 @@ end TopologicalAlgebra
 
 section Ring
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {A : Type u} [TopologicalSpace A]
 
@@ -171,6 +167,7 @@ def Algebra.elementalAlgebra (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 #align algebra.elemental_algebra Algebra.elementalAlgebra
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
   SetLike.le_def.mp (Subalgebra.le_topologicalClosure (Algebra.adjoin R ({x} : Set A))) <|
     Algebra.self_mem_adjoin_singleton R x

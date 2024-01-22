@@ -16,7 +16,7 @@ namespace CategoryTheory
 
 namespace Groupoid
 
-variable (C : Type _) [Groupoid C]
+variable (C : Type*) [Groupoid C]
 
 section Thin
 

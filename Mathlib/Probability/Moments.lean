@@ -45,7 +45,7 @@ open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type _} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
 
 /-- Moment of a real random variable, `μ[X ^ p]`. -/
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
@@ -329,7 +329,7 @@ set_option linter.uppercaseLean3 false in
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε) * mgf X μ t := by
-  cases' ht.eq_or_lt with ht_zero_eq ht_pos
+  rcases ht.eq_or_lt with ht_zero_eq | ht_pos
   · rw [ht_zero_eq.symm]
     simp only [neg_zero, zero_mul, exp_zero, mgf_zero', one_mul]
     rw [ENNReal.toReal_le_toReal (measure_ne_top μ _) (measure_ne_top μ _)]
@@ -343,7 +343,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
       have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
           μ[fun ω => exp (t * X ω)] :=
-        mul_meas_ge_le_integral_of_nonneg (fun x => (exp_pos _).le) h_int _
+        mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x => (exp_pos _).le) h_int _
       rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff' (exp_pos _)]
     _ = exp (-t * ε) * mgf X μ t := by rw [neg_mul, exp_neg]; rfl
 #align probability_theory.measure_ge_le_exp_mul_mgf ProbabilityTheory.measure_ge_le_exp_mul_mgf

@@ -25,9 +25,9 @@ It is based purely on the polynomial exponents and coefficients.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommRing R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`

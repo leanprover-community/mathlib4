@@ -31,7 +31,7 @@ open scoped Polynomial
 
 section ScaleRoots
 
-variable {A K R S : Type _} [CommRing A] [Field K] [CommRing R] [CommRing S]
+variable {A K R S : Type*} [CommRing A] [Field K] [CommRing R] [CommRing S]
 
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
@@ -59,13 +59,13 @@ end ScaleRoots
 
 section RationalRootTheorem
 
-variable {A K : Type _} [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A] [Field K]
+variable {A K : Type*} [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A] [Field K]
 
 variable [Algebra A K] [IsFractionRing A K]
 
 open IsFractionRing IsLocalization Polynomial UniqueFactorizationMonoid
 
-/-- Rational root theorem part 1:
+/-- **Rational root theorem** part 1:
 if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the numerator of `r` divides the constant coefficient -/
 theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
@@ -111,11 +111,11 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *
   rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt h) hj.symm),
-    MulZeroClass.zero_mul]
+    zero_mul]
   exact dvd_zero _
 #align denom_dvd_of_is_root den_dvd_of_is_root
 
-/-- Integral root theorem:
+/-- **Integral root theorem**:
 if `r : f.codomain` is a root of a monic polynomial over the ufd `A`,
 then `r` is an integer -/
 theorem isInteger_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : aeval r p = 0) :

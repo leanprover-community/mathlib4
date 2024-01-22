@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type _} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type _)
+variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
   [Category E]
 
 namespace Functor
@@ -248,8 +248,8 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
-def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type _) [Category E] :
-  (D ⥤ E) ⥤ C ⥤ E :=
+def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
+    (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
@@ -376,7 +376,7 @@ def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W
 namespace Lifting
 
 @[simps]
-instance compRight {E' : Type _} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
+instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
     (G : E ⥤ E') : Lifting L W (F ⋙ G) (F' ⋙ G) :=
   ⟨isoWhiskerRight (iso L W F F') G⟩
 #align category_theory.localization.lifting.comp_right CategoryTheory.Localization.Lifting.compRight
@@ -385,6 +385,9 @@ instance compRight {E' : Type _} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lif
 instance id : Lifting L W L (𝟭 D) :=
   ⟨Functor.rightUnitor L⟩
 #align category_theory.localization.lifting.id CategoryTheory.Localization.Lifting.id
+
+@[simps]
+instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
@@ -418,7 +421,7 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
 
 /-- If `L : C ⥤ D` is a localization for `W : MorphismProperty C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
-theorem of_equivalence_target {E : Type _} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
+theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
     [L.IsLocalization W] (e : L ⋙ eq.functor ≅ L') : L'.IsLocalization W := by
   have h : W.IsInvertedBy L' := by
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso W e]
@@ -431,8 +434,53 @@ theorem of_equivalence_target {E : Type _} [Category E] (L' : C ⥤ E) (eq : D �
       nonempty_isEquivalence := Nonempty.intro (IsEquivalence.ofIso e' inferInstance) }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
 
+lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
+    (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
+    L.IsLocalization W := by
+  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
+
 end IsLocalization
 
 end Functor
+
+namespace Localization
+
+variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+  (W' : MorphismProperty C) [L₁.IsLocalization W'] [L₂.IsLocalization W']
+
+/-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
+same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`. -/
+def uniq : D₁ ≌ D₂ :=
+  (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
+
+lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := rfl
+
+/-- The functor of equivalence of localized categories given by `Localization.uniq` is
+compatible with the localization functors. -/
+def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ :=
+  calc
+    L₁ ⋙ (uniq L₁ L₂ W').functor ≅ (L₁ ⋙ (equivalenceFromModel L₁ W').inverse) ⋙
+      (equivalenceFromModel L₂ W').functor := (Functor.associator _ _ _).symm
+    _ ≅ W'.Q ⋙ (equivalenceFromModel L₂ W').functor :=
+      isoWhiskerRight (compEquivalenceFromModelInverseIso L₁ W') _
+    _ ≅ L₂ := qCompEquivalenceFromModelFunctorIso L₂ W'
+
+/-- The inverse functor of equivalence of localized categories given by `Localization.uniq` is
+compatible with the localization functors. -/
+def compUniqInverse : L₂ ⋙ (uniq L₁ L₂ W').inverse ≅ L₁ := compUniqFunctor L₂ L₁ W'
+
+instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := ⟨compUniqFunctor L₁ L₂ W'⟩
+instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInverse L₁ L₂ W'⟩
+
+/-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
+same `MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
+`L₁ ⋙ F ≅ L₂` is isomorphic to the functor of the equivalence given by `uniq`. -/
+def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
+    F ≅ (uniq L₁ L₂ W').functor :=
+  letI : Lifting L₁ W' L₂ F := ⟨e⟩
+  liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
+
+end Localization
 
 end CategoryTheory

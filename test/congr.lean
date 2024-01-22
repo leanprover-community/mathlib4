@@ -2,7 +2,13 @@ import Mathlib.Tactic.Congr!
 import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.BigOperators.Basic
+
+private axiom test_sorry : ∀ {α}, α
+set_option autoImplicit true
+
+-- Useful for debugging the generated congruence theorems
+--set_option trace.Meta.CongrTheorems true
 
 theorem ex1 (a b c : Nat) (h : a = b) : a + c = b + c := by
   congr!
@@ -64,96 +70,96 @@ theorem ex15 (p q : Nat → Prop) :
   congr! 2 with ε hε
   guard_hyp hε : ε > 0
   guard_target = p ε ↔ q ε
-  sorry
+  exact test_sorry
 
-/-- Generating type equalities is OK if it's possible they're the same type. -/
+/- Generating type equalities is OK if it's possible they're the same type. -/
 example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr! 1
   guard_target = Subtype s = Subtype t
   congr! 1
   guard_target = s = t
-  sorry
+  exact test_sorry
 
-/-- `Subtype s = Subtype t` is plausible -/
+/- `Subtype s = Subtype t` is plausible -/
 example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   · guard_target = s = t
-    sorry
+    exact test_sorry
   · guard_target = HEq f g
-    sorry
+    exact test_sorry
 
-/-- `ι = κ` is not plausible -/
+/- `ι = κ` is not plausible -/
 example (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   guard_target = Set.image f Set.univ = Set.image g Set.univ
   congr! (config := {typeEqs := true})
   · guard_target = ι = κ
-    sorry
+    exact test_sorry
   · guard_target = HEq f g
-    sorry
+    exact test_sorry
 
-/-- Generating type equalities is not OK if they're not likely to be the same type. -/
+/- Generating type equalities is not OK if they're not likely to be the same type. -/
 example (s : Set α) (t : Set β) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
   congr!
   guard_target = Subtype s = Subtype t
-  sorry
+  exact test_sorry
 
-/-- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
+/- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
 example (m n : Nat) (h : m = n) (x : Fin m) (y : Fin n) : HEq (x + x) (y + y) := by
   congr!
   guard_target = HEq x y
-  sorry
+  exact test_sorry
   guard_target = HEq x y
-  sorry
+  exact test_sorry
 
-/-- Props are types, but prop equalities are totally plausible. -/
+/- Props are types, but prop equalities are totally plausible. -/
 example (p q r : Prop) : p ∧ q ↔ p ∧ r := by
   congr!
   guard_target = q ↔ r
-  sorry
+  exact test_sorry
 
-/-- Congruence here is not OK by default since `α = β` is not generally plausible. -/
+/- Congruence here is not OK by default since `α = β` is not generally plausible. -/
 example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x) (y + y) := by
   congr!
   guard_target = HEq (x + x) (y + y)
   -- But with typeEqs we can get it to generate the congruence anyway:
-  have : α = β := sorry
-  have : HEq inst1 inst2 := sorry
+  have : α = β := test_sorry
+  have : HEq inst1 inst2 := test_sorry
   congr! (config := { typeEqs := true })
   guard_target = HEq x y
-  sorry
+  exact test_sorry
   guard_target = HEq x y
-  sorry
+  exact test_sorry
 
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr!
   · guard_target =ₛ (HMul.hMul : Nat → Nat → Nat) = HAdd.hAdd
-    sorry
+    exact test_sorry
   · guard_target = 2 = n
-    sorry
+    exact test_sorry
 
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! (config := {etaExpand := true})
   · guard_target =ₛ (fun (x y : Nat) => x * y) = (fun (x y : Nat) => x + y)
-    sorry
+    exact test_sorry
   · guard_target = 2 = n
-    sorry
+    exact test_sorry
 
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! 2
   guard_target = 2 * n = n + n
-  sorry
+  exact test_sorry
 
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr! (config := .unfoldSameFun)
   guard_target = 2 * n = n + n
-  sorry
+  exact test_sorry
 
 opaque partiallyApplied (p : Prop) [Decidable p] : Nat → Nat
 
@@ -172,23 +178,23 @@ def walk.map (f : α → β) (w : walk α x y) : walk β (f x) (f y) :=
 example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (w'.map f) := by
   congr!
   guard_target = x = x'
-  sorry
+  exact test_sorry
   guard_target = y = y'
-  sorry
+  exact test_sorry
   -- get x = y and y = y' in context for `HEq w w'` goal.
   have : x = x' := by assumption
   have : y = y' := by assumption
   guard_target = HEq w w'
-  sorry
+  exact test_sorry
 
 example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (w'.map f) := by
   congr! with rfl rfl
   guard_target = x = x'
-  sorry
+  exact test_sorry
   guard_target = y = y'
-  sorry
+  exact test_sorry
   guard_target = w = w'
-  sorry
+  exact test_sorry
 
 def MySet (α : Type _) := α → Prop
 def MySet.image (f : α → β) (s : MySet α) : MySet β := fun y => ∃ x, s x ∧ f x = y
@@ -256,7 +262,7 @@ example (Fintype : Type → Type)
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
   guard_target = HEq inst inst'
-  sorry
+  exact test_sorry
 
 /- Here, `Fintype` is a subsingleton class so the `HEq` reduces to `Fintype α = Fintype β`.
 Since these are explicit type arguments with no forward dependencies, this reduces to `α = β`.
@@ -266,7 +272,7 @@ example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
   guard_target = α = β
-  sorry
+  exact test_sorry
 
 example : n = m → 3 + n = m + 3 := by
   congr! 0 with rfl

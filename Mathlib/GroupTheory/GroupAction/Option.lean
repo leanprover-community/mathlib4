@@ -22,7 +22,7 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 -/
 
 
-variable {M N α : Type _}
+variable {M N α : Type*}
 
 namespace Option
 
@@ -35,7 +35,7 @@ instance : SMul M (Option α) :=
   ⟨fun a => Option.map <| (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map ((· • ·) a) :=
+theorem smul_def : a • x = x.map (a • ·) :=
   rfl
 #align option.smul_def Option.smul_def
 #align option.vadd_def Option.vadd_def

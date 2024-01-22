@@ -3,7 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 #align_import model_theory.bundled from "leanprover-community/mathlib"@"b3951c65c6e797ff162ae8b69eab0063bcfb3d73"
@@ -209,7 +209,7 @@ theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bund
 end Theory
 
 /-- A structure that is elementarily equivalent to a model, bundled as a model. -/
-def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type _} [LN : L.Structure N]
+def ElementarilyEquivalent.toModel {M : T.ModelType} {N : Type*} [LN : L.Structure N]
     (h : M ≅[L] N) : T.ModelType where
   Carrier := N
   struc := LN

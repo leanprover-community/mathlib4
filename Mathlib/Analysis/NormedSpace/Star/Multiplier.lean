@@ -90,7 +90,7 @@ namespace DoubleCentralizer
 
 section NontriviallyNormed
 
-variable (𝕜 A : Type _) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
@@ -122,7 +122,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
     { toProd := 0
-      central := fun x y => (MulZeroClass.zero_mul y).trans (MulZeroClass.mul_zero x).symm }
+      central := fun x y => (zero_mul y).trans (mul_zero x).symm }
 
 instance instNeg : Neg 𝓜(𝕜, A) where
   neg a :=
@@ -140,7 +140,7 @@ instance instSub : Sub 𝓜(𝕜, A) where
 
 section Scalars
 
-variable {S : Type _} [Monoid S] [DistribMulAction S A] [SMulCommClass 𝕜 S A]
+variable {S : Type*} [Monoid S] [DistribMulAction S A] [SMulCommClass 𝕜 S A]
   [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A]
 
 instance instSMul : SMul S 𝓜(𝕜, A) where
@@ -163,7 +163,7 @@ theorem smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
   rfl
 #align double_centralizer.smul_snd DoubleCentralizer.smul_snd
 
-variable {T : Type _} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
+variable {T : Type*} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
   [ContinuousConstSMul T A] [IsScalarTower T A A] [SMulCommClass T A A]
 
 instance instIsScalarTower [SMul S T] [IsScalarTower S T A] : IsScalarTower S T 𝓜(𝕜, A) where
@@ -172,7 +172,7 @@ instance instIsScalarTower [SMul S T] [IsScalarTower S T A] : IsScalarTower S T 
 instance instSMulCommClass [SMulCommClass S T A] : SMulCommClass S T 𝓜(𝕜, A) where
   smul_comm _ _ a := ext (𝕜 := 𝕜) (A := A) _ _ <| smul_comm _ _ a.toProd
 
-instance instIsCentralScalar {R : Type _} [Semiring R] [Module R A] [SMulCommClass 𝕜 R A]
+instance instIsCentralScalar {R : Type*} [Semiring R] [Module R A] [SMulCommClass 𝕜 R A]
     [ContinuousConstSMul R A] [IsScalarTower R A A] [SMulCommClass R A A] [Module Rᵐᵒᵖ A]
     [IsCentralScalar R A] : IsCentralScalar R 𝓜(𝕜, A) where
   op_smul_eq_smul _ a := ext (𝕜 := 𝕜) (A := A) _ _ <| op_smul_eq_smul _ a.toProd
@@ -354,7 +354,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
-/-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
@@ -374,7 +374,7 @@ def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜]
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
 `DoubleCentralizer.toProd : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
-instance instModule {S : Type _} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
+instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
   Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
 
@@ -519,7 +519,7 @@ noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [Norme
   map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
   map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
   map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
-  map_mul' _ _ :=  ext _ _ _ _ <| Prod.ext
+  map_mul' _ _ := ext _ _ _ _ <| Prod.ext
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
     (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
   map_star' _ := ext _ _ _ _ <| Prod.ext
@@ -657,7 +657,7 @@ end NontriviallyNormed
 
 section DenselyNormed
 
-variable {𝕜 A : Type _} [DenselyNormedField 𝕜] [StarRing 𝕜]
+variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
 
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
 
@@ -691,7 +691,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @op_nnnorm_mul 𝕜 A]
+      simp only [← @op_nnnorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
       · rintro - ⟨x, hx, rfl⟩
@@ -709,7 +709,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_of_lt_left hxr zero_le' two_pos
+            using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
 

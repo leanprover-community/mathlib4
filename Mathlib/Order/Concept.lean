@@ -39,7 +39,7 @@ concept, formal concept analysis, intent, extend, attribute
 
 open Function OrderDual Set
 
-variable {ι : Sort _} {α β γ : Type _} {κ : ι → Sort _} (r : α → β → Prop) {s s₁ s₂ : Set α}
+variable {ι : Sort*} {α β γ : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s s₁ s₂ : Set α}
   {t t₁ t₂ : Set β}
 
 /-! ### Intent and extent -/
@@ -113,23 +113,15 @@ theorem extentClosure_iUnion (f : ι → Set β) :
   intentClosure_iUnion _ _
 #align extent_closure_Union extentClosure_iUnion
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
 theorem intentClosure_iUnion₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_iSup₂
 #align intent_closure_Union₂ intentClosure_iUnion₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
-theorem extentClosure_Union₂ (f : ∀ i, κ i → Set β) :
+theorem extentClosure_iUnion₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
   intentClosure_iUnion₂ _ _
-#align extent_closure_Union₂ extentClosure_Union₂
+#align extent_closure_Union₂ extentClosure_iUnion₂
 
 theorem subset_extentClosure_intentClosure (s : Set α) :
     s ⊆ extentClosure r (intentClosure r s) :=
@@ -290,7 +282,7 @@ instance : InfSet (Concept α β r) :=
       snd := intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst)
       closure_fst := rfl
       closure_snd := by
-        simp_rw [← closure_snd, ← extentClosure_Union₂,
+        simp_rw [← closure_snd, ← extentClosure_iUnion₂,
           extentClosure_intentClosure_extentClosure] }⟩
 
 instance : CompleteLattice (Concept α β r) :=

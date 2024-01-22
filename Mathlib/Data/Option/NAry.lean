@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Option.Basic
+import Mathlib.Init.Function
 
 #align_import data.option.n_ary from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -27,6 +27,9 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 `Option.map₂` and casing already fulfills this task.
 -/
 
+set_option autoImplicit true
+
+universe u
 
 open Function
 
@@ -42,7 +45,7 @@ def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b : Option β) :
+theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = f <$> a <*> b :=
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def

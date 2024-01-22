@@ -3,11 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
@@ -18,7 +16,7 @@ import Mathlib.FieldTheory.Finite.Basic
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- A polynomial over the integers is divisible by `n : ℕ`
 if and only if it is zero over `ZMod n`. -/
@@ -56,7 +54,7 @@ open scoped BigOperators Classical
 
 open Set LinearMap Submodule
 
-variable {K : Type _} {σ : Type _}
+variable {K : Type*} {σ : Type*}
 
 section Indicator
 
@@ -84,7 +82,7 @@ theorem degrees_indicator (c : σ → K) :
   refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_of_le_right _ _)
+  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_right _ _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
   exact degrees_X' _
@@ -95,7 +93,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine' le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq _)
-  simp_rw [← Multiset.coe_countAddMonoidHom, (Multiset.countAddMonoidHom n).map_sum,
+  simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   refine' Finset.sum_eq_single n _ _
@@ -142,13 +140,13 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine' ⟨∑ n : σ → K, e n • indicator n, _, _⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [LinearMap.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      LinearMap.map_smul]
+    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
+      map_smul]
     simp only [evalₗ_apply]
     trans
-    refine' Finset.sum_eq_single n (fun b _ h => _) _
-    · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-    · exact fun h => (h <| Finset.mem_univ n).elim
+    · refine' Finset.sum_eq_single n (fun b _ h => _) _
+      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
+      · exact fun h => (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
 #align mv_polynomial.map_restrict_dom_evalₗ MvPolynomial.map_restrict_dom_evalₗ
 

@@ -32,10 +32,10 @@ noncomputable section
 
 open Classical
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
-def Finite.equivFin (α : Type _) [Finite α] : α ≃ Fin (Nat.card α) := by
+def Finite.equivFin (α : Type*) [Finite α] : α ≃ Fin (Nat.card α) := by
   have := (Finite.exists_equiv_fin α).choose_spec.some
   rwa [Nat.card_eq_of_equiv_fin this]
 #align finite.equiv_fin Finite.equivFin
@@ -46,7 +46,7 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   apply Finite.equivFin
 #align finite.equiv_fin_of_card_eq Finite.equivFinOfCardEq
 
-theorem Nat.card_eq (α : Type _) :
+theorem Nat.card_eq (α : Type*) :
     Nat.card α = if h : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
@@ -65,7 +65,7 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-theorem cast_card_eq_mk {α : Type _} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
+theorem cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
   Cardinal.cast_toNat_of_lt_aleph0 (Cardinal.lt_aleph0_of_finite α)
 #align finite.cast_card_eq_mk Finite.cast_card_eq_mk
 
@@ -192,7 +192,7 @@ end Finite
 
 namespace PartENat
 
-theorem card_eq_coe_nat_card (α : Type _) [Finite α] : card α = Nat.card α := by
+theorem card_eq_coe_nat_card (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
@@ -212,5 +212,24 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
     exact Cardinal.mk_union_le s t
   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 #align set.card_union_le Set.card_union_le
+
+namespace Finite
+
+variable {s t : Set α} (ht : t.Finite)
+
+theorem card_lt_card (hsub : s ⊂ t) : Nat.card s < Nat.card t := by
+  have : Fintype t := Finite.fintype ht
+  have : Fintype s := Finite.fintype (subset ht (subset_of_ssubset hsub))
+  simp only [Nat.card_eq_fintype_card]
+  exact Set.card_lt_card hsub
+
+theorem eq_of_subset_of_card_le (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) : s = t :=
+  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
+
+theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
+  ⟨fun h ↦ by rw [h], fun h ↦ hs.eq_of_subset_of_card_le h <|
+    ge_of_eq (Nat.card_congr (e.image s).symm)⟩
+
+end Finite
 
 end Set

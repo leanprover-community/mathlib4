@@ -33,7 +33,7 @@ open Finset Function Relator
 
 open BigOperators
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Bipartite graph -/
 

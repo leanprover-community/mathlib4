@@ -27,7 +27,7 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp; rfl
+instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp); rfl
 
 open LawfulTraversable CommApplicative
 
@@ -41,14 +41,14 @@ variable {α' β' : Type u} (f : α' → F β')
 def traverse : Multiset α' → F (Multiset β') := by
   refine' Quotient.lift (Functor.map Coe.coe ∘ Traversable.traverse f) _
   introv p; unfold Function.comp
-  induction p
-  case nil => rfl
-  case cons x l₁ l₂ _ h =>
+  induction p with
+  | nil => rfl
+  | @cons x l₁ l₂ _ h =>
     have :
       Multiset.cons <$> f x <*> Coe.coe <$> Traversable.traverse f l₁ =
         Multiset.cons <$> f x <*> Coe.coe <$> Traversable.traverse f l₂ := by rw [h]
     simpa [functor_norm] using this
-  case swap x y l =>
+  | swap x y l =>
     have :
       (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
         (fun a b l ↦ ↑(a :: b :: l)) <$> f x <*> f y := by
@@ -57,7 +57,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       funext a b l
       simpa [flip] using Perm.swap a b l
     simp [(· ∘ ·), this, functor_norm, Coe.coe]
-  case trans => simp [*]
+  | trans => simp [*]
 #align multiset.traverse Multiset.traverse
 
 instance : Monad Multiset :=
@@ -86,7 +86,7 @@ open Functor
 open Traversable LawfulTraversable
 
 @[simp]
-theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
+theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
     (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
   Quotient.lift_mk _ _ _
 #align multiset.lift_coe Multiset.lift_coe
@@ -97,7 +97,7 @@ theorem map_comp_coe {α β} (h : α → β) :
   funext; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
-theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
+theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
   refine' Quotient.inductionOn x _
   intro
   simp [traverse, Coe.coe]
@@ -114,7 +114,7 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
   simp only [Function.comp, lift_coe]
 #align multiset.comp_traverse Multiset.comp_traverse
 
-theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
+theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → G β) (h : β → γ) (x : Multiset α) :
     Functor.map (Functor.map h) (traverse g x) = traverse (Functor.map h ∘ g) x := by
   refine' Quotient.inductionOn x _
@@ -124,7 +124,7 @@ theorem map_traverse {G : Type _ → Type _} [Applicative G] [CommApplicative G]
   rfl
 #align multiset.map_traverse Multiset.map_traverse
 
-theorem traverse_map {G : Type _ → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
+theorem traverse_map {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → β) (h : β → G γ) (x : Multiset α) : traverse h (map g x) = traverse (h ∘ g) x := by
   refine' Quotient.inductionOn x _
   intro

@@ -3,10 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Lean.Linter.Deprecated
+import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
-import Lean.Linter.Deprecated
+import Mathlib.Init.ZeroOne
 
 #align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
@@ -17,6 +19,8 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
+
+set_option autoImplicit true
 
 
 /-- The type of positive binary numbers.
@@ -189,7 +193,7 @@ end PosNum
 
 section
 
-variable {α : Type _} [One α] [Add α]
+variable {α : Type*} [One α] [Add α]
 
 section deprecated
 set_option linter.deprecated false
@@ -669,7 +673,7 @@ end ZNum
 section
 
 set_option linter.deprecated false
-variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
+variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
 @[deprecated, coe] def castZNum : ZNum → α

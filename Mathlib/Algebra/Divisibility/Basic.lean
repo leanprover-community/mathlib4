@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -30,7 +31,7 @@ divisibility, divides
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Semigroup
 
@@ -48,7 +49,7 @@ theorem Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
   Exists.intro c h.symm
 #align dvd.intro Dvd.intro
 
-alias Dvd.intro ← dvd_of_mul_right_eq
+alias dvd_of_mul_right_eq := Dvd.intro
 #align dvd_of_mul_right_eq dvd_of_mul_right_eq
 
 theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
@@ -58,7 +59,7 @@ theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
 theorem dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
   Iff.rfl
 
-alias dvd_def ← dvd_iff_exists_eq_mul_right
+alias dvd_iff_exists_eq_mul_right := dvd_def
 
 theorem Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
   Exists.elim H₁ H₂
@@ -71,7 +72,7 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
   | ⟨d, h₁⟩, ⟨e, h₂⟩ => ⟨d * e, h₁ ▸ h₂.trans <| mul_assoc a d e⟩
 #align dvd_trans dvd_trans
 
-alias dvd_trans ← Dvd.dvd.trans
+alias Dvd.dvd.trans := dvd_trans
 
 /-- Transitivity of `|` for use in `calc` blocks. -/
 instance : IsTrans α Dvd.dvd :=
@@ -86,7 +87,7 @@ theorem dvd_mul_of_dvd_left (h : a ∣ b) (c : α) : a ∣ b * c :=
   h.trans (dvd_mul_right b c)
 #align dvd_mul_of_dvd_left dvd_mul_of_dvd_left
 
-alias dvd_mul_of_dvd_left ← Dvd.dvd.mul_right
+alias Dvd.dvd.mul_right := dvd_mul_of_dvd_left
 
 theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
   (dvd_mul_right a b).trans h
@@ -94,17 +95,18 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type _} [Monoid M] [Monoid N]
+variable {M N : Type*}
 
-theorem map_dvd {F : Type _} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [MulHomClass F M N] (f : F) {a b} :
+    a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
-theorem MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align mul_hom.map_dvd MulHom.map_dvd
 
-theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
@@ -113,8 +115,7 @@ end map_dvd
 end Semigroup
 
 section Monoid
-
-variable [Monoid α] {a b : α}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -134,8 +135,22 @@ theorem one_dvd (a : α) : 1 ∣ a :=
 theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 #align dvd_of_eq dvd_of_eq
 
-alias dvd_of_eq ← Eq.dvd
+alias Eq.dvd := dvd_of_eq
 #align eq.dvd Eq.dvd
+
+lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
+  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
+#align pow_dvd_pow pow_dvd_pow
+
+lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
+  | 0,     hn => (hn rfl).elim
+  | n + 1, _  => by rw [pow_succ]; exact hab.mul_right _
+#align dvd_pow dvd_pow
+
+alias Dvd.dvd.pow := dvd_pow
+
+lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
+#align dvd_pow_self dvd_pow_self
 
 end Monoid
 
@@ -147,7 +162,7 @@ theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
   Dvd.intro _ (by rw [mul_comm] at h; apply h)
 #align dvd.intro_left Dvd.intro_left
 
-alias Dvd.intro_left ← dvd_of_mul_left_eq
+alias dvd_of_mul_left_eq := Dvd.intro_left
 #align dvd_of_mul_left_eq dvd_of_mul_left_eq
 
 theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
@@ -173,7 +188,7 @@ theorem dvd_mul_of_dvd_right (h : a ∣ b) (c : α) : a ∣ c * b := by
   rw [mul_comm]; exact h.mul_right _
 #align dvd_mul_of_dvd_right dvd_mul_of_dvd_right
 
-alias dvd_mul_of_dvd_right ← Dvd.dvd.mul_left
+alias Dvd.dvd.mul_left := dvd_mul_of_dvd_right
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

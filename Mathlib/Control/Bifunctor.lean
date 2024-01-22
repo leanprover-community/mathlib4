@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
-import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Common
 
 #align_import control.bifunctor from "leanprover-community/mathlib"@"dc1525fb3ef6eb4348fb1749c302d8abc303d34a"
@@ -14,7 +13,7 @@ import Mathlib.Tactic.Common
 
 This file defines bifunctors.
 
-A bifunctor is a function `F : Type _ → Type _ → Type _` along with a bimap which turns `F α β`into
+A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap which turns `F α β`into
 `F α' β'` given two functions `α → α'` and `β → β'`. It further
 * respects the identity: `bimap id id = id`
 * composes in the obvious way: `(bimap f' g') ∘ (bimap f g) = bimap (f' ∘ f) (g' ∘ g)`
@@ -130,8 +129,8 @@ instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
-instance Bifunctor.flip : Bifunctor (flip F)
-    where bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
+instance Bifunctor.flip : Bifunctor (flip F) where
+  bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 #align bifunctor.flip Bifunctor.flip
 
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
@@ -157,10 +156,10 @@ instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} : Law
 
 section Bicompl
 
-variable (G : Type _ → Type u₀) (H : Type _ → Type u₁) [Functor G] [Functor H]
+variable (G : Type* → Type u₀) (H : Type* → Type u₁) [Functor G] [Functor H]
 
-instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H)
-    where bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
+instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
+  bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
 #align function.bicompl.bifunctor Function.bicompl.bifunctor
 
 instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
@@ -172,10 +171,10 @@ end Bicompl
 
 section Bicompr
 
-variable (G : Type u₂ → Type _) [Functor G]
+variable (G : Type u₂ → Type*) [Functor G]
 
-instance Function.bicompr.bifunctor : Bifunctor (bicompr G F)
-    where bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
+instance Function.bicompr.bifunctor : Bifunctor (bicompr G F) where
+  bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
 #align function.bicompr.bifunctor Function.bicompr.bifunctor
 
 instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :

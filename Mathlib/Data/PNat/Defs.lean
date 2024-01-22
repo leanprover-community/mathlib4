@@ -3,10 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Order.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Lift
+import Mathlib.Init.Data.Int.Order
 
 #align_import data.pnat.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -203,7 +205,7 @@ instance : WellFoundedRelation ℕ+ :=
   measure (fun (a : ℕ+) => (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort _} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by _ => n.1
 #align pnat.strong_induction_on PNat.strongInductionOn
@@ -248,7 +250,7 @@ def div (m k : ℕ+) : ℕ :=
 #align pnat.div PNat.div
 
 theorem mod_coe (m k : ℕ+) :
-  (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
+    (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
   dsimp [mod, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>
@@ -260,7 +262,7 @@ theorem mod_coe (m k : ℕ+) :
 #align pnat.mod_coe PNat.mod_coe
 
 theorem div_coe (m k : ℕ+) :
-  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
+    (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
   dsimp [div, modDiv]
   cases (m : ℕ) % (k : ℕ) with
   | zero =>

@@ -24,7 +24,7 @@ open Finset
   infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
-class FinEnum (α : Sort _) where
+class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
@@ -155,8 +155,8 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [or_iff_not_imp_left] at h
       exists h
       by_cases h : xs_hd ∈ s
-      · have : {xs_hd} ⊆ s
-        simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
+      · have : {xs_hd} ⊆ s := by
+          simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
           eq_self_iff_true]
       · left
@@ -238,7 +238,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
     constructor
     · apply xs_ih
     · ext x h
-      simp [Pi.cons]
+      simp only [Pi.cons]
       split_ifs
       · subst x
         rfl

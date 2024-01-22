@@ -47,7 +47,7 @@ instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
   infer_instance
 
-instance : CoeSort SemiNormedGroupCat (Type _) where
+instance : CoeSort SemiNormedGroupCat (Type*) where
   coe X := X.α
 
 /-- Construct a bundled `SemiNormedGroupCat` from the underlying type and typeclass. -/
@@ -68,7 +68,7 @@ instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V �
 -- Porting note: added to ease automation
 @[ext]
 lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
@@ -122,7 +122,8 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 
   intro v
   apply le_antisymm (h1 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
 #align SemiNormedGroup.iso_isometry_of_norm_noninc SemiNormedGroupCat.iso_isometry_of_normNoninc
 
@@ -137,7 +138,7 @@ def SemiNormedGroupCat₁ : Type (u + 1) :=
 
 namespace SemiNormedGroupCat₁
 
-instance : CoeSort SemiNormedGroupCat₁ (Type _) where
+instance : CoeSort SemiNormedGroupCat₁ (Type*) where
   coe X := X.α
 
 instance : LargeCategory.{u} SemiNormedGroupCat₁ where
@@ -146,7 +147,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 -- Porting Note: Added
-instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X (fun _ => Y) where
+instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
@@ -258,7 +259,8 @@ theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.ho
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 #align SemiNormedGroup₁.iso_isometry SemiNormedGroupCat₁.iso_isometry
 

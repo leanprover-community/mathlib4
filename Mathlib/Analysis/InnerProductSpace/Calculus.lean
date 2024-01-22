@@ -26,8 +26,6 @@ and from the equivalence of norms in finite dimensions.
 The last part of the file should be generalized to `PiLp`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open IsROrC Real Filter
@@ -36,7 +34,7 @@ open scoped BigOperators Classical Topology
 
 section DerivInner
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -71,7 +69,7 @@ theorem differentiable_inner : Differentiable ℝ fun p : E × E => ⟪p.1, p.2�
 #align differentiable_inner differentiable_inner
 
 variable (𝕜)
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
   {s : Set G} {x : G} {n : ℕ∞}
 
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :
@@ -231,9 +229,18 @@ theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
 
+theorem HasDerivAt.norm_sq {f : ℝ → F} {f' : F} {x : ℝ} (hf : HasDerivAt f f' x) :
+    HasDerivAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') x := by
+  simpa using hf.hasFDerivAt.norm_sq.hasDerivAt
+
 theorem HasFDerivWithinAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') s x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp_hasFDerivWithinAt x hf
+
+theorem HasDerivWithinAt.norm_sq {f : ℝ → F} {f' : F} {s : Set ℝ} {x : ℝ}
+    (hf : HasDerivWithinAt f f' s x) :
+    HasDerivWithinAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') s x := by
+  simpa using hf.hasFDerivWithinAt.norm_sq.hasDerivWithinAt
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
@@ -299,7 +306,7 @@ section PiLike
 
 open ContinuousLinearMap
 
-variable {𝕜 ι H : Type _} [IsROrC 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
+variable {𝕜 ι H : Type*} [IsROrC 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
 
 theorem differentiableWithinAt_euclidean :
@@ -368,18 +375,18 @@ section DiffeomorphUnitBall
 
 open Metric hiding mem_nhds_iff
 
-variable {n : ℕ∞} {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
-  suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ from this.smul contDiff_id
+theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
+  suffices ContDiff ℝ n fun x : E => (1 + ‖x‖ ^ 2 : ℝ).sqrt⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
   refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
-theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
+theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
     ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
-  suffices ContDiffAt ℝ n (fun y : E => ((1 : ℝ) - ‖y‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
+  suffices ContDiffAt ℝ n (fun y : E => (1 - ‖y‖ ^ 2 : ℝ).sqrt⁻¹) y from this.smul contDiffAt_id
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
@@ -387,17 +394,17 @@ theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
-  LocalHomeomorph.contDiff_univUnitBall
+  PartialHomeomorph.contDiff_univUnitBall
 #align cont_diff_homeomorph_unit_ball Homeomorph.contDiff_unitBall
 
-@[deprecated LocalHomeomorph.contDiffOn_univUnitBall_symm]
+@[deprecated PartialHomeomorph.contDiffOn_univUnitBall_symm]
 theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
     (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = Homeomorph.unitBall.symm ⟨y, hy⟩) :
     ContDiffOn ℝ n f <| ball 0 1 :=
-  LocalHomeomorph.contDiffOn_univUnitBall_symm.congr h
+  PartialHomeomorph.contDiffOn_univUnitBall_symm.congr h
 #align cont_diff_on_homeomorph_unit_ball_symm Homeomorph.contDiffOn_unitBall_symm
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable {c : E} {r : ℝ}
 
@@ -417,9 +424,9 @@ theorem contDiffOn_univBall_symm :
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
-    apply LocalHomeomorph.symm_mapsTo
+    apply PartialHomeomorph.symm_mapsTo
   · exact contDiffOn_id.sub contDiffOn_const
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 end DiffeomorphUnitBall

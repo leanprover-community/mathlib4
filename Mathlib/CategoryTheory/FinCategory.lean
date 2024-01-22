@@ -31,11 +31,11 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteFintype {α : Type _} [Fintype α] : Fintype (Discrete α) :=
+instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 #align category_theory.discrete_fintype CategoryTheory.discreteFintype
 
-instance discreteHomFintype {α : Type _} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   apply ULift.fintype
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
@@ -52,7 +52,7 @@ instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Di
 
 namespace FinCategory
 
-variable (α : Type _) [Fintype α] [SmallCategory α] [FinCategory α]
+variable (α : Type*) [Fintype α] [SmallCategory α] [FinCategory α]
 
 /-- A FinCategory `α` is equivalent to a category with objects in `Type`. -/
 --@[nolint unused_arguments]

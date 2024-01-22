@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 #align_import analysis.calculus.fderiv_analytic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -21,11 +22,11 @@ open Filter Asymptotics
 
 open scoped ENNReal
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
@@ -87,32 +88,17 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
 /-- If a function has a power series on a ball, then so does its derivative. -/
 theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r) :
     HasFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F :
-            (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries
-        (p.changeOriginSeries 1))
-      x r := by
-  suffices A :
-    HasFPowerSeriesOnBall
-      (fun z => continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1))
-      ((continuousMultilinearCurryFin1 𝕜 E F :
-            (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries
-        (p.changeOriginSeries 1))
-      x r
-  · apply A.congr
-    intro z hz
-    dsimp
-    rw [← h.fderiv_eq, add_sub_cancel'_right]
-    simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
-  suffices B :
-    HasFPowerSeriesOnBall (fun z => p.changeOrigin (z - x) 1) (p.changeOriginSeries 1) x r
-  exact
-    (continuousMultilinearCurryFin1 𝕜 E
-              F).toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesOnBall
-      B
-  simpa using
-    ((p.hasFPowerSeriesOnBall_changeOrigin 1 (h.r_pos.trans_le h.r_le)).mono h.r_pos
-          h.r_le).comp_sub
-      x
+      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x r := by
+  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
+    fun z hz ↦ ?_
+  · refine continuousMultilinearCurryFin1 𝕜 E F
+      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesOnBall ?_
+    simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
+      (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
+  dsimp only
+  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 #align has_fpower_series_on_ball.fderiv HasFPowerSeriesOnBall.fderiv
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
@@ -131,31 +117,23 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
     exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOn h
   · rw [iteratedFDeriv_succ_eq_comp_left]
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
-    convert @ContinuousLinearMap.comp_analyticOn 𝕜 E
-      ?_ (ContinuousMultilinearMap 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
-      ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
-      s ?g IH.fderiv
-    case g =>
-      exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F)
-    rfl
+    convert ContinuousLinearMap.comp_analyticOn ?g IH.fderiv
+    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+    simp
 #align analytic_on.iterated_fderiv AnalyticOn.iteratedFDeriv
 
 /-- An analytic function is infinitely differentiable. -/
 theorem AnalyticOn.contDiffOn [CompleteSpace F] (h : AnalyticOn 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s := by
+    ContDiffOn 𝕜 n f s :=
   let t := { x | AnalyticAt 𝕜 f x }
-  suffices : ContDiffOn 𝕜 n f t; exact this.mono h
-  have H : AnalyticOn 𝕜 f t := fun x hx => hx
+  suffices ContDiffOn 𝕜 n f t from this.mono h
+  have H : AnalyticOn 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_analyticAt 𝕜 f
-  apply contDiffOn_of_continuousOn_differentiableOn
-  · rintro m -
-    apply (H.iteratedFDeriv m).continuousOn.congr
-    intro x hx
-    exact iteratedFDerivWithin_of_isOpen _ t_open hx
-  · rintro m -
-    apply (H.iteratedFDeriv m).differentiableOn.congr
-    intro x hx
-    exact iteratedFDerivWithin_of_isOpen _ t_open hx
+  contDiffOn_of_continuousOn_differentiableOn
+    (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
+      fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
+    (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
+      fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 #align analytic_on.cont_diff_on AnalyticOn.contDiffOn
 
 theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
@@ -198,5 +176,121 @@ theorem AnalyticOn.iterated_deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
   · exact h
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 #align analytic_on.iterated_deriv AnalyticOn.iterated_deriv
+
+end deriv
+section fderiv
+
+variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
+
+variable {f : E → F} {x : E} {s : Set E}
+
+/-! The case of continuously polynomial functions. We get the same differentiability
+results as for analytic functions, but without the assumptions that `F` is complete.-/
+
+theorem HasFiniteFPowerSeriesOnBall.differentiableOn
+    (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
+  fun _ hy ↦ (h.cPolynomialAt_of_mem hy).analyticAt.differentiableWithinAt
+
+theorem HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
+    HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
+  (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasFDerivAt
+
+theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f p x n r)
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
+    fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
+  (h.hasFDerivAt hy).fderiv
+
+/-- If a function has a finite power series on a ball, then so does its derivative. -/
+protected theorem HasFiniteFPowerSeriesOnBall.fderiv
+    (h : HasFiniteFPowerSeriesOnBall f p x (n + 1) r) :
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
+      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x n r := by
+  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
+    fun z hz ↦ ?_
+  · refine continuousMultilinearCurryFin1 𝕜 E F
+      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall ?_
+    simpa using
+      ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
+  dsimp only
+  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+
+/-- If a function has a finite power series on a ball, then so does its derivative.
+This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
+and not `< n + 1`. -/
+theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p x n r) :
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
+      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x (n - 1) r := by
+  obtain rfl | hn := eq_or_ne n 0
+  · rw [zero_tsub]
+    refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_
+    · rw [Filter.EventuallyEq.fderiv_eq (f := fun _ ↦ 0)]
+      · rw [fderiv_const, Pi.zero_apply]
+      · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
+          EMetric.isOpen_ball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
+    · apply ContinuousMultilinearMap.ext; intro a
+      change (continuousMultilinearCurryFin1 𝕜 E F) (p.changeOriginSeries 1 n a) = 0
+      rw [p.changeOriginSeries_finite_of_finite h.finite 1 (Nat.zero_le _)]
+      exact map_zero _
+  · rw [← Nat.succ_pred hn] at h
+    exact h.fderiv
+
+/-- If a function is polynomial on a set `s`, so is its Fréchet derivative. -/
+theorem CPolynomialOn.fderiv (h : CPolynomialOn 𝕜 f s) :
+    CPolynomialOn 𝕜 (fderiv 𝕜 f) s := by
+  intro y hy
+  rcases h y hy with ⟨p, r, n, hp⟩
+  exact hp.fderiv'.cPolynomialAt
+
+/-- If a function is polynomial on a set `s`, so are its successive Fréchet derivative. -/
+theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
+    CPolynomialOn 𝕜 (iteratedFDeriv 𝕜 n f) s := by
+  induction' n with n IH
+  · rw [iteratedFDeriv_zero_eq_comp]
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_cPolynomialOn h
+  · rw [iteratedFDeriv_succ_eq_comp_left]
+    convert ContinuousLinearMap.comp_cPolynomialOn ?g IH.fderiv
+    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+    simp
+
+/-- A polynomial function is infinitely differentiable. -/
+theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
+    ContDiffOn 𝕜 n f s :=
+  let t := { x | CPolynomialAt 𝕜 f x }
+  suffices ContDiffOn 𝕜 n f t from this.mono h
+  have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
+  have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
+  contDiffOn_of_continuousOn_differentiableOn
+    (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
+      fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
+    (fun m _ ↦ (H.iteratedFDeriv m).analyticOn.differentiableOn.congr
+      fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
+
+theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
+    ContDiffAt 𝕜 n f x :=
+  let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
+  hf.contDiffOn.contDiffAt hs
+
+end fderiv
+
+section deriv
+
+variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
+
+variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+
+/-- If a function is polynomial on a set `s`, so is its derivative. -/
+protected theorem CPolynomialOn.deriv (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (deriv f) s :=
+  (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_cPolynomialOn h.fderiv
+
+/-- If a function is polynomial on a set `s`, so are its successive derivatives. -/
+theorem CPolynomialOn.iterated_deriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
+    CPolynomialOn 𝕜 (deriv^[n] f) s := by
+  induction' n with n IH
+  · exact h
+  · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
 end deriv

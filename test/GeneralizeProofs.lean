@@ -3,14 +3,16 @@ import Mathlib.Tactic.GeneralizeProofs
 import Std.Tactic.GuardExpr
 import Mathlib.Tactic.LibrarySearch
 
-def List.nthLe (l : List α) (n) (h : n < l.length) : α := sorry
+private axiom test_sorry : ∀ {α}, α
+set_option autoImplicit true
+noncomputable def List.nthLe (l : List α) (n) (_h : n < l.length) : α := test_sorry
 
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1 2].nth_le 1 _ = 2
   generalize_proofs h
   -- h : 1 < [1 2].length
   -- ⊢ [1 2].nth_le 1 h = 2
-  sorry
+  exact test_sorry
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2 := by
   generalize_proofs a
@@ -29,20 +31,20 @@ example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   generalize_proofs a
   guard_hyp a : ∃ x, x < 2
   guard_target = Classical.choose a = Classical.choose _
-  sorry
+  exact test_sorry
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs
   guard_target = Classical.choose _ = Classical.choose _
-  sorry
+  exact test_sorry
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
   Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs _ a
   guard_hyp a : ∃ x, x < 3
   guard_target = Classical.choose _ = Classical.choose a
-  sorry
+  exact test_sorry
 
 example (a : ∃ x, x < 2) : Classical.choose a < 2 := by
   generalize_proofs

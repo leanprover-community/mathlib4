@@ -3,10 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
@@ -440,16 +441,16 @@ instance instSemigroupTropical [AddSemigroup R] : Semigroup (Tropical R) where
 instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (Tropical R) :=
   { instSemigroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
 
-instance {α : Type _} [SMul α R] : Pow (Tropical R) α where pow x n := trop <| n • untrop x
+instance {α : Type*} [SMul α R] : Pow (Tropical R) α where pow x n := trop <| n • untrop x
 
 @[simp]
-theorem untrop_pow {α : Type _} [SMul α R] (x : Tropical R) (n : α) :
+theorem untrop_pow {α : Type*} [SMul α R] (x : Tropical R) (n : α) :
     untrop (x ^ n) = n • untrop x :=
   rfl
 #align tropical.untrop_pow Tropical.untrop_pow
 
 @[simp]
-theorem trop_smul {α : Type _} [SMul α R] (x : R) (n : α) : trop (n • x) = trop x ^ n :=
+theorem trop_smul {α : Type*} [SMul α R] (x : R) (n : α) : trop (n • x) = trop x ^ n :=
   rfl
 #align tropical.trop_smul Tropical.trop_smul
 
@@ -512,10 +513,10 @@ instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (�
 
 instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
-    cases' le_total x y with hx hy
+    rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
     · rw [add_eq_right hy]
-      cases' le_total x z with hx hx
+      rcases le_total x z with hx | hx
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
@@ -543,9 +544,9 @@ instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + �
 theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· ≤ ·)]
     [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
-  cases' le_total x y with h h
-  · rw [add_eq_left h, add_eq_left (pow_le_pow_of_le_left' h _)]
-  · rw [add_eq_right h, add_eq_right (pow_le_pow_of_le_left' h _)]
+  rcases le_total x y with h | h
+  · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
+  · rw [add_eq_right h, add_eq_right (pow_le_pow_left' h _)]
 #align tropical.add_pow Tropical.add_pow
 
 end Distrib
@@ -574,11 +575,11 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
 --Porting note: removing @[simp], `simp` can prove it
-theorem mul_eq_zero_iff {R : Type _} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
+theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff
 
-instance {R : Type _} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
+instance {R : Type*} [LinearOrderedAddCommMonoid R] : NoZeroDivisors (Tropical (WithTop R)) :=
   ⟨mul_eq_zero_iff.mp⟩
 
 end Semiring

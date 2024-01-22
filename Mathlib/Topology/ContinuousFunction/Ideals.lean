@@ -78,7 +78,7 @@ open TopologicalSpace
 
 section TopologicalRing
 
-variable {X R : Type _} [TopologicalSpace X] [Semiring R]
+variable {X R : Type*} [TopologicalSpace X] [Semiring R]
 
 variable [TopologicalSpace R] [TopologicalSemiring R]
 
@@ -90,7 +90,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
   add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
-  smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
+  smul_mem' c f hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
@@ -108,7 +108,7 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
 #align continuous_map.mem_ideal_of_set ContinuousMap.mem_idealOfSet
 
 theorem not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
-  simp_rw [mem_idealOfSet, exists_prop]; push_neg; rfl
+  simp_rw [mem_idealOfSet]; push_neg; rfl
 #align continuous_map.not_mem_ideal_of_set ContinuousMap.not_mem_idealOfSet
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
@@ -124,7 +124,7 @@ theorem not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
-  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf, exists_prop]; push_neg; rfl
+  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push_neg; rfl
 #align continuous_map.mem_set_of_ideal ContinuousMap.mem_setOfIdeal
 
 theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
@@ -149,7 +149,7 @@ theorem setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set
 theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
   Ideal.ext fun f => by
     simp only [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
-      FunLike.ext_iff, zero_apply]
+      DFunLike.ext_iff, zero_apply]
 #align continuous_map.ideal_of_empty_eq_bot ContinuousMap.idealOfEmpty_eq_bot
 
 @[simp]
@@ -176,7 +176,7 @@ section IsROrC
 
 open IsROrC
 
-variable {X 𝕜 : Type _} [IsROrC 𝕜] [TopologicalSpace X]
+variable {X 𝕜 : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
@@ -243,8 +243,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           _ ≤ 1 := (nnnorm_algebraMap_nNReal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
         ‖f x - f x * (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =
-            ‖f x * (1 - (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
-          by simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
+            ‖f x * (1 - (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by
+          simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
         _ ≤ ε / 2 * ‖(1 - (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnnorm_mul_le _ _).trans
             (mul_le_mul_right' (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
@@ -291,9 +291,9 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
     `exists_mul_le_one_eqOn_ge` there is some `g` for which `g * g'` is the desired function. -/
   obtain ⟨g', hI', hgt'⟩ := this
-  obtain ⟨c, hc, hgc'⟩ : ∃ (c : _) (_ : 0 < c), ∀ y : X, y ∈ t → c ≤ g' y :=
+  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
     t.eq_empty_or_nonempty.elim
-      (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy )⟩) fun ht' =>
+      (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_forall_le ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
@@ -321,11 +321,10 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
   -- If `x ∉ closure sᶜ`, we must produce `f : C(X, 𝕜)` which is zero on `sᶜ` and `f x ≠ 0`.
   rw [← compl_compl (interior s), ← closure_compl] at hx
   simp_rw [mem_setOfIdeal, mem_idealOfSet]
-  haveI : NormalSpace X := normalOfCompactT2
   /- Apply Urysohn's lemma to get `g : C(X, ℝ)` which is zero on `sᶜ` and `g x ≠ 0`, then compose
     with the natural embedding `ℝ ↪ 𝕜` to produce the desired `f`. -/
   obtain ⟨g, hgs, hgx : Set.EqOn g 1 {x}, -⟩ :=
-    exists_continuous_zero_one_of_closed isClosed_closure isClosed_singleton
+    exists_continuous_zero_one_of_isClosed isClosed_closure isClosed_singleton
       (Set.disjoint_singleton_right.mpr hx)
   exact
     ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
@@ -404,7 +403,7 @@ namespace CharacterSpace
 
 open Function ContinuousMap
 
-variable (X 𝕜 : Type _) [TopologicalSpace X]
+variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
@@ -436,11 +435,10 @@ variable [CompactSpace X] [T2Space X] [IsROrC 𝕜]
 theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine' ⟨fun x y hxy => _, fun φ => _⟩
   · contrapose! hxy
-    haveI := @normalOfCompactT2 X _ _ _
-    rcases exists_continuous_zero_one_of_closed (isClosed_singleton : _root_.IsClosed {x})
+    rcases exists_continuous_zero_one_of_isClosed (isClosed_singleton : _root_.IsClosed {x})
         (isClosed_singleton : _root_.IsClosed {y}) (Set.disjoint_singleton.mpr hxy) with
       ⟨f, fx, fy, -⟩
-    rw [FunLike.ne_iff]
+    rw [DFunLike.ne_iff]
     use (⟨fun (x : ℝ) => (x : 𝕜), IsROrC.continuous_ofReal⟩ : C(ℝ, 𝕜)).comp f
     simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne.def,
       IsROrC.ofReal_inj] using

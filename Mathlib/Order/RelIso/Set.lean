@@ -20,12 +20,12 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
   {u : δ → δ → Prop}
 
 namespace RelHomClass
 
-variable {F : Type _}
+variable {F : Type*}
 
 theorem map_inf [SemilatticeInf α] [LinearOrder β]
     [RelHomClass F ((· < ·) : β → β → Prop) ((· < ·) : α → α → Prop)] (a : F) (m n : β) :
@@ -45,7 +45,7 @@ namespace RelIso
 
 @[simp]
 theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  Function.Surjective.range_eq e.surjective
+  e.surjective.range_eq
 #align rel_iso.range_eq RelIso.range_eq
 
 end RelIso

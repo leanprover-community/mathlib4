@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 #align_import analysis.calculus.affine_map from "leanprover-community/mathlib"@"839b92fedff9981cf3fe1c1f623e04b0d127f57c"
 
@@ -22,7 +22,7 @@ This file contains results about smoothness of affine maps.
 
 namespace ContinuousAffineMap
 
-variable {𝕜 V W : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
 
 variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
@@ -32,7 +32,6 @@ variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
 theorem contDiff {n : ℕ∞} (f : V →A[𝕜] W) : ContDiff 𝕜 n f := by
   rw [f.decomp]
   apply f.contLinear.contDiff.add
-  simp only
   exact contDiff_const
 #align continuous_affine_map.cont_diff ContinuousAffineMap.contDiff
 

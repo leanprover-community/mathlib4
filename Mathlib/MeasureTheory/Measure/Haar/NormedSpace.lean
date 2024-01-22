@@ -13,8 +13,6 @@ import Mathlib.MeasureTheory.Integral.Bochner
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped NNReal ENNReal Pointwise BigOperators Topology
@@ -29,13 +27,13 @@ namespace Measure
 
 /- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
 an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
-example {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
 
 section ContinuousLinearEquiv
 
-variable {𝕜 G H : Type _} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
   [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [T2Space H]
@@ -53,9 +51,9 @@ instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasu
 
 end ContinuousLinearEquiv
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type _} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
+  [NormedSpace ℝ F]
 
 variable {s : Set E}
 
@@ -64,6 +62,8 @@ integral of `f`. The formula we give works even when `f` is not integrable or `R
 thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
+  by_cases hF : CompleteSpace F; swap
+  · simp [integral, hF]
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
@@ -130,14 +130,14 @@ theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) =
 
 end Measure
 
-variable {F : Type _} [NormedAddCommGroup F]
+variable {F : Type*} [NormedAddCommGroup F]
 
-theorem integrable_comp_smul_iff {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (hg : Integrable g μ) {S : ℝ} (hS : S ≠ 0), Integrable (fun x => g (S • x)) μ by
+    ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine' ⟨fun hf => _, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel hR, one_smul]
@@ -149,7 +149,7 @@ theorem integrable_comp_smul_iff {E : Type _} [NormedAddCommGroup E] [NormedSpac
   simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
 
-theorem Integrable.comp_smul {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] {μ : Measure E} [IsAddHaarMeasure μ]
     {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ :=
   (integrable_comp_smul_iff μ f hR).2 hf

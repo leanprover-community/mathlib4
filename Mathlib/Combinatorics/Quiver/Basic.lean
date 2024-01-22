@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 -/
 import Mathlib.Data.Opposite
+import Mathlib.Tactic.Cases
 
 #align_import combinatorics.quiver.basic from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
 
@@ -16,12 +17,14 @@ is a very permissive notion of directed graph.
 
 ## Implementation notes
 
-Currently `Quiver` is defined with `arrow : V → V → Sort v`.
+Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
 but it is also results in error-prone universe signatures when constraints require a `Type`.
 -/
+
+set_option autoImplicit true
 
 
 open Opposite
@@ -89,19 +92,19 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
 
 /-- The identity morphism between quivers. -/
 @[simps]
-def id (V : Type _) [Quiver V] : Prefunctor V V where
+def id (V : Type*) [Quiver V] : Prefunctor V V where
   obj := fun X => X
   map f := f
 #align prefunctor.id Prefunctor.id
 #align prefunctor.id_obj Prefunctor.id_obj
 #align prefunctor.id_map Prefunctor.id_map
 
-instance (V : Type _) [Quiver V] : Inhabited (Prefunctor V V) :=
+instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
 @[simps, pp_dot]
-def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
+def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
     (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
@@ -110,17 +113,17 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp_map Prefunctor.comp_map
 
 @[simp]
-theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     F.comp (id _) = F := rfl
 #align prefunctor.comp_id Prefunctor.comp_id
 
 @[simp]
-theorem id_comp {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     (id _).comp F = F := rfl
 #align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
-theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
+theorem comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
     (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
     (F.comp G).comp H = F.comp (G.comp H) :=
   rfl

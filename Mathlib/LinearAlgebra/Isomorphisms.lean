@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Quotient
 
 universe u v
 
-variable {R M M₂ M₃ : Type _}
+variable {R M M₂ M₃ : Type*}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
 
@@ -34,7 +34,7 @@ open Submodule
 
 section IsomorphismLaws
 
-/-- The first isomorphism law for modules. The quotient of `M` by the kernel of `f` is linearly
+/-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
   (LinearEquiv.ofInjective (f.ker.liftQ f <| le_rfl) <|
@@ -42,7 +42,7 @@ noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMa
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 #align linear_map.quot_ker_equiv_range LinearMap.quotKerEquivRange
 
-/-- The first isomorphism theorem for surjective linear maps. -/
+/-- The **first isomorphism theorem for surjective linear maps**. -/
 noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
     (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
   f.quotKerEquivRange.trans (LinearEquiv.ofTop (LinearMap.range f) (LinearMap.range_eq_top.2 hf))
@@ -65,12 +65,12 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 @[reducible]
 def subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
-  (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left)
+  (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
     comap (Submodule.subtype p) (p ⊓ p') ≤ ker (subToSupQuotient p p') := by
-  rw [LinearMap.ker_comp, Submodule.ofLe, comap_codRestrict, ker_mkQ, map_comap_subtype]
+  rw [LinearMap.ker_comp, Submodule.inclusion, comap_codRestrict, ker_mkQ, map_comap_subtype]
   exact comap_mono (inf_le_inf_right _ le_sup_left)
 
 /-- Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
@@ -94,7 +94,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  simp only [mem_comap, map_sub, coeSubtype, coe_ofLe, sub_add_cancel', neg_mem_iff, hz]
+  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel', neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
@@ -106,16 +106,17 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 -- @[simp]
--- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
+-- Porting note: `simp` affects the type arguments of `DFunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
-    let map := ofLe (le_sup_left : p ≤ p ⊔ p')
+    let map := inclusion (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
       @Submodule.Quotient.mk R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
   rfl
@@ -127,7 +128,7 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
-    rw [quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
+    rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 

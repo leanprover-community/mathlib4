@@ -16,6 +16,8 @@ infinite list. In this file we define `Stream'` and some functions that take and
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
 
+set_option autoImplicit true
+
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α
 #align stream Stream'
@@ -30,49 +32,49 @@ def cons (a : α) (s : Stream' α) : Stream' α
 
 scoped infixr:67 " :: " => cons
 
-/-- `n`-th element of a stream. -/
-def nth (s : Stream' α) (n : ℕ) : α := s n
-#align stream.nth Stream'.nth
+/-- Get the `n`-th element of a stream. -/
+def get (s : Stream' α) (n : ℕ) : α := s n
+#align stream.nth Stream'.get
 
-/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
-abbrev head (s : Stream' α) : α := s.nth 0
+/-- Head of a stream: `Stream'.head s = Stream'.get s 0`. -/
+abbrev head (s : Stream' α) : α := s.get 0
 #align stream.head Stream'.head
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s.nth (i + 1)
+def tail (s : Stream' α) : Stream' α := fun i => s.get (i + 1)
 #align stream.tail Stream'.tail
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.nth (i + n)
+def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
-def All (p : α → Prop) (s : Stream' α) := ∀ n, p (nth s n)
+def All (p : α → Prop) (s : Stream' α) := ∀ n, p (get s n)
 #align stream.all Stream'.All
 
 /-- Proposition saying that at least one element of a stream satisfies a predicate. -/
-def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (nth s n)
+def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 #align stream.any Stream'.Any
 
-/-- `a ∈ s` means that `a = Stream'.nth n s` for some `n`. -/
+/-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
-def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (nth s n)
+def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
 #align stream.map Stream'.map
 
 /-- Zip two streams using a binary operation:
-`Stream'.nth n (Stream'.zip f s₁ s₂) = f (Stream'.nth s₁) (Stream'.nth s₂)`. -/
+`Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
 def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
-  fun n => f (nth s₁ n) (nth s₂ n)
+  fun n => f (get s₁ n) (get s₂ n)
 #align stream.zip Stream'.zip
 
 /-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.nth n)
+def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 #align stream.enum Stream'.enum
 
-/-- The constant stream: `Stream'.nth n (Stream'.const a) = a`. -/
+/-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
 #align stream.const Stream'.const
 
@@ -178,13 +180,13 @@ def pure (a : α) : Stream' α :=
 #align stream.pure Stream'.pure
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
-def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (nth f n) (nth s n)
+def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
 #align stream.apply Stream'.apply
 
 infixl:75 " ⊛ " => apply
 -- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
 
-/-- The stream of natural numbers: `Stream'.nth n Stream'.nats = n`. -/
+/-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
 def nats : Stream' Nat := fun n => n
 #align stream.nats Stream'.nats
 

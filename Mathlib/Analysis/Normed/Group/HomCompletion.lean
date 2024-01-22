@@ -13,7 +13,7 @@ import Mathlib.Analysis.Normed.Group.Completion
 
 Given two (semi) normed groups `G` and `H` and a normed group hom `f : NormedAddGroupHom G H`,
 we build and study a normed group hom
-`f.completion  : NormedAddGroupHom (completion G) (completion H)` such that the diagram
+`f.completion : NormedAddGroupHom (completion G) (completion H)` such that the diagram
 
 ```
                    f
@@ -55,8 +55,8 @@ open Set NormedAddGroupHom UniformSpace
 
 section Completion
 
-variable {G : Type _} [SeminormedAddCommGroup G] {H : Type _} [SeminormedAddCommGroup H]
-  {K : Type _} [SeminormedAddCommGroup K]
+variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGroup H]
+  {K : Type*} [SeminormedAddCommGroup K]
 
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
@@ -197,9 +197,9 @@ end Completion
 
 section Extension
 
-variable {G : Type _} [SeminormedAddCommGroup G]
+variable {G : Type*} [SeminormedAddCommGroup G]
 
-variable {H : Type _} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
+variable {H : Type*} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/

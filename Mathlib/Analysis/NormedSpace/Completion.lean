@@ -28,7 +28,7 @@ namespace UniformSpace
 
 namespace Completion
 
-variable (𝕜 E : Type _) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 E : Type*) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
     UniformContinuousConstSMul 𝕜 E :=
@@ -37,7 +37,6 @@ instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
 
 instance : NormedSpace 𝕜 (Completion E) :=
   { Completion.instModule with
-    smul := (· • ·)
     norm_smul_le := fun c x =>
       induction_on x
         (isClosed_le (continuous_const_smul _).norm (continuous_const.mul continuous_norm)) fun y =>
@@ -71,7 +70,7 @@ set_option linter.uppercaseLean3 false in
 #align uniform_space.completion.coe_to_complL UniformSpace.Completion.coe_toComplL
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 set_option linter.uppercaseLean3 false in
@@ -79,7 +78,7 @@ set_option linter.uppercaseLean3 false in
 
 section Algebra
 
-variable (𝕜) (A : Type _)
+variable (𝕜) (A : Type*)
 
 instance [SeminormedRing A] : NormedRing (Completion A) :=
   { Completion.ring,

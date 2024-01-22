@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import group_theory.group_action.opposite from "leanprover-community/mathlib"@"4330aae21f538b862f8aead371cfb6ee556398f1"
@@ -16,10 +17,19 @@ type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+
+## Notation
+
+With `open scoped RightActions`, this provides:
+
+* `r •> m` as an alias for `r • m`
+* `m <• r` as an alias for `MulOpposite.op r • m`
+* `v +ᵥ> p` as an alias for `v +ᵥ p`
+* `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-! ### Actions _on_ the opposite type
 
@@ -30,16 +40,16 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance mulAction (R : Type _) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
+instance mulAction (R : Type*) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
   { one_smul := fun x => unop_injective <| one_smul R (unop x)
     mul_smul := fun r₁ r₂ x => unop_injective <| mul_smul r₁ r₂ (unop x) }
 
-instance distribMulAction (R : Type _) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+instance distribMulAction (R : Type*) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R αᵐᵒᵖ :=
   { smul_add := fun r x₁ x₂ => unop_injective <| smul_add r (unop x₁) (unop x₂)
     smul_zero := fun r => unop_injective <| smul_zero r }
 
-instance mulDistribMulAction (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
+instance mulDistribMulAction (R : Type*) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
     MulDistribMulAction R αᵐᵒᵖ :=
   { smul_mul := fun r x₁ x₂ => unop_injective <| smul_mul' r (unop x₂) (unop x₁)
     smul_one := fun r => unop_injective <| smul_one r }
@@ -54,21 +64,92 @@ instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SM
   ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
 
 @[to_additive]
-instance isCentralScalar (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
+instance isCentralScalar (R : Type*) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R αᵐᵒᵖ :=
   ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
 
-theorem op_smul_eq_op_smul_op {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
+theorem op_smul_eq_op_smul_op {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     (r : R) (a : α) : op (r • a) = op r • op a :=
   (op_smul_eq_smul r (op a)).symm
 #align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
-theorem unop_smul_eq_unop_smul_unop {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α]
+theorem unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
     [IsCentralScalar R α] (r : Rᵐᵒᵖ) (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a :=
   (unop_smul_eq_smul r (unop a)).symm
 #align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
 
 end MulOpposite
+
+/-! ### Right actions
+
+In this section we establish `SMul αᵐᵒᵖ β` as the canonical spelling of right scalar multiplication
+of `β` by `α`, and provide convienient notations.
+-/
+
+namespace RightActions
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+
+In lemma names this is still called `smul`. -/
+scoped notation3:74 r:75 " •> " m:74 => r • m
+
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
+
+In lemma names this is still called `op_smul`. -/
+scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+
+In lemma names this is still called `vadd`. -/
+scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
+
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
+
+In lemma names this is still called `op_vadd`. -/
+scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+
+section examples
+variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+
+-- Left and right actions are just notation around the general `•` and `+ᵥ` notations
+example : a •> b = a • b := rfl
+example : b <• a = MulOpposite.op a • b := rfl
+
+example : a +ᵥ> b = a +ᵥ b := rfl
+example : b <+ᵥ a = AddOpposite.op a +ᵥ b := rfl
+
+-- Left actions right-associate, right actions left-associate
+example : a₁ •> a₂ •> b = a₁ •> (a₂ •> b) := rfl
+example : b <• a₂ <• a₁ = (b <• a₂) <• a₁ := rfl
+
+example : a₁ +ᵥ> a₂ +ᵥ> b = a₁ +ᵥ> (a₂ +ᵥ> b) := rfl
+example : b <+ᵥ a₂ <+ᵥ a₁ = (b <+ᵥ a₂) <+ᵥ a₁ := rfl
+
+-- When left and right actions coexist, they associate to the left
+example : a₁ •> b <• a₂ = (a₁ •> b) <• a₂ := rfl
+example : a₁ •> a₂ •> b <• a₃ <• a₄ = ((a₁ •> (a₂ •> b)) <• a₃) <• a₄ := rfl
+
+example : a₁ +ᵥ> b <+ᵥ a₂ = (a₁ +ᵥ> b) <+ᵥ a₂ := rfl
+example : a₁ +ᵥ> a₂ +ᵥ> b <+ᵥ a₃ <+ᵥ a₄ = ((a₁ +ᵥ> (a₂ +ᵥ> b)) <+ᵥ a₃) <+ᵥ a₄ := rfl
+
+end examples
+
+end RightActions
+
+section
+variable {α β : Type*}
+
+open scoped RightActions
+
+@[to_additive]
+theorem op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+    b <• a₁ <• a₂ = b <• (a₁ * a₂) := smul_smul _ _ _
+
+@[to_additive]
+theorem op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+    b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
+
+end section
 
 /-! ### Actions _by_ the opposite type (right actions)
 
@@ -76,7 +157,6 @@ In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁
 multiplicative opposite, we define `MulOpposite.op a₁ • a₂ = a₂ * a₁`, with the multiplication
 reversed.
 -/
-
 
 open MulOpposite
 
@@ -105,7 +185,7 @@ theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a �
 
 /-- The right regular action of a group on itself is transitive. -/
 @[to_additive "The right regular action of an additive group on itself is transitive."]
-instance MulAction.OppositeRegular.isPretransitive {G : Type _} [Group G] :
+instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] :
     MulAction.IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 #align mul_action.opposite_regular.is_pretransitive MulAction.OppositeRegular.isPretransitive
