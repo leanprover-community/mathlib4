@@ -798,6 +798,11 @@ instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
 
 @[simp]
+theorem symm_symm (f : M ≃[L] N) :
+    f.symm.symm = f :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
   f.toEquiv.apply_symm_apply a
 #align first_order.language.equiv.apply_symm_apply FirstOrder.Language.Equiv.apply_symm_apply
@@ -806,6 +811,9 @@ theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
 theorem symm_apply_apply (f : M ≃[L] N) (a : M) : f.symm (f a) = a :=
   f.toEquiv.symm_apply_apply a
 #align first_order.language.equiv.symm_apply_apply FirstOrder.Language.Equiv.symm_apply_apply
+
+theorem injective_symm : Function.Injective (.symm : (M ≃[L] N) → N ≃[L] M) := by
+  intro f g hfg; exact congr_arg (Equiv.symm) hfg
 
 @[simp]
 theorem map_fun (φ : M ≃[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
@@ -973,6 +981,10 @@ theorem symm_comp_self_toHom (f : M ≃[L] N) :
 theorem self_comp_symm_toHom (f : M ≃[L] N) :
     f.toHom.comp f.symm.toHom = Hom.id L N := by
   rw [←comp_toHom, self_comp_symm, refl_toHom]
+
+@[simp]
+theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
+  rfl
 
 end Equiv
 
