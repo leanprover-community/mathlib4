@@ -7,6 +7,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Data.Set.Pointwise.Interval
 
 /-!
 ## Pseudo-metric spaces
@@ -31,7 +32,6 @@ Additional useful definitions:
 * `nndist a b`: `dist` as a function to the non-negative reals.
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
-* `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
 
 TODO (anyone): Add "Main results" section.
 
@@ -760,9 +760,9 @@ theorem uniformity_basis_dist_inv_nat_succ :
 
 theorem uniformity_basis_dist_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / ↑n } :=
-  Metric.mk_uniformity_basis (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun ε ε0 =>
+  Metric.mk_uniformity_basis (fun _ hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ ε0 =>
     let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
-    ⟨n + 1, Nat.succ_pos n, by exact_mod_cast hn.le⟩
+    ⟨n + 1, Nat.succ_pos n, mod_cast hn.le⟩
 #align metric.uniformity_basis_dist_inv_nat_pos Metric.uniformity_basis_dist_inv_nat_pos
 
 theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
@@ -870,7 +870,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
         ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
@@ -1564,7 +1564,8 @@ theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
 theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
-    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
+    simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
+    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 #align nnreal.nndist_eq NNReal.nndist_eq
 
@@ -1863,6 +1864,12 @@ theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → 
 
 end Metric
 
+/-- A compact set is separable. -/
+theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  isSeparable_of_separableSpace_subtype s
+#align is_compact.is_separable IsCompact.isSeparable
+
 section Pi
 
 open Finset
@@ -2057,128 +2064,6 @@ alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
 
 end Compact
 
-section ProperSpace
-
-open Metric
-
-/-- A pseudometric space is proper if all closed balls are compact. -/
-class ProperSpace (α : Type u) [PseudoMetricSpace α] : Prop where
-  isCompact_closedBall : ∀ x : α, ∀ r, IsCompact (closedBall x r)
-#align proper_space ProperSpace
-
-export ProperSpace (isCompact_closedBall)
-
-/-- In a proper pseudometric space, all spheres are compact. -/
-theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
-    IsCompact (sphere x r) :=
-  (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
-#align is_compact_sphere isCompact_sphere
-
-/-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
-instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
-    (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
-  isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
-
--- see Note [lower instance priority]
-/-- A proper pseudo metric space is sigma compact, and therefore second countable. -/
-instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
-    SecondCountableTopology α := by
-  -- We already have `sigmaCompactSpace_of_locallyCompact_secondCountable`, so we don't
-  -- add an instance for `SigmaCompactSpace`.
-  suffices SigmaCompactSpace α from EMetric.secondCountable_of_sigmaCompact α
-  rcases em (Nonempty α) with (⟨⟨x⟩⟩ | hn)
-  · exact ⟨⟨fun n => closedBall x n, fun n => isCompact_closedBall _ _, iUnion_closedBall_nat _⟩⟩
-  · exact ⟨⟨fun _ => ∅, fun _ => isCompact_empty, iUnion_eq_univ_iff.2 fun x => (hn ⟨x⟩).elim⟩⟩
-#align second_countable_of_proper secondCountable_of_proper
-
-/-- If all closed balls of large enough radius are compact, then the space is proper. Especially
-useful when the lower bound for the radius is 0. -/
-theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
-    (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
-  ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
-    (closedBall_subset_closedBall <| le_max_left _ _)⟩
-#align proper_space_of_compact_closed_ball_of_le properSpace_of_compact_closedBall_of_le
-
--- A compact pseudometric space is proper
--- see Note [lower instance priority]
-instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α :=
-  ⟨fun _ _ => isClosed_ball.isCompact⟩
-#align proper_of_compact proper_of_compact
-
--- see Note [lower instance priority]
-/-- A proper space is locally compact -/
-instance (priority := 100) locally_compact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
-  locallyCompactSpace_of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
-    isCompact_closedBall _ _
-#align locally_compact_of_proper locally_compact_of_proper
-
--- see Note [lower instance priority]
-/-- A proper space is complete -/
-instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace α :=
-  ⟨fun {f} hf => by
-    /- We want to show that the Cauchy filter `f` is converging. It suffices to find a closed
-      ball (therefore compact by properness) where it is nontrivial. -/
-    obtain ⟨t, t_fset, ht⟩ : ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, dist x y < 1 :=
-      (Metric.cauchy_iff.1 hf).2 1 zero_lt_one
-    rcases hf.1.nonempty_of_mem t_fset with ⟨x, xt⟩
-    have : closedBall x 1 ∈ f := mem_of_superset t_fset fun y yt => (ht y yt x xt).le
-    rcases (isCompact_iff_totallyBounded_isComplete.1 (isCompact_closedBall x 1)).2 f hf
-        (le_principal_iff.2 this) with
-      ⟨y, -, hy⟩
-    exact ⟨y, hy⟩⟩
-#align complete_of_proper complete_of_proper
-
-/-- A binary product of proper spaces is proper. -/
-instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
-    [ProperSpace α] [ProperSpace β] : ProperSpace (α × β) where
-  isCompact_closedBall := by
-    rintro ⟨x, y⟩ r
-    rw [← closedBall_prod_same x y]
-    exact (isCompact_closedBall x r).prod (isCompact_closedBall y r)
-#align prod_proper_space prod_properSpace
-
-/-- A finite product of proper spaces is proper. -/
-instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
-    [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
-  refine' properSpace_of_compact_closedBall_of_le 0 fun x r hr => _
-  rw [closedBall_pi _ hr]
-  exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
-#align pi_proper_space pi_properSpace
-
-variable [ProperSpace α] {x : α} {r : ℝ} {s : Set α}
-
-/-- If a nonempty ball in a proper space includes a closed set `s`, then there exists a nonempty
-ball with the same center and a strictly smaller radius that includes `s`. -/
-theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball x r) :
-    ∃ r' ∈ Ioo 0 r, s ⊆ ball x r' := by
-  rcases eq_empty_or_nonempty s with (rfl | hne)
-  · exact ⟨r / 2, ⟨half_pos hr, half_lt_self hr⟩, empty_subset _⟩
-  have : IsCompact s :=
-    (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
-  obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
-    this.exists_forall_ge hne (continuous_id.dist continuous_const).continuousOn
-  have hyr : dist y x < r := h hys
-  rcases exists_between hyr with ⟨r', hyr', hrr'⟩
-  exact ⟨r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩, hy.trans <| closedBall_subset_ball hyr'⟩
-#align exists_pos_lt_subset_ball exists_pos_lt_subset_ball
-
-/-- If a ball in a proper space includes a closed set `s`, then there exists a ball with the same
-center and a strictly smaller radius that includes `s`. -/
-theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < r, s ⊆ ball x r' := by
-  cases' le_or_lt r 0 with hr hr
-  · rw [ball_eq_empty.2 hr, subset_empty_iff] at h
-    subst s
-    exact (exists_lt r).imp fun r' hr' => ⟨hr', empty_subset _⟩
-  · exact (exists_pos_lt_subset_ball hr hs h).imp fun r' hr' => ⟨hr'.1.2, hr'.2⟩
-#align exists_lt_subset_ball exists_lt_subset_ball
-
-end ProperSpace
-
-theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  isSeparable_of_separableSpace_subtype s
-#align is_compact.is_separable IsCompact.isSeparable
-
 namespace Metric
 
 section SecondCountable
@@ -2192,9 +2077,9 @@ theorem secondCountable_of_almost_dense_set
     SecondCountableTopology α := by
   refine' EMetric.secondCountable_of_almost_dense_set fun ε ε0 => _
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
-  choose s hsc y hys hyx using H ε' (by exact_mod_cast ε'0)
+  choose s hsc y hys hyx using H ε' (mod_cast ε'0)
   refine' ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
-  exact_mod_cast hyx x
+  exact mod_cast hyx x
 #align metric.second_countable_of_almost_dense_set Metric.secondCountable_of_almost_dense_set
 
 end SecondCountable
@@ -2212,15 +2097,3 @@ theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 #align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_sUnion
-
-namespace Metric
-theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
-    [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
-    (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
-    (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
-  simp_rw [← closedBall_diff_ball] at hf1
-  exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
-    isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
-
-end Metric

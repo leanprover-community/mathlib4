@@ -482,7 +482,7 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
           tensorHom (rightUnitor X).hom (𝟙 Y) := by
             aesop_cat) :
       MonoidalCategory C where
-  tensorHom_def := by intros; simp [← id_tensorHom, ←tensorHom_id, ← tensor_comp]
+  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
   id_whiskerRight := by intros; simp [← tensorHom_id, tensor_id]
   pentagon := pentagon

@@ -383,9 +383,9 @@ variable {R : Type*} [CommRing R]
 
 variable [TopologicalSpace R] [TopologicalRing R]
 
-theorem isOpen_of_open_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
+theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
     IsOpen (I : Set R) :=
   @Submodule.isOpen_mono R R _ _ _ _ Semiring.toModule _ _ h hU
-#align ideal.is_open_of_open_subideal Ideal.isOpen_of_open_subideal
+#align ideal.is_open_of_open_subideal Ideal.isOpen_of_isOpen_subideal
 
 end Ideal

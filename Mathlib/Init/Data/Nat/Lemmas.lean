@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
+import Std.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Init.Order.Defs
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -63,7 +64,7 @@ namespace Nat
 
 #align nat.one_mul Nat.one_mul
 
-#align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
+#align nat.succ_add_eq_succ_add Nat.succ_add_eq_add_succ
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
@@ -416,7 +417,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_one Nat.sub_one
 
-#align nat.succ_sub_one Nat.succ_sub_one
+#align nat.succ_sub_one Nat.add_one_sub_one
 
 #align nat.succ_pred_eq_of_pos Nat.succ_pred_eq_of_pos
 
@@ -462,7 +463,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.mul_self_sub_mul_self_eq Nat.mul_self_sub_mul_self_eq
 
-#align nat.succ_mul_succ_eq Nat.succ_mul_succ_eq
+#align nat.succ_mul_succ_eq Nat.succ_mul_succ
 
 /-! min -/
 
@@ -734,9 +735,9 @@ lemma to_digits_core_lens_eq_aux (b f : Nat) :
   induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption
   | succ f ih =>
-    by_cases hx : n / b = 0
-    case pos => simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
-    case neg =>
+    if hx : n / b = 0 then
+      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+    else
       simp only [hx, if_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
@@ -746,9 +747,9 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
   induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
   | succ f ih =>
-    by_cases hnb : (n / b) = 0
-    case pos => simp only [hnb, if_true, List.length]
-    case neg =>
+    if hnb : (n / b) = 0 then
+      simp only [hnb, if_true, List.length]
+    else
       generalize hx: Nat.digitChar (n % b) = x
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
@@ -773,21 +774,19 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
     cases e with
     | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
     | succ e =>
-      by_cases h_pred_pos : 0 < e
-      case pos =>
+      if h_pred_pos : 0 < e then
         have _ : 0 < b := Nat.lt_trans (by decide) h
         specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-        by_cases hdiv_ten : n / b = 0
-        case pos => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-        case neg =>
+        if hdiv_ten : n / b = 0 then
+          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+        else
           simp only [hdiv_ten,
-            to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
+            to_digits_core_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
           exact Nat.succ_le_succ ih
-      case neg =>
-        have _ : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        rw [‹e = 0›]
+      else
+        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
         have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
+        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
@@ -798,8 +797,9 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
     (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
   | zero => assumption
   | succ n =>
-    by_cases hterm : n.succ / 10 = 0
-    case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-    case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+    if hterm : n.succ / 10 = 0 then
+      simp only [hterm, Nat.toDigitsCore]; assumption
+    else
+      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Nat

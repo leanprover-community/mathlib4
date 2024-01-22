@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
@@ -97,25 +97,25 @@ namespace NatPredicate
 
 variable {N}
 
-nonrec theorem m_le_n {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ n := by exact_mod_cast h1.m_le_n
+nonrec theorem m_le_n {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ n := mod_cast h1.m_le_n
 #align imo1981_q3.nat_predicate.m_le_n Imo1981Q3.NatPredicate.m_le_n
 
-nonrec theorem eq_imp_1 {n : ℕ} (h1 : NatPredicate N n n) : n = 1 := by exact_mod_cast h1.eq_imp_1
+nonrec theorem eq_imp_1 {n : ℕ} (h1 : NatPredicate N n n) : n = 1 := mod_cast h1.eq_imp_1
 #align imo1981_q3.nat_predicate.eq_imp_1 Imo1981Q3.NatPredicate.eq_imp_1
 
 nonrec theorem reduction {m n : ℕ} (h1 : NatPredicate N m n) (h2 : 1 < n) :
     NatPredicate N (n - m) m := by
   have : m ≤ n := h1.m_le_n
-  exact_mod_cast h1.reduction (by exact_mod_cast h2)
+  exact mod_cast h1.reduction (mod_cast h2)
 #align imo1981_q3.nat_predicate.reduction Imo1981Q3.NatPredicate.reduction
 
-theorem n_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < n := by exact_mod_cast h1.n_range.left
+theorem n_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < n := mod_cast h1.n_range.left
 #align imo1981_q3.nat_predicate.n_pos Imo1981Q3.NatPredicate.n_pos
 
-theorem m_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < m := by exact_mod_cast h1.m_range.left
+theorem m_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < m := mod_cast h1.m_range.left
 #align imo1981_q3.nat_predicate.m_pos Imo1981Q3.NatPredicate.m_pos
 
-theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := by exact_mod_cast h1.n_range.right
+theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := mod_cast h1.n_range.right
 set_option linter.uppercaseLean3 false in
 #align imo1981_q3.nat_predicate.n_le_N Imo1981Q3.NatPredicate.n_le_N
 
@@ -207,5 +207,5 @@ theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   apply this
   · decide
   · decide
-  · norm_num [ProblemPredicate_iff]; decide
+  · norm_num [problemPredicate_iff]; decide
 #align imo1981_q3 imo1981_q3

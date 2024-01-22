@@ -23,17 +23,17 @@ open Set Filter
 
 open scoped Topology Real
 
-theorem hasStrictDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x := by
-  exact_mod_cast (Complex.hasStrictDerivAt_tan (by exact_mod_cast h)).real_of_complex
+theorem hasStrictDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x :=
+  mod_cast (Complex.hasStrictDerivAt_tan (by exact mod_cast h)).real_of_complex
 #align real.has_strict_deriv_at_tan Real.hasStrictDerivAt_tan
 
-theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^ 2) x := by
-  exact_mod_cast (Complex.hasDerivAt_tan (by exact_mod_cast h)).real_of_complex
+theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^ 2) x :=
+  mod_cast (Complex.hasDerivAt_tan (by exact mod_cast h)).real_of_complex
 #align real.has_deriv_at_tan Real.hasDerivAt_tan
 
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
-  have hx : Complex.cos x = 0 := by exact_mod_cast hx
+  have hx : Complex.cos x = 0 := mod_cast hx
   simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
   refine' (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp _
   refine' Tendsto.inf Complex.continuous_ofReal.continuousAt _
@@ -66,7 +66,7 @@ theorem deriv_tan (x : ℝ) : deriv tan x = 1 / cos x ^ 2 :=
 @[simp]
 theorem contDiffAt_tan {n x} : ContDiffAt ℝ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, fun h =>
-    (Complex.contDiffAt_tan.2 <| by exact_mod_cast h).real_of_complex⟩
+    (Complex.contDiffAt_tan.2 <| mod_cast h).real_of_complex⟩
 #align real.cont_diff_at_tan Real.contDiffAt_tan
 
 theorem hasDerivAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π / 2)) :
@@ -82,7 +82,7 @@ theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : �
 theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
   simpa [cos_sq_arctan] using
-    tanLocalHomeomorph.hasStrictDerivAt_symm trivial (by simpa) (hasStrictDerivAt_tan A)
+    tanPartialHomeomorph.hasStrictDerivAt_symm trivial (by simpa) (hasStrictDerivAt_tan A)
 #align real.has_strict_deriv_at_arctan Real.hasStrictDerivAt_arctan
 
 theorem hasDerivAt_arctan (x : ℝ) : HasDerivAt arctan (1 / (1 + x ^ 2)) x :=
@@ -105,7 +105,7 @@ theorem deriv_arctan : deriv arctan = fun (x : ℝ) => 1 / (1 + x ^ 2) :=
 theorem contDiff_arctan {n : ℕ∞} : ContDiff ℝ n arctan :=
   contDiff_iff_contDiffAt.2 fun x =>
     have : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
-    tanLocalHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)
+    tanPartialHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)
       (contDiffAt_tan.2 this)
 #align real.cont_diff_arctan Real.contDiff_arctan
 

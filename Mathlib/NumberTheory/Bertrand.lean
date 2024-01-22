@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
 import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -92,7 +92,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
     apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg; norm_num1
+    apply rpow_nonneg; norm_num1
     apply rpow_pos_of_pos; norm_num1
     apply hf' 18; norm_num1
     norm_num1
@@ -124,17 +124,13 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
-  have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
-  have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' _root_.trans (mul_le_mul _ _ _ _)
-      (Bertrand.real_main_inequality (by exact_mod_cast n_large))
-  · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-    refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
-    exact_mod_cast Real.nat_sqrt_le_real_sqrt
-  · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
-  · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
-  · refine' mul_nonneg (Nat.cast_nonneg _) _
-    exact Real.rpow_nonneg_of_nonneg (mul_nonneg zero_le_two (Nat.cast_nonneg _)) _
+  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  gcongr
+  · have n2_pos : 0 < 2 * n := by positivity
+    exact mod_cast n2_pos
+  · exact_mod_cast Real.nat_sqrt_le_real_sqrt
+  · norm_num1
+  · exact cast_div_le.trans (by norm_cast)
 #align bertrand_main_inequality bertrand_main_inequality
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
@@ -182,13 +178,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow n2_pos ((Finset.card_le_of_subset fun x hx => _).trans this.le)
+    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
@@ -196,7 +192,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
 
 namespace Nat
 
-/-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
+/-- Proves that **Bertrand's postulate** holds for all sufficiently large `n`.
 -/
 theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
@@ -220,7 +216,7 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
+  by_cases h : p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
   exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
 #align nat.exists_prime_lt_and_le_two_mul_succ Nat.exists_prime_lt_and_le_two_mul_succ
 

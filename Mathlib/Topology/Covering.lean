@@ -3,7 +3,7 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.IsLocallyHomeomorph
+import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.FiberBundle.Basic
 
 #align_import topology.covering from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
@@ -55,7 +55,7 @@ theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
   let h := Classical.choose_spec h.2
   let he := e.mk_proj_snd' h
   Subtype.ext
-    ((e.toLocalEquiv.eq_symm_apply (e.mem_source.mpr h)
+    ((e.toPartialEquiv.eq_symm_apply (e.mem_source.mpr h)
             (by rwa [he, e.mem_target, e.coe_fst (e.mem_source.mpr h)])).mpr
         he.symm).symm
 #align is_evenly_covered.to_trivialization_apply IsEvenlyCovered.toTrivialization_apply
@@ -101,14 +101,14 @@ protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f �
   ContinuousAt.continuousOn fun _ => hf.continuousAt
 #align is_covering_map_on.continuous_on IsCoveringMapOn.continuousOn
 
-protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
-    IsLocallyHomeomorphOn f (f ⁻¹' s) := by
-  refine' IsLocallyHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
+protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
+    IsLocalHomeomorphOn f (f ⁻¹' s) := by
+  refine' IsLocalHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
   refine'
-    ⟨e.toLocalHomeomorph.trans
+    ⟨e.toPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
@@ -120,12 +120,12 @@ protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
           map_target' := fun p hp => ⟨hp, rfl⟩
           left_inv' := fun p hp => Prod.ext rfl hp.2.symm
           right_inv' := fun p _ => rfl
-          continuous_toFun := continuous_fst.continuousOn
-          continuous_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
-      ⟨he, by rwa [e.toLocalHomeomorph.symm_symm, e.proj_toFun x he],
+          continuousOn_toFun := continuous_fst.continuousOn
+          continuousOn_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
+      ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
-#align is_covering_map_on.is_locally_homeomorph_on IsCoveringMapOn.isLocallyHomeomorphOn
+#align is_covering_map_on.is_locally_homeomorph_on IsCoveringMapOn.isLocalHomeomorphOn
 
 end IsCoveringMapOn
 
@@ -162,12 +162,12 @@ protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
 #align is_covering_map.continuous IsCoveringMap.continuous
 
-protected theorem isLocallyHomeomorph : IsLocallyHomeomorph f :=
-  isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocallyHomeomorphOn
-#align is_covering_map.is_locally_homeomorph IsCoveringMap.isLocallyHomeomorph
+protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
+  isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocalHomeomorphOn
+#align is_covering_map.is_locally_homeomorph IsCoveringMap.isLocalHomeomorph
 
 protected theorem isOpenMap : IsOpenMap f :=
-  hf.isLocallyHomeomorph.isOpenMap
+  hf.isLocalHomeomorph.isOpenMap
 #align is_covering_map.is_open_map IsCoveringMap.isOpenMap
 
 protected theorem quotientMap (hf' : Function.Surjective f) : QuotientMap f :=
@@ -181,7 +181,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine ⟨t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₁).2}, t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₂).2},
       ?_, ?_, ⟨he₁, rfl⟩, ⟨he₂, rfl⟩, Set.disjoint_left.mpr fun x h₁ h₂ ↦ hne (t.injOn he₁ he₂ ?_)⟩
     iterate 2
-      exact t.continuous_toFun.preimage_open_of_open t.open_source
+      exact t.continuousOn_toFun.isOpen_inter_preimage t.open_source
         (continuous_snd.isOpen_preimage _ <| isOpen_discrete _)
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
@@ -190,20 +190,20 @@ variable {A} [TopologicalSpace A] {s : Set A} (hs : IsPreconnected s) {g g₁ g�
 
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
-  hf.isSeparatedMap.eq_of_comp_eq hf.isLocallyHomeomorph.isLocallyInjective h₁ h₂ he a ha
+  hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
 
 theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
-  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocallyHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
+  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocalHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
 
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', f (g a) = f (g a')) (a a') : g a = g a' :=
-  hf.isSeparatedMap.const_of_comp hf.isLocallyHomeomorph.isLocallyInjective cont he a a'
+  hf.isSeparatedMap.const_of_comp hf.isLocalHomeomorph.isLocallyInjective cont he a a'
 
 theorem constOn_of_comp (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, f (g a) = f (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
-  hf.isSeparatedMap.constOn_of_comp hf.isLocallyHomeomorph.isLocallyInjective hs cont he ha ha'
+  hf.isSeparatedMap.constOn_of_comp hf.isLocalHomeomorph.isLocallyInjective hs cont he ha ha'
 
 end IsCoveringMap
 

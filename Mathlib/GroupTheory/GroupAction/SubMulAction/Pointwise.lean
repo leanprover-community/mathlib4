@@ -55,7 +55,7 @@ variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 instance : Mul (SubMulAction R M) where
   mul p q :=
     { carrier := Set.image2 (· * ·) p q
-      smul_mem' := fun r _ ⟨m₁, m₂, hm₁, hm₂, h⟩ =>
+      smul_mem' := fun r _ ⟨m₁, hm₁, m₂, hm₂, h⟩ =>
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }
 
 @[norm_cast]
@@ -63,7 +63,7 @@ theorem coe_mul (p q : SubMulAction R M) : ↑(p * q) = (p * q : Set M) :=
   rfl
 #align sub_mul_action.coe_mul SubMulAction.coe_mul
 
-theorem mem_mul {p q : SubMulAction R M} {x : M} : x ∈ p * q ↔ ∃ y z, y ∈ p ∧ z ∈ q ∧ y * z = x :=
+theorem mem_mul {p q : SubMulAction R M} {x : M} : x ∈ p * q ↔ ∃ y ∈ p, ∃ z ∈ q, y * z = x :=
   Set.mem_mul
 #align sub_mul_action.mem_mul SubMulAction.mem_mul
 
@@ -74,13 +74,12 @@ section MulOneClass
 variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 -- porting note: giving the instance the name `mulOneClass`
-instance mulOneClass : MulOneClass (SubMulAction R M)
-    where
+instance mulOneClass : MulOneClass (SubMulAction R M) where
   mul := (· * ·)
   one := 1
   mul_one a := by
     ext x
-    simp only [mem_mul, mem_one, mul_smul_comm, exists_and_left, exists_exists_eq_and, mul_one]
+    simp only [mem_mul, mem_one, mul_smul_comm, exists_exists_eq_and, mul_one]
     constructor
     · rintro ⟨y, hy, r, rfl⟩
       exact smul_mem _ _ hy
@@ -88,7 +87,7 @@ instance mulOneClass : MulOneClass (SubMulAction R M)
       exact ⟨x, hx, 1, one_smul _ _⟩
   one_mul a := by
     ext x
-    simp only [mem_mul, mem_one, smul_mul_assoc, exists_and_left, exists_exists_eq_and, one_mul]
+    simp only [mem_mul, mem_one, smul_mul_assoc, exists_exists_eq_and, one_mul]
     refine' ⟨_, fun hx => ⟨1, x, hx, one_smul _ _⟩⟩
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
@@ -115,14 +114,14 @@ instance : Monoid (SubMulAction R M) :=
   { SubMulAction.semiGroup,
     SubMulAction.mulOneClass with }
 
-theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = ((p : Set M) ^ n)
+theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = (p : Set M) ^ n
   | 0, hn => (hn rfl).elim
   | 1, _ => by rw [pow_one, pow_one]
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
-theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ ↑(p ^ n)
+theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, (p : Set M) ^ n ⊆ ↑(p ^ n)
   | 0 => by
     rw [pow_zero, pow_zero]
     exact subset_coe_one

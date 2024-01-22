@@ -5,7 +5,6 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -130,6 +129,15 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
+
+variable (J)
+
+/-- The functor which sends a functor to types to its sections. -/
+@[simps]
+def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
+  obj F := F.sections
+  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+    (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
 
 end Functor
 

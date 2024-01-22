@@ -87,7 +87,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   apply irreducible_of_eisenstein_criterion
   · rwa [span_singleton_prime (Int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
   · rw [leadingCoeff_Phi, mem_span_singleton]
-    exact_mod_cast mt Nat.dvd_one.mp hp.ne_one
+    exact mod_cast mt Nat.dvd_one.mp hp.ne_one
   · intro n hn
     rw [mem_span_singleton]
     rw [degree_Phi] at hn; norm_cast at hn
@@ -126,18 +126,18 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hfa : 0 ≤ f a := by
       -- Porting note: was `simp_rw`
       simp only [hf, ← sq]
-      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow ha _)) _ <;> norm_num
+      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
     exact ⟨x, y, (hx1.trans hy1).ne, hx2, hy2⟩
-  · replace hb : (b : ℝ) = a - 1 := by linarith [show (b : ℝ) + 1 ≤ a by exact_mod_cast hab]
+  · replace hb : (b : ℝ) = a - 1 := by linarith [show (b : ℝ) + 1 ≤ a from mod_cast hab]
     have hf1 : f 1 = 0 := by simp [hf, hb]
     have hfa :=
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
           norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
         _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
+          refine' add_le_add (sub_le_sub_left (pow_le_pow_right ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)

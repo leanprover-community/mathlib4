@@ -3,6 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
+import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.Tactic.LinearCombination
 
@@ -231,7 +232,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     refine' ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => _⟩
     refine' Nat.odd_iff_not_even.mp _ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
-      b.factorization_def hqp ▸ le_antisymm (Nat.Squarefree.factorization_le_one _ hb)
+      b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
         ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)
     haveI hqi : Fact q.Prime := ⟨hqp⟩
     simp_rw [← hab, padicValNat.mul (pow_ne_zero 2 ha₀.ne') hb₀.ne', hqb',

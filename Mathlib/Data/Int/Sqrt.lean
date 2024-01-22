@@ -40,6 +40,6 @@ theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
 /-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
 instance : DecidablePred (IsSquare : ℤ → Prop) :=
   fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
-    simp_rw [←exists_mul_self m, IsSquare, eq_comm]
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 end Int

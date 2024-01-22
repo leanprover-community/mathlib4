@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Submodule.Basic
 
 #align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
@@ -22,14 +22,14 @@ In this file we define a number of linear maps involving submodules of a module.
   as a semilinear map `p → M₂`.
 * `LinearMap.restrict`: The restriction of a linear map `f : M → M₁` to a submodule `p ⊆ M` and
   `q ⊆ M₁` (if `q` contains the codomain).
-* `Submodule.ofLe`: the inclusion `p ⊆ p'` of submodules `p` and `p'` as a linear map.
+* `Submodule.inclusion`: the inclusion `p ⊆ p'` of submodules `p` and `p'` as a linear map.
 
 ## Tags
 
 submodule, subspace, linear map
 -/
 
-open BigOperators Function
+open BigOperators Function Set
 
 universe u'' u' u v w
 
@@ -104,22 +104,6 @@ instance [AddAction M α] : AddAction p α :=
   AddAction.compHom _ p.subtype.toAddMonoidHom
 
 end AddAction
-
-section RestrictScalars
-
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
-variable (R M)
-
-/-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
-as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
-def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
-  { AddEquiv.refl p with
-    map_smul' := fun _ _ => rfl }
-#align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
-#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
-
-end RestrictScalars
 
 end AddCommMonoid
 
@@ -199,6 +183,20 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
 
+lemma restrict_comp
+    {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
+    {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
+    {f : M →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘ₗ f) p p₃ := hg.comp hf) :
+    (g ∘ₗ f).restrict hfg = (g.restrict hg) ∘ₗ (f.restrict hf) :=
+  rfl
+
+lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
+    (hf : MapsTo f p p) (hg : MapsTo g p p) :
+    Commute (f.restrict hf) (g.restrict hg) := by
+  change _ * _ = _ * _
+  conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
+
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
   rfl
@@ -226,13 +224,15 @@ instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂)
 #align linear_map.unique_of_right LinearMap.uniqueOfRight
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
+@[simps]
 def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   toFun f := f a
   map_add' f g := LinearMap.add_apply f g a
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `LinearMap.toAddMonoidHom` promoted to a `AddMonoidHom` -/
+/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
+@[simps]
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   toFun := toAddMonoidHom
   map_zero' := by ext; rfl
@@ -253,7 +253,7 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
     ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
-      from { toFun := FunLike.coe,
+      from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
@@ -280,7 +280,7 @@ theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈
 
 theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
-    (f'.restrict h) ^ n = (HPow.hPow f' n).restrict h' := by
+    (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
   simp [coe_pow, this.iterate_right _ _]
@@ -323,32 +323,32 @@ section AddCommMonoid
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
 
-/-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `ofLe p p'` is the linear map version of
-this inclusion. -/
-def ofLe (h : p ≤ p') : p →ₗ[R] p' :=
+/-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version
+of this inclusion. -/
+def inclusion (h : p ≤ p') : p →ₗ[R] p' :=
   p.subtype.codRestrict p' fun ⟨_, hx⟩ => h hx
-#align submodule.of_le Submodule.ofLe
+#align submodule.of_le Submodule.inclusion
 
 @[simp]
-theorem coe_ofLe (h : p ≤ p') (x : p) : (ofLe h x : M) = x :=
+theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
   rfl
-#align submodule.coe_of_le Submodule.coe_ofLe
+#align submodule.coe_of_le Submodule.coe_inclusion
 
-theorem ofLe_apply (h : p ≤ p') (x : p) : ofLe h x = ⟨x, h x.2⟩ :=
+theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
   rfl
-#align submodule.of_le_apply Submodule.ofLe_apply
+#align submodule.of_le_apply Submodule.inclusion_apply
 
-theorem ofLe_injective (h : p ≤ p') : Function.Injective (ofLe h) := fun _ _ h =>
+theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
   Subtype.val_injective (Subtype.mk.inj h)
-#align submodule.of_le_injective Submodule.ofLe_injective
+#align submodule.of_le_injective Submodule.inclusion_injective
 
 variable (p p')
 
-theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (ofLe h) = p.subtype := by
+theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
+    q.subtype.comp (inclusion h) = p.subtype := by
   ext ⟨b, hb⟩
   rfl
-#align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
+#align submodule.subtype_comp_of_le Submodule.subtype_comp_inclusion
 
 end AddCommMonoid
 

@@ -240,8 +240,6 @@ instance : PreservesFiniteCoproducts compHausToTop := by
   exact TopCat.sigmaCofanIsColimit _
 
 instance : FinitaryExtensive CompHaus :=
-  have := fullyFaithfulReflectsLimits compHausToTop
-  have := fullyFaithfulReflectsColimits compHausToTop
   finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts

@@ -5,7 +5,6 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean
-import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
@@ -77,12 +76,12 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return mkSimpStep e (← mkAppM ``not_not_eq #[e])
   | (``And, #[p, q]) =>
       match ← getBoolOption `push_neg.use_distrib with
-      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (←mkAppM ``not_and_eq #[p, q])
-      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (←mkAppM ``not_and_or_eq #[p, q])
+      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
+      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
   | (``Or, #[p, q]) =>
-      return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
+      return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (← mkAppM ``not_or_eq #[p, q])
   | (``Iff, #[p, q]) =>
-      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (←mkAppM ``not_iff #[p, q])
+      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (← mkAppM ``not_iff #[p, q])
   | (``Eq, #[ty, e₁, e₂]) =>
       if ty.isAppOfArity ``Set 1 then
         -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`

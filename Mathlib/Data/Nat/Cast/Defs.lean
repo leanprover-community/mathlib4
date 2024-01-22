@@ -45,7 +45,7 @@ class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
 instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
 lemma Nat.AtLeastTwo.ne_zero (n : ℕ) [h : n.AtLeastTwo] : n ≠ 0 := by
   rintro rfl; exact absurd h.1 (by decide)
@@ -63,8 +63,8 @@ instance instOfNat [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
 
 library_note "no_index around OfNat.ofNat"
 /--
-When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term need to be wrapped in
-`no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
+When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
+in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
@@ -159,7 +159,7 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
+decreasing_by simp_wf; omega
 #align nat.bin_cast Nat.binCast
 
 @[simp]
@@ -171,11 +171,11 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : 
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · rw [←Nat.mod_add_div (succ k) 2]
-        rw [if_pos h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ←Nat.cast_add]
+      · rw [← Nat.mod_add_div (succ k) 2]
+        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [←Nat.mod_add_div (succ k) 2]
-        rw [if_neg h, hk _ $ Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ←Nat.cast_add]
+      · rw [← Nat.mod_add_div (succ k) 2]
+        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
@@ -222,18 +222,18 @@ protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMon
 #align add_monoid_with_one.binary AddMonoidWithOne.binary
 
 theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
-  rw [←Nat.cast_one, ←Nat.cast_add]
+  rw [← Nat.cast_one, ← Nat.cast_add]
   apply congrArg
   decide
 #align one_add_one_eq_two one_add_one_eq_two
 
 theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
-  rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
+  rw [← one_add_one_eq_two, ← Nat.cast_one, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
 
 theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
-  rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
-    ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
+  rw [← two_add_one_eq_three, ← one_add_one_eq_two, ← Nat.cast_one,
+    ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide

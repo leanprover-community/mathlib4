@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.Basic
@@ -39,12 +38,12 @@ instance : Module (ZMod 2) (Additive ℤˣ) where
   one_smul au := Additive.toMul.injective <| pow_one _
   mul_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul]
-    rw [←pow_mul, ZMod.val_mul, ←Int.units_pow_eq_pow_mod_two, mul_comm]
+    rw [← pow_mul, ZMod.val_mul, ← Int.units_pow_eq_pow_mod_two, mul_comm]
   smul_zero z := Additive.toMul.injective <| one_pow _
   smul_add z au₁ au₂ := Additive.toMul.injective <| mul_pow _ _ _
   add_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul, toMul_add]
-    rw [←pow_add, ZMod.val_add, ←Int.units_pow_eq_pow_mod_two]
+    rw [← pow_add, ZMod.val_add, ← Int.units_pow_eq_pow_mod_two]
   zero_smul au := Additive.toMul.injective <| pow_zero (Additive.toMul au)
 
 section CommSemiring
@@ -59,7 +58,7 @@ instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
 -- The above instance forms no typeclass diamonds with the standard power operators
-example : Int.instUnitsPow = Monoid.Pow := rfl
+example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
@@ -69,7 +68,7 @@ example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change Additive.toMul ((n : R) • Additive.ofMul u) = _
-  rw [←nsmul_eq_smul_cast, toMul_nsmul, toMul_ofMul]
+  rw [← nsmul_eq_smul_cast, toMul_nsmul, toMul_ofMul]
 
 -- See note [no_index around OfNat.ofNat]
 lemma uzpow_ofNat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
@@ -107,6 +106,6 @@ lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
 
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change Additive.toMul ((z : R) • Additive.ofMul u) = _
-  rw [←zsmul_eq_smul_cast, toMul_zsmul, toMul_ofMul]
+  rw [← zsmul_eq_smul_cast, toMul_zsmul, toMul_ofMul]
 
 end CommRing

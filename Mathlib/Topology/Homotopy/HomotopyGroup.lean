@@ -112,14 +112,14 @@ variable {N X x}
 
 namespace GenLoop
 
-instance funLike : FunLike (Ω^ N X x) (I^N) fun _ => X where
+instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
   coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ => by congr
-#align gen_loop.fun_like GenLoop.funLike
+#align gen_loop.fun_like GenLoop.instFunLike
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  FunLike.coe_injective' (funext H)
+  DFunLike.coe_injective' (funext H)
 #align gen_loop.ext GenLoop.ext
 
 @[simp]
@@ -133,7 +133,7 @@ def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
   ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
 #align gen_loop.copy GenLoop.copy
 
-/- porting note: this now requires the `funLike` instance,
+/- porting note: this now requires the `instFunLike` instance,
   so the instance is now put before `copy`. -/
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -214,7 +214,7 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
-      (ContinuousMap.continuous_eval'.comp <|
+      (ContinuousMap.continuous_eval.comp <|
         Continuous.prod_map
           (ContinuousMap.continuous_curry.comp <|
             (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)

@@ -75,7 +75,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       simpa only [Set.Nonempty, upperBounds, lowerBounds, ball_image_iff] using this
     refine' exists_between_of_forall_le (Nonempty.image f _) (Nonempty.image f (dense y)) _
     · rcases dense (-y) with ⟨x, hx⟩
-      rw [← neg_neg x, AddSubgroupClass.coe_neg, ← sub_eq_add_neg] at hx
+      rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx
       exact ⟨_, hx⟩
     rintro a ⟨xn, hxn, rfl⟩ b ⟨xp, hxp, rfl⟩
     have := s.add_mem hxp hxn
@@ -125,7 +125,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     refine' ⟨LinearPMap.sSup c hcd, _, fun _ ↦ LinearPMap.le_sSup hcd⟩
     rintro ⟨x, hx⟩ hxs
     have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
-      directedOn_image.2 (hcd.mono fun h ↦ LinearPMap.domain_mono.monotone h)
+      directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
     rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
     convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
@@ -135,7 +135,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     contrapose! hq
     have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
       let ⟨x, hx⟩ := hp_dense y
-      ⟨ofLe hpq.left x, hx⟩
+      ⟨Submodule.inclusion hpq.left x, hx⟩
     rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
     exact ⟨r, hr, hqr.le, hqr.ne'⟩
 #align riesz_extension.exists_top RieszExtension.exists_top

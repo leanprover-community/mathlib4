@@ -3,8 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
 
 /-!
 ## `norm_num` plugin for `^`.
@@ -105,13 +106,14 @@ theorem intPow_ofNat (h1 : Nat.pow a b = c) :
 theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
-  rw [← hb, Int.negOfNat_eq, pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc, ← h1]
+  rw [← hb, Int.negOfNat_eq, Int.pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc,
+    ← h1]
   simp
 
 theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
-  rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
+  rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, Int.pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
     two_mul, pow_add, ← hc, ← h1]
   simp [mul_assoc, mul_comm, mul_left_comm]
 

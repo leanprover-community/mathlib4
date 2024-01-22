@@ -1616,7 +1616,7 @@ namespace MulLECancellable
 
 @[to_additive]
 protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
-    Injective ((· * ·) a) :=
+    Injective (a * ·) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
 #align mul_le_cancellable.injective MulLECancellable.Injective
 #align add_le_cancellable.injective AddLECancellable.Injective

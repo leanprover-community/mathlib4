@@ -207,7 +207,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAd
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
@@ -326,11 +326,11 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
   refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
-  choose! a v hav using husv
-  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
-  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
-  convert (hav (φ n)).1 using 1
-  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+  choose! a ha v hv hav using husv
+  rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
+  convert ha (φ n) using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 
 end Pointwise

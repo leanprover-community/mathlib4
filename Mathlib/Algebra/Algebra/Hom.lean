@@ -97,7 +97,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+-- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
 -- Porting note: This instance is moved.
@@ -192,11 +192,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
 variable (φ : A →ₐ[R] B)
 
 theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align alg_hom.coe_fn_injective AlgHom.coe_fn_injective
 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align alg_hom.coe_fn_inj AlgHom.coe_fn_inj
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
@@ -212,20 +212,20 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B)
 #align alg_hom.coe_add_monoid_hom_injective AlgHom.coe_addMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  FunLike.congr_fun H x
+  DFunLike.congr_fun H x
 #align alg_hom.congr_fun AlgHom.congr_fun
 
 protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  FunLike.congr_arg φ h
+  DFunLike.congr_arg φ h
 #align alg_hom.congr_arg AlgHom.congr_arg
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align alg_hom.ext AlgHom.ext
 
 theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align alg_hom.ext_iff AlgHom.ext_iff
 
 @[simp]
@@ -509,6 +509,10 @@ def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S
   { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
+lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+    Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
+  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
@@ -570,6 +574,16 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction

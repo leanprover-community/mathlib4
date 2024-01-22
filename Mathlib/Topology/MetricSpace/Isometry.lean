@@ -317,7 +317,7 @@ instance : EquivLike (α ≃ᵢ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.left_inv
   right_inv e := e.right_inv
-  coe_injective' _ _ h _ := toEquiv_injective <| FunLike.ext' h
+  coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
 
 theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 #align isometry_equiv.coe_eq_to_equiv IsometryEquiv.coe_eq_toEquiv
@@ -368,7 +368,7 @@ theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : EMetric.diam (h '' s) = EM
 
 @[ext]
 theorem ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align isometry_equiv.ext IsometryEquiv.ext
 
 /-- Alternative constructor for isometric bijections,
@@ -419,6 +419,9 @@ initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_inv
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 #align isometry_equiv.symm_symm IsometryEquiv.symm_symm
+
+theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem apply_symm_apply (h : α ≃ᵢ β) (y : β) : h (h.symm y) = y :=

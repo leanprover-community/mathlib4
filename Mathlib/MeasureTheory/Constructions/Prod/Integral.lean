@@ -514,7 +514,7 @@ theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
 
 theorem integral_prod_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
-  by_cases hE : CompleteSpace E; swap; simp [integral, hE]
+  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
   by_cases h : Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν)
   · rw [integral_prod _ h]
     simp_rw [integral_smul, integral_smul_const]
