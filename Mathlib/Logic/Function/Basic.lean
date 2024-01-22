@@ -857,7 +857,7 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
 notation:arg "↿" x:arg => HasUncurry.uncurry x
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
-  ⟨id⟩
+  ⟨fun x => x⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
