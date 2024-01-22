@@ -87,7 +87,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     have : IsAddHaarMeasure (μ.map M.symm) :=
       M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
     refine ⟨addHaarScalarFactor (μ.map M.symm) (μS.prod μT), ?_, ENNReal.coe_ne_top,
-      isAddHaarMeasure_eq_smul _ _⟩
+      isAddLeftInvariant_eq_smul _ _⟩
     simpa only [ne_eq, ENNReal.coe_eq_zero] using
       (addHaarScalarFactor_pos_of_isAddHaarMeasure (μ.map M.symm) (μS.prod μT)).ne'
   have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
@@ -95,7 +95,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     have : IsAddHaarMeasure (μT.map L') :=
       L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
     refine ⟨addHaarScalarFactor (μT.map L') ν, ?_, ENNReal.coe_ne_top,
-      isAddHaarMeasure_eq_smul _ _⟩
+      isAddLeftInvariant_eq_smul _ _⟩
     simpa only [ne_eq, ENNReal.coe_eq_zero] using
       (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
   refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
