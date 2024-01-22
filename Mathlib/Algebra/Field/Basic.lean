@@ -267,7 +267,7 @@ variable {R : Type*} [Nontrivial R]
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { hR, groupWithZeroOfIsUnitOrEqZero h with }
 #align division_ring_of_is_unit_or_eq_zero divisionRingOfIsUnitOrEqZero
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0.
@@ -275,7 +275,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def fieldOfIsUnitOrEqZero [hR : CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { hR, groupWithZeroOfIsUnitOrEqZero h with }
 #align field_of_is_unit_or_eq_zero fieldOfIsUnitOrEqZero
 
 end NoncomputableDefs
@@ -290,8 +290,8 @@ protected def Function.Injective.divisionSemiring [DivisionSemiring β] [Zero α
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : DivisionSemiring α :=
-  { hf.groupWithZero f zero one mul inv div npow zpow,
-    hf.semiring f zero one add mul nsmul npow nat_cast with }
+  { hf.semiring f zero one add mul nsmul npow nat_cast,
+    hf.groupWithZero f zero one mul inv div npow zpow with }
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function.
@@ -329,8 +329,8 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : Semifield α :=
-  { hf.commGroupWithZero f zero one mul inv div npow zpow,
-    hf.commSemiring f zero one add mul nsmul npow nat_cast with }
+  { hf.commSemiring f zero one add mul nsmul npow nat_cast,
+    hf.commGroupWithZero f zero one mul inv div npow zpow with }
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function.
@@ -346,8 +346,8 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
     Field K' :=
-  { hf.commGroupWithZero f zero one mul inv div npow zpow,
-    hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
+  { hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast,
+    hf.commGroupWithZero f zero one mul inv div npow zpow with
     ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
