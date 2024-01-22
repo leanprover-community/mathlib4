@@ -226,7 +226,7 @@ end Neg
 
 section Sub
 
-/-! ### Derivative of the difference of two functions -/
+/-! ### Gradient of the difference of two functions -/
 
 variable {f' : F} {g : F → 𝕜} {x : F} {g' : F}
 variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
