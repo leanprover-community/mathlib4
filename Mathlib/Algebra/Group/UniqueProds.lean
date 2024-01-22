@@ -635,42 +635,36 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
         ∃ w ∈ s, ∀ u ∈ s, w.length ≤ u.length :=
       let ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).min'_mem (hs.image _)
       ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
-    have ⟨hA, hB⟩ : A.Nonempty ∧ B.Nonempty := by
-      rewrite [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
-      rintro (hA | hB)
-      · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_left (show A.card = 0 from hA ▸ rfl) _ ▸ h
-      · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_right _ (show B.card = 0 from hB ▸ rfl) ▸ h
+    have ⟨hA, hB, hAB⟩ : A.Nonempty ∧ B.Nonempty ∧ (1 < A.card ∨ 1 < B.card) := by
+      obtain ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
+      rw [Finset.card_pos] at hA hB
+      exact ⟨hA, hB, hAB⟩
     have ⟨x, hx, hx_spec⟩ := max_length hA
     have ⟨y, hy, hy_spec⟩ := max_length hB
     have ⟨x', hx', hx'_spec⟩ := min_length hA
     have ⟨y', hy', hy'_spec⟩ := min_length hB
     by_cases heq : (x, y) = (x', y')
-    · obtain (hA' | hB') : 1 < A.card ∨ 1 < B.card := by
-        rewrite [← not_le, ← not_le, ← not_and_or]
-        exact fun hp => Nat.not_le.mpr h <| mul_le_one' hp.left hp.right
-      · rewrite [Finset.one_lt_card] at hA'
-        have ⟨u, hu, v, hv, hne⟩ := hA'
-        have hl : ∀ u ∈ A, u.length = x.length := fun u hu => le_antisymm (hx_spec u hu)
-          (congrArg List.length (congrArg Prod.fst heq) ▸ hx'_spec u hu)
+    · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
+      obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
+      · have hl : ∀ u ∈ A, u.length = x.length := fun u hu =>
+          le_antisymm (hx_spec u hu) (congrArg (·.1.length) heq ▸ hx'_spec u hu)
         exact ⟨(u, y), Finset.mk_mem_product hu hy, (v, y), Finset.mk_mem_product hv hy,
           fun heq => hne (congrArg Prod.fst heq),
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
-      · rewrite [Finset.one_lt_card] at hB'
-        have ⟨u, hu, v, hv, hne⟩ := hB'
-        have hl : ∀ u ∈ B, u.length = y.length := fun u hu => le_antisymm (hy_spec u hu)
-          (congrArg List.length (congrArg Prod.snd heq) ▸ hy'_spec u hu)
+      · have hl : ∀ u ∈ B, u.length = y.length := fun u hu =>
+          le_antisymm (hy_spec u hu) (congrArg (·.2.length) heq ▸ hy'_spec u hu)
         exact ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
           fun heq => hne (congrArg Prod.snd heq),
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
     refine ⟨(x, y), Finset.mk_mem_product hx hy, (x', y'), Finset.mk_mem_product hx' hy',
-        heq, ?_, ?_⟩
-    · exact fun u v hu hv h => List.append_inj h <| And.left <| by
-        rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
+        heq, fun u v hu hv h => ?_, fun u v hu hv h => ?_⟩
+    · exact List.append_inj h <| And.left <| by
+        rw [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
-    · exact fun u v hu hv h => List.append_inj h <| And.left <| by
-        rewrite [eq_comm, ← add_eq_add_iff_eq_and_eq (hx'_spec u hu) (hy'_spec v hv), eq_comm,
+    · exact List.append_inj h <| And.left <| by
+        rw [eq_comm, ← add_eq_add_iff_eq_and_eq (hx'_spec u hu) (hy'_spec v hv), eq_comm,
           ← List.length_append, ← List.length_append]
         exact congrArg List.length h
