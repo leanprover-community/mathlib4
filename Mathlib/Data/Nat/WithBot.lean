@@ -35,7 +35,7 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
   any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
-              aesop (simp_options := { decide := true })
+              aesop (simp_config := { decide := true })
   repeat' erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_one_iff
 #align nat.with_bot.add_eq_one_iff Nat.WithBot.add_eq_one_iff
@@ -44,7 +44,7 @@ theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
   any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
-              aesop (simp_options := { decide := true })
+              aesop (simp_config := { decide := true })
   repeat' erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_two_iff
 #align nat.with_bot.add_eq_two_iff Nat.WithBot.add_eq_two_iff
@@ -53,7 +53,7 @@ theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
   any_goals refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
-              aesop (simp_options := { decide := true })
+              aesop (simp_config := { decide := true })
   repeat' erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_three_iff
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff

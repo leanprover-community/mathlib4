@@ -81,16 +81,20 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
 /-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic| first | assumption |
-  aesop $c* (options :=
-    { terminal := true, assumptionTransparency := .reducible })
-    (simp_options := { enabled := false })
-  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+  aesop $c*
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false })
+    (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c* (options :=
-    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  aesop? $c*
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false
+                 maxRuleApplications := 300 })
   (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 attribute[aesop 10% (rule_sets [Restrict])] le_trans
