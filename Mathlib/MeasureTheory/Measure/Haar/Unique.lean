@@ -14,9 +14,9 @@ import Mathlib.MeasureTheory.Measure.EverywherePos
 
 ## Main results
 
-In a locally compact group, we prove that two left-invariant measures which are finite on compact
-sets coincide, up to a normalizing scalar that we denote with `haarScalarFactor μ' μ`, in the
-following sense:
+In a locally compact group, we prove that two left-invariant measures `μ'` and `μ` which are finite
+on compact sets coincide, up to a normalizing scalar that we denote with `haarScalarFactor μ' μ`,
+in the following sense:
 * `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`: they give the same value to the
   integral of continuous compactly supported functions, up to a scalar.
 * `measure_isMulInvariant_eq_smul_of_isCompact_closure`: they give the same value to sets with
@@ -24,14 +24,15 @@ following sense:
 * `measure_isHaarMeasure_eq_smul_of_isOpen`: they give the same value to open sets, up to a scalar.
 
 To get genuine equality of measures, we typically need additional regularity assumptions:
+
 * `isMulLeftInvariant_eq_smul_of_innerRegular`: two left invariant measures which are
   inner regular coincide up to a scalar.
 * `isMulLeftInvariant_eq_smul_of_regular`: two left invariant measure which are
   regular coincide up to a scalar.
 * `isHaarMeasure_eq_smul`: in a second countable space, two Haar measures coincide up to a
   scalar.
-* `isMulInvariant_eq_smul_of_compactSpace`: two Haar measures on a compac group coincide up to
-  a scalar.
+* `isMulInvariant_eq_smul_of_compactSpace`: two left-invariant measures on a compact group coincide
+  up to a scalar.
 * `isHaarMeasure_eq_of_isProbabilityMeasure`: two Haar measures which are probability measures
   coincide exactly.
 
@@ -374,24 +375,24 @@ zero set `t`. The same argument applied to `t - s` gives `μ (t \ s) ≤ μ' (t 
 `μ' s ≤ μ s`. Together with the previous one, this gives `μ' s = μ s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompactLTTop`.
 
-If neither `μ` nor `μ'` is inner regular, we can use the existence of another inner regular measure
+If neither `μ` nor `μ'` is inner regular, we can use the existence of another inner regular
 left-invariant measure `ν`, so get `μ s = ν s = μ' s`, by applying twice the previous argument.
 Here, the uniqueness argument uses the existence of a Haar measure with a nice behavior!
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet`.
 
-Finally, if `s` has compact closure but is not measurable, its measure is the infimum of the measure
-of its measurable supersets, and even of those contained in `closure s`. As `μ` and `μ'` coincide
-on these supersets, this yields `μ s = μ' s`.
+Finally, if `s` has compact closure but is not measurable, its measure is the infimum of the
+measures of its measurable supersets, and even of those contained in `closure s`. As `μ`
+and `μ'` coincide on these supersets, this yields `μ s = μ' s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure`.
 -/
 
 /-- Two left invariant measures give the same mass to level sets of continuous compactly supported
-functions, up to the scalar `haarScalarFactor μ' μ`. *
+functions, up to the scalar `haarScalarFactor μ' μ`.
 Superseded by `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which works for any set with
 compact closure. -/
 @[to_additive measure_preimage_isAddLeftInvariant_eq_smul_of_hasCompactSupport
 "Two left invariant measures give the same mass to level sets of continuous compactly supported
-functions, up to the scalar `addHaarScalarFactor μ' μ`. *
+functions, up to the scalar `addHaarScalarFactor μ' μ`.
 Superseded by `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which works for any set with
 compact closure."]
 lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
@@ -596,7 +597,7 @@ instance (priority := 100) instRegularOfIsHaarMeasureOfCompactSpace
   rw [isMulInvariant_eq_smul_of_compactSpace μ haar]
   infer_instance
 
-/-- **Uniqueness of left-invariant measures**: Two Haar measures which are probability measures
+/-- **Uniqueness of Haar measures**: Two Haar measures which are probability measures
 coincide. -/
 @[to_additive]
 lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ : Measure G)
@@ -808,15 +809,15 @@ lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
 
 /-- **Uniqueness of left-invariant measures**: Two Haar measures coincide up to a multiplicative
 constant in a second countable group. -/
-@[to_additive isAddHaarMeasure_eq_smul]
-lemma isHaarMeasure_eq_smul [LocallyCompactSpace G] [SecondCountableTopology G]
-    (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] :
+@[to_additive isAddLeftInvariant_eq_smul]
+lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopology G]
+    (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     μ' = haarScalarFactor μ' μ • μ :=
   isMulLeftInvariant_eq_smul_of_regular μ' μ
   -- one could use as well `isMulLeftInvariant_eq_smul_of_innerRegular`, as in a
   -- second countable topological space all Haar measures are regular and inner regular
-#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul
-#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul
+#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isMulLeftInvariant_eq_smul
+#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddLeftInvariant_eq_smul
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
 second countable group. -/
@@ -827,7 +828,7 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
     [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
   have K : PositiveCompacts G := Classical.arbitrary _
   have h : haarMeasure K = (haarScalarFactor (haarMeasure K) ν : ℝ≥0∞) • ν :=
-    isHaarMeasure_eq_smul (haarMeasure K) ν
+    isMulLeftInvariant_eq_smul (haarMeasure K) ν
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
 
