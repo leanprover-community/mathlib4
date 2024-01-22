@@ -326,78 +326,11 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
   dsimp at H₁ H₂
   erw [H, H₁, H₂, h _ hji]
 
-/-- The `(δ i).toOrderHom j`th subface of the `i`-th horn, such that `j:Fin (n+1)` sequentially
-labels the subfaces which exist. -/
-def face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+1)) : (Λ[n+1, i]: SSet) _[n] :=by
-    refine face i ((δ i).toOrderHom j) ?_
-    unfold δ
-    simp
-    unfold Fin.succAbove
-    by_contra h
-    split at h
-    all_goals
-      subst h
-      simp_all only [lt_self_iff_false,Fin.castSucc_lt_succ_iff, le_refl, not_true_eq_false]
-
-/-- Every `face` can be written as a `face'`.-/
-lemma face_eq_face' {n : ℕ} (i  : Fin (n+2)) (j: Fin (n+2)) (h: j≠i): face i j h
-    =face' i (Fin.predAbove (Fin.predAbove 0 i) j) := by
-  unfold face'
-  congr
-  change j = (Fin.succAbove i) (_)
-  have ht : (Fin.predAbove 0 i).val= i.val -1 := by
-       unfold Fin.predAbove
-       split
-       · rfl
-       · simp_all only [ne_eq, Fin.coe_castPred]
-         simp_all only [Fin.castSucc_zero, not_lt, Fin.le_zero_iff, Fin.val_zero,
-         ge_iff_le, zero_le, tsub_eq_zero_of_le]
-  by_cases h1 : j ≤ Fin.castSucc (Fin.predAbove 0 i)
-  · rw [Fin.predAbove_below (Fin.predAbove 0 i) j h1]
-    unfold Fin.succAbove
-    split
-    · rfl
-    · rename_i h2
-      change j.val ≤ (Fin.predAbove 0 i).val at h1
-      rw [ht] at h1
-      exfalso
-      apply h ∘ (Fin.eq_iff_veq j i).mpr
-      apply le_antisymm
-      · apply le_trans h1
-        exact Nat.sub_le (↑i) 1
-      · exact Nat.not_lt.mp h2
-  · rw [Fin.predAbove_above (Fin.predAbove 0 i) j (not_le.mp h1)]
-    unfold Fin.succAbove
-    split
-    · rename_i h2
-      change ¬ (j.val≤ (Fin.predAbove 0 i).val ) at h1
-      rw [ht] at h1
-      exfalso
-      apply  h ∘ (Fin.eq_iff_veq j i).mpr
-      apply le_antisymm
-      · exact Nat.le_of_pred_lt h2
-      · contrapose! h1
-        exact Nat.le_pred_of_lt h1
-    · simp_all only [ne_eq, not_lt, Fin.succ_pred]
-
-
-lemma face'_factor {n : ℕ} (i: Fin (n+2)) (j: Fin (n+1)) : factor_δ (face'.{u} i j).val.down
-    ((δ i).toOrderHom j)= 𝟙 ([n]:SimplexCategory):=by
-        change δ ((δ i).toOrderHom j)≫  (σ (Fin.predAbove 0 ((δ i).toOrderHom j)))=_
-        let l' : Fin (n+2) := ((δ i).toOrderHom j)
-        change δ l' ≫  (σ (Fin.predAbove 0 l'))=_
-        unfold Fin.predAbove
-        split
-        · rename_i h1
-          let l'' := Fin.pred l' (@Fin.predAbove.proof_1 (n + 1) 0 l' h1)
-          rw [show δ l' = δ (Fin.succ l'') by simp_all only [len_mk, Fin.succ_pred]]
-          exact δ_comp_σ_succ
-        · exact δ_comp_σ_self
-
-
 namespace FactorMinFace
 variable {X : SimplexCategoryᵒᵖ } {n: ℕ }{i : Fin (n+3)} ( α : Λ[n+2,i].obj X)
-
+/--Given  `l ∈ ℕ` if `l<n+2` this is the smallest natural number k such that `l≤ k<n+2` and  such
+that `α: Λ[n+2,i].obj X` does not contain `(δ i).toOrderHom k`  in its range. If not such `k`
+ exists or `l>n+2` then the output is (n+2).-/
 def  minAsNat (l : ℕ )  :  ℕ  :=
         if l > n+1 then  (n+2) -- Default case (never occurs)
         else if ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l
@@ -564,8 +497,7 @@ lemma minAsNat_zero_neq : minAsNat α 0 ≠ n+2 := by
             change i.val ≤ Nat.pred i.val at h4
             rw [Nat.le_pred_iff_lt ht] at h4
             simp at h4
-        ·
-          simp at hi
+        · simp at hi
           rw [hi]
           rw [Fin.eq_iff_veq]
           simp
@@ -591,6 +523,8 @@ lemma minAsNat_zero_neq : minAsNat α 0 ≠ n+2 := by
 lemma minAsNat_zero_lt  : minAsNat α 0 < n+2 :=
     Nat.lt_of_le_of_ne (Nat.lt_succ.mp (  minAsNat_lt α 0) ) (minAsNat_zero_neq α)
 
+/--The minimal  `l ∈ Fin (n+2)`  such
+that `α: Λ[n+2,i].obj X` does not contain `(δ i).toOrderHom k`  in its range.-/
 def min : Fin (n+2) := ⟨minAsNat α 0,  minAsNat_zero_lt α⟩
 
 lemma minAsNat_eq_minAsNat_of_self (l:ℕ)  (hl: l= (minAsNat α 0)) :(minAsNat α 0= minAsNat α l):=by
@@ -682,8 +616,8 @@ the appropriate compatiblity conditions on their faces. -/
 def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1])
     (hface : (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
-    =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (face_map i2) )
-    : Λ[n+2,i]⟶ S where
+    =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (face_map i2) ):
+    Λ[n+2,i]⟶ S where
   app X α := by
     let α' :([(unop X).len]: SimplexCategory)⟶  [n+2]:= α.1.down
     let id:= FactorMinFace.min α
