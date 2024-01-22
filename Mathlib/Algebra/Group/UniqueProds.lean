@@ -650,14 +650,14 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
           le_antisymm (hx u hu) (congrArg (·.1.length) heq ▸ hx' u hu)
         exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
           fun heq => hne (congrArg Prod.fst heq),
-            fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
-            fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
+          fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
+          fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
       · have hl : ∀ u ∈ B, u.length = y.length := fun u hu =>
           le_antisymm (hy u hu) (congrArg (·.2.length) heq ▸ hy' u hu)
         exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
           fun heq => hne (congrArg Prod.snd heq),
-            fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
-            fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
+          fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
+          fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
     refine ⟨(x, y), Finset.mk_mem_product hxA hyB, (x', y'), Finset.mk_mem_product hx'A hy'B,
         heq, fun u v hu hv h => ?_, fun u v hu hv h => ?_⟩
     · exact List.append_inj h <| And.left <| by
