@@ -583,14 +583,16 @@ lemma isMulInvariant_eq_smul_of_compactSpace [CompactSpace G] (μ' μ : Measure 
   exact measure_isMulInvariant_eq_smul_of_isCompact_closure _ _ isClosed_closure.isCompact
 
 @[to_additive]
-instance instInnerRegularOfIsHaarMeasureOfCompactSpace [CompactSpace G] (μ : Measure G)
-    [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by
+instance (priority := 100) instInnerRegularOfIsHaarMeasureOfCompactSpace
+    [CompactSpace G] (μ : Measure G) [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] :
+    InnerRegular μ := by
   rw [isMulInvariant_eq_smul_of_compactSpace μ haar]
   infer_instance
 
 @[to_additive]
-instance instRegularOfIsHaarMeasureOfCompactSpace [CompactSpace G] (μ : Measure G)
-    [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] : Regular μ := by
+instance (priority := 100) instRegularOfIsHaarMeasureOfCompactSpace
+    [CompactSpace G] (μ : Measure G) [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] :
+    Regular μ := by
   rw [isMulInvariant_eq_smul_of_compactSpace μ haar]
   infer_instance
 
