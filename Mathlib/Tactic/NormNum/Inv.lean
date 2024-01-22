@@ -68,7 +68,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let rab ← derive q($na / $nb : Rat)
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
-  return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
+  return .isRat _ q n d q(isRat_mkRat $pa $pb $p)
 
 theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
@@ -104,11 +104,11 @@ recognizes `q`, returning the cast of `q`. -/
   | .isNNRat _ qa na da pa =>
     assumeInstancesCommute
     let i ← inferCharZeroOfDivisionRing dα
-    return .isNNRat dα qa na da q(isNNRat_ratCast $pa)
+    return .isNNRat q(inferInstance) qa na da q(isNNRat_ratCast $pa)
   | .isNegNNRat _ qa na da pa =>
     assumeInstancesCommute
     let i ← inferCharZeroOfDivisionRing dα
-    return .isRat dα qa na da q(isRat_ratCast $pa)
+    return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
@@ -161,7 +161,7 @@ such that `norm_num` successfully recognises `a`. -/
         haveI : $na =Q Int.ofNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
         haveI : $lit =Q ($lit2).succ := ⟨⟩
-        return .isRat' dα qb q(.ofNat $da) lit q(isRat_inv_pos $pa)
+        return .isRat dα qb q(.ofNat $da) lit q(isRat_inv_pos $pa)
       else
         guard (qa = 1)
         let .isNat inst n pa := ra | failure
@@ -174,7 +174,7 @@ such that `norm_num` successfully recognises `a`. -/
         haveI : $na =Q Int.negOfNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
         haveI : $lit =Q ($lit2).succ := ⟨⟩
-        return .isRat' dα qb q(.negOfNat $da) lit q(isRat_inv_neg $pa)
+        return .isRat dα qb q(.negOfNat $da) lit q(isRat_inv_neg $pa)
       else
         guard (qa = -1)
         let .isNegNat inst n pa := ra | failure

@@ -53,7 +53,7 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   | ~q(true) =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
     let some ⟨q, n, d, p⟩ := rme.toRat' dα | failure
-    return .isRat' dα q n d q(isRat_ofScientific_of_true $σα $lh $p)
+    return .isRat dα q n d q(isRat_ofScientific_of_true $σα $lh $p)
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)

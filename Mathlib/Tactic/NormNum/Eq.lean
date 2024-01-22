@@ -79,7 +79,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     | true, (p₁ : Q($a)), false, (p₂ : Q(¬$b)) =>
       return .isFalse q(ne_of_true_of_false $p₁ $p₂)
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
+  | .isNNRat dα .., _ | _, .isNNRat dα .. => ratArm dα
+  | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat _ na pa, .isNat mα nb pb =>
     assumeInstancesCommute

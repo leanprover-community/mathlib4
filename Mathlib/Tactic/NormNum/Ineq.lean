@@ -135,7 +135,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isRat_le_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNNRat _ .., _ | _, .isNNRat _ .. => ratArm
+  | .isNegNNRat _ .., _ | _, .isNegNNRat _ .. => ratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α
@@ -192,7 +193,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isRat_lt_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNNRat _ .., _ | _, .isNNRat _ .. => ratArm
+  | .isNegNNRat _ .., _ | _, .isNegNNRat _ .. => ratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α

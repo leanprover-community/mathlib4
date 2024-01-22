@@ -186,7 +186,13 @@ def evalPow : NormNumExt where eval {u α} e := do
       let ⟨za, na, pa⟩ ← ra.toInt rα
       have ⟨zc, c, r⟩ := evalIntPow za na nb
       return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isRat dα qa na da pa =>
+    | .isNNRat dα qa na da pa =>
+      assumeInstancesCommute
+      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
+      have ⟨dc, r2⟩ := evalNatPow da nb
+      let qc := mkRat zc dc.natLit!
+      return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+    | .isNegNNRat dα qa na da pa =>
       assumeInstancesCommute
       have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
       have ⟨dc, r2⟩ := evalNatPow da nb

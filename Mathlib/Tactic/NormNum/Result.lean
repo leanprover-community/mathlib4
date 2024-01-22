@@ -219,11 +219,7 @@ def _root_.Rat.rawCast [DivisionRing α] (n : ℤ) (d : ℕ) : α := n / d
 def _root_.NNRat.rawCast [DivisionSemiring α] (n : ℕ) (d : ℕ) : α := n / d
 
 theorem IsNNRat.to_isNat {α} [Semiring α] : ∀ {a : α} {n}, IsNNRat a (n) (nat_lit 1) → IsNat a n
-  | _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by
-    convert mul_one _
-    convert (rfl : ⅟(1 : α) = _)
-    · rw [Nat.cast_one]
-    · rw [invOf_one]⟩
+  | _, num, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨by simp⟩
 
 theorem IsRat.to_isNNRat {α} [Ring α] : ∀ {a : α} {n d}, IsRat a (.ofNat n) (d) → IsNNRat a n d
   | _, _, _, ⟨inv, rfl⟩ => have := @invertibleOne α _; ⟨inv, by simp⟩
@@ -279,9 +275,9 @@ inductive Result' where
   | isNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isNegNat`. -/
   | isNegNat (inst lit proof : Expr)
-  /-- Untyped version of `Result.isRat`. -/
+  /-- Untyped version of `Result.isNNRat`. -/
   | isNNRat (inst : Expr) (q : { q : ℚ // 0 ≤ q }) (n d proof : Expr)
-  /-- Untyped version of `Result.isRat`. -/
+  /-- Untyped version of `Result.isNegNNRat`. -/
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
 
@@ -341,15 +337,21 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
   else
     .isNegNat inst lit proof
 
-/-- The result depends on whether `q : ℚ` happens to be an integer, in which case the result is
-`.isInt ..` whereas otherwise it's `.isRat ..`. -/
-def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
-    (q : Rat) (n : Q(ℤ)) (d : Q(ℕ)) (proof : Q(IsRat $x $n $d)) : Result x :=
+/-- The result is `q : ℚ` and `proof : isRat x q`. -/
+-- Note the independent arguments `q : Q(ℚ)` and `n : ℚ`.
+-- We ensure these are "the same" when calling.
+def Result.isRat {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := by assumption)
+    (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (proof : Q(IsRat $x $n $d)) : Result x :=
+  have lit : Q(ℕ) := n.appArg!
   if q.den = 1 then
     have proof : Q(IsRat $x $n (nat_lit 1)) := proof
     .isInt q(DivisionRing.toRing) n q.num q(IsRat.to_isInt $proof)
+  else if hq : 0 ≤ q then
+    let proof : Q(IsRat $x (.ofNat $lit) $d) := proof
+    .isNNRat q(DivisionRing.toDivisionSemiring) ⟨q, hq⟩ lit d q(IsRat.to_isNNRat $proof)
   else
-    .isRat inst q n d proof
+    .isNegNNRat inst q lit d proof
+
 
 instance : ToMessageData (Result x) where
   toMessageData
@@ -357,7 +359,6 @@ instance : ToMessageData (Result x) where
   | .isBool false proof => m!"isFalse ({proof})"
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
-  | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
   | .isNNRat _ q _ _ proof => m!"isNNRat {q} ({proof})"
   | .isNegNNRat _ q _ _ proof => m!"isNegNNRat {q} ({proof})"
 
@@ -422,7 +423,8 @@ def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (e' : Q($α)) ×
     ⟨(q(True) : Expr), (q(eq_true $p) : Expr)⟩
   | .isNat _ lit p => ⟨q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ _ n d p => ⟨q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+  | .isNNRat _ _ n d p => ⟨q(NNRat.rawCast $n $d), q(IsNNRat.to_raw_eq $p)⟩
+  | .isNegNNRat _ _ n d p => ⟨q(Rat.rawCast (.negOfNat $n) $d), q(IsRat.to_raw_eq $p)⟩
 
 /--
 `Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
@@ -434,7 +436,7 @@ def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
     Option (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. | .isBool .. => none
+  | .isNNRat _ .. | .isNegNNRat _ .. | .isBool .. => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -449,6 +451,18 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
   else Id.run do
     let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
+
+/-- Constructs a `Result` out of a raw rat cast.
+Assumes `e` is a raw rat cast expression denoting `n`. -/
+def Result.ofRawNNRat
+    {α : Q(Type u)} (q : {q : ℚ // 0 ≤ q}) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
+  if q.val.den = 1 then
+    Result.ofRawInt q.val.num e
+  else Id.run do
+    let .app (.app (.app _ (dα : Q(DivisionSemiring $α))) (n : Q(ℕ))) (d : Q(ℕ)) := e
+      | panic! "not a raw rat cast"
+    let hyp : Q(($d : $α) ≠ 0) := hyp.get!
+    .isNNRat dα q n d (q(IsNNRat.of_raw $α $n $d $hyp) : Expr)
 
 /-- Constructs a `Result` out of a raw rat cast.
 Assumes `e` is a raw rat cast expression denoting `n`. -/
@@ -483,7 +497,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
     let p : Q(IsRat $e (.negOfNat $lit) $d) := p
     let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-    return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd')
+    return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
@@ -513,6 +527,7 @@ def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b 
     Result.isFalse (x := a) q($eq ▸ $proof)
   | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
-  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+  | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
+  | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
 
 end Meta.NormNum
