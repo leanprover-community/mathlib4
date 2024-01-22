@@ -406,7 +406,7 @@ namespace LieAlgebra
 
 /-- We say a Lie algebra is Killing if its Killing form is non-singular.
 
-NB: The is not standard terminology (the literature does not seem to name Lie algebras with this
+NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
 class IsKilling : Prop :=
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
