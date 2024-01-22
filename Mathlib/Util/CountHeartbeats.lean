@@ -73,6 +73,7 @@ def elabForHeartbeats (cmd : TSyntax `command) : CommandElabM Nat := do
   setEnv env
   return (← IO.getNumHeartbeats) - start
 
+/-- Run a command `10` times, reporting the range in heartbeats, and the standard deviation. -/
 elab "heartbeat_variation " "in" ppLine cmd:command : command => do
   let n := 10
   let counts ← (List.range n).mapM fun _ => elabForHeartbeats cmd
