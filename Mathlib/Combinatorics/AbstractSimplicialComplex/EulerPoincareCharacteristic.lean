@@ -1,4 +1,8 @@
-/- Copyright-/
+/-
+Copyright (c) 2024 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
 import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -6,7 +10,7 @@ import Mathlib.Data.Nat.Parity
 
 /-! This files contains the definition of the Euler-Poincaré characteristic of a finite simplicial
 complex, and its calculation for a decomposable complex (see
-`Mathlinb.Cominnatorics.AbstractSimplicialComplex.Decomposability`).-/
+`Mathlinb.Combinatorics.AbstractSimplicialComplex.Decomposability`).-/
 
 universe u
 
@@ -89,32 +93,34 @@ lemma sum_on_finsetInterval1 [DecidableEq α] {s t : Finset α} (hst : s ⊂ t) 
 `Finset.Ioc ∅ s` is `1`.-/
 lemma Sum_on_FinsetInterval2 [DecidableEq α] {s : Finset α} (hsne : s.Nonempty) :
     ∑ x in Finset.Ioc ∅ s, (-1)^(x.card - 1) = 1 := by
-  rw [@Finset.sum_congr ℤ (Finset α) (Finset.Ioc ∅ s) _ (fun s => (-1)^(Finset.card s - 1)) (fun s => (-1 : ℤ) * (-1 : ℤ)^(Finset.card s)) _ rfl
-  (fun s hs => by simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset] at hs
-                  simp only
-                  conv => rhs
-                          congr
-                          rw [←(pow_one (-1 : ℤ))]
-                  rw [←pow_add]
-                  conv => lhs
-                          rw [←(one_mul ((-1 : ℤ)^(Finset.card s - 1)))]
-                          congr
-                          rw [←neg_one_pow_two]
-                  rw [←pow_add]
-                  apply congr_arg
-                  rw [add_comm, add_comm 1 _, Nat.add_succ, ←(Nat.succ_eq_add_one (Finset.card s)), Nat.succ_inj', ←Nat.succ_eq_add_one,
-                         ←Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos (by rw [←Finset.card_pos] at hs; exact hs.1)]
-  )]
-  rw [←Finset.mul_sum]
+  rw [@Finset.sum_congr ℤ (Finset α) (Finset.Ioc ∅ s) _ (fun s => (-1)^(Finset.card s - 1))
+    (fun s => (-1 : ℤ) * (-1 : ℤ)^(Finset.card s)) _ rfl (fun s hs => by
+    simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, Finset.lt_eq_subset,
+      Finset.empty_ssubset] at hs
+    simp only
+    conv => rhs
+            congr
+            rw [← (pow_one (-1 : ℤ))]
+    rw [← pow_add]
+    conv => lhs
+            rw [← (one_mul ((-1 : ℤ)^(Finset.card s - 1)))]
+            congr
+            rw [← neg_one_pow_two]
+    rw [← pow_add]
+    apply congr_arg
+    rw [add_comm, add_comm 1 _, Nat.add_succ, ← (Nat.succ_eq_add_one (Finset.card s)),
+      Nat.succ_inj', ← Nat.succ_eq_add_one, ← Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos
+      (by rw [← Finset.card_pos] at hs; exact hs.1)])]
+  rw [← Finset.mul_sum]
   have hsum := AlternatingSumPowerset hsne
   have hunion : Finset.powerset s = {∅} ∪ Finset.Ioc ∅ s := by
     ext t
-    simp only [Finset.mem_powerset, ge_iff_le, Finset.le_eq_subset, Finset.mem_union, Finset.mem_singleton,
-  Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset]
+    simp only [Finset.mem_powerset, ge_iff_le, Finset.le_eq_subset, Finset.mem_union,
+      Finset.mem_singleton, Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset]
     constructor
     · exact fun ht => by by_cases hte : t = ∅
                          · exact Or.inl hte
-                         · rw [←ne_eq, ←Finset.nonempty_iff_ne_empty] at hte
+                         · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hte
                            exact Or.inr ⟨hte, ht⟩
     · exact fun ht => by cases ht with
                          | inl hte => rw [hte]; simp only [Finset.empty_subset]
@@ -125,13 +131,15 @@ lemma Sum_on_FinsetInterval2 [DecidableEq α] {s : Finset α} (hsne : s.Nonempty
     simp only [Finset.mem_singleton] at ht
     by_contra habs
     rw [ht] at habs
-    rw [←habs] at hu
-    simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, lt_self_iff_false, Finset.empty_subset, and_true] at hu
-  rw [←(Finset.disjUnion_eq_union _ _ hdisj)] at hunion
+    rw [← habs] at hu
+    simp only [ge_iff_le, Finset.le_eq_subset, Finset.mem_Ioc, lt_self_iff_false,
+      Finset.empty_subset, and_true] at hu
+  rw [← Finset.disjUnion_eq_union _ _ hdisj] at hunion
   rw [hunion] at hsum
   rw [Finset.sum_disjUnion hdisj] at hsum
-  simp only [Finset.sum_singleton, Finset.card_empty, pow_zero, ge_iff_le, Finset.le_eq_subset] at hsum
-  rw [add_comm, ←eq_neg_iff_add_eq_zero] at hsum
+  simp only [Finset.sum_singleton, Finset.card_empty, pow_zero, ge_iff_le,
+    Finset.le_eq_subset] at hsum
+  rw [add_comm, ← eq_neg_iff_add_eq_zero] at hsum
   rw [hsum]
   simp only [mul_neg, mul_one, neg_neg]
 
@@ -150,8 +158,8 @@ lemma BoringFacet_image_by_R {s : K.facets} (hs : ¬ isPi0Facet R s ∧ ¬ isHom
   · by_contra habs
     have heq : decompositionInterval R s = {⟨s.1, facets_subset s.2⟩} := by
       ext x
-      simp only [decompositionInterval_def, eq_of_le_of_not_lt (hdec.1 s) habs, Finset.le_eq_subset,
-        Finset.mem_singleton]
+      simp only [decompositionInterval_def, eq_of_le_of_not_lt (hdec.1 s) habs,
+        Finset.le_eq_subset, Finset.mem_singleton]
       erw [← le_antisymm_iff (a := s.1) (b := x.1), ← SetCoe.ext_iff, eq_comm]
     exact hs.2 ⟨hs.1, heq⟩
 

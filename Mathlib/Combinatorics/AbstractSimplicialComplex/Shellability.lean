@@ -1,4 +1,8 @@
-/- Copyright.-/
+/-
+Copyright (c) 2024 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
 import Mathlib.Combinatorics.AbstractSimplicialComplex.Decomposability
 
 /-! Shellability : an abstract simplicial complex `K` is shellable if there exists a well-order `r`

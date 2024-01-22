@@ -1,12 +1,10 @@
-/- Copyright.-/
+/-
+Copyright (c) 2024 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
 import Mathlib.Combinatorics.AbstractSimplicialComplex.FacePoset
 import Mathlib.Combinatorics.AbstractSimplicialComplex.OrderOnFacets
-
-universe u
-
-open AbstractSimplicalComplex
-
-variable {α : Type u} {K : AbstractSimplicialComplex α}
 
 /-! An abstract simplicial `K` on `α` is called decomposable if there exists a map `R` (for
 "restriction") from the set of facets of `K` to the set of finsets of `α` such that
@@ -19,6 +17,12 @@ We will actually define decomposability using the maps `R` and `DF` rather than 
 union decomposition, as it makes the definition simpler to manipulate. The map `R` uniquely
 determines the map `DF`, and the map `DF` uniquely determines the intervals `Set.Icc (R s) s`
 (but not map `R`, as `Set.Icc s s` and `Set.Icc ∅ s` if `s` is a `0`-dimensional face). -/
+
+universe u
+
+open AbstractSimplicalComplex
+
+variable {α : Type u} {K : AbstractSimplicialComplex α}
 
 namespace AbstractSimplicialComplex
 
