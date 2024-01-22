@@ -64,25 +64,34 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
 /--
 Run a command, but then restore the original state, and report just the number of heartbeats.
 -/
-def elabForHeartbeats (cmd : TSyntax `command) : CommandElabM Nat := do
+def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : CommandElabM Nat := do
   let start ← IO.getNumHeartbeats
-  -- FIXME really should revert more state here:
-  -- can someone advise how to roll back CommandElabM state?
   let s ← get
   elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
-  set s
+  if revert then set s
   return (← IO.getNumHeartbeats) - start
 
-/-- Run a command `10` times, reporting the range in heartbeats, and the standard deviation. -/
+/--
+Run a command `10` times, reporting the range in heartbeats, and the standard deviation.
+
+Example usage:
+```
+heartbeat_variation in
+def f := 37
+```
+displays the info message `Min: 7 Max: 8 StdDev: 14%`.
+-/
 elab "heartbeat_variation " "in" ppLine cmd:command : command => do
   let n := 10
-  let counts ← (List.range n).mapM fun _ => elabForHeartbeats cmd
+  -- First run the command `n-1` times, reverting the state.
+  let counts ← (List.range (n - 1)).mapM fun _ => elabForHeartbeats cmd
+  -- Then run once more, keeping the state.
+  let counts := (← elabForHeartbeats cmd (revert := false)) :: counts
   let counts := counts.map fun i => i / 1000 -- convert to user-facing heartbeats
   let counts := counts.toArray.qsort (· < ·)
   let μ := counts.foldl (· + · ) 0 / n
   -- We jump through some hoops here to get access to `Float.sqrt`, to avoid imports.
-  let var := Float.sqrt <| UInt64.toFloat <| UInt64.ofNat
-    ((counts.map fun i => (i - μ)^2).foldl (· + · ) 0)
-  let stddev := var.toUInt64.toNat * 100 / μ
-  elabCommand cmd
+  let var := (Float.sqrt <| UInt64.toFloat <| UInt64.ofNat
+    ((counts.map fun i => (i - μ)^2).foldl (· + · ) 0)).toUInt64.toNat
+  let stddev := var * 100 / μ
   logInfo s!"Min: {counts[0]!} Max: {counts[n - 1]!} StdDev: {stddev}%"
