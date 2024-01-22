@@ -46,7 +46,6 @@ instance FreeMonoid.instUniqueProds {κ : Type*} : UniqueProds (FreeMonoid κ) w
     have ⟨x, hx, hx_spec⟩ := max_length ha
     have ⟨y, hy, hy_spec⟩ := max_length hb
     ⟨x, hx, y, hy, fun u v hu hv h => List.append_inj h <| And.left <| by
-      rewrite [← toList.apply_eq_iff_eq, toList_mul, toList_mul] at h
       rewrite [← add_eq_add_iff_eq_and_eq (hx_spec u hu) (hy_spec v hv),
         ← List.length_append, ← List.length_append]
       exact congrArg List.length h⟩
