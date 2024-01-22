@@ -201,9 +201,8 @@ section Neg
 
 theorem HasGradientAtFilter.neg (h : HasGradientAtFilter f f' x L) :
     HasGradientAtFilter (fun x => -f x) (-f') x L := by
-  have : -(toDual 𝕜 F) f' = (toDual 𝕜 F) (-f') := by simp
-  rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
-  exact h.neg
+  rw [HasGradientAtFilter, map_neg]
+  exact HasFDerivAtFilter.neg h
 
 nonrec theorem HasGradientWithinAt.neg (h : HasGradientWithinAt f f' s x) :
   HasGradientWithinAt (fun x => -f x) (-f') s x := by exact h.neg
