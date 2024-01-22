@@ -356,17 +356,15 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
-theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) :=
-  fun _ _ => coe_lt_coe.2
+theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_lt_coe.2
 #align with_bot.coe_strict_mono WithBot.coe_strictMono
 
-theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) :=
-  fun _ _ => coe_le_coe.2
+theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_le_coe.2
 #align with_bot.coe_mono WithBot.coe_mono
 
-theorem monotone_iff [Preorder β] {f : WithBot α → β} :
+theorem monotone_iff {f : WithBot α → β} :
     Monotone f ↔ Monotone (λ a => f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
   ⟨fun h => ⟨h.comp WithBot.coe_mono, fun _ => h bot_le⟩, fun h =>
     WithBot.forall.2
@@ -376,14 +374,14 @@ theorem monotone_iff [Preorder β] {f : WithBot α → β} :
 #align with_bot.monotone_iff WithBot.monotone_iff
 
 @[simp]
-theorem monotone_map_iff [Preorder β] {f : α → β} : Monotone (WithBot.map f) ↔ Monotone f :=
+theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone f :=
   monotone_iff.trans <| by simp [Monotone]
 #align with_bot.monotone_map_iff WithBot.monotone_map_iff
 
 alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 #align monotone.with_bot_map Monotone.withBot_map
 
-theorem strictMono_iff [Preorder β] {f : WithBot α → β} :
+theorem strictMono_iff {f : WithBot α → β} :
     StrictMono f ↔ StrictMono (fun a => f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
   ⟨fun h => ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
     WithBot.forall.2
@@ -391,12 +389,12 @@ theorem strictMono_iff [Preorder β] {f : WithBot α → β} :
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
-theorem strictAnti_iff [Preorder β] {f : WithBot α → β} :
+theorem strictAnti_iff {f : WithBot α → β} :
     StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]
-theorem strictMono_map_iff [Preorder β] {f : α → β} :
+theorem strictMono_map_iff {f : α → β} :
     StrictMono (WithBot.map f) ↔ StrictMono f :=
   strictMono_iff.trans <| by simp [StrictMono, bot_lt_coe]
 #align with_bot.strict_mono_map_iff WithBot.strictMono_map_iff
@@ -404,7 +402,7 @@ theorem strictMono_map_iff [Preorder β] {f : α → β} :
 alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 #align strict_mono.with_bot_map StrictMono.withBot_map
 
-theorem map_le_iff [Preorder β] (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
+theorem map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     ∀ a b : WithBot α, a.map f ≤ b.map f ↔ a ≤ b
   | ⊥, _ => by simp only [map_bot, bot_le]
   | (a : α), ⊥ => by simp only [map_coe, map_bot, coe_ne_bot, not_coe_le_bot _]
@@ -1168,7 +1166,7 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 theorem coe_strictMono : StrictMono (fun a : α => (a : WithTop α)) := fun _ _ => some_lt_some.2
 #align with_top.coe_strict_mono WithTop.coe_strictMono
@@ -1176,7 +1174,7 @@ theorem coe_strictMono : StrictMono (fun a : α => (a : WithTop α)) := fun _ _ 
 theorem coe_mono : Monotone (fun a : α => (a : WithTop α)) := fun _ _ => coe_le_coe.2
 #align with_top.coe_mono WithTop.coe_mono
 
-theorem monotone_iff [Preorder β] {f : WithTop α → β} :
+theorem monotone_iff {f : WithTop α → β} :
     Monotone f ↔ Monotone (fun (a : α) => f a) ∧ ∀ x : α, f x ≤ f ⊤ :=
   ⟨fun h => ⟨h.comp WithTop.coe_mono, fun _ => h le_top⟩, fun h =>
     WithTop.forall.2
@@ -1185,15 +1183,14 @@ theorem monotone_iff [Preorder β] {f : WithTop α → β} :
 #align with_top.monotone_iff WithTop.monotone_iff
 
 @[simp]
-theorem monotone_map_iff [Preorder β] {f : α → β} :
-    Monotone (WithTop.map f) ↔ Monotone f :=
+theorem monotone_map_iff {f : α → β} : Monotone (WithTop.map f) ↔ Monotone f :=
   monotone_iff.trans <| by simp [Monotone]
 #align with_top.monotone_map_iff WithTop.monotone_map_iff
 
 alias ⟨_, _root_.Monotone.withTop_map⟩ := monotone_map_iff
 #align monotone.with_top_map Monotone.withTop_map
 
-theorem strictMono_iff [Preorder β] {f : WithTop α → β} :
+theorem strictMono_iff {f : WithTop α → β} :
     StrictMono f ↔ StrictMono (fun (a : α) => f a) ∧ ∀ x : α, f x < f ⊤ :=
   ⟨fun h => ⟨h.comp WithTop.coe_strictMono, fun _ => h (coe_lt_top _)⟩, fun h =>
     WithTop.forall.2
@@ -1201,20 +1198,19 @@ theorem strictMono_iff [Preorder β] {f : WithTop α → β} :
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
 
-theorem strictAnti_iff [Preorder β] {f : WithTop α → β} :
+theorem strictAnti_iff {f : WithTop α → β} :
     StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]
-theorem strictMono_map_iff [Preorder β] {f : α → β} :
-    StrictMono (WithTop.map f) ↔ StrictMono f :=
+theorem strictMono_map_iff {f : α → β} : StrictMono (WithTop.map f) ↔ StrictMono f :=
   strictMono_iff.trans <| by simp [StrictMono, coe_lt_top]
 #align with_top.strict_mono_map_iff WithTop.strictMono_map_iff
 
 alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 #align strict_mono.with_top_map StrictMono.withTop_map
 
-theorem map_le_iff [Preorder β] (f : α → β) (a b : WithTop α)
+theorem map_le_iff (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
   erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
