@@ -50,12 +50,3 @@ instance GradeZero.module_at_i (i : ιM) : Module (𝒜 0) (ℳ i) :=
     refine' zero_smul A ↑x }
 
 end DirectSum
-
-section
-
-variable [Module.Finite A M]
-
-instance (i : ιM) : Module.Finite (𝒜 0) (ℳ i) := by
-sorry
-
-end

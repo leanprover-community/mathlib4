@@ -958,12 +958,15 @@ section HomogeneouslyFG
 
 variable [Semiring A] [Module A M]
 variable [AddMonoid ιA] [AddSubmonoidClass σA A] [GradedRing 𝒜]
-variable {p : HomogeneousSubmodule A ℳ} (hp : p.toSubmodule.FG)
+variable (p : HomogeneousSubmodule A ℳ) (I : HomogeneousIdeal 𝒜)
 
 def Submodule.homogeneously_FG (p : Submodule A M) : Prop :=
-∃ (s : Finset M), (∀ m ∈ s, Homogeneous ℳ m) ∧ p = Submodule.span A s
+  ∃ (s : Finset M), (∀ m ∈ s, Homogeneous ℳ m) ∧ p = Submodule.span A s
 
-example : p.toSubmodule.FG ↔ p.toSubmodule.homogeneously_FG ℳ := by
+def Ideal.homogeneously_FG (I : Ideal A) : Prop := Submodule.homogeneously_FG 𝒜 I
+
+variable {ℳ} in
+lemma Submodule.fg_iff_homogeneously_fg : p.toSubmodule.FG ↔ p.toSubmodule.homogeneously_FG ℳ := by
   classical
   fconstructor
   · rintro ⟨s, hs⟩
@@ -993,5 +996,9 @@ example : p.toSubmodule.FG ↔ p.toSubmodule.homogeneously_FG ℳ := by
   · rintro ⟨s, _, hs1⟩
     rw [hs1]
     exact ⟨s, rfl⟩
+
+variable {𝒜} in
+lemma Ideal.fg_iff_homogeneously_fg : I.toIdeal.FG ↔ I.toIdeal.homogeneously_FG 𝒜 :=
+  Submodule.fg_iff_homogeneously_fg I
 
 end HomogeneouslyFG
