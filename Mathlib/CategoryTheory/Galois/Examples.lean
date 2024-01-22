@@ -27,16 +27,16 @@ universe u v w
 
 namespace CategoryTheory
 
-namespace PreGaloisCategory
+namespace FintypeCat
 
-open Limits Functor
+open Limits Functor PreGaloisCategory
 
-private noncomputable def FintypeCat.imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+private noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
   exact FintypeCat.of (↑(Set.range f)ᶜ)
 
-private def FintypeCat.imageComplementIncl {X Y : FintypeCat.{u}}
+private def imageComplementIncl {X Y : FintypeCat.{u}}
     (f : X ⟶ Y) : imageComplement f ⟶ Y :=
   Subtype.val
 
@@ -48,8 +48,7 @@ private noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCa
     (f : X ⟶ Y) : Action FintypeCat (MonCat.of G) where
   V := FintypeCat.imageComplement f.hom
   ρ := MonCat.ofHom <| {
-    toFun := fun g y ↦ Subtype.mk _ <| by
-      show ¬ Y.ρ g y.val ∈ Set.range f.hom
+    toFun := fun g y ↦ Subtype.mk (Y.ρ g y.val) <| by
       intro ⟨x, h⟩
       apply y.property
       use X.ρ g⁻¹ x
@@ -102,6 +101,6 @@ noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
-end PreGaloisCategory
+end FintypeCat
 
 end CategoryTheory
