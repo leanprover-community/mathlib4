@@ -227,7 +227,7 @@ lemma isDecomposition_of_isShellingOrder {r : LinearOrder K.facets} (hshel : isS
       have hpure := hshel.2 t
       rw [or_iff_right hofne] at hpure
       exact oldFace_does_not_contain_restriction r.toPartialOrder t hpure hsof
-    . exact Or.inr hsub
+    · exact Or.inr hsub
 
 /-- Suppose that we have maps `R` and `DF` that form a decomposition of `K` (in the sense
 of `isDecomposition`), and let `r` be a well-order on the facets of `K` that is compatible with

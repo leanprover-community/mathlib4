@@ -112,11 +112,11 @@ lemma Sum_on_FinsetInterval2 [DecidableEq α] {s : Finset α} (hsne : s.Nonempty
     simp only [Finset.mem_powerset, ge_iff_le, Finset.le_eq_subset, Finset.mem_union, Finset.mem_singleton,
   Finset.mem_Ioc, Finset.lt_eq_subset, Finset.empty_ssubset]
     constructor
-    . exact fun ht => by by_cases hte : t = ∅
-                         . exact Or.inl hte
-                         . rw [←ne_eq, ←Finset.nonempty_iff_ne_empty] at hte
+    · exact fun ht => by by_cases hte : t = ∅
+                         · exact Or.inl hte
+                         · rw [←ne_eq, ←Finset.nonempty_iff_ne_empty] at hte
                            exact Or.inr ⟨hte, ht⟩
-    . exact fun ht => by cases ht with
+    · exact fun ht => by cases ht with
                          | inl hte => rw [hte]; simp only [Finset.empty_subset]
                          | inr htne => exact htne.2
   have hdisj : Disjoint {∅} (Finset.Ioc ∅ s) := by
