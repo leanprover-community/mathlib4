@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -44,7 +45,7 @@ Note that `a` and `b` are `outParam`s,
 so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
 class AddConstMapClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
-    (a : outParam G) (b : outParam H) extends FunLike F G fun _ ↦ H where
+    (a : outParam G) (b : outParam H) extends DFunLike F G fun _ ↦ H where
   /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/
   map_add_const (f : F) (x : G) : f (x + a) = f x + b
@@ -88,7 +89,7 @@ theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass 
 
 theorem map_add_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + no_index (OfNat.ofNat n)) = f x + OfNat.ofNat n := map_add_nat f x n
+    f (x + OfNat.ofNat n) = f x + OfNat.ofNat n := map_add_nat f x n
 
 @[simp]
 theorem map_const [AddZeroClass G] [Add H] [AddConstMapClass F G H a b] (f : F) :
@@ -111,7 +112,7 @@ theorem map_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
 
 theorem map_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (no_index (OfNat.ofNat n)) = f 0 + (OfNat.ofNat n : ℕ) • b :=
+    f (OfNat.ofNat n) = f 0 + (OfNat.ofNat n : ℕ) • b :=
   map_nat' f n
 
 theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -119,7 +120,7 @@ theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G 
 
 theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (no_index (OfNat.ofNat n)) = f 0 + OfNat.ofNat n := map_nat f n
+    f (OfNat.ofNat n) = f 0 + OfNat.ofNat n := map_nat f n
 
 @[simp]
 theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
@@ -141,7 +142,7 @@ theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F 
 
 theorem map_ofNat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (no_index (OfNat.ofNat n + x)) = f x + OfNat.ofNat n • b :=
+    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n • b :=
   map_nat_add' f n x
 
 theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -149,7 +150,7 @@ theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapCl
 
 theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (no_index (OfNat.ofNat n) + x) = f x + OfNat.ofNat n :=
+    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n :=
   map_nat_add f n x
 
 @[simp]
@@ -314,7 +315,7 @@ instance : AddConstMapClass (G →+c[a, b] H) G H a b where
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
 
 @[ext] protected theorem ext {f g : G →+c[a, b] H} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 
@@ -359,7 +360,7 @@ theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G �
 
 instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
     AddAction K (G →+c[a, b] H) :=
-  FunLike.coe_injective.addAction _ coe_vadd
+  DFunLike.coe_injective.addAction _ coe_vadd
 
 /-!
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
