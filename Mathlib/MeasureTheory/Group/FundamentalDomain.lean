@@ -782,13 +782,13 @@ section HasFundamentalDomain
 /-- We say a quotient of `α` by `G` `HasAddFundamentalDomain` if there is a measurable set
   `s` for which `IsAddFundamentalDomain G s` holds. -/
 class HasAddFundamentalDomain (G α : Type*) [Zero G] [VAdd G α] [MeasurableSpace α]
-    (ν : Measure α) : Prop where
+    (ν : Measure α := by volume_tac) : Prop where
   ExistsIsAddFundamentalDomain : ∃ s : Set α, IsAddFundamentalDomain G s ν
 
 /-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
   which `IsFundamentalDomain G s` holds. -/
 class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [MeasurableSpace α]
-    (ν : Measure α) : Prop where
+    (ν : Measure α := by volume_tac) : Prop where
   ExistsIsFundamentalDomain : ∃ (s : Set α), IsFundamentalDomain G s ν
 
 attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
@@ -798,7 +798,7 @@ attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
 fundamental domain. -/
 @[to_additive addCovolume "The `addCovolume` of an action of `G` on `α` which has a fundamental
 domain is the volume of some fundamental domain."]
-def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace α] (ν : Measure α)
+def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace α] (ν : Measure α := by volume_tac)
     [funDom : HasFundamentalDomain G α ν] : ℝ≥0∞ :=
   ν funDom.ExistsIsFundamentalDomain.choose
 
@@ -806,13 +806,13 @@ variable [Group G] [MulAction G α] [MeasurableSpace G] [MeasurableSpace α]
 
 /-- If there is a fundamental domain `s`, then `HasFundamentalDomain` holds. -/
 @[to_additive]
-lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
+lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α := by volume_tac) {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) :
     HasFundamentalDomain G α ν := ⟨⟨s, fund_dom_s⟩⟩
 
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
 @[to_additive]
-lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
+lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α := by volume_tac) [Countable G]
     [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) :
     covolume (funDom := fund_dom_s.hasFundamentalDomain ν) (ν := ν) = ν s := by
@@ -848,8 +848,8 @@ local notation "π" => @Quotient.mk _ α_mod_G
 /-- A measure `μ` on the `AddQuotient` of `α` mod `G` satisfies
   `AddQuotientMeasureEqMeasurePreimage` if: for any fundamental domain `t`, and any measurable
   subset `U` of the quotient, `μ U = volume ((π ⁻¹' U) ∩ t)`. -/
-class AddQuotientMeasureEqMeasurePreimage (ν : Measure α) (μ : Measure (Quotient α_mod_G)) : Prop
-    where
+class AddQuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
+    (μ : Measure (Quotient α_mod_G)) : Prop where
   add_projection_respects_measure' : ∀ (t : Set α) (_ : IsAddFundamentalDomain G t ν),
 --    (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
     --μ U = ν (π ⁻¹' U ∩ t)
@@ -866,7 +866,8 @@ local notation "π" => @Quotient.mk _ α_mod_G
 /-- Measures `ν` on `α` and `μ` on the `Quotient` of `α` mod `G` satisfy
   `QuotientMeasureEqMeasurePreimage` if: for any fundamental domain `t`, and any measurable subset
   `U` of the quotient, `μ U = ν ((π ⁻¹' U) ∩ t)`. -/
-class QuotientMeasureEqMeasurePreimage (ν : Measure α) (μ : Measure (Quotient α_mod_G)) : Prop where
+class QuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
+    (μ : Measure (Quotient α_mod_G)) : Prop where
   projection_respects_measure' : ∀ (t : Set α) (_ : IsFundamentalDomain G t ν),
 --    (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U),
     --μ U = ν (π ⁻¹' U ∩ t)
@@ -945,10 +946,13 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_of_volume_zero
     (vol_s : ν s = 0) :
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
-  ext U _
+  ext U meas_U
   simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
-  sorry
---  have := Eq.symm (measure_inter_null_of_null_right (Quotient.mk α_mod_G ⁻¹' U) vol_s)
+  convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
+  rw [Measure.map_apply (hs := measurableSet_quotient.mpr meas_U),
+    Measure.restrict_apply]
+  · exact measurableSet_quotient.mpr meas_U
+  convert measurable_quotient_mk'
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure, then it is itself `SigmaFinite`. -/
