@@ -5,7 +5,7 @@ Authors: Winston Yin
 -/
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -87,15 +87,13 @@ lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegra
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
-  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem]
-  rfl
+  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem, IsIntegralCurveAt]
 
 /-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
 containing `t₀`. -/
 lemma isIntegralCurveAt_iff' :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball]
-  rfl
+  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball, IsIntegralCurveAt]
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
     IsIntegralCurveAt γ v t := isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩

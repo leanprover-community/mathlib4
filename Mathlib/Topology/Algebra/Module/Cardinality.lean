@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.Data.Real.Cardinality
+import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Topology.Perfect
 
