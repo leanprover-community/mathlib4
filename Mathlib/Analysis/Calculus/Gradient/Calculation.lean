@@ -82,10 +82,8 @@ open Set Filter
 
 theorem HasGradientAtFilter.const_smul (h : HasGradientAtFilter f f' x L) (c : 𝕜) :
     HasGradientAtFilter (fun x => c • f x) ((starRingEnd 𝕜) c • f') x L := by
-  have : c • (toDual 𝕜 F) f' = (toDual 𝕜 F) ((starRingEnd 𝕜) c • f') := by
-    rw [map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
-  rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
-  exact h.const_smul c
+  rw [HasGradientAtFilter, map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
+  exact HasFDerivAtFilter.const_smul h c
 
 theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x) (c : 𝕜) :
     HasGradientWithinAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') s x := by
