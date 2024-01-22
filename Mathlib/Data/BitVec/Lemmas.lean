@@ -256,7 +256,7 @@ theorem getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i 
   · exact h ⟨i, hi⟩
   · have (z : BitVec w) : z.toNat < 2 ^ i :=
       Nat.lt_of_lt_of_le z.toNat_lt (pow_le_pow_right (le_succ 1) hi)
-    rw [Nat.shiftRight_eq_zero_of_lt (this x), Nat.shiftRight_eq_zero_of_lt (this y)]
+    rw [Nat.shiftRight_eq_zero_iff_lt.mpr (this x), Nat.shiftRight_eq_zero_iff_lt.mpr (this y)]
 
 /-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_msb` -/
 @[ext]

@@ -516,9 +516,9 @@ lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
 
-theorem shiftRight_eq_zero_of_lt {x y} (h : x < 2^y) :
-    x >>> y = 0 := by
-  rw [Nat.shiftRight_eq_div_pow]
-  apply div_eq_of_lt h
+theorem shiftRight_eq_zero_iff_lt {x y} :
+    x >>> y = 0 ↔ x < 2^y := by
+  rw [Nat.shiftRight_eq_div_pow, ← lt_one_iff, div_lt_iff_lt_mul, one_mul]
+  exact two_pow_pos y
 
 end Nat
