@@ -629,16 +629,14 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
   uniqueMul_of_one_lt_card := fun {A} {B} h => by
     have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
         ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
-      let ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).max'_mem (hs.image _)
+      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).max'_mem (hs.image _)
       ⟨w, hws, fun u hu => hw ▸ Finset.le_max' _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
     have min_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
         ∃ w ∈ s, ∀ u ∈ s, w.length ≤ u.length :=
-      let ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).min'_mem (hs.image _)
+      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).min'_mem (hs.image _)
       ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
-    have ⟨hA, hB, hAB⟩ : A.Nonempty ∧ B.Nonempty ∧ (1 < A.card ∨ 1 < B.card) := by
-      obtain ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
-      rw [Finset.card_pos] at hA hB
-      exact ⟨hA, hB, hAB⟩
+    have ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
+    rw [Finset.card_pos] at hA hB
     have ⟨x, hxA, hx⟩ := max_length hA
     have ⟨y, hyB, hy⟩ := max_length hB
     have ⟨x', hx'A, hx'⟩ := min_length hA
@@ -646,14 +644,12 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
     by_cases heq : (x, y) = (x', y')
     · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
       obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
-      · have hl : ∀ u ∈ A, u.length = x.length := fun u hu =>
-          le_antisymm (hx u hu) (congrArg (·.1.length) heq ▸ hx' u hu)
+      · have hl (u) (hu) := le_antisymm (hx u hu) (congrArg (·.1.length) heq ▸ hx' u hu)
         exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
           fun heq => hne (congrArg Prod.fst heq),
           fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
           fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
-      · have hl : ∀ u ∈ B, u.length = y.length := fun u hu =>
-          le_antisymm (hy u hu) (congrArg (·.2.length) heq ▸ hy' u hu)
+      · have hl (u) (hu) := le_antisymm (hy u hu) (congrArg (·.2.length) heq ▸ hy' u hu)
         exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
           fun heq => hne (congrArg Prod.snd heq),
           fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
