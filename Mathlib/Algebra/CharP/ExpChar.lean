@@ -253,37 +253,37 @@ variable {R}
 variable [CommSemiring R] (q : ℕ) [hR : ExpChar R q] (n : ℕ)
 
 theorem list_sum_pow_expChar (l : List R) : l.sum ^ q = (l.map (· ^ q : R → R)).sum := by
-  cases hR
-  case zero => simp_rw [pow_one, List.map_id']
-  case prime hprime _ => haveI := Fact.mk hprime; exact list_sum_pow_char q l
+  cases hR with
+  | zero => simp_rw [pow_one, List.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact list_sum_pow_char q l
 
 theorem multiset_sum_pow_expChar (s : Multiset R) : s.sum ^ q = (s.map (· ^ q : R → R)).sum := by
-  cases hR
-  case zero => simp_rw [pow_one, Multiset.map_id']
-  case prime hprime _ => haveI := Fact.mk hprime; exact multiset_sum_pow_char q s
+  cases hR with
+  | zero => simp_rw [pow_one, Multiset.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact multiset_sum_pow_char q s
 
 theorem sum_pow_expChar {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ q = ∑ i in s, f i ^ q := by
-  cases hR
-  case zero => simp_rw [pow_one]
-  case prime hprime _ => haveI := Fact.mk hprime; exact sum_pow_char q s f
+  cases hR with
+  | zero => simp_rw [pow_one]
+  | prime hprime => haveI := Fact.mk hprime; exact sum_pow_char q s f
 
 theorem list_sum_pow_expChar_pow (l : List R) :
     l.sum ^ q ^ n = (l.map (· ^ q ^ n : R → R)).sum := by
-  cases hR
-  case zero => simp_rw [one_pow, pow_one, List.map_id']
-  case prime hprime _ => haveI := Fact.mk hprime; exact list_sum_pow_char_pow q n l
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one, List.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact list_sum_pow_char_pow q n l
 
 theorem multiset_sum_pow_expChar_pow (s : Multiset R) :
     s.sum ^ q ^ n = (s.map (· ^ q ^ n : R → R)).sum := by
-  cases hR
-  case zero => simp_rw [one_pow, pow_one, Multiset.map_id']
-  case prime hprime _ => haveI := Fact.mk hprime; exact multiset_sum_pow_char_pow q n s
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one, Multiset.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact multiset_sum_pow_char_pow q n s
 
 theorem sum_pow_expChar_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ q ^ n = ∑ i in s, f i ^ q ^ n := by
-  cases hR
-  case zero => simp_rw [one_pow, pow_one]
-  case prime hprime _ => haveI := Fact.mk hprime; exact sum_pow_char_pow q n s f
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one]
+  | prime hprime => haveI := Fact.mk hprime; exact sum_pow_char_pow q n s f
 
 end BigOperators
