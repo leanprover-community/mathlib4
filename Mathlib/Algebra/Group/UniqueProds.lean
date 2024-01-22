@@ -642,7 +642,7 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
         Finset.mem_toList.mp <| List.argmin_mem <| Option.get_mem _,
         fun _ hu => List.le_of_mem_argmin (Finset.mem_toList.mpr hu) (Option.get_mem _)⟩
     have ⟨hA, hB⟩ : A.Nonempty ∧ B.Nonempty := by
-      rw [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
+      rewrite [Finset.nonempty_iff_ne_empty, Finset.nonempty_iff_ne_empty, ← not_or]
       rintro (hA | hB)
       · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_left (show A.card = 0 from hA ▸ rfl) _ ▸ h
       · exact Nat.not_lt_zero 1 <| mul_eq_zero_of_right _ (show B.card = 0 from hB ▸ rfl) ▸ h
@@ -652,9 +652,9 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
     have ⟨y', hy', hy'_spec⟩ := min_length hB
     by_cases heq : (x, y) = (x', y')
     · obtain (hA' | hB') : 1 < A.card ∨ 1 < B.card := by
-        rw [← not_le, ← not_le, ← not_and_or]
+        rewrite [← not_le, ← not_le, ← not_and_or]
         exact fun hp => Nat.not_le.mpr h <| mul_le_one' hp.left hp.right
-      · rw [Finset.one_lt_card] at hA'
+      · rewrite [Finset.one_lt_card] at hA'
         have ⟨u, hu, v, hv, hne⟩ := hA'
         have hl : ∀ u ∈ A, u.length = x.length := fun u hu => le_antisymm (hx_spec u hu)
           (congrArg List.length (congrArg Prod.fst heq) ▸ hx'_spec u hu)
@@ -662,11 +662,11 @@ instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid
           fun heq => hne (congrArg Prod.fst heq),
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
             fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
-      · rw [Finset.one_lt_card] at hB'
+      · rewrite [Finset.one_lt_card] at hB'
         have ⟨u, hu, v, hv, hne⟩ := hB'
         have hl : ∀ u ∈ B, u.length = y.length := fun u hu => le_antisymm (hy_spec u hu)
           (congrArg List.length (congrArg Prod.snd heq) ▸ hy'_spec u hu)
-        refine ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
+        exact ⟨(x, u), Finset.mk_mem_product hx hu, (x, v), Finset.mk_mem_product hx hv,
           fun heq => hne (congrArg Prod.snd heq),
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
             fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
