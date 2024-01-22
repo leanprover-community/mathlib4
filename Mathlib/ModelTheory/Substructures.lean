@@ -1105,7 +1105,8 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
   ∃ le_cod : f.sub_cod ≤ g.sub_cod,
   ∀ x, inclusion le_cod (f.equiv x) = g.equiv (inclusion le_dom x) := by
     constructor
-    · exact fun h ↦ ⟨le_dom h, le_cod h, by intro x; apply (subtype _).inj'; rwa [equiv_inclusion_apply]⟩
+    · exact fun h ↦ ⟨le_dom h, le_cod h,
+      by intro x; apply (subtype _).inj'; rwa [equiv_inclusion_apply]⟩
     · rintro ⟨le_dom, le_cod, h_eq⟩
       rw [le_def]
       exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [←h_eq]; rfl⟩
