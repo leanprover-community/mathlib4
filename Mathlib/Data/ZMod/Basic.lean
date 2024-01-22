@@ -220,7 +220,6 @@ theorem int_cast_surjective : Function.Surjective ((↑) : ℤ → ZMod n) :=
   int_cast_rightInverse.surjective
 #align zmod.int_cast_surjective ZMod.int_cast_surjective
 
-@[norm_cast]
 theorem cast_id : ∀ (n) (i : ZMod n), (ZMod.cast i : ZMod n) = i
   | 0, _ => Int.cast_id
   | _ + 1, i => nat_cast_zmod_val i
@@ -335,17 +334,17 @@ theorem castHom_apply {h : m ∣ n} (i : ZMod n) : castHom h R i = cast i :=
   rfl
 #align zmod.cast_hom_apply ZMod.castHom_apply
 
-@[simp, norm_cast]
+@[simp]
 theorem cast_sub (h : m ∣ n) (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b :=
   (castHom h R).map_sub a b
 #align zmod.cast_sub ZMod.cast_sub
 
-@[simp, norm_cast]
+@[simp]
 theorem cast_neg (h : m ∣ n) (a : ZMod n) : (cast (-a : ZMod n) : R) = -(cast a) :=
   (castHom h R).map_neg a
 #align zmod.cast_neg ZMod.cast_neg
 
-@[simp, norm_cast]
+@[simp]
 theorem cast_pow (h : m ∣ n) (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a) ^ k :=
   (castHom h R).map_pow a k
 #align zmod.cast_pow ZMod.cast_pow
