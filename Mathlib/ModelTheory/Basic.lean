@@ -731,10 +731,23 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 #align first_order.language.embedding.comp_assoc FirstOrder.Language.Embedding.comp_assoc
 
-theorem injective_comp (h : N ↪[L] P) :
-  Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
-    intro f g hfg
-    ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+theorem comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+
+@[simp]
+theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
+
+theorem toHom_comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+
+@[simp]
+theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.toHom_comp_injective eq, congr_arg h.toHom.comp⟩
 
 @[simp]
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
@@ -812,8 +825,12 @@ theorem symm_apply_apply (f : M ≃[L] N) (a : M) : f.symm (f a) = a :=
   f.toEquiv.symm_apply_apply a
 #align first_order.language.equiv.symm_apply_apply FirstOrder.Language.Equiv.symm_apply_apply
 
-theorem injective_symm : Function.Injective (.symm : (M ≃[L] N) → N ≃[L] M) := by
+theorem symm_injective : Function.Injective (.symm : (M ≃[L] N) → N ≃[L] M) := by
   intro f g hfg; exact congr_arg (Equiv.symm) hfg
+
+@[simp]
+theorem symm_inj (f g : M ≃[L] N) : f.symm = g.symm ↔ f = g :=
+  ⟨fun eq ↦ symm_injective eq, congr_arg Equiv.symm⟩
 
 @[simp]
 theorem map_fun (φ : M ≃[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
@@ -939,10 +956,14 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
   rfl
 #align first_order.language.equiv.comp_assoc FirstOrder.Language.Equiv.comp_assoc
 
-theorem injective_comp (h : N ≃[L] P) :
+theorem comp_left_injective (h : N ≃[L] P) :
   Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
     intro f g hfg
     ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+
+@[simp]
+theorem comp_left_inj (h : N ≃[L] P) (f g : M ≃[L] N) : h.comp f = h.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.comp_left_injective eq, congr_arg h.comp⟩
 
 @[simp]
 theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
@@ -965,26 +986,36 @@ theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
 @[simp]
 theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
     f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
-  rw [←comp_toEmbedding, symm_comp_self, refl_toEmbedding]
+  rw [← comp_toEmbedding, symm_comp_self, refl_toEmbedding]
 
 @[simp]
 theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
     f.toEmbedding.comp f.symm.toEmbedding = Embedding.refl L N := by
-  rw [←comp_toEmbedding, self_comp_symm, refl_toEmbedding]
+  rw [← comp_toEmbedding, self_comp_symm, refl_toEmbedding]
 
 @[simp]
 theorem symm_comp_self_toHom (f : M ≃[L] N) :
     f.symm.toHom.comp f.toHom = Hom.id L M := by
-  rw [←comp_toHom, symm_comp_self, refl_toHom]
+  rw [← comp_toHom, symm_comp_self, refl_toHom]
 
 @[simp]
 theorem self_comp_symm_toHom (f : M ≃[L] N) :
     f.toHom.comp f.symm.toHom = Hom.id L N := by
-  rw [←comp_toHom, self_comp_symm, refl_toHom]
+  rw [← comp_toHom, self_comp_symm, refl_toHom]
 
 @[simp]
 theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
   rfl
+
+theorem comp_right_injective (h : M ≃[L] N) :
+  Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
+    intro f g hfg
+    convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+      rw [comp_assoc, self_comp_symm, comp_refl]
+
+@[simp]
+theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=
+  ⟨fun eq ↦ h.comp_right_injective eq, congr_arg (fun (r : N ≃[L] P) ↦ r.comp h)⟩
 
 end Equiv
 

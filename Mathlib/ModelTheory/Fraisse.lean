@@ -354,10 +354,10 @@ theorem extend_finite_SubEquiv :
     have dom_le_S : f.sub_dom ≤ S :=
       by simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
     have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
-      rw [←fg_iff_structure_fg, closure_union, closure_eq]
+      rw [← fg_iff_structure_fg, closure_union, closure_eq]
       exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
     have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
-      rw [hN.age, ←hM.age]
+      rw [hN.age, ← hM.age]
       exact ⟨S_FG, ⟨subtype _⟩⟩
     let nonempty_S_N : Nonempty (S ↪[L] N) := by
       let ⟨_, this⟩ := S_in_age_N
@@ -375,10 +375,10 @@ theorem extend_finite_SubEquiv :
 theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
   let S := closure L (∅ : Set M)
   have S_fg : FG L S := by
-    simp [←fg_iff_structure_fg, Substructure.closure_empty]
+    simp [← fg_iff_structure_fg, Substructure.closure_empty]
     exact Substructure.fg_bot
   obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
-    rw [hN.age, ←hM.age]
+    rw [hN.age, ← hM.age]
     exact ⟨S_fg, ⟨subtype _⟩⟩
   let v : M ≃ₚ[L] N := {
     sub_dom := S

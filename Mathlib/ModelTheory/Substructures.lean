@@ -985,6 +985,11 @@ theorem substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : 
   rfl
 #align first_order.language.embedding.substructure_equiv_map_apply FirstOrder.Language.Embedding.substructureEquivMap_apply
 
+@[simp]
+theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
+    (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
+  ext; rfl
+
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
@@ -1000,6 +1005,10 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
 #align first_order.language.embedding.equiv_range_apply FirstOrder.Language.Embedding.equivRange_apply
+
+@[simp]
+theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
+  ext; rfl
 
 end Embedding
 
@@ -1041,8 +1050,11 @@ variable (L) (M) (N)
 
 /-- An equivalence between substructures -/
 structure SubEquivalence  where
+  /--The substructure which is the domain of the equivalence.-/
   sub_dom : L.Substructure M
+  /--The substructure which is the codomain of the equivalence.-/
   sub_cod : L.Substructure N
+  /--The equivalence between the two subdomains.-/
   equiv : sub_dom ≃[L] sub_cod
 
 @[inherit_doc]
@@ -1062,17 +1074,18 @@ theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
 @[simp]
-theorem symm_apply (f : M ≃ₚ[L] N) : ∀ x, f.symm.equiv x = f.equiv.symm x :=
-  fun _ ↦ rfl
+theorem symm_apply (f : M ≃ₚ[L] N) (x : f.sub_cod) : f.symm.equiv x = f.equiv.symm x :=
+  rfl
 
-instance : LE (M ≃ₚ[L] N) := ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
-  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
-    (subtype _).comp f.equiv.toEmbedding⟩
+instance : LE (M ≃ₚ[L] N) :=
+  ⟨fun f g ↦ ∃h : f.sub_dom ≤ g.sub_dom,
+    (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
+      (subtype _).comp f.equiv.toEmbedding⟩
 
 theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃h : f.sub_dom ≤ g.sub_dom,
-  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
-    (subtype _).comp f.equiv.toEmbedding :=
-      by rfl
+    (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion h)) =
+      (subtype _).comp f.equiv.toEmbedding :=
+  Iff.rfl
 
 theorem le_dom {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_dom ≤ g.sub_dom := fun ⟨le, _⟩ ↦ le
 
@@ -1081,24 +1094,28 @@ theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
   let m := f.equiv.symm ⟨n, hn⟩
   have  : ((subtype _).comp f.equiv.toEmbedding) m = n := by simp only [Embedding.comp_apply,
     Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coeSubtype]
-  rw [←this, ←eq_fun]
+  rw [← this, ← eq_fun]
   simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
     SetLike.coe_mem]
 
 @[simp]
 theorem subtype_equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
-  (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion (le_dom h)))
-    = (subtype _).comp f.equiv.toEmbedding := by
-      let ⟨_, eq⟩ := h; exact eq
+    (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion (le_dom h))) =
+      (subtype _).comp f.equiv.toEmbedding := by
+  let ⟨_, eq⟩ := h; exact eq
+
+theorem equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
+    g.equiv.toEmbedding.comp (Substructure.inclusion (le_dom h)) =
+      (Substructure.inclusion (le_cod h)).comp f.equiv.toEmbedding := by
+  rw [← (subtype _).comp_inj, subtype_equiv_inclusion h]
 
 theorem equiv_inclusion_apply {f g : M ≃ₚ[L] N} (h : f ≤ g) (x : f.sub_dom) :
-  g.equiv (Substructure.inclusion (le_dom h) x)
-  = Substructure.inclusion (le_cod h) (f.equiv x) := by
-    apply (subtype _).inj'
-    change (subtype _).comp (g.equiv.toEmbedding.comp (inclusion _)) x = _
-    rw [subtype_equiv_inclusion]
-    rfl
-    assumption
+    g.equiv (Substructure.inclusion (le_dom h) x) =
+      Substructure.inclusion (le_cod h) (f.equiv x) := by
+  apply (subtype _).injective
+  change (subtype _).comp (g.equiv.toEmbedding.comp (inclusion _)) x = _
+  rw [subtype_equiv_inclusion h]
+  rfl
 
 theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
   ∃ le_dom : f.sub_dom ≤ g.sub_dom,
@@ -1109,12 +1126,12 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
       by intro x; apply (subtype _).inj'; rwa [equiv_inclusion_apply]⟩
     · rintro ⟨le_dom, le_cod, h_eq⟩
       rw [le_def]
-      exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [←h_eq]; rfl⟩
+      exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [← h_eq]; rfl⟩
 
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
-  rw [←eq_fg, ←Embedding.comp_assoc (g := g.equiv.toEmbedding), ←eq_gh]
+  rw [← eq_fg, ← Embedding.comp_assoc (g := g.equiv.toEmbedding), ← eq_gh]
   rfl
 
 nonrec theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f :=
@@ -1127,8 +1144,6 @@ nonrec theorem le_antisymm (f g : M ≃ₚ[L] N) : f ≤ g → g ≤ f → f = g
   cases le_antisymm (le_cod le_fg) (le_cod le_gf)
   convert rfl
   exact Equiv.injective_toEmbedding ((subtype _).injective_comp (subtype_equiv_inclusion le_fg))
-
-
 
 instance : PartialOrder (M ≃ₚ[L] N) := {
   le_refl := le_refl
@@ -1147,10 +1162,8 @@ theorem monotone_symm : Monotone (fun (f : M ≃ₚ[L] N) ↦ f.symm) := by
   exact equiv_inclusion_apply hfg _
 
 theorem symm_le_iff (f : M ≃ₚ[L] N) (g : N ≃ₚ[L] M) : f.symm ≤ g ↔ f ≤ g.symm :=
-  ⟨by intro h; rw [←f.symm_symm]; exact monotone_symm h,
-  by intro h; rw  [←g.symm_symm]; exact monotone_symm h⟩
-
-
+  ⟨by intro h; rw [← f.symm_symm]; exact monotone_symm h,
+  by intro h; rw  [← g.symm_symm]; exact monotone_symm h⟩
 
 theorem ext {f g : M ≃ₚ[L] N} (h_dom : f.sub_dom = g.sub_dom) : (∀ x : M, ∀ h : x ∈ f.sub_dom,
   subtype _ (f.equiv ⟨x, h⟩) = subtype _ (g.equiv ⟨x, (h_dom ▸ h)⟩))
@@ -1190,7 +1203,7 @@ theorem dom_restrict_le (f : M ≃ₚ[L] N) {A : L.Substructure M} (h : A ≤ f.
 
 theorem le_dom_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure M} (hf : f.sub_dom ≤ A)
   (hg : A ≤ g.sub_dom) (hfg : f ≤ g) : f ≤ g.dom_restrict hg :=
-  ⟨hf, by rw [←(subtype_equiv_inclusion hfg)]; rfl⟩
+  ⟨hf, by rw [← (subtype_equiv_inclusion hfg)]; rfl⟩
 
 /-- Restriction of a subequivalence to a substructure of the codomain. -/
 noncomputable def cod_restrict (f : M ≃ₚ[L] N) {A : L.Substructure N} (h : A ≤ f.sub_cod) :

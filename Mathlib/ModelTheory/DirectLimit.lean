@@ -494,7 +494,7 @@ noncomputable def Equiv_iSup :
   let F := Embedding.codRestrict (⨆ i, S i) _ liftInclusion_in_sup
   have F_surj : Function.Surjective F := by
     rintro ⟨m, hm⟩
-    rw [←rangeLiftInclusion, Hom.mem_range] at hm
+    rw [← rangeLiftInclusion, Hom.mem_range] at hm
     rcases hm with ⟨a, _⟩; use a
     simpa only [Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
@@ -664,7 +664,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg 
       have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
       exact le_dom
         (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
-    have isTop : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
+    have isTop : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
     exact ⟨dom_top_toEmbedding isTop,
           by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
 
@@ -695,8 +695,8 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
       have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D (Sum.inr ⟨y, hy⟩)
       exact le_cod
         (le_subEquiv_limit S (Encodable.encode (Sum.inr (⟨y, hy⟩ : Y)) + 1)) this
-    have dom_top : F.sub_dom = ⊤ := by rwa [←top_le_iff, ←X_gen, Substructure.closure_le]
-    have cod_top : F.sub_cod = ⊤ := by rwa [←top_le_iff, ←Y_gen, Substructure.closure_le]
+    have dom_top : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
+    have cod_top : F.sub_cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
     refine ⟨dom_cod_top_toEquiv dom_top cod_top, ?_⟩
     convert le_subEquiv_limit S 0
     rw [dom_cod_top_toEquiv_toEmbedding]
