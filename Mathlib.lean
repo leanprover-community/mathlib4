@@ -979,6 +979,7 @@ import Mathlib.CategoryTheory.Abelian.Projective
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.Abelian.RefinementsExtra
 import Mathlib.CategoryTheory.Abelian.RightDerived
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
