@@ -414,6 +414,7 @@ depend on the finite order we consider).
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
 -/
+@[fprop]
 def ContDiffWithinAt (n : ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
     ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
@@ -631,6 +632,7 @@ admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
 -/
+@[fprop]
 def ContDiffOn (n : ℕ∞) (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, ContDiffWithinAt 𝕜 n f s x
 #align cont_diff_on ContDiffOn
@@ -1329,6 +1331,7 @@ variable (𝕜)
 /-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
 -/
+@[fprop]
 def ContDiffAt (n : ℕ∞) (f : E → F) (x : E) : Prop :=
   ContDiffWithinAt 𝕜 n f univ x
 #align cont_diff_at ContDiffAt
@@ -1412,6 +1415,7 @@ variable (𝕜)
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
 -/
+@[fprop]
 def ContDiff (n : ℕ∞) (f : E → F) : Prop :=
   ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
 #align cont_diff ContDiff
