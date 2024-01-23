@@ -1919,6 +1919,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.Rat.NNRat.BigOperators
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
