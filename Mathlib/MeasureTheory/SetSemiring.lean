@@ -284,7 +284,7 @@ variable [DecidableEq (Set α)]
 `⋃₀ ↑(hC.indexedDiffFinset₀ J hJ n) = J.ordered n \ ⋃₀ finsetLT J n`. -/
 noncomputable def indexedDiffFinset₀ (hC : IsSetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C)
     (n : Fin J.card) : Finset (Set α) :=
-  hC.diffFinset₀ (ordered_mem' hJ n) (finsetLT_subset' J hJ n)
+  hC.diffFinset₀ (hJ (ordered_mem n)) (finsetLT_subset' J hJ n)
 
 lemma sUnion_indexedDiffFinset₀ (hC : IsSetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C)
     (n : Fin J.card) : ⋃₀ ↑(hC.indexedDiffFinset₀ J hJ n) = J.ordered n \ ⋃₀ finsetLT J n :=
@@ -309,7 +309,7 @@ lemma subset_ordered_of_mem_indexedDiffFinset₀ (hC : IsSetSemiring C)
     {n : Fin J.card} (h : s ∈ hC.indexedDiffFinset₀ J hJ n) :
     s ⊆ J.ordered n :=
   (subset_sUnion_of_mem h).trans
-    (hC.sUnion_diffFinset₀_subset (ordered_mem' hJ n) (finsetLT_subset' J hJ n))
+    (hC.sUnion_diffFinset₀_subset (hJ (ordered_mem n)) (finsetLT_subset' J hJ n))
 
 lemma iUnion_sUnion_indexedDiffFinset₀ (hC : IsSetSemiring C) (J : Finset (Set α)) (hJ : ↑J ⊆ C) :
     (⋃ i, ⋃₀ (hC.indexedDiffFinset₀ J hJ i : Set (Set α))) = ⋃₀ J := by
@@ -331,7 +331,7 @@ lemma iUnion_sUnion_indexedDiffFinset₀ (hC : IsSetSemiring C) (J : Finset (Set
     refine ⟨⟨i, hi⟩, ?_⟩
     rw [sUnion_indexedDiffFinset₀, Set.mem_diff]
     refine ⟨ha_mem_i, ?_⟩
-    rw [sUnion_finsetLT_eq_bUnion]
+    rw [sUnion_finsetLT_eq_biUnion]
     simp only [mem_iUnion, exists_prop, not_exists, not_and]
     intro j hj_lt hj
     have hj_lt' : ↑j < i := by rwa [← Fin.eta j j.2, Fin.mk_lt_mk] at hj_lt

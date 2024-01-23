@@ -8,7 +8,7 @@ open scoped BigOperators
 
 namespace Finset
 
-variable {α : Type*}
+variable {α β : Type*}
 
 lemma mem_map_univ_asEmbedding {α β : Type*} [Fintype α] {p : β → Prop}
     (e : α ≃ Subtype p) {b : β} :
@@ -28,14 +28,12 @@ noncomputable def ordered (J : Finset α) : Fin J.card ↪ α :=
   J.equivFin.symm.asEmbedding
 
 lemma ordered_mem {J : Finset α} (n : Fin J.card) : J.ordered n ∈ J := by
-  simp_rw [Finset.ordered]
-  exact coe_mem _
+  simp_rw [Finset.ordered]; exact coe_mem _
 
-lemma map_ordered (J : Finset α) :
-    Finset.map J.ordered (univ : Finset (Fin J.card)) = J := by
+lemma map_ordered (J : Finset α) : Finset.map J.ordered (univ : Finset (Fin J.card)) = J := by
   ext; simp_rw [Finset.ordered, Finset.mem_map_univ_asEmbedding]
 
-lemma sum_ordered {β : Type*} [AddCommMonoid β] (J : Finset α) (m : α → β) :
+lemma sum_ordered [AddCommMonoid β] (J : Finset α) (m : α → β) :
     ∑ i : Fin J.card, m (J.ordered i) = ∑ u in J, m u := by
   conv_rhs => rw [← map_ordered J]
   rw [sum_map]
@@ -44,6 +42,7 @@ lemma sum_ordered {β : Type*} [AddCommMonoid β] (J : Finset α) (m : α → β
 noncomputable def finsetLT (J : Finset α) : Fin J.card → Finset α :=
   fun n ↦ (Finset.filter (fun j : Fin J.card ↦ j < n) univ).map J.ordered
 
+@[simp]
 lemma mem_finsetLT (J : Finset α) (n : Fin J.card) (s : α) :
     s ∈ finsetLT J n ↔ ∃ m < n, s = J.ordered m := by
   rw [finsetLT, mem_map]
@@ -54,6 +53,7 @@ lemma mem_finsetLT (J : Finset α) (n : Fin J.card) (s : α) :
 lemma ordered_mem_finsetLT (J : Finset α) {n m : Fin J.card} (hnm : n < m) :
     J.ordered n ∈ finsetLT J m := by rw [mem_finsetLT _ _]; exact ⟨n, hnm, rfl⟩
 
+@[simp]
 lemma finsetLT_zero {J : Finset α} (hJ : 0 < J.card) : finsetLT J ⟨0, hJ⟩ = ∅ := by
   rw [finsetLT]
   simp only [univ_eq_attach, map_eq_empty, filter_eq_empty_iff]
@@ -72,12 +72,16 @@ lemma finsetLT_mono (J : Finset α) : Monotone (finsetLT J) := by
 lemma finsetLT_subset (J : Finset α) (n : Fin J.card) : finsetLT J n ⊆ J := by
   intro u; rw [finsetLT, mem_map]; rintro ⟨i, _, rfl⟩; exact ordered_mem i
 
+lemma biUnion_finsetLT (J : Finset α) (n : Fin J.card) :
+    ⋃ i ≤ n, (finsetLT J i : Set α) = finsetLT J n := by
+  ext x
+  simp only [mem_iUnion, mem_coe, mem_finsetLT, exists_prop]
+  exact ⟨fun ⟨i, hin, ⟨m, hmi, h⟩⟩ ↦ ⟨m, hmi.trans_le hin, h⟩,
+    fun ⟨m, hmn, h⟩ ↦ ⟨n, le_rfl, m, hmn, h⟩⟩
 
 section FinsetSet
 
 variable {C : Set (Set α)} {J : Finset (Set α)}
-
-lemma ordered_mem' (hJ : ↑J ⊆ C) (n : Fin J.card) : J.ordered n ∈ C := hJ (ordered_mem n)
 
 lemma iUnion_ordered (J : Finset (Set α)) : (⋃ i, J.ordered i) = ⋃₀ J := by
   conv_rhs => rw [← map_ordered J]
@@ -88,7 +92,7 @@ lemma finsetLT_subset' (J : Finset (Set α)) (hJ : ↑J ⊆ C) (n : Fin J.card) 
     ↑(finsetLT J n) ⊆ C :=
   (Finset.coe_subset.mpr (finsetLT_subset J n)).trans hJ
 
-lemma sUnion_finsetLT_eq_bUnion (J : Finset (Set α)) (n : Fin J.card) :
+lemma sUnion_finsetLT_eq_biUnion (J : Finset (Set α)) (n : Fin J.card) :
     ⋃₀ (finsetLT J n : Set (Set α)) = ⋃ i < n, J.ordered i := by
   ext1 a
   simp_rw [mem_sUnion, mem_coe, mem_finsetLT, mem_iUnion]
