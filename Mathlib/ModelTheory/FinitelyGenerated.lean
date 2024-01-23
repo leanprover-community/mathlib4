@@ -119,7 +119,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
   rw [cg_def]
   constructor
   · rintro ⟨S, Scount, hS⟩
-    cases' eq_empty_or_nonempty (N : Set M) with h h
+    rcases eq_empty_or_nonempty (N : Set M) with h | h
     · exact Or.intro_left _ h
     obtain ⟨f, h'⟩ :=
       (Scount.union (Set.countable_singleton h.some)).exists_eq_range

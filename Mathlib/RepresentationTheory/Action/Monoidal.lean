@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Braided
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Induced monoidal structure on `Action V G`
@@ -372,7 +373,7 @@ each factor. -/
 @[simps!]
 noncomputable def diagonalSucc (G : Type u) [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
-  mkIso (Equiv.piFinSuccAboveEquiv _ 0).toIso fun _ => rfl
+  mkIso (Equiv.piFinSuccAbove _ 0).toIso fun _ => rfl
 set_option linter.uppercaseLean3 false in
 #align Action.diagonal_succ Action.diagonalSucc
 

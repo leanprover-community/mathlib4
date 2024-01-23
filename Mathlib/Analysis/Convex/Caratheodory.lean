@@ -166,8 +166,8 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
 /-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
-      ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : AffineIndependent 𝕜 z)
-        (_ : ∀ i, 0 < w i), ∑ i, w i = 1 ∧ ∑ i, w i • z i = x := by
+      ∃ (z : ι → E) (w : ι → 𝕜), Set.range z ⊆ s ∧ AffineIndependent 𝕜 z ∧ (∀ i, 0 < w i) ∧
+        ∑ i, w i = 1 ∧ ∑ i, w i • z i = x := by
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx

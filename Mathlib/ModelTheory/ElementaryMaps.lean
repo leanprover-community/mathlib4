@@ -14,8 +14,6 @@ import Mathlib.ModelTheory.Substructures
 ## Main Definitions
 * A `FirstOrder.Language.ElementaryEmbedding` is an embedding that commutes with the
   realizations of formulas.
-* A `FirstOrder.Language.ElementarySubstructure` is a substructure where the realization of each
-  formula agrees with the realization in the larger model.
 * The `FirstOrder.Language.elementaryDiagram` of a structure is the set of all sentences with
   parameters that the structure satisfies.
 * `FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram` is the canonical
@@ -24,9 +22,6 @@ elementary embedding of any structure into a model of its elementary diagram.
 ## Main Results
 * The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
 gives a simple criterion for an embedding to be elementary.
-* The Tarski-Vaught Test for substructures:
-`FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
-substructure to be elementary.
  -/
 
 
@@ -68,7 +63,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
-instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
+instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -76,10 +71,10 @@ instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
     simp only [ElementaryEmbedding.mk.injEq]
     ext x
     exact Function.funext_iff.1 h x
-#align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.funLike
+#align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.instFunLike
 
 instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
@@ -132,7 +127,7 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
 #align first_order.language.elementary_embedding.injective FirstOrder.Language.ElementaryEmbedding.injective
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
-  { show FunLike (M ↪ₑ[L] N) M fun _ => N from inferInstance with injective' := injective }
+  { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
 @[simp]
@@ -191,16 +186,16 @@ theorem coe_toEmbedding (f : M ↪ₑ[L] N) : (f.toEmbedding : M → N) = (f : M
 #align first_order.language.elementary_embedding.coe_to_embedding FirstOrder.Language.ElementaryEmbedding.coe_toEmbedding
 
 theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align first_order.language.elementary_embedding.coe_injective FirstOrder.Language.ElementaryEmbedding.coe_injective
 
 @[ext]
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align first_order.language.elementary_embedding.ext FirstOrder.Language.ElementaryEmbedding.ext
 
 theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align first_order.language.elementary_embedding.ext_iff FirstOrder.Language.ElementaryEmbedding.ext_iff
 
 variable (L) (M)
@@ -350,147 +345,6 @@ theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α �
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
   S.subtype.realize_term t
 #align first_order.language.realize_term_substructure FirstOrder.Language.realize_term_substructure
-
-namespace Substructure
-
-@[simp]
-theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
-    {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
-    φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
-  simp
-#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
-
-@[simp]
-theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
-    φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
-  rw [← Substructure.topEquiv.realize_formula φ]
-  simp
-#align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
-
-/-- A substructure is elementary when every formula applied to a tuple in the subtructure
-  agrees with its value in the overall structure. -/
-def IsElementary (S : L.Substructure M) : Prop :=
-  ∀ ⦃n⦄ (φ : L.Formula (Fin n)) (x : Fin n → S), φ.Realize (((↑) : _ → M) ∘ x) ↔ φ.Realize x
-#align first_order.language.substructure.is_elementary FirstOrder.Language.Substructure.IsElementary
-
-end Substructure
-
-variable (L M)
-
-/-- An elementary substructure is one in which every formula applied to a tuple in the subtructure
-  agrees with its value in the overall structure. -/
-structure ElementarySubstructure where
-  toSubstructure : L.Substructure M
-  isElementary' : toSubstructure.IsElementary
-#align first_order.language.elementary_substructure FirstOrder.Language.ElementarySubstructure
-#align first_order.language.elementary_substructure.to_substructure FirstOrder.Language.ElementarySubstructure.toSubstructure
-#align first_order.language.elementary_substructure.is_elementary' FirstOrder.Language.ElementarySubstructure.isElementary'
-
-variable {L M}
-
-namespace ElementarySubstructure
-
-attribute [coe] toSubstructure
-
-instance instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
-  ⟨ElementarySubstructure.toSubstructure⟩
-#align first_order.language.elementary_substructure.first_order.language.substructure.has_coe FirstOrder.Language.ElementarySubstructure.instCoe
-
-instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
-  ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
-    congr⟩
-#align first_order.language.elementary_substructure.set_like FirstOrder.Language.ElementarySubstructure.instSetLike
-
-instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
-  Substructure.inducedStructure
-set_option linter.uppercaseLean3 false in
-#align first_order.language.elementary_substructure.induced_Structure FirstOrder.Language.ElementarySubstructure.inducedStructure
-
-@[simp]
-theorem isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).IsElementary :=
-  S.isElementary'
-#align first_order.language.elementary_substructure.is_elementary FirstOrder.Language.ElementarySubstructure.isElementary
-
-/-- The natural embedding of an `L.Substructure` of `M` into `M`. -/
-def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
-  toFun := (↑)
-  map_formula' := S.isElementary
-#align first_order.language.elementary_substructure.subtype FirstOrder.Language.ElementarySubstructure.subtype
-
-@[simp]
-theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
-  rfl
-#align first_order.language.elementary_substructure.coe_subtype FirstOrder.Language.ElementarySubstructure.coeSubtype
-
-/-- The substructure `M` of the structure `M` is elementary. -/
-instance instTop : Top (L.ElementarySubstructure M) :=
-  ⟨⟨⊤, fun _ _ _ => Substructure.realize_formula_top.symm⟩⟩
-#align first_order.language.elementary_substructure.has_top FirstOrder.Language.ElementarySubstructure.instTop
-
-instance instInhabited : Inhabited (L.ElementarySubstructure M) :=
-  ⟨⊤⟩
-#align first_order.language.elementary_substructure.inhabited FirstOrder.Language.ElementarySubstructure.instInhabited
-
-@[simp]
-theorem mem_top (x : M) : x ∈ (⊤ : L.ElementarySubstructure M) :=
-  Set.mem_univ x
-#align first_order.language.elementary_substructure.mem_top FirstOrder.Language.ElementarySubstructure.mem_top
-
-@[simp]
-theorem coe_top : ((⊤ : L.ElementarySubstructure M) : Set M) = Set.univ :=
-  rfl
-#align first_order.language.elementary_substructure.coe_top FirstOrder.Language.ElementarySubstructure.coe_top
-
-@[simp]
-theorem realize_sentence (S : L.ElementarySubstructure M) (φ : L.Sentence) : S ⊨ φ ↔ M ⊨ φ :=
-  S.subtype.map_sentence φ
-#align first_order.language.elementary_substructure.realize_sentence FirstOrder.Language.ElementarySubstructure.realize_sentence
-
-@[simp]
-theorem theory_model_iff (S : L.ElementarySubstructure M) (T : L.Theory) : S ⊨ T ↔ M ⊨ T := by
-  simp only [Theory.model_iff, realize_sentence]
-set_option linter.uppercaseLean3 false in
-#align first_order.language.elementary_substructure.Theory_model_iff FirstOrder.Language.ElementarySubstructure.theory_model_iff
-
-instance theory_model {T : L.Theory} [h : M ⊨ T] {S : L.ElementarySubstructure M} : S ⊨ T :=
-  (theory_model_iff S T).2 h
-set_option linter.uppercaseLean3 false in
-#align first_order.language.elementary_substructure.Theory_model FirstOrder.Language.ElementarySubstructure.theory_model
-
-instance instNonempty [Nonempty M] {S : L.ElementarySubstructure M} : Nonempty S :=
-  (model_nonemptyTheory_iff L).1 inferInstance
-#align first_order.language.elementary_substructure.nonempty FirstOrder.Language.ElementarySubstructure.instNonempty
-
-theorem elementarilyEquivalent (S : L.ElementarySubstructure M) : S ≅[L] M :=
-  S.subtype.elementarilyEquivalent
-#align first_order.language.elementary_substructure.elementarily_equivalent FirstOrder.Language.ElementarySubstructure.elementarilyEquivalent
-
-end ElementarySubstructure
-
-namespace Substructure
-
-/-- The Tarski-Vaught test for elementarity of a substructure. -/
-theorem isElementary_of_exists (S : L.Substructure M)
-    (htv :
-      ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → S) (a : M),
-        φ.Realize default (Fin.snoc ((↑) ∘ x) a : _ → M) →
-          ∃ b : S, φ.Realize default (Fin.snoc ((↑) ∘ x) b : _ → M)) :
-    S.IsElementary := fun _ => S.subtype.isElementary_of_exists htv
-#align first_order.language.substructure.is_elementary_of_exists FirstOrder.Language.Substructure.isElementary_of_exists
-
-/-- Bundles a substructure satisfying the Tarski-Vaught test as an elementary substructure. -/
-@[simps]
-def toElementarySubstructure (S : L.Substructure M)
-    (htv :
-      ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → S) (a : M),
-        φ.Realize default (Fin.snoc ((↑) ∘ x) a : _ → M) →
-          ∃ b : S, φ.Realize default (Fin.snoc ((↑) ∘ x) b : _ → M)) :
-    L.ElementarySubstructure M :=
-  ⟨S, S.isElementary_of_exists htv⟩
-#align first_order.language.substructure.to_elementary_substructure FirstOrder.Language.Substructure.toElementarySubstructure
-
-end Substructure
 
 end Language
 

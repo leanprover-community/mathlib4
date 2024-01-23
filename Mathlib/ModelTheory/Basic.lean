@@ -96,7 +96,7 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -456,7 +456,7 @@ end Structure
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
 class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
+  [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
@@ -464,26 +464,26 @@ class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
 class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
+  [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass [L.Structure M]
-    [L.Structure N] [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
+    [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
 theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
-    [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
+    [FunLike F M N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
 #align first_order.language.hom_class.strong_hom_class_of_is_algebraic FirstOrder.Language.HomClass.strongHomClassOfIsAlgebraic
 
-theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
+theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
   (HomClass.map_fun φ c default).trans (congr rfl (funext default))
 #align first_order.language.hom_class.map_constants FirstOrder.Language.HomClass.map_constants
@@ -498,10 +498,10 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
-instance funLike : FunLike (M →[L] N) M fun _ => N where
+instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
   coe_injective' f g h := by cases f; cases g; cases h; rfl
-#align first_order.language.hom.fun_like FirstOrder.Language.Hom.funLike
+#align first_order.language.hom.fun_like FirstOrder.Language.Hom.instFunLike
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -512,7 +512,7 @@ instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
   HomClass.strongHomClassOfIsAlgebraic
 
 instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align first_order.language.hom.has_coe_to_fun FirstOrder.Language.Hom.hasCoeToFun
 
 @[simp]
@@ -522,11 +522,11 @@ theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 
 @[ext]
 theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
 
 theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align first_order.language.hom.ext_iff FirstOrder.Language.Hom.ext_iff
 
 @[simp]
@@ -596,7 +596,7 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
-def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
+def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 #align first_order.language.hom_class.to_hom FirstOrder.Language.HomClass.toHom
@@ -620,7 +620,7 @@ instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
 #align first_order.language.embedding.strong_hom_class FirstOrder.Language.Embedding.strongHomClass
 
 instance hasCoeToFun : CoeFun (M ↪[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align first_order.language.embedding.has_coe_to_fun FirstOrder.Language.Embedding.hasCoeToFun
 
 @[simp]
@@ -799,15 +799,15 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id]
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id] }
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
 
 -- Name would be better as symm_symm, but then can clash with Equiv.symm_symm
@@ -872,7 +872,7 @@ theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) �
   intro _ _ h; apply FunLike.coe_injective; exact congr_arg (FunLike.coe ∘ Embedding.toHom) h
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
 @[ext]
@@ -1085,7 +1085,7 @@ instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 
-instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] :
+instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
@@ -1160,14 +1160,14 @@ theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
 
 @[simp]
 theorem toFun_inducedStructureEquiv (e : M ≃ N) :
-    FunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
+    DFunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
   rfl
 
 @[simp]
 theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
     (by
     letI : L.Structure N := inducedStructure e
-    exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
+    exact DFunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
   rfl
 
 end Equiv

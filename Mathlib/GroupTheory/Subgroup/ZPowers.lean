@@ -3,7 +3,10 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
 
 #align_import group_theory.subgroup.zpowers from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -37,9 +40,9 @@ theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 #align subgroup.coe_zpowers Subgroup.coe_zpowers
 
-noncomputable instance decidableMemZpowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
+noncomputable instance decidableMemZPowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
   Classical.decPred _
-#align decidable_zpowers Subgroup.decidableMemZpowers
+#align decidable_zpowers Subgroup.decidableMemZPowers
 
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
@@ -102,8 +105,8 @@ attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_z
 
 attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
 
-attribute [to_additive AddSubgroup.decidableMemZmultiples] Subgroup.decidableMemZpowers
-#align decidable_zmultiples AddSubgroup.decidableMemZmultiples
+attribute [to_additive AddSubgroup.decidableMemZMultiples] Subgroup.decidableMemZPowers
+#align decidable_zmultiples AddSubgroup.decidableMemZMultiples
 
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure

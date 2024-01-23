@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Types
 
 #align_import topology.category.Top.limits.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -91,7 +91,7 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
           erw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi <| fun j => (S.π.app j).2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }

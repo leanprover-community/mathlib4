@@ -701,6 +701,21 @@ theorem coe_topEquiv :
   rfl
 #align first_order.language.substructure.coe_top_equiv FirstOrder.Language.Substructure.coe_topEquiv
 
+@[simp]
+theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
+    {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
+    φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
+  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  simp
+#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
+
+@[simp]
+theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
+    φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
+  rw [← Substructure.topEquiv.realize_formula φ]
+  simp
+#align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
+
 /-- A dependent version of `Substructure.closure_induction`. -/
 @[elab_as_elim]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}

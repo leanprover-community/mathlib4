@@ -208,7 +208,7 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
 #align measure_theory.mem_ℒp.exists_has_compact_support_integral_rpow_sub_le MeasureTheory.Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -301,7 +301,7 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
-  exact integral_nonneg fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  exact integral_nonneg fun x => Real.rpow_nonneg (norm_nonneg _) _
 #align measure_theory.mem_ℒp.exists_bounded_continuous_integral_rpow_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_integral_rpow_sub_le
 
 /-- Any integrable function can be approximated by bounded continuous functions,
