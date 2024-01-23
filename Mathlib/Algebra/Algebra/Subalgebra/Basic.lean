@@ -374,7 +374,7 @@ instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScal
 /- More general form of `Subalgebra.algebra`.
 
 This instance should have low priority since it is slow to fail:
-before failing, it will cause a search through all `SMul K' K` instances,
+before failing, it will cause a search through all `SMul R' R` instances,
 which can quickly get expensive.
 -/
 instance (priority := low) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
