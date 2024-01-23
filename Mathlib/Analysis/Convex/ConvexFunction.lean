@@ -13,8 +13,7 @@ import Mathlib.Analysis.Calculus.Gradient.Basic
 ## Main results
 
 This file contains the following parts of smooth convex functions.
-* (First Order Condition for convex functions)
-    Function f(x) is convex if and only if for any x, y ∈ s, f(y) ≥ f(x) + f'(x) (y - x)
+* First Order Condition for convex functions: function `f(x)` is convex if and only if for any `x, y ∈ s`, `f(y) ≥ f(x) + f'(x) (y - x)`.
 * (Monotonity of Gradient)
     Function f(x) is convex if and only if its gradient is monotone, i.e.
     for any x, y ∈ s, (f'(x) - f'(y)) (x - y) ≥ 0
