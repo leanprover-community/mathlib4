@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs
@@ -343,11 +344,11 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 #align simple_graph.hom.coe_comp SimpleGraph.Hom.coe_comp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLe (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-#align simple_graph.hom.of_le SimpleGraph.Hom.ofLe
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+#align simple_graph.hom.of_le SimpleGraph.Hom.ofLE
 
-@[simp, norm_cast] lemma coe_ofLe (h : G₁ ≤ G₂) : ⇑(ofLe h) = id := rfl
-#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLe
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLE
 
 end Hom
 

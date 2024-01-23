@@ -6,7 +6,6 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 import Lean.Elab.Binders
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Assert
-import Mathlib.Data.Array.Defs
 
 /-!
 # Extending `have`, `let` and `suffices`
