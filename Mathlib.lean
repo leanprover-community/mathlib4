@@ -1919,6 +1919,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.Rat.NNRat.BigOperators
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
@@ -1980,6 +1981,7 @@ import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrdConnectedComponent
+import Mathlib.Data.Set.Intervals.OrderEmbedding
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Intervals.ProjIcc
