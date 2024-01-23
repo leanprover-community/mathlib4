@@ -2090,10 +2090,8 @@ theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
   induction n generalizing x with
   | zero => -- zero case
-    intro x hx
     simp only [pow_zero, coe_one, id.def, Subtype.coe_mk]
   | succ n hrec => -- induction case
-    intro x hx
     simp only [pow_succ', coe_mul, Function.comp_apply]
     apply hrec
 
