@@ -48,7 +48,7 @@ noncomputable def h₂ (p : ℝ) : ℝ := -p * log₂ p - (1 - p) * log₂ (1 - 
 @[simp] lemma h2_onehalf : h₂ 2⁻¹ = 1 := by
   simp [h₂, log₂, logb]
   norm_num
-  simp
+  simp only [one_div, log_inv]
   field_simp
 
 lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
@@ -108,7 +108,7 @@ lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂
     _ = (-(p * (log p / log 2)) * log 2 - (1 - p) * (log (1 - p) / log 2) * log 2) := by ring
     _ = -p * log p - (1 - p) * log (1 - p) := by simp; field_simp
   rw [this]
-  simp
+  simp only [neg_mul, one_mul, gt_iff_lt]
   by_cases pz : p = 0
   · simp [*]; norm_num
   · have invppos : 0 < 1/p := by positivity
@@ -163,19 +163,19 @@ protected noncomputable def h₂deriv (p : ℝ) : ℝ := log₂ (1 - p) - log₂
 @[simp] lemma deriv_one_minus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
   have onem (y : ℝ) : 1 - y = -(y + -1) := by ring
   simp_rw [onem]
-  simp
+  simp only [neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
 
 @[simp] lemma differentiable_1_minusp (p : ℝ) : DifferentiableAt ℝ (fun p => 1 - p) p := by
   have (p : ℝ) : 1 - p = -(p - 1) := by ring
   simp_rw [this]
   apply differentiableAt_neg_iff.mpr
   apply DifferentiableAt.add_const
-  simp
+  simp only [differentiableAt_id']
 
 -- TODO don't need assumptions
 lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
   rw [deriv.log]
-  simp
+  simp only [deriv_one_minus]
   field_simp
   exact differentiable_1_minusp x
   exact sub_ne_zero.mpr hh.symm
@@ -196,11 +196,11 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   simp_rw [mul_div]
   rw [deriv_div_const, deriv_mul_log h, deriv_div_const]
   simp_rw [mul_sub_right_distrib]
-  simp
+  simp only [one_mul]
   rw [deriv_sub, deriv_log_one_sub hh]
   · rw [deriv_mul, deriv_id'']
     rw [deriv.log]
-    simp
+    simp only [one_mul, deriv_one_minus]
     field_simp
     ring_nf
     calc -1 + (-log x - x * (1 - x)⁻¹) + (1 - x)⁻¹ + log (1 - x)
@@ -310,8 +310,7 @@ lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1
       -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
     field_simp [sub_ne_zero.mpr h2.symm]
     ring
-  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
-    Function.comp_apply]
+  simp only [Function.iterate_succ]
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
     refine (Filter.EventuallyEq.deriv_eq this).trans ?_
     rw [deriv_sub]
