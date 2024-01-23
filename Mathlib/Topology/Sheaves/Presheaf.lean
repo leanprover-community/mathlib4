@@ -82,21 +82,19 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic| first | assumption |
   aesop $c*
-    (config :=
-      { terminal := true
-        assumptionTransparency := .reducible
-        enableSimp := false })
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false })
     (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop? $c*
-    (config :=
-      { terminal := true
-        assumptionTransparency := .reducible
-        enableSimp := false
-        maxRuleApplications := 300 })
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false
+                 maxRuleApplications := 300 })
   (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 attribute[aesop 10% (rule_sets [Restrict])] le_trans
