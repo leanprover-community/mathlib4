@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Group.InjSurj
-import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
@@ -2970,7 +2968,7 @@ theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* 
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact FunLike.congr_fun h y⟩
+  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=

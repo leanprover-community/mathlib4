@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Tactic.Basic
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
