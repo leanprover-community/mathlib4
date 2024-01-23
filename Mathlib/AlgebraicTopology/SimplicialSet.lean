@@ -329,13 +329,13 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
 namespace FactorMinFace
 variable {X : SimplexCategoryᵒᵖ } {n: ℕ }{i : Fin (n+3)} ( α : Λ[n+2,i].obj X)
 /--Given  `l ∈ ℕ` if `l<n+2` this is the smallest natural number k such that `l≤ k<n+2` and  such
-that `α: Λ[n+2,i].obj X` does not contain `(δ i).toOrderHom k`  in its range. If not such `k`
+that `α: Λ[n+2,i].obj X` does not contain `(δ i).toOrderHom k`  in its image. If no such `k`
  exists or `l>n+2` then the output is (n+2).-/
 def  minAsNat (l : ℕ )  :  ℕ  :=
-        if l > n+1 then  (n+2) -- Default case (never occurs)
+        if l > n+1 then  (n+2)
         else if ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l
-         then l-- Found the index satisfying the condition
-         else minAsNat (l+1) -- Check the next index
+         then l
+         else minAsNat (l+1)
 termination_by _ l => (n+2) - l
 decreasing_by
     simp_wf
@@ -373,8 +373,7 @@ lemma lt_minAsNat_of_succ (l: ℕ)  (hl:  l<n+2): l< minAsNat α (l+1):= by
         by_cases hn : (l+1) < n+2
         · let ht:= lt_minAsNat_of_succ (l+1) hn
           exact Nat.lt_of_succ_lt ht
-        · have hlp1 : (l+1)+1 > n+2  := by
-            exact Nat.not_le.mp hn
+        · let ht := Nat.not_le.mp hn
           unfold minAsNat
           linarith
 termination_by _  => (n+2) - l
@@ -387,12 +386,12 @@ decreasing_by
     exact Nat.lt.base (n + 1)
 
 lemma not_in_range_if_eq_self (l: ℕ)  (hl:  l<n+2) (heq: minAsNat α l=l) :
-    ∀ k, α.1.down.toOrderHom k ≠
-    (δ i).toOrderHom l:=by
+    ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l:=by
       unfold minAsNat at heq
       have h1 : ¬ (l >n+1) := by
         linarith
-      simp [h1] at heq
+      simp only [gt_iff_lt, h1, len_mk, yoneda_obj_obj, ne_eq, ite_false, ite_eq_left_iff,
+        not_forall, not_not, forall_exists_index] at heq
       let h3:= lt_minAsNat_of_succ α l hl
       have h2: minAsNat α (l+1) ≠ l := by
         exact Nat.ne_of_gt h3
@@ -400,16 +399,15 @@ lemma not_in_range_if_eq_self (l: ℕ)  (hl:  l<n+2) (heq: minAsNat α l=l) :
       simp_all only [gt_iff_lt, not_lt, len_mk, imp_false, ne_eq, not_false_eq_true]
 
 lemma in_range_if_neq_self (l: ℕ)  (hl:  l<n+2) (heq: minAsNat α l≠ l) :
-    ¬ ∀ k, α.1.down.toOrderHom k ≠
-    (δ i).toOrderHom l:=by
+    ¬ ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l:=by
       unfold minAsNat at heq
-      have h1 : ¬ (l >n+1) := by
-         linarith
-      simp [h1] at heq
+      simp only [gt_iff_lt, show ¬ (l >n+1) by linarith, len_mk, yoneda_obj_obj, ne_eq, ite_false,
+       ite_eq_left_iff,not_forall, not_not, forall_exists_index, exists_prop, exists_and_right]
+         at heq
       tauto
 
-lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) : (¬ ∀ k, α.1.down.toOrderHom k ≠
-    (δ i).toOrderHom l) ∧ (minAsNat α 0= minAsNat α l):=by
+lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) :
+    (¬ ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l) ∧ (minAsNat α 0= minAsNat α l):=by
      induction' l with k hk
      · have h1 : 0 < n+2 := by
           exact Nat.succ_pos (n+1)
@@ -422,13 +420,13 @@ lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) : (¬ ∀ k
           exact Nat.lt_of_succ_lt hl
        have k_lt_np1 :¬ (k> n+1)  := by
              let hr:= minAsNat_lt α 0
-             simp
+             simp only [gt_iff_lt, not_lt, ge_iff_le]
              linarith
        apply hk at hkl
        rw [hkl.right] at hl
        apply And.intro
        · unfold minAsNat at hl
-         simp [k_lt_np1] at hl
+         simp only [gt_iff_lt, k_lt_np1, len_mk, yoneda_obj_obj, ne_eq, ite_false] at hl
          split at hl
          · tauto
          · have ht: minAsNat α (Nat.succ k) ≠ Nat.succ k  := by
@@ -438,29 +436,18 @@ lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) : (¬ ∀ k
              linarith
            · exact ht
        · rw [hkl.right]
-         have hx: ¬ ∀ (k_1 : Fin (len X.unop + 1)), ¬(Hom.toOrderHom α.1.down) k_1
-             = (Hom.toOrderHom (δ i)) k := by
-            exact hkl.left
-         have hf:  minAsNat α k
-             = (if k > n + 1 then n + 2  else if ∀ l, α.1.down.toOrderHom l ≠ (δ i).toOrderHom k
-         then k
-         else minAsNat α (k+1) ):= by
-            rw [minAsNat]
-         rw [hf]
-         simp [k_lt_np1]
-         exact fun a => (hx a).elim
+         rw [show (minAsNat α k=(if k > n + 1 then n + 2 else if ∀ l,
+         α.1.down.toOrderHom l ≠ (δ i).toOrderHom k then k else minAsNat α (k+1) )) by rw [minAsNat]]
+         simp only [gt_iff_lt, k_lt_np1, len_mk, yoneda_obj_obj, ne_eq, ite_false, ite_eq_right_iff]
+         exact fun a => (hkl.left a).elim
 
 lemma minAsNat_zero_neq : minAsNat α 0 ≠ n+2 := by
     by_contra h
     have h1: ∀ (l : Fin (n+2)) , (¬ ∀ k , α.1.down.toOrderHom k ≠ (δ i).toOrderHom l) := by
         intro l
-        have hj: @Nat.cast (Fin (len [n + 1] + 1)) AddMonoidWithOne.toNatCast l.val  = l := by
-          exact Fin.cast_val_eq_self l
-        rw [← hj]
-        have htt : l.val < minAsNat α 0 := by
-            simp_all only [len_mk, Fin.is_lt]
-        let ht:= in_range_if_lt_minAsNat_zero α  l htt
-        exact ht.left
+        rw [← (show Nat.cast l.val  = l from Fin.cast_val_eq_self l )]
+        have htt : l.val < minAsNat α 0 := by simp_all only [len_mk, Fin.is_lt]
+        exact (in_range_if_lt_minAsNat_zero α  l htt).left
     have hα:= α.prop∘Set.eq_univ_iff_forall.mpr
     simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
             not_forall, not_or, not_exists] at hα
@@ -468,51 +455,31 @@ lemma minAsNat_zero_neq : minAsNat α 0 ≠ n+2 := by
     let lx:= (Fin.predAbove (Fin.predAbove 0 i)) x
     have ht :   (Hom.toOrderHom (δ i)) lx =x  := by
         change Fin.succAbove i ((Fin.predAbove (Fin.predAbove 0 i)) x) =_
-        by_cases hi: i≠ 0
-        · rw [Fin.predAbove_zero hi]
-          rw [Fin.eq_iff_veq]
-          unfold Fin.succAbove
-          unfold Fin.predAbove
-          split <;> split
-          · rename_i  h2 h3
-            rw [Fin.lt_def] at h2
-            simp at h2 h3
-            let hx2:= hx.left
+        by_cases hi: i ≠ 0
+        · rw [Fin.predAbove_zero hi,Fin.eq_iff_veq]
+          unfold Fin.succAbove Fin.predAbove
+          split <;> split <;> rename_i  h2 h3
+          any_goals simp only [Fin.succ_pred,Fin.castSucc_castPred]
+          all_goals rw [Fin.lt_def] at h2
+          all_goals simp only [Fin.coe_castSucc, Fin.coe_pred, not_lt, Fin.castSucc_castPred]
+               at h2 h3
+          · let hx2:= (hx.left)
             rw [Fin.eq_iff_veq] at hx2
             exact (hx2 (Nat.le_antisymm (Nat.le_of_pred_lt h3) (Nat.le_of_pred_lt h2))).elim
-          · simp
-          · simp
-          · rename_i  h2 h3
-            rw [Fin.lt_def] at h2
-            simp at h2 h3
-            rw [Fin.le_def] at h3
-            have h4: i.val ≤ i.val -1 := by
-                exact Nat.le_trans h3 h2
-            change  ¬(i=0)  at hi
-            rw [Fin.eq_iff_veq] at hi
-            have ht : 0< i.val :=  Nat.pos_of_ne_zero hi
-            change i.val ≤ Nat.pred i.val at h4
-            rw [Nat.le_pred_iff_lt ht] at h4
-            simp at h4
-        · simp at hi
-          rw [hi]
-          rw [Fin.eq_iff_veq]
-          simp
-          have hpr: Fin.predAbove (0: Fin (n+2)) 0=0 := by
-              rfl
-          rw [hpr]
+          · have h4: i.val ≤ i.val -1 := Nat.le_trans h3 h2
+            rw [ne_eq,Fin.eq_iff_veq] at hi
+            contrapose! h4
+            apply Nat.pred_lt_self
+            exact Nat.pos_of_ne_zero hi
+        · simp only [ne_eq, not_not] at hi
+          rw [hi,Fin.eq_iff_veq,Fin.zero_succAbove,Fin.val_succ,
+            show Fin.predAbove (0: Fin (n+2)) 0=0 from rfl]
           unfold Fin.predAbove
-          split
-          · rename_i h2
-            rw [Fin.lt_def] at h2
-            simp at h2
-            simp
-            exact Nat.sub_add_cancel h2
-          ·  rename_i h2
-             simp at h2
-             rw [h2] at hx
-             rw [← hi] at hx
-             simp at hx
+          split <;> rename_i h2
+          · exact Nat.succ_pred_eq_of_pos h2
+          · rw [Fin.castSucc_zero, not_lt, Fin.le_zero_iff] at h2
+            rw [ h2,← hi] at hx
+            simp only [not_true_eq_false, false_and] at hx
     rw [← ht] at hx
     let hxr:= hx.right
     exact h1 lx hxr
@@ -530,59 +497,37 @@ lemma minAsNat_eq_minAsNat_of_self (l:ℕ)  (hl: l= (minAsNat α 0)) :(minAsNat 
     · let lm1:= Nat.pred l
       have hl1: lm1< l:= Nat.pred_lt hl2
       rw [hl] at hl1
-      let h3:= (in_range_if_lt_minAsNat_zero α lm1 hl1).right
-      let h4:= (in_range_if_lt_minAsNat_zero α lm1 hl1).left
-      rw [h3]
-      have hf:  minAsNat α lm1 =
-      (if lm1 > n + 1 then n + 2  else if ∀ l, α.1.down.toOrderHom l ≠ (δ i).toOrderHom lm1
-         then lm1
-         else minAsNat α (lm1+1) ):= by
-            rw [minAsNat]
-      rw [hf]
+      rw [(in_range_if_lt_minAsNat_zero α lm1 hl1).right]
+      rw [show (minAsNat α lm1=if lm1 > n + 1 then n + 2  else if ∀ l, α.1.down.toOrderHom l ≠
+        (δ i).toOrderHom lm1 then lm1 else minAsNat α (lm1+1)) by rw [minAsNat]]
       have hlm1N: ¬ (lm1>  n+1):=
-         Nat.not_lt.mpr (Nat.lt_succ.mp (Nat.lt_trans hl1 (minAsNat_zero_lt α)))
-
+        Nat.not_lt.mpr (Nat.lt_succ.mp (Nat.lt_trans hl1 (minAsNat_zero_lt α)))
       simp only [gt_iff_lt, hlm1N, len_mk, ne_eq, ite_false]
       rw [if_neg]
       · rw [show Nat.pred l+1 =l from Nat.succ_pred hl2  ]
-      · exact h4
+      · exact (in_range_if_lt_minAsNat_zero α lm1 hl1).left
 
 lemma gt_min_if_not_in_range (j: Fin (n+2)) : ( ∀ k, α.1.down.toOrderHom k ≠
     (δ i).toOrderHom j )→ ((min α)≤ j):= by
       intro h
-      rw [Fin.le_def]
-      change minAsNat α 0 ≤ j.val
       by_contra hn
-      simp at hn
+      rw [not_le] at hn
       let hn2:=(in_range_if_lt_minAsNat_zero α j.val hn).left
-      have hj:  @Nat.cast (Fin (len [n + 1] + 1)) AddMonoidWithOne.toNatCast j.val  = j := by
-          exact Fin.cast_val_eq_self j
-      rw [hj] at hn2
+      rw [show Nat.cast j.val  = j from Fin.cast_val_eq_self j] at hn2
       exact hn2 h
 
 lemma min_not_in_range: ∀ k, α.1.down.toOrderHom k ≠
     (δ i).toOrderHom (min α):=by
-      let l :=  (minAsNat α 0)
-      have h1: (minAsNat α 0) = (minAsNat α l) := by
-       apply  (minAsNat_eq_minAsNat_of_self α l)
-       rfl
-      have hj:  @Nat.cast (Fin (len [n + 1] + 1)) AddMonoidWithOne.toNatCast l  = (min α) := by
-          exact Fin.cast_val_eq_self (min α)
-      rw [← hj]
-      apply not_in_range_if_eq_self
-      · exact minAsNat_zero_lt α
-      · exact  id h1.symm
-
-
+      rw [← (show Nat.cast (minAsNat α 0)  = (min α)  from Fin.cast_val_eq_self (min α))]
+      exact not_in_range_if_eq_self α (minAsNat α 0) (minAsNat_zero_lt α)
+             (minAsNat_eq_minAsNat_of_self α (minAsNat α 0) rfl).symm
 
 variable {Y : SimplexCategoryᵒᵖ } (φ':X⟶ Y)
-lemma min_not_in_range_φ : ∀ k, (φ'.unop ≫ α.1.down).toOrderHom k ≠
-    (δ i).toOrderHom (min α):= by
-        exact fun k ↦ min_not_in_range α ((Hom.toOrderHom φ'.unop) k)
-lemma min_comp_le_min:
-    min (Λ[n+2,i].map φ' α) ≤  min α:= by
-       exact gt_min_if_not_in_range (Λ[n+2, i].map φ' α) (min α)
-          (fun k ↦ min_not_in_range α ((Hom.toOrderHom φ'.unop) k) )
+lemma min_not_in_range_φ : ∀ k, (φ'.unop ≫ α.1.down).toOrderHom k ≠ (δ i).toOrderHom (min α):=
+    fun k ↦ min_not_in_range α ((Hom.toOrderHom φ'.unop) k)
+lemma min_comp_le_min: min (Λ[n+2,i].map φ' α) ≤  min α:=
+    gt_min_if_not_in_range (Λ[n+2, i].map φ' α) (min α)
+      (fun k ↦ min_not_in_range α ((Hom.toOrderHom φ'.unop) k) )
 end FactorMinFace
 
 
@@ -597,16 +542,15 @@ lemma naturality_lt {S : SSet} {n  : ℕ } {i : Fin (n+3)} {X Y :SimplexCategory
     = S.map (δ (Fin.predAbove (Fin.last (n+1)) i1)).op f2 ):
     S.map ( ((Λ[n+2, i].map φ.op α).val.down) ≫ σ  ( Fin.predAbove 0 i1)).op
     (f1)=S.map φ.op (S.map ( (α.val.down)≫  σ (Fin.predAbove 0 i2)).op
-    (f2))  := by
+    (f2)) := by
   let α' :([(unop X).len]: SimplexCategory)⟶  [n+2]:= α.val.down
   change S.map (factor_δ (φ ≫ α.val.down) i1).op (_)
              = (S.map (factor_δ α' i2).op ≫ S.map φ.op) (_)
   rw [← S.map_comp, ← op_comp]
   change _= (S.map (factor_δ (φ ≫ α.val.down) i2).op ) (_)
-  rw [← (factor_δ_comp_spec_lt i1_lt_i2 exclude_i1 exclude_i2)]
-  rw [← (factor_δ_comp_spec_lt' i1_lt_i2 exclude_i1 exclude_i2)]
-  rw [op_comp,S.map_comp,op_comp,S.map_comp,types_comp_apply,types_comp_apply]
-  rw [(hface),← (factor_δ_comp_lt _ _ _ i1_lt_i2)]
+  rw [← (factor_δ_comp_spec_lt i1_lt_i2 exclude_i1 exclude_i2),← (factor_δ_comp_spec_lt' i1_lt_i2
+      exclude_i1 exclude_i2),op_comp,S.map_comp,op_comp,S.map_comp,types_comp_apply,
+      types_comp_apply,hface,← (factor_δ_comp_lt _ _ _ i1_lt_i2)]
 
 /-- The horn `Λ[n+2,i]⟶ S` constructed from the image of the appropriate to (n+1)-simplies and
 the appropriate compatiblity conditions on their faces. -/
@@ -626,8 +570,7 @@ def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1
      let i1 := FactorMinFace.min (Λ[n+2, i].map φ' α)
      let i2 := FactorMinFace.min α
      let i1_le_i2 : i1≤i2 := FactorMinFace.min_comp_le_min α φ'
-     have h : i1<i2 ∨ i1=i2 := by
-      exact lt_or_eq_of_le i1_le_i2
+     have h : i1<i2 ∨ i1=i2 := lt_or_eq_of_le i1_le_i2
      change S.map (factor_δ _ ((δ i).toOrderHom i1)).op (face_map i1)
         = S.map φ.op (S.map (factor_δ _ (((δ i).toOrderHom i2))).op (face_map i2))
      cases h with
