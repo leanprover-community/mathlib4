@@ -144,19 +144,24 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
     (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
 #align norm_le_gronwall_bound_of_norm_deriv_right_le norm_le_gronwallBound_of_norm_deriv_right_le
 
+variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
+  (hv : ∀ t, LipschitzOnWith K (v t) (s t))
+
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in some time-dependent set `s t`,
 and assumes that the solutions never leave this set. -/
-theorem dist_le_of_approx_trajectories_ODE_of_mem {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g f' g' : ℝ → E} {a b : ℝ} {εf εg δ : ℝ} (hf : ContinuousOn f (Icc a b))
+theorem dist_le_of_approx_trajectories_ODE_of_mem
+    (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (f' t) (Ici t) t)
-    (f_bound : ∀ t ∈ Ico a b, dist (f' t) (v t (f t)) ≤ εf) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
-    (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (g' t) (Ici t) t)
-    (g_bound : ∀ t ∈ Ico a b, dist (g' t) (v t (g t)) ≤ εg) (hgs : ∀ t ∈ Ico a b, g t ∈ s t)
+    (f_bound : ∀ t ∈ Ico a b, dist (f' t) (v t (f t)) ≤ εf)
+    (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (g' t) (Ici t) t)
+    (g_bound : ∀ t ∈ Ico a b, dist (g' t) (v t (g t)) ≤ εg)
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t)
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) := by
   simp only [dist_eq_norm] at ha ⊢
@@ -177,12 +182,15 @@ can't grow faster than exponentially. This is a simple corollary of Grönwall's 
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in the whole space. -/
-theorem dist_le_of_approx_trajectories_ODE {v : ℝ → E → E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzWith K (v t)) {f g f' g' : ℝ → E} {a b : ℝ} {εf εg δ : ℝ}
-    (hf : ContinuousOn f (Icc a b)) (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (f' t) (Ici t) t)
-    (f_bound : ∀ t ∈ Ico a b, dist (f' t) (v t (f t)) ≤ εf) (hg : ContinuousOn g (Icc a b))
+theorem dist_le_of_approx_trajectories_ODE
+    (hv : ∀ t, LipschitzWith K (v t))
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (f' t) (Ici t) t)
+    (f_bound : ∀ t ∈ Ico a b, dist (f' t) (v t (f t)) ≤ εf)
+    (hg : ContinuousOn g (Icc a b))
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (g' t) (Ici t) t)
-    (g_bound : ∀ t ∈ Ico a b, dist (g' t) (v t (g t)) ≤ εg) (ha : dist (f a) (g a) ≤ δ) :
+    (g_bound : ∀ t ∈ Ico a b, dist (g' t) (v t (g t)) ≤ εg)
+    (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
   dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf'
@@ -196,10 +204,10 @@ people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in some time-dependent set `s t`,
 and assumes that the solutions never leave this set. -/
-theorem dist_le_of_trajectories_ODE_of_mem {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b : ℝ} {δ : ℝ} (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
+theorem dist_le_of_trajectories_ODE_of_mem
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
+    (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
     (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) := by
@@ -217,10 +225,13 @@ can't grow faster than exponentially. This is a simple corollary of Grönwall's 
 people call this Grönwall's inequality too.
 
 This version assumes all inequalities to be true in the whole space. -/
-theorem dist_le_of_trajectories_ODE {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, LipschitzWith K (v t))
-    {f g : ℝ → E} {a b : ℝ} {δ : ℝ} (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hg : ContinuousOn g (Icc a b))
-    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t) (ha : dist (f a) (g a) ≤ δ) :
+theorem dist_le_of_trajectories_ODE
+    (hv : ∀ t, LipschitzWith K (v t))
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
+    (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
   dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg
@@ -233,12 +244,15 @@ a given initial value provided that the RHS is Lipschitz continuous in `x` withi
 and we consider only solutions included in `s`.
 
 This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
-theorem ODE_solution_unique_of_mem_Icc_right {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
-    (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
-    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Icc a b) := fun t ht ↦ by
+theorem ODE_solution_unique_of_mem_Icc_right
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
+    (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t)
+    (ha : f a = g a) :
+    EqOn f g (Icc a b) := fun t ht ↦ by
   have := dist_le_of_trajectories_ODE_of_mem hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 set_option linter.uppercaseLean3 false in
@@ -246,12 +260,15 @@ set_option linter.uppercaseLean3 false in
 
 /-- A time-reversed version of `ODE_solution_unique_of_mem_Icc_right`. Uniqueness is shown in a
 closed interval `Icc a b`, where `b` is the "initial" time. -/
-theorem ODE_solution_unique_of_mem_Icc_left {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ioc a b, HasDerivWithinAt f (v t (f t)) (Iic t) t) (hfs : ∀ t ∈ Ioc a b, f t ∈ s t)
-    (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ioc a b, HasDerivWithinAt g (v t (g t)) (Iic t) t)
-    (hgs : ∀ t ∈ Ioc a b, g t ∈ s t) (hb : f b = g b) : EqOn f g (Icc a b) := by
+theorem ODE_solution_unique_of_mem_Icc_left
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ioc a b, HasDerivWithinAt f (v t (f t)) (Iic t) t)
+    (hfs : ∀ t ∈ Ioc a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ioc a b, HasDerivWithinAt g (v t (g t)) (Iic t) t)
+    (hgs : ∀ t ∈ Ioc a b, g t ∈ s t)
+    (hb : f b = g b) :
+    EqOn f g (Icc a b) := by
   have hv' t : LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
     rw [← one_mul K]
     exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _)
@@ -279,12 +296,16 @@ theorem ODE_solution_unique_of_mem_Icc_left {v : ℝ → E → E} {s : ℝ → S
 
 /-- A version of `ODE_solution_unique_of_mem_Icc_right` for uniqueness in a closed interval whose
 interior contains the initial time. -/
-theorem ODE_solution_unique_of_mem_Icc {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b) (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t) (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
-    (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
-    (hgs : ∀ t ∈ Ioo a b, g t ∈ s t) (heq : f t₀ = g t₀) : EqOn f g (Icc a b) := by
+theorem ODE_solution_unique_of_mem_Icc
+    (ht : t₀ ∈ Ioo a b)
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t)
+    (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
+    (hgs : ∀ t ∈ Ioo a b, g t ∈ s t)
+    (heq : f t₀ = g t₀) :
+    EqOn f g (Icc a b) := by
   rw [← Icc_union_Icc_eq_Icc (le_of_lt ht.1) (le_of_lt ht.2)]
   apply EqOn.union
   · have hss : Ioc a t₀ ⊆ Ioo a b := Ioc_subset_Ioo_right ht.2
@@ -301,12 +322,12 @@ theorem ODE_solution_unique_of_mem_Icc {v : ℝ → E → E} {s : ℝ → Set E}
       (fun _ ht' ↦ (hg' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hgs _ (hss ht'))) heq
 
 /-- A version of `ODE_solution_unique_of_mem_Icc` for uniqueness in an open interval. -/
-theorem ODE_solution_unique_of_mem_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
-    {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b)
+theorem ODE_solution_unique_of_mem_Ioo
+    (ht : t₀ ∈ Ioo a b)
     (hf : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
     (hg : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
-    (heq : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
+    (heq : f t₀ = g t₀) :
+    EqOn f g (Ioo a b) := by
   intros t' ht'
   rcases lt_or_le t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
@@ -331,8 +352,7 @@ theorem ODE_solution_unique_of_mem_Ioo {v : ℝ → E → E} {s : ℝ → Set E}
       ⟨h, le_rfl⟩
 
 /-- Local unqueness of ODE solutions. -/
-theorem ODE_solution_unique_of_eventually {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
-    (hv : ∀ t, LipschitzOnWith K (v t) (s t)) {f g : ℝ → E} {t₀ : ℝ}
+theorem ODE_solution_unique_of_eventually
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
     (hg : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
@@ -345,10 +365,13 @@ theorem ODE_solution_unique_of_eventually {v : ℝ → E → E} {s : ℝ → Set
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
-theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, LipschitzWith K (v t))
-    {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
-    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hg : ContinuousOn g (Icc a b))
-    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t) (ha : f a = g a) :
+theorem ODE_solution_unique
+    (hv : ∀ t, LipschitzWith K (v t))
+    (hf : ContinuousOn f (Icc a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t)
+    (hg : ContinuousOn g (Icc a b))
+    (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
+    (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
   ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
