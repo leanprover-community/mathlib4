@@ -419,7 +419,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
     (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
-  apply ODE_solution_unique_of_mem_set_eventually hlip
+  exact ODE_solution_unique_of_mem_set_eventually hlip
     (hdrv hγ rfl) (hdrv hγ' h) (by rw [Function.comp_apply, Function.comp_apply, h])
 
 theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
@@ -453,8 +453,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht
     revert ht t
-    apply IsClosed.closure_subset
-    apply isClosed_eq
+    apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
@@ -489,17 +488,15 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
-  obtain ⟨T, hT, ht⟩ : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
-    refine ⟨|t - t₀| + 1, by positivity, ?_⟩
-    by_cases ht : t - t₀ < 0
-    · rw [abs_of_neg ht]
-      constructor <;> linarith
-    · rw [abs_of_nonneg (not_lt.mp ht)]
-      constructor <;> linarith
-  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff
-    (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ ↦ hγt t) hv
+  obtain ⟨T, ht₀, ht⟩ : ∃ T, t ∈ Ioo (-T) T ∧ t₀ ∈ Ioo (-T) T := by
+    obtain ⟨T, hT₁, hT₂⟩ := exists_mem_Ioo_neg_self t
+    obtain ⟨hT₂, hT₃⟩ := abs_lt.mp hT₂
+    obtain ⟨S, hS₁, hS₂⟩ := exists_mem_Ioo_neg_self t₀
+    obtain ⟨hS₂, hS₃⟩ := abs_lt.mp hS₂
+    exact ⟨T + S, by constructor <;> constructor <;> linarith⟩
+  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht (fun t _ ↦ hγt t) hv
     ((hγ.isIntegralCurveOn _).mono  (subset_univ _))
-    ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht
+    ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht₀
 
 theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))

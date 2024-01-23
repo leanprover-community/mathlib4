@@ -73,6 +73,15 @@ theorem abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
   simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
 #align abs_le_one_iff_mul_self_le_one abs_le_one_iff_mul_self_le_one
 
+theorem exists_mem_Ioo_neg_self
+    {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b := by
+  refine ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, ?_⟩
+  cases' le_or_lt 0 a with ht ht
+  · suffices -1 < a + a by simp [abs_eq_self.mpr ht]
+    exact lt_of_lt_of_le neg_one_lt_zero (by simpa)
+  · suffices a + a < 1 by simp [abs_eq_neg_self.mpr ht.le]
+    exact lt_of_lt_of_le (by simpa) zero_le_one
+
 end LinearOrderedRing
 
 section LinearOrderedCommRing
