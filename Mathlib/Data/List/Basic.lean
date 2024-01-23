@@ -2491,83 +2491,13 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
-private lemma append_singleton_append_mem_left_of_length_lt {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
-    (together : x₁ ++ [a₁] ++ z₁ = x₂ ++ [a₂] ++ z₂) (longer : x₂.length < x₁.length) :
-    a₂ ∈ x₁ := by
-  have middle := congr_fun (congr_arg get? together) x₂.length
-  rw [
-    append_assoc x₂,
-    get?_append_right x₂.length.le_refl,
-    Nat.sub_self,
-    singleton_append,
-    get?_cons_zero,
-    append_assoc x₁,
-    get?_append longer,
-  ] at middle
-  exact get?_mem middle
-
-private lemma lt_iff_gt_of_add_eq_add
-    {M : Type*} [LinearOrderedAddCommMonoid M] [CovariantClass M M (· + ·) (· < ·)]
-    {a b c d : M} (total : a + b = c + d) :
-    a < c ↔ d < b := by
+lemma append_cons_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {a b : α}
+    (notin_x : b ∉ x₁) (notin_z : b ∉ z₁) :
+    x₁ ++ a::z₁ = x₂ ++ b::z₂ ↔ x₁ = x₂ ∧ a = b ∧ z₁ = z₂ := by
   constructor
-  · intro hac
-    by_contra contr
-    rw [not_lt] at contr
-    exact (add_lt_add_of_lt_of_le hac contr).ne total
-  · intro hbd
-    by_contra contr
-    rw [not_lt] at contr
-    rw [add_comm a b, add_comm c d] at total
-    exact (add_lt_add_of_lt_of_le hbd contr).ne total.symm
-
-/- Also works:
-private lemma lt_iff_gt_of_add_eq_add' {M : Type*} [LinearOrderedSemiring M]
-    {a b c d : M} (total : a + b = c + d) :
-    a < c ↔ d < b :=
-  lt_iff_gt_of_add_eq_add total-/
-
-lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
-    (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
-    x₁ ++ [a₁] ++ z₁ = x₂ ++ [a₂] ++ z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
-  constructor
-  · intro together
-    have xlens : x₁.length = x₂.length
-    · have not_gt : ¬ x₁.length > x₂.length
-      · intro contra_gt
-        apply notin_x
-        exact append_singleton_append_mem_left_of_length_lt together contra_gt
-      have not_lt : ¬ x₁.length < x₂.length
-      · intro contra_lt
-        apply notin_z
-        have reversed := congr_arg reverse together
-        rw [reverse_append, reverse_append, reverse_append, reverse_append,
-            reverse_singleton, reverse_singleton, ← append_assoc, ← append_assoc] at reversed
-        rw [← mem_reverse]
-        apply append_singleton_append_mem_left_of_length_lt reversed
-        rw [length_reverse, length_reverse]
-        have total := congr_arg length together
-        rw [length_append, length_append, length_append, length_append,
-            length_singleton, length_singleton] at total
-        rw [← lt_iff_gt_of_add_eq_add total]
-        exact Nat.add_lt_add_right contra_lt 1
-      rw [Nat.not_lt] at not_gt not_lt
-      exact Nat.le_antisymm not_gt not_lt
-    constructor
-    · rw [append_assoc, append_assoc] at together
-      convert congr_arg (take x₁.length) together
-      · rw [take_left]
-      · rw [xlens, take_left]
-    constructor
-    · have chopped := congr_arg (drop x₁.length) together
-      rw [append_assoc, append_assoc, drop_left, xlens, drop_left] at chopped
-      convert congr_arg head? chopped
-      simp
-    · convert congr_arg (drop x₁.length.succ) together
-      · rw [drop_left']
-        rw [length_append, length_singleton]
-      · rw [xlens, drop_left']
-        rw [length_append, length_singleton]
+  · simp only [append_eq_append_iff, cons_eq_append, cons_eq_cons]
+    rintro (⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩ |
+      ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
 
