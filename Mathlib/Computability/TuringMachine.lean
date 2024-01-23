@@ -1229,7 +1229,7 @@ the tape head, will be split into two TM0 statements which (i) writes and moves 
 `Λ × Dir` and then (ii) in state `Λ × Dir`, moves `Dir` and transitions to normal state `Λ × stay`.
 -/
 
-namespace TM0toQ
+namespace TMQto0
 
 section
 
@@ -1269,27 +1269,13 @@ local notation "Cfg₀" => TM0.Cfg Γ (Λ × Dir')
 
 local notation "CfgQ" => TM0.Cfg Γ Λ
 
-/-- Translate configurations from TMQ to TM0. -/
+/-- Translate configurations from TMQ to TM0 -/
 def trCfg : CfgQ → Cfg₀
   | ⟨q, T⟩ => ⟨(q, Dir'.stay), T⟩
 
-theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
-  fun a b ↦ trCfg a = b :=
-  fun_respects.2 fun ⟨q, T⟩ ↦ by
-  cases' e : MQ q T.1 with val
-  simp only [trCfg, TMQ.step,e,FRespects,Option.map]
-  simp [TM0.step,tr]
-  exact e
-  cases' val with q' s
-  simp only [trCfg,TMQ.step,e,Option.map,FRespects]
-
---  simp only [trCfg,TMQ.step,e,FRespects,Option.map] --,TMQ.step,e,FRespects,TM0.step]
-
---  simp only [trCfg] --, TMQ.step,FRespects,Option.map]
-
 end
 
-end TM0toQ
+end TMQto0
 
 /-!
 ## The TM1 model
