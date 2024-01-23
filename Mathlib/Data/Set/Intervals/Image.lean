@@ -242,10 +242,6 @@ lemma StrictAnti.image_Ioc_subset (h : StrictAnti f) : f '' Ioc a b ⊆ Ico (f b
 
 end PartialOrder
 
-@[simp]
-theorem Int.range_natCast : range ((↑) : ℕ → ℤ) = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 Int.ofNat_nonneg) CanLift.prf
-
 namespace Set
 
 variable [Preorder α] {p : α → Prop}
