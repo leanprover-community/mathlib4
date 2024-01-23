@@ -212,13 +212,13 @@ open BitVec (toNat)
 /- `Std.BitVec.toNat_add` and `Std.BitVec.toNat_zero` already exists in Std -/
 attribute [simp] Std.BitVec.toNat_add
 
-@[simp] lemma toNat_mul : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ w           := rfl
-@[simp] lemma toNat_sub : (x - y).toNat = (x.toNat + (2 ^ w - y.toNat)) % 2 ^ w := rfl
+lemma toNat_mul : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ w           := rfl
+lemma toNat_sub : (x - y).toNat = (x.toNat + (2 ^ w - y.toNat)) % 2 ^ w := rfl
 
-@[simp] lemma toNat_neg : (-x).toNat = (2 ^ w - x.toNat) % 2 ^ w := by
+lemma toNat_neg : (-x).toNat = (2 ^ w - x.toNat) % 2 ^ w := by
   simp only [Neg.neg, BitVec.neg, BitVec.sub_eq, toNat_sub, ofNat_eq_ofNat, toNat_zero, zero_add]
 
-@[simp] lemma toNat_natCast (n : ℕ) : toNat (n : BitVec w) = n % 2 ^ w := by
+lemma toNat_natCast (n : ℕ) : toNat (n : BitVec w) = n % 2 ^ w := by
   rw [toNat, toFin_natCast, Fin.coe_ofNat_eq_mod]
 
 end
