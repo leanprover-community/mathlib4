@@ -643,16 +643,14 @@ lemma homMk_face {S : SSet}  {n:ℕ} (i j: Fin (n+3)) (hij : j≠ i)  (face_map 
      rw [op_id, S.map_id]
      rfl
 
-lemma homMk_surjective {s :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) :
+lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) :
     ∃ (fm: Fin (n+2) →  S _[n+1] ) (hf: (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (fm i1)
     =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (fm i2) ),
     (homMk i fm hf) = f := by
       have hk (k: Fin (n+2)) : ((δ i).toOrderHom k) ≠ i := by
         by_contra hkc
-        have hi:  ∃  k,  i.succAbove k = i := Exists.intro k hkc
-        apply Fin.exists_succAbove_eq_iff.mp at hi
-        exact hi rfl
+        exact Fin.exists_succAbove_eq_iff.mp (Exists.intro k hkc) rfl
       let fma (k : Fin (n+2)) : S _[n+1] := f.app (op [n+1]) (face i  ((δ i).toOrderHom k) (hk k))
       use fma
       have ht  (i1 : Fin (n+2)) (i2 : Fin (n+2)) (h: i1< i2) :
