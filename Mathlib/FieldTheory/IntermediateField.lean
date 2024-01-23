@@ -380,7 +380,7 @@ This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul K' K` instances,
 which can quickly get expensive.
 -/
-instance (priority := 500) algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
+def algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
     [IsScalarTower K' K L] :
     Algebra K' S :=
   S.toSubalgebra.algebra'

@@ -377,7 +377,7 @@ This instance should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
 which can quickly get expensive.
 -/
-instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+def algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
@@ -425,6 +425,7 @@ theorem coe_smul [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] 
     (↑(r • x) : A) = r • (x : A) := rfl
 #align subalgebra.coe_smul Subalgebra.coe_smul
 
+attribute [instance 500] Subalgebra.algebra' in
 @[simp, norm_cast]
 theorem coe_algebraMap [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A]
     (r : R') : ↑(algebraMap R' S r) = algebraMap R' A r := rfl
