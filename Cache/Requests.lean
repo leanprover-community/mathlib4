@@ -204,6 +204,7 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
     else
       #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
     _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+      "--fail-with-body",
       "--retry", "5", -- there seem to be some intermittent failures
       "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
     IO.FS.removeFile IO.CURLCFG
