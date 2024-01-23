@@ -6,7 +6,6 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
@@ -87,6 +86,15 @@ theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
+
+theorem IsRightRegular.left_of_commute {a : R}
+    (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
+  simp_rw [@Commute.symm_iff R _ a] at ca
+  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+
+theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
+    IsRightRegular a ↔ IsLeftRegular a :=
+  ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
 
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩

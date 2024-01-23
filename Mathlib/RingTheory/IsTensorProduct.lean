@@ -38,7 +38,7 @@ open TensorProduct
 
 section IsTensorProduct
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 variable {M₁ M₂ M M' : Type*}
 
@@ -140,9 +140,9 @@ section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
 
-variable [AddCommMonoid M] [AddCommMonoid N] [CommRing R]
+variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
 
-variable [CommRing S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
+variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
 
 variable (f : M →ₗ[R] N)
 
@@ -277,7 +277,7 @@ theorem IsBaseChange.of_lift_unique
           TensorProduct.induction_on x _ (fun s' y => smul_assoc s s' _) fun x y hx hy => _ }
     · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
     · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
-  simp_rw [FunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
+  simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
     LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
@@ -325,7 +325,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   simp
 #align is_base_change.of_equiv IsBaseChange.ofEquiv
 
-variable {T O : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
 
@@ -356,7 +356,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   rfl
 #align is_base_change.comp IsBaseChange.comp
 
-variable {R' S' : Type*} [CommRing R'] [CommRing S']
+variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 

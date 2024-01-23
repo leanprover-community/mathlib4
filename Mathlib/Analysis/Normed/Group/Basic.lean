@@ -452,6 +452,7 @@ theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_re
 #align norm_inv' norm_inv'
 #align norm_neg norm_neg
 
+open scoped symmDiff in
 @[to_additive]
 theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     dist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖ := by
@@ -510,6 +511,10 @@ theorem norm_mul₃_le (a b c : E) : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖
   norm_mul_le_of_le (norm_mul_le' _ _) le_rfl
 #align norm_mul₃_le norm_mul₃_le
 #align norm_add₃_le norm_add₃_le
+
+@[to_additive]
+lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
+  simpa only [dist_eq_norm_div] using dist_triangle a b c
 
 @[to_additive (attr := simp) norm_nonneg]
 theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
@@ -969,6 +974,7 @@ theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
 #align nnnorm_inv' nnnorm_inv'
 #align nnnorm_neg nnnorm_neg
 
+open scoped symmDiff in
 @[to_additive]
 theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     nndist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
@@ -1028,6 +1034,7 @@ theorem edist_eq_coe_nnnorm' (x : E) : edist x 1 = (‖x‖₊ : ℝ≥0∞) := 
 #align edist_eq_coe_nnnorm' edist_eq_coe_nnnorm'
 #align edist_eq_coe_nnnorm edist_eq_coe_nnnorm
 
+open scoped symmDiff in
 @[to_additive]
 theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by

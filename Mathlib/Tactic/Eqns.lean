@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Lean.Meta.Eqns
-import Mathlib.Lean.Expr
 import Std.Lean.NameMapAttribute
+import Std.CodeAction.Attr
+import Std.Tactic.Lint.Basic
 
 /-! # The `@[eqns]` attribute
 

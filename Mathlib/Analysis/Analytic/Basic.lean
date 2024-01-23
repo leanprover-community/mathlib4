@@ -602,7 +602,7 @@ theorem analyticOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOn 𝕜
 
 theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn f g) :
     AnalyticOn 𝕜 g s :=
-  hf.congr' $ mem_nhdsSet_iff_forall.mpr
+  hf.congr' <| mem_nhdsSet_iff_forall.mpr
     (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
 theorem analyticOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
@@ -706,9 +706,9 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
     hf.uniform_geometric_approx' h
   refine' ⟨a, ha, C, hC, fun y hy n => (hp y hy n).trans _⟩
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
+  have := ha.1.le -- needed to discharge a side goal on the next line
   gcongr
-  exacts [mul_nonneg ha.1.le (div_nonneg (norm_nonneg y) r'.coe_nonneg),
-    mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)]
+  exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
 #align has_fpower_series_on_ball.uniform_geometric_approx HasFPowerSeriesOnBall.uniform_geometric_approx
 
 /-- Taylor formula for an analytic function, `IsBigO` version. -/
@@ -1192,7 +1192,7 @@ The forward map sends `(k, l, s)` to `(k + l, s)` and the inverse map sends `(n,
 with non-definitional equalities. -/
 @[simps]
 def changeOriginIndexEquiv :
-    (Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) ≃ Σn : ℕ, Finset (Fin n) where
+    (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) ≃ Σ n : ℕ, Finset (Fin n) where
   toFun s := ⟨s.1 + s.2.1, s.2.2⟩
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
@@ -1215,6 +1215,16 @@ def changeOriginIndexEquiv :
     rintro ⟨n, s⟩
     simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
 #align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
+
+lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
+    let s := changeOriginIndexEquiv.symm ⟨n, t⟩
+    p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
+    p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
+  have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
+      p m ((t.map (Fin.castIso hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
+    rintro m rfl
+    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+  simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
     Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
@@ -1309,7 +1319,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   have x_add_y_mem_ball : x + y ∈ EMetric.ball (0 : E) p.radius := by
     refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ h)
     exact mod_cast nnnorm_add_le x y
-  set f : (Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
+  set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
     refine' .of_nnnorm_bounded _ (p.changeOriginSeries_summable_aux₁ h) _
@@ -1333,17 +1343,8 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   refine' HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => _) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
   erw [(p n).map_add_univ (fun _ => x) fun _ => y]
-  -- porting note: added explicit function
-  convert hasSum_fintype (fun c : Finset (Fin n) => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
-  rename_i s _
-  dsimp only [changeOriginSeriesTerm, (· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
-    changeOriginIndexEquiv_symm_apply_snd_fst, changeOriginIndexEquiv_symm_apply_snd_snd_coe]
-  rw [ContinuousMultilinearMap.curryFinFinset_apply_const]
-  have : ∀ (m) (hm : n = m), p n (s.piecewise (fun _ => x) fun _ => y) =
-      p m ((s.map (Fin.castIso hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
-    rintro m rfl
-    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
-  apply this
+  simp_rw [← changeOriginSeriesTerm_changeOriginIndexEquiv_symm]
+  exact hasSum_fintype (fun c => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
 /-- Power series terms are analytic as we vary the origin -/

@@ -152,25 +152,25 @@ structure QuadraticForm' (R : Type u) (M : Type v) [CommSemiring R] [AddCommMono
 
 namespace QuadraticForm
 
-section FunLike
+section DFunLike
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 variable {Q Q' : QuadraticForm R M N}
 
-instance funLike : FunLike (QuadraticForm R M N) M fun _ => N where
+instance instFunLike : FunLike (QuadraticForm R M N) M N where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
-#align quadratic_form.fun_like QuadraticForm.funLike
+#align quadratic_form.fun_like QuadraticForm.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply
-`FunLike.hasCoeToFun` directly. -/
+`DFunLike.hasCoeToFun` directly. -/
 instance : CoeFun (QuadraticForm R M N) fun _ => M → N :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 variable (Q)
 
-/-- The `simp` normal form for a quadratic form is `FunLike.coe`, not `toFun`. -/
+/-- The `simp` normal form for a quadratic form is `DFunLike.coe`, not `toFun`. -/
 @[simp]
 theorem toFun_eq_coe : Q.toFun = ⇑Q :=
   rfl
@@ -183,15 +183,15 @@ variable {Q}
 
 @[ext]
 theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align quadratic_form.ext QuadraticForm.ext
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align quadratic_form.congr_fun QuadraticForm.congr_fun
 
 theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align quadratic_form.ext_iff QuadraticForm.ext_iff
 
 /-- Copy of a `QuadraticForm` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -208,10 +208,10 @@ theorem coe_copy (Q : QuadraticForm R M N) (Q' : M → N) (h : Q' = ⇑Q) : ⇑(
 #align quadratic_form.coe_copy QuadraticForm.coe_copy
 
 theorem copy_eq (Q : QuadraticForm R M N) (Q' : M → N) (h : Q' = ⇑Q) : Q.copy Q' h = Q :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align quadratic_form.copy_eq QuadraticForm.copy_eq
 
-end FunLike
+end DFunLike
 
 section CommSemiring
 
@@ -248,7 +248,7 @@ theorem map_zero : Q 0 = 0 := by
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticForm R M N) M N :=
-  { QuadraticForm.funLike with map_zero := map_zero }
+  { QuadraticForm.instFunLike with map_zero := map_zero }
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
@@ -470,14 +470,14 @@ theorem add_apply (Q Q' : QuadraticForm R M N) (x : M) : (Q + Q') x = Q x + Q' x
 #align quadratic_form.add_apply QuadraticForm.add_apply
 
 instance : AddCommMonoid (QuadraticForm R M N) :=
-  FunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticForm R M)` as an `AddMonoidHom`.
 
 This API mirrors `AddMonoidHom.coeFn`. -/
 @[simps apply]
 def coeFnAddMonoidHom : QuadraticForm R M N →+ M → N where
-  toFun := FunLike.coe
+  toFun := DFunLike.coe
   map_zero' := coeFn_zero
   map_add' := coeFn_add
 #align quadratic_form.coe_fn_add_monoid_hom QuadraticForm.coeFnAddMonoidHom
@@ -562,7 +562,7 @@ theorem sub_apply (Q Q' : QuadraticForm R M N) (x : M) : (Q - Q') x = Q x - Q' x
 #align quadratic_form.sub_apply QuadraticForm.sub_apply
 
 instance : AddCommGroup (QuadraticForm R M N) :=
-  FunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
+  DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 end RingOperators
@@ -806,7 +806,7 @@ theorem  _root_.QuadraticForm.polarBilin_injective (h : Invertible (2 : R)) :
     Function.Injective (polarBilin : QuadraticForm R M N → _) :=
   fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => by
   have e1 : 2 • Q₁ x = 2 • Q₂ x := by
-    simpa using FunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
+    simpa using DFunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
   calc
     Q₁ x = (⅟(2 : R) * 2) • Q₁ x := by rw [invOf_mul_self', one_smul]
     _ = ⅟(2 : R) • ((2 : R) • Q₁ x) := by rw [mul_smul]

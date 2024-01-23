@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
 
@@ -145,3 +144,33 @@ instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
 #noalign pi.ordered_smul''
 
 end LinearOrderedSemifield
+
+section Invertible
+variable (α : Type*) {β : Type*}
+variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
+  rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+lemma sup_eq_half_smul_add_add_abs_sub (x y : β) : x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
+  rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
+    smul_smul, invOf_mul_self, one_smul]
+
+end Invertible
+
+section DivisionSemiring
+variable (α : Type*) {β : Type*}
+variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact inf_eq_half_smul_add_sub_abs_sub α x y
+
+lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
+  letI := invertibleOfNonzero (two_ne_zero' α)
+  exact sup_eq_half_smul_add_add_abs_sub α x y
+
+end DivisionSemiring

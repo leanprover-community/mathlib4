@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -489,6 +488,7 @@ theorem snorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ,
   snorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 #align measure_theory.snorm_congr_norm_ae MeasureTheory.snorm_congr_norm_ae
 
+open scoped symmDiff in
 theorem snorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     snorm (s.indicator f - t.indicator f) p μ = snorm ((s ∆ t).indicator f) p μ :=
   snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
@@ -512,7 +512,7 @@ theorem snorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
   congr
   ext1 x
   simp_rw [← ofReal_norm_eq_coe_nnnorm]
-  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _), mul_comm, ←
+  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 #align measure_theory.snorm'_norm_rpow MeasureTheory.snorm'_norm_rpow
 
