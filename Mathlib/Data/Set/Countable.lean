@@ -37,7 +37,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 namespace Set
 
-/-- A set `s`  is countable if the corresponding subtype is countable,
+/-- A set `s` is countable if the corresponding subtype is countable,
 i.e., there exists an injective map `f : s → ℕ`.
 
 Note that this is an abbreviation, so `hs : Set.Countable s` in the proof context
