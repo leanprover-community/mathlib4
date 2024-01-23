@@ -7,6 +7,7 @@ import Lean
 import Mathlib.Tactic.FProp.FPropDecl
 import Mathlib.Tactic.FProp.FPropLambdaTheorems
 import Mathlib.Tactic.FProp.FPropTheorems
+import Mathlib.Tactic.FProp.FPropTheorems2
 
 namespace Mathlib
 open Lean Meta
@@ -14,16 +15,20 @@ open Lean Meta
 namespace Meta.FProp
 
 /-- -/
-def isLambdaRule (f : Expr) : Bool :=
+def isLambdaRule (f : Expr) : MetaM Bool :=
   match f with
   | .lam _ _ xBody _ => 
     let fn := xBody.getAppFn
     if fn.isConst then 
-      false
+      return false
     else 
-      true
-  | .fvar .. => true
-  | _ => false
+      return true
+  | .fvar .. => do
+    if (← inferType f).forallArity ≥ 2 then
+      return true
+    else
+      return false
+  | _ => return false
 
 open Lean Qq Meta Elab Term in
 /-- -/
@@ -41,10 +46,11 @@ initialize fpropAttr : TagAttribute ←
            let .some (_, f) ← getFProp? b
              | throwError "unrecognized fprop"
 
-           if isLambdaRule f then
+           if (← isLambdaRule f) then
              addLambdaTheorem declName
            else
-             addTheorem declName .global 1000)
+             addTheorem declName .global 1000
+             addTheorem2 declName .global 1000)
       
       
 

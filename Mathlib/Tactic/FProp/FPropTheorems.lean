@@ -64,6 +64,20 @@ initialize fpropTheoremsExt : FPropTheoremsExt ←
     addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
+initialize fpropTransitionTheoremsExt : FPropTheoremsExt ←
+  registerSimpleScopedEnvExtension {
+    name     := by exact decl_name%
+    initial  := {}
+    addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+  }
+
+initialize fpropMorTheoremsExt : FPropTheoremsExt ←
+  registerSimpleScopedEnvExtension {
+    name     := by exact decl_name%
+    initial  := {}
+    addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+  }
+
 ---
 
 open RefinedDiscrTree in

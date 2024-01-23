@@ -65,7 +65,7 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
 ----------------------------------------------------------------------------------------------------
 
-/-- -/
+/-- Unfold function body head recursors and matches -/
 def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
   lambdaLetTelescope e fun xs b => do
     if let .some b' ← reduceRecMatcher? b then
@@ -356,7 +356,7 @@ def removeArgRule (fpropDecl : FPropDecl) (e f : Expr) (fprop : Expr → FPropM 
       | throwError "fprop bug: can't remove arguments from {← ppExpr f}, body not application"
 
     if z.containsFVar xId then
-      throwError "fprop bug: can't remove argument from function {← ppExpr f}, last arg depends on the lambda argument"
+      return none 
 
     let f' := .lam `f (← inferType fn) (.app (.bvar 0) z) default
     let g' ← mkLambdaFVars xs fn
@@ -463,8 +463,10 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
 
         match compare numAppArgs numAppArgs' with
         | .lt => 
+          trace[Meta.Tactic.fprop] "adding argument before applying `{(Expr.fvar var.fvarId)} : {← inferType (Expr.fvar var.fvarId)}`"
           return ← applyPiRule fpropDecl e (e.getArg! fpropDecl.funArgId) fprop
         | .gt => 
+          trace[Meta.Tactic.fprop] "removing applied argument before applying `{(Expr.fvar var.fvarId)} : {← inferType (Expr.fvar var.fvarId)}`"
           return ← removeArgRule fpropDecl e (e.getArg! fpropDecl.funArgId) fprop
         | .eq => 
           let f := e.getArg! fpropDecl.funArgId
@@ -552,34 +554,120 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
   -- return none
 
 /-- -/
-def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
-  let .lam n t (.app g x) bi := f
-    | -- this case might not even be possible on the uses of `bvarAppCase`
-      trace[Meta.Tactic.fprop.step] "fprop can handle function like {f}"
-      return none
-
-  if x.hasLooseBVars then
-    -- this case might not even be possible on the uses of `bvarAppCase`
-    trace[Meta.Tactic.fprop.step] "fprop can handle function like {f}"
-    return none
+def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : FunctionData) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   
-  match g with
-  | .bvar 0 => 
-    -- return none
-    applyProjRule fpropDecl e x t fprop
-  | _ => 
-    removeArgRule fpropDecl e f fprop
-    -- let g := .lam n t g bi
-    -- let gType ← inferType g
-    -- let .some (_,fType) := gType.arrow?
-    --   | trace[Meta.Tactic.fprop.step] "fprop can't handle dependent functions of type {← ppExpr gType} appearing in {← ppExpr f}"
-    --     return none
+  match f.args.size with
+  | 0 => throwError "fprop bug: invalid use of `bvarAppCase`"
+  | 1 => 
+    if f.args[0]!.coe.isNone then
+      applyProjRule fpropDecl e f.args[0]!.expr (← f.domainType) fprop
+    else
+      throwError "fprop unhandled case: {← ppExpr e}"
+  | _ => removeArgRule fpropDecl e (← f.toExpr) fprop
 
-    -- let h := .lam n fType ((Expr.bvar 0).app x) bi
-    -- applyCompRule fpropDecl e h g fprop
+
+def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let ext := fpropMorTheoremsExt.getState (← getEnv)
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates := candidates.map (·.1) |>.flatten
+
+  let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
+  -- trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
+
+  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
+
+  for c in candidates do
+    if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
+      return r
+
+  trace[Meta.Tactic.fprop.step] "no theorem matched"
+  return none
+
+
+def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let ext := fpropTransitionTheoremsExt.getState (← getEnv)
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates := candidates.map (·.1) |>.flatten
+
+  let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
+  -- trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
+
+  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
+
+  for c in candidates do
+    if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
+      return r
+
+  trace[Meta.Tactic.fprop.step] "no theorem matched"
+  return none
+
+  
 
 /-- -/
-def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let f ← fData.toExpr
+
+  if let .some f' ← unfoldFunHeadRec? f then
+    return ← fprop (e.setArg fpropDecl.funArgId f')
+  
+  trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is declared function\n{e}"
+
+  let .some functionName ← fData.getFnConstName? 
+    | throwError "fprop bug, invalid use of `constAppCase` on {← ppExpr e}"
+
+  let ext := fpropTheorems2Ext.getState (← getEnv)
+  
+  let thms := ext.theorems.findD functionName {} |>.findD fpropDecl.fpropName #[]
+
+  let thms := thms.filter (fun thm => fData.mainArgs ⊆ thm.mainArgs)
+  trace[Meta.Tactic.fprop] "applicable theorems for {functionName}: {thms.map fun thm => toString thm.theoremName}"
+
+  -- todo find the best match
+
+  for thm in thms.reverse do
+    match compare thm.appliedArgs fData.args.size with
+    | .lt => 
+      trace[Meta.Tactic.fprop] "removing applied argument before applying {← ppOrigin (.decl thm.theoremName)}"
+      let .some prf ← removeArgRule fpropDecl e f fprop | continue
+      return prf  
+    | .gt => 
+      trace[Meta.Tactic.fprop] "adding argument before applying {← ppOrigin (.decl thm.theoremName)}"
+      let .some prf ← applyPiRule fpropDecl e f fprop | continue
+      return prf  
+    | .eq => 
+      if thm.isSimple then
+        let .some (f',g') ← splitMorToCompOverArgs f thm.mainArgs
+          | continue
+        if (← isDefEq f' f) then
+          let .some r ← tryTheorem? e (← thm.toTheorem) fpropDecl.discharger fprop | continue
+          return r
+        else
+          let .some r ← applyCompRule fpropDecl e f' g' fprop | continue
+          return r
+      else
+        let .some r ← tryTheorem? e (← thm.toTheorem) fpropDecl.discharger fprop | continue
+        return r
+
+  -- if functionName == ``DFunLike.coe && fData.args.size = 5 then
+  --   return ← applyPiRule fpropDecl e f fprop
+
+  -- this should be done only `f` can't be decomposed and can't be unfolded
+  if let .some r ← applyTransitionRules fpropDecl e fData fprop then
+    return r
+
+  -- nothing got applied
+  let .some f' ← unfoldFunHead? f | return none
+
+  let e' := e.setArg fpropDecl.funArgId f'
+  return (← fprop e')
+
+/-- -/
+def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+
+  let f ← fData.toExpr
 
   let .some (f', g') ← splitMorToComp f
     | throwError "fprop bug: failed to decompose {f}"
@@ -590,43 +678,17 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → 
     let .some (fvarId, args, n) ← isFVarFProp fpropDecl e
       | trace[Meta.Tactic.fprop.step] "fvar app case: unexpected goal {e}"
         return none
-    return ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args n fprop
+
+    if let .some prf ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args n fprop then
+      return prf
+    else
+      -- we might talk about boundled morphism
+      -- so try this
+      return ← applyTransitionRules fpropDecl e fData fprop
   else
     trace[Meta.Tactic.fprop.step] "decomposed into `({f'}) ∘ ({g'})`"
     applyCompRule fpropDecl e f' g' fprop
-  
-/-- -/
-def constAppCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
-
-  if let .some f' ← unfoldFunHeadRec? f then
-    return ← fprop (e.setArg fpropDecl.funArgId f')
-
-  trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is declared function\n{e}"
-
-  let ext := fpropTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  let candidates := candidates.map (·.1) |>.flatten
-
-  let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
-  trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
-
-  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
-
-  if candidates.size ≠ 0 then
-
-    for c in candidates do
-      if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
-        return r
-
-    trace[Meta.Tactic.fprop.step] "no theorem matched"
-    return none
-  else
-    trace[Meta.Tactic.fprop.step] "no candidates found"
-    let .some f' ← unfoldFunHead? f | return none
-
-    let e' := e.setArg fpropDecl.funArgId f'
-    return (← fprop e')
-    
+      
 
 -- cache if there are no subgoals
 /-- -/
@@ -643,7 +705,6 @@ mutual
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fprop.cache] "cached result for {e}"
       return .some { proof := proof, subgoals := [] }
-
     else
       -- take care of forall and let binders and run main
       match e with
@@ -670,15 +731,7 @@ mutual
     let .some (fpropDecl, f) ← getFProp? e
       | return none
 
-    let f := f.consumeMData.eta
-    -- eta expand if `f` is not lambda function
-    let f ← 
-      if f.isLambda 
-      then pure f
-      else do
-        let X := (← inferType f).bindingDomain!
-        pure (.lam `x X (f.app (.bvar 0)) default)
-    
+    let f ← fpropNormalizeFun f 
     let e := e.setArg fpropDecl.funArgId f
 
     withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
@@ -707,31 +760,35 @@ mutual
       | .mvar .. => fprop (← instantiateMVars e)
 
       | xBody => do
-        if !(xBody.hasLooseBVar 0) then
+
+        if ¬xBody.hasLooseBVars then
           trace[Meta.Tactic.fprop.step] "case `P (fun x => y)`\n{e}"
           applyConstRule fpropDecl e xType xBody fprop
-        else 
-          let f' := Expr.lam xName xType xBody xBi
-          let g := Mor.getAppFn xBody
-          let nargs := Mor.getAppNumArgs xBody
+        else
+          let fData ← getFunctionData f
 
-          match g with 
-          | .fvar .. => 
-            trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is free variable\n{e}"
-            fvarAppCase fpropDecl e f' fprop
-          | .bvar .. => 
-            trace[Meta.Tactic.fprop.step] "case `P (fun f => f x)`\n{e}"
-            bvarAppCase fpropDecl e f' fprop
+          trace[Meta.Tactic.fprop.step] "app fun is: {← ppExpr xBody.getAppFn}"
+          if xBody.isAppOfArity ``DFunLike.coe 5 then
+            if let .some r ← applyPiRule fpropDecl e f fprop then
+              return r
+
+          -- TODO: remove arguments if arity is bigger then 7 and try to apply mor rules again
+          if xBody.isAppOfArity ``DFunLike.coe 6 then
+            if let .some r ← applyMorRules fpropDecl e fData fprop then
+              return r
+
+          match fData.fn with 
+          | .fvar id => 
+            if id == fData.mainVar.fvarId! then
+              trace[Meta.Tactic.fprop.step] "case `P (fun f => f x)`\n{e}"
+              bvarAppCase fpropDecl e fData fprop
+            else
+              trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is free variable\n{e}"
+              fvarAppCase fpropDecl e fData fprop
           | .mvar .. => 
             fprop (← instantiateMVars e)
-          | .const n _ => do
-            let arity ← Mor.constArity n
-            match compare arity nargs with
-            | .eq => constAppCase fpropDecl e f fprop
-            | .gt => applyPiRule fpropDecl e f fprop
-            | .lt => removeArgRule fpropDecl e f fprop
-          | .proj .. | .app .. => do
-            constAppCase fpropDecl e f fprop
+          | .const n _ | .proj .. => do
+            constAppCase fpropDecl e fData fprop
           | _ => 
             trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{e}"
             return none
