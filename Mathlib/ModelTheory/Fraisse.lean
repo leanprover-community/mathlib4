@@ -281,26 +281,26 @@ structure IsFraisseLimit [Countable (Σ l, L.Functions l)] [Countable M] : Prop 
 
 variable {M}
 
+/-- Any embedding from a finitely generated `S` to an ultrahomogeneous structure `M`
+can be extended to an embedding from any structure with an embedding to `M`.-/
 theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {S : Type*}
-  [L.Structure S] (S_FG : FG L S) {T : Type*} [L.Structure T] [h : Nonempty (T ↪[L] M)]
-  (f : S ↪[L] M) (g : S ↪[L] T) :
-  ∃ f' : T ↪[L] M, f = f'.comp g := by
-    let ⟨r⟩ := h
-    let s := (r.comp g)
-    let S'' := s.toHom.range
-    let ⟨t, eq⟩ := M_homog S'' (S_FG.range s.toHom) (f.comp s.equivRange.symm.toEmbedding)
-    use t.toEmbedding.comp r
-    change _ = t.toEmbedding.comp s
-    ext x
-    have eq' := congr_fun (congr_arg FunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
-    simp only [Embedding.comp_apply, Hom.comp_apply,
-      Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
-    simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
-    apply (Embedding.equivRange (Embedding.comp r g)).injective
-    simp only [Equiv.apply_symm_apply]
-    rfl
-
-
+    [L.Structure S] (S_FG : FG L S) {T : Type*} [L.Structure T] [h : Nonempty (T ↪[L] M)]
+    (f : S ↪[L] M) (g : S ↪[L] T) :
+    ∃ f' : T ↪[L] M, f = f'.comp g := by
+  let ⟨r⟩ := h
+  let s := (r.comp g)
+  let S'' := s.toHom.range
+  let ⟨t, eq⟩ := M_homog S'' (S_FG.range s.toHom) (f.comp s.equivRange.symm.toEmbedding)
+  use t.toEmbedding.comp r
+  change _ = t.toEmbedding.comp s
+  ext x
+  have eq' := congr_fun (congr_arg FunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
+  simp only [Embedding.comp_apply, Hom.comp_apply,
+    Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
+  simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
+  apply (Embedding.equivRange (Embedding.comp r g)).injective
+  simp only [Equiv.apply_symm_apply]
+  rfl
 
 theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Amalgamation (L.age M) := by
@@ -348,29 +348,29 @@ variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
 variable (hM : IsFraisseLimit K M) (hN : IsFraisseLimit K N)
 
 theorem extend_finite_SubEquiv :
-  ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom := by
-    intro f f_FG m
-    let S := closure L (f.sub_dom ∪ {m})
-    have dom_le_S : f.sub_dom ≤ S :=
-      by simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
-    have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
-      rw [← fg_iff_structure_fg, closure_union, closure_eq]
-      exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
-    have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
-      rw [hN.age, ← hM.age]
-      exact ⟨S_FG, ⟨subtype _⟩⟩
-    let nonempty_S_N : Nonempty (S ↪[L] N) := by
-      let ⟨_, this⟩ := S_in_age_N
-      exact this
-    let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
-      ((subtype f.sub_cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
-    refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
-    · rw [SubEquivalence.le_def]
-      use dom_le_S
-      rw [eq]
-      rfl
-    · simp only [union_singleton]
-      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
+    ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom := by
+  intro f f_FG m
+  let S := closure L (f.sub_dom ∪ {m})
+  have dom_le_S : f.sub_dom ≤ S :=
+    by simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
+  have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
+    rw [← fg_iff_structure_fg, closure_union, closure_eq]
+    exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
+  have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
+    rw [hN.age, ← hM.age]
+    exact ⟨S_FG, ⟨subtype _⟩⟩
+  let nonempty_S_N : Nonempty (S ↪[L] N) := by
+    let ⟨_, this⟩ := S_in_age_N
+    exact this
+  let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
+    ((subtype f.sub_cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
+  refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
+  · rw [SubEquivalence.le_def]
+    use dom_le_S
+    rw [eq]
+    rfl
+  · simp only [union_singleton]
+    exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
 
 theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
   let S := closure L (∅ : Set M)
@@ -386,13 +386,12 @@ theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
     equiv := emb_S.equivRange
   }
   have ⟨g, _⟩ := BackAndForth.equiv_between_cg (cg_if_countable) (cg_if_countable) v
-    ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN) (by
+    ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN) <| by
       intro f fg m
       let ⟨g, g_prop⟩ := extend_finite_SubEquiv hN hM f.symm (f.fg_iff.1 fg) m
       use g.symm
       convert g_prop
       exact (SubEquivalence.symm_le_iff f g).symm
-    )
   exact ⟨g⟩
 
 end IsFraisseLimit
