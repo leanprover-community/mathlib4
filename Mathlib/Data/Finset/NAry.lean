@@ -41,7 +41,7 @@ def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ 
 #align finset.image₂ Finset.image₂
 
 @[simp]
-theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a b, a ∈ s ∧ b ∈ t ∧ f a b = c := by
+theorem mem_image₂ : c ∈ image₂ f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := by
   simp [image₂, and_assoc]
 #align finset.mem_image₂ Finset.mem_image₂
 
@@ -68,7 +68,7 @@ theorem card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
 #align finset.card_image₂ Finset.card_image₂
 
 theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
-  mem_image₂.2 ⟨a, b, ha, hb, rfl⟩
+  mem_image₂.2 ⟨a, ha, b, hb, rfl⟩
 #align finset.mem_image₂_of_mem Finset.mem_image₂_of_mem
 
 theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
@@ -317,15 +317,12 @@ theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α)
 
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
-    image₂ (curry f) s t = (s ×ˢ t).image f := by
-  classical
-  rw [← image₂_mk_eq_product, image_image₂]
-  dsimp (config := { unfoldPartialApp := true }) [curry]
+    image₂ (curry f) s t = (s ×ˢ t).image f := rfl
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
+    (s ×ˢ t).image (uncurry f) = image₂ f s t := rfl
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
 theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
@@ -529,6 +526,8 @@ theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
 #align finset.card_dvd_card_image₂_left Finset.card_dvd_card_image₂_left
 
+/-- If a `Finset` is a subset of the image of two `Set`s under a binary operation,
+then it is a subset of the `Finset.image₂` of two `Finset` subsets of these `Set`s. -/
 theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
   rw [← Set.image_prod, subset_image_iff] at hu
@@ -539,6 +538,8 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
 #align finset.subset_image₂ Finset.subset_image₂
+
+section UnionInter
 
 variable [DecidableEq α] [DecidableEq β]
 
@@ -570,7 +571,93 @@ theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf
     exact image2_union_inter_subset hf
 #align finset.image₂_union_inter_subset Finset.image₂_union_inter_subset
 
+end UnionInter
+
+section SemilatticeSup
+
+variable [SemilatticeSup δ]
+
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma sup'_image₂_le {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
+  rw [sup'_le_iff, forall_image₂_iff]
+
+lemma sup'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g =
+      sup' s h.of_image₂_left fun x ↦ sup' t h.of_image₂_right (g <| f x ·) := by
+  simp only [image₂, sup'_image, sup'_product_left]; rfl
+
+lemma sup'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    sup' (image₂ f s t) h g =
+      sup' t h.of_image₂_right fun y ↦ sup' s h.of_image₂_left (g <| f · y) := by
+  simp only [image₂, sup'_image, sup'_product_right]; rfl
+
+variable [OrderBot δ]
+
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma sup_image₂_le {g : γ → δ} {a : δ} :
+    sup (image₂ f s t) g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
+  rw [Finset.sup_le_iff, forall_image₂_iff]
+
+variable (s t)
+
+lemma sup_image₂_left (g : γ → δ) : sup (image₂ f s t) g = sup s fun x ↦ sup t (g <| f x ·) := by
+  simp only [image₂, sup_image, sup_product_left]; rfl
+
+lemma sup_image₂_right (g : γ → δ) : sup (image₂ f s t) g = sup t fun y ↦ sup s (g <| f · y) := by
+  simp only [image₂, sup_image, sup_product_right]; rfl
+
+end SemilatticeSup
+
+section SemilatticeInf
+
+variable [SemilatticeInf δ]
+
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma le_inf'_image₂ {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
+    a ≤ inf' (image₂ f s t) h g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) := by
+  rw [le_inf'_iff, forall_image₂_iff]
+
+lemma inf'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    inf' (image₂ f s t) h g =
+      inf' s h.of_image₂_left fun x ↦ inf' t h.of_image₂_right (g <| f x ·) :=
+  sup'_image₂_left (δ := δᵒᵈ) g h
+
+lemma inf'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
+    inf' (image₂ f s t) h g =
+      inf' t h.of_image₂_right fun y ↦ inf' s h.of_image₂_left (g <| f · y) :=
+  sup'_image₂_right (δ := δᵒᵈ) g h
+
+variable [OrderTop δ]
+
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+lemma le_inf_image₂ {g : γ → δ} {a : δ} :
+    a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
+  sup_image₂_le (δ := δᵒᵈ)
+
+variable (s t)
+
+lemma inf_image₂_left (g : γ → δ) : inf (image₂ f s t) g = inf s fun x ↦ inf t (g ∘ f x) :=
+  sup_image₂_left (δ := δᵒᵈ) ..
+
+lemma inf_image₂_right (g : γ → δ) : inf (image₂ f s t) g = inf t fun y ↦ inf s (g <| f · y) :=
+  sup_image₂_right (δ := δᵒᵈ) ..
+
+end SemilatticeInf
+
 end Finset
+
+open Finset
+
+namespace Fintype
+variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [∀ i, DecidableEq (γ i)]
+
+lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
+      image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
+
+end Fintype
 
 namespace Set
 

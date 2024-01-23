@@ -22,9 +22,6 @@ We prove some basic properties of this function and show that it is continuous.
 logarithm, continuity
 -/
 
-set_option autoImplicit true
-
-
 open Set Filter Function
 
 open Topology
@@ -220,9 +217,9 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
 #align real.log_nonpos Real.log_nonpos
 
 theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
-  by_cases hn : n = 0
-  case pos => simp [hn]
-  case neg =>
+  if hn : n = 0 then
+    simp [hn]
+  else
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
@@ -484,26 +481,31 @@ end TendstoCompAddSub
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-lemma log_nonneg_of_isNat (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
+variable {e : ℝ} {d : ℕ}
+
+lemma log_nonneg_of_isNat {n : ℕ} (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Real.log_nat_cast_nonneg _
 
-lemma log_pos_of_isNat (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) : 0 < Real.log (e : ℝ) := by
+lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) :
+    0 < Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Real.log_pos
   simpa using w
 
-lemma log_nonneg_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) : 0 ≤ Real.log (e : ℝ) := by
+lemma log_nonneg_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) :
+    0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   exact Real.log_neg_nat_cast_nonneg _
 
-lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
+lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
     0 < Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   rw [Real.log_neg_eq_log]
   apply Real.log_pos
   simpa using w
 
+set_option autoImplicit true in
 lemma log_pos_of_isRat :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
@@ -511,6 +513,7 @@ lemma log_pos_of_isRat :
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
+set_option autoImplicit true in
 lemma log_pos_of_isRat_neg :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
@@ -518,6 +521,7 @@ lemma log_pos_of_isRat_neg :
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
+set_option autoImplicit true in
 lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
@@ -526,6 +530,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
+set_option autoImplicit true in
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by

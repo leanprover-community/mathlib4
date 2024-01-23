@@ -5,10 +5,11 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Util.Cache
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
-import Mathlib.Lean.Name
+import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Library search
@@ -275,8 +276,8 @@ elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
   exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
-  logWarning ("`library_search` has been renamed to `apply?`" ++
-    " (or `exact?` if you only want solutions closing the goal)")
+  logWarning "`library_search` has been renamed to `apply?` \
+    (or `exact?` if you only want solutions closing the goal)"
   exact? tk none false
 
 open Elab Term in

@@ -48,9 +48,6 @@ isometrically and in a way compatible with `f n`.
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w
@@ -628,6 +625,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
 
+set_option autoImplicit true in
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
@@ -659,7 +657,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
-  exacts [le_rfl, le_succ _, le_rfl]
+  exact le_succ _
 #align metric.to_inductive_limit_commute Metric.toInductiveLimit_commute
 
 end InductiveLimit

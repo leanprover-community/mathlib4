@@ -147,7 +147,7 @@ lemma mem_sumLexLift :
           (∃ a₁ b₂ c₂, a = inl a₁ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g₂ a₁ b₂) ∨
             ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ f₂ a₂ b₂ := by
   constructor
-  · obtain a | a := a <;> obtain b | b :=  b
+  · obtain a | a := a <;> obtain b | b := b
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -155,11 +155,11 @@ lemma mem_sumLexLift :
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
-        exact Or.inr (Or.inr $ Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+        exact Or.inr (Or.inr <| Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
-      exact Or.inr (Or.inr $ Or.inr $ ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+      exact Or.inr (Or.inr <| Or.inr <| ⟨a, b, c, rfl, rfl, rfl, hc⟩)
   · rintro (⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩ |
       ⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact mem_map_of_mem _ hc

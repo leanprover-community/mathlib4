@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.Expr
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Util.Syntax
-import Std.Data.Option.Basic
+import Std.Linter.UnreachableTactic
+import Std.Util.ExtendedBinder
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -316,7 +316,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
         let isDep := (← getExpr).bindingBody!.hasLooseBVar 0
         let ppTypes ← getPPOption getPPPiBinderTypes -- the same option controlling ∀
         let dom ← withBindingDomain delab
-        withBindingBodyUnusedName <| fun x => do
+        withBindingBodyUnusedName fun x => do
           let x : Ident := ⟨x⟩
           let binder ←
             if prop && !isDep then
@@ -590,13 +590,14 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         elabCommand <|
           ← `(command| attribute [$attrKind delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
-      logWarning s!"Was not able to generate a pretty printer for this notation.{
-        ""} If you do not expect it to be pretty printable, then you can use{
-        ""} `notation3 (prettyPrint := false)`.{
-        ""} If the notation expansion refers to section variables, be sure to do `local notation3`.{
-        ""} Otherwise, you might be able to adjust the notation expansion to make it matchable;{
-        ""} pretty printing relies on deriving an expression matcher from the expansion.{
-        ""} (Use `set_option trace.notation3 true` to get some debug information.)"
+      logWarning s!"\
+        Was not able to generate a pretty printer for this notation. \
+        If you do not expect it to be pretty printable, then you can use \
+        `notation3 (prettyPrint := false)`. \
+        If the notation expansion refers to section variables, be sure to do `local notation3`. \
+        Otherwise, you might be able to adjust the notation expansion to make it matchable; \
+        pretty printing relies on deriving an expression matcher from the expansion. \
+        (Use `set_option trace.notation3 true` to get some debug information.)"
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 

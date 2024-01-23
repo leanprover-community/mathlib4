@@ -6,7 +6,7 @@ Authors: Brendan Murphy
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Tactic.MonadReassoc
-
+import Mathlib.Tactic.SimpRw
 -- TODO: Implement WriterT instances
 
 universe u v₁ v₂ v₃

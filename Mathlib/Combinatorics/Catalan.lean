@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree.BinTree
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
@@ -172,8 +173,9 @@ def treesOfNumNodesEq : ℕ → Finset BinTree.Bare
   -- Porting note: Add this to satisfy the linter.
   decreasing_by
       simp_wf
-      try exact Nat.lt_succ_of_le (fst_le ijh.2)
-      try exact Nat.lt_succ_of_le (snd_le ijh.2)
+      have := fst_le ijh.2
+      have := snd_le ijh.2
+      omega
 #align tree.trees_of_num_nodes_eq BinTree.treesOfNumNodesEq
 
 @[simp]
@@ -191,19 +193,19 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
 
 @[simp]
 theorem mem_treesOfNumNodesEq {x : BinTree.Bare} {n : ℕ} :
-    x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
+    x ∈ treesOfNumNodesEq n ↔ x.numInnerNodes = n := by
   induction x using BinTree.recOnBare generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
   exact (Nat.succ_ne_zero _).symm
 #align tree.mem_trees_of_nodes_eq BinTree.mem_treesOfNumNodesEq
 
-theorem mem_treesOfNumNodesEq_numNodes (x : BinTree.Bare) : x ∈ treesOfNumNodesEq x.numNodes :=
+theorem mem_treesOfNumNodesEq_numNodes (x : BinTree.Bare) : x ∈ treesOfNumNodesEq x.numInnerNodes :=
   mem_treesOfNumNodesEq.mpr rfl
 #align tree.mem_trees_of_nodes_eq_num_nodes BinTree.mem_treesOfNumNodesEq_numNodes
 
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
-    ↑(treesOfNumNodesEq n) = { x : BinTree.Bare | x.numNodes = n } :=
+    ↑(treesOfNumNodesEq n) = { x : BinTree.Bare | x.numInnerNodes = n } :=
   Set.ext (by simp)
 #align tree.coe_trees_of_nodes_eq BinTree.coe_treesOfNumNodesEq
 
@@ -218,11 +220,11 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card
     rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
     -- Porting note: was clear * -; tidy
     intros h a
-    cases' a with _ a l r
+    cases' a with l r
     · intro h; simp at h
     · intro h1 h2
       apply h
-      trans (numNodes l, numNodes r)
+      trans (numInnerNodes l, numInnerNodes r)
       · simp at h1; simp [h1]
       · simp at h2; simp [h2]
 #align tree.trees_of_nodes_eq_card_eq_catalan BinTree.treesOfNumNodesEq_card_eq_catalan

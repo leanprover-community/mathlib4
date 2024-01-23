@@ -769,6 +769,11 @@ end bifunctor
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 abbrev numInnerNodes : BinTree α β → ℕ := foldMapInnerNodesAdd (fun _ => 1)
 
+@[simp] lemma numInnerNodes_leaf (x : β) : numInnerNodes (@leaf α β x) = 0 := rfl
+@[simp] lemma numInnerNodes_branch (y : α) (l r : BinTree α β) :
+    numInnerNodes (branch y l r) = numInnerNodes l + numInnerNodes r + 1 :=
+  show cata _ _ _ = _ from Eq.trans cata_branch (add_rotate _ _ _)
+
 /-- The number of leaves of a binary tree -/
 abbrev numLeaves : BinTree α β → ℕ := foldMapInnerNodesAdd (fun _ => 1)
 

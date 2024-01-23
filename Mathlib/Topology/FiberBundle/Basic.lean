@@ -216,7 +216,7 @@ for trivializations of `E`, expressing that a trivialization is in the designate
 bundle.  This is needed because lemmas about the linearity of trivializations or the continuity (as
 functions to `F →L[R] F`, where `F` is the model fiber) of the transition functions are only
 expected to hold for trivializations in the designated atlas. -/
-@[mk_iff memTrivializationAtlas_iff]
+@[mk_iff]
 class MemTrivializationAtlas [FiberBundle F E] (e : Trivialization F (π F E)) : Prop where
   out : e ∈ trivializationAtlas F E
 #align mem_trivialization_atlas MemTrivializationAtlas

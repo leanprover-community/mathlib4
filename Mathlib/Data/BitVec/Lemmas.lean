@@ -737,7 +737,6 @@ variable (x y : Fin (2^w))
 lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
 lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := by
   simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
-  rfl
 
 lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
 lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
@@ -825,7 +824,7 @@ lemma ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := by
       rw [neg_eq_zero_sub, Fin.coe_sub_iff_lt.mpr, h']
       . refine Eq.trans (congrArg (_ + . - _) (zero_mod _)) ?_
         simp only [Nat.add_zero, Fin.val_add, Fin.val_nat_cast,
-                   shiftLeft_eq_mul_pow, one_mul]
+                   Nat.shiftLeft_eq, one_mul]
         rw [← or_eq_add_of_and_eq_zero h'', or_eq_xor_of_and_eq_zero h'',
             ← Nat.xor_comm, Nat.xor_assoc, Nat.xor_self, Nat.xor_zero]
         exact Eq.symm (mod_eq_of_lt (Nat.sub_lt_self zero_lt_one (two_pow_pos _)))

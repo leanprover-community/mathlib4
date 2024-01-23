@@ -3,10 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Data.Tree.BinTree
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.NormNum.Core
+import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Qq
 
 /-!
@@ -25,8 +27,6 @@ There are likely some rough edges to it.
 
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
-
-set_option autoImplicit true
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
@@ -149,7 +149,7 @@ partial def findCancelFactor (e : Expr) : ℕ × BinTree.Leafless ℕ :=
     | none => (1, .branch 1 .nil .nil)
   | _ => (1, .branch 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
+def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
@@ -160,9 +160,9 @@ def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
 canceled in `e'`, distributing `v` proportionally according to the tree `tr` computed
 by `findCancelFactor`.
 -/
-partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTree.Leafless ℕ)
-    (e : Q($α)) : MetaM Expr := do
-  let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α))
+    (v : ℕ) (t : BinTree.Leafless ℕ) (e : Q($α)) : MetaM Expr := do
+  let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
   | .branch _ lhs rhs, ~q($e1 + $e2) => do
@@ -180,8 +180,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
     have vln' := (← mkOfNat α amwo <| mkRawNatLit (v/ln)).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
-    let ntp : Q(Prop) := q($ln' * $vln' = $v')
-    let npf ← synthesizeUsingNormNum ntp
+    let npf ← synthesizeUsingNormNum q($ln' * $vln' = $v')
     mkAppM ``CancelDenoms.mul_subst #[v1, v2, npf]
   | .branch _ lhs (.branch rn _ _), ~q($e1 / $e2) => do
     -- Invariant: e2 is equal to the natural number rn
@@ -189,10 +188,8 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-    let ntp : Q(Prop) := q($rn' / $e2 = 1)
-    let npf ← synthesizeUsingNormNum ntp
-    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
-    let npf2 ← synthesizeUsingNormNum ntp2
+    let npf ← synthesizeUsingNormNum q($rn' / $e2 = 1)
+    let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
     mkAppM ``CancelDenoms.div_subst #[v1, npf, npf2]
   | t, ~q(-$e) => do
     let v ← mkProdPrf α sα v t e
@@ -203,17 +200,14 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
     have k1' := (← mkOfNat α amwo <| mkRawNatLit k1).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
     have l' := (← mkOfNat α amwo <| mkRawNatLit l).1
-    let ntp : Q(Prop) := q($l' * $k1' ^ $e2 = $v')
-    let npf ← synthesizeUsingNormNum ntp
+    let npf ← synthesizeUsingNormNum q($l' * $k1' ^ $e2 = $v')
     mkAppM ``CancelDenoms.pow_subst #[v1, npf]
   | .branch _ .nil (.branch rn _ _), ~q($e ⁻¹) => do
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
-    let ntp : Q(Prop) := q($rn' ≠ 0)
-    let npf ← synthesizeUsingNormNum ntp
-    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
-    let npf2 ← synthesizeUsingNormNum ntp2
+    let npf ← synthesizeUsingNormNum q($rn' ≠ 0)
+    let npf2 ← synthesizeUsingNormNum q($vrn' * $rn' = $v')
     mkAppM ``CancelDenoms.inv_subst #[npf, npf2]
   | _, _ => do
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
@@ -226,7 +220,7 @@ def deriveThms : List Name :=
   [``div_div_eq_mul_div, ``div_neg]
 
 /-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
-theorem derive_trans [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
+theorem derive_trans {α} [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
 
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,

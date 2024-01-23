@@ -191,6 +191,7 @@ def decidableForallOfDecidableSSubsets' {s : Finset α} {p : Finset α → Prop}
 end SSubsets
 
 section powersetCard
+variable {n} {s t : Finset α}
 
 /-- Given an integer `n` and a finset `s`, then `powersetCard n s` is the finset of subsets of `s`
 of cardinality `n`. -/
@@ -199,8 +200,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
     s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 #align finset.powerset_len Finset.powersetCard
 
-/-- **Formula for the Number of Combinations** -/
-theorem mem_powersetCard {n} {s t : Finset α} : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
+@[simp] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 #align finset.mem_powerset_len Finset.mem_powersetCard
 
@@ -226,6 +226,10 @@ theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
       exact ⟨empty_subset s, rfl⟩⟩
 #align finset.powerset_len_zero Finset.powersetCard_zero
 
+lemma powersetCard_empty_subsingleton (n : ℕ) :
+    (powersetCard n (∅ : Finset α) : Set $ Finset α).Subsingleton := by
+  simp [Set.Subsingleton, subset_empty]
+
 @[simp]
 theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
     (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
@@ -237,9 +241,15 @@ theorem powersetCard_one (s : Finset α) :
   eq_of_veq <| Multiset.map_injective val_injective <| by simp [Multiset.powersetCard_one]
 
 @[simp]
-theorem powersetCard_empty (n : ℕ) {s : Finset α} (h : s.card < n) : powersetCard n s = ∅ :=
-  Finset.card_eq_zero.mp (by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h])
-#align finset.powerset_len_empty Finset.powersetCard_empty
+lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
+  refine ⟨?_, fun h ↦ card_eq_zero.1 $ by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
+  contrapose!
+  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_smaller_set _ _ h).imp $ by simp
+#align finset.powerset_len_empty Finset.powersetCard_eq_empty
+
+@[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
+    s.powersetCard (s.card + n) = ∅ := by simpa
+#align finset.powerset_len_card_add Finset.powersetCard_card_add
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
@@ -326,15 +336,9 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
       exact mem_union_right _ (mem_image_of_mem _ ht)
 #align finset.powerset_len_sup Finset.powersetCard_sup
 
-@[simp]
-theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
-    s.powersetCard (s.card + i) = ∅ :=
-  Finset.powersetCard_empty _ (lt_add_of_pos_right (Finset.card s) hi)
-#align finset.powerset_len_card_add Finset.powersetCard_card_add
-
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext <| fun t => by
+  ext fun t => by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical

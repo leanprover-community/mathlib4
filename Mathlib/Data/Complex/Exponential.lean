@@ -18,10 +18,6 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 -/
 
-
-@[inherit_doc]
-local notation "abs'" => Abs.abs
-
 open IsAbsoluteValue
 
 open Classical BigOperators ComplexConjugate
@@ -187,31 +183,12 @@ theorem sum_range_diag_flip {α : Type*} [AddCommMonoid α] (n : ℕ) (f : ℕ �
     (∑ m in range n, ∑ k in range (m + 1), f k (m - k)) =
       ∑ m in range n, ∑ k in range (n - m), f m k := by
   rw [sum_sigma', sum_sigma']
-  exact
-    sum_bij (fun a _ => ⟨a.2, a.1 - a.2⟩)
-      (fun a ha =>
-        have h₁ : a.1 < n := mem_range.1 (mem_sigma.1 ha).1
-        have h₂ : a.2 < Nat.succ a.1 := mem_range.1 (mem_sigma.1 ha).2
-        mem_sigma.2
-          ⟨mem_range.2 (lt_of_lt_of_le h₂ h₁),
-            mem_range.2 ((tsub_lt_tsub_iff_right (Nat.le_of_lt_succ h₂)).2 h₁)⟩)
-      (fun _ _ => rfl)
-      (fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ha hb h =>
-        have ha : a₁ < n ∧ a₂ ≤ a₁ :=
-          ⟨mem_range.1 (mem_sigma.1 ha).1, Nat.le_of_lt_succ (mem_range.1 (mem_sigma.1 ha).2)⟩
-        have hb : b₁ < n ∧ b₂ ≤ b₁ :=
-          ⟨mem_range.1 (mem_sigma.1 hb).1, Nat.le_of_lt_succ (mem_range.1 (mem_sigma.1 hb).2)⟩
-        have h : a₂ = b₂ ∧ _ := by simpa using h
-        have h' : a₁ = b₁ - b₂ + a₂ := (tsub_eq_iff_eq_add_of_le ha.2).1 (eq_of_heq h.2)
-        Sigma.mk.inj_iff.2 ⟨tsub_add_cancel_of_le hb.2 ▸ h'.symm ▸ h.1 ▸ rfl, heq_of_eq h.1⟩)
-      fun ⟨a₁, a₂⟩ ha =>
-      have ha : a₁ < n ∧ a₂ < n - a₁ :=
-        ⟨mem_range.1 (mem_sigma.1 ha).1, mem_range.1 (mem_sigma.1 ha).2⟩
-      ⟨⟨a₂ + a₁, a₁⟩,
-        ⟨mem_sigma.2
-            ⟨mem_range.2 (lt_tsub_iff_right.1 ha.2),
-              mem_range.2 (Nat.lt_succ_of_le (Nat.le_add_left _ _))⟩,
-          Sigma.mk.inj_iff.2 ⟨rfl, heq_of_eq (add_tsub_cancel_right _ _).symm⟩⟩⟩
+  refine sum_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
+    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+      Nat.lt_succ_iff, le_add_iff_nonneg_right, zero_le, and_true, and_imp, imp_self, implies_true,
+      Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
+      add_tsub_cancel_left, heq_eq_eq]
+  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
 #align sum_range_diag_flip sum_range_diag_flip
 
 end
@@ -350,7 +327,7 @@ open CauSeq
 namespace Complex
 
 theorem isCauSeq_abs_exp (z : ℂ) :
-    IsCauSeq Abs.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
+    IsCauSeq _root_.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
@@ -572,7 +549,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp]
   rw [← lim_conj]
   refine' congr_arg CauSeq.lim (CauSeq.ext fun _ => _)
-  dsimp [exp', Function.comp_def, isCauSeq_conj, cauSeqConj]
+  dsimp [exp', Function.comp_def, cauSeqConj]
   rw [(starRingEnd _).map_sum]
   refine' sum_congr rfl fun n _ => _
   rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
@@ -1472,7 +1449,7 @@ open IsAbsoluteValue Nat
 
 theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range n, x ^ i / i ! ≤ exp x :=
   calc
-    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
+    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
@@ -1602,27 +1579,16 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
       (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
     (∑ m in filter (fun k => n ≤ k) (range j), (1 / m.factorial : α)) =
-        ∑ m in range (j - n), (1 / ((m + n).factorial : α)) :=
-      sum_bij (fun m _ => m - n)
-        (fun m hm =>
-          mem_range.2 <|
-            (tsub_lt_tsub_iff_right (by simp at hm; tauto)).2 (by simp at hm; tauto))
-        (fun m hm => by rw [tsub_add_cancel_of_le]; simp at *; tauto)
-        (fun a₁ a₂ ha₁ ha₂ h => by
-          rwa [tsub_eq_iff_eq_add_of_le, tsub_add_eq_add_tsub, eq_comm, tsub_eq_iff_eq_add_of_le,
-              add_left_inj, eq_comm] at h <;>
-          simp at * <;> aesop)
-        fun b hb =>
-        ⟨b + n,
-          mem_filter.2 ⟨mem_range.2 <| lt_tsub_iff_right.mp (mem_range.1 hb), Nat.le_add_left _ _⟩,
-          by dsimp; rw [add_tsub_cancel_right]⟩
+        ∑ m in range (j - n), (1 / ((m + n).factorial : α)) := by
+        refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
+          simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, mul_sum.symm, sum_mul.symm, mul_comm, inv_pow]
+      simp [mul_inv, ← mul_sum, ← sum_mul, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -1661,7 +1627,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
     _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
-      simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
+      simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
       exact sum_div_factorial_le _ _ hn
@@ -1749,7 +1715,7 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 #align real.exp_bound' Real.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
-  have : abs' x ≤ 1 := mod_cast hx
+  have : |x| ≤ 1 := mod_cast hx
   --Porting note: was
   --exact_mod_cast Complex.abs_exp_sub_one_le (x := x) this
   have := Complex.abs_exp_sub_one_le (x := x) (by simpa using this)
@@ -1805,7 +1771,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   refine' (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans _)
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert mul_le_mul_of_nonneg_left (a := abs' x ^ n / ↑(Nat.factorial n))
+  convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
     ac_rfl
@@ -2002,10 +1968,10 @@ theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
 #align real.add_one_le_exp_of_nonneg Real.add_one_le_exp
 
 lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
-  (sub_eq_neg_add _ _).trans_lt $ add_one_lt_exp $ neg_ne_zero.2 hx
+  (sub_eq_neg_add _ _).trans_lt <| add_one_lt_exp <| neg_ne_zero.2 hx
 
 lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
-  (sub_eq_neg_add _ _).trans_le $ add_one_le_exp _
+  (sub_eq_neg_add _ _).trans_le <| add_one_le_exp _
 #align real.one_sub_le_exp_minus_of_pos Real.one_sub_le_exp_neg
 #align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_neg
 
