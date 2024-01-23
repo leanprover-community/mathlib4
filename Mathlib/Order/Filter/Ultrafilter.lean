@@ -150,7 +150,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨hf.1⟩
-  le_of_le g hg := (isAtom_iff.1 hf).2 g hg.ne
+  le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 #align ultrafilter.of_atom Ultrafilter.ofAtom
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=
@@ -315,7 +315,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 
 theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = pure x := by
   rw [← biUnion_of_singleton s] at h'
-  rcases(Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
+  rcases (Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
   exact ⟨a, has, eq_of_le (Filter.le_pure_iff.2 haf)⟩
 #align ultrafilter.eq_pure_of_finite_mem Ultrafilter.eq_pure_of_finite_mem
 
@@ -413,6 +413,21 @@ theorem isAtom_pure : IsAtom (pure a : Filter α) :=
 protected theorem NeBot.le_pure_iff (hf : f.NeBot) : f ≤ pure a ↔ f = pure a :=
   ⟨Ultrafilter.unique (pure a), le_of_eq⟩
 #align filter.ne_bot.le_pure_iff Filter.NeBot.le_pure_iff
+
+protected theorem NeBot.eq_pure_iff (hf : f.NeBot) {x : α} :
+    f = pure x ↔ {x} ∈ f := by
+  rw [← hf.le_pure_iff, le_pure_iff]
+
+lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x := by
+  have : Nonempty α := ⟨x⟩
+  apply atTop_neBot.eq_pure_iff.2
+  convert Ici_mem_atTop x using 1
+  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+
+lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+    (atBot : Filter α) = pure x :=
+  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 
 @[simp]
 theorem lt_pure_iff : f < pure a ↔ f = ⊥ :=

@@ -65,7 +65,7 @@ The relations `r` and `s` are `outParam`s since figuring them out from a goal is
 matching problem that Lean usually can't do unaided.
 -/
 class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
-  (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
+  (s : outParam <| β → β → Prop) extends DFunLike F α fun _ => β where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass
@@ -94,7 +94,7 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 #align rel_hom_class.acc RelHomClass.acc
 
-protected theorem wellFounded [RelHomClass F r s] (f : F) : ∀ _ : WellFounded s, WellFounded r
+protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 #align rel_hom_class.well_founded RelHomClass.wellFounded
 
@@ -123,16 +123,16 @@ theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
 
 /-- The map `coe_fn : (r →r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align rel_hom.coe_fn_injective RelHom.coe_fn_injective
 
 @[ext]
 theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align rel_hom.ext RelHom.ext
 
 theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align rel_hom.ext_iff RelHom.ext_iff
 
 /-- Identity map is a relation homomorphism. -/
@@ -183,20 +183,14 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
--- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
-theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
+theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
   Iff.intro
-    (by
-      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
-      · exact Classical.choose hf.hasRightInverse
-      intro a b h
-      apply o.2
-      convert h
-      iterate 2 apply Classical.choose_spec hf.hasRightInverse)
+    (RelHomClass.wellFounded (⟨surjInv hf,
+      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.wellFounded_iff
+#align surjective.well_founded_iff Function.Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -236,7 +230,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+-- TODO: define and instantiate a `RelEmbeddingClass`
 instance : RelHomClass (r ↪r s) r s where
   coe := fun x => x.toFun
   coe_injective' f g h := by
@@ -245,14 +239,10 @@ instance : RelHomClass (r ↪r s) r s where
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
-
-/-- See Note [custom simps projection]. We specify this explicitly because we have a coercion not
-given by the `FunLike` instance. Todo: remove that instance?
--/
-def Simps.apply (h : r ↪r s) : α → β :=
-  h
-
 initialize_simps_projections RelEmbedding (toFun → apply)
+
+instance : EmbeddingLike (r ↪r s) α β where
+  injective' f := f.inj'
 
 @[simp]
 theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
@@ -267,8 +257,7 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
-theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
-  f.injective.eq_iff
+theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b := f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
 
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
@@ -282,16 +271,16 @@ theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align rel_embedding.coe_fn_injective RelEmbedding.coe_fn_injective
 
 @[ext]
 theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align rel_embedding.ext RelEmbedding.ext
 
 theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align rel_embedding.ext_iff RelEmbedding.ext_iff
 
 /-- Identity map is a relation embedding. -/
@@ -641,20 +630,27 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- Porting note: moved to after `RelHomClass` instance and redefined as `FunLike.coe`
+-- Porting note: moved to after `RelHomClass` instance and redefined as `DFunLike.coe`
 -- instance : CoeFun (r ≃r s) fun _ => α → β :=
 --   ⟨fun f => f⟩
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+-- TODO: define and instantiate a `RelIsoClass`
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
+instance : EquivLike (r ≃r s) α β where
+  coe f := f
+  inv f := f.toEquiv.symm
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' _ _ hf _ := DFunLike.ext' hf
+
 --Porting note: helper instance
 -- see Note [function coercion]
 instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 @[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
@@ -662,10 +658,6 @@ theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :
 
 @[simp]
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
-  rfl
-
-@[simp]
-theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
@@ -686,16 +678,16 @@ theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
 `function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align rel_iso.coe_fn_injective RelIso.coe_fn_injective
 
 @[ext]
 theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align rel_iso.ext RelIso.ext
 
 theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align rel_iso.ext_iff RelIso.ext_iff
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
@@ -704,7 +696,7 @@ protected def symm (f : r ≃r s) : s ≃r r :=
 #align rel_iso.symm RelIso.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because `RelIso` defines custom coercions other than the ones given by `FunLike`. -/
+  because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 #align rel_iso.simps.apply RelIso.Simps.apply

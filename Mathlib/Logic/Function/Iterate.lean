@@ -34,6 +34,15 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
+/-- Iterate a function. -/
+def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
+  | 0, a => a
+  | succ k, a => iterate op k (op a)
+#align nat.iterate Nat.iterate
+
+@[inherit_doc Nat.iterate]
+notation:max f "^["n"]" => Nat.iterate f n
+
 namespace Function
 
 open Function (Commute)
@@ -60,7 +69,7 @@ theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
 
 @[simp]
 theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
-  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, comp.left_id]
+  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, id_comp]
 #align function.iterate_id Function.iterate_id
 
 theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
@@ -110,11 +119,13 @@ theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Sem
 
 theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
     Semiconj f^[n] (g k) (g <| n + k) := by
-  induction' n with n ihn generalizing k
-  · rw [Nat.zero_add]
+  induction n generalizing k with
+  | zero =>
+    rw [Nat.zero_add]
     exact id_left
-  · rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
-    exact (H k).comp_left (ihn (k + 1))
+  | succ n ihn =>
+    rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
+    exact (H k).trans (ihn (k + 1))
 #align function.semiconj.iterate_left Function.Semiconj.iterate_left
 
 end Semiconj
@@ -142,10 +153,11 @@ theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
 #align function.commute.iterate_eq_of_map_eq Function.Commute.iterate_eq_of_map_eq
 
 theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
-  induction' n with n ihn
-  · rfl
-  funext x
-  simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
+  induction n with
+  | zero => rfl
+  | succ n ihn =>
+    funext x
+    simp only [ihn, (h.iterate_right n).eq, iterate_succ, comp_apply]
 #align function.commute.comp_iterate Function.Commute.comp_iterate
 
 variable (f)
@@ -224,17 +236,21 @@ theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun 
 #align function.iterate_commute Function.iterate_commute
 
 lemma iterate_add_eq_iterate (hf : Injective f) : f^[m + n] a = f^[n] a ↔ f^[m] a = a :=
-  Iff.trans (by rw [←iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
+  Iff.trans (by rw [← iterate_add_apply, Nat.add_comm]) (hf.iterate n).eq_iff
 #align function.iterate_add_eq_iterate Function.iterate_add_eq_iterate
 
 alias ⟨iterate_cancel_of_add, _⟩ := iterate_add_eq_iterate
 #align function.iterate_cancel_of_add Function.iterate_cancel_of_add
 
 lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a = a := by
-  obtain h | h := le_total m n
+  obtain h | h := Nat.le_total m n
   { simp [Nat.sub_eq_zero_of_le h] }
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
 #align function.iterate_cancel Function.iterate_cancel
+
+theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
+  funext_iff.symm
+#align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 
 end Function
 
@@ -244,9 +260,9 @@ open Function
 
 theorem foldl_const (f : α → α) (a : α) (l : List β) :
     l.foldl (fun b _ ↦ f b) a = f^[l.length] a := by
-  induction' l with b l H generalizing a
-  · rfl
-  · rw [length_cons, foldl, iterate_succ_apply, H]
+  induction l generalizing a with
+  | nil => rfl
+  | cons b l H => rw [length_cons, foldl, iterate_succ_apply, H]
 #align list.foldl_const List.foldl_const
 
 theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = f^[l.length] b

@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.List.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Lex
 
 #align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -72,7 +73,7 @@ theorem chain_iff_forall₂ :
   | a, [] => by simp
   | a, b :: l => by
     by_cases h : l = [] <;>
-    simp [@chain_iff_forall₂ b l, *]
+    simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
@@ -164,9 +165,9 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
 set_option linter.deprecated false in
 @[deprecated chain_iff_get]
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
-        (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
-          ∀ (i) (h : i < length l - 1),
-            R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+    (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
+    ∀ (i) (h : i < length l - 1),
+    R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
@@ -255,7 +256,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
@@ -352,7 +353,9 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
+      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -375,7 +378,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
 
 -- porting note: new
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-  (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [join]
@@ -384,7 +387,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne.def] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
-    exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
+    exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -439,6 +442,31 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain
 
+theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
+    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
+    List.Chain' (· > ·) (a :: m) := by
+  cases m with
+  | nil => simp only [List.chain'_singleton]
+  | cons b bs =>
+    apply hm.cons
+    cases as with
+    | nil =>
+      simp only [le_iff_lt_or_eq, or_false] at hmas
+      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+    | cons a' as =>
+      rw [List.chain'_cons] at ha
+      refine gt_of_gt_of_ge ha.1 ?_
+      rw [le_iff_lt_or_eq] at hmas
+      cases' hmas with hmas hmas
+      · by_contra! hh
+        rw [← not_le] at hmas
+        apply hmas
+        apply le_of_lt
+        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+      · simp only [List.cons.injEq] at hmas
+        rw [ge_iff_le, le_iff_lt_or_eq]
+        exact Or.inr hmas.1
+
 end List
 
 
@@ -469,8 +497,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     /- Bundle l with a proof that it is r-decreasing to form l' -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
-    have : Acc (List.lex_chains r) l'
-    · cases' l with b l
+    have : Acc (List.lex_chains r) l' := by
+      cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

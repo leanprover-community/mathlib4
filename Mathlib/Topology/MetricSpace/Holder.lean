@@ -52,7 +52,7 @@ def HolderWith (C r : ℝ≥0) (f : X → Y) : Prop :=
 #align holder_with HolderWith
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
-`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
+`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : Set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
 for all `x y ∈ s`. -/
 def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
@@ -89,7 +89,7 @@ alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 
 @[simp]
 theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
-  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitz_on_univ
+  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitzOn_univ
 #align holder_with_one holderWith_one
 
 alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one
@@ -114,7 +114,7 @@ theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈
 
 theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
     (hd : edist x y ≤ d) : edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  (h.edist_le hx hy).trans (mul_le_mul_left' (ENNReal.rpow_le_rpow hd r.coe_nonneg) _)
+  (h.edist_le hx hy).trans <| by gcongr
 #align holder_on_with.edist_le_of_le HolderOnWith.edist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}

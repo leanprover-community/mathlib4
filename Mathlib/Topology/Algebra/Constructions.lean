@@ -56,8 +56,12 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
 #align add_opposite.op_homeomorph AddOpposite.opHomeomorph
 
 @[to_additive]
-instance [T2Space M] : T2Space Mᵐᵒᵖ :=
+instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
   opHomeomorph.symm.embedding.t2Space
+
+@[to_additive]
+instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
+  opHomeomorph.symm.embedding.discreteTopology
 
 @[to_additive (attr := simp)]
 theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
@@ -108,6 +112,14 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
   ⟨inducing_embedProduct, embedProduct_injective M⟩
 #align units.embedding_embed_product Units.embedding_embedProduct
 #align add_units.embedding_embed_product AddUnits.embedding_embedProduct
+
+@[to_additive]
+instance instT2Space [T2Space M] : T2Space Mˣ :=
+  embedding_embedProduct.t2Space
+
+@[to_additive]
+instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
+  embedding_embedProduct.discreteTopology
 
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =

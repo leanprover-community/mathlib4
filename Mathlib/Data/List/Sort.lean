@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Nodup
 
 #align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -50,6 +50,14 @@ protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sort
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
   h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
+protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
+    l.Sorted (· ≥ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
+    (h₂ : l.Nodup) : l.Sorted (· > ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
+
 @[simp]
 theorem sorted_nil : Sorted r [] :=
   Pairwise.nil
@@ -67,6 +75,20 @@ theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b 
   rel_of_pairwise_cons
 #align list.rel_of_sorted_cons List.rel_of_sorted_cons
 
+theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
+    (ha : a ∈ l) : l.head! ≤ a := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
+theorem Sorted.le_head! [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
+    (ha : a ∈ l) : a ≤ l.head! := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
 @[simp]
 theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=
   pairwise_cons
@@ -77,29 +99,29 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
   Pairwise.nodup h
 #align list.sorted.nodup List.Sorted.nodup
 
-theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~ l₂) (s₁ : Sorted r l₁)
-    (s₂ : Sorted r l₂) : l₁ = l₂ := by
-  induction' s₁ with a l₁ h₁ s₁ IH generalizing l₂
-  · exact p.nil_eq
-  · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
+theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
+    (hs₂ : Sorted r l₂) : l₁ = l₂ := by
+  induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
+  · exact hp.nil_eq
+  · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
     rcases mem_split this with ⟨u₂, v₂, rfl⟩
-    have p' := (perm_cons a).1 (p.trans perm_middle)
-    obtain rfl := IH p' (s₂.sublist <| by simp)
+    have hp' := (perm_cons a).1 (hp.trans perm_middle)
+    obtain rfl := IH hp' (hs₂.sublist <| by simp)
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
-    have : ∀ (x : α) (_ : x ∈ u₂), x = a := fun x m =>
-      antisymm ((pairwise_append.1 s₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
+    have : ∀ x ∈ u₂, x = a := fun x m =>
+      antisymm ((pairwise_append.1 hs₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
     rw [(@eq_replicate _ a (length u₂ + 1) (a :: u₂)).2,
-          (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
+        (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
       simp [iff_true_intro this, or_comm]
 #align list.eq_of_perm_of_sorted List.eq_of_perm_of_sorted
 
-theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ <+~ l₂)
-    (s₁ : l₁.Sorted r) (s₂ : l₂.Sorted r) : l₁ <+ l₂ := by
-  let ⟨_, h, h'⟩ := p
-  rwa [← eq_of_perm_of_sorted h (s₂.sublist h') s₁]
+theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
+    (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
+  let ⟨_, h, h'⟩ := hp
+  rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
 
 @[simp 1100] --Porting note: higher priority for linter
@@ -132,7 +154,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
   rw [get_take', get_drop']
   rw [length_take] at hix
-  exact h.rel_nthLe_of_lt _ _ (ix.lt_add_right _ _ (lt_min_iff.mp hix).left)
+  exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted
@@ -143,7 +165,7 @@ variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
-  exact Iff.symm (Fin.castIso _).surjective.forall₂
+  exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -246,7 +268,7 @@ variable {r}
 
 /-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
+theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
   | a :: b :: l, h => by
@@ -410,7 +432,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
   | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r l (b :: l')), r a b' by
+    · suffices ∀ b' ∈ List.merge r l (b :: l'), r a b' by
         simpa [List.merge, h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
@@ -420,7 +442,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
+    · suffices ∀ b' ∈ List.merge r (a :: l) l', r b b' by
         simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h

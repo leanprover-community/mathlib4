@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Profinite.Basic
 /-!
 # Extremally disconnected sets
 
-This file develops some of the basic theory of extremally disconnected sets.
+This file develops some of the basic theory of extremally disconnected compact Hausdorff spaces.
 
 ## Overview
 
@@ -61,8 +60,8 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   have : Epi g' := by
     rw [CompHaus.epi_iff_surjective]
     assumption
-  obtain ⟨h,hh⟩ := Projective.factors f' g'
-  refine ⟨h,h.2,?_⟩
+  obtain ⟨h, hh⟩ := Projective.factors f' g'
+  refine ⟨h, h.2, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -105,7 +104,7 @@ instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
 instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
+instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
 /-- Stonean spaces are topological spaces. -/
 instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
@@ -126,8 +125,8 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 @[simps]
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
-  { toCompHaus := X.compHaus,
-    IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+    { toCompHaus := X.compHaus,
+      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
@@ -163,13 +162,89 @@ def isoEquivHomeo {X Y : Stonean} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
 
+/--
+A finite discrete space as a Stonean space.
+-/
+def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : Stonean where
+  compHaus := CompHaus.of X
+  extrDisc := by
+    dsimp
+    constructor
+    intro U _
+    apply isOpen_discrete (closure U)
+
+/--
+A morphism in `Stonean` is an epi iff it is surjective.
+
+TODO: prove that `forget Stonean` preserves pushouts (in fact it preserves all finite colimits)
+and deduce this from general lemmas about concrete categories.
+-/
+lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
+    Epi f ↔ Function.Surjective f := by
+  refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
+  dsimp [Function.Surjective]
+  intro h y
+  by_contra! hy
+  let C := Set.range f
+  have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+  let U := Cᶜ
+  have hUy : U ∈ nhds y := by
+    simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
+  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
+  classical
+  let g : Y ⟶ mkFinite (ULift (Fin 2)) :=
+    ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+  let h : Y ⟶ mkFinite (ULift (Fin 2)) := ⟨fun _ => ⟨1⟩, continuous_const⟩
+  have H : h = g := by
+    rw [← cancel_epi f]
+    ext x
+    apply ULift.ext -- why is `ext` not doing this automatically?
+    change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
+    rw [if_neg]
+    refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
+    simpa only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
+      using exists_apply_eq_apply f x
+  apply_fun fun e => (e y).down at H
+  change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
+  rw [if_pos hyV] at H
+  exact one_ne_zero H
+
+instance {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+  rw [CompHaus.epi_iff_surjective]
+  rwa [Stonean.epi_iff_surjective] at *
+
+instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+  rw [Stonean.epi_iff_surjective]
+  rwa [CompHaus.epi_iff_surjective] at *
+
 /-- Every Stonean space is projective in `CompHaus` -/
 instance (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
-    have hf : f.1.Surjective
-    · rwa [CompHaus.epi_iff_surjective] at *
+    have hf : Function.Surjective f := by rwa [← CompHaus.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
+
+/-- Every Stonean space is projective in `Profinite` -/
+instance (X : Stonean) : Projective (toProfinite.obj X) where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected (toProfinite.obj X) := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
+
+/-- Every Stonean space is projective in `Stonean`. -/
+instance (X : Stonean) : Projective X where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
     use ⟨f', h.left⟩
     ext
@@ -179,9 +254,9 @@ end Stonean
 
 namespace CompHaus
 
-/-- If `X` is compact Hausdorff, `presentation X` is an extremally disconnected space
-  equipped with an epimorphism down to `X`. It is a "constructive" witness to the
-  fact that `CompHaus` has enough projectives.  -/
+/-- If `X` is compact Hausdorff, `presentation X` is a Stonean space equipped with an epimorphism
+  down to `X` (see `CompHaus.presentation.π` and `CompHaus.presentation.epi_π`). It is a
+  "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
   compHaus := (projectivePresentation X).p
@@ -207,17 +282,17 @@ instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
 /--
-
+```
                X
                |
               (f)
                |
                \/
   Z ---(e)---> Y
-
-If `Z` is extremally disconnected, X, Y are compact Hausdorff, if `f : X ⟶ Y` is an epi and
-`e : Z ⟶ Y` is arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism
-`Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
+```
+If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `CompHaus` and `e : Z ⟶ Y` is arbitrary, then
+`lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It exists because
+`Z` is a projective object in `CompHaus`.
 -/
 noncomputable
 def lift {X Y : CompHaus} {Z : Stonean} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
@@ -240,3 +315,53 @@ lemma Gleason (X : CompHaus.{u}) :
     apply Stonean.instProjectiveCompHausCategoryCompHaus
 
 end CompHaus
+
+namespace Profinite
+
+/-- If `X` is profinite, `presentation X` is a Stonean space equipped with an epimorphism down to
+    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
+noncomputable
+def presentation (X : Profinite) : Stonean where
+  compHaus := X.toCompHaus.projectivePresentation.p
+  extrDisc := X.toCompHaus.presentation.extrDisc
+
+/-- The morphism from `presentation X` to `X`. -/
+noncomputable
+def presentation.π (X : Profinite) : Stonean.toProfinite.obj X.presentation ⟶ X :=
+  X.toCompHaus.projectivePresentation.f
+
+/-- The morphism from `presentation X` to `X` is an epimorphism. -/
+noncomputable
+instance presentation.epi_π (X : Profinite) : Epi (π X) := by
+  have := X.toCompHaus.projectivePresentation.epi
+  rw [CompHaus.epi_iff_surjective] at this
+  rw [epi_iff_surjective]
+  exact this
+
+/--
+```
+               X
+               |
+              (f)
+               |
+               \/
+  Z ---(e)---> Y
+```
+If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `Profinite` and `e : Z ⟶ Y` is arbitrary,
+then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It is
+`CompHaus.lift e f` as a morphism in `Profinite`.
+-/
+noncomputable
+def lift {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y) [Epi f] :
+    Stonean.toProfinite.obj Z ⟶ X := CompHaus.lift e f
+
+@[simp, reassoc]
+lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z ⟶ Y) (f : X ⟶ Y)
+    [Epi f] : lift e f ≫ f = e := CompHaus.lift_lifts _ _
+
+lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
+    Projective X := by
+  show Projective (Stonean.toProfinite.obj ⟨X.toCompHaus⟩)
+  exact inferInstance
+
+end Profinite

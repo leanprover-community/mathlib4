@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
@@ -52,6 +53,8 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
+open Set
+
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
@@ -61,7 +64,7 @@ variable (α)
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
 contains its `sSup`. -/
 def IsSupClosedCompact : Prop :=
-  ∀ (s : Set α) (_ : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → sSup s ∈ s
+  ∀ (s : Set α) (_ : s.Nonempty), SupClosed s → sSup s ∈ s
 #align complete_lattice.is_sup_closed_compact CompleteLattice.IsSupClosedCompact
 
 /-- A compactness property for a complete lattice is that any subset has a finite subset with the
@@ -181,12 +184,12 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
   exact hxk.ne (hxk.le.antisymm hkx)
 #align complete_lattice.is_compact_element.directed_Sup_lt_of_lt CompleteLattice.IsCompactElement.directed_sSup_lt_of_lt
 
-theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
+theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
   classical
     rw [isCompactElement_iff_le_of_directed_sSup_le]
     intro d hemp hdir hsup
-    rw [← Function.comp.left_id f]
+    rw [← Function.id_comp f]
     rw [← Finset.sup_image]
     apply Finset.sup_le_of_le_directed d hemp hdir
     rintro x hx
@@ -195,7 +198,7 @@ theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : 
     rw [isCompactElement_iff_le_of_directed_sSup_le] at h
     specialize h d hemp hdir (le_trans (Finset.le_sup hps) hsup)
     simpa only [exists_prop]
-#align complete_lattice.finset_sup_compact_of_compact CompleteLattice.finset_sup_compact_of_compact
+#align complete_lattice.finset_sup_compact_of_compact CompleteLattice.isCompactElement_finsetSup
 
 theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsSupFiniteCompact α := fun s => by
@@ -213,13 +216,13 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  cases' t.eq_empty_or_nonempty with h h
+  rcases t.eq_empty_or_nonempty with h | h
   · subst h
     rw [Finset.sup_empty] at ht₂
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]
-    exact t.sup_closed_of_sup_closed h ht₁ hsc
+    exact hsc.finsetSup_mem h ht₁
 #align complete_lattice.is_Sup_finite_compact.is_sup_closed_compact CompleteLattice.IsSupFiniteCompact.isSupClosedCompact
 
 theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
@@ -260,7 +263,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
 
 open List in
 theorem wellFounded_characterisations : List.TFAE
-    [WellFounded (( · > · ) : α → α → Prop),
+    [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
   tfae_have 1 → 2
   · exact WellFounded.isSupFiniteCompact α
@@ -315,6 +318,11 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
     rw [← hs, eq_comm, inf_eq_left]
     exact le_sSup _ _ hx₀
 #align complete_lattice.well_founded.finite_of_set_independent CompleteLattice.WellFounded.finite_of_setIndependent
+
+theorem WellFounded.finite_ne_bot_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop))
+    {ι : Type*} {t : ι → α} (ht : Independent t) : Set.Finite {i | t i ≠ ⊥} := by
+  refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
+  exact WellFounded.finite_of_setIndependent hwf ht.setIndependent_range
 
 theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type*}
     {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
@@ -374,16 +382,19 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
 #align directed_on.inf_Sup_eq DirectedOn.inf_sSup_eq
 
 /-- This property is sometimes referred to as `α` being upper continuous. -/
-protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) : sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a :=
-  by simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
+protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) :
+    sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a := by
+  simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
 #align directed_on.Sup_inf_eq DirectedOn.sSup_inf_eq
 
-protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i :=
-  by rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
+protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) :
+    (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+  rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
 #align directed.inf_supr_eq Directed.inf_iSup_eq
 
-protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a :=
-  by rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
+protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) :
+    (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+  rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
 #align directed.supr_inf_eq Directed.iSup_inf_eq
 
 protected theorem DirectedOn.disjoint_sSup_right (h : DirectedOn (· ≤ ·) s) :
@@ -436,6 +447,28 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
+
+lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
+    (hf : InjOn f {i | f i ≠ ⊥}) :
+    CompleteLattice.Independent f ↔ ∀ (s : Finset ι), s.SupIndep f := by
+  refine ⟨fun h ↦ h.supIndep', fun h ↦ CompleteLattice.independent_def'.mpr fun i ↦ ?_⟩
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  classical
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
+      Finset.erase_insert_eq_erase, not_and, Finset.mem_image]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
 
 theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, CompleteLattice.SetIndependent (s i)) :

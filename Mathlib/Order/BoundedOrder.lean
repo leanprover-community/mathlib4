@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
+import Mathlib.Tactic.PushNeg
 
 #align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -38,37 +38,6 @@ universe u v
 variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
-
-
-/-- Typeclass for the `⊤` (`\top`) notation -/
-@[notation_class, ext]
-class Top (α : Type u) where
-  /-- The top (`⊤`, `\top`) element -/
-  top : α
-#align has_top Top
-
-/-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext]
-class Bot (α : Type u) where
-  /-- The bot (`⊥`, `\bot`) element -/
-  bot : α
-#align has_bot Bot
-
-/-- The top (`⊤`, `\top`) element -/
-notation "⊤" => Top.top
-
-/-- The bot (`⊥`, `\bot`) element -/
-notation "⊥" => Bot.bot
-
-instance (priority := 100) top_nonempty (α : Type u) [Top α] : Nonempty α :=
-  ⟨⊤⟩
-#align has_top_nonempty top_nonempty
-
-instance (priority := 100) bot_nonempty (α : Type u) [Bot α] : Nonempty α :=
-  ⟨⊥⟩
-#align has_bot_nonempty bot_nonempty
-
-attribute [match_pattern] Bot.bot Top.top
 
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
@@ -227,14 +196,6 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
   apply top_unique
   exact @le_top _ _ A _
 #align order_top.ext_top OrderTop.ext_top
-
-theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
-  rcases A with ⟨ha⟩
-  rcases B with ⟨hb⟩
-  congr
-  ext
-  exact le_antisymm (hb _) (ha _)
-#align order_top.ext OrderTop.ext
 
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
@@ -437,14 +398,6 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
   exact @bot_le _ _ A _
 #align order_bot.ext_bot OrderBot.ext_bot
 
-theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
-  rcases A with ⟨ha⟩
-  rcases B with ⟨hb⟩
-  congr
-  ext
-  exact le_antisymm (ha _) (hb _)
-#align order_bot.ext OrderBot.ext
-
 section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α] {a : α}
@@ -530,13 +483,19 @@ instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : Bounde
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)
 
-theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B := by
-  have ht : @BoundedOrder.toOrderTop α _ A = @BoundedOrder.toOrderTop α _ B := OrderTop.ext
-  have hb : @BoundedOrder.toOrderBot α _ A = @BoundedOrder.toOrderBot α _ B := OrderBot.ext
-  cases A
-  cases B
-  congr
-#align bounded_order.ext BoundedOrder.ext
+section PartialOrder
+variable [PartialOrder α]
+
+instance OrderBot.instSubsingleton : Subsingleton (OrderBot α) where
+  allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (ha _) (hb _)
+
+instance OrderTop.instSubsingleton : Subsingleton (OrderTop α) where
+  allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (hb _) (ha _)
+
+instance BoundedOrder.instSubsingleton : Subsingleton (BoundedOrder α) where
+  allEq := by rintro ⟨⟩ ⟨⟩; congr <;> exact Subsingleton.elim _ _
+
+end PartialOrder
 
 section Logic
 
@@ -560,10 +519,10 @@ theorem monotone_or {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) :
   fun _ _ h => Or.imp (m_p h) (m_q h)
 #align monotone_or monotone_or
 
-theorem monotone_le {x : α} : Monotone ((· ≤ ·) x) := fun _ _ h' h => h.trans h'
+theorem monotone_le {x : α} : Monotone (x ≤ ·) := fun _ _ h' h => h.trans h'
 #align monotone_le monotone_le
 
-theorem monotone_lt {x : α} : Monotone ((· < ·) x) := fun _ _ h' h => h.trans_le h'
+theorem monotone_lt {x : α} : Monotone (x < ·) := fun _ _ h' h => h.trans_le h'
 #align monotone_lt monotone_lt
 
 theorem antitone_le {x : α} : Antitone (· ≤ x) := fun _ _ h' h => h'.trans h
@@ -951,9 +910,9 @@ open Bool
 
 instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
-  le_top _ := le_true
+  le_top := Bool.le_true
   bot := false
-  bot_le _ := false_le
+  bot_le := Bool.false_le
 
 @[simp]
 theorem top_eq_true : ⊤ = true :=

@@ -130,7 +130,7 @@ protected theorem is_basis [T : TopologicalSpace α] (F : Realizer α) :
 #align ctop.realizer.is_basis Ctop.Realizer.is_basis
 
 protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
-  s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
+    s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
   have := @mem_nhds_toTopsp _ _ F.F s a; rwa [F.eq] at this
 #align ctop.realizer.mem_nhds Ctop.Realizer.mem_nhds
 
@@ -246,12 +246,12 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 #align locally_finite.realizer LocallyFinite.Realizer
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
-  {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
+    {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
   ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.refl _⟩, ⟨R.sets a⟩⟩
 #align locally_finite.realizer.to_locally_finite LocallyFinite.Realizer.to_locallyFinite
 
-theorem locallyFinite_iff_exists_realizer [TopologicalSpace α]
-  (F : Ctop.Realizer α) {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
+theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
+    {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
   ⟨fun h ↦
     let ⟨g, h₁⟩ := Classical.axiom_of_choice h
     let ⟨g₂, h₂⟩ :=

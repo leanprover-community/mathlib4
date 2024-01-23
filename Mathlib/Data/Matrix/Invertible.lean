@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basic
 
 #align_import data.matrix.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
@@ -63,7 +62,7 @@ protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n 
 #align matrix.invertible_of_invertible_mul invertibleOfInvertibleMul
 #align matrix.invertible_of_mul_invertible invertibleOfMulInvertible
 
-section conj_transpose
+section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
 
 /-- The conjugate transpose of an invertible matrix is invertible. -/
@@ -79,7 +78,7 @@ def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
 
 @[simp] lemma isUnit_conjTranspose : IsUnit Aᴴ ↔ IsUnit A := isUnit_star
 
-end conj_transpose
+end ConjTranspose
 
 end Semiring
 
@@ -90,8 +89,8 @@ variable [CommSemiring α] (A : Matrix n n α)
 /-- The transpose of an invertible matrix is invertible. -/
 instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf := (⅟A)ᵀ
-  invOf_mul_self := by rw [←transpose_mul, mul_invOf_self, transpose_one]
-  mul_invOf_self := by rw [←transpose_mul, invOf_mul_self, transpose_one]
+  invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
+  mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 #align matrix.invertible_transpose Matrix.invertibleTranspose
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
@@ -101,8 +100,8 @@ lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) :
 /-- `Aᵀ` is invertible when `A` is. -/
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
   invOf := (⅟(Aᵀ))ᵀ
-  invOf_mul_self := by rw [←transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
-  mul_invOf_self := by rw [←transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
+  invOf_mul_self := by rw [← transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
+  mul_invOf_self := by rw [← transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
 #align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
 
 /-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an

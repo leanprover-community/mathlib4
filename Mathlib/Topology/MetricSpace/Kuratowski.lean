@@ -16,9 +16,6 @@ Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole 
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 set_option linter.uppercaseLean3 false
@@ -93,7 +90,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
     ∃ f : α → ℓ^∞(ℕ), Isometry f := by
-  cases' (univ : Set α).eq_empty_or_nonempty with h h
+  rcases (univ : Set α).eq_empty_or_nonempty with h | h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
     rcases h with ⟨basepoint⟩
@@ -140,22 +137,22 @@ Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2
 The same result for the case of a finite type `ι` is implemented in
 `LipschitzOnWith.extend_pi`.
 -/
-theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
-    {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
+theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι : Type*}
+    {f : α → ℓ^∞(ι)} {K : ℝ≥0} (hfl : LipschitzOnWith K f s) :
+    ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
   rw [LipschitzOnWith.coordinate] at hfl
-  have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
-  · intro i
-    exact LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
+  have (i: ι) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s :=
+    LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
   · exact ⟨0, LipschitzWith.const' 0, by simp⟩
   · -- Show that the extensions are uniformly bounded
-    have hf_extb : ∀ a : α, Memℓp (swap g a) ∞
-    · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+    have hf_extb : ∀ a : α, Memℓp (swap g a) ∞ := by
+      apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
-      simp_rw [←hgeq i ha₀_in_s]
+      simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
     let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨swap g i, hf_extb i⟩

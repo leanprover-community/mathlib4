@@ -3,6 +3,7 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
@@ -16,7 +17,7 @@ set_option autoImplicit true
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying the way that `apply?` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
 -- We need to set this here, as the lakefile does not enable this during testing.
@@ -56,7 +57,7 @@ example : x < x + 1 := exact?%
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact False.elim (np p) -/
+/-- info: Try this: exact (np p).elim -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
@@ -82,7 +83,7 @@ by apply?
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by apply?
 
-/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
+/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
@@ -157,7 +158,7 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact Iff.mp (Nat.dvd_add_left h₁) h₂ -/
+/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
 #guard_msgs in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
@@ -169,7 +170,7 @@ example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by appl
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
-/-- info: Try this: exact Iff.mpr (F a b) h -/
+/-- info: Try this: exact (F a b).mpr h -/
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
@@ -217,3 +218,21 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
+
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
+lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
+  exact? says exact dvd_of_mul_left_dvd h
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
+example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
+  exact? says exact mt h h'
+
+-- Removed until we come up with a way of handling nonspecific lemmas
+-- that does not pollute the output or cause too much slow-down.
+-- -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
+-- set_option linter.unreachableTactic false in
+-- example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
+--   -- This example non-deterministically picks between `le_antisymm hxy hyx` and `ge_antisymm hyx hxy`.
+--   first
+--   | exact? says exact le_antisymm hxy hyx
+--   | exact? says exact ge_antisymm hyx hxy

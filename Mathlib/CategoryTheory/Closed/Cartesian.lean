@@ -111,25 +111,28 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- Morphisms obtained using an exponentiable object. -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `Prefunctor.obj` -/
 @[delab app.Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := do
   let e ← getExpr
-  guard $ e.isAppOfArity' ``Prefunctor.obj 6
+  guard <| e.isAppOfArity' ``Prefunctor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard $ e.isAppOfArity' ``Functor.toPrefunctor 5
+    guard <| e.isAppOfArity' ``Functor.toPrefunctor 5
     withNaryArg 4 do
       let e ← getExpr
-      guard $ e.isAppOfArity' ``exp 5
+      guard <| e.isAppOfArity' ``exp 5
       withNaryArg 2 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
@@ -162,12 +165,14 @@ def uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 #align category_theory.cartesian_closed.uncurry CategoryTheory.CartesianClosed.uncurry
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⨯ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.cartesian_closed.hom_equiv_apply_eq CategoryTheory.CartesianClosed.homEquiv_apply_eq
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -318,9 +323,9 @@ def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   hom := Limits.prod.snd
   inv := t.to _
   hom_inv_id := by
-    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _)
-    rw [← curry_eq_iff]
-    apply t.hom_ext
+    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _) := by
+      rw [← curry_eq_iff]
+      apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
     apply t.hom_ext
   inv_hom_id := t.hom_ext _ _
@@ -407,15 +412,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
         have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
-        apply NatIso.ofComponents _ _
-        · intro Y
-          apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-          apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-        · intro Y Z g
-          dsimp
-          simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-          -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
+        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
+            prod.functor.obj (e.inverse.obj X) := by
+          apply NatIso.ofComponents _ _
+          · intro Y
+            apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+            apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+          · intro Y Z g
+            dsimp
+            simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+            -- I wonder if it would be a good idea to
+            -- make `map_comp` a simp lemma the other way round
         · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
           have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
@@ -432,4 +439,6 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
 
 end Functor
 
+attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
+  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

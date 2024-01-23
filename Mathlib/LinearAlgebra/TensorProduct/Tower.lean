@@ -45,13 +45,15 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
+suppress_compilation
+
 namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe uR uA uB uM uN uP uQ
+universe uR uA uB uM uN uP uQ uP' uQ'
 variable {R : Type uR} {A : Type uA} {B : Type uB}
-variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
 open LinearMap
 open Algebra (lsmul)
@@ -69,6 +71,11 @@ variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
 
 variable [AddCommMonoid Q] [Module R Q]
+
+variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
+variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
+
+variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
   rfl
@@ -197,6 +204,20 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
+@[simp]
+theorem map_id : map (id : M →ₗ[A] M) (id : N →ₗ[R] N) = .id :=
+  ext fun _ _ => rfl
+
+theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
+    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext fun _ _ => rfl
+
+@[simp]
+protected theorem map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
+
+protected theorem map_mul (f₁ f₂ : M →ₗ[A] M) (g₁ g₂ : N →ₗ[R] N) :
+    map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ := map_comp _ _ _ _
+
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
@@ -250,6 +271,22 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
 
+@[simp]
+theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
+  LinearEquiv.toLinearMap_injective <| map_id
+
+theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃ₗ[R] Q) (g₂ : Q ≃ₗ[R] Q') :
+    congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
+  LinearEquiv.toLinearMap_injective <| map_comp _ _ _ _
+
+theorem congr_symm (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : congr f.symm g.symm = (congr f g).symm := rfl
+
+@[simp]
+theorem congr_one : congr (1 : M ≃ₗ[A] M) (1 : N ≃ₗ[R] N) = 1 := congr_refl
+
+theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
+    congr (f₁ * f₂) (g₁ * g₂) = congr f₁ g₁ * congr f₂ g₂ := congr_trans _ _ _ _
+
 @[simp] theorem congr_tmul (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) (m : M) (n : N) :
     congr f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
@@ -266,12 +303,18 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
-    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+    (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
-variable {R M}
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
 
+variable {R M} in
 @[simp]
 theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
+
+variable {M} in
+@[simp]
+theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
 end Semiring
 
@@ -360,9 +403,9 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
     -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
     -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => Eq.refl <|
+    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
       (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => Eq.refl <|
+    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
       (m ⊗ₜ[A] p) ⊗ₜ[R] q)
 
 variable {M N P Q}
@@ -383,7 +426,7 @@ section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :
-  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm
   ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
   ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
@@ -407,3 +450,54 @@ end CommSemiring
 end AlgebraTensorModule
 
 end TensorProduct
+
+namespace Submodule
+
+open TensorProduct
+
+variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+/-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
+an `A`-submodule of `A ⊗ M`.
+
+This "base change" operation is also known as "extension of scalars". -/
+def baseChange : Submodule A (A ⊗[R] M) :=
+  span A <| p.map (TensorProduct.mk R A M 1)
+
+@[simp]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange]
+
+@[simp]
+lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
+  rw [baseChange, map_top, eq_top_iff']
+  intro x
+  refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  refine smul_mem _ _ (subset_span ?_)
+  simp
+
+variable {A p} in
+lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.baseChange A := by
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  exact smul_mem (baseChange A p) a (subset_span ⟨m, hm, rfl⟩)
+
+@[simp]
+lemma baseChange_span (s : Set M) :
+    (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
+  simp only [baseChange, map_coe]
+  refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
+  rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
+  apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s)) hm
+  · intro m hm
+    exact subset_span ⟨m, hm, rfl⟩
+  · simp
+  · intro m₁ m₂ hm₁ hm₂
+    rw [tmul_add]
+    exact Submodule.add_mem _ hm₁ hm₂
+  · intro r m' hm'
+    rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
+    exact smul_mem _ (r • 1) hm'
+
+end Submodule

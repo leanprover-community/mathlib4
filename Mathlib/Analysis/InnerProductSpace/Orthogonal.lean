@@ -3,8 +3,8 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 #align_import analysis.inner_product_space.orthogonal from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

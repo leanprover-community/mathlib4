@@ -3,15 +3,12 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-
-import Lean
-import Mathlib.Init.Logic
-import Mathlib.Init.Propext
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
+import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Logic.Basic
 import Qq
 
 /-!
@@ -34,7 +31,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
-    replace q(mt Iff.to_eq $h')
+    replace q(mt propext $h')
   | ~q(($a : Prop) = $b) => do
     let h' : Q($a = $b) := h.toExpr
     replace q(Eq.to_iff $h')
@@ -170,7 +167,7 @@ def tautoCore : TacticM Unit := do
       distribNot <;>
       liftMetaTactic (casesMatching casesMatcher (recursive := true) (throwOnNoMatch := false)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
-      (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
+      (do _ ← tryTactic (evalTactic (← `(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       liftMetaTactic (constructorMatching · coreConstructorMatcher
         (recursive := true) (throwOnNoMatch := false)) <;>

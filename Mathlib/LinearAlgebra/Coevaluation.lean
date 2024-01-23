@@ -71,8 +71,8 @@ theorem contractLeft_assoc_coevaluation :
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [rid_tmul, one_smul, lid_symm_apply]
   simp only [LinearEquiv.coe_toLinearMap, LinearMap.lTensor_tmul, coevaluation_apply_one]
-  rw [TensorProduct.tmul_sum, LinearEquiv.map_sum]; simp only [assoc_symm_tmul]
-  rw [LinearMap.map_sum]; simp only [LinearMap.rTensor_tmul, contractLeft_apply]
+  rw [TensorProduct.tmul_sum, map_sum]; simp only [assoc_symm_tmul]
+  rw [map_sum]; simp only [LinearMap.rTensor_tmul, contractLeft_apply]
   simp only [Basis.coe_dualBasis, Basis.coord_apply, Basis.repr_self_apply, TensorProduct.ite_tmul]
   rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, if_true]
 #align contract_left_assoc_coevaluation contractLeft_assoc_coevaluation
@@ -90,8 +90,8 @@ theorem contractLeft_assoc_coevaluation' :
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [lid_tmul, one_smul, rid_symm_apply]
   simp only [LinearEquiv.coe_toLinearMap, LinearMap.rTensor_tmul, coevaluation_apply_one]
-  rw [TensorProduct.sum_tmul, LinearEquiv.map_sum]; simp only [assoc_tmul]
-  rw [LinearMap.map_sum]; simp only [LinearMap.lTensor_tmul, contractLeft_apply]
+  rw [TensorProduct.sum_tmul, map_sum]; simp only [assoc_tmul]
+  rw [map_sum]; simp only [LinearMap.lTensor_tmul, contractLeft_apply]
   simp only [Basis.coord_apply, Basis.repr_self_apply, TensorProduct.tmul_ite]
   rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, if_true]
 #align contract_left_assoc_coevaluation' contractLeft_assoc_coevaluation'

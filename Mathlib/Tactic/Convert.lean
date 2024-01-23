@@ -3,7 +3,6 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean
 import Mathlib.Tactic.Congr!
 
 /-!
@@ -30,8 +29,7 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! depth config patterns
-  catch _ => return [m]
+  m.congrN! depth config patterns
 
 namespace Mathlib.Tactic
 

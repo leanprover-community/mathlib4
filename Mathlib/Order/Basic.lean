@@ -3,8 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Cases
+import Mathlib.Order.Notation
 
 #align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
@@ -29,9 +36,6 @@ classes and allows to transfer order instances.
 
 ### Extra class
 
-* `Sup`: type class for the `⊔` notation
-* `Inf`: type class for the `⊓` notation
-* `HasCompl`: type class for the `ᶜ` notation
 * `DenselyOrdered`: An order with no gap, i.e. for any two elements `a < b` there exists `c` such
   that `a < c < b`.
 
@@ -170,20 +174,9 @@ theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
 #align lt_self_iff_false lt_self_iff_false
 
-theorem le_of_le_of_eq (hab : a ≤ b) (hbc : b = c) : a ≤ c :=
-  hab.trans hbc.le
 #align le_of_le_of_eq le_of_le_of_eq
-
-theorem le_of_eq_of_le (hab : a = b) (hbc : b ≤ c) : a ≤ c :=
-  hab.le.trans hbc
 #align le_of_eq_of_le le_of_eq_of_le
-
-theorem lt_of_lt_of_eq (hab : a < b) (hbc : b = c) : a < c :=
-  hab.trans_le hbc.le
 #align lt_of_lt_of_eq lt_of_lt_of_eq
-
-theorem lt_of_eq_of_lt (hab : a = b) (hbc : b < c) : a < c :=
-  hab.le.trans_lt hbc
 #align lt_of_eq_of_lt lt_of_eq_of_lt
 
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
@@ -242,7 +235,6 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
-
 
 section
 
@@ -347,18 +339,7 @@ theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 #align ge_of_eq ge_of_eq
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem ge_iff_le [LE α] {a b : α} : a ≥ b ↔ b ≤ a :=
-  Iff.rfl
 #align ge_iff_le ge_iff_le
-
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem gt_iff_lt [LT α] {a b : α} : a > b ↔ b < a :=
-  Iff.rfl
 #align gt_iff_lt gt_iff_lt
 
 theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
@@ -692,8 +673,124 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
     DecidableRel (f ⁻¹'o s) := fun _ _ ↦ H _ _
 #align order.preimage.decidable Order.Preimage.decidable
 
-/-! ### Order dual -/
+section ltByCases
 
+variable [LinearOrder α] {P : Sort*} {x y : α}
+
+@[simp]
+lemma ltByCases_lt (h : x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
+    ltByCases x y h₁ h₂ h₃ = h₁ h := dif_pos h
+
+@[simp]
+lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
+    ltByCases x y h₁ h₂ h₃ = h₃ h := (dif_neg h.not_lt).trans (dif_pos h)
+
+@[simp]
+lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
+    ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
+
+lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : ¬ y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
+    ltByCases x y h₁ h₂ h₃ = if h' : y < x then h₃ h' else h₂ (p h') := dif_neg h
+
+lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
+    ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
+  dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
+
+lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : ¬ x < y → y < x := fun h' => h.lt_or_lt.resolve_left h') :
+    ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
+  dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
+
+lemma ltByCases_comm {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    (p : y = x → x = y := fun h' => h'.symm) :
+    ltByCases x y h₁ h₂ h₃ = ltByCases y x h₃ (h₂ ∘ p) h₁ := by
+  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  · rw [ltByCases_lt h, ltByCases_gt h]
+  · rw [ltByCases_eq h, ltByCases_eq h.symm, comp_apply]
+  · rw [ltByCases_lt h, ltByCases_gt h]
+
+lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x' y' : α}
+    (ltc : (x < y) ↔ (x' < y')) (gtc : (y < x) ↔ (y' < x')) :
+    x = y ↔ x' = y' := by simp_rw [eq_iff_le_not_lt, ← not_lt, ltc, gtc]
+
+lemma ltByCases_rec {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} (p : P)
+    (hlt : (h : x < y) → h₁ h = p) (heq : (h : x = y) → h₂ h = p)
+    (hgt : (h : y < x) → h₃ h = p) :
+    ltByCases x y h₁ h₂ h₃ = p :=
+  ltByCases x y
+    (fun h => ltByCases_lt h ▸ hlt h)
+    (fun h => ltByCases_eq h ▸ heq h)
+    (fun h => ltByCases_gt h ▸ hgt h)
+
+lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} {p : P} :
+    ltByCases x y h₁ h₂ h₃ = p ↔ (∃ h, h₁ h = p) ∨ (∃ h, h₂ h = p) ∨ (∃ h, h₃ h = p) := by
+  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  · simp only [ltByCases_lt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
+    exists_prop_of_false, or_false, h.ne]
+  · simp only [h, lt_self_iff_false, ltByCases_eq, not_false_eq_true,
+    exists_prop_of_false, exists_prop_of_true, or_false, false_or]
+  · simp only [ltByCases_gt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
+    exists_prop_of_false, false_or, h.ne']
+
+lemma ltByCases_congr {x' y' : α} {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
+    {h₁' : x' < y' → P} {h₂' : x' = y' → P} {h₃' : y' < x' → P} (ltc : (x < y) ↔ (x' < y'))
+    (gtc : (y < x) ↔ (y' < x')) (hh'₁ : ∀ (h : x' < y'), h₁ (ltc.mpr h) = h₁' h)
+    (hh'₂ : ∀ (h : x' = y'), h₂ ((eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc).mpr h) = h₂' h)
+    (hh'₃ : ∀ (h : y' < x'), h₃ (gtc.mpr h) = h₃' h) :
+    ltByCases x y h₁ h₂ h₃ = ltByCases x' y' h₁' h₂' h₃' := by
+  refine ltByCases_rec _ (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  · rw [ltByCases_lt (ltc.mp h), hh'₁]
+  · rw [eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc] at h
+    rw [ltByCases_eq h, hh'₂]
+  · rw [ltByCases_gt (gtc.mp h), hh'₃]
+
+/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order,
+non-dependently. -/
+abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
+
+variable {p q r s : P}
+
+@[simp]
+lemma ltTrichotomy_lt (h : x < y) : ltTrichotomy x y p q r = p := ltByCases_lt h
+
+@[simp]
+lemma ltTrichotomy_gt (h : y < x) : ltTrichotomy x y p q r = r := ltByCases_gt h
+
+@[simp]
+lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
+
+lemma ltTrichotomy_not_lt (h : ¬ x < y) :
+    ltTrichotomy x y p q r = if y < x then r else q := ltByCases_not_lt h
+
+lemma ltTrichotomy_not_gt (h : ¬ y < x) :
+    ltTrichotomy x y p q r = if x < y then p else q := ltByCases_not_gt h
+
+lemma ltTrichotomy_ne (h : x ≠ y) :
+    ltTrichotomy x y p q r = if x < y then p else r := ltByCases_ne h
+
+lemma ltTrichotomy_comm : ltTrichotomy x y p q r = ltTrichotomy y x r q p := ltByCases_comm
+
+lemma ltTrichotomy_self {p : P} : ltTrichotomy x y p p p = p :=
+  ltByCases_rec p (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
+    (x < y ∧ p = s) ∨ (x = y ∧ q = s) ∨ (y < x ∧ r = s) := by
+  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  · simp only [ltTrichotomy_lt, false_and, true_and, or_false, h, h.not_lt, h.ne]
+  · simp only [ltTrichotomy_eq, false_and, true_and, or_false, false_or, h, lt_irrefl]
+  · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_lt, h.ne']
+
+lemma ltTrichotomy_congr {x' y' : α} {p' q' r' : P} (ltc : (x < y) ↔ (x' < y'))
+    (gtc : (y < x) ↔ (y' < x')) (hh'₁ : x' < y' → p = p')
+    (hh'₂ : x' = y' → q = q') (hh'₃ : y' < x' → r = r') :
+    ltTrichotomy x y p q r = ltTrichotomy x' y' p' q' r' :=
+  ltByCases_congr ltc gtc hh'₁ hh'₂ hh'₃
+
+end ltByCases
+
+/-! ### Order dual -/
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
@@ -729,7 +826,7 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total     := λ a b : α => le_total b a
+  le_total := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
@@ -758,18 +855,6 @@ end OrderDual
 
 /-! ### `HasCompl` -/
 
-
-/-- Set / lattice complement -/
-@[notation_class]
-class HasCompl (α : Type*) where
-  /-- Set / lattice complement -/
-  compl : α → α
-#align has_compl HasCompl
-
-export HasCompl (compl)
-
-@[inherit_doc]
-postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
@@ -977,31 +1062,7 @@ theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
 
 end MinMaxRec
 
-/-! ### `Sup` and `Inf` -/
-
-
-/-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class, ext]
-class Sup (α : Type u) where
-  /-- Least upper bound (`\lub` notation) -/
-  sup : α → α → α
-#align has_sup Sup
-
-/-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class, ext]
-class Inf (α : Type u) where
-  /-- Greatest lower bound (`\glb` notation) -/
-  inf : α → α → α
-#align has_inf Inf
-
-@[inherit_doc]
-infixl:68 " ⊔ " => Sup.sup
-
-@[inherit_doc]
-infixl:69 " ⊓ " => Inf.inf
-
 /-! ### Lifts of order instances -/
-
 
 /-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
 See note [reducible non-instances]. -/
@@ -1365,7 +1426,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance linearOrder: LinearOrder PUnit where
+instance linearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
@@ -1446,3 +1507,41 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder
+
+section dite
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+
+@[to_additive dite_nonneg]
+lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive dite_pos]
+lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+end dite
+
+section
+variable [One α] {p : Prop} [Decidable p] {a b : α}
+
+@[to_additive ite_nonneg]
+lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
+
+@[to_additive ite_pos]
+lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
+
+end

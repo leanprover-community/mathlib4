@@ -4,19 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Bool.Basic
+import Mathlib.Init.Data.Fin.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.countable.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
-# Countable types
+# Countable and uncountable types
 
-In this file we define a typeclass saying that a given `Sort*` is countable. See also `Encodable`
-for a version that singles out a specific encoding of elements of `α` by natural numbers.
+In this file we define a typeclass `Countable` saying that a given `Sort*` is countable
+and a typeclass `Uncountable` saying that a given `Type*` is uncountable.
 
-This file also provides a few instances of this typeclass. More instances can be found in other
-files.
+See also `Encodable` for a version that singles out
+a specific encoding of elements of `α` by natural numbers.
+
+This file also provides a few instances of these typeclasses.
+More instances can be found in other files.
 -/
-
 
 open Function
 
@@ -36,9 +41,8 @@ class Countable (α : Sort u) : Prop where
 #align countable Countable
 #align countable_iff_exists_injective countable_iff_exists_injective
 
-lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
-  ∃ f : α → ℕ, Injective f :=
-Countable.exists_injective_nat'
+lemma Countable.exists_injective_nat (α : Sort u) [Countable α] : ∃ f : α → ℕ, Injective f :=
+  Countable.exists_injective_nat'
 
 instance : Countable ℕ :=
   ⟨⟨id, injective_id⟩⟩
@@ -46,13 +50,13 @@ instance : Countable ℕ :=
 export Countable (exists_injective_nat)
 
 protected theorem Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
-  Countable α :=
+    Countable α :=
   let ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
 #align function.injective.countable Function.Injective.countable
 
 protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
-  Countable β :=
+    Countable β :=
   (injective_surjInv hf).countable
 #align function.surjective.countable Function.Surjective.countable
 
@@ -116,3 +120,57 @@ instance (priority := 500) Quotient.countable [Countable α] {r : α → α → 
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
   (inferInstance : Countable (@Quot α _))
+
+/-!
+### Uncountable types
+-/
+
+/-- A type `α` is uncountable if it is not countable. -/
+@[mk_iff uncountable_iff_not_countable]
+class Uncountable (α : Sort*) : Prop where
+  /-- A type `α` is uncountable if it is not countable. -/
+  not_countable : ¬Countable α
+
+lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
+  rw [uncountable_iff_not_countable, not_not]
+
+lemma not_countable_iff : ¬Countable α ↔ Uncountable α := (uncountable_iff_not_countable α).symm
+
+@[simp]
+lemma not_uncountable [Countable α] : ¬Uncountable α := not_uncountable_iff.2 ‹_›
+
+@[simp]
+lemma not_countable [Uncountable α] : ¬Countable α := Uncountable.not_countable
+
+protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
+    Uncountable β :=
+  ⟨fun _ ↦ not_countable hf.countable⟩
+
+protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
+    Uncountable α := (injective_surjInv hf).uncountable
+
+lemma not_injective_uncountable_countable [Uncountable α] [Countable β] (f : α → β) :
+    ¬Injective f := fun hf ↦ not_countable hf.countable
+
+lemma not_surjective_countable_uncountable [Countable α] [Uncountable β] (f : α → β) :
+    ¬Surjective f := fun hf ↦
+  not_countable hf.countable
+
+theorem uncountable_iff_forall_not_surjective [Nonempty α] :
+    Uncountable α ↔ ∀ f : ℕ → α, ¬Surjective f := by
+  rw [← not_countable_iff, countable_iff_exists_surjective, not_exists]
+
+theorem Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Uncountable β :=
+  e.injective.uncountable
+
+theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
+  ⟨fun h => @Uncountable.of_equiv _ _ h e, fun h => @Uncountable.of_equiv _ _ h e.symm⟩
+
+instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
+  .of_equiv _ Equiv.ulift.symm
+
+instance [Uncountable α] : Uncountable (PLift α) :=
+  .of_equiv _ Equiv.plift.symm
+
+instance (priority := 100) [Uncountable α] : Infinite α :=
+  ⟨fun _ ↦ not_countable (α := α) inferInstance⟩

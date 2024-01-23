@@ -64,9 +64,6 @@ theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 #align sigma.eta Sigma.eta
 
-@[ext]
-theorem ext {x₀ x₁ : Sigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
-  cases x₀; cases x₁; cases h₀; cases h₁; rfl
 #align sigma.ext Sigma.ext
 
 theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
@@ -103,6 +100,12 @@ theorem «exists» {p : (Σa, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 #align sigma.exists Sigma.exists
 
+lemma exists' {p : ∀ a, β a → Prop} : (∃ a b, p a b) ↔ ∃ x : Σ a, β a, p x.1 x.2 :=
+(Sigma.exists (p := λ x ↦ p x.1 x.2)).symm
+
+lemma forall' {p : ∀ a, β a → Prop} : (∀ a b, p a b) ↔ ∀ x : Σ a, β a, p x.1 x.2 :=
+(Sigma.forall (p := λ x ↦ p x.1 x.2)).symm
+
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x : Sigma β₁) : Sigma β₂ :=
   ⟨f₁ x.1, f₂ x.1 x.2⟩
@@ -117,7 +120,7 @@ theorem sigma_mk_injective {i : α} : Function.Injective (@Sigma.mk α β i)
 #align sigma_mk_injective sigma_mk_injective
 
 theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
+    (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
     Function.Injective (Sigma.map f₁ f₂)
   | ⟨i, x⟩, ⟨j, y⟩, h => by
     obtain rfl : i = j := h₁ (Sigma.mk.inj_iff.mp h).1
@@ -132,13 +135,13 @@ theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, 
 #align function.injective.of_sigma_map Function.Injective.of_sigma_map
 
 theorem Function.Injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Injective f₁) :
+    (h₁ : Function.Injective f₁) :
     Function.Injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.Injective (f₂ a) :=
   ⟨fun h ↦ h.of_sigma_map, h₁.sigma_map⟩
 #align function.injective.sigma_map_iff Function.Injective.sigma_map_iff
 
 theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
+    (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
     Function.Surjective (Sigma.map f₁ f₂) := by
   simp only [Function.Surjective, Sigma.forall, h₁.forall]
   exact fun i ↦ (h₂ _).forall.2 fun x ↦ ⟨⟨i, x⟩, rfl⟩
@@ -237,9 +240,6 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
 #align psigma.mk.inj_iff PSigma.mk.inj_iff
 
-@[ext]
-theorem ext {x₀ x₁ : PSigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
-  cases x₀; cases x₁; cases h₀; cases h₁; rfl
 #align psigma.ext PSigma.ext
 
 theorem ext_iff {x₀ x₁ : PSigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by

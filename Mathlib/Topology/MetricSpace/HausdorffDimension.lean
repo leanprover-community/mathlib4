@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.IsROrC
 import Mathlib.MeasureTheory.Measure.Hausdorff
 
 #align_import topology.metric_space.hausdorff_dimension from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
@@ -407,24 +407,24 @@ end LipschitzWith
 /-- If `s` is a set in an extended metric space `X` with second countable topology and `f : X → Y`
 is Lipschitz in a neighborhood within `s` of every point `x ∈ s`, then the Hausdorff dimension of
 the image `f '' s` is at most the Hausdorff dimension of `s`. -/
-theorem dimH_image_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X → Y} {s : Set X}
+theorem dimH_image_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y} {s : Set X}
     (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith C f t) : dimH (f '' s) ≤ dimH s := by
   have : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C 1 f t := by
     simpa only [holderOnWith_one] using hf
   simpa only [ENNReal.coe_one, div_one] using dimH_image_le_of_locally_holder_on zero_lt_one this
 set_option linter.uppercaseLean3 false in
-#align dimH_image_le_of_locally_lipschitz_on dimH_image_le_of_locally_lipschitz_on
+#align dimH_image_le_of_locally_lipschitz_on dimH_image_le_of_locally_lipschitzOn
 
 /-- If `f : X → Y` is Lipschitz in a neighborhood of each point `x : X`, then the Hausdorff
 dimension of `range f` is at most the Hausdorff dimension of `X`. -/
-theorem dimH_range_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X → Y}
+theorem dimH_range_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y}
     (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, LipschitzOnWith C f s) :
     dimH (range f) ≤ dimH (univ : Set X) := by
   rw [← image_univ]
-  refine dimH_image_le_of_locally_lipschitz_on fun x _ => ?_
+  refine dimH_image_le_of_locally_lipschitzOn fun x _ => ?_
   simpa only [exists_prop, nhdsWithin_univ] using hf x
 set_option linter.uppercaseLean3 false in
-#align dimH_range_le_of_locally_lipschitz_on dimH_range_le_of_locally_lipschitz_on
+#align dimH_range_le_of_locally_lipschitz_on dimH_range_le_of_locally_lipschitzOn
 
 namespace AntilipschitzWith
 
@@ -519,7 +519,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     exact fun x _ y _ => Subsingleton.elim x y
   · rw [← ENNReal.coe_nat]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
-      rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr, rpow_nat_cast]
+      rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
     refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_nat_cast, this]
     · simp [pow_pos (mul_pos (zero_lt_two' ℝ) hr)]
     · exact ENNReal.ofReal_ne_top
@@ -600,7 +600,7 @@ dimension of `s`.
 TODO: do we actually need `Convex ℝ s`? -/
 theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
     (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
-  dimH_image_le_of_locally_lipschitz_on fun x hx =>
+  dimH_image_le_of_locally_lipschitzOn fun x hx =>
     let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
     ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
 set_option linter.uppercaseLean3 false in

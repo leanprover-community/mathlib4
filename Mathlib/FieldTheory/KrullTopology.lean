@@ -54,15 +54,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
 
-
-open scoped Classical
-
-/-- Mapping intermediate fields along algebra equivalences preserves the partial order -/
-theorem IntermediateField.map_mono {K L M : Type*} [Field K] [Field L] [Field M] [Algebra K L]
-    [Algebra K M] {E1 E2 : IntermediateField K L} (e : L ≃ₐ[K] M) (h12 : E1 ≤ E2) :
-    E1.map e.toAlgHom ≤ E2.map e.toAlgHom :=
-  Set.image_subset e h12
-#align intermediate_field.map_mono IntermediateField.map_mono
+open scoped Classical Pointwise
 
 /-- Mapping intermediate fields along the identity does not change them -/
 theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -166,7 +158,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
-      rintro x ⟨a, b, haH, hbH, rfl⟩
+      rintro x ⟨a, haH, b, hbH, rfl⟩
       exact H.mul_mem haH hbH⟩
   inv' {U} hU :=
     ⟨U, hU, by
@@ -230,7 +222,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
-      cases' FunLike.exists_ne hfg with x hx
+      cases' DFunLike.exists_ne hfg with x hx
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
@@ -243,10 +235,11 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
       rw [mem_nhds_iff] at h_nhd
       rcases h_nhd with ⟨W, hWH, hW_open, hW_1⟩
-      refine' ⟨leftCoset f W, leftCoset g W,
+      refine' ⟨f • W, g • W,
         ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, _⟩⟩
       rw [Set.disjoint_left]
       rintro σ ⟨w1, hw1, h⟩ ⟨w2, hw2, rfl⟩
+      dsimp at h
       rw [eq_inv_mul_iff_mul_eq.symm, ← mul_assoc, mul_inv_eq_iff_eq_mul.symm] at h
       have h_in_H : w1 * w2⁻¹ ∈ H := H.mul_mem (hWH hw1) (H.inv_mem (hWH hw2))
       rw [h] at h_in_H
@@ -267,13 +260,13 @@ section TotallyDisconnected
   totally disconnected. -/
 theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
-  apply isTotallyDisconnected_of_clopen_set
+  apply isTotallyDisconnected_of_isClopen_set
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
-  rcases FunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
+  rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)
   haveI := IntermediateField.adjoin.finiteDimensional (h_int x)
-  refine' ⟨leftCoset σ E.fixingSubgroup,
+  refine' ⟨σ • E.fixingSubgroup,
     ⟨E.fixingSubgroup_isOpen.leftCoset σ, E.fixingSubgroup_isClosed.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,

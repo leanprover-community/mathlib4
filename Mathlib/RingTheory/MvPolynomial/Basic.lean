@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 #align_import ring_theory.mv_polynomial.basic from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -76,16 +76,37 @@ end Homomorphism
 
 section Degree
 
+variable {σ}
+
+/-- The submodule of polynomials that are sum of monomials in the set `s`. -/
+def restrictSupport (s : Set (σ →₀ ℕ)) : Submodule R (MvPolynomial σ R) :=
+  Finsupp.supported _ _ s
+
+/-- `restrictSupport R s` has a canonical `R`-basis indexed by `s`. -/
+def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport R s) where
+  repr := Finsupp.supportedEquivFinsupp s
+
+theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
+    restrictSupport R s ≤ restrictSupport R t := Finsupp.supported_mono h
+
+variable (σ)
+
 /-- The submodule of polynomials of total degree less than or equal to `m`.-/
-def restrictTotalDegree : Submodule R (MvPolynomial σ R) :=
-  Finsupp.supported _ _ { n | (n.sum fun _ e => e) ≤ m }
+def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
+  restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
 less than or equal to `m`.-/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
-  Finsupp.supported _ _ { n | ∀ i, n i ≤ m }
+  restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree
+
+theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
+    restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
+  restrictSupport_mono R fun n hn i ↦ (eq_or_ne (n i) 0).elim
+    (fun h ↦ h.trans_le m.zero_le) fun h ↦
+      (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
 
 variable {R}
 
@@ -97,7 +118,7 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
 
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
-  rw [restrictDegree, Finsupp.mem_supported]
+  rw [restrictDegree, restrictSupport, Finsupp.mem_supported]
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
@@ -126,6 +147,23 @@ theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R)
     (Finsupp.single_left_injective one_ne_zero)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
+
+private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
+  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
+    DFunLike.coe_injective.injOn _).to_subtype
+
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
+  have := finite_setOf_bounded σ N
+  Module.Finite.of_basis (basisRestrictSupport R _)
+
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
+  have := finite_setOf_bounded σ N
+  have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
+    rw [Set.finite_coe_iff] at this ⊢
+    exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim
+      (fun h ↦ h.trans_le N.zero_le) fun h ↦
+        (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
+  Module.Finite.of_basis (basisRestrictSupport R _)
 
 end Degree
 

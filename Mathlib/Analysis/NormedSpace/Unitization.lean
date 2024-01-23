@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Bornology.Constructions
 
 /-!
 # Unitization norms
@@ -54,6 +55,8 @@ viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. 
 bornology.
 
 -/
+
+suppress_compilation
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]

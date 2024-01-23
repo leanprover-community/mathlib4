@@ -83,7 +83,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
   refine' continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => _
-  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
+  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with
     ⟨_, hc, ⟨c, hcs, rfl⟩⟩
@@ -303,9 +303,8 @@ variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace �
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by
-  rw [‹OrderTopology β›.topology_eq_generate_intervals]
-  refine' continuous_generateFrom fun s hs => _
-  rcases hs with ⟨a, rfl | rfl⟩
+  rw [‹OrderTopology β›.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  rintro s ⟨a, rfl | rfl⟩
   · rw [e.preimage_Ioi]
     apply isOpen_lt'
   · rw [e.preimage_Iio]

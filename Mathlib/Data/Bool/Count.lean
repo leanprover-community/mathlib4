@@ -25,7 +25,7 @@ theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b 
   -- Porting note: Proof re-written
   -- Old proof: simp only [length_eq_countP_add_countP (Eq (!b)), Bool.not_not_eq, count]
   simp only [length_eq_countP_add_countP (· == !b), count, add_right_inj]
-  suffices : (fun x => x == b) = (fun a => decide ¬(a == !b) = true); rw [this]
+  suffices (fun x => x == b) = (fun a => decide ¬(a == !b) = true) by rw [this]
   ext x; cases x <;> cases b <;> rfl
 #align list.count_bnot_add_count List.count_not_add_count
 
