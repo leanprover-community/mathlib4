@@ -31,20 +31,22 @@ namespace FintypeCat
 
 open Limits Functor PreGaloisCategory
 
-private noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+/-- Complement of the image of a morphism `f : X ⟶ Y` in `FintypeCat`. -/
+noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
   exact FintypeCat.of (↑(Set.range f)ᶜ)
 
-private def imageComplementIncl {X Y : FintypeCat.{u}}
+/-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
+def imageComplementIncl {X Y : FintypeCat.{u}}
     (f : X ⟶ Y) : imageComplement f ⟶ Y :=
   Subtype.val
 
 variable (G : Type u) [Group G]
 
-/- Given `f : X ⟶ Y` for `X Y : Action FintypeCat (MonCat.of G)`, the complement of the image
+/-- Given `f : X ⟶ Y` for `X Y : Action FintypeCat (MonCat.of G)`, the complement of the image
 of `f` has a natural `G`-action. -/
-private noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
+noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
     (f : X ⟶ Y) : Action FintypeCat (MonCat.of G) where
   V := FintypeCat.imageComplement f.hom
   ρ := MonCat.ofHom <| {
@@ -60,12 +62,13 @@ private noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCa
       exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
   }
 
-private def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+/-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
+def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Action.imageComplement G f ⟶ Y where
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
-private instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)
   apply ConcreteCategory.mono_of_injective
@@ -76,11 +79,8 @@ attribute [-instance] Distrib.toMul
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
 instance (G : Type u) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  letI e' : (Fin n) ≃* G := Equiv.mulEquiv e.symm
-  letI eq : SingleObj G ≌ SingleObj (Fin n) := e'.symm.toSingleObjEquiv
-  exact Limits.hasColimitsOfShape_of_equivalence eq.symm
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Equiv.type_group_representative_of_finite G
+  exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
