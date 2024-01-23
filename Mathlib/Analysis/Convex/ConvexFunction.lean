@@ -30,7 +30,7 @@ section FirstOrderCondition
 
 open InnerProductSpace
 
-variable {f : E → ℝ} {f' : E → (E →L[ℝ] ℝ)} {x y x': E} {s : Set E}
+variable {f : E → ℝ} {f' : E → E →L[ℝ] ℝ} {x y x': E} {s : Set E}
 
 private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a + b = 1)
   (hpoint : x' = a • x + b • y) :  x - x' =  b • (x - y) := by
