@@ -1646,22 +1646,21 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
 #align equiv.perm.cycle_induction_on Equiv.Perm.cycle_induction_on
 
 theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [Fintype α] {f g : Perm α}
-    (h : f ∈ cycleFactorsFinset g) : cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f} := by
-  revert f
-  refine'
-    cycle_induction_on (P := fun {g : Perm α} ↦
-      ∀ {f}, (f ∈ cycleFactorsFinset g)
-        → cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f}) _ _ _ _
-  · simp
-  · intro σ hσ f hf
-    simp only [cycleFactorsFinset_eq_singleton_self_iff.mpr hσ, mem_singleton] at hf ⊢
-    simp [hf]
-  · intro σ τ hd _ hσ hτ f
-    simp_rw [hd.cycleFactorsFinset_mul_eq_union, mem_union]
-    -- if only `wlog` could work here...
-    rintro (hf | hf)
-    · rw [hd.commute.eq, union_comm, union_sdiff_distrib, sdiff_singleton_eq_erase,
-        erase_eq_of_not_mem, mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
+    (h : f ∈ cycleFactorsFinset g) :
+    cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f} := by
+  induction g using cycle_induction_on generalizing f with
+  | base_one =>
+    simp only [cycleFactorsFinset_one, not_mem_empty] at h
+  | base_cycles σ hσ =>
+    simp only [cycleFactorsFinset_eq_singleton_self_iff.mpr hσ, mem_singleton] at h ⊢
+    simp only [h, mul_right_inv, cycleFactorsFinset_one, sdiff_self, bot_eq_empty]
+  | induction_disjoint σ τ hd _ hσ hτ =>
+    rw [hd.cycleFactorsFinset_mul_eq_union, mem_union] at h
+    cases h with
+    | inl hf => -- hf : f ∈ cycleFactorsFinset σ
+      rw [hd.cycleFactorsFinset_mul_eq_union, hd.commute.eq, union_comm,
+        union_sdiff_distrib, sdiff_singleton_eq_erase, erase_eq_of_not_mem,
+        mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
         cases' hd.symm x with hx hx
@@ -1670,12 +1669,17 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [Fintype α] {f g : Perm α}
           by_cases hfx : f x = x
           · rw [← hfx]
             simpa [hx] using hfx.symm
-          · rw [mul_apply]
-            rw [← hf.right _ (mem_support.mpr hfx)] at hx
-            contradiction
-      · exact fun H =>
-        not_mem_empty _ (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem hf H))
-    · rw [union_sdiff_distrib, sdiff_singleton_eq_erase, erase_eq_of_not_mem, mul_assoc,
+          · rw [← Ne.def, ← mem_support] at hfx
+            conv_rhs => rw [← hx]
+            simp only [coe_mul, comp_apply, EmbeddingLike.apply_eq_iff_eq]
+            apply symm
+            rw [eq_inv_iff_eq]
+            rw [hf.right _ hfx, hx]
+      · exact fun H => not_mem_empty _
+          (hd.disjoint_cycleFactorsFinset.le_bot (mem_inter_of_mem hf H))
+    | inr hf => -- hf : f ∈ cycleFactorsFinset τ
+      rw [hd.cycleFactorsFinset_mul_eq_union, union_sdiff_distrib,
+        sdiff_singleton_eq_erase, erase_eq_of_not_mem, mul_assoc,
         Disjoint.cycleFactorsFinset_mul_eq_union, hτ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
@@ -2084,8 +2088,7 @@ end Finset
 theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
     (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
-  revert x
-  induction n with
+  induction n generalizing x with
   | zero => -- zero case
     intro x hx
     simp only [pow_zero, coe_one, id.def, Subtype.coe_mk]
