@@ -89,6 +89,36 @@ def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
 
     return none
 
+
+-- todo clean this up
+def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
+
+  let .some name ← fData.getFnConstName?
+    | return none
+
+  let cfg ← readThe Config
+
+  if cfg.constToUnfold.contains name then
+    let .some fn ← do
+        if let .some fn' ← withTransparency .default <| unfoldDefinition? fData.fn then
+          pure (.some fn')
+        else if let .some fn' ← reduceRecMatcher? fData.fn then
+          pure (.some fn')
+        else 
+          pure none
+      | return none
+    trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr fData.fn}\n==>\n{← ppExpr fn}"
+
+    let fb := Mor.headBeta (Mor.mkAppN fn fData.args)
+    return ← withLCtx fData.lctx fData.insts do
+      mkLambdaFVars #[fData.mainVar] fb
+
+  -- unfold any instance projections
+  if let .some f ← unfoldFunHead? (← fData.toExpr) then
+    return f
+
+  return none
+
 /-- -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
@@ -653,6 +683,11 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fpro
 
   -- if functionName == ``DFunLike.coe && fData.args.size = 5 then
   --   return ← applyPiRule fpropDecl e f fprop
+
+  if let .some f' ← fData.unfold? then
+    let e := e.setArg fpropDecl.funArgId f'
+    if let .some r ← fprop e then
+      return r
 
   -- this should be done only `f` can't be decomposed and can't be unfolded
   if let .some r ← applyTransitionRules fpropDecl e fData fprop then
