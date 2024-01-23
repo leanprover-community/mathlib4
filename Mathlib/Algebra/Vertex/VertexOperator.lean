@@ -466,6 +466,8 @@ noncomputable def res_prod_left_ncoef.linearMap (A B : VertexOperator R V) (m k 
     simp only [RingHom.id_apply]
     exact res_prod_left_ncoef_smul A B m k r x
 
+/-! Rewrite this as composite_ncoef.linearMap A B m 0 k (fun i => ???) -/
+
 /-!
 /-- The left sum of the `m`-th residue product `A(z)_m B(z)`, given by the residue of
 `(x-y)^m A(x)B(y)` at `|x| > |y|`. -/
@@ -532,8 +534,9 @@ def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
 /-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
 for all integers `n`. -/
 theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
-  (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l) (hBC : isLocaltoOrderLeq B C m) :
-    isLocaltoOrderLeq (k + l + m)
+    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
+    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (k + l + m) := by
+  sorry
 -/
 
 end ResidueProduct
