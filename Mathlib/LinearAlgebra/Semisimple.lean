@@ -23,13 +23,13 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
  * `Module.End.IsSemisimple`: the definition that a linear endomorphism is semisimple
  * `Module.End.isSemisimple_iff`: the characterisation of semisimplicity in terms of invariant
    submodules.
- * `Module.End.eq_zero_of_isNilpotent_isSemisimple`: the collections of nilpotent and semisimple
-   endomorphisms meet only in the zero endomorphism.
+ * `Module.End.eq_zero_of_isNilpotent_isSemisimple`: the zero endomorphism is the only endomorphism
+   that is both nilpotent and semisimple.
 
 ## TODO
 
 In finite dimensions over a field:
- * Sum / product of commuting semisimple endomorphism is semisimple
+ * Sum / difference / product of commuting semisimple endomorphisms is semisimple
  * If semisimple then generalized eigenspace is eigenspace
  * Semisimple iff minpoly is squarefree
  * Restriction of semisimple endomorphism is semisimple
@@ -72,42 +72,32 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   nontriviality M
-  -- TODO tidy up this crazy proof
   set k := nilpotencyClass f
-  wlog hk' : 2 ≤ k
-  · replace hk' : k = 0 ∨ k = 1 := by omega
-    rcases hk' with (hk₀ : nilpotencyClass f = 0) | (hk₁ : nilpotencyClass f = 1)
+  wlog hk : 2 ≤ k
+  · replace hk : k = 0 ∨ k = 1 := by omega
+    rcases hk with (hk₀ : nilpotencyClass f = 0) | (hk₁ : nilpotencyClass f = 1)
     · rw [← pos_nilpotencyClass_iff, hk₀] at hn; contradiction
     · exact eq_zero_of_nilpotencyClass_eq_one hk₁
   let p := LinearMap.ker (f ^ (k - 1))
   have hp : p ≤ p.comap f := fun x hx ↦ by
     rw [Submodule.mem_comap, LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', add_comm,
       pow_add, pow_one, LinearMap.mul_apply, hx, map_zero]
-  have hk₁ : f ^ k = 0 := pow_nilpotencyClass hn
-  have hk₂ : p < ⊤ :=
-    lt_top_iff_ne_top.mpr fun contra ↦ pow_pred_nilpotencyClass hn <| LinearMap.ker_eq_top.mp contra
   obtain ⟨q, hq₀, hq₁, hq₂⟩ := isSemisimple_iff.mp hs p hp
-  have hq₂' : q ≠ ⊥ := by
-    -- Missing API for `Codisjoint`?
-    rw [lt_top_iff_ne_top] at hk₂
-    contrapose! hk₂
-    simpa [hk₂] using hq₂
-  obtain ⟨m, hm₁, hm₀⟩ := q.ne_bot_iff.mp hq₂'
-  have hm₂ : f m ∈ p := by
-    have foo : k - 1 + 1 = k := Nat.sub_add_cancel (Nat.zero_lt_of_lt hk')
-    rw [LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', foo, hk₁, LinearMap.zero_apply]
-  have hm₃ : f m ∈ q := hq₀ hm₁
-  have hm₄ : f m = 0 := by
+  replace hq₂ : q ≠ ⊥ := hq₂.ne_bot_of_ne_top <|
+    fun contra ↦ pow_pred_nilpotencyClass hn <| LinearMap.ker_eq_top.mp contra
+  obtain ⟨m, hm₁ : m ∈ q, hm₀ : m ≠ 0⟩ := q.ne_bot_iff.mp hq₂
+  suffices m ∈ p by
+    exfalso
+    apply hm₀
     rw [← Submodule.mem_bot (R := R), ← hq₁.eq_bot]
-    exact ⟨hm₂, hm₃⟩
-  have hm₅ : m ∈ p := by
-    have foo : 1 ≤ k - 1 := by omega
-    rw [LinearMap.mem_ker]
-    exact LinearMap.pow_map_zero_of_le foo hm₄
-  have hm₆ : m = 0 := by
+    exact ⟨this, hm₁⟩
+  replace hm₁ : f m = 0 := by
     rw [← Submodule.mem_bot (R := R), ← hq₁.eq_bot]
-    exact ⟨hm₅, hm₁⟩
-  contradiction
+    refine ⟨(?_ : f m ∈ p), hq₀ hm₁⟩
+    rw [LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', (by omega : k - 1 + 1 = k),
+      pow_nilpotencyClass hn, LinearMap.zero_apply]
+  rw [LinearMap.mem_ker]
+  exact LinearMap.pow_map_zero_of_le (by omega : 1 ≤ k - 1) hm₁
 
 section field
 
