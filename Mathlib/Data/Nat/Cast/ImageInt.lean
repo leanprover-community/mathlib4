@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
@@ -36,5 +36,11 @@ theorem image_cast_int_Iic (a : ℕ) : (↑) '' Iic a = Icc (0 : ℤ) a := by
 
 theorem image_cast_int_Iio (a : ℕ) : (↑) '' Iio a = Ico (0 : ℤ) a := by
   rw [← Ico_bot, image_cast_int_Ico]; rfl
+
+theorem image_cast_int_Ici (a : ℕ) : (↑) '' Ici a = Ici (a : ℤ) :=
+  (castOrderEmbedding (α := ℤ)).image_Ici (by simp [isUpperSet_Ici]) a
+
+theorem image_cast_int_Ioi (a : ℕ) : (↑) '' Ioi a = Ioi (a : ℤ) :=
+  (castOrderEmbedding (α := ℤ)).image_Ioi (by simp [isUpperSet_Ici]) a
 
 end Nat
