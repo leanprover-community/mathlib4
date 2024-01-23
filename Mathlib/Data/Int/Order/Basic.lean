@@ -417,7 +417,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
   · intro h
     rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
-    simp (config := { singlePass := true }) only [← emod_add_ediv m n]
+    rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
     rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
     exact add_lt_add_right (emod_lt_of_pos _ hn) _
