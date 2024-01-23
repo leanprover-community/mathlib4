@@ -82,7 +82,7 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic| first | assumption |
   aesop $c*
-    (options :=
+    (config :=
       { terminal := true
         assumptionTransparency := .reducible
         enableSimp := false })
@@ -92,7 +92,7 @@ macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop? $c*
-    (options :=
+    (config :=
       { terminal := true
         assumptionTransparency := .reducible
         enableSimp := false

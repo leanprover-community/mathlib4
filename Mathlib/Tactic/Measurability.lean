@@ -30,7 +30,7 @@ The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurabl
 `StronglyMeasurable f`, `AEStronglyMeasurable f μ`, or `MeasurableSet s` by applying lemmas tagged
 with the `measurability` user attribute. -/
 macro "measurability" (config)? : tactic =>
-  `(tactic| aesop (options := { terminal := true })
+  `(tactic| aesop (config := { terminal := true })
     (rule_sets [$(Lean.mkIdent `Measurable):ident]))
 
 /--
@@ -39,7 +39,7 @@ The tactic `measurability?` solves goals of the form `Measurable f`, `AEMeasurab
 with the `measurability` user attribute, and suggests a faster proof script that can be substituted
 for the tactic call in case of success. -/
 macro "measurability?" (config)? : tactic =>
-  `(tactic| aesop? (options := { terminal := true })
+  `(tactic| aesop? (config := { terminal := true })
     (rule_sets [$(Lean.mkIdent `Measurable):ident]))
 
 -- Todo: implement `measurability!` and `measurability!?` and add configuration,
