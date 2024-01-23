@@ -269,4 +269,74 @@ lemma homogeneous_of_mem_homogeneousComponents [DecidableEq ιM] [Decomposition 
   change b ∈ (decompose 𝓜 a).support.image _ at hb
   aesop
 
+section same_indexing_set
+
+variable {σA σM : Type*} (𝒜 : ℕ → σA) (ℳ : ℕ → σM)
+variable [AddCommMonoid M] [Module A M] [SetLike σA A] [SetLike σM M]
+variable [AddSubmonoidClass σA A] [AddSubmonoidClass σM M]
+variable [GradedRing 𝒜] [DirectSum.Decomposition ℳ] [SetLike.GradedSMul 𝒜 ℳ]
+
+
+lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
+    GradedModule.proj ℳ j (a • m) =
+    if i ≤ j
+    then GradedRing.proj 𝒜 (j - i) a • GradedModule.proj ℳ i m
+    else 0 := by
+  classical
+  rw [← DirectSum.sum_support_decompose ℳ (a • m), map_sum, Finset.sum_eq_single j,
+    proj_apply, decompose_of_mem_same (hx := SetLike.coe_mem _)]
+  pick_goal 2
+  · intro n _ hne; rw [proj_apply, decompose_of_mem_ne (hx := SetLike.coe_mem _) hne]
+  pick_goal 2
+  · intro hj; simpa using hj
+  letI := isModule 𝒜 ℳ
+
+  have eq0 : decompose ℳ (a • m) = a • decompose ℳ m := (linearEquiv 𝒜 ℳ).1.map_smul a m
+  rw [eq0]
+  show ((DirectSum.decompose 𝒜 a • DirectSum.decompose ℳ m) j : M) = _
+  conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m,
+    ← DirectSum.sum_support_decompose 𝒜 a, DirectSum.decompose_sum,
+    Finset.sum_smul, DirectSum.decompose_sum]
+  simp_rw [Finset.smul_sum]
+  have eq1 (k : ℕ) :
+    ∑ j in (decompose ℳ m).support,
+      (decompose 𝒜 (decompose 𝒜 a k)) • decompose ℳ (decompose ℳ m j) =
+    decompose 𝒜 (decompose 𝒜 a k) • decompose ℳ m
+  · rw [Finset.sum_eq_single i, decompose_of_mem_same ℳ hm]
+    · intro j _ hne
+      rw [decompose_of_mem_ne ℳ hm hne.symm, decompose_zero, smul_zero]
+    · intro hi
+      simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi
+      simp only [decompose_coe, hi, ZeroMemClass.coe_zero, decompose_zero, smul_zero]
+  simp_rw [eq1]
+  lift m to ℳ i using hm
+  simp_rw [decompose_coe, DirectSum.Gmodule.of_smul_of, vadd_eq_add]
+
+  split_ifs with h
+  · rw [DFinsupp.finset_sum_apply, Finset.sum_eq_single (j - i), DirectSum.coe_of_apply,
+      if_pos (Nat.sub_add_cancel h), proj_apply, decompose_coe, DirectSum.of_eq_same]
+    · rfl
+    · intro n _ hn2
+      rw [of_eq_of_ne]
+      contrapose! hn2
+      exact Nat.sub_eq_of_eq_add hn2.symm |>.symm
+
+    · intro H
+      ext
+      simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at H
+      rw [H, Gmodule.zero_smul, coe_of_apply, if_pos (Nat.sub_add_cancel h)]
+      rfl
+
+  · rw [DFinsupp.finset_sum_apply]
+    push_cast
+    simp_rw [coe_of_apply]
+    apply Finset.sum_eq_zero
+    intro k _
+    simp only [not_le] at h
+    rw [if_neg]
+    · rfl
+    · linarith
+
+end same_indexing_set
+
 end GradedModule
