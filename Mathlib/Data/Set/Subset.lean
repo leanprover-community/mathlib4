@@ -30,6 +30,9 @@ subsets
 -/
 
 open Lean PrettyPrinter Delaborator SubExpr in
+/--
+Sets of a subtype coerced to the ambient type are denoted with `↑`.
+-/
 @[delab app.Set.image]
 def delab_set_image_subtype : Delab := do
   let #[α, _, f, _] := (← getExpr).getAppArgs | failure
@@ -47,8 +50,15 @@ variable {S : Set (Set α)} {T : Set (Set ↑A)} {i : β → Set α} {j : β →
 
 namespace Subset
 
+/--
+Given two sets `A` and `B`, `set_restrict A B` is the set of `↑A` formed by the elements
+whose value is in `B`.
+-/
 def set_restrict (A B : Set α) : Set ↑A := restrict A B
 
+/--
+`A ↓∩ B` denotes `restrict A B`.
+-/
 infixl:67 " ↓∩ "  => set_restrict
 
 @[simp]
@@ -135,7 +145,6 @@ lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
   simp only [restrict_subset_restrict_iff, subset_inter_iff, inter_subset_left, true_and]
   apply subset_trans (inter_subset_right A B) h
 
-@[simp]
 lemma mem_coe_iff (x : α): x ∈  (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x  := by rfl
 
 /--
@@ -143,11 +152,9 @@ The following simp lemmas try to transform operations in the subtype into operat
 type, if possible.
 -/
 
-@[simp]
 lemma coe_univ : ↑(univ : Set A)  = A := by
   simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
 
-@[simp]
 lemma coe_empty : ↑(∅ : Set A)  = (∅ : Set α ) := image_empty _
 
 @[simp]
@@ -285,7 +292,7 @@ lemma coueOut_inter_self_left : ↑D ∩ A = ↑D := by
   simp only [inter_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coe_contained_iff : (D : Set α ) ⊆ ↑E ↔ D ⊆ E := by
+lemma coe_contained_iff : D ⊆ Subtype.val ⁻¹' ↑E ↔ D ⊆ E := by
   apply Iff.intro
   · intro h x hx
     simp only [image_subset_iff] at h
@@ -294,15 +301,13 @@ lemma coe_contained_iff : (D : Set α ) ⊆ ↑E ↔ D ⊆ E := by
       Subtype.coe_eta, Subtype.coe_prop, exists_const] at h
     exact h
   · intro h x hx
-    simp_all only [mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-    aesop_destruct_products
-    simp_all only [exists_true_left]
-    apply h
-    simp_all only
+    simp only [mem_preimage, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+      Subtype.coe_eta, Subtype.coe_prop, exists_const]
+    exact h hx
 
 @[simp]
 lemma coe_eq_iff : (D : Set α) = ↑E ↔ D = E := by
-  simp only [subset_antisymm_iff,coe_contained_iff]
+  simp only [subset_antisymm_iff, image_subset_iff, coe_contained_iff]
 
 lemma coe_inj (h : (↑D : Set α) = ↑E) : D = E := by
   simp only [coe_eq_iff] at h
