@@ -215,6 +215,7 @@ jobs:
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
             lake exe cache clean!
+            ls
             find Mathlib -name "*.olean" -type f -delete
             lake exe cache get || (sleep 1; lake exe cache get)
             # We pipe the output of `lake build` to a file,
