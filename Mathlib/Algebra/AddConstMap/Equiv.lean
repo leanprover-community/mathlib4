@@ -14,6 +14,7 @@ We also define the corresponding typeclass and prove some basic properties.
 -/
 
 open Function
+open scoped AddConstMap
 
 /-- An equivalence between `G` and `H` conjugating `(· + a)` to `(· + b)`. -/
 structure AddConstEquiv (G H : Type*) [Add G] [Add H] (a : G) (b : H)
@@ -26,7 +27,7 @@ add_decl_doc AddConstEquiv.toEquiv
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
-notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
+scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
 /-- A typeclass saying that `F` is a type of bundled equivalences `G ≃ H`
 semiconjugating `(· + a)` to `(· + b)`. -/
@@ -39,7 +40,7 @@ class AddConstEquivClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
 instance (priority := 100) {F : Type*} {G H : outParam Type*} [Add G] [Add H]
     {a : outParam G} {b : outParam H} [h : AddConstEquivClass F G H a b] :
     AddConstMapClass F G H a b where
-  toFunLike := inferInstance
+  toDFunLike := inferInstance
   __ := h
 
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
@@ -48,17 +49,17 @@ instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
   inv f := f.toEquiv.symm
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, h, _ => by congr; exact FunLike.ext' h
+  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, h, _ => by congr; exact DFunLike.ext' h
   map_add_const f x := f.map_add_const' x
 
 namespace AddConstEquiv
 
 variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
 
-@[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := FunLike.ext _ _ h
+@[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := DFunLike.ext _ _ h
 
 lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H) :=
-  Injective.of_comp <| show Injective (FunLike.coe ∘ _) from FunLike.coe_injective
+  Injective.of_comp <| show Injective (DFunLike.coe ∘ _) from DFunLike.coe_injective
 
 @[simp]
 lemma toEquiv_eq_iff {e₁ e₂ : G ≃+c[a, b] H} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
