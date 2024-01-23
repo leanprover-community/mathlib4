@@ -477,7 +477,7 @@ theorem monotone_gradient_strict_convex (hs : Convex ℝ s)
   linarith
 
 theorem strict_convex_monotone_gradient (hf : ∀ x ∈ s, HasGradientAt f (f' x) x)
-    (h₁ : StrictConvexOn ℝ s f ) :
+    (h₁ : StrictConvexOn ℝ s f) :
     ∀ x ∈ s, ∀ y ∈ s, x ≠ y → inner (f' x - f' y) (x - y) > (0 : ℝ) := by
   intro x xin y yin xney
   have convf : ConvexOn ℝ s f := by apply StrictConvexOn.convexOn h₁
