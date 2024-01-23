@@ -436,8 +436,8 @@ lemma in_range_if_lt_minAsNat_zero (l:ℕ)  (hl: l< (minAsNat α 0)) :
              linarith
            · exact ht
        · rw [hkl.right]
-         rw [show (minAsNat α k=(if k > n + 1 then n + 2 else if ∀ l,
-         α.1.down.toOrderHom l ≠ (δ i).toOrderHom k then k else minAsNat α (k+1) )) by rw [minAsNat]]
+         rw [show (minAsNat α k=(if k > n + 1 then n + 2 else if ∀ l, α.1.down.toOrderHom l
+          ≠ (δ i).toOrderHom k then k else minAsNat α (k+1) )) by rw [minAsNat]]
          simp only [gt_iff_lt, k_lt_np1, len_mk, yoneda_obj_obj, ne_eq, ite_false, ite_eq_right_iff]
          exact fun a => (hkl.left a).elim
 
