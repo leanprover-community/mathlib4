@@ -905,56 +905,82 @@ section Tactics
 /-!
 ## Tactic extensions for real powers
 -/
+namespace Mathlib.Meta.NormNum
 
+open Lean.Meta Qq
 
--- namespace NormNum
+theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, rpow_nat_cast]
 
--- open Tactic
+theorem isNat_rpow_neg {a b : ℝ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ (Int.negOfNat nb)) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, Real.rpow_int_cast]
 
--- theorem rpow_pos (a b : ℝ) (b' : ℕ) (c : ℝ) (hb : (b' : ℝ) = b) (h : a ^ b' = c) :
--- a ^ b = c := by
---   rw [← h, ← hb, Real.rpow_nat_cast]
--- #align norm_num.rpow_pos NormNum.rpow_pos
+theorem isInt_rpow_pos {a b : ℝ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, rpow_nat_cast]
 
--- theorem rpow_neg (a b : ℝ) (b' : ℕ) (c c' : ℝ) (a0 : 0 ≤ a) (hb : (b' : ℝ) = b) (h : a ^ b' = c)
---     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
---   rw [← hc, ← h, ← hb, Real.rpow_neg a0, Real.rpow_nat_cast]
--- #align norm_num.rpow_neg NormNum.rpow_neg
+theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ (Int.negOfNat nb)) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, Real.rpow_int_cast]
 
--- /-- Evaluate `Real.rpow a b` where `a` is a rational numeral and `b` is an integer.
--- (This cannot go via the generalized version `prove_rpow'` because `rpow_pos` has a
--- side condition; we do not attempt to evaluate `a ^ b` where `a` and `b` are both negative because
--- it comes out to some garbage.) -/
--- unsafe def prove_rpow (a b : expr) : tactic (expr × expr) := do
---   let na ← a.to_rat
---   let ic ← mk_instance_cache q(ℝ)
---   match match_sign b with
---     | Sum.inl b => do
---       let (ic, a0) ← guard (na ≥ 0) >> prove_nonneg ic a
---       let nc ← mk_instance_cache q(ℕ)
---       let (ic, nc, b', hb) ← prove_nat_uncast ic nc b
---       let (ic, c, h) ← prove_pow a na ic b'
---       let cr ← c
---       let (ic, c', hc) ← prove_inv ic c cr
---       pure (c', (expr.const `` rpow_neg []).mk_app [a, b, b', c, c', a0, hb, h, hc])
---     | Sum.inr ff => pure (q((1 : ℝ)), expr.const `` Real.rpow_zero [] a)
---     | Sum.inr tt => do
---       let nc ← mk_instance_cache q(ℕ)
---       let (ic, nc, b', hb) ← prove_nat_uncast ic nc b
---       let (ic, c, h) ← prove_pow a na ic b'
---       pure (c, (expr.const `` rpow_pos []).mk_app [a, b, b', c, hb, h])
--- #align norm_num.prove_rpow norm_num.prove_rpow
+theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, rpow_nat_cast]
 
--- /-- Evaluates expressions of the form `rpow a b` and `a ^ b` in the special case where
--- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
--- @[norm_num]
--- unsafe def eval_rpow : expr → tactic (expr × expr)
---   | q(@Pow.pow _ _ Real.hasPow $(a) $(b)) => b.to_int >> prove_rpow a b
---   | q(Real.rpow $(a) $(b)) => b.to_int >> prove_rpow a b
---   | _ => tactic.failed
--- #align norm_num.eval_rpow norm_num.eval_rpow
+theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a^(Int.negOfNat nb)) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, Real.rpow_int_cast]
 
--- end NormNum
+/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/
+@[norm_num (_ : ℝ) ^ (_ : ℝ)]
+def evalRPow : NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := ℝ) (β := ℝ))
+  haveI' : u =QL 0 := ⟨⟩
+  haveI' : $α =Q ℝ := ⟨⟩
+  haveI' h : $e =Q $a ^ $b := ⟨⟩
+  h.check
+  let (rb : Result b) ← derive (α := q(ℝ)) b
+  match rb with
+  | .isBool .. | .isRat _ .. => failure
+  | .isNat sβ nb pb =>
+    match ← derive q($a ^ $nb) with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      haveI' : $sα' =Q AddGroupWithOne.toAddMonoidWithOne := ⟨⟩
+      return .isNat sα' ne' q(isNat_rpow_pos $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      assumeInstancesCommute
+      return .isNegNat sα' ne' q(isInt_rpow_pos $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
+  | .isNegNat sβ nb pb =>
+    match ← derive q($a ^ (-($nb : ℤ))) with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      let _ := q(instRingReal)
+      assumeInstancesCommute
+      return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isRat sα' qe' nume' dene' q(isRat_rpow_neg $pb $pe')
+
+end Mathlib.Meta.NormNum
 
 end Tactics
 
