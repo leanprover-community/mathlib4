@@ -195,7 +195,9 @@ jobs:
         run: lake build -KCI MathlibExtras
 
       - name: upload cache
-        if: always()
+        # We only upload the cache if the build ran (either succeeding or failing),
+        # but not if it was skipped.
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         run: |
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # lake exe cache pack! || true
