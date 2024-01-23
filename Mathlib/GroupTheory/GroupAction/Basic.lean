@@ -531,3 +531,9 @@ end AddAction
 
 attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
+
+theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] (S : Set α) (a b : α) :
+    Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
+  rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
+  simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
+  exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
