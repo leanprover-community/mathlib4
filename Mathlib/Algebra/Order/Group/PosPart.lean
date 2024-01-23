@@ -5,7 +5,6 @@ Authors: Christopher Hoskin, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Lattice
-import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.order.lattice_group from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 

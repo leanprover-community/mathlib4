@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 

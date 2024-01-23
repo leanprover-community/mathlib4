@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Div
@@ -1073,8 +1072,8 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
 
 @[simp]
 theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
-    (-p).aroots S = p.aroots S :=
-  by rw [aroots, Polynomial.map_neg, roots_neg]
+    (-p).aroots S = p.aroots S := by
+  rw [aroots, Polynomial.map_neg, roots_neg]
 
 @[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
