@@ -44,7 +44,7 @@ private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a 
       _ = b • (x - y):= Eq.symm (smul_sub b x y)
 
 theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s f)
-    (xs : x ∈ s) (hy : y ∈ s) : f x + f' x (y - x) ≤ f y := by
+    (xs : x ∈ s) (ys : y ∈ s) : f x + f' x (y - x) ≤ f y := by
   have h₁ : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
        → ‖f x' - f x - (f' x) (x' - x)‖ ≤ ε * ‖x - x'‖:= by
     rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff] at h
@@ -65,7 +65,6 @@ theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s 
     rw [Set.mem_setOf] at h₃
     rw [norm_sub_rev x]
     exact h₃
-  intro y ys
   by_cases h₂: y = x
   rw [h₂, sub_self, ContinuousLinearMap.map_zero (f' x), add_zero]
   have h₃: 0 < ‖x - y‖:= by
@@ -218,13 +217,13 @@ theorem first_order_condition_inverse
 
 theorem first_order_condition_iff (h₁: Convex ℝ s) (h : ∀ x ∈ s, HasFDerivAt f (f' x) x) :
     ConvexOn ℝ s f ↔ ∀ (x: E), x ∈ s → ∀ (y: E), y ∈ s → f x + f' x (y - x) ≤ f y:=
-  ⟨ fun h₂ x xs ↦ first_order_condition (h x xs) h₂ xs, first_order_condition_inverse h h₁ ⟩
+  ⟨fun h₂ x xs _ ys↦ first_order_condition (h x xs) h₂ xs ys, first_order_condition_inverse h h₁⟩
 
 theorem convex_monotone_gradient (hfun: ConvexOn ℝ s f) (h : ∀ x ∈ s , HasFDerivAt f (f' x) x) :
     ∀ x ∈ s, ∀ y ∈ s,  (f' x - f' y) (x - y) ≥ 0 := by
   intro x hx y hy
-  have h₁ : f x + f' x (y - x) ≤ f y := first_order_condition (h x hx) hfun hx y hy
-  have h₂ : f y + f' y (x - y) ≤ f x := first_order_condition (h y hy) hfun hy x hx
+  have h₁ : f x + f' x (y - x) ≤ f y := first_order_condition (h x hx) hfun hx hy
+  have h₂ : f y + f' y (x - y) ≤ f x := first_order_condition (h y hy) hfun hy hx
   have h₃ : f x + f' x (y - x) + (f y + f' y (x - y)) ≤ f y + f x := add_le_add h₁ h₂
   rw [add_assoc, ← le_sub_iff_add_le', ← add_sub, sub_self, add_zero] at h₃
   rw [add_comm, add_assoc, ← le_sub_iff_add_le', sub_self] at h₃
@@ -243,7 +242,7 @@ variable {f : E → ℝ} {f' : E → E} {s : Set E} {x : E}
 theorem first_order_condition' (h : HasGradientAt f (f' x) x) (hf : ConvexOn ℝ s f) (xs : x ∈ s):
     ∀ (y : E), y ∈ s → f x + inner (f' x) (y - x) ≤ f y := by
   show ∀ (y : E), y ∈ s → f x + (toDual ℝ E) (f' x) (y - x) ≤ f y
-  apply first_order_condition _ hf xs
+  intro _ hy; apply first_order_condition _ hf xs hy
   apply h
 
 theorem first_order_condition_inverse'  (h : ∀ x ∈ s , HasGradientAt f (f' x) x) (h₁ : Convex ℝ s)
