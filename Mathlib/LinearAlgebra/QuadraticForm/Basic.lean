@@ -990,22 +990,23 @@ section IsOrtho
 /-! ### Orthogonality -/
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] {Q : QuadraticForm R M}
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  {Q : QuadraticForm R M N}
 
 /-- The proposition that two elements of a quadratic form space are orthogonal. -/
-def IsOrtho (Q : QuadraticForm R M) (x y : M) : Prop :=
+def IsOrtho (Q : QuadraticForm R M N) (x y : M) : Prop :=
   Q (x + y) = Q x + Q y
 
-theorem isOrtho_def {Q : QuadraticForm R M} {x y : M} : Q.IsOrtho x y ↔ Q (x + y) = Q x + Q y :=
+theorem isOrtho_def {Q : QuadraticForm R M N} {x y : M} : Q.IsOrtho x y ↔ Q (x + y) = Q x + Q y :=
   Iff.rfl
 
-theorem IsOrtho.all (x y : M) : IsOrtho (0 : QuadraticForm R M) x y := (zero_add _).symm
+theorem IsOrtho.all (x y : M) : IsOrtho (0 : QuadraticForm R M N) x y := (zero_add _).symm
 
 theorem IsOrtho.zero_left (x : M) : IsOrtho Q (0 : M) x := by simp [isOrtho_def]
 
 theorem IsOrtho.zero_right (x : M) : IsOrtho Q x (0 : M) := by simp [isOrtho_def]
 
-theorem ne_zero_of_not_isOrtho_self {Q : QuadraticForm R M} (x : M) (hx₁ : ¬Q.IsOrtho x x) :
+theorem ne_zero_of_not_isOrtho_self {Q : QuadraticForm R M N} (x : M) (hx₁ : ¬Q.IsOrtho x x) :
     x ≠ 0 :=
   fun hx₂ => hx₁ (hx₂.symm ▸ .zero_left _)
 
@@ -1013,13 +1014,13 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
-theorem _root_.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
-    [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm):
+theorem _root_.LinearMap.toQuadraticForm_isOrtho [IsCancelAdd R]
+    [NoZeroDivisors R] [CharZero R] {B : M →ₗ[R] M →ₗ[R] R} {x y : M} (h : B.IsSymm):
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
-  simp_rw [isOrtho_def, BilinForm.isOrtho_def, toQuadraticForm_apply, bilin_add_left,
-    bilin_add_right, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), h, add_self_eq_zero (R := R)]
+  simp_rw [isOrtho_def, LinearMap.isOrtho_def, LinearMap.toQuadraticForm_apply, map_add,
+    LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
+  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero (R := R)]
 
 end CommSemiring
 
