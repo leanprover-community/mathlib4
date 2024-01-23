@@ -131,8 +131,8 @@ section ZeroPow
 variable [Zero R] [Pow R ℕ]
 
 variable (x) in
-/-- If `x` is nilpotent the nilpotency class is the small natural number `k` such that `x ^ k = 0`.
-If `x` is not nilpotent, then the nilpotency class takes the junk value `0`. -/
+/-- If `x` is nilpotent, the nilpotency class is the smallest natural number `k` such that
+`x ^ k = 0`. If `x` is not nilpotent, the nilpotency class takes the junk value `0`. -/
 noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
 
 @[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
