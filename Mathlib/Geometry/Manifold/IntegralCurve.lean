@@ -487,9 +487,9 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
   obtain ⟨T, ht₀, ht⟩ : ∃ T, t ∈ Ioo (-T) T ∧ t₀ ∈ Ioo (-T) T := by
-    obtain ⟨T, hT₁, hT₂⟩ := exists_mem_Ioo_neg_self t
+    obtain ⟨T, hT₁, hT₂⟩ := exists_abs_lt t
     obtain ⟨hT₂, hT₃⟩ := abs_lt.mp hT₂
-    obtain ⟨S, hS₁, hS₂⟩ := exists_mem_Ioo_neg_self t₀
+    obtain ⟨S, hS₁, hS₂⟩ := exists_abs_lt t₀
     obtain ⟨hS₂, hS₃⟩ := abs_lt.mp hS₂
     exact ⟨T + S, by constructor <;> constructor <;> linarith⟩
   exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht (fun t _ ↦ hγt t) hv
