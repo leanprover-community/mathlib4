@@ -10,6 +10,10 @@ import Mathlib.Algebra.Order.Module.Defs
 # Ordered algebras
 
 This file proves properties of algebras where both rings are ordered compatibly.
+
+### TODO
+
+`positivity` extension for `algebraMap`
 -/
 
 variable {α β : Type*} [OrderedCommSemiring α]
@@ -18,9 +22,14 @@ section OrderedSemiring
 variable (β)
 variable [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α}
 
-lemma algebraMap_mono : Monotone (algebraMap α β) :=
+@[mono] lemma algebraMap_mono : Monotone (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
     simpa only [Algebra.algebraMap_eq_smul_one] using smul_le_smul_of_nonneg_right ha zero_le_one
+
+/-- A version of `algebraMap_mono` for use by `gcongr` since it currently does not preprocess
+`Monotone` conclusions. -/
+@[gcongr] protected lemma GCongr.algebraMap_le_algebraMap {a₁ a₂ : α} (ha : a₁ ≤ a₂) :
+    algebraMap α β a₁ ≤ algebraMap α β a₂ := algebraMap_mono _ ha
 
 lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa using algebraMap_mono β ha
 
@@ -41,9 +50,14 @@ section SMulPosStrictMono
 variable [SMulPosStrictMono α β] {a a₁ a₂ : α}
 variable (β)
 
-lemma algebraMap_strictMono : StrictMono (algebraMap α β) :=
+@[mono] lemma algebraMap_strictMono : StrictMono (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
     simpa only [Algebra.algebraMap_eq_smul_one] using smul_lt_smul_of_pos_right ha zero_lt_one
+
+/-- A version of `algebraMap_strictMono` for use by `gcongr` since it currently does not preprocess
+`Monotone` conclusions. -/
+@[gcongr] protected lemma GCongr.algebraMap_lt_algebraMap {a₁ a₂ : α} (ha : a₁ < a₂) :
+    algebraMap α β a₁ < algebraMap α β a₂ := algebraMap_strictMono _ ha
 
 lemma algebraMap_pos (ha : 0 < a) : 0 < algebraMap α β a := by
   simpa using algebraMap_strictMono β ha
