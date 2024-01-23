@@ -43,7 +43,7 @@ private lemma point_proportion {a b: ℝ} (_ : 0 ≤ a) (_ : 0 ≤ b) (sumab: a 
       _ = b • (x - y):= Eq.symm (smul_sub b x y)
 
 theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s f)
-    (xs : x ∈ s) : ∀ (y : E), y ∈ s → f x + f' x (y - x) ≤ f y := by
+    (xs : x ∈ s) (hy : y ∈ s) : f x + f' x (y - x) ≤ f y := by
   have h₁ : ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ (x' : E), ‖x - x'‖ ≤ δ
        → ‖f x' - f x - (f' x) (x' - x)‖ ≤ ε * ‖x - x'‖:= by
     rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff] at h
