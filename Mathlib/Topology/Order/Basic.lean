@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.NormNum
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.Order.LeftRight
 
