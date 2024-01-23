@@ -224,8 +224,6 @@ theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
 #align bool.bor_bnot_self Bool.or_not_self
 #align bool.bnot_bor_self Bool.not_or_self
 
-theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
-
 #align bool.bxor_comm Bool.xor_comm
 
 attribute [simp] xor_assoc

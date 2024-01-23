@@ -45,21 +45,8 @@ set_option linter.deprecated false
 section
 variable {f : Bool → Bool → Bool}
 
-@[simp]
-lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
-  rfl
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
-
-@[simp]
-lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
-  unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
-  rintro ⟨⟩
-  split_ifs <;> rfl
 #align nat.bitwise_zero_right Nat.bitwise_zero_right
-
-lemma bitwise_zero : bitwise f 0 0 = 0 := by
-  simp only [bitwise_zero_right, ite_self]
 #align nat.bitwise_zero Nat.bitwise_zero
 
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
@@ -68,15 +55,6 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
-  split_ifs <;> rfl
-
-theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
-    (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -178,7 +156,6 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
   simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
     ite_false]
   conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
-  split_ifs with hf <;> rfl
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
@@ -212,9 +189,7 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 /-- The ith bit is the ith element of `n.bits`. -/
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp only [testBit, zero_eq, shiftRight_zero, and_one_is_mod, mod_two_of_bodd,
-      bodd_eq_bits_head, List.getI_zero_eq_headI]
-    cases List.headI (bits n) <;> rfl
+  · simp [testBit, bodd_eq_bits_head, List.getI_zero_eq_headI]
   conv_lhs => rw [← bit_decomp n]
   rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
@@ -273,20 +248,19 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n)]
-  simp
+  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
   rw [testBit, shiftRight_eq_div_pow]
   cases' hm.lt_or_lt with hm hm
-  · rw [Nat.div_eq_of_lt]
-    · simp
-    · exact pow_lt_pow_right one_lt_two hm
+  · rw [Nat.div_eq_of_lt, bodd_zero]
+    exact pow_lt_pow_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
-    simp [pow_succ, and_one_is_mod, mul_mod_left]
+    simp only [pow_succ, bodd_mul, Bool.and_eq_false_eq_eq_false_or_eq_false]
+    exact Or.inr rfl
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
 theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
@@ -328,7 +302,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
 #align nat.land_comm Nat.land_comm
 
 theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
-  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
+  bitwise_comm Bool.xor_comm n m
 #align nat.lxor_comm Nat.xor_comm
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
@@ -497,6 +498,79 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
 
 attribute [to_additive existing] npowRec
 
+@[to_additive]
+lemma npowRec_add [One M] [Mul M] -- can we rename `one_mul` to `zero_add` in additive version?
+    (one_mul : ∀ x : M, 1 * x = x) (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z))
+    (n m : ℕ) (x : M) :
+    npowRec (n + m) x = npowRec n x * npowRec m x := by
+  induction n with
+  | zero => simpa only [Nat.zero_add] using (one_mul _).symm
+  | succ n ih => simp only [Nat.add_right_comm _ 1, npowRec, mul_assoc, ih]
+
+@[to_additive nsmulRec_mul]
+lemma npowRec_mul [One M] [Mul M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z))
+    (n m : ℕ) (x : M) :
+    npowRec (n * m) x = npowRec m (npowRec n x) := by
+  induction m with
+  | zero => simp [Nat.mul_zero, npowRec]
+  | succ m ih => rw [Nat.mul_succ, Nat.add_comm, npowRec_add one_mul mul_assoc, npowRec, ih]
+
+/-- Auxiliary function for `nsmulBinRec`. -/
+@[to_additive "Auxiliary function for `npowBinRec`."]
+abbrev npowBinRecAux [Mul M] (n : ℕ) : M → M → M :=
+  n.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (x * y) y) (x * x)
+
+/-- `npow` implemented using binary recursion. Friendlier to compute than `npowRec`. -/
+@[to_additive "`nsmul` implemented using binary recursion. Friendlier to compute than `npowRec`."]
+def npowBinRec [One M] [Mul M] (n : ℕ) : M → M :=
+  npowBinRecAux n 1
+
+@[to_additive (attr := simp)]
+lemma npowBinRec_zero [One M] [Mul M] (x : M) : npowBinRec 0 x = 1 := rfl
+
+@[to_additive]
+lemma npowBinRecAux_eq_npowRec_mul [One M] [Mul M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
+    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z))
+    (n : ℕ) (y x : M) :
+    npowBinRecAux n y x = npowRec n x * y := by
+  unfold npowBinRecAux
+  induction n using Nat.binaryRec generalizing y x with
+    | z => exact (one_mul y).symm
+    | f b n ih =>
+      rw [Nat.binaryRec_eq _ _ (.inl rfl), ih]
+      cases b <;>
+      · simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec_add one_mul mul_assoc]
+        simp [npowRec_mul, npowRec, *]
+
+@[to_additive]
+lemma npowBinRec_eq_npowRec [One M] [Mul M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
+    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z)) :
+    npowBinRec (M := M) = npowRec := by
+  ext; simp [npowBinRec, npowBinRecAux_eq_npowRec_mul, *]
+
+@[to_additive]
+lemma npowBinRec_succ [One M] [Mul M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
+    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z)) (n : ℕ) (x : M) :
+    npowBinRec (n + 1) x = x * npowBinRec n x := by
+  simp [npowBinRec_eq_npowRec, npowRec, *]
+
+@[to_additive]
+lemma npowBinRec_inv [One M] [Mul M] [Inv M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
+    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z))
+    (inv_one : (1 : M)⁻¹ = 1)
+    (mul_inv_rev : ∀ x y : M, (x * y)⁻¹ = y⁻¹ * x⁻¹) (n : ℕ) (x : M) :
+    npowBinRec n x⁻¹ = (npowBinRec n x)⁻¹ := by
+  rw [npowBinRec_eq_npowRec one_mul mul_one mul_assoc]
+  induction n with
+  | zero => exact inv_one.symm
+  | succ n ih => rw [npowRec, Nat.succ_eq_add_one, npowRec_add one_mul mul_assoc, ih, npowRec,
+    npowRec, mul_one, mul_inv_rev]
+
 end
 
 library_note "forgetful inheritance"/--
@@ -648,6 +722,12 @@ theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
 #align pow_succ pow_succ
 #align succ_nsmul succ_nsmul
 
+@[to_additive (attr := simp)]
+lemma npowBinRec_eq (n : ℕ) (x : M) :
+    npowBinRec n x = x ^ n :=
+  n.rec (pow_zero x).symm (fun n ih ↦ ((npowBinRec_succ one_mul mul_one mul_assoc n x).trans
+    (congr_arg _ ih)).trans (pow_succ x n).symm)
+
 end
 
 section Monoid
@@ -779,6 +859,26 @@ def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
 #align zsmul_rec zsmulRec
 
 attribute [to_additive existing] zpowRec
+
+/-- `zpow` implemented using binary recursion. Friendlier to compute than `zpowRec`. -/
+@[to_additive "`zsmul` implemented using binary recursion. Friendlier to compute than `zsmulRec`."]
+def zpowBinRec {M : Type*} [One M] [Mul M] [Inv M] (a : ℤ) (x : M) : M :=
+  match a with
+  | Int.ofNat n => npowBinRec n x
+  | Int.negSucc n => (npowBinRec n.succ x)⁻¹
+
+@[to_additive]
+lemma zpowBinRec_succ {M : Type*} [One M] [Mul M] [Inv M]
+    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
+    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z)) (n : ℕ) (a : M) :
+    zpowBinRec (Int.ofNat n.succ) a = a * zpowBinRec (Int.ofNat n) a :=
+  npowBinRec_succ one_mul mul_one mul_assoc n a
+
+@[to_additive]
+lemma zpowBinRec_neg {M : Type*} [One M] [Mul M] [Inv M]
+    (n : ℕ) (a : M) :
+    zpowBinRec (Int.negSucc n) a = (zpowBinRec n.succ a)⁻¹ :=
+  rfl
 
 section InvolutiveInv
 
@@ -986,6 +1086,13 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 #align division_def division_def
+
+@[to_additive (attr := simp)]
+lemma zpowBinRec_eq (n : ℤ) (x : G) :
+    zpowBinRec n x = x ^ n :=
+  match n with
+  | .ofNat n => (npowBinRec_eq n x).trans (zpow_ofNat x n).symm
+  | .negSucc _ => (congr_arg _ (npowBinRec_eq _ x)).trans (zpow_negSucc _ _).symm
 
 end DivInvMonoid
 

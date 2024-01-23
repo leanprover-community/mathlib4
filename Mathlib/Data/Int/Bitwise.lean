@@ -95,18 +95,16 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.xor_comm]`
 #align int.bodd_mul Int.bodd_mul
 
-theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
+theorem div2_add_bodd : ∀ n, 2 * div2 n + cond (bodd n) 1 0 = n
   | (n : ℕ) => by
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
-    exact congr_arg ofNat n.bodd_add_div2
+    exact congr_arg ofNat n.div2_add_bodd
   | -[n+1] => by
-    refine' Eq.trans _ (congr_arg negSucc n.bodd_add_div2)
+    refine' Eq.trans _ (congr_arg negSucc n.div2_add_bodd)
     dsimp [bodd]; cases Nat.bodd n <;> dsimp [cond, not, div2, Int.mul]
-    · change -[2 * Nat.div2 n+1] = _
-      rw [zero_add]
-    · rw [zero_add, add_comm]
-      rfl
-#align int.bodd_add_div2 Int.bodd_add_div2
+    · rfl
+    · rw [add_zero]; rfl
+#align int.bodd_add_div2 Int.div2_add_boddₓ
 
 theorem div2_val : ∀ n, div2 n = n / 2
   | (n : ℕ) => congr_arg ofNat n.div2_val
@@ -134,7 +132,7 @@ theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
-  (bit_val _ _).trans <| (add_comm _ _).trans <| bodd_add_div2 _
+  (bit_val _ _).trans <| div2_add_bodd _
 #align int.bit_decomp Int.bit_decomp
 
 /-- Defines a function from `ℤ` conditionally, if it is defined for odd and even integers separately

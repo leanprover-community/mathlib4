@@ -24,14 +24,7 @@ namespace Nat
 
 variable {m n : ℕ}
 
-@[simp]
-theorem mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_one Nat.mod_two_ne_one
-
-@[simp]
-theorem mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_zero Nat.mod_two_ne_zero
 
 theorem even_iff : Even n ↔ n % 2 = 0 :=
@@ -95,14 +88,7 @@ theorem mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (
     rw [odd_iff.1 hm, even_iff.1 (hm.add_odd hn)]
 #align nat.mod_two_add_add_odd_mod_two Nat.mod_two_add_add_odd_mod_two
 
-@[simp]
-theorem mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 :=
-  mod_two_add_add_odd_mod_two m odd_one
 #align nat.mod_two_add_succ_mod_two Nat.mod_two_add_succ_mod_two
-
-@[simp]
-theorem succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by
-  rw [add_comm, mod_two_add_succ_mod_two]
 #align nat.succ_mod_two_add_mod_two Nat.succ_mod_two_add_mod_two
 
 @[simp] theorem not_even_one : ¬Even 1 := odd_iff_not_even.1 odd_one

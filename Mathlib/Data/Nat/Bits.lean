@@ -33,13 +33,8 @@ universe u
 
 variable {n : ℕ}
 
-/-! ### `boddDiv2_eq` and `bodd` -/
+/-! ### `div2` and `bodd` -/
 
-
-@[simp]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
-  unfold bodd div2; cases boddDiv2 n; rfl
-#align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
 theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
@@ -153,57 +148,9 @@ protected theorem bit0_eq_zero {n : ℕ} : bit0 n = 0 ↔ n = 0 :=
   ⟨Nat.eq_zero_of_add_eq_zero_left, fun h => by simp [h]⟩
 #align nat.bit0_eq_zero Nat.bit0_eq_zero
 
-theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  constructor
-  · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero, Nat.bit1_ne_zero]
-  · rintro ⟨rfl, rfl⟩
-    rfl
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
-
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
-    exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
-#align nat.binary_rec_eq' Nat.binaryRec_eq'
-
-/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
-@[elab_as_elim]
-def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec z fun b n ih =>
-    if h : n = 0 → b = true then f b n h ih
-    else by
-      convert z
-      rw [bit_eq_zero_iff]
-      simpa using h
+#align nat.binary_rec_eq' Nat.binaryRec_eq
 #align nat.binary_rec' Nat.binaryRec'
-
-/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim]
-def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then by
-      rw [h', h h']
-      exact z₁
-    else f b n h' ih
 #align nat.binary_rec_from_one Nat.binaryRecFromOne
 
 @[simp]
@@ -213,7 +160,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
+  rw [Nat.bits, Nat.bits, binaryRec_eq]
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 

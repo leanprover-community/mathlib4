@@ -160,6 +160,7 @@ def ofNatCode : ℕ → Code
     | false, true  => comp (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true , false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true , true  => rfind' (ofNatCode m)
+decreasing_by simp_wf; simp [hm, _m1, _m2]
 #align nat.partrec.code.of_nat_code Nat.Partrec.Code.ofNatCode
 
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode`-/
@@ -184,6 +185,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     simp only [ofNatCode._eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
+decreasing_by simp_wf; simp [hm, _m1, _m2]
 
 instance instDenumerable : Denumerable Code :=
   mk'

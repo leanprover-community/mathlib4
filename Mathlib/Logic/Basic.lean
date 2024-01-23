@@ -565,34 +565,16 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
 #align heq_of_cast_eq heq_of_cast_eq
 #align cast_eq_iff_heq cast_eq_iff_heq
 
-theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
-
---Porting note: new theorem. More general version of `eqRec_heq`
-theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
-    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p :=
-  by subst t; rfl
-
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
     HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
 
-theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
-    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 #align rec_heq_iff_heq rec_heq_iff_heq
-
-theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
-    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
-
 #align eq.congr Eq.congr
 #align eq.congr_left Eq.congr_left
 #align eq.congr_right Eq.congr_right
 #align congr_arg2 congr_arg₂
-
-variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
-
 #align congr_fun₂ congr_fun₂
 #align congr_fun₃ congr_fun₃
 #align funext₂ funext₂

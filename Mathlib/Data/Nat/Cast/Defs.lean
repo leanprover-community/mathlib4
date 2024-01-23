@@ -153,32 +153,27 @@ theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n 
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
 #align nat.cast_add Nat.cast_addₓ
 
+@[simp]
+theorem _root_.nsmul_one [AddMonoidWithOne A] (n : ℕ) : n • (1 : A) = n := by
+  induction' n with n ih
+  · rw [zero_nsmul, Nat.cast_zero]
+  · rw [succ_nsmul, Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, ih]
+
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
-protected def binCast [Zero R] [One R] [Add R] : ℕ → R
-  | 0 => 0
-  | n + 1 => if (n + 1) % 2 = 0
-    then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
-    else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-decreasing_by simp_wf; omega
+protected def binCast [Zero R] [One R] [Add R] : ℕ → R :=
+  (nsmulBinRec · 1)
 #align nat.bin_cast Nat.binCast
 
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
-  apply Nat.strongInductionOn n
-  intros k hk
-  cases k with
-  | zero => rw [Nat.binCast, Nat.cast_zero]
-  | succ k =>
-      rw [Nat.binCast]
-      by_cases h : (k + 1) % 2 = 0
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
-        rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
-        simp only [Nat.cast_add, Nat.cast_one]
+  rw [Nat.binCast, nsmulBinRec_eq, nsmul_one]
+
+@[simp]
+theorem binCast_eq_unaryCast [AddMonoid R] [One R] (n : ℕ) :
+    (Nat.binCast n : R) = (n.unaryCast : R) := by
+  letI : AddMonoidWithOne R := {}
+  rw [binCast_eq]; rfl
+
 #align nat.bin_cast_eq Nat.binCast_eq
 
 section deprecated
@@ -214,7 +209,7 @@ protected def AddMonoidWithOne.unary {R : Type*} [AddMonoid R] [One R] : AddMono
 protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    natCast_zero := by simp only [Nat.binCast_eq_unaryCast, Nat.unaryCast],
     natCast_succ := fun n => by
       dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary

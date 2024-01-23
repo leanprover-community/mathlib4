@@ -464,11 +464,6 @@ theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
     @add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
-@[simp]
-theorem one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
-  Nat.mod_eq_of_lt (add_lt_add_right n.succ_pos 1)
-#align nat.one_mod Nat.one_mod
-
 theorem one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
   | 0, _ | (n + 2), _ => by simp
 
