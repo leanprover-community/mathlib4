@@ -7,15 +7,6 @@ import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Lean.Expr.ExtraRecognizers
 
-open Lean PrettyPrinter Delaborator SubExpr in
-@[delab app.Set.image]
-def delab_set_image_subtype : Delab := do
-  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
-  let e ← withAppArg delab
-  `(↑$e)
-
 /-!
 # Subsets as subtypes
 
@@ -37,6 +28,15 @@ operation, if possible.
 
 subsets
 -/
+
+open Lean PrettyPrinter Delaborator SubExpr in
+@[delab app.Set.image]
+def delab_set_image_subtype : Delab := do
+  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let some _ := α.coeTypeSet? | failure
+  let e ← withAppArg delab
+  `(↑$e)
 
 open Set
 
@@ -180,7 +180,8 @@ lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D  ∩ ↑E := by
 @[simp]
 lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
   unhygienic ext
-  simp_all only [mem_image, mem_compl_iff, Subtype.exists, exists_and_right, exists_eq_right, mem_diff, not_exists]
+  simp_all only [mem_image, mem_compl_iff, Subtype.exists, exists_and_right, exists_eq_right,
+    mem_diff, not_exists]
   apply Iff.intro
   · intro a
     cases a
@@ -222,20 +223,7 @@ lemma coe_sUnion : ↑(⋃₀ T)  = ⋃₀ { (B : Set α) | B ∈ T} := by
 
 
 @[simp]
-lemma coe_iUnion : ↑(⋃ (B : β ), j B) = ⋃ (B : β), (j B : Set α) := by
-  unhygienic ext
-  simp_all only [mem_iUnion, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  apply Iff.intro
-  · intro a
-    unhygienic with_reducible aesop_destruct_products
-    simp_all only [exists_true_left]
-    apply Exists.intro
-    exact h_1
-  · intro a
-    unhygienic with_reducible aesop_destruct_products
-    simp_all only [exists_true_left]
-    apply Exists.intro
-    exact h_1
+lemma coe_iUnion : ↑(⋃ (B : β ), j B) = ⋃ (B : β), (j B : Set α) := image_iUnion
 
 @[simp]
 lemma coe_sInter (hT : ∃ L, L ∈ T) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T}  := by
