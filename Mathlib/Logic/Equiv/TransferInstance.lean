@@ -338,23 +338,6 @@ protected def group [Group β] : Group α := by
 noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
   (equivShrink α).symm.group
 
-section
-
-attribute [-instance] Fin.instMulFin
-attribute [-instance] Distrib.toMul
-
-/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
-lemma type_group_representative_of_finite (G : Type u) [Group G] [Finite G] :
-    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  use (Fin n)
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  use groupH
-  use inferInstance
-  exact ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩
-
-end
-
 /-- Transfer `CommGroup` across an `Equiv` -/
 @[to_additive (attr := reducible) "Transfer `AddCommGroup` across an `Equiv`"]
 protected def commGroup [CommGroup β] : CommGroup α := by
@@ -757,3 +740,16 @@ end R
 end Instances
 
 end Equiv
+
+namespace Finite
+
+attribute [-instance] Fin.instMulFin
+
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
+lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
+    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
+  letI groupH : Group (Fin n) := Equiv.group e.symm
+  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
+
+end Finite

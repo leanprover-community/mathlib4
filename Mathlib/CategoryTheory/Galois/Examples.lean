@@ -74,12 +74,9 @@ instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
   apply ConcreteCategory.mono_of_injective
   exact Subtype.val_injective
 
-attribute [-instance] Fin.instMulFin
-attribute [-instance] Distrib.toMul
-
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
 instance (G : Type u) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
-  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Equiv.type_group_representative_of_finite G
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_zero_nonempty_mulEquiv G
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
