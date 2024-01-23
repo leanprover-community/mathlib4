@@ -100,8 +100,7 @@ theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s 
     rw[add_le_add_iff_right b] at h1
     exact h1
   specialize cxf a_nonneg b_nonneg sum_a_b
-  let x' := a • x + b • y
-  have x'rfl : x' = a • x + b • y := rfl
+  set x' := a • x + b • y with x'rfl
   have h1 : ‖x - x'‖ = ‖b • (x - y)‖ := by
     congr; apply point_proportion a_nonneg b_nonneg sum_a_b x'rfl
   have h2 : ‖b • (x - y)‖ = b * ‖x - y‖ := by
