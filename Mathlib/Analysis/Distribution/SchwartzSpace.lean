@@ -6,7 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
@@ -92,14 +92,14 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instFunLike : FunLike 𝓢(E, F) E fun _ => F where
+instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align schwartz_map.fun_like SchwartzMap.instFunLike
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align schwartz_map.has_coe_to_fun SchwartzMap.instCoeFun
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
@@ -132,7 +132,7 @@ protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt �
 
 @[ext]
 theorem ext {f g : 𝓢(E, F)} (h : ∀ x, (f : E → F) x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align schwartz_map.ext SchwartzMap.ext
 
 section IsBigO
@@ -163,7 +163,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
+  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
     Int.cast_ofNat]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
@@ -210,7 +210,8 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _), norm_smul]
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+    norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 #align schwartz_map.decay_smul_aux SchwartzMap.decay_smul_aux
 
 end Aux
@@ -323,7 +324,7 @@ instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 #align schwartz_map.inhabited SchwartzMap.instInhabited
 
-theorem coe_zero : FunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
+theorem coe_zero : DFunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
   rfl
 #align schwartz_map.coe_zero SchwartzMap.coe_zero
 
@@ -403,7 +404,7 @@ end Sub
 section AddCommGroup
 
 instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
-  FunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align schwartz_map.add_comm_group SchwartzMap.instAddCommGroup
 
@@ -418,13 +419,13 @@ def coeHom : 𝓢(E, F) →+ E → F where
 
 variable {E F}
 
-theorem coe_coeHom : (coeHom E F : 𝓢(E, F) → E → F) = FunLike.coe :=
+theorem coe_coeHom : (coeHom E F : 𝓢(E, F) → E → F) = DFunLike.coe :=
   rfl
 #align schwartz_map.coe_coe_hom SchwartzMap.coe_coeHom
 
 theorem coeHom_injective : Function.Injective (coeHom E F) := by
   rw [coe_coeHom]
-  exact FunLike.coe_injective
+  exact DFunLike.coe_injective
 #align schwartz_map.coe_hom_injective SchwartzMap.coeHom_injective
 
 end AddCommGroup

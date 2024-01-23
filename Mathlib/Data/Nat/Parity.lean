@@ -3,9 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime
 import Mathlib.Algebra.Parity
+import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.ModEq
 
 #align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -305,7 +305,7 @@ theorem iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
 #align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
 
 theorem iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
-  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
+  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
 #align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
 
 end
@@ -320,7 +320,7 @@ theorem iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
 
 theorem iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rcases hn with ⟨m, rfl⟩
-  rw [iterate_add, hf.iterate_two_mul, comp.left_id, iterate_one]
+  rw [iterate_add, hf.iterate_two_mul, id_comp, iterate_one]
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
 theorem iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=

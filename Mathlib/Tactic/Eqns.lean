@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Lean.Meta.Eqns
-import Mathlib.Lean.Expr
 import Std.Lean.NameMapAttribute
+import Std.CodeAction.Attr
+import Std.Tactic.Lint.Basic
 
 /-! # The `@[eqns]` attribute
 
@@ -38,8 +39,8 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     add   := fun
     | declName, `(attr| eqns $[$names]*) => do
       if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
-        throwError "There already exist stored eqns for '{declName}' registering new equations{
-            "\n"}will not have the desired effect."
+        throwError "There already exist stored eqns for '{declName}'; registering new equations \
+          will not have the desired effect."
       names.mapM resolveGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 

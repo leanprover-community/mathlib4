@@ -3,16 +3,17 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Mathlib.Data.MLList.Dedup
-import Mathlib.Lean.Meta.DiscrTree
+import Std.Tactic.SolveByElim
+import Std.Util.Pickle
 import Std.Util.Cache
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.TryThis
+import Mathlib.Init.Core
 import Mathlib.Control.Basic
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Data.MLList.Dedup
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Tactic.TryThis
 
 /-!
 # The `rewrites` tactic.
@@ -344,8 +345,7 @@ elab_rules : tactic |
       let results ← rewrites hyps lems goal target (stopAtRfl := false) forbidden
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
-        throwError "Could not find any lemmas which can rewrite the hypothesis {
-          ← f.getUserName}"
+        throwError "Could not find any lemmas which can rewrite the hypothesis {← f.getUserName}"
       for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(r.expr, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)

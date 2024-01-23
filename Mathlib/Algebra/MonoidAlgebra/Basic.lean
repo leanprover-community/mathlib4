@@ -459,7 +459,7 @@ theorem single_commute_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k}
 theorem single_commute [Mul G] {a : G} {b : k} (ha : ∀ a', Commute a a') (hb : ∀ b', Commute b b') :
     ∀ f : MonoidAlgebra k G, Commute (single a b) f :=
   suffices AddMonoidHom.mulLeft (single a b) = AddMonoidHom.mulRight (single a b) from
-    FunLike.congr_fun this
+    DFunLike.congr_fun this
   addHom_ext' fun a' => AddMonoidHom.ext fun b' => single_commute_single (ha a') (hb b')
 
 @[simp]
@@ -612,7 +612,7 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
   suffices :
     (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
-  exact FunLike.congr_fun this φ
+  exact DFunLike.congr_fun this φ
   -- Porting note: `ext` couldn't a find appropriate theorem.
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
@@ -685,7 +685,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra 
 @[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
-  nonUnitalAlgHom_ext k <| FunLike.congr_fun h
+  nonUnitalAlgHom_ext k <| DFunLike.congr_fun h
 #align monoid_algebra.non_unital_alg_hom_ext' MonoidAlgebra.nonUnitalAlgHom_ext'
 
 /-- The functor `G ↦ MonoidAlgebra k G`, from the category of magmas to the category of non-unital,
@@ -792,7 +792,7 @@ theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : Monoid
     (h_of :
       (f : MonoidAlgebra k G →* R).comp (of k G) = (g : MonoidAlgebra k G →* R).comp (of k G)) :
     f = g :=
-  ringHom_ext (RingHom.congr_fun h₁) (FunLike.congr_fun h_of)
+  ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
 #align monoid_algebra.ring_hom_ext' MonoidAlgebra.ringHom_ext'
 
 /-- The instance `Algebra k (MonoidAlgebra A G)` whenever we have `Algebra k A`.
@@ -879,7 +879,7 @@ theorem algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h :
       (φ₁ : MonoidAlgebra k G →* A).comp (of k G) = (φ₂ : MonoidAlgebra k G →* A).comp (of k G)) :
     φ₁ = φ₂ :=
-  algHom_ext <| FunLike.congr_fun h
+  algHom_ext <| DFunLike.congr_fun h
 #align monoid_algebra.alg_hom_ext' MonoidAlgebra.algHom_ext'
 
 variable (k G A)
@@ -979,7 +979,7 @@ def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
 theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
+  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongr_apply (e : G ≃* H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=
@@ -1875,7 +1875,7 @@ theorem ringHom_ext' {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →
     (h₁ : f.comp singleZeroRingHom = g.comp singleZeroRingHom)
     (h_of : (f : k[G] →* R).comp (of k G) = (g : k[G] →* R).comp (of k G)) :
     f = g :=
-  ringHom_ext (RingHom.congr_fun h₁) (FunLike.congr_fun h_of)
+  ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
 #align add_monoid_algebra.ring_hom_ext' AddMonoidAlgebra.ringHom_ext'
 
 section Opposite
@@ -1987,7 +1987,7 @@ theorem algHom_ext ⦃φ₁ φ₂ : k[G] →ₐ[k] A⦄
 theorem algHom_ext' ⦃φ₁ φ₂ : k[G] →ₐ[k] A⦄
     (h : (φ₁ : k[G] →* A).comp (of k G) = (φ₂ : k[G] →* A).comp (of k G)) :
     φ₁ = φ₂ :=
-  algHom_ext <| FunLike.congr_fun h
+  algHom_ext <| DFunLike.congr_fun h
 #align add_monoid_algebra.alg_hom_ext' AddMonoidAlgebra.algHom_ext'
 
 variable (k G A)
@@ -2119,7 +2119,7 @@ def domCongr (e : G ≃+ H) : A[G] ≃ₐ[k] A[H] :=
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
 theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
+  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongr_apply (e : G ≃+ H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=

@@ -75,7 +75,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-@[positivity FunLike.coe _ _]
+@[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
@@ -287,7 +287,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg <| fun k => ?_
+        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
         positivity
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>

@@ -221,7 +221,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | some 1 => .inl `one
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
-      | (``FunLike.coe, #[_, _, _, _, polFun, _]) =>
+      | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
         let na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na
@@ -445,11 +445,10 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
     | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
-    | (_, .anonymous, _) => throwError
-        (m!"'compute_degree' inapplicable. The goal{indentD gt}\nis expected to be '≤' or '='.")
-    | (.anonymous, _, _) => throwError
-        (m!"'compute_degree' inapplicable. The LHS must be an application of {
-          ""}'natDegree', 'degree', or 'coeff'.")
+    | (_, .anonymous, _) => throwError m!"'compute_degree' inapplicable. \
+        The goal{indentD gt}\nis expected to be '≤' or '='."
+    | (.anonymous, _, _) => throwError m!"'compute_degree' inapplicable. \
+        The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
       trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"

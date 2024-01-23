@@ -41,14 +41,14 @@ variable {α' β' : Type u} (f : α' → F β')
 def traverse : Multiset α' → F (Multiset β') := by
   refine' Quotient.lift (Functor.map Coe.coe ∘ Traversable.traverse f) _
   introv p; unfold Function.comp
-  induction p
-  case nil => rfl
-  case cons x l₁ l₂ _ h =>
+  induction p with
+  | nil => rfl
+  | @cons x l₁ l₂ _ h =>
     have :
       Multiset.cons <$> f x <*> Coe.coe <$> Traversable.traverse f l₁ =
         Multiset.cons <$> f x <*> Coe.coe <$> Traversable.traverse f l₂ := by rw [h]
     simpa [functor_norm] using this
-  case swap x y l =>
+  | swap x y l =>
     have :
       (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
         (fun a b l ↦ ↑(a :: b :: l)) <$> f x <*> f y := by
@@ -57,7 +57,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       funext a b l
       simpa [flip] using Perm.swap a b l
     simp [(· ∘ ·), this, functor_norm, Coe.coe]
-  case trans => simp [*]
+  | trans => simp [*]
 #align multiset.traverse Multiset.traverse
 
 instance : Monad Multiset :=

@@ -103,7 +103,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
-@[mk_iff charP_iff]
+@[mk_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 #align char_p CharP
@@ -442,6 +442,25 @@ theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
   (frobenius R p).map_sum _ _
 #align sum_pow_char sum_pow_char
 
+variable (n : ℕ)
+
+theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum := by
+  induction n with
+  | zero => simp_rw [pow_zero, pow_one, List.map_id']
+  | succ n ih => simp_rw [pow_succ', pow_mul, ih, list_sum_pow_char, List.map_map]; rfl
+
+theorem multiset_sum_pow_char_pow (s : Multiset R) :
+    s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum := by
+  induction n with
+  | zero => simp_rw [pow_zero, pow_one, Multiset.map_id']
+  | succ n ih => simp_rw [pow_succ', pow_mul, ih, multiset_sum_pow_char, Multiset.map_map]; rfl
+
+theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n := by
+  induction n with
+  | zero => simp_rw [pow_zero, pow_one]
+  | succ n ih => simp_rw [pow_succ', pow_mul, ih, sum_pow_char]
+
 end CommSemiring
 
 section CommRing
@@ -539,6 +558,12 @@ theorem char_is_prime_or_zero (p : ℕ) [hc : CharP R p] : Nat.Prime p ∨ p = 0
   | 1, hc => absurd (Eq.refl (1 : ℕ)) (@char_ne_one R _ _ (1 : ℕ) hc)
   | m + 2, hc => Or.inl (@char_is_prime_of_two_le R _ _ (m + 2) hc (Nat.le_add_left 2 m))
 #align char_p.char_is_prime_or_zero CharP.char_is_prime_or_zero
+
+theorem exists' (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+    CharZero R ∨ ∃ p : ℕ, Fact p.Prime ∧ CharP R p := by
+  obtain ⟨p, hchar⟩ := CharP.exists R
+  rcases char_is_prime_or_zero R p with h | rfl
+  exacts [Or.inr ⟨p, Fact.mk h, hchar⟩, Or.inl (charP_to_charZero R)]
 
 theorem char_is_prime_of_pos (p : ℕ) [NeZero p] [CharP R p] : Fact p.Prime :=
   ⟨(CharP.char_is_prime_or_zero R _).resolve_right <| NeZero.ne p⟩
@@ -739,3 +764,11 @@ theorem charZero_iff_forall_prime_ne_zero
     exact CharP.charP_to_charZero R
 
 end CharZero
+
+namespace Fin
+
+instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
+    cast_eq_zero_iff' := by
+      simp [Fin.eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+
+end Fin

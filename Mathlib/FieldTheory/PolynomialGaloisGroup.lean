@@ -421,6 +421,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   have hα : IsIntegral F α := .of_finite F α
   use FiniteDimensional.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
+    letI _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
     rw [← FiniteDimensional.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by
