@@ -51,7 +51,7 @@ theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s 
     specialize h epos
     rw [Filter.Eventually] at h
     let t := {x_1 | ‖f x_1 - f x - (f' x) (x_1 - x)‖ ≤ ε * ‖x_1 - x‖}
-    have h₁: ∃ ε1 > (0 : ℝ), Metric.ball x ε1 ⊆ t := Iff.mp Metric.mem_nhds_iff h
+    have h₁: ∃ ε1 > (0 : ℝ), Metric.ball x ε1 ⊆ t := Metric.mem_nhds_iff.mp h
     rcases h₁ with ⟨e1, e1pos, h₁⟩
     use (e1 / 2); constructor
     exact (half_pos e1pos)
