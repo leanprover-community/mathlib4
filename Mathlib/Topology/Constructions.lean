@@ -1057,7 +1057,7 @@ nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set α} (hs : IsClosed 
   closedEmbedding_subtype_val hs
 #align is_closed.closed_embedding_subtype_coe IsClosed.closedEmbedding_subtype_val
 
-@[continuity, fprop]
+@[continuity]
 theorem Continuous.subtype_mk {f : β → α} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
