@@ -149,31 +149,30 @@ instance : Mono (ι φ) := by
 @[reassoc (attr := simp)]
 lemma π_ι : π φ ≫ ι φ = φ := rfl
 
-/-instance : StrongEpiCategory (Sheaf J (Type u)) where
-  strongEpi_of_epi {F G} p hp := ⟨hp, fun A B i hi => ⟨fun {a b} sq => by
-    suffices ∃ (c : G ⟶ A), c ≫ i = b by
-      obtain ⟨c, hc⟩ := this
-      exact ⟨⟨{
-        l := c
-        fac_left := by rw [← cancel_mono i, assoc, hc, sq.w]
-        fac_right := hc }⟩⟩
-    have : ∀ ⦃X : Cᵒᵖ⦄ (g : G.1.obj X), ∃ (a : A.1.obj X), i.1.app _ a = b.1.app _ g := by
-      intro X g
-      sorry
-    rw [mono_iff_injective] at hi
-    refine' ⟨Sheaf.Hom.mk
-      { app := fun X g => (this g).choose
-        naturality := fun X Y f => by
-          ext g
-          apply hi
-          have H := congr_fun (i.1.naturality f) (this g).choose
-          dsimp at H ⊢
-          erw [(this (G.1.map f g)).choose_spec, H, (this g).choose_spec]
-          apply congr_fun (b.1.naturality f) }, _⟩
-    ext X g
-    exact (this g).choose_spec ⟩⟩-/
+instance [Epi φ] : Epi (ι φ) := epi_of_epi_fac (π_ι φ)
 
 end EpiMonoFactorization
+
+/-lemma isIso_of_mono_of_epi (φ : F ⟶ G) [Mono φ] [Epi φ] : IsIso φ := by
+  sorry
+
+lemma epi_iff_locally_surjective :
+    Epi φ ↔ (∀ (X : Cᵒᵖ) (x : G.1.obj X),
+    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
+    ∀ (Y : C) (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F.1.obj (op Y)),
+    φ.1.app _ y = G.1.map f.op x) := by
+  constructor
+  · intro hφ
+    have : IsIso (EpiMonoFactorization.ι φ) := isIso_of_mono_of_epi _
+    intro X x
+    have : Function.Bijective ((EpiMonoFactorization.ι φ).1.app X) := by
+      rw [← isIso_iff_bijective]
+      change IsIso ((sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).map (EpiMonoFactorization.ι φ))
+      infer_instance
+    obtain ⟨⟨y, hy⟩, rfl⟩ := this.2 x
+    exact hy
+  · intro hφ
+    exact epi_of_locally_surjective φ hφ-/
 
 end Sheaf
 
