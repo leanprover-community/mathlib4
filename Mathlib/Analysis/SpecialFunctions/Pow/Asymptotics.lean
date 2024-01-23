@@ -40,7 +40,7 @@ theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ 
   exact
     le_of_max_le_left
       (by
-        convert rpow_le_rpow (rpow_nonneg_of_nonneg (le_max_right b 0) (1 / y)) hx (le_of_lt hy)
+        convert rpow_le_rpow (rpow_nonneg (le_max_right b 0) (1 / y)) hx (le_of_lt hy)
           using 1
         rw [← rpow_mul (le_max_right b 0), (eq_div_iff (ne_of_gt hy)).mp rfl, Real.rpow_one])
 #align tendsto_rpow_at_top tendsto_rpow_atTop
@@ -148,7 +148,7 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop := by
   refine' ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' _
   filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx₀
-  simp [Real.div_rpow, (exp_pos x).le, rpow_nonneg_of_nonneg, ← Real.rpow_mul, ← exp_mul,
+  simp [Real.div_rpow, (exp_pos x).le, rpow_nonneg, ← Real.rpow_mul, ← exp_mul,
     mul_comm x, hb.ne', *]
 #align tendsto_exp_mul_div_rpow_at_top tendsto_exp_mul_div_rpow_atTop
 
@@ -280,7 +280,7 @@ theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r :=
   IsLittleO.of_isBigOWith fun c hc =>
-    ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg_of_nonneg hc.le _) hr.le
+    ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg hc.le _) hr.le
           hg).congr_const
       (by rw [← rpow_mul hc.le, inv_mul_cancel hr.ne', Real.rpow_one])
 #align asymptotics.is_o.rpow Asymptotics.IsLittleO.rpow

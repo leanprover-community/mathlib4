@@ -6,10 +6,12 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Quotient
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -828,6 +830,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
 
 instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+
+instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+    [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
+  Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
@@ -2107,6 +2113,10 @@ lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R 
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
   ext x
   simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
+
+@[simp]
+theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
 
 end Semiring
 

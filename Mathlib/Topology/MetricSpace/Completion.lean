@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.Instances.Real
 
 #align_import topology.metric_space.completion from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

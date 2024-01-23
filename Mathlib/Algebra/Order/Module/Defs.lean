@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -530,9 +531,9 @@ variable [PartialOrder α] [Preorder β]
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
   elim a ha b₁ b₂ h := by
-      obtain ha | ha := ha.eq_or_lt
-      · simp [← ha]
-      · exact h₀ _ ha _ _ h
+    obtain ha | ha := ha.eq_or_lt
+    · simp [← ha]
+    · exact h₀ _ ha _ _ h
 
 /-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
 when `0 < a`-/
@@ -561,7 +562,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
 when `0 < b`-/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
-  elim  b hb a₁ a₂ h := by
+  elim b hb a₁ a₂ h := by
     obtain hb | hb := hb.eq_or_lt
     · simp [← hb] at h
     · exact h₀ _ hb _ _ h
@@ -1091,7 +1092,7 @@ lemma PosSMulMono.lift [PosSMulMono α γ] : PosSMulMono α β where
   elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
 
 lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ] : PosSMulStrictMono α β where
-  elim a ha b₁ b₂ hb :=  by
+  elim a ha b₁ b₂ hb := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
 
 lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ] : PosSMulReflectLE α β where

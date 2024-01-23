@@ -3,8 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
-import Qq
 
 #align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -200,7 +201,7 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
-    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero]
     exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=

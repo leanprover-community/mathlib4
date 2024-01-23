@@ -8,7 +8,7 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity

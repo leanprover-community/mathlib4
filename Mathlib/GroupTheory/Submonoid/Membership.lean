@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
@@ -398,8 +398,8 @@ theorem closure_eq_image_prod (s : Set M) :
 
 @[to_additive]
 theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
-    ∃ (l : List M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
-  rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image_iff_bex] at hx
+    ∃ l : List M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
+  rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image] at hx
 #align submonoid.exists_list_of_mem_closure Submonoid.exists_list_of_mem_closure
 #align add_submonoid.exists_list_of_mem_closure AddSubmonoid.exists_list_of_mem_closure
 

@@ -41,6 +41,7 @@ assert_not_exists Absorbs
 noncomputable section
 
 namespace Complex
+variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
@@ -51,6 +52,8 @@ instance : Norm ℂ :=
 theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
   rfl
 #align complex.norm_eq_abs Complex.norm_eq_abs
+
+lemma norm_I : ‖I‖ = 1 := abs_I
 
 theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
   simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
@@ -168,6 +171,9 @@ theorem norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := (int_cast_abs n).s
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_int, ← Int.cast_abs, _root_.abs_of_nonneg hn]
 #align complex.norm_int_of_nonneg Complex.norm_int_of_nonneg
+
+lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
+  rw [normSq_eq_abs, norm_eq_abs]
 
 @[continuity]
 theorem continuous_abs : Continuous abs :=
@@ -356,7 +362,7 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
     f = RingHom.id ℂ ∨ f = conj := by
-  simpa only [FunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
+  simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 #align complex.ring_hom_eq_id_or_conj_of_continuous Complex.ringHom_eq_id_or_conj_of_continuous
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
@@ -435,6 +441,46 @@ theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex
 theorem _root_.IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 #align is_R_or_C.im_eq_complex_im IsROrC.im_eq_complex_im
+
+-- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
+lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := IsROrC.mul_conj z
+lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := IsROrC.conj_mul z
+
+lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z := IsROrC.inv_eq_conj hz
+
+lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z :=
+  IsROrC.exists_norm_eq_mul_self _
+
+lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
+  IsROrC.exists_norm_mul_eq_self _
+
+/-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
+`IsROrC.im IsROrC.I = 1`. -/
+@[simps]
+def _root_.IsROrC.complexRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : IsROrC.im (IsROrC.I : 𝕜) = 1) :
+    𝕜 ≃+* ℂ where
+  toFun x := IsROrC.re x + IsROrC.im x * I
+  invFun x := re x + im x * IsROrC.I
+  left_inv x := by simp
+  right_inv x := by simp [h]
+  map_add' x y := by simp only [map_add, ofReal_add]; ring
+  map_mul' x y := by
+    simp only [IsROrC.mul_re, ofReal_sub, ofReal_mul, IsROrC.mul_im, ofReal_add]
+    ring_nf
+    rw [I_sq]
+    ring
+
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
+`IsROrC.im IsROrC.I = 1`. -/
+@[simps]
+def _root_.IsROrC.complexLinearIsometryEquiv {𝕜 : Type*} [IsROrC 𝕜]
+    (h : IsROrC.im (IsROrC.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
+  map_smul' _ _ := by simp [IsROrC.smul_re, IsROrC.smul_im, ofReal_mul]; ring
+  norm_map' _ := by
+    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← IsROrC.normSq_eq_def',
+      IsROrC.normSq_apply]
+    simp [normSq_add]
+  __ := IsROrC.complexRingEquiv h
 
 section ComplexOrder
 

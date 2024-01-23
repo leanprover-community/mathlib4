@@ -662,7 +662,7 @@ the group quotiented by its center. -/
 theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Prop}
     (G : Type*) [Group G] [IsNilpotent G]
     (hbase : ∀ (G) [Group G] [Subsingleton G], P G)
-    (hstep : ∀ (G) [Group G] [IsNilpotent G], ∀ _ih : P (G ⧸ center G), P G) : P G := by
+    (hstep : ∀ (G) [Group G] [IsNilpotent G], P (G ⧸ center G) → P G) : P G := by
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction' n with n ih generalizing G
   · haveI := nilpotencyClass_zero_iff_subsingleton.mp h
@@ -865,7 +865,7 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
         rw [card_eq_card_quotient_mul_card_subgroup (center G)]
         apply lt_mul_of_one_lt_right
-        exact Fintype.card_pos_iff.mpr One.nonempty
+        exact Fintype.card_pos_iff.mpr One.instNonempty
         exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
       have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
       exact of_quotient_center_nilpotent hnq

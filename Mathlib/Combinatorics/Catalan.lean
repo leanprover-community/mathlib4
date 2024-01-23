@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
@@ -172,8 +173,9 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   -- Porting note: Add this to satisfy the linter.
   decreasing_by
       simp_wf
-      try exact Nat.lt_succ_of_le (fst_le ijh.2)
-      try exact Nat.lt_succ_of_le (snd_le ijh.2)
+      have := fst_le ijh.2
+      have := snd_le ijh.2
+      omega
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]

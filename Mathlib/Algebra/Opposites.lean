@@ -120,7 +120,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
 @[to_additive (attr := simp, elab_as_elim)
   "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec'`."]
-protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+protected def rec' {F : αᵐᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 #align add_opposite.rec AddOpposite.rec'
 

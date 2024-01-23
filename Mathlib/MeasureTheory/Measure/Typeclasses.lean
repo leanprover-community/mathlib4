@@ -185,6 +185,8 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
+open scoped symmDiff
+
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
@@ -979,7 +981,7 @@ end FiniteSpanningSetsIn
 theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : ∀ s ∈ S, μ s < ∞)
     (hU : ⋃₀ S = univ) : SigmaFinite μ := by
   obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ
-  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ⊤) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
+  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
   exact ⟨⟨⟨fun n => s n, fun _ => trivial, hμ, hs⟩⟩⟩
 #align measure_theory.measure.sigma_finite_of_countable MeasureTheory.Measure.sigmaFinite_of_countable
 

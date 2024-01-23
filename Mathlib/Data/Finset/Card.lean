@@ -24,23 +24,20 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.strongDownwardInduction`
 * `Finset.strongDownwardInductionOn`
 * `Finset.case_strong_induction_on`
-
-## TODO
-
-Should we add a noncomputable version?
+* `Finset.Nonempty.strong_induction`
 -/
 
 
 open Function Multiset Nat
 
-variable {α β : Type*}
+variable {α β R : Type*}
 
 namespace Finset
 
 variable {s t : Finset α} {a b : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality. -/
-def card (s : Finset α) : ℕ :=
+@[pp_dot] def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 #align finset.card Finset.card
 
@@ -480,6 +477,9 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
+lemma cast_card_sdiff [AddGroupWithOne R] (h : s ⊆ t) : ((t \ s).card : R) = t.card - s.card := by
+  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=
   ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 #align finset.card_sdiff_add_card_eq_card Finset.card_sdiff_add_card_eq_card
@@ -756,6 +756,26 @@ theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : 
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
       (h₁ a s n) fun t ss => ih _ (lt_of_le_of_lt ss (ssubset_insert n) : t < _)
 #align finset.case_strong_induction_on Finset.case_strong_induction_on
+
+/-- Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`,
+one knows how to define an object on `s`. Then one can inductively define an object on all finsets,
+starting from singletons and iterating.
+
+TODO: Currently this can only be used to prove properties.
+Replace `Finset.Nonempty.exists_eq_singleton_or_nontrivial` with computational content
+in order to let `p` be `Sort`-valued. -/
+@[elab_as_elim]
+protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
+    (h₀ : ∀ a, p {a} (singleton_nonempty _))
+    (h₁ : ∀ ⦃s⦄ (hs : s.Nontrivial), (∀ t ht, t ⊂ s → p t ht) → p s hs.nonempty) :
+    ∀ ⦃s : Finset α⦄ (hs), p s hs
+  | s, hs => by
+    obtain ⟨a, rfl⟩ | hs := hs.exists_eq_singleton_or_nontrivial
+    · exact h₀ _
+    · refine h₁ hs fun t ht hts ↦ ?_
+      have := card_lt_card hts
+      exact ht.strong_induction h₀ h₁
+termination_by Nonempty.strong_induction _ => Finset.card ‹_›
 
 /-- Suppose that, given that `p t` can be defined on all supersets of `s` of cardinality less than
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all finsets `s` of

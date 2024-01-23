@@ -98,14 +98,14 @@ namespace Poly
 
 section
 
-instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
-#align poly.fun_like Poly.funLike
+#align poly.fun_like Poly.instFunLike
 
 -- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there are too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
--- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
+-- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := DFunLike.hasCoeToFun
 
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
@@ -113,7 +113,7 @@ protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 
 /-- Extensionality for `Poly α` -/
 @[ext]
-theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
+theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := DFunLike.ext _ _
 #align poly.ext Poly.ext
 
 /-- The `i`th projection function, `x_i`. -/
@@ -341,7 +341,7 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
 
 variable (β)
 
-theorem reindex_dioph (f : α → β) : ∀ _ : Dioph S, Dioph {v | v ∘ f ∈ S}
+theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>

@@ -379,7 +379,7 @@ where
     imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var <| ∀ b : Bool, β b) cfg min
 
 instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] :
-  Testable (NamedBinder var <| ∀ _x : α, β)
+  Testable (NamedBinder var (α → β))
 where
   run := λ cfg min => do
     if cfg.traceDiscarded || cfg.traceSuccesses then
