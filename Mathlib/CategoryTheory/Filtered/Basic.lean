@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
