@@ -64,8 +64,18 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
   rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel']
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
-`A(n)`.  We choose a notation that looks like the TeX input. -/
-scoped[VertexAlg] notation A "_{" n "}" => ncoef A n
+`A(n)`.  We choose a notation that looks a bit like the TeX input. -/
+scoped[VertexAlg] notation A "_{" n "}_" => ncoef A n
+
+theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
+    (h : -n - 1 < HahnSeries.order (A x)) : ncoef A n x = 0 := by
+  simp only [ncoef, coeff, LinearMap.coe_mk, AddHom.coe_mk]
+  exact HahnSeries.coeff_eq_zero_of_lt_order h
+
+theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
+    (h : n < HahnSeries.order (A x)) : coeff A n x = 0 := by
+  rw [coeff_eq_ncoef, ncoef_eq_zero_of_lt_order A (-n - 1) x]
+  omega
 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
@@ -102,18 +112,6 @@ theorem one_coeff_zero' (x : V) : @coeff R V _ _ _ 1 0 x = x := by
 
 theorem one_coeff_ne (x : V) (n : ℤ) (hn : n ≠ 0): @coeff R V _ _ _ 1 n x = 0 := by
   rw [one_coeff_ite, if_neg hn]
-
-/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
-vanishing of the `x^k y^l` term, for all integers `k` and `l`. -/
-def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
-    (A B : VertexOperator R V) (n : ℕ) : Prop := ∀ (k l : ℤ) (x : V), Finset.sum
-    (Finset.antidiagonal n) (fun m => (-1)^(m.2) • (Nat.choose n m.2) •
-    coeff A (k - m.1) (coeff B (l - m.2) x)) = Finset.sum (Finset.antidiagonal n)
-    (fun m => (-1)^(m.2) • (Nat.choose n m.2) • coeff B (l - m.2) (coeff A (k - m.1) x))
-
-/-- Two fields are local if they are local to order `≤ n` for some `n`. -/
-def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
-    (A B : VertexOperator R V) : Prop := ∃(n : ℕ), isLocalToOrderLeq R V A B n
 
 section HasseDerivative
 
@@ -238,7 +236,45 @@ theorem factorial_smul_hasseDeriv (k : ℕ) :
 
 end HasseDerivative
 
-section ResidueProduct
+section Composite
+
+/-- The coefficients of composites of vertex opeartors are sums of terms of this shape. -/
+def composite_summand (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ) (f : ℤ → ℕ → ℤ) :
+    Module.End R V where
+  toFun := fun x => (f m i) • (ncoef A (m + n - i)) (ncoef B (k + i) x)
+  map_add' := by
+    simp only [map_add, smul_add, forall_const]
+  map_smul' := by
+    intro r x
+    simp only [map_smul, RingHom.id_apply]
+    rw [smul_algebra_smul_comm (f m i) r]
+
+theorem composite_summand_eq_zero_of_lt_order_right (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ)
+    (f : ℤ → ℕ → ℤ) (x : V) (h : Int.toNat (-k - HahnSeries.order (B x)) ≤ i) :
+    (composite_summand A B m n k i f) x = 0 := by
+  simp_all only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, Int.toNat_le,
+    tsub_le_iff_right, ncoef, coeff]
+  have hi : (- (k + i) - 1) < HahnSeries.order (B x) := by omega
+  rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero]
+
+/-!
+theorem composite_summand_eq_zero_of_lt_order_left (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ)
+    (f : ℤ → ℕ → ℤ) (x : V)
+    (h : Int.toNat (-m + i - HahnSeries.order (A (ncoef B (k + i) x))) ≤ n) :
+    (composite_summand A B m n k i f) x = 0 := by
+  sorry
+-/
+
+theorem composite_summand_smul (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ) (f : ℤ → ℕ → ℤ)
+    (r : R) (x : V) : r • composite_summand A B m n k i f x =
+    composite_summand A B m n k i f (r • x) := by
+  unfold composite_summand
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
+
+/-- The coefficients of composites of vertex opeartors are sums of this shape. -/
+noncomputable def composite_ncoef (A B : VertexOperator R V) (m n k : ℤ) (f : ℤ → ℕ → ℤ) (x : V) :
+  V := Finset.sum (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
+  fun i => composite_summand A B m n k i f x
 
 theorem eventually_constant_sum_add {M : Type*} [AddCommMonoid M] {N : Type*} [AddCommMonoid N]
     (bd : M → ℕ) (f : ℕ → (M →+ N)) (h : ∀(m : M) (n : ℕ), bd m ≤ n → f n m = 0) (a b : M) :
@@ -260,6 +296,102 @@ theorem eventually_constant_sum_add {M : Type*} [AddCommMonoid M] {N : Type*} [A
   rw [(Finset.eventually_constant_sum hmm (Nat.min_le_right (bd (a + b)) (max (bd a) (bd b)))).symm]
   simp only [← @Finset.sum_add_distrib, map_add]
 
+theorem composite_ncoef_add (A B : VertexOperator R V) (m n k : ℤ) (f : ℤ → ℕ → ℤ) (x y : V) :
+    composite_ncoef A B m n k f (x + y) = (composite_ncoef A B m n k f x) +
+    (composite_ncoef A B m n k f y) := by
+  unfold composite_ncoef
+  refine @eventually_constant_sum_add V _ V _
+    (fun (x : V) => Int.toNat (-k - HahnSeries.order (B x)))
+    (fun i => composite_summand A B m n k i f) ?_ x y
+  intro z i hi
+  simp_all only [AddMonoidHom.coe_coe]
+  exact @composite_summand_eq_zero_of_lt_order_right R V _ _ _ A B m n k i f z hi
+
+theorem composite_ncoef_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℤ → ℕ → ℤ) (r : R)
+    (x : V) : composite_ncoef A B m n k f (r • x) = r • composite_ncoef A B m n k f x := by
+  simp only [composite_ncoef, Finset.smul_sum, composite_summand_smul]
+  by_cases h₂ : B (r • x) = 0
+  · simp only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoef, coeff]
+    simp only [h₂]
+    simp only [HahnSeries.zero_coeff, map_zero, smul_zero, Finset.sum_const_zero]
+  · have h₃ : HahnSeries.order (B x) ≤ HahnSeries.order (B (r • x)) := by
+      rw [@LinearMap.map_smul]
+      refine HahnSeries.smul_order_leq r (B x) ?_
+      simp_all only [map_smul, forall_const, ne_eq, not_false_eq_true]
+    have h₄ : Int.toNat (-k - HahnSeries.order (B (r • x))) ≤
+        Int.toNat (-k - HahnSeries.order (B x)) := by
+      have h₅ : -k - HahnSeries.order (B (r • x)) ≤ -k - HahnSeries.order (B x) := by omega
+      exact Int.toNat_le_toNat h₅
+    rw [Finset.eventually_constant_sum
+      (fun i => composite_summand_eq_zero_of_lt_order_right A B m n k i f (r • x)) h₄]
+
+/-- The coefficient of a composite of vertex opeartors as a linear map. -/
+noncomputable def composite_ncoef.linearMap (A B : VertexOperator R V) (m n k : ℤ) (f : ℤ → ℕ → ℤ) :
+    Module.End R V where
+  toFun := fun x => composite_ncoef A B m n k f x
+  map_add' := by
+    intro x y
+    simp only [map_add, smul_add]
+    exact composite_ncoef_add A B m n k f x y
+  map_smul' := by
+    intro r x
+    simp only [RingHom.id_apply]
+    exact composite_ncoef_smul A B m n k f r x
+
+theorem composite_bdd_below_right (A B : VertexOperator R V) (m n : ℤ) (f : ℤ → ℕ → ℤ) (x : V) :
+    ∀(k : ℤ), (- HahnSeries.order (B x)) < k → composite_ncoef A B m n k f x = 0 := by
+  unfold composite_ncoef
+  intro k hk
+  have h : Int.toNat (-k - HahnSeries.order (B x)) = 0 := by
+    refine Int.toNat_eq_zero.mpr ?_
+    omega
+  rw [h, Finset.sum_range_zero]
+
+theorem composite_bdd_below_left (A B : VertexOperator R V) (m k : ℤ) (f : ℤ → ℕ → ℤ) (x : V) :
+    ∃(z : ℕ), ∀(n : ℤ), z - m < n → composite_ncoef A B m n k f x = 0 := by
+  let bd : ℕ → ℤ := fun i => i - (HahnSeries.order (A (ncoef B (k + i) x)))
+  have hbd: ∀(i : ℕ) (n : ℤ), (bd i) ≤ m + n → (ncoef A (m + n - i)) (ncoef B (k + i) x) = 0 := by
+    intro i n hn
+    simp_all only [tsub_le_iff_right]
+    refine ncoef_eq_zero_of_lt_order A (m + n - i) (ncoef B (k + i) x) ?_
+    omega
+  use Finset.sup (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
+    (fun i => Int.toNat (bd i))
+  intro n hn
+  unfold composite_ncoef composite_summand
+  simp only [LinearMap.coe_mk, AddHom.coe_mk]
+  refine Finset.sum_eq_zero ?_
+  intro i hi
+  rw [hbd i n ?_, smul_zero]
+  have h : Int.toNat (bd i) < m + n := by
+    rw [sub_lt_iff_lt_add, add_comm] at hn
+    refine lt_of_le_of_lt ?_ hn
+    rw [Nat.cast_le]
+    exact @Finset.le_sup ℕ ℕ _ _ (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
+      (fun i => Int.toNat (bd i)) i hi
+  exact le_trans (Int.le_add_one (Int.self_le_toNat (bd i))) h
+
+
+/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
+vanishing of the `x^k y^l` term, for all integers `k` and `l`. -/
+def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) (n : ℕ) : Prop := ∀ (k l : ℤ) (x : V), Finset.sum
+    (Finset.antidiagonal n) (fun m => (-1)^(m.2) • (Nat.choose n m.2) •
+    coeff A (k - m.1) (coeff B (l - m.2) x)) = Finset.sum (Finset.antidiagonal n)
+    (fun m => (-1)^(m.2) • (Nat.choose n m.2) • coeff B (l - m.2) (coeff A (k - m.1) x))
+
+/-- Two fields are local if they are local to order `≤ n` for some `n`. -/
+def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) : Prop := ∃(n : ℕ), isLocalToOrderLeq R V A B n
+
+
+end Composite
+
+section ResidueProduct
+
+
+
+
 /-- The function defining a coefficient in the left sum of the residue product. -/
 def res_prod_left_summand (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) : Module.End R V where
   toFun := fun x => (-1)^i • (Ring.choose m i) • (ncoef A (m - i)) (ncoef B (k + i) x)
@@ -279,6 +411,11 @@ theorem res_prod_left_summand_vanish (A B : VertexOperator R V) (m k : ℤ) (i :
   rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero,
     smul_zero]
 
+theorem res_prod_left_summand_smul (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) (r : R) (x : V) :
+    r • res_prod_left_summand A B m k i x = res_prod_left_summand A B m k i (r • x) := by
+  unfold res_prod_left_summand
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
+
 /-- The `k`-th normalized coefficient in the left sum of the `m`-th residue product of `A` and `B`.
 -/
 noncomputable def res_prod_left_ncoef (A B : VertexOperator R V) (m k : ℤ) (x : V) : V :=
@@ -289,12 +426,6 @@ theorem res_prod_left_ncoef_add (A B : VertexOperator R V) (m k : ℤ) (x y : V)
     res_prod_left_ncoef A B m k (x + y) = res_prod_left_ncoef A B m k x +
     res_prod_left_ncoef A B m k y := by
   unfold res_prod_left_ncoef
-  have h : ∀(z : V) (i : ℕ), (res_prod_left_summand A B m k i) z =
-      (@AddMonoidHomClass.toAddMonoidHom V V (Module.End R V) AddMonoid.toAddZeroClass
-      AddMonoid.toAddZeroClass (DistribMulActionHomClass.toAddMonoidHomClass R)
-      (res_prod_left_summand A B m k i)) z := by
-    exact fun z i ↦ rfl
-  simp_rw [h x, h y]
   refine @eventually_constant_sum_add V _ V _
     (fun (x : V) => Int.toNat (-k - HahnSeries.order (B x)))
     (fun i => res_prod_left_summand A B m k i) ?_ x y
@@ -304,15 +435,9 @@ theorem res_prod_left_ncoef_add (A B : VertexOperator R V) (m k : ℤ) (x y : V)
 
 theorem res_prod_left_ncoef_smul (A B : VertexOperator R V) (m k : ℤ) (r : R) (x : V) :
     res_prod_left_ncoef A B m k (r • x) = r • res_prod_left_ncoef A B m k x := by
-  simp only [res_prod_left_ncoef, Finset.smul_sum]
-  have h₁ : ∀(i : ℕ),
-      r • res_prod_left_summand A B m k i x = res_prod_left_summand A B m k i (r • x) := by
-    intro i
-    unfold res_prod_left_summand
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
+  simp only [res_prod_left_ncoef, Finset.smul_sum, res_prod_left_summand_smul]
   by_cases h₂ : B (r • x) = 0
-  · simp only [h₁]
-    simp only [res_prod_left_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoef, coeff]
+  · simp only [res_prod_left_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoef, coeff]
     simp only [h₂]
     simp only [HahnSeries.zero_coeff, map_zero, smul_zero, Finset.sum_const_zero]
   · have h₃ : HahnSeries.order (B x) ≤ HahnSeries.order (B (r • x)) := by
@@ -324,7 +449,6 @@ theorem res_prod_left_ncoef_smul (A B : VertexOperator R V) (m k : ℤ) (r : R) 
       have h₅ : -k - HahnSeries.order (B (r • x)) ≤ -k - HahnSeries.order (B x) := by
         omega
       exact Int.toNat_le_toNat h₅
-    simp only [h₁]
     rw [Finset.eventually_constant_sum (fun n => res_prod_left_summand_vanish A B m k n (r • x)) h₄]
 
 /-- The `k`-th normalized coefficient in the left sum of the `m`-th residue product of `A` and `B`,
@@ -343,28 +467,73 @@ noncomputable def res_prod_left_ncoef.linearMap (A B : VertexOperator R V) (m k 
     exact res_prod_left_ncoef_smul A B m k r x
 
 /-!
-theorem res_prod_left_bdd_below (A B : VertexOperator R V) (m : ℤ) : ∃(k : ℤ), ∀(n : ℤ),
-    k ≤ n → res_prod_left_ncoef.linearMap A B m n = 0 := by
-  sorry
 /-- The left sum of the `m`-th residue product `A(z)_m B(z)`, given by the residue of
 `(x-y)^m A(x)B(y)` at `|x| > |y|`. -/
-def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  VertexOperator_from_coeff (fun n => res_prod_left_coeff A B m (-k-1))
-  {
-    toMap := res_prod_left_coeff
-  }
+noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+  VertexOperatorFromCoeff (fun k => res_prod_left_ncoef.linearMap A B m (-k-1)) sorry
+  --(Exists.choose (res_prod_left_bdd_below A B m))
+-/
+
+def res_prod_right_summand (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) : Module.End R V where
+  toFun := fun x => (-1 : ℤˣ)^(m + i) • (Ring.choose m i) • (ncoef A (m + k - i)) (ncoef B i x)
+  map_add' := by
+    simp only [map_add, smul_add, forall_const]
+  map_smul' := by
+    intro r x
+    simp only [map_smul, RingHom.id_apply]
+    rw [smul_comm r, smul_comm r]
+
+theorem res_prod_right_summand_vanish (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) (x : V)
+    (h : Int.toNat (-HahnSeries.order (B x)) ≤ i) :
+    (res_prod_right_summand A B m k i) x = 0 := by
+  simp_all only [res_prod_right_summand, LinearMap.coe_mk, AddHom.coe_mk, Int.toNat_le,
+    tsub_le_iff_right, ncoef, coeff]
+  have hi : (- i - 1) < HahnSeries.order (B x) := by omega
+  rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero,
+    smul_zero]
+
+theorem res_prod_right_summand_smul (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) (r : R) (x : V) :
+    r • res_prod_right_summand A B m k i x = res_prod_right_summand A B m k i (r • x) := by
+  unfold res_prod_right_summand
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
+
+/-- The `k`-th normalized coefficient in the right sum of the `m`-th residue product of `A` and `B`.
+-/
+noncomputable def res_prod_right_ncoef (A B : VertexOperator R V) (m k : ℤ) (x : V) : V :=
+  Finset.sum (Finset.range (Int.toNat (-HahnSeries.order (B x))))
+  fun i => res_prod_right_summand A B m k i x
+
+theorem res_prod_right_ncoef_add (A B : VertexOperator R V) (m k : ℤ) (x y : V) :
+    res_prod_right_ncoef A B m k (x + y) = res_prod_right_ncoef A B m k x +
+    res_prod_right_ncoef A B m k y := by
+  unfold res_prod_right_ncoef
+  refine @eventually_constant_sum_add V _ V _
+    (fun (x : V) => Int.toNat (-HahnSeries.order (B x)))
+    (fun i => res_prod_right_summand A B m k i) ?_ x y
+  intro z i hi
+  simp_all only [AddMonoidHom.coe_coe]
+  exact @res_prod_right_summand_vanish R V _ _ _ A B m k i z hi
+
+
+
+/-!
 /-- The `k`-th coefficient in the right sum of the `m`-th residue product of `A` and `B`. -/
 def res_prod_right_coeff (A B : VertexOperator R V) (m k : ℤ) : Module.End R V :=
   ∑ i (-1)^(m + i) • (Ring.choose m i) • (ncoef A (m - i)) (ncoef B (n + i))
+
 /-- The right sum of the `m`-th residue product `A(z)_m B(z)`, given by the residue of
 `(x-y)^m B(y)A(x)` at `|y| > |x|`. -/
-def res_prod_right (A B : VertexOperator R V) (m : ℤ)
+def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+
 /-- The `m`-th residue product `A(z)_n B(z)` -/
-residue products: to show that the residue product is a vertex operator, we need
+def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+  res_prod_left A B m + res_prod_right A B m
+
 /-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
 for all integers `n`. -/
-theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (hAB : ) (hAC : ) (hBC : ) :
-    isLocaltoOrderLeq
+theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
+  (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l) (hBC : isLocaltoOrderLeq B C m) :
+    isLocaltoOrderLeq (k + l + m)
 -/
 
 end ResidueProduct
