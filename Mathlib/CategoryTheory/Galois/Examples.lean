@@ -75,7 +75,7 @@ instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
   exact Subtype.val_injective
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
-instance (G : Type u) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
+instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
   obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_zero_nonempty_mulEquiv G
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
