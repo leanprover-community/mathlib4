@@ -92,7 +92,7 @@ theorem first_order_condition (h : HasFDerivAt f (f' x) x) (hf : ConvexOn ℝ s 
   let b := min b1 (1 : ℝ)
   let a := 1 - b
   have sum_a_b : a + b = 1:= sub_add_cancel 1 b
-  have b_nonneg: 0 ≤ b := le_min (LT.lt.le b1pos) zero_le_one
+  have b_nonneg: 0 ≤ b := le_min b1pos.le zero_le_one
   have a_nonneg : 0 ≤ a := by
     have h1: 0 + b ≤ a + b := by
       rw[zero_add, sum_a_b]
