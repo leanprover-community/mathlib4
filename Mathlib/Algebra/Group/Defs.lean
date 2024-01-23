@@ -33,8 +33,8 @@ actions and register the following instances:
 - `SMul ℕ M` for additive monoids `M`, and `SMul ℤ G` for additive groups `G`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-A motivating example for the name `VAdd` (vector addition) is the action of a vector space
-on a Euclidean space, where the result of adding a vector to a point is a point.
+An informal motivating example for the name `VAdd` (vector addition) is the action of a
+vector space by translation.
 
 ## Notation
 
