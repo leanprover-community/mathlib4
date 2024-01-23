@@ -263,7 +263,7 @@ theorem lagrange (hs : Convex ℝ s) (hf : ∀ x ∈ s, HasGradientAt f (f' x) x
     ∀ x ∈ s, ∀ y ∈ s, ∃ c : ℝ, c ∈ Set.Ioo 0 1 ∧
     inner (f' (x + c • (y - x))) (y - x) = f y - f x := by
   intro x xs y ys
-  let g := fun t : ℝ ↦ f (x + t • (y - x))
+  let g (t : ℝ) := f (x + t • (y - x))
   let g' := fun t : ℝ ↦ (inner (f' (x + t • (y - x))) (y - x) : ℝ)
   have h1 : ∀ r ∈ Icc 0 1 , HasDerivAt g (g' r) r := by
     let h := fun r : ℝ ↦ (x + r • (y - x))
