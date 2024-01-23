@@ -7,7 +7,6 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Tactic.Positivity
 
 #align_import analysis.mean_inequalities_pow from "leanprover-community/mathlib"@"ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f"
 

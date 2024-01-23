@@ -3,9 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
-import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr.Core
 
 #align_import analysis.normed.group.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 

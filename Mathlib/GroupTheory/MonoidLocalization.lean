@@ -7,6 +7,7 @@ import Mathlib.Init.Data.Prod
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Regular.Basic
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
 

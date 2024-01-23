@@ -3,7 +3,6 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Data.Set.Pointwise.Interval
