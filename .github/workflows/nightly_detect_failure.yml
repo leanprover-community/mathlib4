@@ -41,7 +41,15 @@ jobs:
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
           version=${BASH_REMATCH[1]}
           echo "NIGHTLY=$version" >> $GITHUB_ENV
-          git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
+          # Check if the remote tag exists
+          if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
+              echo "Tag nightly-testing-$version already exists on the remote."
+          else
+              # If the tag does not exist, create and push the tag to remote
+              echo "Creating tag nightly-testing-$version from the current state of the nightly-testing branch."
+              git tag nightly-testing-$version
+              git push origin nightly-testing-$version
+          fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
           exit 1
