@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Koundinya Vajjha, Thomas Browning
 -/
 
-import Mathlib.NumberTheory.Padics.PadicIntegers
-import Mathlib.Data.Int.Log
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.NumberTheory.Padics.PadicNumbers
 
 
 /-!
