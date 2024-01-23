@@ -81,9 +81,9 @@ def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
-scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
+@[inherit_doc] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -123,8 +123,10 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 
 variable {R}
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 infixl:100 " ⊗ₜ " => tmul _
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit

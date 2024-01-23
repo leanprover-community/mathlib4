@@ -360,7 +360,9 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
+  /-- The fundamental groupoid of a topological space. -/
   obj X := { α := FundamentalGroupoid X }
+  /-- The functor between fundamental groupoids induced by a continuous map. -/
   map f :=
     { obj := fun x => ⟨f x.as⟩
       map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
@@ -387,9 +389,9 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
-scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
-scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
+@[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+@[inherit_doc] scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+@[inherit_doc] scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl

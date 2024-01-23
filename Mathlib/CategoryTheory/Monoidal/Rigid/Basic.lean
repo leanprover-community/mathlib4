@@ -96,8 +96,8 @@ variable [ExactPairing X Y]
 def coevaluation : 𝟙_ C ⟶ X ⊗ Y := @coevaluation' _ _ _ X Y _
 def evaluation : Y ⊗ X ⟶ 𝟙_ C := @evaluation' _ _ _ X Y _
 
-notation "η_" => ExactPairing.coevaluation
-notation "ε_" => ExactPairing.evaluation
+@[inherit_doc] notation "η_" => ExactPairing.coevaluation
+@[inherit_doc] notation "ε_" => ExactPairing.evaluation
 
 lemma coevaluation_evaluation :
     (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
@@ -175,8 +175,8 @@ def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : �
   (λ_ _).inv ≫ (η_ (ᘁX) X ⊗ 𝟙 _) ≫ ((𝟙 _ ⊗ f) ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom
 #align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
-notation f "ᘁ" => rightAdjointMate f
-notation "ᘁ" f => leftAdjointMate f
+@[inherit_doc] notation f "ᘁ" => rightAdjointMate f
+@[inherit_doc] notation "ᘁ" f => leftAdjointMate f
 
 @[simp]
 theorem rightAdjointMate_id {X : C} [HasRightDual X] : (𝟙 X)ᘁ = 𝟙 (Xᘁ) := by

@@ -50,7 +50,7 @@ def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
 #align upper_half_plane UpperHalfPlane
 
-scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
+@[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
 open UpperHalfPlane
 

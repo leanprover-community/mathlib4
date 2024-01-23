@@ -71,7 +71,7 @@ average w.r.t. the volume, one can omit `∂volume`. -/
 noncomputable def laverage (f : α → ℝ≥0∞) := ∫⁻ x, f x ∂(μ univ)⁻¹ • μ
 #align measure_theory.laverage MeasureTheory.laverage
 
-notation3"⨍⁻ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => laverage μ r
+@[inherit_doc] notation3"⨍⁻ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => laverage μ r
 notation3"⨍⁻ "(...)", "r:60:(scoped f => laverage volume f) => r
 notation3"⨍⁻ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => laverage (Measure.restrict μ s) r
 notation3 (prettyPrint := false)

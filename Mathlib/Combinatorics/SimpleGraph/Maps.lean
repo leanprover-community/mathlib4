@@ -237,9 +237,9 @@ abbrev Iso :=
   RelIso G.Adj G'.Adj
 #align simple_graph.iso SimpleGraph.Iso
 
-infixl:50 " →g " => Hom
-infixl:50 " ↪g " => Embedding
-infixl:50 " ≃g " => Iso
+@[inherit_doc] infixl:50 " →g " => Hom
+@[inherit_doc] infixl:50 " ↪g " => Embedding
+@[inherit_doc] infixl:50 " ≃g " => Iso
 
 namespace Hom
 
