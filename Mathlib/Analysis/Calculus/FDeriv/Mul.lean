@@ -159,6 +159,69 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
 
 end ClmCompApply
 
+section ContinuousMultilinearApplyConst
+
+/-! ### Derivative of the application of continuous multilinear maps to a constant -/
+
+variable {ι : Type*} [Fintype ι]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+  {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  {c : E → ContinuousMultilinearMap 𝕜 M H}
+  {c' : E →L[𝕜] ContinuousMultilinearMap 𝕜 M H}
+
+theorem HasStrictFDerivAt.continuousMultilinear_apply_const (hc : HasStrictFDerivAt c c' x)
+    (u : ∀ i, M i) : HasStrictFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasStrictFDerivAt.comp x hc
+
+theorem HasFDerivWithinAt.continuousMultilinear_apply_const (hc : HasFDerivWithinAt c c' s x)
+    (u : ∀ i, M i) :
+    HasFDerivWithinAt (fun y ↦ (c y) u) (c'.flipMultilinear u) s x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp_hasFDerivWithinAt x hc
+
+theorem HasFDerivAt.continuousMultilinear_apply_const (hc : HasFDerivAt c c' x) (u : ∀ i, M i) :
+    HasFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp x hc
+
+theorem DifferentiableWithinAt.continuousMultilinear_apply_const
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
+    DifferentiableWithinAt 𝕜 (fun y ↦ (c y) u) s x :=
+  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).differentiableWithinAt
+
+theorem DifferentiableAt.continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x)
+    (u : ∀ i, M i) :
+    DifferentiableAt 𝕜 (fun y ↦ (c y) u) x :=
+  (hc.hasFDerivAt.continuousMultilinear_apply_const u).differentiableAt
+
+theorem DifferentiableOn.continuousMultilinear_apply_const (hc : DifferentiableOn 𝕜 c s)
+    (u : ∀ i, M i) : DifferentiableOn 𝕜 (fun y ↦ (c y) u) s :=
+  fun x hx ↦ (hc x hx).continuousMultilinear_apply_const u
+
+theorem Differentiable.continuousMultilinear_apply_const (hc : Differentiable 𝕜 c) (u : ∀ i, M i) :
+    Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousMultilinear_apply_const u
+
+theorem fderivWithin_continuousMultilinear_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
+    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipMultilinear u) :=
+  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).fderivWithin hxs
+
+theorem fderiv_continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ∀ i, M i) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipMultilinear u :=
+  (hc.hasFDerivAt.continuousMultilinear_apply_const u).fderiv
+
+/-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderivWithin`. -/
+theorem fderivWithin_continuousMultilinear_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) (m : E) :
+    (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
+  simp [fderivWithin_continuousMultilinear_apply_const hxs hc]
+
+/-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderiv`. -/
+theorem fderiv_continuousMultilinear_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
+    (u : ∀ i, M i) (m : E) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
+  simp [fderiv_continuousMultilinear_apply_const hc]
+
+end ContinuousMultilinearApplyConst
+
 section SMul
 
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
