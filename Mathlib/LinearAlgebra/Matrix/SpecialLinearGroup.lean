@@ -70,7 +70,8 @@ def SpecialLinearGroup :=
 
 end
 
-@[inherit_doc] scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
+@[inherit_doc]
+scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 namespace SpecialLinearGroup
 
