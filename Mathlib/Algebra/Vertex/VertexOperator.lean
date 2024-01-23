@@ -476,6 +476,7 @@ noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOpe
   --(Exists.choose (res_prod_left_bdd_below A B m))
 -/
 
+/-- The function defining a coefficient in the left sum of the residue product. -/
 def res_prod_right_summand (A B : VertexOperator R V) (m k : ℤ) (i : ℕ) : Module.End R V where
   toFun := fun x => (-1 : ℤˣ)^(m + i) • (Ring.choose m i) • (ncoef A (m + k - i)) (ncoef B i x)
   map_add' := by
