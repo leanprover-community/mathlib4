@@ -81,7 +81,7 @@ def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
-@[inherit_doc] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
+@[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
 @[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 

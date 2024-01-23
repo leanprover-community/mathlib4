@@ -73,7 +73,13 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /-- An exact pairing is a pair of objects `X Y : C` which admit
   a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
+  /-- Coevaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.coevaluation` instead. -/
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
+  /-- Evaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.evaluation` instead. -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     (𝟙 Y ⊗ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
@@ -93,7 +99,10 @@ namespace ExactPairing
 variable (X Y : C)
 variable [ExactPairing X Y]
 
+/-- Coevaluation of an exact pairing. -/
 def coevaluation : 𝟙_ C ⟶ X ⊗ Y := @coevaluation' _ _ _ X Y _
+
+/-- Evaluation of an exact pairing. -/
 def evaluation : Y ⊗ X ⟶ 𝟙_ C := @evaluation' _ _ _ X Y _
 
 @[inherit_doc] notation "η_" => ExactPairing.coevaluation
