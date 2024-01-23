@@ -119,7 +119,7 @@ noncomputable instance instLocallyFiniteOrderBot [DecidableEq α] :
   (fun a s => by simp only [Set.Finite.mem_toFinset, Set.mem_Iic])
 
 /-- `LocallyFiniteOrder` instance on the face poset of an abstract simplicial complex.-/
-noncomputable instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (K.faces) :=
+noncomputable instance instLocallyFiniteOrder : LocallyFiniteOrder (K.faces) :=
   LocallyFiniteOrder.ofFiniteIcc (Icc_finite K)
 
 /-! Finiteness properties of the face poset.-/
