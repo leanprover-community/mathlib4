@@ -91,11 +91,11 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
     simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula, iff_eq_eq] at h
     rw [← Function.comp.assoc _ _ (Fintype.equivFin _).symm,
-      Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _), Equiv.symm_comp_self,
+      Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp.right_id, Function.comp.assoc, Sum.elim_comp_inl,
       Function.comp.assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp.assoc] at h
     refine' h.trans _
-    erw [Function.comp.assoc _ _ (Fintype.equivFin _), Equiv.symm_comp_self, Function.comp.right_id,
+    erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self, Function.comp.right_id,
       Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
       BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]

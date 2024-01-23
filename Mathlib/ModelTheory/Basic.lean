@@ -812,7 +812,7 @@ instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
 
 -- Name would be better as symm_symm, but then can clash with Equiv.symm_symm
 @[simp]
-theorem symm_symm_eq_self (f : M ≃[L] N) :
+theorem symm_symm (f : M ≃[L] N) :
     f.symm.symm = f :=
   rfl
 
@@ -970,13 +970,13 @@ theorem self_comp_symm (f : M ≃[L] N) : f.comp f.symm = refl L N := by
   ext; rw [comp_apply, apply_symm_apply, refl_apply]
 
 @[simp]
-theorem symm_comp_self_eq_refl (f : M ≃[L] N) : f.symm.comp f = refl L M := by
+theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
   ext; rw [comp_apply, symm_apply_apply, refl_apply]
 
 @[simp]
 theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
     f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
-  rw [←comp_toEmbedding, symm_comp_self_eq_refl, refl_toEmbedding]
+  rw [←comp_toEmbedding, symm_comp_self, refl_toEmbedding]
 
 @[simp]
 theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
@@ -986,7 +986,7 @@ theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
 @[simp]
 theorem symm_comp_self_toHom (f : M ≃[L] N) :
     f.symm.toHom.comp f.toHom = Hom.id L M := by
-  rw [←comp_toHom, symm_comp_self_eq_refl, refl_toHom]
+  rw [←comp_toHom, symm_comp_self, refl_toHom]
 
 @[simp]
 theorem self_comp_symm_toHom (f : M ≃[L] N) :

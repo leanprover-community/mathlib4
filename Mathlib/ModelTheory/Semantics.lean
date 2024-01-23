@@ -735,7 +735,7 @@ namespace Formula
 theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     [(L.lhomWithConstants α).IsExpansionOn M] (φ : L[[α]].Sentence) :
     ((equivSentence.symm φ).Realize fun a => (L.con a : M)) ↔ φ.Realize M := by
-  simp only [equivSentence, Equiv.symm_symm, Equiv.coe_trans, Realize,
+  simp only [equivSentence, _root_.Equiv.symm_symm, Equiv.coe_trans, Realize,
     BoundedFormula.realize_relabelEquiv, Function.comp]
   refine' _root_.trans _ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
