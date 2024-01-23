@@ -172,6 +172,9 @@ theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_int, ← Int.cast_abs, _root_.abs_of_nonneg hn]
 #align complex.norm_int_of_nonneg Complex.norm_int_of_nonneg
 
+lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
+  rw [normSq_eq_abs, norm_eq_abs]
+
 @[continuity]
 theorem continuous_abs : Continuous abs :=
   continuous_norm
@@ -450,6 +453,34 @@ lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z
 
 lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
   IsROrC.exists_norm_mul_eq_self _
+
+/-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
+`IsROrC.im IsROrC.I = 1`. -/
+@[simps]
+def _root_.IsROrC.complexRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : IsROrC.im (IsROrC.I : 𝕜) = 1) :
+    𝕜 ≃+* ℂ where
+  toFun x := IsROrC.re x + IsROrC.im x * I
+  invFun x := re x + im x * IsROrC.I
+  left_inv x := by simp
+  right_inv x := by simp [h]
+  map_add' x y := by simp only [map_add, ofReal_add]; ring
+  map_mul' x y := by
+    simp only [IsROrC.mul_re, ofReal_sub, ofReal_mul, IsROrC.mul_im, ofReal_add]
+    ring_nf
+    rw [I_sq]
+    ring
+
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
+`IsROrC.im IsROrC.I = 1`. -/
+@[simps]
+def _root_.IsROrC.complexLinearIsometryEquiv {𝕜 : Type*} [IsROrC 𝕜]
+    (h : IsROrC.im (IsROrC.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
+  map_smul' _ _ := by simp [IsROrC.smul_re, IsROrC.smul_im, ofReal_mul]; ring
+  norm_map' _ := by
+    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← IsROrC.normSq_eq_def',
+      IsROrC.normSq_apply]
+    simp [normSq_add]
+  __ := IsROrC.complexRingEquiv h
 
 section ComplexOrder
 
