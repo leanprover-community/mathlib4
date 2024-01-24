@@ -779,6 +779,53 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
   lt_iff_lt_of_le_iff_le (inv_le_of_neg hb ha)
 #align lt_inv_of_neg lt_inv_of_neg
 
+/-!
+### Monotonicity results involving inversion
+-/
+
+
+theorem sub_inv_antitoneOn_Ioi {R : Type*} [LinearOrderedField R] (c : R) :
+    AntitoneOn (fun x:R ↦ (x-c)⁻¹) (Set.Ioi c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Iio {R : Type*} [LinearOrderedField R] (c : R) :
+    AntitoneOn (fun x:R ↦ (x-c)⁻¹) (Set.Iio c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Icc_right {R : Type*} [LinearOrderedField R]  (a b c: R) (ha : c < a) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Ioi c |>.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem sub_inv_antitoneOn_Icc_left {R : Type*} [LinearOrderedField R]  (a b c: R) (ha : b < c) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Iio c |>.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem inv_antitoneOn_Ioi {R : Type*} [LinearOrderedField R] :
+    AntitoneOn (fun x:R ↦ x⁻¹) (Set.Ioi 0) := by
+  convert sub_inv_antitoneOn_Ioi (R:=R) 0
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Iio {R : Type*} [LinearOrderedField R] :
+    AntitoneOn (fun x:R ↦ x⁻¹) (Set.Iio 0) := by
+  convert sub_inv_antitoneOn_Iio (R:=R) 0
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_right {R : Type*} [LinearOrderedField R] (a b : R) (ha : 0 < a) :
+    AntitoneOn (fun x ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_right a b 0 ha
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_left {R : Type*} [LinearOrderedField R] (a b : R) (hb : b < 0) :
+    AntitoneOn (fun x ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_left a b 0 hb
+  exact (sub_zero _).symm
+
 /-! ### Relating two divisions -/
 
 
