@@ -441,7 +441,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   see library note [reducible non-instances]. -/
 instance id : Algebra R R where
     toFun x := x
-    smul r x := r * x
+    toSMul := Mul.toSMul _
     __ := (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
