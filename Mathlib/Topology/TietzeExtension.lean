@@ -87,6 +87,30 @@ theorem ContinuousMap.exists_extension' (f : C(X₁, Y)) : ∃ (g : C(X, Y)), g 
   f.exists_extension he |>.imp fun g hg ↦ by ext x; congrm($(hg) x)
 #align continuous_map.exists_extension_of_closed_embedding ContinuousMap.exists_extension'
 
+/-- This theorem is not intended to be used directly because it is rare for a set alone to
+satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
+the radius is strictly positive, so finding this as an instance will fail.
+
+Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
+`[TietzeExtension t]` under some hypotheses. -/
+theorem ContinuousMap.exists_forall_mem_restrict_eq {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
+    {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
+    ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.restrict s = f := by
+  obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
+  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+
+/-- This theorem is not intended to be used directly because it is rare for a set alone to
+satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
+the radius is strictly positive, so finding this as an instance will fail.
+
+Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
+`[TietzeExtension t]` under some hypotheses. -/
+theorem ContinuousMap.exists_extension_forall_mem {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
+    {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
+    ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.comp ⟨e, he.continuous⟩ = f := by
+  obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_extension he
+  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [∀ i, TietzeExtension (Y i)] : TietzeExtension (∀ i, Y i) where
   exists_restrict_eq' s hs f := by
