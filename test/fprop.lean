@@ -1,0 +1,187 @@
+/-
+Copyright (c) 2024 Tomáš Skřivan All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tomáš Skřivan
+-/
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Topology.Constructions
+
+import Mathlib.Tactic.FProp
+
+
+open Mathlib
+
+
+/-!  
+The first step in using `fprop` is to mark desired function property with `fprop` attribute.
+In this example we work with `Measurable`. 
+-/
+attribute [fprop] Measurable
+
+
+/-! 
+Now we can start marking theorems about `Measurable` with the attribute `@[fprop]`.
+It is best to start with the basic lambda calculus rules. There are five of these rules in total
+
+  - identity rule    `Measurable fun x => x`
+  - constant rule    `Measurable fun x => y`
+  - composition rule `Measurable f → Measurable g → Measurable fun x => f (g x)`
+  - apply rule       `Measurable fun f => f x`
+  - pi rule          `∀ i, Measurable (f · i) → Measurable fun x i => f x i`
+
+You do not have to provide them all. For example `IsLinearMap` does not have the constant rule.
+However, to have any hope at using `fprop` successfully you need to at least provide identity and composition rule.
+-/
+
+attribute [fprop] 
+  measurable_id' 
+  measurable_const 
+  Measurable.comp' 
+  measurable_pi_apply 
+  measurable_pi_lambda
+
+/-!
+Measurability also behaves nicely with respect to taking products. Let's mark the product constructor
+-/
+
+attribute [fprop]
+  Measurable.prod_mk -- Measurable f → Measurable g → Measurable fun x => (f x, g x)
+
+/-!
+When it comes to product projection, their properties are usually stated in two different ways
+```
+measurable_fst : Measurable fun x => Prod.fst x
+```
+or 
+```
+Measurable.fst : Measurable f → Measurable fun x => Prod.fst (f x)
+```
+Tactic `fprop` can work with both versions and it should be sufficient to provide just one of them.
+It does not hurt to provide both of them though.
+-/
+
+attribute [fprop]
+  measurable_fst 
+  Measurable.fst
+  measurable_snd 
+  Measurable.snd
+
+/-!
+A silly example on which `measurability` fails and `fprop` succeeds. Let's turn on tracing to see what is going on
+-/
+
+set_option trace.Meta.Tactic.fprop true in
+example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x,y) => f x y) (a : α) : 
+    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by (try measurability); fprop
+
+/-!
+To give more complicated examples we mark theorems about arithmetic operations with `@[fprop]
+
+Again we mark both versions of theorems. Internally `fprop` says that theorems like `measurable_add`
+are in "uncurried form" and theorems like `Measurable.add` are in compositional form.
+-/
+
+attribute [fprop]
+  measurable_add
+  measurable_mul
+  measurable_neg
+  measurable_div
+  measurable_smul
+
+  Measurable.add
+  Measurable.mul
+  Measurable.neg
+  Measurable.div
+  Measurable.smul
+
+
+/-!
+An example of measurability of some arithmetic function
+-/
+example : Measurable fun x : ℝ => (x * x - 1) / x + (x - x*x) := by fprop
+
+
+
+/-!
+So far we talked about two types of theorems:
+1. theorems about basic lambda calculus terms 
+2. theorems about defined functions
+
+There are two other kinds of theorems `fprop` can work with:
+3. transition theorems - theorems that imply e.g. measurability from continuity
+4. morphism theorems - theorems talking about bundles 
+
+When you mark a theorem with `@[fprop]` attribute you can check the type of the 
+theorem by turning on the option `trace.Meta.Tactic.fprop.attr`.
+-/
+
+/-!
+Transition theorems prove one function property from another. We already mentioned
+that continuity implies measurability but there are many more. For example differentiability 
+implies continuity, linear map between finitely dimensional spaces is continuous etc.
+
+The theorem proving measurability from continuity is `Continuous.measurable` so let's
+mark it with `@[fprop]`
+-/
+
+attribute [fprop]
+  Continuous.measurable -- Continuous f → Measurable f
+
+
+/-!
+Now we can prove one of the earlier examples assuming the function is continuous instead of
+measurable.
+-/
+
+example (f : ℝ → ℝ → ℝ) (hf : Continuous fun (x,y) => f x y) (a : ℝ) : 
+    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by fprop
+
+
+/-!
+To keep `fprop` performant it is important to keep these "transition theorems" in the form
+`P f → Q f` i.e. the conclusion has to talk about a single free variable `f`. Furthermore,
+the "transition theorems" should **not** form a cycle. 
+-/
+
+
+/-!
+Lastly there are "morphism theorems". These are really just theorems about the properties of
+`DFunLike.coe` and are treated somewhat specially.  
+
+Let's make continuous linear maps work with measurability. The function `DFunLike.coe` is 
+a function of two arguments `f : E →L[K] F` and `x : E`. Mathlib currently states 
+measurability of `DFunLike.coe` in `f` and `x` separately. 
+
+The theorem `ContinuousLinearMap.measurable` states measurability in `x` in uncurried form.
+The theorem `ContinuousLinearMap.measurable_comp` states measurability in `x` in compositional form.
+The theorem `ContinuousLinearMap.measurable_apply` states measurability in `f` in uncurried form.
+The theorem `Measurable.apply_continuousLinearMap` states measurability in `f` in compositional form.
+-/
+
+attribute [fprop] 
+  ContinuousLinearMap.measurable       -- Measurable fun (x : E) => DFunLike.coe L x
+  ContinuousLinearMap.measurable_comp  -- Measurable φ → Measurable fun (x : E) => DFunLike.coe L (φ x)
+  ContinuousLinearMap.measurable_apply -- Measurable fun (f : E →[K] F) => f x
+  Measurable.apply_continuousLinearMap -- Measurable φ → Measurable fun (x : α) => DFunLike.coe (L x) v
+
+
+/-!
+In the current state of `fprop`, morphism theorems **have to** be stated in compositional form. 
+Sometimes they might work in uncurried form but `fprop` is not designed that way right now.
+
+
+In other cases the function property can be stated jointly in `f` and `x`. This is the case of `ContDiff n` and 
+continuous linear maps. The theorem is `ContDiff.clm_apply`.
+
+-/
+
+#check ContDiff.clm_apply -- {f : E → F →L[K] G} → {g : E → F} →  ContDiff K n f → ContDiff K n g → ContDiff K n fun x => DFunLike.coe (f x) (g x)
+
+/-!
+If possible, `fprop` theorem about `DFunLike.coe` should be state in this way.
+
+
+That should be all about `fprop`, I hope you will enjoy using it :)
+-/
