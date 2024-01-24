@@ -718,7 +718,7 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
 
 /-- The rational numbers are an algebra over the non-negative rationals. -/
 instance : Algebra NNRat ℚ :=
-  coeHom.toAlgebra
+  NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
 example : algebraRat = Algebra.id ℚ :=
