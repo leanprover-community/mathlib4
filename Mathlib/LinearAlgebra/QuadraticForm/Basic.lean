@@ -910,7 +910,7 @@ theorem associated_left_inverse (h : B₁.toBilin.IsSymm) : associatedHom S B₁
 -- porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three,
-    add_smul, add_smul, one_smul, add_sub_cancel, add_sub_cancel, two_smul, ←two_smul R,
+    add_smul, add_smul, one_smul, add_sub_cancel, add_sub_cancel, two_smul, ← two_smul R,
     ← smul_assoc]
   simp only [smul_eq_mul, invOf_mul_self', one_smul]
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
@@ -957,19 +957,21 @@ section Associated
 
 variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R M]
 
+variable [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower S R N]
+
 variable [Invertible (2 : R)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
 -- the more general `associatedHom` and place it in the previous section.
 /-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
-abbrev associated : QuadraticForm R M R →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
+abbrev associated : QuadraticForm R M N →ₗ[R] M →ₗ[R] M →ₗ[R] N :=
   associatedHom R
 #align quadratic_form.associated QuadraticForm.associated
 
 variable (S) in
 theorem coe_associatedHom :
-    ⇑(associatedHom S : QuadraticForm R M R →ₗ[S] M →ₗ[R] M →ₗ[R] R) = associated :=
+    ⇑(associatedHom S : QuadraticForm R M N →ₗ[S] M →ₗ[R] M →ₗ[R] N) = associated :=
   rfl
 
 @[simp]
@@ -1039,11 +1041,16 @@ theorem isOrtho_polarBilin {x y : M} : Q.polarBilin.IsOrtho x y ↔ IsOrtho Q x 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
   isOrtho_polarBilin.mpr h
 
+-- TODO: move to `GroupTheory/GroupAction/Group`
+theorem invOf_smul_eq_iff (r : R) [Invertible r] {a b : M} :
+    ⅟r • a = b ↔ a = r • b :=
+  inv_smul_eq_iff (a := unitOfInvertible r)
+
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
     Q.associated.IsOrtho x y ↔ Q.IsOrtho x y := by
-  simp_rw [isOrtho_def, BilinForm.isOrtho_def, associated_apply, invOf_mul_eq_iff_eq_mul_left,
-    mul_zero, sub_sub, sub_eq_zero]
+  simp_rw [isOrtho_def, LinearMap.isOrtho_def, associated_apply, invOf_smul_eq_iff,
+    smul_zero, sub_sub, sub_eq_zero]
 
 end CommRing
 
