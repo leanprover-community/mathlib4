@@ -563,4 +563,64 @@ theorem mem_Ioo_self_sub_add : x ≠ ∞ → x ≠ 0 → ε₁ ≠ 0 → ε₂ �
 
 end Interval
 
+-- TODO: generalize some of these to `WithTop α`
+section Actions
+
+/-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
+  MulAction.compHom M ofNNRealHom.toMonoidHom
+
+theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
+  rfl
+#align ennreal.smul_def ENNReal.smul_def
+
+instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+    IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ≥0∞) : _)
+
+instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+    SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ≥0∞) : _)
+#align ennreal.smul_comm_class_left ENNReal.smulCommClass_left
+
+instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+    SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ≥0∞) : _)
+#align ennreal.smul_comm_class_right ENNReal.smulCommClass_right
+
+/-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
+noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
+    DistribMulAction ℝ≥0 M :=
+  DistribMulAction.compHom M ofNNRealHom.toMonoidHom
+
+/-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
+noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
+  Module.compHom M ofNNRealHom
+
+/-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
+noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
+  smul := (· • ·)
+  commutes' r x := by simp [Algebra.commutes]
+  smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
+  toRingHom := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
+
+-- verify that the above produces instances we might care about
+noncomputable example : Algebra ℝ≥0 ℝ≥0∞ := inferInstance
+
+noncomputable example : DistribMulAction ℝ≥0ˣ ℝ≥0∞ := inferInstance
+
+theorem coe_smul {R} (r : R) (s : ℝ≥0) [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0]
+    [IsScalarTower R ℝ≥0 ℝ≥0∞] : (↑(r • s) : ℝ≥0∞) = (r : R) • (s : ℝ≥0∞) := by
+  rw [← smul_one_smul ℝ≥0 r (s : ℝ≥0∞), smul_def, smul_eq_mul, ← ENNReal.coe_mul, smul_mul_assoc,
+    one_mul]
+#align ennreal.coe_smul ENNReal.coe_smul
+
+-- porting note: added missing `DecidableEq R`
+theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
+    c • ∞ = if c = 0 then 0 else ∞ := by
+  rw [← smul_one_mul, mul_top']
+  -- porting note: need the primed version of `one_ne_zero` now
+  simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
+#align ennreal.smul_top ENNReal.smul_top
+
+end Actions
+
 end ENNReal
