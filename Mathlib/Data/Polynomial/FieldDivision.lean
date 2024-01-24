@@ -598,7 +598,7 @@ theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
 #align polynomial.irreducible_of_degree_eq_one Polynomial.irreducible_of_degree_eq_one
 
-theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
+theorem not_irreducible_C {R : Type*} [DivisionSemiring R] (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
   · rw [H, C_0]
     exact not_irreducible_zero
@@ -606,11 +606,24 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.not_irreducible_C Polynomial.not_irreducible_C
 
-theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
+theorem degree_pos_of_irreducible {R : Type*} [DivisionSemiring R] {p : R[X]} (hp : Irreducible p) :
+    0 < p.degree :=
   lt_of_not_ge fun hp0 =>
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 #align polynomial.degree_pos_of_irreducible Polynomial.degree_pos_of_irreducible
+
+lemma ne_zero_of_irreducible_X_pow_sub_C {R : Type*} [DivisionRing R] {n : ℕ} {a : R}
+    (H : Irreducible (X ^ n - C a)) : n ≠ 0 := by
+  rintro rfl
+  rw [pow_zero, ← C.map_one, ← map_sub] at H
+  exact not_irreducible_C _ H
+
+lemma ne_zero_of_irreducible_X_pow_sub_C' {R : Type*} [DivisionRing R] {n : ℕ} (hn : n ≠ 1) {a : R}
+    (H : Irreducible (X ^ n - C a)) : a ≠ 0 := by
+  rintro rfl
+  rw [map_zero, sub_zero] at H
+  exact not_irreducible_pow hn H
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
 into multiple decls because the original proof was timing out -/
