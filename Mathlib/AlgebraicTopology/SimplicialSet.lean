@@ -623,10 +623,13 @@ def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1
                 · exact hface i1 i2 h
      | inr h => rw [← h,← (types_comp_apply (S.map _) (S.map _)),← S.map_comp, ← op_comp]
                 rfl
-lemma homMk_face {S : SSet}  {n:ℕ} (i j: Fin (n+3)) (hij : j≠ i)  (face_map : Fin (n+2) →  S _[n+1])
-    (hface : (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
+section homMk
+variable {S : SSet}  {n:ℕ} (i: Fin (n+3)) (face_map : Fin (n+2) →  S _[n+1])
+variable (hface : (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
-    =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (face_map i2) ):
+    =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (face_map i2) )
+
+lemma homMk_face (j: Fin (n+3)) (hij : j≠ i):
     (homMk i face_map hface).app (op [n+1]) (face.{u} i j hij) =
     face_map ((Fin.predAbove (Fin.predAbove 0 i)) j):=by
      change S.map (factor_δ (face.{u} i j hij).1.down
@@ -703,7 +706,42 @@ lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) 
       congr 1
       exact SimplexImage.firstEdgeNIImageGe.preimage_δ_exe j hij
 
+lemma homMk_lift_face (lift : Δ[n+2]⟶ S)
+    (hlift: (homMk i face_map hface)  = hornInclusion (n+2) i ≫ lift):
+    S.map (δ ((δ i).toOrderHom j)).op (lift.app (op [n+2])
+    ((standardSimplex.objEquiv ([n+2]) (op [n+2])).invFun  (𝟙 ([n+2]:SimplexCategory))))
+    =face_map j:= by
+       rw [← (types_comp_apply (lift.app _) (S.map _) ),← lift.naturality,types_comp_apply]
+       have hij: ((δ i).toOrderHom j) ≠ i := by
+          by_contra hkc
+          exact Fin.exists_succAbove_eq_iff.mp (Exists.intro j hkc) rfl
+       have hj: j= ((Fin.predAbove (Fin.predAbove 0 i))
+        ((δ i).toOrderHom j)):= by
+          have hj2: (Hom.toOrderHom (δ i)) j = (Hom.toOrderHom (δ i))
+             (((Fin.predAbove (Fin.predAbove 0 i)) ((δ i).toOrderHom j))):= by
+               exact
+                 (SimplexImage.firstEdgeNIImageGe.preimage_δ_exe ((Hom.toOrderHom (δ i)) j)
+                     hij).symm
+          exact Fin.succAbove_right_inj.mp hj2
+       rw [hj]
+       rw [← (homMk_face i face_map hface ((δ i).toOrderHom j) hij )]
+       rw [hlift,NatTrans.comp_app,types_comp_apply]
+       apply congrArg
+       change _= (face i ((Hom.toOrderHom (δ i)) j) hij).val
+       unfold face
+       rw [standardSimplex.map_apply]
+       change _= (standardSimplex.objEquiv [n + 1 + 1] (op [n + 1])).symm
+           (δ ((Hom.toOrderHom (δ i)) j))
+       congr
+       change _≫ 𝟙 ([n + 2]: SimplexCategory)=_
+       rw [Category.comp_id]
+       change  (δ ((Hom.toOrderHom (δ i)) (Fin.predAbove (Fin.predAbove 0 i)
+          ((Hom.toOrderHom (δ i)) j))))=_
+       congr
+       exact id hj.symm
 
+
+end homMk
 end horn
 
 section Examples

@@ -87,6 +87,7 @@ lemma refl  {C : SSet} [Quasicategory C] (f : C _[1]) : homotopic f f := by
    exact  (C.map (SimplexCategory.σ  1).op f)
    infer_instance
 
+
 /--If there exists a homotopy from `φ` to `φ'` and from `φ` to `φ''` then there exists a homotopy
  from `φ'` to `φ''`.-/
 lemma trans' {C :SSet} [Quasicategory C] (φ φ' φ'' : C _[1]) (τ  τ' : C _[2])
@@ -125,37 +126,12 @@ lemma trans' {C :SSet} [Quasicategory C] (φ φ' φ'' : C _[1]) (τ  τ' : C _[2
       obtain ⟨lift,hlift⟩ := qusi.hornFilling h01 h0n three_horn
       let lift_simplex : C _[3] :=  lift.app (op [3])
          ((standardSimplex.objEquiv ([3]) (op [3])).invFun  (𝟙 ([3]:SimplexCategory)))
-      have lift₂ : C.map (δ 2).op lift_simplex = τ' := by
-          dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
-          have hτ':  τ' = (hornInclusion 3 1 ≫ lift).app (op [2])
-            (horn.face 1 2 (by {apply (bne_iff_ne 2 1).mp; rfl})):=by
-            rw [← hlift,horn.homMk_face]
-            rfl
-          rw [NatTrans.comp_app,types_comp_apply] at hτ'
-          rw [hτ']
-          rfl
-      have lift₃ : C.map (δ 3).op lift_simplex = τ := by
-          dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
-          have hτ:  τ = (hornInclusion 3 1 ≫ lift).app (op [2])
-           (horn.face 1 3 (Fin.ne_of_gt h0n)):=by
-            rw [← hlift,horn.homMk_face]
-            rfl
-          rw [NatTrans.comp_app,types_comp_apply] at hτ
-          rw [hτ]
-          rfl
-      have lift₀ : C.map (δ 0).op lift_simplex = τ'' := by
-          dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
-          have hτ'':  τ'' = (hornInclusion 3 1 ≫ lift).app (op [2])
-             (horn.face 1 0 (Fin.zero_ne_one)):=by
-            rw [← hlift,horn.homMk_face]
-            rfl
-          rw [NatTrans.comp_app,types_comp_apply] at hτ''
-          change _=τ''
-          rw [hτ'']
-          rfl
+      have lift₂ : C.map (δ 2).op lift_simplex = τ' :=  horn.homMk_lift_face (1 : Fin 4) (1 : Fin 3)
+          face_map hface lift hlift
+      have lift₃ : C.map (δ 3).op lift_simplex = τ :=  horn.homMk_lift_face (1 : Fin 4) (2 : Fin 3)
+               face_map hface lift hlift
+      have lift₀ : C.map (δ 0).op lift_simplex = τ'' :=horn.homMk_lift_face (1 : Fin 4) (0 : Fin 3)
+               face_map hface lift hlift
       use C.map (δ 1).op lift_simplex
       fconstructor
       all_goals rw [← (types_comp_apply (C.map _) (C.map _) ),← C.map_comp,← op_comp]
