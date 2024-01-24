@@ -9,7 +9,6 @@ import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -268,7 +267,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-   toList (append v w) = toList v ++ toList w := by
+    toList (append v w) = toList v ++ toList w := by
   cases v
   cases w
   rfl

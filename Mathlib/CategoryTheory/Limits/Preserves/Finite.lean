@@ -109,6 +109,8 @@ for `Fintype J` -/
 class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
+attribute [instance] PreservesFiniteProducts.preserves
+
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
 -/
@@ -182,5 +184,7 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 for `Fintype J` -/
 class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
+
+attribute [instance] PreservesFiniteCoproducts.preserves
 
 end CategoryTheory.Limits

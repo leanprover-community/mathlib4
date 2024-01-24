@@ -18,7 +18,6 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 variable {ι F : Type*}
@@ -77,7 +76,27 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
+/-- An orthonormal basis of a finite-dimensional inner product space defines a measurable
+equivalence between the space and the Euclidean space of the same dimension. -/
+noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
+
+/-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
+theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.measurableEquiv volume volume := by
+  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
+  erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
+  exact b.addHaar_eq_volume.symm
+
+theorem OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr volume volume := b.measurePreserving_measurableEquiv
+
+theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr.symm volume volume := b.measurePreserving_measurableEquiv.symm
+
 section PiLp
+
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
@@ -98,5 +117,13 @@ theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι →
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+
+lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
+    (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
+  ext s hs
+  simp only [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).measure_preimage hs,
+    volume_pi_eq_dirac 0, MeasurableEquiv.measurableSet_preimage, hs, dirac_apply', indicator,
+    mem_preimage, Pi.one_apply]
+  rfl
 
 end PiLp

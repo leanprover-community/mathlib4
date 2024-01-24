@@ -337,6 +337,23 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
+variable {C} in
+/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
+of `yonedaEquiv` with heterogeneous universes. -/
+def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
+    (yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) ≃ F.obj (op X) where
+  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
+  invFun f :=
+    { app := fun Y x => F.map (ULift.down x).op f }
+  left_inv φ := by
+    ext Y f
+    dsimp
+    rw [← FunctorToTypes.naturality]
+    dsimp
+    rw [Category.comp_id]
+    rfl
+  right_inv f := by aesop_cat
+
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
@@ -351,7 +368,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
         simp only [yonedaEvaluation]
         ext
         dsimp
-        erw [Category.id_comp, ←FunctorToTypes.naturality]
+        erw [Category.id_comp, ← FunctorToTypes.naturality]
         simp only [Category.comp_id, yoneda_obj_map] }
   inv :=
     { app := fun F x =>
@@ -366,7 +383,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
         simp only [yoneda]
         ext
         dsimp
-        rw [←FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
+        rw [← FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
   hom_inv_id := by
     ext
     dsimp
@@ -421,15 +438,16 @@ lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : y
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = yonedaEquiv (yoneda.map g.unop ≫ f) :=
   yonedaEquiv_naturality _ _
 
-lemma yonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj X ⟶ F) (β : F ⟶ G)  :
+lemma yonedaEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj X ⟶ F) (β : F ⟶ G) :
     yonedaEquiv (α ≫ β) = β.app _ (yonedaEquiv α) :=
   rfl
 
-lemma yonedaEquiv_comp' {X : Cᵒᵖ} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj (unop X) ⟶ F) (β : F ⟶ G)  :
+lemma yonedaEquiv_comp' {X : Cᵒᵖ} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda.obj (unop X) ⟶ F) (β : F ⟶ G) :
     yonedaEquiv (α ≫ β) = β.app X (yonedaEquiv α) :=
   rfl
 
-@[simp]
+-- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f) = f := by
   rw [yonedaEquiv_apply]
   simp

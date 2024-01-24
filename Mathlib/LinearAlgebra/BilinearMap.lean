@@ -30,7 +30,6 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-
 namespace LinearMap
 
 section Semiring
@@ -119,6 +118,9 @@ theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
+
+theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
+  ⟨congr_fun₂, ext₂⟩
 
 section
 
@@ -395,6 +397,11 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+/-- The restriction of a bilinear form to a submodule. -/
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
+    p →ₗ[R] p →ₗ[R] R :=
+  f.compl₁₂ p.subtype p.subtype
+
 end CommSemiring
 
 section CommRing
@@ -417,7 +424,7 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
 theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
-  LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
+    LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 

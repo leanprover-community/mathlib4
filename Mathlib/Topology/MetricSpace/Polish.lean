@@ -125,6 +125,13 @@ instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, Topologica
   inferInstance
 #align polish_space.sigma PolishSpace.sigma
 
+/-- The product of two Polish spaces is Polish. -/
+instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
+    PolishSpace (α × β) :=
+  letI := upgradePolishSpace α
+  letI := upgradePolishSpace β
+  inferInstance
+
 /-- The disjoint union of two Polish spaces is Polish. -/
 instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
     PolishSpace (α ⊕ β) :=
@@ -399,8 +406,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    convert And.intro (isOpen_univ (α := s)) (isOpen_empty (α := (sᶜ : Set α)))
-      <;> ext ⟨x, hx⟩ <;> simpa using hx
+    simp [preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :

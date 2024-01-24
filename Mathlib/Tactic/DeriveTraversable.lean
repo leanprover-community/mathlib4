@@ -3,7 +3,6 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Tactic.Basic
 import Mathlib.Control.Traversable.Lemmas
 
 #align_import control.traversable.derive from "leanprover-community/mathlib"@"b01d6eb9d0a308807af54319b264d0994b91774b"
@@ -463,7 +462,9 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    return { config := { failIfUnchanged := false }, simpTheorems := #[s] }
+    pure <|
+    { config := { failIfUnchanged := false, unfoldPartialApp := true },
+      simpTheorems := #[s] }
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure

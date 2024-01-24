@@ -122,7 +122,7 @@ theorem isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (
   rw [isUnit_iff] at ha hb hc hd
   cases ha <;> cases hb <;> cases hc <;> cases hd <;>
       subst a <;> subst b <;> subst c <;> subst d <;>
-    simp
+    simp (config := {decide := true})
 #align int.is_unit_add_is_unit_eq_is_unit_add_is_unit Int.isUnit_add_isUnit_eq_isUnit_add_isUnit
 
 theorem eq_one_or_neg_one_of_mul_eq_neg_one {z w : ℤ} (h : z * w = -1) : z = 1 ∨ z = -1 :=

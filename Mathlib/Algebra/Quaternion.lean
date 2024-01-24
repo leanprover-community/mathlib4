@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Finrank
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
@@ -101,6 +101,9 @@ theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a
 #align quaternion_algebra.mk.eta QuaternionAlgebra.mk.eta
 
 variable {S T R : Type*} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
+
+instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
+instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
 
 /-- The imaginary part of a quaternion. -/
 def im (x : ℍ[R,c₁,c₂]) : ℍ[R,c₁,c₂] :=
@@ -492,6 +495,15 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0�
   rfl
 #align quaternion_algebra.algebra_map_eq QuaternionAlgebra.algebraMap_eq
 
+theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂] : _ → _).Injective :=
+  fun _ _ ↦ by simp [algebraMap_eq]
+
+instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂] := ⟨by
+  rintro t ⟨a, b, c, d⟩ h
+  rw [or_iff_not_imp_left]
+  intro ht
+  simpa [QuaternionAlgebra.ext_iff, ht] using h⟩
+
 section
 
 variable (c₁ c₂)
@@ -571,6 +583,21 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 
 theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
   rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
+
+/-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
+@[simps]
+def swapEquiv : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R, c₂, c₁] where
+  toFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  invFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by
+    ext
+      <;> simp only [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
+                     neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
+      <;> ring
+  map_add' _ _ := by ext <;> simp [add_comm]
+  commutes' _ := by simp [algebraMap_eq]
 
 end
 
@@ -753,6 +780,11 @@ theorem Quaternion.equivTuple_apply (R : Type*) [One R] [Neg R] (x : ℍ[R]) :
     Quaternion.equivTuple R x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 #align quaternion.equiv_tuple_apply Quaternion.equivTuple_apply
+
+instance {R : Type*} [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
+  inferInstanceAs (Subsingleton <| ℍ[R, -1, -1])
+instance {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
+  inferInstanceAs (Nontrivial <| ℍ[R, -1, -1])
 
 namespace Quaternion
 
@@ -1072,6 +1104,9 @@ theorem algebraMap_def : ⇑(algebraMap R ℍ[R]) = coe :=
   rfl
 #align quaternion.algebra_map_def Quaternion.algebraMap_def
 
+theorem algebraMap_injective : (algebraMap R ℍ[R] : _ → _).Injective :=
+  QuaternionAlgebra.algebraMap_injective
+
 theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 #align quaternion.smul_coe Quaternion.smul_coe
@@ -1232,8 +1267,8 @@ theorem im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, im_star, neg_mul, neg_neg]
 #align quaternion.im_sq Quaternion.im_sq
 
-theorem coe_normSq_add : (normSq (a + b) : ℍ[R]) = normSq a + a * star b + b * star a + normSq b :=
-  by simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
+theorem coe_normSq_add : normSq (a + b) = normSq a + a * star b + b * star a + normSq b := by
+  simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
 #align quaternion.coe_norm_sq_add Quaternion.coe_normSq_add
 
 theorem normSq_smul (r : R) (q : ℍ[R]) : normSq (r • q) = r ^ 2 * normSq q := by
@@ -1309,7 +1344,7 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := { isSimp := false })]
+@[simps (config := .lemmasOnly)]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
@@ -1378,10 +1413,10 @@ instance : DivisionRing ℍ[R] :=
   { Quaternion.instGroupWithZero,
     Quaternion.instRing with
     ratCast_mk := fun n d hd h => by
-      rw [←coe_rat_cast, Rat.cast_mk', coe_mul, coe_int_cast, coe_inv, coe_nat_cast]
+      rw [← coe_rat_cast, Rat.cast_mk', coe_mul, coe_int_cast, coe_inv, coe_nat_cast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun q x => by
-      rw [←coe_rat_cast, coe_mul_eq_smul]
+      rw [← coe_rat_cast, coe_mul_eq_smul]
       ext <;> exact DivisionRing.qsmul_eq_mul' _ _ }
 
 --@[simp] Porting note: `simp` can prove it
@@ -1412,17 +1447,15 @@ namespace Cardinal
 
 open Quaternion
 
-local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal _
-
 section QuaternionAlgebra
 
 variable {R : Type*} (c₁ c₂ : R)
 
-private theorem pow_four [Infinite R] : #R ^ℕ 4 = #R :=
-  power_nat_eq (aleph0_le_mk R) <| by simp
+private theorem pow_four [Infinite R] : #R ^ 4 = #R :=
+  power_nat_eq (aleph0_le_mk R) <| by decide
 
 /-- The cardinality of a quaternion algebra, as a type. -/
-theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
+theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ 4 := by
   rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂)]
   simp only [mk_prod, lift_id]
   ring
@@ -1434,7 +1467,7 @@ theorem mk_quaternionAlgebra_of_infinite [Infinite R] : #(ℍ[R,c₁,c₂]) = #R
 #align cardinal.mk_quaternion_algebra_of_infinite Cardinal.mk_quaternionAlgebra_of_infinite
 
 /-- The cardinality of a quaternion algebra, as a set. -/
-theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
+theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ 4 := by
   rw [mk_univ, mk_quaternionAlgebra]
 #align cardinal.mk_univ_quaternion_algebra Cardinal.mk_univ_quaternionAlgebra
 
@@ -1451,7 +1484,7 @@ variable (R : Type*) [One R] [Neg R]
 
 /-- The cardinality of the quaternions, as a type. -/
 @[simp]
-theorem mk_quaternion : #(ℍ[R]) = #R ^ℕ 4 :=
+theorem mk_quaternion : #(ℍ[R]) = #R ^ 4 :=
   mk_quaternionAlgebra _ _
 #align cardinal.mk_quaternion Cardinal.mk_quaternion
 
@@ -1462,7 +1495,7 @@ theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
 
 /-- The cardinality of the quaternions, as a set. -/
 --@[simp] Porting note: `simp` can prove it
-theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ℕ 4 :=
+theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ 4 :=
   mk_univ_quaternionAlgebra _ _
 #align cardinal.mk_univ_quaternion Cardinal.mk_univ_quaternion
 

@@ -42,18 +42,17 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
   · letI := Fintype.ofEquiv _ e.symm
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
-    exact ⟨Embedding.ofIsEmpty, fun x ↦ FunLike.ext _ _ isEmptyElim⟩
+    exact ⟨Embedding.ofIsEmpty, fun x ↦ DFunLike.ext _ _ isEmptyElim⟩
   · classical
     dsimp only at ih
     rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv γ β),
-        card_sigma, ←ih]
+        card_sigma, ← ih]
     simp only [Fintype.card_compl_set, Fintype.card_range, Finset.sum_const, Finset.card_univ,
       smul_eq_mul, mul_comm]
 #align fintype.card_embedding_eq Fintype.card_embedding_eq
 
 /- The cardinality of embeddings from an infinite type to a finite type is zero.
 This is a re-statement of the pigeonhole principle. -/
-@[simp]
 theorem card_embedding_eq_of_infinite {α β : Type*} [Infinite α] [Fintype β] [Fintype (α ↪ β)] :
     ‖α ↪ β‖ = 0 :=
   card_eq_zero

@@ -282,8 +282,8 @@ Throws an error if the `lhs` and `rhs` have non-defeq types.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   unless ← isDefEq (← inferType res.lhs) (← inferType res.rhs) do
-    throwError "Expecting{indentD res.lhs}\nand{indentD res.rhs}\n{""
-      }to have definitionally equal types."
+    throwError "Expecting{indentD res.lhs}\nand{indentD res.rhs}\n\
+      to have definitionally equal types."
   match res.pf? with
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
@@ -369,11 +369,11 @@ where
     let some (_, lhs', _, rhs') := (← whnf pfTy).sides?
       | panic! "Unexpectedly did not generate an eq or heq"
     unless ← isDefEq lhs lhs' do
-      throwError "Congruence hole has type{indentD pfTy}\n{""
-        }but its left-hand side is not definitionally equal to the expected value{indentD lhs}"
+      throwError "Congruence hole has type{indentD pfTy}\n\
+        but its left-hand side is not definitionally equal to the expected value{indentD lhs}"
     unless ← isDefEq rhs rhs' do
-      throwError "Congruence hole has type{indentD pfTy}\n{""
-        }but its right-hand side is not definitionally equal to the expected value{indentD rhs}"
+      throwError "Congruence hole has type{indentD pfTy}\n\
+        but its right-hand side is not definitionally equal to the expected value{indentD rhs}"
     return pf
 
 /-- Force the lhs and rhs to be defeq. For when `dsimp`-like congruence is necessary.
@@ -383,8 +383,8 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
     return res
   else
     unless ← isDefEq res.lhs res.rhs do
-      throwError "Cannot generate congruence because we need{indentD res.lhs}\n{""
-        }to be definitionally equal to{indentD res.rhs}"
+      throwError "Cannot generate congruence because we need{indentD res.lhs}\n\
+        to be definitionally equal to{indentD res.rhs}"
     -- Propagate types into any proofs that we're dropping:
     discard <| res.eq
     return {res with pf? := none}
@@ -417,8 +417,8 @@ def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM Con
 
 /-- Throw an internal error. -/
 def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
-  throwError "congr(...) failed with left-hand side{indentD lhs}\n{""
-    }and right-hand side {indentD rhs}\n{msg}"
+  throwError "congr(...) failed with left-hand side{indentD lhs}\n\
+    and right-hand side {indentD rhs}\n{msg}"
 
 /-- If `lhs` or `rhs` is a congruence hole, then process it.
 Only process ones that are at least as new as `mvarCounterSaved`
@@ -436,11 +436,11 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
       throwCongrEx lhs rhs "Elaborated types of congruence holes are not defeq."
     if let some (_, lhsVal, _, rhsVal) := (← whnf <| ← inferType pf1).sides? then
       unless ← isDefEq val1 lhsVal do
-        throwError "Left-hand side of congruence hole is{indentD lhsVal}\n{""
-          }but is expected to be{indentD val1}"
+        throwError "Left-hand side of congruence hole is{indentD lhsVal}\n\
+          but is expected to be{indentD val1}"
       unless ← isDefEq val2 rhsVal do
-        throwError "Right-hand side of congruence hole is{indentD rhsVal}\n{""
-          }but is expected to be{indentD val2}"
+        throwError "Right-hand side of congruence hole is{indentD rhsVal}\n\
+          but is expected to be{indentD val2}"
     return some <| CongrResult.mk' val1 val2 pf1
   | some .., none =>
     throwCongrEx lhs rhs "Right-hand side lost its congruence hole annotation."
@@ -616,11 +616,11 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
         let rhs ← elaboratePattern t expRhsTy false
         -- Note: these defeq checks can leak congruence holes.
         unless ← isDefEq expLhs lhs do
-          throwError "Left-hand side of elaborated pattern{indentD lhs}\n{""
-            }is not definitionally equal to left-hand side of expected type{indentD expectedType}"
+          throwError "Left-hand side of elaborated pattern{indentD lhs}\n\
+            is not definitionally equal to left-hand side of expected type{indentD expectedType}"
         unless ← isDefEq expRhs rhs do
-          throwError "Right-hand side of elaborated pattern{indentD rhs}\n{""
-            }is not definitionally equal to right-hand side of expected type{indentD expectedType}"
+          throwError "Right-hand side of elaborated pattern{indentD rhs}\n\
+            is not definitionally equal to right-hand side of expected type{indentD expectedType}"
         Term.synthesizeSyntheticMVars (mayPostpone := true)
         let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
         let expectedType' ← whnf expectedType

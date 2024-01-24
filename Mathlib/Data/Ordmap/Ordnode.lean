@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
-import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Data.Option.Basic
 
 #align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -348,7 +348,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
-instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
   | nil => decidableFalse
   | node _ l _ r =>
     have : Decidable (Any P l) := Any.decidable l

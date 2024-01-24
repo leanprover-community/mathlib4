@@ -67,12 +67,12 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
 -- porting note: added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).left = f.left ≫ g.left := rfl
+    (f ≫ g).left = f.left ≫ g.left := rfl
 
 -- porting note: added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).right = f.right ≫ g.right := rfl
+    (f ≫ g).right = f.right ≫ g.right := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
 @[simps]
@@ -231,7 +231,7 @@ instance mono_left [Mono sq] : Mono sq.left where
     apply CommaMorphism.ext
     · exact h
     · rw [Comma.comp_right, Comma.comp_right, this, this, Category.assoc, Category.assoc]
-      rw [←Arrow.w]
+      rw [← Arrow.w]
       simp only [← Category.assoc, h]
 #align category_theory.arrow.mono_left CategoryTheory.Arrow.mono_left
 
@@ -247,6 +247,22 @@ instance epi_right [Epi sq] : Epi sq.right where
     · rw [Comma.comp_left, Comma.comp_left, Arrow.w_assoc, Arrow.w_assoc, h]
     · exact h
 #align category_theory.arrow.epi_right CategoryTheory.Arrow.epi_right
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_left (e : f ≅ g) : e.hom.left ≫ e.inv.left = 𝟙 _ := by
+  rw [← comp_left, e.hom_inv_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_left (e : f ≅ g) : e.inv.left ≫ e.hom.left = 𝟙 _ := by
+  rw [← comp_left, e.inv_hom_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_right (e : f ≅ g) : e.hom.right ≫ e.inv.right = 𝟙 _ := by
+  rw [← comp_right, e.hom_inv_id, id_right]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_right (e : f ≅ g) : e.inv.right ≫ e.hom.right = 𝟙 _ := by
+  rw [← comp_right, e.inv_hom_id, id_right]
 
 end
 

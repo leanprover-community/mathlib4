@@ -50,7 +50,7 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k
   of_adj : ∀ v w : V, G.Adj v w → Fintype.card (G.commonNeighbors v w) = ℓ
-  of_not_adj : ∀ v w : V, v ≠ w → ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
+  of_not_adj : Pairwise fun v w => ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with SimpleGraph.IsSRGWith
 
@@ -102,7 +102,7 @@ adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
 theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (hne : v ≠ w) (ha : ¬G.Adj v w) :
     (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - μ := by
-  rw [← h.of_not_adj v w hne ha]
+  rw [← h.of_not_adj hne ha]
   apply h.card_neighborFinset_union_eq
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_not_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_not_adj
@@ -135,7 +135,7 @@ theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
 #align simple_graph.sdiff_compl_neighbor_finset_inter_eq SimpleGraph.sdiff_compl_neighborFinset_inter_eq
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
-  Gᶜ.IsRegularOfDegree (n - k - 1) := by
+    Gᶜ.IsRegularOfDegree (n - k - 1) := by
   rw [← h.card, Nat.sub_sub, add_comm, ← Nat.sub_sub]
   exact h.regular.compl
 set_option linter.uppercaseLean3 false in
@@ -206,7 +206,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
       ← Ne.def] at hw
     simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
-      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj v w hw.2.symm hw.1,
+      neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
       ← Set.toFinset_card]
     congr!
 
@@ -225,8 +225,9 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]
   · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
     by_cases ha : G.Adj v w <;>
-      simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one]
+      simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one,
+        not_true_eq_false, not_false_eq_true, and_false, and_self]
     · rw [h.of_adj v w ha]
-    · rw [h.of_not_adj v w hn ha]
+    · rw [h.of_not_adj hn ha]
 
 end SimpleGraph

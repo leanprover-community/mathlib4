@@ -98,7 +98,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
       simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   specialize hφ aux.1
   specialize hψ aux.2
-  rw [Finsupp.mem_antidiagonal] at hde
+  rw [Finset.mem_antidiagonal] at hde
   classical
   have hd' : d.support ⊆ d.support ∪ e.support := Finset.subset_union_left _ _
   have he' : e.support ⊆ d.support ∪ e.support := Finset.subset_union_right _ _
@@ -204,7 +204,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
-  rw [totalDegree]
+  rw [MvPolynomial.totalDegree]
   apply le_antisymm
   · apply Finset.sup_le
     intro d hd
@@ -276,7 +276,7 @@ theorem homogeneousComponent_zero : homogeneousComponent 0 φ = C (coeff 0 φ) :
   · simp only [coeff_homogeneousComponent, sum_eq_zero_iff, Finsupp.zero_apply, if_true, coeff_C,
       eq_self_iff_true, forall_true_iff]
   · rw [coeff_homogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
-    simp only [FunLike.ext_iff, Finsupp.zero_apply] at hd
+    simp only [DFunLike.ext_iff, Finsupp.zero_apply] at hd
     simp [hd]
 #align mv_polynomial.homogeneous_component_zero MvPolynomial.homogeneousComponent_zero
 

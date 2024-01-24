@@ -3,9 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.Hom.Basic
+import Mathlib.Util.AssertExists
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
@@ -60,7 +60,7 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
-  AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
+  IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
@@ -705,7 +705,7 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
@@ -727,7 +727,7 @@ alias ⟨le_of_sub_nonneg, sub_nonneg_of_le⟩ := sub_nonneg
 #align sub_nonneg_of_le sub_nonneg_of_le
 #align le_of_sub_nonneg le_of_sub_nonneg
 
-@[to_additive (attr := simp) sub_nonpos]
+@[to_additive sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
@@ -753,6 +753,10 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 #align div_le_iff_le_mul div_le_iff_le_mul
 #align sub_le_iff_le_add sub_le_iff_le_add
 
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
+attribute [simp] div_le_iff_le_mul
+
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
@@ -769,7 +773,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
@@ -1018,6 +1022,13 @@ theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
 
 end Preorder
 
+section LinearOrder
+variable [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
+
+@[to_additive] lemma lt_or_lt_of_div_lt_div : a / d < b / c → a < b ∨ c < d := by
+  contrapose!; exact fun h ↦ div_le_div'' h.1 h.2
+
+end LinearOrder
 end CommGroup
 
 section LinearOrder
@@ -1063,7 +1074,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 -- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
-@[to_additive, simp]
+@[to_additive]
 theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
@@ -1086,7 +1097,7 @@ addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
+/-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
@@ -1158,6 +1169,22 @@ instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoi
 { ‹LinearOrderedCommGroup α›, OrderedCommGroup.toOrderedCancelCommMonoid with }
 #align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
 #align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
+
+@[to_additive (attr := simp)]
+theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le_mul']
+#align neg_le_self_iff neg_le_self_iff
+
+@[to_additive (attr := simp)]
+theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
+#align neg_lt_self_iff neg_lt_self_iff
+
+@[to_additive (attr := simp)]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+#align le_neg_self_iff le_neg_self_iff
+
+@[to_additive (attr := simp)]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+#align lt_neg_self_iff lt_neg_self_iff
 
 end LinearOrderedCommGroup
 

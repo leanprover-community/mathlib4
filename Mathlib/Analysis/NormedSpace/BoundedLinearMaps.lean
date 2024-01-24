@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.Asymptotics.Asymptotics
 
@@ -39,9 +39,10 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 
 ## Notes
 
-The main use of this file is `IsBoundedBilinearMap`. The file `Analysis.NormedSpace.Multilinear`
-already expounds the theory of multilinear maps, but the `2`-variables case is sufficiently simpler
-to currently deserve its own treatment.
+The main use of this file is `IsBoundedBilinearMap`.
+The file `Analysis.NormedSpace.Multilinear.Basic`
+already expounds the theory of multilinear maps,
+but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
 in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
@@ -253,7 +254,7 @@ theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜
       apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
       exact Finset.prod_le_prod (fun i _ => norm_nonneg _) fun i _ => g.le_op_norm _
     _ = ‖g‖ ^ Fintype.card ι * ‖f‖ * ∏ i, ‖m i‖ := by
-      simp [Finset.prod_mul_distrib, Finset.card_univ]
+      simp only [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ]
       ring
 
 #align is_bounded_linear_map_continuous_multilinear_map_comp_linear isBoundedLinearMap_continuousMultilinearMap_comp_linear

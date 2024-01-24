@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.Quotient
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.CategoryTheory.Quotient.Preadditive
 
 #align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
 
@@ -59,16 +60,29 @@ instance : Category (HomotopyCategory V v) := by
 -- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 /-- The quotient functor from complexes to the homotopy category. -/
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
+instance : Full (quotient V c) := Quotient.fullFunctor _
+
+instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+
+instance : (quotient V c).Additive where
+
 open ZeroObject
 
--- TODO upgrade this to `HasZeroObject`, presumably for any `quotient`.
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
+
+instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
+  ⟨(quotient V c).obj 0, by
+    rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
 variable {V c}
 
@@ -85,7 +99,7 @@ theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient 
 
 -- porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
-  Quot.mk _ f = (quotient V c).map f := rfl
+    Quot.mk _ f = (quotient V c).map f := rfl
 
 theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homotopy f g) :
     (quotient V c).map f = (quotient V c).map g :=
@@ -140,38 +154,78 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
       (by rw [quotient_map_out_comp_out, i.inv_hom_id, (quotient V c).map_id])
 #align homotopy_category.homotopy_equiv_of_iso HomotopyCategory.homotopyEquivOfIso
 
+lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
+    IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by
+  rw [IsZero.iff_id_eq_zero]
+  constructor
+  · intro h
+    exact ⟨(homotopyOfEq _ _ (by simp [h]))⟩
+  · rintro ⟨h⟩
+    simpa using (eq_of_homotopy _ _ h)
+
 variable (V c)
+
+section
+
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 
 /-- The `i`-th homology, as a functor from the homotopy category. -/
-def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
-  CategoryTheory.Quotient.lift _ (_root_.homologyFunctor V c i) fun _ _ _ _ ⟨h⟩ =>
-    homology_map_eq_of_homotopy h i
-#align homotopy_category.homology_functor HomotopyCategory.homologyFunctor
+def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
+  CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
+    homology'_map_eq_of_homotopy h i
+#align homotopy_category.homology_functor HomotopyCategory.homology'Functor
 
 /-- The homology functor on the homotopy category is just the usual homology functor. -/
-def homologyFactors (i : ι) :
-    quotient V c ⋙ homologyFunctor V c i ≅ _root_.homologyFunctor V c i :=
+def homology'Factors (i : ι) :
+    quotient V c ⋙ homology'Functor V c i ≅ _root_.homology'Functor V c i :=
   CategoryTheory.Quotient.lift.isLift _ _ _
-#align homotopy_category.homology_factors HomotopyCategory.homologyFactors
+#align homotopy_category.homology_factors HomotopyCategory.homology'Factors
 
 @[simp]
-theorem homologyFactors_hom_app (i : ι) (C : HomologicalComplex V c) :
-    (homologyFactors V c i).hom.app C = 𝟙 _ :=
+theorem homology'Factors_hom_app (i : ι) (C : HomologicalComplex V c) :
+    (homology'Factors V c i).hom.app C = 𝟙 _ :=
   rfl
-#align homotopy_category.homology_factors_hom_app HomotopyCategory.homologyFactors_hom_app
+#align homotopy_category.homology_factors_hom_app HomotopyCategory.homology'Factors_hom_app
 
 @[simp]
-theorem homologyFactors_inv_app (i : ι) (C : HomologicalComplex V c) :
-    (homologyFactors V c i).inv.app C = 𝟙 _ :=
+theorem homology'Factors_inv_app (i : ι) (C : HomologicalComplex V c) :
+    (homology'Factors V c i).inv.app C = 𝟙 _ :=
   rfl
-#align homotopy_category.homology_factors_inv_app HomotopyCategory.homologyFactors_inv_app
+#align homotopy_category.homology_factors_inv_app HomotopyCategory.homology'Factors_inv_app
 
-theorem homologyFunctor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
-    (_root_.homologyFunctor V c i).map f =
-      ((homologyFunctor V c i).map ((quotient V c).map f) : _) :=
-  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homologyFunctor V c i) _ f).symm
-#align homotopy_category.homology_functor_map_factors HomotopyCategory.homologyFunctor_map_factors
+theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
+    (_root_.homology'Functor V c i).map f =
+      ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
+  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
+#align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
+
+end
+
+section
+
+variable [CategoryWithHomology V]
+
+/-- The `i`-th homology, as a functor from the homotopy category. -/
+noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
+  CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
+    rintro K L f g ⟨h⟩
+    exact h.homologyMap_eq i)
+
+/-- The homology functor on the homotopy category is induced by
+the homology functor on homological complexes. -/
+noncomputable def homologyFunctorFactors (i : ι) :
+    quotient V c ⋙ homologyFunctor V c i ≅
+      HomologicalComplex.homologyFunctor V c i :=
+  Quotient.lift.isLift _ _ _
+
+-- this is to prevent any abuse of defeq
+attribute [irreducible] homologyFunctor homologyFunctorFactors
+
+instance (i : ι) : (homologyFunctor V c i).Additive := by
+  have := Functor.additive_of_iso (homologyFunctorFactors V c i).symm
+  exact Functor.additive_of_full_essSurj_comp (quotient V c) _
+
+end
 
 end HomotopyCategory
 
@@ -195,6 +249,15 @@ lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexSha
     (F.mapHomotopyCategory c).map ((HomotopyCategory.quotient V c).map f) =
       (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f) :=
   rfl
+
+/-- The obvious isomorphism between
+`HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c` and
+`F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c` when `F : V ⥤ W` is
+an additive functor. -/
+def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
+    HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c ≅
+      F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=
+  CategoryTheory.Quotient.lift.isLift _ _ _
 
 -- TODO `F.mapHomotopyCategory c` is additive (and linear when `F` is linear).
 -- TODO develop lifting of natural transformations for general quotient categories so that

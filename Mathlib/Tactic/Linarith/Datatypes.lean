@@ -63,7 +63,7 @@ partial def add : Linexp → Linexp → Linexp
 def scale (c : Int) (l : Linexp) : Linexp :=
   if c = 0 then []
   else if c = 1 then l
-  else l.map $ fun ⟨n, z⟩ => (n, z*c)
+  else l.map fun ⟨n, z⟩ => (n, z*c)
 
 /--
 `l.get n` returns the value in `l` associated with key `n`, if it exists, and `none` otherwise.
@@ -281,7 +281,7 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
 tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
-  (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
+    (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
   let branches ← pp.transform g l
   if branches.length > 1 then
     trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
@@ -318,7 +318,7 @@ open Meta
 structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (←`(tactic| ring1))
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
@@ -346,7 +346,7 @@ since this is typically needed when using stronger unification.
 def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
     LinarithConfig :=
   if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (←`(tactic| ring1!)) }
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
   else cfg
 
 /-!

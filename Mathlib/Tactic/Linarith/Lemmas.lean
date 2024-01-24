@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Nat.Cast.Order
 
 /-!
 # Lemmas for `linarith`.
@@ -59,15 +59,16 @@ lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h
 -- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
 @[nolint unusedArguments]
 lemma mul_zero_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (_ : R a 0) (h : b = 0) :
-  a * b = 0 :=
-by simp [h]
+    a * b = 0 := by
+  simp [h]
 
 -- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
 @[nolint unusedArguments]
 lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a = 0) (_ : R b 0) :
-  a * b = 0 :=
-by simp [h]
+    a * b = 0 := by
+  simp [h]
 
+lemma nat_cast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
 end Linarith
 

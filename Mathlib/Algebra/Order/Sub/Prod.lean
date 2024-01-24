@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Products of `OrderedSub` types.

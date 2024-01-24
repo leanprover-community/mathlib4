@@ -116,13 +116,13 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
 #align category_theory.grothendieck_topology.mem_sieves_iff_coe CategoryTheory.GrothendieckTopology.mem_sieves_iff_coe
 -/
 
--- Also known as the maximality axiom.
+/-- Also known as the maximality axiom. -/
 @[simp]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 #align category_theory.grothendieck_topology.top_mem CategoryTheory.GrothendieckTopology.top_mem
 
--- Also known as the stability axiom.
+/-- Also known as the stability axiom. -/
 @[simp]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
@@ -306,7 +306,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · refine' @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=

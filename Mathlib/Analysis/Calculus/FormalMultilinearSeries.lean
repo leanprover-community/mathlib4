@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear
+import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 
 #align_import analysis.calculus.formal_multilinear_series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -57,12 +57,6 @@ instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
 instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
   ⟨0⟩
 
-@[simp] -- porting note: new; was not needed in Lean 3
-theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
-
-@[simp] -- porting note: new; was not needed in Lean 3
-theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
-
 section Module
 
 /- `derive` is not able to find the module structure, probably because Lean is confused by the
@@ -75,6 +69,12 @@ end Module
 
 namespace FormalMultilinearSeries
 
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
+
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
+
 @[ext] -- porting note: new theorem
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
@@ -86,6 +86,12 @@ protected theorem ext_iff {p q : FormalMultilinearSeries 𝕜 E F} : p = q ↔ �
 protected theorem ne_iff {p q : FormalMultilinearSeries 𝕜 E F} : p ≠ q ↔ ∃ n, p n ≠ q n :=
   Function.ne_iff
 #align formal_multilinear_series.ne_iff FormalMultilinearSeries.ne_iff
+
+/-- Cartesian product of two formal multilinear series (with the same field `𝕜` and the same source
+space, but possibly different target spaces). -/
+def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
+    FormalMultilinearSeries 𝕜 E (F × G)
+  | n => (p n).prod (q n)
 
 /-- Killing the zeroth coefficient in a formal multilinear series -/
 def removeZero (p : FormalMultilinearSeries 𝕜 E F) : FormalMultilinearSeries 𝕜 E F
@@ -156,14 +162,16 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
 /-- Forgetting the zeroth term in a formal multilinear series, and interpreting the following terms
-as multilinear maps into `E →L[𝕜] F`. If `p` corresponds to the Taylor series of a function, then
-`p.shift` is the Taylor series of the derivative of the function. -/
+as multilinear maps into `E →L[𝕜] F`. If `p` is the Taylor series (`HasFTaylorSeriesUpTo`) of a
+function, then `p.shift` is the Taylor series of the derivative of the function. Note that the
+`p.sum` of a Taylor series `p` does not give the original function; for a formal multilinear
+series that sums to the derivative of `p.sum`, see `HasFPowerSeriesOnBall.fderiv`. -/
 def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n => (p n.succ).curryRight
 #align formal_multilinear_series.shift FormalMultilinearSeries.shift
 
 /-- Adding a zeroth term to a formal multilinear series taking values in `E →L[𝕜] F`. This
-corresponds to starting from a Taylor series for the derivative of a function, and building a Taylor
-series for the function itself. -/
+corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the derivative of a
+function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
   | n + 1 => -- porting note: added type hint here and explicit universes to fix compile
@@ -344,3 +352,39 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
 #align const_formal_multilinear_series_apply constFormalMultilinearSeries_apply
 
 end Const
+
+section Linear
+
+variable [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+namespace ContinuousLinearMap
+
+/-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
+`f y = f x + f (y - x)`. -/
+def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
+  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
+  | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
+  | _ => 0
+#align continuous_linear_map.fpower_series ContinuousLinearMap.fpowerSeries
+
+theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
+    f.fpowerSeries x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x) :=
+  rfl
+
+theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
+    f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
+  rfl
+
+theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
+  rfl
+#align continuous_linear_map.fpower_series_apply_add_two ContinuousLinearMap.fpowerSeries_apply_add_two
+
+attribute
+  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
+attribute [simp] fpowerSeries
+
+end ContinuousLinearMap
+
+end Linear

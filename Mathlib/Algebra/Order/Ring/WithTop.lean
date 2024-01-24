@@ -3,11 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
-import Std.Data.Option.Lemmas
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Tactic.Tauto
+import Std.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -67,7 +67,7 @@ theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ 
 
 theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
-  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
 #align with_top.mul_lt_top' WithTop.mul_lt_top'
 
 theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
@@ -75,7 +75,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) 
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
 instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
-  refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
+  refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
@@ -130,7 +130,7 @@ instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
       | (a : α) => by rw [← coe_one, ← coe_mul, mul_one] }
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
@@ -185,12 +185,12 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]
-    simp [mul_coe hc]
+    simp only [mul_coe hc]
     cases a <;> cases b
     repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 
 /-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
-that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddMonoid`, both
+that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddCommMonoid`, both
 of which are required for distributivity. -/
 instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
   { WithTop.addCommMonoidWithOne, WithTop.commMonoidWithZero with
@@ -199,11 +199,11 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid with
+  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
@@ -240,7 +240,6 @@ theorem bot_mul {a : WithBot α} (h : a ≠ 0) : ⊥ * a = ⊥ :=
   WithTop.top_mul h
 #align with_bot.bot_mul WithBot.bot_mul
 
-@[simp]
 theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
@@ -392,7 +391,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (WithBot α) :=
+instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -406,7 +405,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMonoRev α] : PosMulMonoRev (Wit
     norm_cast at x0
     exact le_of_mul_le_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (WithBot α) :=
+instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h

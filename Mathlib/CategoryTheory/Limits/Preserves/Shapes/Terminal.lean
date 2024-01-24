@@ -197,7 +197,7 @@ def preservesInitialOfIsIso (f : ⊥_ D ⟶ G.obj (⊥_ C)) [i : IsIso f] :
   exact PreservesInitial.ofIsoComparison G
 #align category_theory.limits.preserves_initial_of_is_iso CategoryTheory.Limits.preservesInitialOfIsIso
 
-/-- If there is any isomorphism `⊥ ≅ G.obj ⊥ `, then `G` preserves initial objects. -/
+/-- If there is any isomorphism `⊥ ≅ G.obj ⊥`, then `G` preserves initial objects. -/
 def preservesInitialOfIso (f : ⊥_ D ≅ G.obj (⊥_ C)) : PreservesColimit (Functor.empty C) G :=
   preservesInitialOfIsIso G f.hom
 #align category_theory.limits.preserves_initial_of_iso CategoryTheory.Limits.preservesInitialOfIso

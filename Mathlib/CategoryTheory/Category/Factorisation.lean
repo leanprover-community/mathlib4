@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C]
 and the condition that their composition equals `f`. -/
 structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The midpoint of the factorisation. -/
-  mid  : C
+  mid : C
   /-- The morphism into the factorisation midpoint. -/
   ι   : X ⟶ mid
   /-- The morphism out of the factorisation midpoint. -/
@@ -112,11 +112,14 @@ instance : Unique (d ⟶ (Factorisation.terminal : Factorisation f)) where
 
 open Limits
 
-instance : IsInitial (Factorisation.initial : Factorisation f) := IsInitial.ofUnique _
+/-- The initial factorisation is an initial object -/
+def IsInitial_initial : IsInitial (Factorisation.initial : Factorisation f) := IsInitial.ofUnique _
 
 instance : HasInitial (Factorisation f) := Limits.hasInitial_of_unique Factorisation.initial
 
-instance : IsTerminal (Factorisation.terminal : Factorisation f) := IsTerminal.ofUnique _
+/-- The terminal factorisation is a terminal object -/
+def IsTerminal_terminal : IsTerminal (Factorisation.terminal : Factorisation f) :=
+IsTerminal.ofUnique _
 
 instance : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factorisation.terminal
 

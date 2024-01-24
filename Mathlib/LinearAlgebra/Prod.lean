@@ -172,6 +172,14 @@ theorem ker_fst : ker (fst R M M₂) = range (inr R M M₂) :=
   Eq.symm <| range_inr R M M₂
 #align linear_map.ker_fst LinearMap.ker_fst
 
+@[simp] theorem fst_comp_inl : fst R M M₂ ∘ₗ inl R M M₂ = id := rfl
+
+@[simp] theorem snd_comp_inl : snd R M M₂ ∘ₗ inl R M M₂ = 0 := rfl
+
+@[simp] theorem fst_comp_inr : fst R M M₂ ∘ₗ inr R M M₂ = 0 := rfl
+
+@[simp] theorem snd_comp_inr : snd R M M₂ ∘ₗ inr R M M₂ = id := rfl
+
 end
 
 @[simp]
@@ -441,7 +449,7 @@ theorem range_coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : range (f
   Submodule.ext fun x => by simp [mem_sup]
 #align linear_map.range_coprod LinearMap.range_coprod
 
-theorem isCompl_range_inl_inr : IsCompl (range $ inl R M M₂) (range $ inr R M M₂) := by
+theorem isCompl_range_inl_inr : IsCompl (range <| inl R M M₂) (range <| inr R M M₂) := by
   constructor
   · rw [disjoint_def]
     rintro ⟨_, _⟩ ⟨x, hx⟩ ⟨y, hy⟩
@@ -454,11 +462,11 @@ theorem isCompl_range_inl_inr : IsCompl (range $ inl R M M₂) (range $ inr R M 
     simp
 #align linear_map.is_compl_range_inl_inr LinearMap.isCompl_range_inl_inr
 
-theorem sup_range_inl_inr : (range $ inl R M M₂) ⊔ (range $ inr R M M₂) = ⊤ :=
+theorem sup_range_inl_inr : (range <| inl R M M₂) ⊔ (range <| inr R M M₂) = ⊤ :=
   IsCompl.sup_eq_top isCompl_range_inl_inr
 #align linear_map.sup_range_inl_inr LinearMap.sup_range_inl_inr
 
-theorem disjoint_inl_inr : Disjoint (range $ inl R M M₂) (range $ inr R M M₂) := by
+theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M₂) := by
   simp (config := { contextual := true }) [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
 #align linear_map.disjoint_inl_inr LinearMap.disjoint_inl_inr
 
@@ -607,7 +615,8 @@ def fst : Submodule R (M × M₂) :=
 
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
-def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where -- Porting note: proofs were `tidy` or `simp`
+def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
@@ -642,7 +651,8 @@ def snd : Submodule R (M × M₂) :=
 
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
-def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where -- Porting note: proofs were `tidy` or `simp`
+def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
@@ -966,7 +976,7 @@ theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
 #align linear_map.tailing_le_tunnel LinearMap.tailing_le_tunnel
 
 theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailing f i n) (OrderDual.ofDual $ tunnel f i (n + 1)) := by
+    Disjoint (tailing f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
   rw [disjoint_iff]
   dsimp [tailing, tunnel, tunnel']
   erw [Submodule.map_inf_eq_map_inf_comap,
@@ -975,8 +985,8 @@ theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) 
 #align linear_map.tailing_disjoint_tunnel_succ LinearMap.tailing_disjoint_tunnel_succ
 
 theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ⊔ (OrderDual.ofDual $ tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual $ tunnel f i n) := by
+    tailing f i n ⊔ (OrderDual.ofDual <| tunnel f i (n + 1)) ≤
+      (OrderDual.ofDual <| tunnel f i n) := by
   dsimp [tailing, tunnel, tunnel', tunnelAux]
   erw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
@@ -998,7 +1008,7 @@ theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
 #align linear_map.tailings_succ LinearMap.tailings_succ
 
 theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (OrderDual.ofDual $ tunnel f i (n + 1)) := by
+    Disjoint (tailings f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
   induction' n with n ih
   · simp only [tailings_zero]
     apply tailing_disjoint_tunnel_succ

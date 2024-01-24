@@ -19,6 +19,9 @@ The typical usage case is:
 ```
 simp? [X] says simp only [X, Y, Z]
 ```
+
+If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
+runs `X` and verifies that it still prints "Try this: Y".
 -/
 
 open Lean Elab Tactic
@@ -29,8 +32,8 @@ namespace Mathlib.Tactic.Says
 register_option says.verify : Bool :=
   { defValue := false
     group := "says"
-    descr := "For every appearance of the `X says Y` combinator, " ++
-      "re-verify that running `X` produces `Try this: Y`." }
+    descr := "For every appearance of the `X says Y` combinator, \
+      re-verify that running `X` produces `Try this: Y`." }
 
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
@@ -85,13 +88,27 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | [] => throwError m!"Tactic `{tac}` did not produce any messages."
   | [msg] => msg.toString
   | _ => throwError m!"Tactic `{tac}` produced multiple messages."
-  let tryThis ← match msg.dropPrefix? "Try this: " with
+  let tryThis ← match msg.dropPrefix? "Try this:" with
   | none => throwError m!"Tactic output did not begin with 'Try this:': {msg}"
-  | some S => pure S.toString
+  | some S => pure (Lean.removeLeadingSpaces S.toString)
   match parseAsTacticSeq (← getEnv) tryThis with
   | .ok stx => return stx
   | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"
 
+/--
+If you write `X says`, where `X` is a tactic that produces a "Try this: Y" message,
+then you will get a message "Try this: X says Y".
+Once you've clicked to replace `X says` with `X says Y`,
+afterwards `X says Y` will only run `Y`.
+
+The typical usage case is:
+```
+simp? [X] says simp only [X, Y, Z]
+```
+
+If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
+runs `X` and verifies that it still prints "Try this: Y".
+-/
 syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 
 elab_rules : tactic
@@ -108,6 +125,7 @@ elab_rules : tactic
         let r' := (← Lean.PrettyPrinter.ppTactic ⟨Syntax.stripPos r⟩).pretty
         if stx' != r' then
           throwError m!"Tactic `{tac}` produced `{stx'}`,\nbut was expecting it to produce `{r'}`!"
+            ++ m!"\n\nYou can reproduce this error locally using `set_option says.verify true`."
     | none =>
     addSuggestion tk (← `(tactic| $tac says $stx)) (origSpan? := (← `(tactic| $tac says)))
   | some result, false =>

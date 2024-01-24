@@ -151,24 +151,16 @@ theorem ascPochhammer_mul (n m : ℕ) :
 #align pochhammer_mul ascPochhammer_mul
 
 theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
-    ∀ k, (ascPochhammer ℕ k).eval (n + 1) = n.ascFactorial k
+    ∀ k, (ascPochhammer ℕ k).eval n = n.ascFactorial k
   | 0 => by rw [ascPochhammer_zero, eval_one, Nat.ascFactorial_zero]
   | t + 1 => by
-    rw [ascPochhammer_succ_right, eval_mul, ascPochhammer_nat_eq_ascFactorial n t]
-    simp only [eval_add, eval_X, eval_nat_cast, Nat.cast_id]
-    rw [Nat.ascFactorial_succ, add_right_comm, mul_comm]
+    rw [ascPochhammer_succ_right, eval_mul, ascPochhammer_nat_eq_ascFactorial n t, eval_add, eval_X,
+      eval_nat_cast, Nat.cast_id, Nat.ascFactorial_succ, mul_comm]
 #align pochhammer_nat_eq_asc_factorial ascPochhammer_nat_eq_ascFactorial
 
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
     (ascPochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
-  cases' b with b
-  · rw [Nat.descFactorial_zero, ascPochhammer_zero, Polynomial.eval_one]
-  rw [Nat.add_succ, Nat.succ_sub_succ, tsub_zero]
-  cases a
-  · simp only [Nat.zero_eq, ne_eq, Nat.succ_ne_zero, not_false_iff, ascPochhammer_ne_zero_eval_zero,
-    zero_add, Nat.descFactorial_succ, le_refl, tsub_eq_zero_of_le, zero_mul]
-  · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
-      ascPochhammer_nat_eq_ascFactorial]
+  rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial']
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
 
 @[simp]
@@ -209,7 +201,7 @@ variable (S : Type*) [Semiring S] (r n : ℕ)
 @[simp]
 theorem ascPochhammer_eval_one (S : Type*) [Semiring S] (n : ℕ) :
     (ascPochhammer S n).eval (1 : S) = (n ! : S) := by
-  rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.zero_ascFactorial]
+  rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.one_ascFactorial]
 #align pochhammer_eval_one ascPochhammer_eval_one
 
 theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
@@ -228,8 +220,8 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
 
 theorem ascPochhammer_eval_succ (r n : ℕ) :
     (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
-    (n + r) * (ascPochhammer S r).eval (n : S) := by
-  exact_mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+    (n + r) * (ascPochhammer S r).eval (n : S) :=
+  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
 #align pochhammer_eval_succ ascPochhammer_eval_succ
 
 end Factorial
@@ -310,7 +302,7 @@ theorem descPochhammer_succ_right (n : ℕ) :
     rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
 
 @[simp]
-theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
     (descPochhammer R n).natDegree = n := by
   induction' n with n hn
   · simp
@@ -343,6 +335,18 @@ theorem descPochhammer_mul (n m : ℕ) :
   · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih,
       Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
+theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
+    (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
+  | 0 => by
+    rw [ascPochhammer_zero, descPochhammer_zero]
+    simp only [eval_one, pow_zero, mul_one]
+  | (k+1) => by
+    rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, eval_nat_cast_mul,
+      Nat.cast_comm, ← mul_add, ascPochhammer_eval_neg_eq_descPochhammer r k, mul_assoc,
+      descPochhammer_succ_right, mul_sub, eval_sub, eval_mul_X, ← Nat.cast_comm, eval_nat_cast_mul,
+      pow_add, pow_one, mul_assoc ((-1)^k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
+      Nat.cast_comm, sub_eq_add_neg, neg_one_mul, neg_neg, ← mul_add]
+
 theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
     ∀ k, (descPochhammer ℤ k).eval (n : ℤ) = n.descFactorial k
   | 0 => by
@@ -354,14 +358,14 @@ theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
         Nat.descFactorial_eq_zero_iff_lt]
     rw [mul_comm]
     simp only [mul_eq_mul_right_iff, Nat.cast_eq_zero, Nat.descFactorial_eq_zero_iff_lt]
-    by_cases n < t
+    by_cases h : n < t
     · tauto
     · left
       exact (Int.ofNat_sub <| not_lt.mp h).symm
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
-    (descPochhammer ℤ b).eval (a + b : ℤ) = a.ascFactorial b := by
+    (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by
   rw [← Nat.cast_add, descPochhammer_int_eq_descFactorial (a + b) b,
-      Nat.add_descFactorial_eq_ascFactorial]
+    Nat.add_descFactorial_eq_ascFactorial]
 
 end Ring
