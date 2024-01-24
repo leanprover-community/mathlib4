@@ -1315,8 +1315,7 @@ theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
     obtain ⟨s, hs⟩ := H.tsum_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · convert tendsto_const_nhds (α := G) (β := Finset α) (f := atTop) (a := 0)
-    apply tsum_eq_zero_of_not_summable
+  · refine tendsto_const_nhds.congr fun _ ↦ (tsum_eq_zero_of_not_summable ?_).symm
     rwa [Finset.summable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
