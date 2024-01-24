@@ -70,14 +70,12 @@ theorem cardinal_mk_lift_of_infinite [Infinite R] :
 
 variable [Countable R]
 
+@[simp]
 protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
   rw [← le_aleph0_iff_set_countable, ← lift_le_aleph0]
   apply (cardinal_mk_lift_le_max R A).trans
   simp
 #align algebraic.countable Algebraic.countable
-
-@[simp, instance]
-protected theorem countable' : Countable {x : A // IsAlgebraic R x} := Algebraic.countable R A
 
 @[simp]
 theorem cardinal_mk_of_countable_of_charZero [CharZero A] [IsDomain R] :
