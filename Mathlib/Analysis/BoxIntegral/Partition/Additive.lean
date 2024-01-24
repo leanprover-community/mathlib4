@@ -53,9 +53,7 @@ structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι))
 we have `f J = ∑ Ji in π.boxes, f Ji`. -/
 scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
 
-/-- A function on `Box ι` is called box additive on subboxes of `I : Box ι` if for every subbox `J`
-of `I` and a partition `π` of `J` we have `f J = ∑ Ji in π.boxes, f Ji`. -/
-scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
+@[inherit_doc] scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
 
 namespace BoxAdditiveMap
 

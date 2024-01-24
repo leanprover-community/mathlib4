@@ -393,7 +393,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 
 /-- The functor between fundamental groupoids induced by a continuous map. -/
-@[inherit_doc] scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
+scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl
