@@ -332,18 +332,16 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     obtain rfl | h := eq_or_ne j i
     · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
-    /- porting note: the following is indented two spaces more than it should be due to
-      strange behavior of `erw` -/
-    all_goals
-      intro
-      apply (homotopyFrom_apply _ _ _).trans
-      first
-      | rw [H.apply_zero]
-      | rw [H.apply_one]
-      first
-      | apply congr_arg p
-      | apply congr_arg q
-      apply (Cube.splitAt i).left_inv
+  all_goals
+    intro
+    apply (homotopyFrom_apply _ _ _).trans
+    first
+    | rw [H.apply_zero]
+    | rw [H.apply_one]
+    first
+    | apply congr_arg p
+    | apply congr_arg q
+    apply (Cube.splitAt i).left_inv
 #align gen_loop.homotopic_from GenLoop.homotopicFrom
 
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
