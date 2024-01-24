@@ -156,6 +156,21 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
     IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
   ⟨fun h _ ht ↦ h.isIntegralCurveAt (hs.mem_nhds ht), IsIntegralCurveAt.isIntegralCurveOn⟩
 
+lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
+    ContinuousAt γ t₀ := (hγ t₀ ht).1
+
+lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
+    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
+
+lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
+    ContinuousAt γ t₀ :=
+  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
+  hγ.continuousAt <| mem_of_mem_nhds hs
+
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
+    Continuous γ := continuous_iff_continuousAt.mpr
+      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -356,21 +371,6 @@ lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ ↦ x
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
-
-lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
-    ContinuousAt γ t₀ := (hγ t₀ ht).1
-
-lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
-    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
-
-lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ContinuousAt γ t₀ :=
-  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
-  hγ.continuousAt <| mem_of_mem_nhds hs
-
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 end Scaling
 
