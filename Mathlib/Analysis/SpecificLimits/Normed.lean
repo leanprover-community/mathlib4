@@ -449,9 +449,8 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
 lemma norm_bounded_of_cauchy_series (h : CauchySeq fun n ↦ ∑ k in range n, f k) :
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
   obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
-  refine' ⟨b 0, fun n ↦ _⟩
-  replace key := key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
-  rwa [dist_partial_sum'] at key
+  refine ⟨b 0, fun n ↦ ?_⟩
+  simpa only [dist_partial_sum'] using key n (n + 1) 0 (zero_le _) (zero_le _)
 
 end SummableLeGeometric
 
@@ -574,23 +573,20 @@ section NormedDivisionRing
 
 variable [NormedDivisionRing α] [CompleteSpace α] {f : ℕ → α}
 
-/-- If a power series converges at `w`, it converges absolutely at all `z` of lesser norm. -/
+/-- If a power series converges at `w`, it converges absolutely at all `z` of smaller norm. -/
 theorem summable_power_of_norm_lt {w z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i * w ^ i) (hz : ‖z‖ < ‖w‖) :
     Summable fun n ↦ f n * z ^ n := by
-  -- First show `0 < ‖w‖`
-  cases' (norm_nonneg w).eq_or_gt with hw hw
-  · exact absurd ((norm_nonneg z).trans_lt (hw ▸ hz)) (lt_irrefl 0)
+  have hw := (norm_nonneg z).trans_lt hz -- `0 < ‖w‖`
   obtain ⟨C, hC⟩ := norm_bounded_of_cauchy_series h
   rw [summable_iff_cauchySeq_finset]
-  refine' @cauchySeq_finset_of_geometric_bound _ _ (‖z‖ / ‖w‖) C _ _ (fun n ↦ _)
-  · rwa [div_lt_one hw]
-  · replace hC := hC n
-    rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
-    rw [norm_mul, norm_pow, ← _root_.le_div_iff (by positivity)] at hC
-    gcongr
+  refine cauchySeq_finset_of_geometric_bound (r := ‖z‖ / ‖w‖) (C := C) ((div_lt_one hw).mpr hz)
+    (fun n ↦ ?_)
+  rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
+  conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff (by positivity)]
+  exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
 
-/-- If a power series converges at 1, it converges absolutely at all `z` of lesser norm. -/
+/-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/
 theorem summable_power_of_norm_lt_one {z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i) (hz : ‖z‖ < 1) :
     Summable fun n ↦ f n * z ^ n :=
