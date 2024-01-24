@@ -706,7 +706,7 @@ lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) 
       congr 1
       exact SimplexImage.firstEdgeNIImageGe.preimage_δ_exe j hij
 
-lemma homMk_lift_face (lift : Δ[n+2]⟶ S)
+lemma homMk_lift_face (j : Fin (n+2)) (lift : Δ[n+2]⟶ S)
     (hlift: (homMk i face_map hface)  = hornInclusion (n+2) i ≫ lift):
     S.map (δ ((δ i).toOrderHom j)).op (lift.app (op [n+2])
     ((standardSimplex.objEquiv ([n+2]) (op [n+2])).invFun  (𝟙 ([n+2]:SimplexCategory))))
