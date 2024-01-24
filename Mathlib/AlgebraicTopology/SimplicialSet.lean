@@ -108,7 +108,7 @@ def binaryProductCone (X Y : SSet.{0}) : BinaryFan X Y :=
 
 /-- The morphism from the point of any binary fan to `Prod X Y`. -/
 @[simps]
-def binaryProductLift {X Y : SSet} (s : BinaryFan X Y) : s.pt ⟶ Prod X Y where
+def binaryProductLift {X Y : SSet.{0}} (s : BinaryFan X Y) : s.pt ⟶ Prod X Y where
   app n x := ((s.fst).app n x, (s.snd).app n x)
   naturality _ _ _ := by
     ext
