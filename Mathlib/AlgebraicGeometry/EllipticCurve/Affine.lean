@@ -99,7 +99,7 @@ local macro "derivative_simp" : tactic =>
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_neg, eval_add, eval_sub, eval_mul, eval_pow])
 
-universe u
+universe r s u v w
 
 /-! ## Weierstrass curves -/
 
@@ -644,7 +644,7 @@ inductive Point
 #align weierstrass_curve.point WeierstrassCurve.Affine.Point
 
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
-scoped[WeierstrassCurve] notation W "⟮" S "⟯" => Affine.Point <| baseChange W S
+scoped[WeierstrassCurve] notation3 W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 namespace Point
 
@@ -782,8 +782,6 @@ section BaseChange
 
 /-! ### Maps and base changes -/
 
-universe v
-
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
 lemma map_equation {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
@@ -848,8 +846,6 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (φ
     · contrapose! hx
       exact φ.injective hx
 #align weierstrass_curve.base_change_slope WeierstrassCurve.Affine.map_slope
-
-universe r s w
 
 variable {R : Type r} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [Algebra R S]
   {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]

@@ -78,7 +78,7 @@ elliptic curve, weierstrass equation, j invariant
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
-universe u v
+universe s u v w
 
 /-! ## Weierstrass curves -/
 
@@ -359,8 +359,6 @@ end VariableChange
 section BaseChange
 
 /-! ### Maps and base changes -/
-
-universe s w
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
