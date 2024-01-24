@@ -10,6 +10,12 @@ import Mathlib.NumberTheory.Harmonic.Defs
 
 open BigOperators
 
+/-!
+
+This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
+
+-/
+
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
   calc _ = ∫ x in (1)..↑(n+1), x⁻¹ := ?_
@@ -60,7 +66,6 @@ theorem log_le_harmonic_floor (y : ℝ) (hy : 0 ≤ y) :
       norm_cast
       exact Nat.ceil_le_floor_add_one y
     · apply log_add_one_le_harmonic
-
 
 theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
     harmonic ⌊y⌋₊ ≤ 1 + Real.log y := by
