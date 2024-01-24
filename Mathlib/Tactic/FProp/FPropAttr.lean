@@ -30,13 +30,21 @@ def isLambdaRule (f : Expr) : MetaM Bool :=
       return false
   | _ => return false
 
-open Lean Qq Meta Elab Term in
-/-- -/
-initialize fpropAttr : TagAttribute ←
-  registerTagAttribute
-    `fprop
-    "Attribute to tag the basic rules for a function property." 
-    (validate := fun declName => discard <| MetaM.run do
+
+-- TODO: add support for specifying priority and discharger
+-- open Lean.Parser.Tactic
+-- syntax (name:=Attr.fprop) "fprop" (prio)? (discharger)? : attr
+
+def fpropHelpString : String :=
+"`fprop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap` etc."
+
+initialize fpropAttr : Unit ←
+  registerBuiltinAttribute {
+    name  := `fprop
+    descr := fpropHelpString
+    applicationTime := AttributeApplicationTime.afterCompilation
+    add   := fun declName _stx attrKind =>
+       discard <| MetaM.run do
        let info ← getConstInfo declName
 
        forallTelescope info.type fun _ b => do
@@ -49,11 +57,12 @@ initialize fpropAttr : TagAttribute ←
            if (← isLambdaRule f) then
              addLambdaTheorem declName
            else
-             addTheorem declName .global 1000
-             addTheorem2 declName .global 1000)
-      
-      
+             addTheorem declName attrKind 1000
+             addTheorem2 declName attrKind 1000
+    erase := fun _declName => 
+      throwError "can't remove `fprop` attribute (not implemented yet)" 
+  }
 
-  
-  
+
+
 
