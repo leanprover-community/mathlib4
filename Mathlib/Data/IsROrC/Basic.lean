@@ -341,6 +341,10 @@ theorem I_mul_I : (I : K) = 0 ∨ (I : K) * I = -1 :=
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_mul_I IsROrC.I_mul_I
 
+variable (𝕜) in
+lemma I_eq_zero_or_im_I_eq_one : (I : K) = 0 ∨ im (I : K) = 1 :=
+  I_mul_I (K := K) |>.imp_right fun h ↦ by simpa [h] using (I_mul_re (I : K)).symm
+
 @[simp, isROrC_simps]
 theorem conj_re (z : K) : re (conj z) = re z :=
   IsROrC.conj_re_ax z
@@ -728,6 +732,10 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 @[simp, isROrC_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
+
+variable (K) in
+lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+  rw [nsmul_eq_smul_cast K, norm_smul, IsROrC.norm_natCast, nsmul_eq_mul]
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 #align is_R_or_C.mul_self_norm IsROrC.mul_self_norm
@@ -1138,5 +1146,36 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 #align is_R_or_C.continuous_norm_sq IsROrC.continuous_normSq
 
 end LinearMaps
+
+/-!
+### ℝ-dependent results
+
+Here we gather results that depend on whether `K` is `ℝ`.
+-/
+section CaseSpecific
+
+lemma im_eq_zero (h : I = (0 : K)) (z : K) : im z = 0 := by
+  rw [← re_add_im z, h]
+  simp
+
+/-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when `IsROrC.I = 0`. -/
+@[simps]
+def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
+  toFun := re
+  invFun := (↑)
+  left_inv x := by nth_rw 2 [← re_add_im x]; simp [h]
+  right_inv := ofReal_re
+  map_add' := map_add re
+  map_mul' := by simp [im_eq_zero h]
+
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℝ` when
+`IsROrC.I = 0`. -/
+@[simps]
+noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
+  map_smul' := smul_re
+  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  __ := realRingEquiv h
+
+end CaseSpecific
 
 end IsROrC

@@ -400,3 +400,8 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
 end
 
 end CategoryTheory.Limits
+
+-- Various pieces of algebra that have previously been spuriously imported here:
+assert_not_exists zero_zpow
+assert_not_exists div_self
+assert_not_exists Field
