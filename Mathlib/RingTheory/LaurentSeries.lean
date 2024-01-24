@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-
 import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
@@ -22,7 +21,6 @@ import Mathlib.RingTheory.Localization.FractionRing
   `HahnSeries.ofPowerSeries`.
 
 -/
-
 
 open HahnSeries BigOperators Classical Polynomial
 
@@ -43,28 +41,44 @@ section Zero
 
 variable [Zero R]
 
--- generalize to any locally finite linear order? see mathlib3 PR #18604
-theorem supp_bdd_below_supp_Pwo (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    (Function.support f).IsPwo := by
-  rw [← Set.isWf_iff_isPwo, Set.isWf_iff_no_descending_seq]
-  rintro g hg hsupp
-  refine Set.infinite_range_of_injective (StrictAnti.injective hg) ?_
-  refine (Set.finite_Icc n <| g 0).subset <| Set.range_subset_iff.2 ?_
-  simp_all only [Function.mem_support, ne_eq, Set.mem_Icc]
-  intro k
-  constructor
-  exact Int.not_lt.mp (mt (hn (g k)) (hsupp k))
-  exact (StrictAnti.le_iff_le hg).mpr (Nat.zero_le k)
+theorem suppBddBelow_supp_PWO (f : ℤ → R) (hf : BddBelow (Function.support f)) :
+    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp <| Set.bddBelow_wellFoundedOn_lt <| hf
 
-/-- Construct a Laurent series from any function with support that is bounded below. -/
-def LaurentFromSuppBddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    LaurentSeries R where
+theorem forallLTEqZero_supp_BddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
+    BddBelow (Function.support f) := by
+  unfold BddBelow Set.Nonempty lowerBounds
+  use n
+  intro m hm
+  rw [Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
+
+/-- Construct a Laurent series from any function whose support is bounded below. -/
+@[simps]
+def ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) : LaurentSeries R where
   coeff := f
-  isPwo_support' := supp_bdd_below_supp_Pwo f n hn
+  isPWO_support' := suppBddBelow_supp_PWO f hf
 
 @[simp]
-theorem coeff_LaurentFromSuppBddBelow (f : ℤ → R) (m n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    coeff (LaurentFromSuppBddBelow f n hn) m = f m := by exact rfl
+theorem coeff_ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) (m : ℤ) :
+    coeff (ofSuppBddBelow f hf) m = f m := rfl
+
+theorem BddBelow_zero : BddBelow (Function.support (0 : ℤ → R)) := by
+  simp_all only [Function.support_zero', bddBelow_empty]
+
+theorem zero_ofSuppBddBelow : ofSuppBddBelow 0 BddBelow_zero = (0 : LaurentSeries R) := by
+  exact rfl
+
+theorem order_ofForallLtEqZero (f : ℤ → R) (hf : f ≠ 0) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
+    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
+  unfold order
+  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
+  cases h
+  exact (hf rfl).elim
+  simp_all only [dite_false]
+  rw [Set.IsWF.le_min_iff]
+  intro m hm
+  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
 
 end Zero
 
