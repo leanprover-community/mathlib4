@@ -959,6 +959,12 @@ lemma lift_rank_mul_lift_sepDegree_of_isSeparable [IsSeparable F E] :
   rw [sepDegree, sepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   exact lift_rank_mul_lift_rank F E (separableClosure E K)
 
+/-- The same-universe version of `Field.lift_rank_mul_lift_sepDegree_of_isSeparable`. -/
+lemma rank_mul_sepDegree_of_isSeparable (K : Type v) [Field K] [Algebra F K]
+    [Algebra E K] [IsScalarTower F E K] [IsSeparable F E] :
+    Module.rank F E * sepDegree E K = sepDegree F K := by
+  simpa only [Cardinal.lift_id] using lift_rank_mul_lift_sepDegree_of_isSeparable F E K
+
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
 then $[K:F]_s = [K:E]_s$.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
@@ -981,6 +987,12 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
   have h := lift_rank_mul_lift_sepDegree_of_isSeparable F (separableClosure F E) K
   haveI := separableClosure.isPurelyInseparable F E halg
   rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
+
+/-- The same-universe version of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`. -/
+theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F K]
+    [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic F E) :
+    sepDegree F E * sepDegree E K = sepDegree F K := by
+  simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K halg
 
 end Field
 
