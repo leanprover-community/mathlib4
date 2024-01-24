@@ -423,6 +423,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι 
     refine' injective_iff_pairwise_ne.mpr
       ((h.subtype _ _).mono fun i j hij hfij => hij.le_bot ⟨hfs i, _⟩)
     simp only [congr_arg Subtype.val hfij, hfs j]
+  have := u_countable.to_subtype
   exact f_inj.countable
 #align set.pairwise_disjoint.countable_of_is_open Set.PairwiseDisjoint.countable_of_isOpen
 
