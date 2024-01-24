@@ -62,13 +62,13 @@ instance instTopologicalSpaceSum [t₁ : TopologicalSpace X] [t₂ : Topological
     TopologicalSpace (X ⊕ Y) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance instTopologicalSpaceSigma {X : X → Type v} [t₂ : ∀ a, TopologicalSpace (X a)] :
+instance instTopologicalSpaceSigma {ι : Type*} {X : ι → Type v} [t₂ : ∀ i, TopologicalSpace (X i)] :
     TopologicalSpace (Sigma X) :=
-  ⨆ a, coinduced (Sigma.mk a) (t₂ a)
+  ⨆ i, coinduced (Sigma.mk i) (t₂ i)
 
-instance Pi.topologicalSpace {Y : X → Type v} [t₂ : (a : X) → TopologicalSpace (Y a)] :
-    TopologicalSpace ((a : X) → Y a) :=
-  ⨅ a, induced (fun f => f a) (t₂ a)
+instance Pi.topologicalSpace {ι : Type*} {Y : ι → Type v} [t₂ : (i : ι) → TopologicalSpace (Y i)] :
+    TopologicalSpace ((i : ι) → Y i) :=
+  ⨅ i, induced (fun f => f i) (t₂ i)
 #align Pi.topological_space Pi.topologicalSpace
 
 instance ULift.topologicalSpace [t : TopologicalSpace X] : TopologicalSpace (ULift.{v, u} X) :=
@@ -206,12 +206,12 @@ instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTo
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
 instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : DiscreteTopology X]
-    [hY : DiscreteTopology Y] : DiscreteTopology (Sum X Y) :=
+    [hY : DiscreteTopology Y] : DiscreteTopology (X ⊕ Y) :=
   ⟨sup_eq_bot_iff.2 <| by simp [h.eq_bot, hY.eq_bot]⟩
 #align sum.discrete_topology Sum.discreteTopology
 
-instance Sigma.discreteTopology {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
-    [h : ∀ a, DiscreteTopology (Y a)] : DiscreteTopology (Sigma Y) :=
+instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
+    [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 #align sigma.discrete_topology Sigma.discreteTopology
 
