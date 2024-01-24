@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Constructions
 
 #align_import topology.continuous_on from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -27,9 +28,6 @@ equipped with the subspace topology.
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
 
 -/
-
-set_option autoImplicit true
-
 
 open Set Filter Function Topology Filter
 
@@ -720,6 +718,7 @@ theorem continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α
 theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 #align continuous_on_empty continuousOn_empty
 
+@[simp]
 theorem continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
   forall_eq.2 <| by
     simpa only [ContinuousWithinAt, nhdsWithin_singleton, tendsto_pure_left] using fun s =>
@@ -751,7 +750,7 @@ theorem ContinuousWithinAt.mono_of_mem {f : α → β} {s t : Set α} {x : α}
   h.mono_left (nhdsWithin_le_of_mem hs)
 #align continuous_within_at.mono_of_mem ContinuousWithinAt.mono_of_mem
 
-theorem continuousWithinAt_congr_nhds {f : α → β} (h : 𝓝[s] x = 𝓝[t] x) :
+theorem continuousWithinAt_congr_nhds {f : α → β} {s t : Set α} {x : α} (h : 𝓝[s] x = 𝓝[t] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, h]
 
@@ -1102,7 +1101,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
 -- porting note: new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
-  forall₂_congr <| fun x _ => by
+  forall₂_congr fun x _ => by
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
@@ -1155,10 +1154,9 @@ theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbed
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 
-theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} :
-    x ∉ closure s → ContinuousWithinAt f s x := by
-  intro hx
-  rw [mem_closure_iff_nhdsWithin_neBot, neBot_iff, not_not] at hx
+theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} (hx : x ∉ closure s) :
+    ContinuousWithinAt f s x := by
+  rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 #align continuous_within_at_of_not_mem_closure continuousWithinAt_of_not_mem_closure
@@ -1270,6 +1268,21 @@ theorem Continuous.piecewise {s : Set α} {f g : α → β} [∀ a, Decidable (a
     Continuous (piecewise s f g) :=
   hf.if hs hg
 #align continuous.piecewise Continuous.piecewise
+
+section Indicator
+variable [One β] {f : α → β} {s : Set α}
+
+@[to_additive]
+lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : ContinuousOn f (closure s)) :
+    Continuous (mulIndicator s f) := by
+  classical exact continuous_piecewise hs hf continuousOn_const
+
+@[to_additive]
+protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :
+    Continuous (mulIndicator s f) := by
+  classical exact hf.piecewise hs continuous_const
+
+end Indicator
 
 theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by

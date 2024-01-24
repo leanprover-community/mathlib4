@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.Data.Int.Basic
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -34,10 +34,9 @@ have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 set_option autoImplicit true
 
-
-open CategoryTheory.Limits
-
 namespace CategoryTheory
+
+open Category Limits
 
 universe w v u
 
@@ -151,7 +150,7 @@ theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = 
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
 @[simp]
-theorem eqToHom_apply {β : Type w} {X Y : ∀ _ : β, C} (h : X = Y) (b : β) :
+theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
   subst h
   rfl
@@ -255,7 +254,7 @@ instance : Faithful (total β C) where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp at *
+    simp? at * says simp only [Discrete.functor_obj, Discrete.natTrans_app] at *
     exact Mono.right_cancellation _ _ w
 
 end GradedObject
@@ -279,7 +278,7 @@ end GradedObject
 
 namespace GradedObject
 
-variable {I J : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
@@ -412,6 +411,58 @@ noncomputable def map [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j}))
     GradedObject I C ⥤ GradedObject J C where
   obj X := X.mapObj p
   map φ := mapMap φ p
+
+variable {C} (X Y)
+variable (q : J → K) (r : I → K) (hpqr : ∀ i, q (p i) = r i)
+
+section
+
+variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
+  (hc : ∀ j hj, IsColimit (c j hj))
+  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.1 j.2).pt)) (hc' : IsColimit c')
+
+/-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
+`X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all
+`j : J` and of a cofan for all the points of these cofans, this is a cofan of
+type `X.CofanMapObjFun r k`, which is a colimit (see `isColimitCofanMapObjComp`) if the
+given cofans are. -/
+@[simp]
+def cofanMapObjComp : X.CofanMapObjFun r k :=
+  CofanMapObjFun.mk _ _ _ c'.pt (fun i hi =>
+    (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
+      rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
+
+/-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
+`X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
+In other words, if we have, for all `j : J` such that `hj : q j = k`,
+a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
+and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
+.-/
+@[simp]
+def isColimitCofanMapObjComp :
+    IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
+  mkCofanColimit _
+    (fun s => Cofan.IsColimit.desc hc'
+      (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
+        (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
+          simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
+    (fun s ⟨i, (hi : r i = k)⟩ => by simp)
+    (fun s m hm => by
+      apply Cofan.IsColimit.hom_ext hc'
+      rintro ⟨j, rfl : q j = k⟩
+      apply Cofan.IsColimit.hom_ext (hc j rfl)
+      rintro ⟨i, rfl : p i = j⟩
+      dsimp
+      rw [Cofan.IsColimit.fac, Cofan.IsColimit.fac, ← hm]
+      dsimp
+      rw [assoc])
+
+lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
+  fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
+    (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
+
+end
 
 end GradedObject
 

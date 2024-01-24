@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
@@ -185,4 +185,75 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
+@[simp]
+lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
+  suffices ∀ x y, x ≤ y → star x ≤ star y from
+    ⟨by simpa only [star_star] using this (star x) (star y), this x y⟩
+  intro x y h
+  rw [StarOrderedRing.le_iff] at h ⊢
+  obtain ⟨d, hd, rfl⟩ := h
+  refine ⟨starAddEquiv d, ?_, star_add _ _⟩
+  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono ?_ hd
+  rintro - ⟨s, rfl⟩
+  exact ⟨s, by simp⟩
+
+@[simp]
+lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
+  by_cases h : x = y
+  · simp [h]
+  · simpa [le_iff_lt_or_eq, h] using star_le_star_iff (x := x) (y := y)
+
+lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_le_star_iff, star_star]
+
+lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
+
+@[simp]
+lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
+  simpa using star_le_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
+  simpa using star_le_star_iff (x := x) (y := 0)
+
+@[simp]
+lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
+  simpa using star_lt_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
+  simpa using star_lt_star_iff (x := x) (y := 0)
+
+lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+  rw [StarOrderedRing.le_iff] at h
+  obtain ⟨d, hd, rfl⟩ := h
+  rw [IsSelfAdjoint, star_add, hx.star_eq]
+  congr
+  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
+  rintro - ⟨s, rfl⟩
+  simp
+
+lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
+  (isSelfAdjoint_zero R).mono hx
+
 end NonUnitalSemiring
+
+section Semiring
+variable [Semiring R] [PartialOrder R] [StarOrderedRing R]
+
+@[simp]
+lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
+  simpa using star_le_star_iff (x := 1) (y := x)
+
+@[simp]
+lemma star_le_one_iff {x : R} : star x ≤ 1 ↔ x ≤ 1 := by
+  simpa using star_le_star_iff (x := x) (y := 1)
+
+@[simp]
+lemma one_lt_star_iff {x : R} : 1 < star x ↔ 1 < x := by
+  simpa using star_lt_star_iff (x := 1) (y := x)
+
+@[simp]
+lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
+  simpa using star_lt_star_iff (x := x) (y := 1)
+
+end Semiring

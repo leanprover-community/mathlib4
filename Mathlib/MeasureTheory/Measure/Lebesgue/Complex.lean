@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 #align_import measure_theory.measure.lebesgue.complex from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -61,23 +62,5 @@ theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
-
-@[simp]
-theorem volume_ball (a : ℂ) (r : ℝ) :
-    volume (Metric.ball a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
-  rw [Measure.addHaar_ball_center, ← EuclideanSpace.volume_ball 0,
-    ← (volume_preserving_equiv_pi.symm).measure_preimage measurableSet_ball,
-    ← ((EuclideanSpace.volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage
-    measurableSet_ball]
-  refine congrArg _ (Set.ext fun _ => ?_)
-  simp_rw [← MeasurableEquiv.coe_toEquiv_symm, Set.mem_preimage, MeasurableEquiv.coe_toEquiv_symm,
-    measurableEquivPi_symm_apply, mem_ball_zero_iff, norm_eq_abs, abs_def, normSq_add_mul_I,
-    EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply,
-    Fin.sum_univ_two, Real.norm_eq_abs, _root_.sq_abs]
-
-@[simp]
-theorem volume_closedBall (a : ℂ) (r : ℝ) :
-    volume (Metric.closedBall a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
-  rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 
 end Complex

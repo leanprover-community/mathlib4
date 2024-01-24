@@ -135,10 +135,10 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
   · cases' k with k
-    · rw [Nat.succ_add_eq_succ_add] at hnk
+    · rw [Nat.succ_add_eq_add_succ] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
     · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
-      · rwa [Nat.succ_add_eq_succ_add] at hnk
+      · rwa [Nat.succ_add_eq_add_succ] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
@@ -204,7 +204,7 @@ termination_by _ n k => (n, k)
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
-  cases' le_or_lt k n with h_le h_lt
+  rcases le_or_lt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     -- porting note: linarith failed to find a contradiction by itself

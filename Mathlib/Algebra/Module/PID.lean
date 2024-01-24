@@ -243,7 +243,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
         Nonempty <| torsionBy R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    have := isNoetherian_of_isNoetherianRing_of_finite R N
     haveI := fun i => isNoetherian_submodule' (torsionBy R N <| p i ^ e i)
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
@@ -266,7 +265,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  have := isNoetherian_of_isNoetherianRing_of_finite R N
   haveI := isNoetherian_submodule' (torsion R N)
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=

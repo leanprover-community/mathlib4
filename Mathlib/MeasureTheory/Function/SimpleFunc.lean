@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Algebra.Support
 
 #align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -576,19 +574,24 @@ theorem map_mul [Mul β] [Mul γ] {g : β → γ} (hg : ∀ x y, g (x * y) = g x
 
 variable {K : Type*}
 
+@[to_additive]
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
-  ⟨fun k f => f.map ((· • ·) k)⟩
+  ⟨fun k f => f.map (k • ·)⟩
 #align measure_theory.simple_func.has_smul MeasureTheory.SimpleFunc.instSMul
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_smul [SMul K β] (c : K) (f : α →ₛ β) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align measure_theory.simple_func.coe_smul MeasureTheory.SimpleFunc.coe_smul
 
+@[to_additive (attr := simp)]
 theorem smul_apply [SMul K β] (k : K) (f : α →ₛ β) (a : α) : (k • f) a = k • f a :=
   rfl
 #align measure_theory.simple_func.smul_apply MeasureTheory.SimpleFunc.smul_apply
 
+instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
+
+@[to_additive existing hasNatSMul]
 instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 #align measure_theory.simple_func.has_nat_pow MeasureTheory.SimpleFunc.hasNatPow
@@ -668,7 +671,7 @@ instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α
     coe_injective coe_smul
 #align measure_theory.simple_func.module MeasureTheory.SimpleFunc.instModule
 
-theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map ((· • ·) k) :=
+theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
 #align measure_theory.simple_func.smul_eq_map MeasureTheory.SimpleFunc.smul_eq_map
 
@@ -1009,9 +1012,7 @@ theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     (const α x * f).lintegral μ = x * f.lintegral μ :=
   calc
     (f.map fun a => x * a).lintegral μ = ∑ r in f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
-    _ = ∑ r in f.range, x * (r * μ (f ⁻¹' {r})) :=
-      (Finset.sum_congr rfl fun _ _ => mul_assoc _ _ _)
-    _ = x * f.lintegral μ := Finset.mul_sum.symm
+    _ = x * ∑ r in f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
 #align measure_theory.simple_func.const_mul_lintegral MeasureTheory.SimpleFunc.const_mul_lintegral
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/

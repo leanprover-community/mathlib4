@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Algebra.Order.Nonneg.Floor
+import Mathlib.Data.Int.Lemmas
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -42,7 +40,6 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 instance : DenselyOrdered NNRat := Nonneg.densely_ordered
-instance : Archimedean NNRat := Nonneg.archimedean
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
@@ -249,49 +246,6 @@ theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
 theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
   coeHom.map_pow _ _
 #align nnrat.coe_pow NNRat.coe_pow
-
-@[norm_cast]
-theorem coe_list_sum (l : List ℚ≥0) : (l.sum : ℚ) = (l.map (↑)).sum :=
-  coeHom.map_list_sum _
-#align nnrat.coe_list_sum NNRat.coe_list_sum
-
-@[norm_cast]
-theorem coe_list_prod (l : List ℚ≥0) : (l.prod : ℚ) = (l.map (↑)).prod :=
-  coeHom.map_list_prod _
-#align nnrat.coe_list_prod NNRat.coe_list_prod
-
-@[norm_cast]
-theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : ℚ) = (s.map (↑)).sum :=
-  coeHom.map_multiset_sum _
-#align nnrat.coe_multiset_sum NNRat.coe_multiset_sum
-
-@[norm_cast]
-theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : ℚ) = (s.map (↑)).prod :=
-  coeHom.map_multiset_prod _
-#align nnrat.coe_multiset_prod NNRat.coe_multiset_prod
-
-@[norm_cast]
-theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℚ) :=
-  coeHom.map_sum _ _
-#align nnrat.coe_sum NNRat.coe_sum
-
-theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    (∑ a in s, f a).toNNRat = ∑ a in s, (f a).toNNRat := by
-  rw [← coe_inj, coe_sum, Rat.coe_toNNRat _ (Finset.sum_nonneg hf)]
-  exact Finset.sum_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
-#align nnrat.to_nnrat_sum_of_nonneg NNRat.toNNRat_sum_of_nonneg
-
-@[norm_cast]
-theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℚ) :=
-  coeHom.map_prod _ _
-#align nnrat.coe_prod NNRat.coe_prod
-
-theorem toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
-    (∏ a in s, f a).toNNRat = ∏ a in s, (f a).toNNRat := by
-  rw [← coe_inj, coe_prod, Rat.coe_toNNRat _ (Finset.prod_nonneg hf)]
-  exact Finset.prod_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
-#align nnrat.to_nnrat_prod_of_nonneg NNRat.toNNRat_prod_of_nonneg
-
 @[norm_cast]
 theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
@@ -408,7 +362,7 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
 #noalign rat.to_nnrat_bit1
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
-  cases' le_total 0 q with hq hq
+  rcases le_total 0 q with hq | hq
   · ext <;> simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]

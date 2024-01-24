@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Aesop
 import Mathlib.Order.BoundedOrder
 
 #align_import order.disjoint from "leanprover-community/mathlib"@"22c4d2ff43714b6ff724b2745ccfdc0f236a4a76"
@@ -100,6 +101,10 @@ theorem Disjoint.eq_bot_of_le (hab : Disjoint a b) (h : a ≤ b) : a = ⊥ :=
 theorem Disjoint.eq_bot_of_ge (hab : Disjoint a b) : b ≤ a → b = ⊥ :=
   hab.symm.eq_bot_of_le
 #align disjoint.eq_bot_of_ge Disjoint.eq_bot_of_ge
+
+lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by aesop
+lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ :=
+  hab.eq_iff.not.trans not_and_or
 
 end PartialOrderBot
 
@@ -284,6 +289,10 @@ theorem Codisjoint.eq_top_of_le (hab : Codisjoint a b) (h : b ≤ a) : a = ⊤ :
 theorem Codisjoint.eq_top_of_ge (hab : Codisjoint a b) : a ≤ b → b = ⊤ :=
   hab.symm.eq_top_of_le
 #align codisjoint.eq_top_of_ge Codisjoint.eq_top_of_ge
+
+lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by aesop
+lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ :=
+  hab.eq_iff.not.trans not_and_or
 
 end PartialOrderTop
 

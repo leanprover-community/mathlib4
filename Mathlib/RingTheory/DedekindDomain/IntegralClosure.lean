@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace
@@ -63,12 +65,13 @@ variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
 
-/- If `L` is a separable extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
+/- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
-theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A L] :
+theorem IsIntegralClosure.isLocalization (hKL : Algebra.IsAlgebraic K L) :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
+  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine' ⟨_, fun z => _, fun {x y} h => ⟨1, _⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
@@ -76,13 +79,17 @@ theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A
       Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
   · obtain ⟨m, hm⟩ :=
-      IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z (IsSeparable.isIntegral K z)
+      IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z (hKL z).isIntegral
     obtain ⟨x, hx⟩ : ∃ x, algebraMap C L x = m • z := IsIntegralClosure.isIntegral_iff.mp hm
     refine' ⟨⟨x, algebraMap A C m, m, SetLike.coe_mem m, rfl⟩, _⟩
     rw [Subtype.coe_mk, ← IsScalarTower.algebraMap_apply, hx, mul_comm, Submonoid.smul_def,
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
-#align is_integral_closure.is_localization IsIntegralClosure.isLocalization
+
+theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
+  IsIntegralClosure.isLocalization A K L C (IsSeparable.isAlgebraic _ _)
+#align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
 
 variable [FiniteDimensional K L]
 
@@ -92,26 +99,12 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
-  let db := (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
-  rintro _ ⟨x, rfl⟩
-  simp only [LinearMap.coe_restrictScalars, Algebra.linearMap_apply]
-  have hx : IsIntegral A (algebraMap C L x) := (IsIntegralClosure.isIntegral A L x).algebraMap
-  rsuffices ⟨c, x_eq⟩ : ∃ c : ι → A, algebraMap C L x = ∑ i, c i • db i
-  · rw [x_eq]
-    refine' Submodule.sum_mem _ fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span _)
-    rw [Set.mem_range]
-    exact ⟨i, rfl⟩
-  suffices ∃ c : ι → K, (∀ i, IsIntegral A (c i)) ∧ algebraMap C L x = ∑ i, c i • db i by
-    obtain ⟨c, hc, hx⟩ := this
-    have hc' : ∀ i, IsLocalization.IsInteger A (c i) := fun i =>
-      IsIntegrallyClosed.isIntegral_iff.mp (hc i)
-    use fun i => Classical.choose (hc' i)
-    refine' hx.trans (Finset.sum_congr rfl fun i _ => _)
-    conv_lhs => rw [← Classical.choose_spec (hc' i)]
-    rw [← IsScalarTower.algebraMap_smul K (Classical.choose (hc' i)) (db i)]
-  refine' ⟨fun i => db.repr (algebraMap C L x) i, fun i => _, (db.sum_repr _).symm⟩
-  simp_rw [BilinForm.dualBasis_repr_apply]
-  exact isIntegral_trace (hx.mul (hb_int i))
+  rw [← BilinForm.dualSubmodule_span_of_basis, ← BilinForm.le_flip_dualSubmodule,
+    Submodule.span_le]
+  rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
+  simp only [LinearMap.coe_restrictScalars, linearMap_apply, BilinForm.flip_apply, traceForm_apply]
+  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -128,7 +121,7 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
   refine' s.induction _ _
   · use 1, one_ne_zero
@@ -209,10 +202,10 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
 theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdealRing A] :
-    Module.Free A C := by
+    Module.Free A C :=
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L _
-  exact Module.free_of_finite_type_torsion_free'
+  inferInstance
 #align is_integral_closure.module_free IsIntegralClosure.module_free
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
@@ -223,7 +216,7 @@ theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L]
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
   haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
-    IsIntegralClosure.isLocalization A K L C
+    IsIntegralClosure.isLocalization A K L C (Algebra.IsIntegral.of_finite _ _).isAlgebraic
   let b := Basis.localizationLocalization K A⁰ L (Module.Free.chooseBasis A C)
   rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex, FiniteDimensional.finrank_eq_card_basis b]
 #align is_integral_closure.rank IsIntegralClosure.rank

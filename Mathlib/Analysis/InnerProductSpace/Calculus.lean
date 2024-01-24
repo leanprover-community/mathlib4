@@ -252,28 +252,6 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
 
-theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
-  rw [DifferentiableAt]
-  push_neg
-  intro f
-  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
-    Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
-  use (1 / 2), by norm_num
-  rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
-  intro δ hδ
-  obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
-    by_cases h : f (δ / 2) ≤ 0
-    · use (δ / 2)
-      simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
-    · use -(δ / 2)
-      push_neg at h
-      simp [h.le, abs_of_nonneg hδ.le, hδ, hδ.ne']
-  use x, hx.left
-  rw [lt_abs]
-  left
-  cancel_denoms
-  linarith [abs_pos.mpr hx.right.left]
-
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
@@ -399,13 +377,13 @@ open Metric hiding mem_nhds_iff
 
 variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
+theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (1 + ‖x‖ ^ 2 : ℝ).sqrt⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
   refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
-theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
+theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
     ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
   suffices ContDiffAt ℝ n (fun y : E => (1 - ‖y‖ ^ 2 : ℝ).sqrt⁻¹) y from this.smul contDiffAt_id
@@ -416,17 +394,17 @@ theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
-  LocalHomeomorph.contDiff_univUnitBall
+  PartialHomeomorph.contDiff_univUnitBall
 #align cont_diff_homeomorph_unit_ball Homeomorph.contDiff_unitBall
 
-@[deprecated LocalHomeomorph.contDiffOn_univUnitBall_symm]
+@[deprecated PartialHomeomorph.contDiffOn_univUnitBall_symm]
 theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
     (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = Homeomorph.unitBall.symm ⟨y, hy⟩) :
     ContDiffOn ℝ n f <| ball 0 1 :=
-  LocalHomeomorph.contDiffOn_univUnitBall_symm.congr h
+  PartialHomeomorph.contDiffOn_univUnitBall_symm.congr h
 #align cont_diff_on_homeomorph_unit_ball_symm Homeomorph.contDiffOn_unitBall_symm
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable {c : E} {r : ℝ}
 
@@ -446,9 +424,9 @@ theorem contDiffOn_univBall_symm :
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
-    apply LocalHomeomorph.symm_mapsTo
+    apply PartialHomeomorph.symm_mapsTo
   · exact contDiffOn_id.sub contDiffOn_const
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 end DiffeomorphUnitBall
