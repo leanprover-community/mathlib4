@@ -24,7 +24,7 @@ theorem measurable_oneLePart : Measurable fun x : R ↦ oneLePart x :=
   Measurable.sup measurable_id' measurable_const
 
 @[to_additive (attr := measurability)]
-theorem Measurable.oneLePart  : Measurable fun x ↦ oneLePart (f x) :=
+theorem Measurable.oneLePart : Measurable fun x ↦ oneLePart (f x) :=
   Measurable.comp measurable_oneLePart hf
 
 variable [MeasurableInv R]
