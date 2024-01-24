@@ -437,7 +437,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   refine' (lpMeasToLpTrim_ae_eq hm _).trans _
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (lpMeasToLpTrim_ae_eq hm f).mono fun x hx => _
-  rw [Pi.smul_apply, Pi.smul_apply, hx]
+  simp only [Pi.smul_apply, hx]
 #align measure_theory.Lp_meas_to_Lp_trim_smul MeasureTheory.lpMeasToLpTrim_smul
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/

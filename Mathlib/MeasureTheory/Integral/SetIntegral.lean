@@ -926,7 +926,7 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set α) :
   refine' (Memℒp.coeFn_toLp ((Lp.memℒp (c • f)).restrict s)).mp _
   refine'
     (Lp.coeFn_smul c (Memℒp.toLp f ((Lp.memℒp f).restrict s))).mono fun x hx1 hx2 hx3 hx4 => _
-  rw [hx2, hx1, Pi.smul_apply, hx3, hx4, Pi.smul_apply]
+  simp only [hx2, hx1, hx3, hx4, Pi.smul_apply]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_smul MeasureTheory.Lp_toLp_restrict_smul
 

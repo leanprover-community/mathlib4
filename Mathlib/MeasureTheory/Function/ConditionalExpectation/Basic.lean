@@ -310,7 +310,7 @@ theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • �
   rw [condexpL1_smul c f]
   refine' (@condexp_ae_eq_condexpL1 _ _ _ _ _ m _ _ hm _ f).mp _
   refine' (coeFn_smul c (condexpL1 hm μ f)).mono fun x hx1 hx2 => _
-  rw [hx1, Pi.smul_apply, Pi.smul_apply, hx2]
+  simp only [hx1, hx2, Pi.smul_apply]
 #align measure_theory.condexp_smul MeasureTheory.condexp_smul
 
 theorem condexp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
