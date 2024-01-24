@@ -3,8 +3,30 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.EpiMono
+import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
+/-!
+# Charactezition of mono and epi in the category of sheaves of types
+
+In this file, we obtain the lemmas `Sheaf.mono_iff_injective`, `Sheaf.isIso_iff_bijective`
+and `Sheaf.epi_iff_locally_surjective` which are concrete characterizations of monomorphisms,
+isomorphisms and epimorphisms in a category of sheaves of types for a Grothendieck
+topology `J` on a category `C`.
+
+Given a morphism `φ : F ⟶ G` in `Sheaf J (Type _)`, it is easy to show that it is
+a mono (resp. an iso) iff for all `X : Cᵒᵖ`, the map `φ.val.app X : F.val.obj X ⟶ G.val.obj X`
+is injective (resp. bijective), similarly as for morphisms of presheaves. We also
+obtain a characterization of epimorphism : `φ` is an epimorphism iff any section of
+`G` can be *locally* lifted to a section of `F`.
+
+The proof of the characterization of epimorphisms uses an epi/mono factorization of
+`φ : F ⟶ G` (see `Sheaf.EpiMonoFactorization.π_ι`) in order to reduce to the particular
+case when `φ` is also a monomorphism, and for this, we show that the category of
+sheaves of types is balanced: `φ` is an isomorphism iff it is a mono and an epi.
+The proof of this last fact is obtained following the argument in SGA 4 II 4.2.
+
+-/
 
 universe w v u
 

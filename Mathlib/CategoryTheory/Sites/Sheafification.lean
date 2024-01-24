@@ -230,6 +230,7 @@ instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit
 
 variable (J D)
 
+/-- The natural isomorphism `𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D`. -/
 @[simps!]
 noncomputable def sheafificationNatIso :
     𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
