@@ -106,8 +106,8 @@ theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
 #align add_monoid.exponent_exists_iff_ne_zero AddMonoid.exponentExists_iff_ne_zero
 
 @[to_additive]
-theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G := by
-  simp only [exponentExists_iff_ne_zero, Classical.not_not]
+theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
+  exponentExists_iff_ne_zero.symm.not_right
 #align monoid.exponent_eq_zero_iff Monoid.exponent_eq_zero_iff
 #align add_monoid.exponent_eq_zero_iff AddMonoid.exponent_eq_zero_iff
 
@@ -185,7 +185,7 @@ theorem order_le_exponent (h : exponent G ≠ 0) (g : G) : orderOf g ≤ exponen
 variable (G)
 
 @[to_additive]
-theorem exponent_dvd_of_forall_pow_eq_one (G) [Monoid G] (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
+theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
     exponent G ∣ n := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · exact dvd_zero _
@@ -200,6 +200,10 @@ theorem exponent_dvd_of_forall_pow_eq_one (G) [Monoid G] (n : ℕ) (hG : ∀ g :
   linarith
 #align monoid.exponent_dvd_of_forall_pow_eq_one Monoid.exponent_dvd_of_forall_pow_eq_one
 #align add_monoid.exponent_dvd_of_forall_nsmul_eq_zero AddMonoid.exponent_dvd_of_forall_nsmul_eq_zero
+
+@[to_additive]
+theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
+  exponent_dvd_of_forall_pow_eq_one G n <| forall_imp (fun _ => orderOf_dvd_iff_pow_eq_one.mp) h
 
 @[to_additive]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
@@ -248,10 +252,10 @@ lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp 
   refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
   · rw [Ne.def, ← orderOf_eq_one_iff] at hg
     exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
-  · apply Monoid.exponent_dvd_of_forall_pow_eq_one G p fun g ↦ ?_
+  · apply Monoid.exponent_dvd_of_forall_orderOf_dvd G p fun g ↦ ?_
     by_cases hg : g = 1
     · simp [hg]
-    · simpa [h g hg] using pow_orderOf_eq_one g
+    · rw [h g hg]
   · obtain ⟨g, hg⟩ := exists_ne (1 : G)
     simpa [h g hg] using Monoid.order_dvd_exponent g
 
@@ -274,9 +278,8 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       intro h
       rw [h, zero_dvd_iff] at this
       exact htpos.ne' this
-    refine' exponent_dvd_of_forall_pow_eq_one _ _ fun g => _
-    rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
-    apply Finset.dvd_prod_of_mem
+    refine' exponent_dvd_of_forall_orderOf_dvd _ _ fun g => _
+    apply Finset.dvd_prod_of_mem id (?_ : orderOf g ∈ _)
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
 #align monoid.exponent_ne_zero_iff_range_order_of_finite Monoid.exponent_ne_zero_iff_range_orderOf_finite
@@ -291,11 +294,10 @@ theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf 
 #align add_monoid.exponent_eq_zero_iff_range_order_of_infinite AddMonoid.exponent_eq_zero_iff_range_addOrderOf_infinite
 
 @[to_additive lcm_addOrder_eq_exponent]
-theorem lcm_order_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G := by
-  apply Nat.dvd_antisymm (lcm_orderOf_dvd_exponent G)
-  refine' exponent_dvd_of_forall_pow_eq_one G _ fun g => _
-  obtain ⟨m, hm⟩ : orderOf g ∣ Finset.univ.lcm orderOf := Finset.dvd_lcm (Finset.mem_univ g)
-  rw [hm, pow_mul, pow_orderOf_eq_one, one_pow]
+theorem lcm_order_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G :=
+  Nat.dvd_antisymm
+    (lcm_orderOf_dvd_exponent G)
+    (exponent_dvd_of_forall_orderOf_dvd G _ fun g => Finset.dvd_lcm (Finset.mem_univ g))
 #align monoid.lcm_order_eq_exponent Monoid.lcm_order_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrder_eq_exponent
 
@@ -456,9 +458,10 @@ end Monoid
 
 section Group
 
+variable [Group G]
+
 @[to_additive AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Group G] [Finite G] [Nontrivial G] :
-    1 < Monoid.exponent G := by
+lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G := by
   let _inst := Fintype.ofFinite G
   obtain ⟨g, hg⟩ := exists_ne (1 : G)
   rw [← Monoid.lcm_order_eq_exponent]
@@ -468,6 +471,12 @@ lemma Group.one_lt_exponent [Group G] [Finite G] [Nontrivial G] :
   rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
   rintro ⟨x, -, hx⟩
   exact (orderOf_pos x).ne' hx
+
+theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
+  Monoid.exponent_dvd_of_forall_orderOf_dvd G (Fintype.card G) <| fun _ => orderOf_dvd_card
+
+theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
+  Monoid.exponent_dvd_of_forall_orderOf_dvd G (Nat.card G) <| orderOf_dvd_natCard
 
 end Group
 
@@ -559,3 +568,77 @@ theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
   · exact MonoidHom.exponent_dvd (f := MonoidHom.snd M₁ M₂) Prod.snd_surjective
 
 end PiProd
+
+/-! # Properties of monoids with exponent two -/
+
+section ExponentTwo
+
+section Monoid
+
+variable [Monoid G]
+
+@[to_additive]
+lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
+    orderOf x = 2 ↔ x ≠ 1 :=
+  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
+
+@[to_additive]
+theorem mul_comm_of_orderOf_dvd_two [IsCancelMul G] {a b : G} (h : ∀ g : G, orderOf g ∣ 2) :
+    a * b = b * a := by
+  simp_rw [orderOf_dvd_iff_pow_eq_one] at h
+  rw [← mul_right_inj a, ← mul_left_inj b]
+  calc
+    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
+    _ = 1 := by rw [h, h, mul_one]
+    _ = (a * b) ^ 2 := by rw [h]
+    _ = a * (b * a) * b := by simp only [pow_two]; group
+
+/-- In a cancellative monoid of exponent two, all elements commute. -/
+@[to_additive]
+lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b : G) :
+    a * b = b * a :=
+  mul_comm_of_orderOf_dvd_two fun g => hG ▸ Monoid.order_dvd_exponent g
+
+/-- Any cancellative monoid of exponent two is abelian. -/
+@[to_additive (attr := reducible) "Any additive group of exponent two is abelian."]
+def commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
+  mul_comm := mul_comm_of_exponent_two hG
+
+end Monoid
+
+section Group
+
+variable [Group G]
+/-- In a group of exponent two, every element is its own inverse. -/
+@[to_additive]
+lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
+    x⁻¹ = x :=
+  inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hG ▸ Monoid.pow_exponent_eq_one x
+
+/-- If an element in a group has order two, then it is its own inverse. -/
+@[to_additive]
+lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
+    x⁻¹ = x :=
+  inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
+
+/-- Any group of exponent two is abelian. -/
+@[to_additive (attr := reducible) "Any additive group of exponent two is abelian."]
+def commGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
+  mul_comm := mul_comm_of_exponent_two hG
+
+@[to_additive]
+lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
+    (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
+  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
+    mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
+  aesop
+
+@[to_additive]
+lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
+    (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
+  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
+    (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
+
+end Group
+
+end ExponentTwo
