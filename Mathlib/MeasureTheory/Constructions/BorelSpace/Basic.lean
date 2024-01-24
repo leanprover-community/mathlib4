@@ -45,9 +45,9 @@ import Mathlib.Topology.Semicontinuous
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory
+open Set Filter MeasureTheory
 
-open Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -130,30 +130,17 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine' generateFrom_le _
     rintro _ ⟨a, rfl | rfl⟩
-    swap
+    · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
+      · rw [hb.Ioi_eq, ← compl_Iio]
+        exact (H _).compl
+      · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
+        have : Ioi a = ⋃ b ∈ t, Ici b := by
+          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
+          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
+          simpa [CovBy, htU, subset_def] using hcovBy
+        simp only [this, ← compl_Iio]
+        exact .biUnion htc <| fun _ _ ↦ (H _).compl
     · apply H
-    by_cases h : ∃ a', ∀ b, a < b ↔ a' ≤ b
-    · rcases h with ⟨a', ha'⟩
-      rw [(_ : Ioi a = (Iio a')ᶜ)]
-      · exact (H _).compl
-      simp [Set.ext_iff, ha']
-    · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
-          isOpen_lt' _ with ⟨v, hv, vu⟩
-      simp? [Set.ext_iff] at vu says
-        simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
-          exists_and_right] at vu
-      have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
-        simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
-          exists_prop, Subtype.exists, exists_and_right]
-        refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
-        rcases (vu x).2 (by
-          refine' not_imp_comm.1 (fun h => _) h
-          exact ⟨x, fun b =>
-            ⟨fun ab => le_of_not_lt fun h' => h ⟨b, ab, h'⟩, lt_of_lt_of_le ax⟩⟩) with ⟨a', h₁, h₂⟩
-        · exact ⟨a', h₁, le_of_lt h₂⟩
-      rw [this]
-      apply MeasurableSet.iUnion
-      exact fun _ => (H _).compl
   · rw [forall_range_iff]
     intro a
     exact GenerateMeasurable.basic _ isOpen_Iio

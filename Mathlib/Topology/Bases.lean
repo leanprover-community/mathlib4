@@ -788,7 +788,7 @@ instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCoun
 
 /-- A countable open cover induces a second-countable topology if all open covers
 are themselves second countable. -/
-theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι → Set α}
+theorem secondCountableTopology_of_countable_cover {ι} [Countable ι] {U : ι → Set α}
     [∀ i, SecondCountableTopology (U i)] (Uo : ∀ i, IsOpen (U i)) (hc : ⋃ i, U i = univ) :
     SecondCountableTopology α :=
   haveI : IsTopologicalBasis (⋃ i, image ((↑) : U i → α) '' countableBasis (U i)) :=
@@ -803,18 +803,22 @@ theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Se
     (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }
   choose f hf using fun b : B => b.2.2
-  haveI : Encodable B := ((countable_countableBasis α).mono (sep_subset _ _)).toEncodable
+  haveI : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
   refine' ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset _)⟩
   rintro _ ⟨i, rfl⟩ x xs
   rcases (isBasis_countableBasis α).exists_subset_of_mem_open xs (H _) with ⟨b, hb, xb, bs⟩
   exact ⟨_, ⟨_, rfl⟩, _, ⟨⟨⟨_, hb, _, bs⟩, rfl⟩, rfl⟩, hf _ xb⟩
 #align topological_space.is_open_Union_countable TopologicalSpace.isOpen_iUnion_countable
 
+theorem isOpen_biUnion_countable [SecondCountableTopology α] {ι : Type*} (I : Set ι) (s : ι → Set α)
+    (H : ∀ i ∈ I, IsOpen (s i)) : ∃ T ⊆ I, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i ∈ I, s i := by
+  simp_rw [← Subtype.exists_set_subtype, biUnion_image]
+  rcases isOpen_iUnion_countable (fun i : I ↦ s i) fun i ↦ H i i.2 with ⟨T, hTc, hU⟩
+  exact ⟨T, hTc.image _, hU.trans <| iUnion_subtype ..⟩
+
 theorem isOpen_sUnion_countable [SecondCountableTopology α] (S : Set (Set α))
-    (H : ∀ s ∈ S, IsOpen s) : ∃ T : Set (Set α), T.Countable ∧ T ⊆ S ∧ ⋃₀ T = ⋃₀ S :=
-  let ⟨T, cT, hT⟩ := isOpen_iUnion_countable (fun s : S => s.1) fun s => H s.1 s.2
-  ⟨Subtype.val '' T, cT.image _, image_subset_iff.2 fun ⟨_, h⟩ _ => h, by
-    rwa [sUnion_image, sUnion_eq_iUnion]⟩
+    (H : ∀ s ∈ S, IsOpen s) : ∃ T : Set (Set α), T.Countable ∧ T ⊆ S ∧ ⋃₀ T = ⋃₀ S := by
+  simpa only [and_left_comm, sUnion_eq_biUnion] using isOpen_biUnion_countable S id H
 #align topological_space.is_open_sUnion_countable TopologicalSpace.isOpen_sUnion_countable
 
 /-- In a topological space with second countable topology, if `f` is a function that sends each
