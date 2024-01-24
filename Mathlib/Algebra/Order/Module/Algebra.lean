@@ -82,14 +82,14 @@ def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
   let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
   match ← core zα pα a with
   | .positive pa =>
-    try {
+    try
       let _oα ← synthInstanceQ (q(OrderedCommSemiring $α) : Q(Type u_1))
       let _oβ ← synthInstanceQ (q(StrictOrderedSemiring $β) : Q(Type u))
       let _oβ ← synthInstanceQ (q(SMulPosStrictMono $α $β) : Q(Prop))
       assertInstancesCommute-- Why does `assertInstancesCommute` not generate the following?
       have : $pα =Q OrderedSemiring.toPartialOrder := ⟨⟩
       return .positive q(algebraMap_pos $β $pa)
-    } catch _ =>
+    catch _ =>
       let _oα ← synthInstanceQ (q(OrderedCommSemiring $α) : Q(Type u_1))
       let _oβ ← synthInstanceQ (q(OrderedSemiring $β) : Q(Type u))
       let _instαβsmul ← synthInstanceQ (q(SMulPosMono $α $β) : Q(Prop))
