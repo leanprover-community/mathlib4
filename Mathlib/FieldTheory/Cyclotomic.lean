@@ -48,3 +48,11 @@ lemma cyclotomicCharacter_unique (n : ℕ+) [IsSepClosure k K] [NeZero (n : K)]
   intro σ
   apply hχ ζ'
   exact IsPrimitiveRoot.mem_rootsOfUnity hζ'
+
+lemma cyclotomicCharacter_compat (m n : ℕ+) (h : (m : ℕ) ∣ n)
+    [IsSepClosure k K] [NeZero (m : K)] [NeZero (n : K)] :
+    (Units.map <| (ZMod.castHom h _).toMonoidHom).comp (cyclotomicCharacter k K n) =
+    cyclotomicCharacter k K m := by
+  apply cyclotomicCharacter_unique
+  intro ξ hξ σ
+  sorry
