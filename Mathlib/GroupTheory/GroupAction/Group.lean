@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Invertible.Defs
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
@@ -177,6 +179,31 @@ theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹
 #align vadd_eq_iff_eq_neg_vadd vadd_eq_iff_eq_neg_vadd
 
 end Group
+
+section Monoid
+
+variable [Monoid α] [MulAction α β]
+
+@[to_additive]
+instance : MulAction αˣ β where
+  one_smul _ := by
+    rw [one_smul]
+  mul_smul _ _ _ := by
+    rw [mul_smul]
+
+@[simp]
+theorem invOf_smul_smul (c : α) [Invertible c] (x : β) : ⅟c • c • x = x :=
+  inv_smul_smul (unitOfInvertible c) _
+
+@[simp]
+theorem smul_invOf_smul (c : α) [Invertible c] (x : β) : c • (⅟ c • x) = x :=
+  smul_inv_smul (unitOfInvertible c) _
+
+theorem invOf_smul_eq_iff (c : α) [Invertible c] {x y : β} :
+    ⅟c • x = y ↔ x = c • y :=
+  inv_smul_eq_iff (a := unitOfInvertible c) (x := x) (y := y)
+
+end Monoid
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
