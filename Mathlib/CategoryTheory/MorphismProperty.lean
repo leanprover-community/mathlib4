@@ -530,6 +530,18 @@ theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphis
   apply epi_comp
 #align category_theory.morphism_property.stable_under_composition.epimorphisms CategoryTheory.MorphismProperty.StableUnderComposition.epimorphisms
 
+lemma StableUnderBaseChange.isomorphisms : StableUnderBaseChange (isomorphisms C) := by
+  intro X' Y Y' X f g f' g' h hg
+  have : IsIso g := hg
+  let c : PullbackCone g f := PullbackCone.mk (f ≫ inv g) (𝟙 X') (by simp)
+  refine' ⟨h.isLimit.lift c, _, h.isLimit.fac c (WalkingCospan.right)⟩
+  apply h.isLimit.hom_ext
+  intro j
+  rw [Category.assoc, h.isLimit.fac c j]
+  obtain (_|_|_) := j
+  all_goals
+    simp [← cancel_mono g, h.toCommSq.w]
+
 variable {C}
 
 
