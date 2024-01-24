@@ -184,7 +184,7 @@ theorem associativity (X Y Z : Type u) :
 #align Module.free.associativity ModuleCat.Free.associativity
 
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
-/-- The free R-module functor is lax monoidal. The property part. -/
+/-- The free R-module functor is lax monoidal. -/
 @[simps]
 instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   -- Send `R` to `PUnit →₀ R`
