@@ -305,6 +305,7 @@ end Monoid
   into a commutative monoid `G` are differentiable/smooth at `x`/on `s`. -/
 section CommMonoid
 
+open Function
 open scoped BigOperators
 
 variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -325,7 +326,7 @@ theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) 
     exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
 
 @[to_additive]
-theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ Function.mulSupport <| f i) {x₀ : M}
+theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
     (h : ∀ i, ContMDiffWithinAt I' I n (f i) s x₀) :
     ContMDiffWithinAt I' I n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
   let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
@@ -357,7 +358,7 @@ theorem ContMDiffAt.prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x₀) :
 
 @[to_additive]
 theorem contMDiffAt_finprod
-    (lf : LocallyFinite fun i ↦ Function.mulSupport <| f i) (h : ∀ i, ContMDiffAt I' I n (f i) x₀) :
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, ContMDiffAt I' I n (f i) x₀) :
     ContMDiffAt I' I n (fun x ↦ ∏ᶠ i, f i x) x₀ :=
   contMDiffWithinAt_finprod lf h
 
@@ -409,7 +410,7 @@ theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => Function.mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
   intro x
   rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
   exact (contMDiff_finset_prod (fun i _ => h i) x).congr_of_eventuallyEq hs
@@ -418,7 +419,7 @@ theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
-    (hf : LocallyFinite fun i => Function.mulSupport (f i)) :
+    (hf : LocallyFinite fun i => mulSupport (f i)) :
     ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
@@ -427,7 +428,7 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
 
 @[to_additive]
 theorem smoothAt_finprod
-    (lf : LocallyFinite fun i ↦ Function.mulSupport <| f i) (h : ∀ i, SmoothAt I' I (f i) x₀) :
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, SmoothAt I' I (f i) x₀) :
     SmoothAt I' I (fun x ↦ ∏ᶠ i, f i x) x₀ :=
   contMDiffWithinAt_finprod lf h
 
@@ -488,14 +489,14 @@ theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
 
 @[to_additive]
 theorem smooth_finprod (h : ∀ i, Smooth I' I (f i))
-    (hfin : LocallyFinite fun i => Function.mulSupport (f i)) : Smooth I' I fun x => ∏ᶠ i, f i x :=
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : Smooth I' I fun x => ∏ᶠ i, f i x :=
   contMDiff_finprod h hfin
 #align smooth_finprod smooth_finprod
 #align smooth_finsum smooth_finsum
 
 @[to_additive]
 theorem smooth_finprod_cond (hc : ∀ i, p i → Smooth I' I (f i))
-    (hf : LocallyFinite fun i => Function.mulSupport (f i)) :
+    (hf : LocallyFinite fun i => mulSupport (f i)) :
     Smooth I' I fun x => ∏ᶠ (i) (_ : p i), f i x :=
   contMDiff_finprod_cond hc hf
 #align smooth_finprod_cond smooth_finprod_cond
