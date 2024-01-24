@@ -1025,10 +1025,10 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
-/- Porting note: Replaced `e` with `FunLike.coe e` to override the strange
+/- Porting note: Replaced `e` with `DFunLike.coe e` to override the strange
  coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`.-/
 theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
-    FunLike.coe e (blimsup u f p) = blimsup ((FunLike.coe e) ∘ u) f p := by
+    DFunLike.coe e (blimsup u f p) = blimsup ((DFunLike.coe e) ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply]
   congr
   ext c

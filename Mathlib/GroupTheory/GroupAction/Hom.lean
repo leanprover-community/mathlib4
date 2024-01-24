@@ -76,7 +76,7 @@ scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
 class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y] extends
-  FunLike F X fun _ => Y where
+  DFunLike F X fun _ => Y where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
@@ -109,7 +109,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
     X →[M] Y where
-   toFun := FunLike.coe f
+   toFun := DFunLike.coe f
    map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
@@ -130,15 +130,15 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 
 @[ext]
 theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
 theorem ext_iff {f g : X →[M'] Y} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
 protected theorem congr_fun {f g : X →[M'] Y} (h : f = g) (x : X) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 variable (M M')
@@ -293,15 +293,15 @@ theorem coe_fn_coe' (f : A →+[M] B) : ⇑(f : A →[M] B) = f :=
 
 @[ext]
 theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
 theorem ext_iff {f g : A →+[M] B} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
 protected theorem congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
 theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
@@ -312,7 +312,7 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
 
 theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
@@ -525,11 +525,11 @@ theorem coe_fn_coe' (f : R →+*[M] S) : ⇑(f : R →+[M] S) = f :=
 
 @[ext]
 theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
 theorem ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
 protected theorem map_zero (f : R →+*[M] S) : f 0 = 0 :=
