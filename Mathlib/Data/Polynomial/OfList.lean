@@ -34,6 +34,8 @@ Constructing polynomials by providing an explicit list of coefficients.
 
 -/
 
+open scoped Classical
+noncomputable section
 
 namespace List
 
@@ -55,8 +57,6 @@ variable {R S : Type _} [Semiring R] (l : List R)
 
 section
 
-variable [DecidablePred fun i : ℕ => List.getD l i 0 ≠ 0]
-
 /-- A `l : List R` over a `Semiring R` defines a polynomial with the elements as coefficients.
 A generalization of `polynomial.ofList_lt`. -/
 def ofList : Polynomial R :=
@@ -77,11 +77,8 @@ theorem ofList_cons (x : R) (xs : List R) [DecidablePred fun i : ℕ => List.get
   ext (_ | i) <;> simp [coeff_C]
 
 @[simp]
-theorem ofList_concat (x : R) (xs : List R)
-    [DecidablePred fun i : ℕ => List.getD (xs ++ [x]) i 0 ≠ 0]
-    [DecidablePred fun i : ℕ => List.getD xs i 0 ≠ 0] :
+theorem ofList_concat (x : R) (xs : List R) :
     ofList (xs ++ [x]) = ofList xs + monomial xs.length x := by
-  stop
   induction' xs with y xs IH generalizing x
   · classical
     rw [add_comm]
@@ -90,18 +87,18 @@ theorem ofList_concat (x : R) (xs : List R)
   · simp [IH, mul_add, add_assoc]
 
 @[simp]
-theorem ofList_append (xs ys : List R) [DecidablePred fun i : ℕ => List.getD (xs ++ ys) i 0 ≠ 0]
-    [DecidablePred fun i : ℕ => List.getD xs i 0 ≠ 0]
-    [DecidablePred fun i : ℕ => List.getD ys i 0 ≠ 0] :
+theorem ofList_append (xs ys : List R) :
     ofList (xs ++ ys) = ofList xs + X ^ xs.length * ofList ys := by
-  stop -- times out
   induction' ys using List.reverseRecOn with ys y IH generalizing xs
   · simp
-  · classical simp [← List.append_assoc, IH, add_assoc, mul_add, add_comm]
+  · simp_rw [← List.append_assoc]
+    simp only [ofList_concat, IH, add_comm, List.length_append, add_assoc, mul_add,
+      X_pow_mul_monomial]
+    abel
 
 -- decidable_eq here is too powerful, we don't have a pfilter
 @[simp]
-theorem support_ofList {R} [Semiring R] [DecidableEq R] (l : List R) :
+theorem support_ofList {R} [Semiring R] (l : List R) :
     (ofList l).support = (l.enum.toFinset.filter fun p : ℕ × R => p.2 ≠ 0).image Prod.fst := by
   ext i
   simp only [List.mem_iff_nthLe, mem_support_iff, coeff_ofList, Ne.def, Finset.mem_image,
@@ -124,10 +121,9 @@ theorem support_ofList {R} [Semiring R] [DecidableEq R] (l : List R) :
 
 theorem ofList_eq_sum_map_monomial_enum :
     ofList l = (l.enum.map fun p : ℕ × R => monomial p.1 p.2).sum := by
-  stop
   induction' l using List.reverseRecOn with xs x IH
-  · simp; rfl
-  · classical simp [List.enum_append, List.enumFrom_cons, IH, ← C_mul_X_eq_monomial]
+  · simp
+  · simp [List.enum_append, List.enumFrom_cons, IH, ← C_mul_X_pow_eq_monomial]
 
 theorem ofList_eq_zero_iff {l : List R} [DecidablePred fun i : ℕ => List.getD l i 0 ≠ 0] :
     ofList l = 0 ↔ ∀ x : R, x ∈ l → x = 0 := by
@@ -142,7 +138,6 @@ theorem ofList_eq_zero_iff {l : List R} [DecidablePred fun i : ℕ => List.getD 
       exact ⟨_, _, rfl⟩
 
 theorem natDegree_ofList_le : natDegree (ofList l) ≤ l.length := by
-  stop
   induction' l using List.reverseRecOn with xs x IH
   · simp
   classical
@@ -153,7 +148,6 @@ theorem natDegree_ofList_le : natDegree (ofList l) ≤ l.length := by
   exact ⟨Nat.le_succ_of_le IH, Nat.le_succ_of_le (natDegree_C_mul_X_pow_le _ _)⟩
 
 theorem natDegree_ofList_lt (h : l ≠ []) : natDegree (ofList l) < l.length := by
-  stop
   induction' l using List.reverseRecOn with xs x IH
   · exact absurd rfl h
   classical
@@ -176,7 +170,6 @@ theorem degree_ofList_lt : degree (ofList l) < l.length := by
 
 theorem natDegree_ofList_of_getLast_ne_zero (h : ∀ hl : l ≠ [], l.getLast hl ≠ 0) :
     natDegree (ofList l) = l.length - 1 := by
-  stop
   induction' l using List.reverseRecOn with xs x IH
   · simp
   classical
@@ -292,17 +285,26 @@ def embedList : { l : List R // l = [] ∨ l.getD (l.length - 1) 0 ≠ 0 } ↪ P
   toFun l := ofList l
   inj' := by
     rintro ⟨l, rfl | hl⟩ ⟨l', rfl | hl'⟩ h <;> simp only [Subtype.mk.injEq] at *
-    stop
     · by_cases H : l' = []
       · exact H.symm
       simp only [ofList_eq_zero_iff, @eq_comm _ _ (ofList _), Subtype.coe_mk, ofList_nil] at h
-      rw [List.getD_eq_nthLe, ← List.getLast_eq_nthLe _ H] at hl'
-      · exact absurd (h _ (List.getLast_mem _)) hl'
+      exfalso
+      refine hl' ?_
+      apply h
+      rw [List.getD_eq_nthLe]
+      refine List.nthLe_mem l' (List.length l' - 1) ?_
+      apply Nat.pred_lt
+      simp [List.length_eq_zero, H]
     · by_cases H : l = []
       · exact H
       simp only [ofList_eq_zero_iff, @eq_comm _ _ (ofList _), Subtype.coe_mk, ofList_nil] at h
-      rw [List.getD_eq_nthLe, ← List.getLast_eq_nthLe _ H] at hl
-      · exact absurd (h _ (List.getLast_mem _)) hl
+      exfalso
+      refine hl ?_
+      apply h
+      rw [List.getD_eq_nthLe]
+      refine List.nthLe_mem l (List.length l - 1) ?_
+      apply Nat.pred_lt
+      simp [List.length_eq_zero, H]
     · exact ofList_inj_on _ _ hl hl' h
 
 end Polynomial
