@@ -178,6 +178,10 @@ theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
 #align monoid.order_dvd_exponent Monoid.order_dvd_exponent
 #align add_monoid.add_order_dvd_exponent AddMonoid.addOrder_dvd_exponent
 
+@[to_additive addOrder_le_exponent]
+theorem order_le_exponent (h : exponent G ≠ 0) (g : G) : orderOf g ≤ exponent G :=
+  Nat.le_of_dvd h.bot_lt (order_dvd_exponent g)
+
 variable (G)
 
 @[to_additive]
@@ -315,14 +319,12 @@ section CommMonoid
 variable [CommMonoid G]
 
 @[to_additive]
-theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
-    exponent G = ⨆ g : G, orderOf g := by
-  rw [iSup]
-  rcases eq_or_ne (exponent G) 0 with (he | he)
-  · rw [he, Set.Infinite.Nat.sSup_eq_zero <| (exponent_eq_zero_iff_range_orderOf_infinite h).1 he]
+theorem yyy (h : ∀ g : G, 0 < orderOf g) (he : exponent G ≠ 0) :
+    exponent G = sSup (Set.range (orderOf (G := G))) ∧ sSup (Set.range (orderOf (G := G))) ∈ Set.range (orderOf (G := G)) := by
   have hne : (Set.range (orderOf : G → ℕ)).Nonempty := ⟨1, 1, orderOf_one⟩
   have hfin : (Set.range (orderOf : G → ℕ)).Finite := by
     rwa [← exponent_ne_zero_iff_range_orderOf_finite h]
+  refine ⟨?_, hne.cSup_mem hfin⟩
   obtain ⟨t, ht⟩ := hne.cSup_mem hfin
   apply Nat.dvd_antisymm _
   · rw [← ht]
@@ -357,6 +359,69 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| h t, ← pow_succ']
   exact one_lt_pow hp.one_lt a.succ_ne_zero
   exact hpk
+
+@[to_additive]
+theorem exists_orderOf_eq_exponent (h : ∀ g : G, 0 < orderOf g) (he : exponent G ≠ 0) :
+    ∃ g : G, orderOf g = exponent G := by
+  have hne : (Set.range (orderOf : G → ℕ)).Nonempty := ⟨1, 1, orderOf_one⟩
+  have hfin : (Set.range (orderOf : G → ℕ)).Finite := by
+    rwa [← exponent_ne_zero_iff_range_orderOf_finite h]
+  obtain ⟨t, ht⟩ := hne.cSup_mem hfin
+  use t
+  apply Nat.dvd_antisymm (order_dvd_exponent _)
+  refine' Nat.dvd_of_factors_subperm he _
+  rw [List.subperm_ext_iff]
+  by_contra! h
+  obtain ⟨p, hp, hpe⟩ := h
+  replace hp := Nat.prime_of_mem_factors hp
+  simp only [Nat.factors_count_eq] at hpe
+  set k := (orderOf t).factorization p with hk
+  obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
+  suffices orderOf t < orderOf (t ^ p ^ k * g) by
+    rw [ht] at this
+    exact this.not_le (le_csSup hfin.bddAbove <| Set.mem_range_self _)
+  have hpk : p ^ k ∣ orderOf t := Nat.ord_proj_dvd _ _
+  have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
+    rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
+  obtain ⟨a, ha⟩ := Nat.exists_eq_add_of_lt hpe
+  have hcoprime : (orderOf (t ^ p ^ k)).Coprime (orderOf g) := by
+    rw [hg, Nat.coprime_pow_right_iff (pos_of_gt hpe), Nat.coprime_comm]
+    apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
+    nth_rw 1 [← pow_one p]
+    have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
+     rw [hpk', Nat.factorization_div hpk]
+     simp [hp]
+    rw [this]
+    -- Porting note: convert made to_additive complain
+    apply Nat.pow_succ_factorization_not_dvd (h <| t ^ p ^ k).ne' hp
+  rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
+    hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
+    Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| h t, ← pow_succ']
+  exact one_lt_pow hp.one_lt a.succ_ne_zero
+  exact hpk
+
+@[to_additive]
+theorem exponent_eq_iSup_orderOf_ (h : ∀ g : G, 0 < orderOf g) :
+    exponent G = ⨆ g : G, orderOf g := by
+  rw [iSup]
+  rcases eq_or_ne (exponent G) 0 with (he | he)
+  · rw [he, Set.Infinite.Nat.sSup_eq_zero <| (exponent_eq_zero_iff_range_orderOf_infinite h).1 he]
+  rw [csSup_eq_of_forall_le_of_forall_lt_exists_gt (Set.range_nonempty _)]
+  · simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    apply order_le_exponent he
+  intro x hx
+  obtain ⟨g, hg⟩ := exists_orderOf_eq_exponent h he
+  rw [← hg] at hx
+  simp_rw [Set.mem_range, exists_exists_eq_and]
+  exact ⟨g, hx⟩
+
+@[to_additive]
+theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
+    exponent G = ⨆ g : G, orderOf g := by
+  rw [iSup]
+  rcases eq_or_ne (exponent G) 0 with (he | he)
+  · rw [he, Set.Infinite.Nat.sSup_eq_zero <| (exponent_eq_zero_iff_range_orderOf_infinite h).1 he]
+  exact (yyy h he).1
 #align monoid.exponent_eq_supr_order_of Monoid.exponent_eq_iSup_orderOf
 #align add_monoid.exponent_eq_supr_order_of AddMonoid.exponent_eq_iSup_addOrderOf
 
