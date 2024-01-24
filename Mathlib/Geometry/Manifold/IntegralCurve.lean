@@ -94,15 +94,13 @@ lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegra
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
-  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem]
-  rfl
+  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem, IsIntegralCurveAt]
 
 /-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
 containing `t₀`. -/
 lemma isIntegralCurveAt_iff' :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball]
-  rfl
+  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball, IsIntegralCurveAt]
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
     IsIntegralCurveAt γ v t := isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
@@ -138,6 +136,21 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
     IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
   ⟨fun h _ ht ↦ h.isIntegralCurveAt (hs.mem_nhds ht), IsIntegralCurveAt.isIntegralCurveOn⟩
 
+lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
+    ContinuousAt γ t₀ := (hγ t₀ ht).1
+
+lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
+    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
+
+lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
+    ContinuousAt γ t₀ :=
+  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
+  hγ.continuousAt <| mem_of_mem_nhds hs
+
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
+    Continuous γ := continuous_iff_continuousAt.mpr
+      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -149,6 +162,23 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
   rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
   apply (HasMFDerivAt.comp t
     (hasMFDerivAt_extChartAt I hsrc) (hγ _ ht)).congr_mfderiv
+  rw [ContinuousLinearMap.ext_iff]
+  intro a
+  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
+    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
+    mfderiv_chartAt_eq_tangentCoordChange I hsrc]
+  rfl
+
+lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
+    ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
+      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
+  apply eventually_mem_nhds.mpr
+    (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I _)) |>.and hγ |>.mono
+  rintro t ⟨ht1, ht2⟩
+  have hsrc := mem_of_mem_nhds ht1
+  rw [mem_preimage, extChartAt_source I (γ t₀)] at hsrc
+  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
+  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt I hsrc) ht2).congr_mfderiv
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
@@ -173,8 +203,8 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext t
-  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · ext t
+    simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
@@ -190,8 +220,8 @@ lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
-  ext t
-  · simp only [Function.comp_apply, neg_add_cancel_right]
+  · ext t
+    simp only [Function.comp_apply, neg_add_cancel_right]
   · simp only [sub_neg_eq_add, sub_add_cancel]
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
@@ -224,8 +254,8 @@ lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
 
@@ -243,8 +273,8 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
   convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [div_inv_eq_mul, div_mul_cancel _ ha]
 
@@ -257,8 +287,8 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
   refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
-  ext t
-  · simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+  · ext t
+    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
@@ -268,21 +298,6 @@ lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ ↦ x
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
-
-lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
-    ContinuousAt γ t₀ := (hγ t₀ ht).1
-
-lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
-    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
-
-lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ContinuousAt γ t₀ :=
-  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
-  hγ.continuousAt <| mem_of_mem_nhds hs
-
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 end Scaling
 
@@ -359,100 +374,56 @@ variable {t₀}
 
 If a $C^1$ vector field `v` admits two local integral curves `γ γ' : ℝ → M` at `t₀` with
 `γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval containing `t₀`. -/
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
+theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
-    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
+    γ =ᶠ[𝓝 t₀] γ' := by
   -- first define `v'` as the vector field expressed in the local chart around `γ t₀`
   -- this is basically what the function looks like when `hv` is unfolded
   set v' : E → E := fun x ↦
     tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
       (v ((extChartAt I (γ t₀)).symm x)) with hv'
-
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
+  -- internal lemmas to reduce code duplication
+  have hsrc {g} (hg : IsIntegralCurveAt g v t₀) :
+    ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds.mpr <|
+      continuousAt_def.mp hg.continuousAt _ <| extChartAt_source_mem_nhds I (g t₀)
+  have hmem {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
+    g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
+  have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) : ∀ᶠ t in 𝓝 t₀,
+      HasDerivAt ((extChartAt I (g t₀)) ∘ g) ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t ∧
+      ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
+    apply Filter.Eventually.and
+    · apply (hsrc hg |>.and hg.eventually_hasDerivAt).mono
+      rintro t ⟨ht1, ht2⟩
+      rw [hv', h']
+      apply ht2.congr_deriv
+      congr <;>
+      rw [Function.comp_apply, PartialEquiv.left_inv _ (hmem ht1)]
+    · apply ((continuousAt_extChartAt I (g t₀)).comp hg.continuousAt).preimage_mem_nhds
+      rw [Function.comp_apply, ← h']
+      exact hs
+  have heq {g} (hg : IsIntegralCurveAt g v t₀) :
+    g =ᶠ[𝓝 t₀] (extChartAt I (g t₀)).symm ∘ ↑(extChartAt I (g t₀)) ∘ g := by
+    apply (hsrc hg).mono
+    intros t ht
+    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hmem ht)]
+  -- main proof
+  suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
+    (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
+  exact ODE_solution_unique_of_eventually hlip
+    (hdrv hγ rfl) (hdrv hγ' h) (by rw [Function.comp_apply, Function.comp_apply, h])
 
-  -- `γ t` when expressed in the local chart should remain inside `s`
-  have hcont : ContinuousAt ((extChartAt I (γ t₀)) ∘ γ) t₀ :=
-    (continuousAt_extChartAt ..).comp hγ.continuousAt
-  rw [continuousAt_def] at hcont
-  have hnhds := hcont _ hs
-  rw [← eventually_mem_nhds] at hnhds
-
-  -- `γ t` should remain inside the domain of the local chart around `γ t₀`
-  have hsrc := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
-  rw [← eventually_mem_nhds] at hsrc
-
-  -- same as above but for `γ'`
-  have hcont' : ContinuousAt ((extChartAt I (γ' t₀)) ∘ γ') t₀ :=
-    ContinuousAt.comp (continuousAt_extChartAt ..) hγ'.continuousAt
-  rw [continuousAt_def] at hcont'
-  have hnhds' := hcont' _ (h ▸ hs)
-  rw [← eventually_mem_nhds] at hnhds'
-
-  have hsrc' := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
-  rw [← eventually_mem_nhds] at hsrc'
-
-  -- there exists a neighbourhood around `t₀` in which all of the above hold
-  have haux := hnhds.and <| hsrc.and <| hγ.and <| hnhds'.and <| hsrc'.and hγ'
-  rw [Metric.eventually_nhds_iff_ball] at haux
-
-  obtain ⟨ε, hε, haux⟩ := haux
-  refine ⟨ε, hε, ?_⟩
-
-  -- break out all the conditions again
-  have hmem := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).1
-  have hsrc := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.1
-  have hcrv : IsIntegralCurveOn _ _ _ := fun t ht ↦ (haux t ht).2.2.1
-  have hmem' := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.2.2.1
-  have hsrc' := fun t ht ↦ mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2.2.2.2.1
-  have hcrv' : IsIntegralCurveOn _ _ _ := fun t ht ↦ (haux t ht).2.2.2.2.2
-
-  -- `γ` and `γ'` when expressed in the local chart are continuous on this neighbourhood
-  have hcont := (continuousOn_extChartAt I (γ t₀)).comp hcrv.continuousOn hsrc
-  have hcont' := (continuousOn_extChartAt I (γ' t₀)).comp hcrv'.continuousOn hsrc'
-
-  simp_rw [Real.ball_eq_Ioo] at hmem hsrc hcrv hcont hmem' hsrc' hcrv' hcont'
-
-  -- `γ` and `γ'` are equal on `Ioo (t₀ - ε) (t₀ + ε)` when expressed in the local chart
-  have heqon : EqOn ((extChartAt I (γ t₀)) ∘ γ) ((extChartAt I (γ' t₀)) ∘ γ')
-    (Ioo (t₀ - ε) (t₀ + ε)) := by
-    -- uniqueness of ODE solutions in an open interval
-    apply ODE_solution_unique_of_mem_set_Ioo hlip (t₀ := t₀)
-      (Real.ball_eq_Ioo _ _ ▸ (Metric.mem_ball_self hε)) hcont _ hmem hcont' _ hmem' (by simp [h])
-    · intros t ht
-      rw [hv']
-      have := hcrv.hasDerivAt ht (hsrc t ht)
-      apply this.congr_deriv
-      have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-        rw [comp_apply, PartialEquiv.left_inv]
-        exact hsrc t ht
-      rw [this]
-    · intros t ht
-      rw [hv', h]
-      have := hcrv'.hasDerivAt ht (hsrc' t ht)
-      apply this.congr_deriv
-      have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-        rw [comp_apply, PartialEquiv.left_inv]
-        exact hsrc' t ht
-      rw [this]
-
-  -- finally show `EqOn γ γ' _` by composing with the inverse of the local chart around `γ t₀`
-  refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
-  · intros t ht
-    rw [comp_apply, comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
-  · intros t ht
-    rw [comp_apply, comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
-
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
+theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
-    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) :=
-  isIntegralCurveAt_eqOn_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
+    γ =ᶠ[𝓝 t₀] γ' :=
+  isIntegralCurveAt_eventuallyEq_of_contMDiffAt (BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
 variable [T2Space M] {a b : ℝ}
 
@@ -479,8 +450,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht
     revert ht t
-    apply IsClosed.closure_subset
-    apply isClosed_eq
+    apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
@@ -493,18 +463,11 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
       exact hγ'.continuousAt ht
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
-    rw [mem_nhds_iff]
-    obtain ⟨ε, hε, heqon⟩ : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) :=
-      isIntegralCurveAt_eqOn_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
-        (hγ.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
-        (hγ'.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
-        ht₁.1
-    refine ⟨Ioo (max a (t₁ - ε)) (min b (t₁ + ε)),
-      subset_inter
-        (fun t ht ↦ @heqon t <| mem_of_mem_of_subset ht <| Ioo_subset_Ioo (by simp) (by simp))
-        (Ioo_subset_Ioo (by simp) (by simp)),
-      isOpen_Ioo, ?_⟩
-    exact ⟨max_lt ht₁.2.1 (by simp [hε]), lt_min ht₁.2.2 (by simp [hε])⟩
+    have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
+    have heq : γ =ᶠ[𝓝 t₁] γ' := isIntegralCurveAt_eventuallyEq_of_contMDiffAt
+      (hγt _ ht₁.2) hv.contMDiffAt (hγ.isIntegralCurveAt hmem) (hγ'.isIntegralCurveAt hmem) ht₁.1
+    apply (heq.and hmem).mono
+    exact fun _ ht ↦ ht
 
 theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b)
@@ -522,17 +485,15 @@ theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
-  obtain ⟨T, hT, ht⟩ : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
-    refine ⟨|t - t₀| + 1, by positivity, ?_⟩
-    by_cases ht : t - t₀ < 0
-    · rw [abs_of_neg ht]
-      constructor <;> linarith
-    · rw [abs_of_nonneg (not_lt.mp ht)]
-      constructor <;> linarith
-  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff
-    (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ ↦ hγt t) hv
+  obtain ⟨T, ht₀, ht⟩ : ∃ T, t ∈ Ioo (-T) T ∧ t₀ ∈ Ioo (-T) T := by
+    obtain ⟨T, hT₁, hT₂⟩ := exists_abs_lt t
+    obtain ⟨hT₂, hT₃⟩ := abs_lt.mp hT₂
+    obtain ⟨S, hS₁, hS₂⟩ := exists_abs_lt t₀
+    obtain ⟨hS₂, hS₃⟩ := abs_lt.mp hS₂
+    exact ⟨T + S, by constructor <;> constructor <;> linarith⟩
+  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht (fun t _ ↦ hγt t) hv
     ((hγ.isIntegralCurveOn _).mono  (subset_univ _))
-    ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht
+    ((hγ'.isIntegralCurveOn _).mono (subset_univ _)) h ht₀
 
 theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
