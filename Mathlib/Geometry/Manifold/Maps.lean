@@ -17,7 +17,6 @@ and prove their various relations and basic properties.
 * `Submersion`: a smooth submersion (not assumed to be surjective)
 * `OpenSmoothEmbedding`, `SmoothEmbedding`: (open) smooth embeddings
 
-
 ## Main results
 * `IsLocalDiffeomorph.toImmersion`: a `C^n` local diffeomorphism (`n≥1`) is an immersion
 * `IsLocalDiffeomorph.toSubmersion`: a `C^n` local diffeomorphism (`n≥1`) is a submersion
@@ -37,12 +36,13 @@ and prove their various relations and basic properties.
 * `SmoothEmbedding.toInjImmersion`: smooth embeddings are injective immersions
 
 ## TODO
+- simple things: `DFunLike` instance; id is all of these; composition of them is one
 - A submersion has open range (by the inverse function theorem).
 - `SmoothEmbedding.toDiffeomorphRange`: a smooth embedding is a diffeomorphism to its range
   (this requires submanifolds to *state*)
 
 ## Implementation notes
-- design decision: bundled (vs unbundled, like sphere-eversion's Immersion)
+- design decision: structure (vs definition, like sphere-eversion's Immersion)
 - omit differentiability for immersions, following sphere-eversion?
   (probably not: at best provide a constructor omitting this)
 - smooth embeddings don't assume smoothness of the inverse; this is automatic in finite dimension
@@ -131,8 +131,17 @@ variable {I I'}
 lemma IsLocalDiffeomorphAt.of_bijective_differential {x : M} (hf : ContMDiff I I' n f)
     (h : Bijective (mfderiv I I' f x)) : IsLocalDiffeomorphAt I I' n f x := sorry
 
+/-- A submersion is an open map. -/
+lemma Submersion.isOpenMap (h : Submersion I I' f n) : IsOpenMap f := by
+  -- a submersion is locally a projection
+  -- (this will be the general definition of submersions; this step links these definitions)
+  -- projections are open maps (kinda in mathlib already: `FiberBundle.isOpenMap_proj`)
+  -- being an open map is a local property (essentially in mathlib as `isOpenMap_iff_nhds_le`)
+  sorry
+
 /-- A submersion has open range. -/
-lemma Submersion.open_range (h : Submersion I I' f n) : IsOpen (range f) := sorry
+lemma Submersion.open_range (h : Submersion I I' f n) : IsOpen (range f) :=
+  h.isOpenMap.isOpen_range
 
 /-- A proper submersion into a connected manifold is surjective. -/
 lemma Submersion.surjective_of_proper (h : Submersion I I' f n) (hprop : IsProperMap f)
@@ -178,6 +187,10 @@ lemma Diffeomorph.toOpenSmoothEmbedding (h : Diffeomorph I I' M M' n) (hn : 1 �
   induced := h.toHomeomorph.inducing.induced
   inj := h.toHomeomorph.injective
   open_range := h.toHomeomorph.isOpenMap.isOpen_range
+
+-- covering lemma `ContinuousLinearEquiv.toOpenSmoothEmbedding` in sphere-eversion
+example : (e : E ≃L[𝕜] E') : OpenSmoothEmbedding 𝓘(𝕜, E) E 𝓘(𝕜, E') E' :=
+  e.toDiffeomorph.toOpenSmoothEmbedding
 
 /-- If `f` is both an immersion and submersion, it is a local diffeomorphism. -/
 theorem IsLocalDiffeomorph.of_immersion_submersion (h : Immersion I I' f n)
@@ -226,7 +239,8 @@ local instance (x : M) : NormedSpace 𝕜 (TangentSpace I x) := instE'
   TODO: using invariance of domain, remove the equi-dimensionality assumption! -/
 def diffeomorph_of_surjective [ifin: FiniteDimensional 𝕜 E] [ifin': FiniteDimensional 𝕜 E']
     (h : SmoothEmbedding I I' f n) (hf : Surjective f)
-    (hrank : FiniteDimensional.finrank 𝕜 E = FiniteDimensional.finrank 𝕜 E') : Diffeomorph I I' M M' n := by
+    (hrank : FiniteDimensional.finrank 𝕜 E = FiniteDimensional.finrank 𝕜 E') :
+  Diffeomorph I I' M M' n := by
   -- we follow Lee, Proposition 5.5.7 (but avoid passing to local charts)
   suffices h' : IsLocalDiffeomorph I I' n f from
     IsLocalDiffeomorph.diffeomorph_of_bijective h' ⟨h.toEmbedding.inj, hf⟩
