@@ -1,4 +1,5 @@
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Units
+import Mathlib.Data.Nat.Basic
 import Std.Tactic.NormCast
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
@@ -221,10 +222,8 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
--- [todo] currently this test breaks.
--- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by norm_cast
+example : (AddUnits.mkOfAddEqZero 0 0 (by simp) : ℕ) = (AddUnits.mkOfAddEqZero 0 0 (by simp) : ℕ) :=
+  by norm_cast
 
 section
 
