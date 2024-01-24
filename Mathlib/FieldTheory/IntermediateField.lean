@@ -374,7 +374,6 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
-<<<<<<< HEAD
 /-- More general form of `IntermediateField.algebra`. -/
 def algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
     [IsScalarTower K' K L] :
