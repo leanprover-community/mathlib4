@@ -167,7 +167,7 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
   id_mem' : PartialHomeomorph.refl H ∈ members
   locality' : ∀ e : PartialHomeomorph H H,
     (∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ members) → e ∈ members
-  eq_on_source' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
+  mem_of_eqOnSource' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
 #align structure_groupoid StructureGroupoid
 
 variable [TopologicalSpace H]
@@ -198,8 +198,8 @@ instance : Inf (StructureGroupoid H) :=
         refine And.intro hs.left (And.intro hs.right.left ?_)
       · exact hs.right.right.left
       · exact hs.right.right.right)
-    (eq_on_source' := fun e e' he hee' =>
-      ⟨G.eq_on_source' e e' he.left hee', G'.eq_on_source' e e' he.right hee'⟩)⟩
+    (mem_of_eqOnSource' := fun e e' he hee' =>
+      ⟨G.mem_of_eqOnSource' e e' he.left hee', G'.mem_of_eqOnSource' e e' he.right hee'⟩)⟩
 
 instance : InfSet (StructureGroupoid H) :=
   ⟨fun S => StructureGroupoid.mk
@@ -223,10 +223,10 @@ instance : InfSet (StructureGroupoid H) :=
       intro x hex
       rcases he x hex with ⟨s, hs⟩
       exact ⟨s, ⟨hs.left, ⟨hs.right.left, hs.right.right i hi⟩⟩⟩)
-    (eq_on_source' := by
+    (mem_of_eqOnSource' := by
       simp only [mem_iInter]
       intro e e' he he'e
-      exact fun i hi => i.eq_on_source' e e' (he i hi) he'e)⟩
+      exact fun i hi => i.mem_of_eqOnSource' e e' (he i hi) he'e)⟩
 
 theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
     (he : e ∈ G) (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
@@ -247,10 +247,10 @@ theorem StructureGroupoid.locality (G : StructureGroupoid H) {e : PartialHomeomo
   G.locality' e h
 #align structure_groupoid.locality StructureGroupoid.locality
 
-theorem StructureGroupoid.eq_on_source (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
+theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
     (he : e ∈ G) (h : e' ≈ e) : e' ∈ G :=
-  G.eq_on_source' e e' he h
-#align structure_groupoid.eq_on_source StructureGroupoid.eq_on_source
+  G.mem_of_eqOnSource' e e' he h
+#align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
 instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
@@ -308,7 +308,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       · exfalso
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
-  eq_on_source' e e' he he'e := by
+  mem_of_eqOnSource' e e' he he'e := by
     cases' he with he he
     · left
       have : e = e' := by
@@ -379,7 +379,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
         convert hs.2 using 1
         dsimp [PartialHomeomorph.restr]
         rw [s_open.interior_eq]
-  eq_on_source' e e' he ee' := by
+  mem_of_eqOnSource' e e' he ee' := by
     constructor
     · apply PG.congr e'.open_source ee'.2
       simp only [ee'.1, he.1]
@@ -405,11 +405,11 @@ theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
   exact ⟨h _ _ he.1, h _ _ he.2⟩
 #align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
 
-theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : PartialHomeomorph H H}
+theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : PartialHomeomorph H H}
     (he' : e ≈ e') (he : PG.property e e.source) : PG.property e' e'.source := by
   rw [← he'.1]
   exact PG.congr e.open_source he'.eqOn.symm he
-#align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eq_on_source
+#align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eqOnSource
 
 /-- The pregroupoid of all partial maps on a topological space `H`. -/
 @[reducible]
@@ -489,7 +489,7 @@ def idRestrGroupoid : StructureGroupoid H where
       rw [hs.interior_eq]
       exact hxs
     simpa only [mfld_simps] using PartialHomeomorph.EqOnSource.eqOn hes' hes
-  eq_on_source' := by
+  mem_of_eqOnSource' := by
     rintro e e' ⟨s, hs, hse⟩ hee'
     exact ⟨s, hs, Setoid.trans hee' hse⟩
 #align id_restr_groupoid idRestrGroupoid
@@ -515,7 +515,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
   · intro _i
     apply StructureGroupoid.le_iff.mpr
     rintro e ⟨s, hs, hes⟩
-    refine' G.eq_on_source _ hes
+    refine' G.mem_of_eqOnSource _ hes
     convert closedUnderRestriction' G.id_mem hs
     -- Porting note: was
     -- change s = _ ∩ _
@@ -618,6 +618,16 @@ theorem chart_source_mem_nhds (x : M) : (chartAt H x).source ∈ 𝓝 x :=
 theorem chart_target_mem_nhds (x : M) : (chartAt H x).target ∈ 𝓝 (chartAt H x x) :=
   (chartAt H x).open_target.mem_nhds <| mem_chart_target H x
 #align chart_target_mem_nhds chart_target_mem_nhds
+
+variable (M) in
+@[simp]
+theorem iUnion_source_chartAt : (⋃ x : M, (chartAt H x).source) = (univ : Set M) :=
+  eq_univ_iff_forall.mpr fun x ↦ mem_iUnion.mpr ⟨x, mem_chart_source H x⟩
+
+theorem ChartedSpace.isOpen_iff (s : Set M) :
+    IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
+  rw [isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source) (iUnion_source_chartAt H M)]
+  simp only [(chartAt H _).isOpen_image_iff_of_subset_source (inter_subset_left _ _)]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
 Especially useful for working with `BasicSmoothVectorBundleCore`. -/
@@ -1031,7 +1041,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
     _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by rw [trans_assoc]
     _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
     _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
-  exact G.eq_on_source C (Setoid.symm D)
+  exact G.mem_of_eqOnSource C (Setoid.symm D)
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
 
 variable (G)
@@ -1095,7 +1105,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
       intro e' e'' he' he''
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
-      refine' G.eq_on_source _ e.symm_trans_self
+      refine' G.mem_of_eqOnSource _ e.symm_trans_self
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
 #align local_homeomorph.singleton_has_groupoid PartialHomeomorph.singleton_hasGroupoid
@@ -1153,7 +1163,8 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt H x) (chartAt H x'))
+    refine' G.mem_of_eqOnSource _
+      (subtypeRestr_symm_trans_subtypeRestr s (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
@@ -1267,7 +1278,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
           by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [feq, _root_.refl]
-      have : F₂ ∈ G := G.eq_on_source A (Setoid.symm this)
+      have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
 #align structomorph.trans Structomorph.trans
 

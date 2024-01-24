@@ -3,10 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"ef95945cd48c932c9e034872bd25c3c220d9c946"
 
@@ -1658,14 +1658,10 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   refine'
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨_, _⟩, fun H =>
       hg.continuous.comp_aestronglyMeasurable H⟩
-  · let G : β → range g := codRestrict g (range g) mem_range_self
+  · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by
-          convert isClosed_univ (α := ↥(range g))
-          apply eq_univ_of_forall
-          rintro ⟨-, ⟨x, rfl⟩⟩
-          exact mem_range_self x }
+        closed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩

@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
 /-!
