@@ -16,11 +16,16 @@ import Mathlib.MeasureTheory.Order.Lattice
 measurable function, group, lattice operation
 -/
 
-variable {R : Type*} [Lattice R] [Group R] [MeasurableSpace R] [MeasurableSup₂ R]
+variable {R S : Type*} [Lattice R] [Group R] [MeasurableSpace R] [MeasurableSup₂ R]
+  [Lattice S] [Group S] [MeasurableSpace S] {f : S → R} (hf : Measurable f)
 
 @[to_additive (attr := measurability)]
-theorem measurable_oneLePart : Measurable fun x : R ↦ oneLePart x := by
-  refine Measurable.sup measurable_id' measurable_const
+theorem measurable_oneLePart : Measurable fun x : R ↦ oneLePart x :=
+  Measurable.sup measurable_id' measurable_const
+
+@[to_additive (attr := measurability)]
+theorem measurable.oneLePart  : Measurable fun x ↦ oneLePart (f x) :=
+  Measurable.comp measurable_oneLePart hf
 
 variable [MeasurableInv R]
 
@@ -29,5 +34,13 @@ theorem measurable_mabs : Measurable fun x : R ↦ mabs x :=
   Measurable.sup measurable_id' measurable_inv
 
 @[to_additive (attr := measurability)]
-theorem measurable_leOnePart : Measurable fun x : R ↦ leOnePart x := by
-  refine Measurable.sup measurable_inv measurable_const
+theorem Measurable.mabs : Measurable fun x ↦ mabs (f x) :=
+  Measurable.comp measurable_mabs hf
+
+@[to_additive (attr := measurability)]
+theorem measurable_leOnePart : Measurable fun x : R ↦ leOnePart x :=
+  Measurable.sup measurable_inv measurable_const
+
+@[to_additive (attr := measurability)]
+theorem Measurable.leOnePart : Measurable fun x ↦ leOnePart (f x) :=
+  Measurable.comp measurable_leOnePart hf
