@@ -72,7 +72,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
     · intro x hx y hy hxy
       obtain ⟨y', hy', rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
       rw [g'g _] at hxy
-      exact hy' ⟨x, hx, hxy⟩
+      exact hy' ⟨x, hx, hxy.symm⟩
   exact ⟨h, ‹Injective h›, ‹Surjective h›⟩
 #align function.embedding.schroeder_bernstein Function.Embedding.schroeder_bernstein
 

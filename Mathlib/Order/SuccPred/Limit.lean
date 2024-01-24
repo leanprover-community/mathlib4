@@ -123,9 +123,9 @@ theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun 
   h b (CovBy.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
-theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
+theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ a = succ b := by
   rw [not_isSuccLimit_iff_exists_covBy]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, _⟩
+  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba).symm⟩, _⟩
   rintro ⟨h, rfl⟩
   exact covBy_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_isSuccLimit_iff
@@ -165,7 +165,7 @@ noncomputable def isSuccLimitRecOn (b : α) (hs : ∀ a, ¬IsMax a → C (succ a
   by_cases hb : IsSuccLimit b
   · exact hl b hb
   · have H := Classical.choose_spec (not_isSuccLimit_iff.1 hb)
-    rw [← H.2]
+    rw [H.2]
     exact hs _ H.1
 #align order.is_succ_limit_rec_on Order.isSuccLimitRecOn
 
@@ -180,9 +180,9 @@ theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ 
   have H := Classical.choose_spec (not_isSuccLimit_iff.1 hb')
   rw [isSuccLimitRecOn]
   simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
-  congr 1 <;> first |
-    exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
-    exact proof_irrel_heq H.left hb
+  congr 1
+  · exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right.symm
+  · exact proof_irrel_heq H.left hb
 #align order.is_succ_limit_rec_on_succ' Order.isSuccLimitRecOn_succ'
 
 section NoMaxOrder
@@ -200,7 +200,7 @@ theorem isSuccLimit_iff_succ_ne : IsSuccLimit a ↔ ∀ b, succ b ≠ a :=
 #align order.is_succ_limit_iff_succ_ne Order.isSuccLimit_iff_succ_ne
 
 theorem not_isSuccLimit_iff' : ¬IsSuccLimit a ↔ a ∈ range (@succ α _ _) := by
-  simp_rw [isSuccLimit_iff_succ_ne, not_forall, not_ne_iff]
+  simp_rw [isSuccLimit_iff_succ_ne, not_forall, not_ne_iff, eq_comm]
   rfl
 #align order.not_is_succ_limit_iff' Order.not_isSuccLimit_iff'
 
@@ -337,7 +337,7 @@ theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun 
   h b (CovBy.pred_eq hba)
 #align order.is_pred_limit_of_pred_ne Order.isPredLimit_of_pred_ne
 
-theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
+theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ a = pred b := by
   rw [← isSuccLimit_toDual_iff]
   exact not_isSuccLimit_iff
 #align order.not_is_pred_limit_iff Order.not_isPredLimit_iff

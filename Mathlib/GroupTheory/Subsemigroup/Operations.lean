@@ -231,7 +231,7 @@ theorem coe_map (f : M →ₙ* N) (S : Subsemigroup M) : (S.map f : Set N) = f '
 #align add_subsemigroup.coe_map AddSubsemigroup.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : M →ₙ* N} {S : Subsemigroup M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+theorem mem_map {f : M →ₙ* N} {S : Subsemigroup M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, y = f x :=
   mem_image _ _ _
 #align subsemigroup.mem_map Subsemigroup.mem_map
 #align add_subsemigroup.mem_map AddSubsemigroup.mem_map
@@ -450,7 +450,7 @@ variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Surjective f)
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
-    mem_map.2 ⟨y, by simp [hy, h]⟩
+    mem_map.2 ⟨y, by simp [← hy, h]⟩
 #align subsemigroup.gi_map_comap Subsemigroup.giMapComap
 #align add_subsemigroup.gi_map_comap AddSubsemigroup.giMapComap
 
@@ -762,7 +762,7 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 #align add_hom.coe_srange AddHom.coe_srange
 
 @[to_additive (attr := simp)]
-theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
+theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, y = f x :=
   Iff.rfl
 #align mul_hom.mem_srange MulHom.mem_srange
 #align add_hom.mem_srange AddHom.mem_srange
@@ -981,7 +981,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
     right_inv := fun x =>
       Subtype.ext <|
         let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
-        show f (g x) = x by rw [← hx', h x'] }
+        show f (g x) = x by rw [hx', h x'] }
 #align mul_equiv.of_left_inverse MulEquiv.ofLeftInverse
 #align add_equiv.of_left_inverse AddEquiv.ofLeftInverse
 #align mul_equiv.of_left_inverse_apply MulEquiv.ofLeftInverse_apply

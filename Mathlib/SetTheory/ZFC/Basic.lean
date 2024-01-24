@@ -699,7 +699,7 @@ instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
     rintro ⟨y, hb⟩
     induction y using Quotient.inductionOn
     cases' hb with i h
-    exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
+    exact ⟨i, Subtype.coe_injective (Quotient.sound h)⟩
 #align Set.small_to_set ZFSet.small_toSet
 
 /-- A nonempty set is one that contains some element. -/
@@ -1204,10 +1204,10 @@ theorem image.mk :
 @[simp]
 theorem mem_image :
     ∀ {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x y : ZFSet.{u}},
-      y ∈ @image f H x ↔ ∃ z ∈ x, f z = y
+      y ∈ @image f H x ↔ ∃ z ∈ x, y = f z
   | _, ⟨_⟩, x, y =>
     Quotient.inductionOn₂ x y fun ⟨_, A⟩ _ =>
-      ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, Eq.symm <| Quotient.sound ya⟩, fun ⟨_, hz, e⟩ =>
+      ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, Quotient.sound ya⟩, fun ⟨_, hz, e⟩ =>
         e ▸ image.mk _ _ hz⟩
 #align Set.mem_image ZFSet.mem_image
 
@@ -1215,7 +1215,7 @@ theorem mem_image :
 theorem toSet_image (f : ZFSet → ZFSet) [H : Definable 1 f] (x : ZFSet) :
     (image f x).toSet = f '' x.toSet := by
   ext
-  simp
+  simp only [mem_toSet, mem_image, Set.mem_image]
 #align Set.to_set_image ZFSet.toSet_image
 
 /-- The range of an indexed family of sets. The universes allow for a more general index type
@@ -1230,10 +1230,11 @@ theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
-      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      refine ⟨z.down, (Quotient.eq_mk_iff_out.2 ?_).symm⟩
+      exact hz.symm
     · rintro ⟨z, hz⟩
       use ULift.up z
-      simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
+      simpa only [mk_func, Function.comp_apply, hz] using PSet.Equiv.symm (Quotient.mk_out y)
 #align Set.mem_range ZFSet.mem_range
 
 @[simp]
@@ -1341,7 +1342,7 @@ noncomputable def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
 
 @[simp]
 theorem mem_map {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
-    y ∈ map f x ↔ ∃ z ∈ x, pair z (f z) = y :=
+    y ∈ map f x ↔ ∃ z ∈ x, y = pair z (f z) :=
   mem_image
 #align Set.mem_map ZFSet.mem_map
 
@@ -1350,7 +1351,7 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSe
   ⟨f z, image.mk _ _ zx, fun y yx => by
     let ⟨w, _, we⟩ := mem_image.1 yx
     let ⟨wz, fy⟩ := pair_injective we
-    rw [← fy, wz]⟩
+    rw [fy, wz]⟩
 #align Set.map_unique ZFSet.map_unique
 
 @[simp]
@@ -1753,7 +1754,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : Z
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
-        rw [← fw, wy], fun e => by
+        rw [fw, wy], fun e => by
         subst e
         exact ⟨_, h, rfl⟩⟩
 #align Set.map_fval ZFSet.map_fval

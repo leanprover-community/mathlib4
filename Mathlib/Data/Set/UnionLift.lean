@@ -86,7 +86,7 @@ theorem preimage_iUnionLift (t : Set β) :
     refine fun h => ⟨i, ⟨x, hi⟩, ?_, rfl⟩
     rwa [iUnionLift_of_mem x hi] at h
   · rintro ⟨i, ⟨y, hi⟩, h, hxy⟩
-    obtain rfl : y = x := congr_arg Subtype.val hxy
+    obtain rfl : x = y := congr_arg Subtype.val hxy
     rwa [iUnionLift_of_mem x hi]
 
 /-- `iUnionLift_const` is useful for proving that `iUnionLift` is a homomorphism

@@ -400,7 +400,7 @@ theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
     x ∩ f ⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) := by
   ext a
   simp only [minimals, mem_inter_iff, mem_image, and_imp, forall_exists_index,
-    forall_apply_eq_imp_iff₂, preimage_setOf_eq, mem_setOf_eq, mem_preimage]
+    forall_eq_apply_imp_iff₂, preimage_setOf_eq, mem_setOf_eq, mem_preimage]
   exact ⟨fun ⟨hax,⟨_,hay⟩,h2⟩ ↦ ⟨⟨hax, hay⟩, fun a₁ ha₁ ha₁y ha₁a ↦
           (hf hax ha₁).mpr (h2 _ ha₁ ha₁y ((hf ha₁ hax).mp ha₁a))⟩ ,
         fun ⟨⟨hax,hay⟩,h⟩ ↦ ⟨hax, ⟨⟨_, hax, rfl⟩, hay⟩, fun a' ha' ha'y hsa' ↦

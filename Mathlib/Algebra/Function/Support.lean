@@ -87,9 +87,9 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
 theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
-    by_cases hf : ∃ a, f a = x
+    by_cases hf : ∃ a, x = f a
     · rw [extend, dif_pos hf, ← nmem_mulSupport]
-      rw [← Classical.choose_spec hf] at hfg
+      rw [Classical.choose_spec hf] at hfg
       exact fun hg ↦ hfg ⟨_, hg, rfl⟩
     · rw [extend_apply' _ _ _ hf]; rfl
 

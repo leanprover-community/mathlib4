@@ -3417,7 +3417,7 @@ theorem toFinset_cons : toFinset (a :: l) = insert a (toFinset l) :=
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
   rintro ⟨⟨l⟩, hl⟩ _
-  exact ⟨l, hl, (toFinset_eq hl).symm⟩
+  exact ⟨l, hl, toFinset_eq hl⟩
 #align list.to_finset_surj_on List.toFinset_surj_on
 
 theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>

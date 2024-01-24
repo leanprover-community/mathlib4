@@ -179,7 +179,7 @@ theorem isClosed_iff_closure_le : c.IsClosed x ↔ c x ≤ x :=
 
 /-- The set of closed elements for `c` is exactly its range. -/
 theorem setOf_isClosed_eq_range_closure : {x | c.IsClosed x} = Set.range c := by
-  ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
+  ext x; exact ⟨fun hx ↦ ⟨x, hx.closure_eq.symm⟩, by rintro ⟨y, rfl⟩; exact c.isClosed_closure _⟩
 #align closure_operator.closed_eq_range_close ClosureOperator.setOf_isClosed_eq_range_closure
 
 theorem le_closure_iff : x ≤ c y ↔ c x ≤ c y :=

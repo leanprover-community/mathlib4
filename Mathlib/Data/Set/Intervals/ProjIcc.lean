@@ -134,23 +134,25 @@ theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   apply projIcc_of_mem
 #align set.proj_Icc_coe Set.projIcc_val
 
-theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
+theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ =>
+  ⟨x, x.2, (projIci_coe x).symm⟩
 #align set.proj_Ici_surj_on Set.projIci_surjOn
 
-theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2, projIic_coe x⟩
+theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ =>
+  ⟨x, x.2, (projIic_coe x).symm⟩
 #align set.proj_Iic_surj_on Set.projIic_surjOn
 
 theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
-  ⟨x, x.2, projIcc_val h x⟩
+  ⟨x, x.2, (projIcc_val h x).symm⟩
 #align set.proj_Icc_surj_on Set.projIcc_surjOn
 
-theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
+theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, (projIci_coe x).symm⟩
 #align set.proj_Ici_surjective Set.projIci_surjective
 
-theorem projIic_surjective : Surjective (projIic b) := fun x => ⟨x, projIic_coe x⟩
+theorem projIic_surjective : Surjective (projIic b) := fun x => ⟨x, (projIic_coe x).symm⟩
 #align set.proj_Iic_surjective Set.projIic_surjective
 
-theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
+theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, (projIcc_val h x).symm⟩
 #align set.proj_Icc_surjective Set.projIcc_surjective
 
 @[simp]
