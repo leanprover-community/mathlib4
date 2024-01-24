@@ -308,9 +308,18 @@ section LeftCancelMonoid
 variable [LeftCancelMonoid G]
 
 @[to_additive]
+theorem ExponentExists.of_finite [Finite G] : Monoid.ExponentExists G := by
+  let _inst := Fintype.ofFinite G
+  simp only [Monoid.ExponentExists]
+  refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
+  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (orderOf_pos x).ne'
+  · rw [← orderOf_dvd_iff_pow_eq_one, lcm_order_eq_exponent]
+    exact order_dvd_exponent g
+
+@[to_additive]
 theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 := by
-  cases nonempty_fintype G
-  simpa [← lcm_order_eq_exponent, Finset.lcm_eq_zero_iff] using fun x => (orderOf_pos x).ne'
+  simp_rw [exponent, dif_pos ExponentExists.of_finite, Ne, Nat.find_eq_zero,
+    lt_self_iff_false, false_and, not_false_eq_true]
 #align monoid.exponent_ne_zero_of_finite Monoid.exponent_ne_zero_of_finite
 #align add_monoid.exponent_ne_zero_of_finite AddMonoid.exponent_ne_zero_of_finite
 
