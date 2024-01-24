@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Data.Polynomial.Module
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.CompleteSublattice
+import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.SimpleModule
 
 /-!
