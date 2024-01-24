@@ -28,9 +28,9 @@ algebraic and lattice structure can be found in `Data.ENNReal.Real`.
 This file proves many of the order properties of `ℝ≥0∞`, with the exception of the ways those relate
 to the algebraic structure, which are included in `Data.ENNReal.Operations`.
 This file also defines inversion and division: this includes `Inv` and `Div` instances on `ℝ≥0∞`
-making it into a `DivInvOneMonoid`. As a consequence of being a `DivInvOneMonoid`,
-`ℝ≥0∞` inherits a power operation with integer exponent: this and other properties is shown in
-`Data.ENNReal.Inv`.
+making it into a `DivInvOneMonoid`.
+As a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer
+exponent: this and other properties is shown in `Data.ENNReal.Inv`.
 
 
 ## Main definitions
@@ -53,6 +53,13 @@ making it into a `DivInvOneMonoid`. As a consequence of being a `DivInvOneMonoid
 
   The addition and multiplication defined this way together with `0 = ↑0` and `1 = ↑1` turn
   `ℝ≥0∞` into a canonically ordered commutative semiring of characteristic zero.
+
+  - `a⁻¹` is defined as `Inf {b | 1 ≤ a * b}`. This way we have `(↑p)⁻¹ = ↑(p⁻¹)` for
+    `p : ℝ≥0`, `p ≠ 0`, `0⁻¹ = ∞`, and `∞⁻¹ = 0`.
+  - `a / b` is defined as `a * b⁻¹`.
+
+  This inversion and division include `Inv` and `Div` instances on `ℝ≥0∞`,
+  making it into a `DivInvOneMonoid`. Further properties of these are shown in `Data.ENNReal.Inv`.
 
 * Coercions to/from other types:
 

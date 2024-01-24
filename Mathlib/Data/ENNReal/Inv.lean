@@ -10,16 +10,11 @@ import Mathlib.Data.ENNReal.Operations
 /-!
 # Results about division in extended non-negative reals
 
-This file places `Inv` and `Div` instances on `ℝ≥0∞` making it into a `DivInvOneMonoid` and
-establishes basic properties related to these operations. As a consequence of being a
-`DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer exponent.
+This file establishes basic properties related to the inversion and division operations on `ℝ≥0∞`.
+For instance, as a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation
+with integer exponent.
 
-## Main definitions
-
-  - `a⁻¹` is defined as `Inf {b | 1 ≤ a * b}`. This way we have `(↑p)⁻¹ = ↑(p⁻¹)` for
-    `p : ℝ≥0`, `p ≠ 0`, `0⁻¹ = ∞`, and `∞⁻¹ = 0`.
-
-  - `a / b` is defined as `a * b⁻¹`.
+## Main results
 
 A few order isomorphisms are worthy of mention:
 
