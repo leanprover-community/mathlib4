@@ -951,9 +951,9 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
 #align first_order.language.equiv.comp_assoc FirstOrder.Language.Equiv.comp_assoc
 
 theorem injective_comp (h : N ≃[L] P) :
-  Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
-    intro f g hfg
-    ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
+    Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
 
 @[simp]
 theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
@@ -976,17 +976,17 @@ theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
 @[simp]
 theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
     f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
-  rw [←comp_toEmbedding, symm_comp_self, refl_toEmbedding]
+  rw [← comp_toEmbedding, symm_comp_self, refl_toEmbedding]
 
 @[simp]
 theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
     f.toEmbedding.comp f.symm.toEmbedding = Embedding.refl L N := by
-  rw [←comp_toEmbedding, self_comp_symm, refl_toEmbedding]
+  rw [← comp_toEmbedding, self_comp_symm, refl_toEmbedding]
 
 @[simp]
 theorem symm_comp_self_toHom (f : M ≃[L] N) :
     f.symm.toHom.comp f.toHom = Hom.id L M := by
-  rw [←comp_toHom, symm_comp_self, refl_toHom]
+  rw [← comp_toHom, symm_comp_self, refl_toHom]
 
 @[simp]
 theorem self_comp_symm_toHom (f : M ≃[L] N) :
@@ -998,10 +998,10 @@ theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.c
   rfl
 
 theorem comp_right_injective (h : M ≃[L] N) :
-  Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
-    intro f g hfg
-    convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
-      rw [comp_assoc, self_comp_symm, comp_refl]
+    Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
+  intro f g hfg
+  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+    rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]
 theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=

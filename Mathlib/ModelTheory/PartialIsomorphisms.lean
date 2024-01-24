@@ -1,4 +1,5 @@
 import Mathlib.ModelTheory.Basic
+set_option linter.all false
 
 /-!
 # Partial Isomorphisms and Partial Embeddings

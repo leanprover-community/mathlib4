@@ -491,7 +491,7 @@ noncomputable def Equiv_iSup :
     (iSup S : L.Substructure M) := by
   have liftInclusion_in_sup : ∀ x, liftInclusion S x ∈ (⨆ i, S i) := by
     simp only [← rangeLiftInclusion, Hom.mem_range, Embedding.coe_toHom]
-    intro x ; use x
+    intro x; use x
   let F := Embedding.codRestrict (⨆ i, S i) _ liftInclusion_in_sup
   have F_surj : Function.Surjective F := by
     rintro ⟨m, hm⟩
@@ -625,9 +625,9 @@ noncomputable def definedAtLeft
       exact Substructure.FG.sup f.property (Substructure.fg_closure_singleton _)
     use ⟨dom_restrict g closure_le_dom, closure_fg⟩
     constructor
-    . simp only [union_singleton]
+    · simp only [union_singleton]
       exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
-    . apply le_dom_restrict
+    · apply le_dom_restrict
       rw [Substructure.closure_union]
       simp only [Substructure.closure_eq, ge_iff_le,
         Substructure.closure_le, singleton_subset_iff, le_sup_left]
@@ -649,9 +649,9 @@ noncomputable def definedAtRight
       exact Substructure.FG.sup ((fg_iff f.val).1 f.prop) (Substructure.fg_closure_singleton _)
     use ⟨cod_restrict g closure_le_cod, (cod_restrict g closure_le_cod).fg_iff.2 closure_fg⟩
     constructor
-    . simp only [union_singleton]
+    · simp only [union_singleton]
       exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl n
-    . apply le_cod_restrict
+    · apply le_cod_restrict
       rw [Substructure.closure_union]
       simp only [Substructure.closure_eq, ge_iff_le,
         Substructure.closure_le, singleton_subset_iff, le_sup_left]

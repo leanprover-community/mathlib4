@@ -1073,7 +1073,8 @@ structure SubEquivalence  where
   equiv : sub_dom ≃[L] sub_cod
 
 @[inherit_doc]
-scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N => FirstOrder.Language.Substructure.SubEquivalence L M N
+scoped[FirstOrder] notation:25 M " ≃ₚ[" L "] " N =>
+  FirstOrder.Language.Substructure.SubEquivalence L M N
 
 namespace SubEquivalence
 
@@ -1142,7 +1143,7 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
       by intro x; apply (subtype _).inj'; rwa [equiv_inclusion_apply]⟩
   · rintro ⟨le_dom, le_cod, h_eq⟩
     rw [le_def]
-    exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _ ; rw [← h_eq]; rfl⟩
+    exact ⟨le_dom, by ext; change subtype _ (g.equiv _) = _; rw [← h_eq]; rfl⟩
 
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
@@ -1231,7 +1232,8 @@ theorem le_cod_restrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.sub
     (hg : A ≤ g.sub_cod) (hfg : f ≤ g) : f ≤ g.cod_restrict hg :=
   (symm_le_iff _ _).1 (le_dom_restrict f.symm g.symm hf hg (monotone_symm hfg))
 
-/-- Given a subequivalence which has the whole structure as domain, returns the corresponding embedding. -/
+/-- Given a subequivalence which has the whole structure as domain,
+returns the corresponding embedding. -/
 noncomputable def dom_top_toEmbedding {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) : M ↪[L] N :=
   (subtype _).comp ((h ▸ f.equiv.toEmbedding).comp Substructure.topEquiv.symm.toEmbedding)
 
