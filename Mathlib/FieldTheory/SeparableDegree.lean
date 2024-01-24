@@ -37,11 +37,11 @@ This file contains basics about the separable degree of a field extension.
   closure of `E`, as a natural number. It is zero if `Field.Emb F E` is not finite.
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
 
-  **Remark:** the infinite separable degree `Field.sepDegree F E` for a general algebraic
-  extension `E / F` is defined to be the degree of `L / F`, where `L` is the (relative) separable
-  closure `separableClosure F E` of `E / F`, which is not defined in this file yet. Later we
-  will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
-  definitions coincide.
+  **Remark:** the `Cardinal`-valued, potentially infinite separable degree `Field.sepDegree F E`
+  for a general algebraicextension `E / F` is defined to be the degree of `L / F`, where `L` is
+  the (relative) separable closure `separableClosure F E` of `E / F`, which is not defined in
+  this file yet. Later we will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite,
+  then these two definitions coincide.
 
 - `Polynomial.natSepDegree`: the separable degree of a polynomial is a natural number,
   defined to be the number of distinct roots of it over its splitting field.
