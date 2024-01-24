@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.MorphismProperty
@@ -85,12 +90,15 @@ lemma epi_iff_isPushout {X Y : C} (f : X ⟶ Y) : Epi f ↔ IsPushout f f (𝟙 
   · intro hf
     exact (epi_iff_inl_eq_inr hf.isColimit).2 rfl
 
+/-- The condition that a family of functors `F i : C ⥤ D i` reflects isomorphisms. -/
 structure JointlyReflectIsomorphisms : Prop where
   isIso {X Y : C} (f : X ⟶ Y) [∀ i, IsIso ((F i).map f)] : IsIso f
 
+/-- The condition that a family of functors `F i : C ⥤ D i` reflects monomorphisms. -/
 structure JointlyReflectMonomorphisms : Prop where
   mono {X Y : C} (f : X ⟶ Y) [∀ i, Mono ((F i).map f)] : Mono f
 
+/-- The condition that a family of functors `F i : C ⥤ D i` reflects epiomorphisms. -/
 structure JointlyReflectEpimorphisms : Prop where
   epi {X Y : C} (f : X ⟶ Y) [∀ i, Epi ((F i).map f)] : Epi f
 
