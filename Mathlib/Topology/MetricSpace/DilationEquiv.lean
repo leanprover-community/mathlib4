@@ -204,6 +204,20 @@ lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : X ≃ᵢ Y) :
 lemma _root_.IsometryEquiv.toDilationEquiv_ratio (e : X ≃ᵢ Y) : ratio e.toDilationEquiv = 1 := by
   rw [← ratio_toDilation, IsometryEquiv.toDilationEquiv_toDilation, Isometry.toDilation_ratio]
 
+/-- Reinterpret a `DilationEquiv` as a homeomorphism. -/
+def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
+  continuous_toFun := Dilation.toContinuous e
+  continuous_invFun := Dilation.toContinuous e.symm
+  __ := e.toEquiv
+
+@[simp]
+lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
+  rfl
+
+@[simp]
+lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+  rfl
+
 end PseudoEMetricSpace
 
 section PseudoMetricSpace
