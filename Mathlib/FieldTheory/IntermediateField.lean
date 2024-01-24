@@ -374,9 +374,11 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
-/- More general form of `IntermediateField.algebra`.
+/-- More general form of `IntermediateField.algebra`.
 
-This instance should have low priority since it is slow to fail:
+This could be an instance but we don't seem to need it, so it's a `def` for performance reasons.
+
+If this `def` is made an instance, it should have low priority since it is slow to fail:
 before failing, it will cause a search through all `SMul K' K` instances,
 which can quickly get expensive.
 -/

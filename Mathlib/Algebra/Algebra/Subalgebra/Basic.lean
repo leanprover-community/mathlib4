@@ -359,8 +359,15 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
+/- More general form of `Subalgebra.module`.
 
-instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+This could be an instance but we don't seem to need it, so it's a `def` for performance reasons.
+
+If this `def` is made an instance, it should have low priority (e.g. 500) since it is slow to fail:
+before failing, it will cause a search through all `SMul R' R` instances,
+which can quickly get expensive.
+-/
+def module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
     Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
@@ -368,12 +375,15 @@ instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsSc
 instance : Module R S :=
   S.module'
 
+attribute [instance 500] Subalgebra.module' in
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
 /- More general form of `Subalgebra.algebra`.
 
-This instance should have low priority since it is slow to fail:
+This could be an instance but we don't seem to need it, so it's a `def` for performance reasons.
+
+If this `def` is made an instance, it should have low priority (e.g. 500) since it is slow to fail:
 before failing, it will cause a search through all `SMul R' R` instances,
 which can quickly get expensive.
 -/
