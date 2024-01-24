@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Basic
+import Mathlib.Order.WithBot
 
 #align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -42,15 +43,6 @@ variable {α β γ : Type*} {ι ι' : Sort*}
 /-! ### Inverse image -/
 
 
-/-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
-  is the set of `x : α` such that `f x ∈ s`. -/
-def preimage {α : Type u} {β : Type v} (f : α → β) (s : Set β) : Set α :=
-  { x | f x ∈ s }
-#align set.preimage Set.preimage
-
-/-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
-infixl:80 " ⁻¹' " => preimage
-
 section Preimage
 
 variable {f : α → β} {g : β → γ}
@@ -59,11 +51,6 @@ variable {f : α → β} {g : β → γ}
 theorem preimage_empty : f ⁻¹' ∅ = ∅ :=
   rfl
 #align set.preimage_empty Set.preimage_empty
-
-@[simp, mfld_simps]
-theorem mem_preimage {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s :=
-  Iff.rfl
-#align set.mem_preimage Set.mem_preimage
 
 theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x) : f ⁻¹' s = g ⁻¹' s := by
   congr with x
@@ -103,6 +90,7 @@ theorem preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻�
   rfl
 #align set.preimage_diff Set.preimage_diff
 
+open scoped symmDiff in
 @[simp]
 lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
   rfl
@@ -219,27 +207,14 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
-/-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
-infixl:80 " '' " => image
-
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
     y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 
-@[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
-  Iff.rfl
-#align set.mem_image Set.mem_image
-
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl
 #align set.image_eta Set.image_eta
-
-@[mfld_simps]
-theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
-  ⟨_, h, rfl⟩
-#align set.mem_image_of_mem Set.mem_image_of_mem
 
 theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective f) {s : Set α} {a : α} :
     f a ∈ f '' s ↔ a ∈ s :=
@@ -467,6 +442,7 @@ theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f
   exact image_subset f (subset_union_right t s)
 #align set.subset_image_diff Set.subset_image_diff
 
+open scoped symmDiff in
 theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
   (union_subset_union (subset_image_diff _ _ _) <| subset_image_diff _ _ _).trans
     (superset_of_eq (image_union _ _ _))
@@ -478,6 +454,7 @@ theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \
     (subset_image_diff f s t)
 #align set.image_diff Set.image_diff
 
+open scoped symmDiff in
 theorem image_symmDiff (hf : Injective f) (s t : Set α) : f '' s ∆ t = (f '' s) ∆ (f '' t) := by
   simp_rw [Set.symmDiff_def, image_union, image_diff hf]
 #align set.image_symm_diff Set.image_symmDiff
@@ -596,6 +573,12 @@ theorem image_eq_image {f : α → β} (hf : Injective f) : f '' s = f '' t ↔ 
       rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, eq]
 #align set.image_eq_image Set.image_eq_image
 
+theorem subset_image_iff {t : Set β} :
+    t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
+  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right _ _, ?_⟩,
+    fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
+  rwa [image_preimage_inter, inter_eq_left]
+
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine' Iff.symm <| (Iff.intro (image_subset f)) fun h => _
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
@@ -619,11 +602,6 @@ theorem exists_image_iff (f : α → β) (x : Set α) (P : β → Prop) :
   ⟨fun ⟨a, h⟩ => ⟨⟨_, a.prop.choose_spec.1⟩, a.prop.choose_spec.2.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨⟨_, _, a.prop, rfl⟩, h⟩⟩
 #align set.exists_image_iff Set.exists_image_iff
-
-/-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f '' s`. -/
-def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
-  ⟨f p.1, mem_image_of_mem f p.2⟩
-#align set.image_factorization Set.imageFactorization
 
 theorem imageFactorization_eq {f : α → β} {s : Set α} :
     Subtype.val ∘ imageFactorization f s = f ∘ Subtype.val :=
@@ -675,26 +653,6 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
 section Range
 
 variable {f : ι → α} {s t : Set α}
-
-/-- Range of a function.
-
-This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
-and not an arbitrary Sort. -/
-def range (f : ι → α) : Set α :=
-  { x | ∃ y, f y = x }
-#align set.range Set.range
-
-@[simp]
-theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x :=
-  Iff.rfl
-#align set.mem_range Set.mem_range
-
--- Porting note
--- @[simp] `simp` can prove this
-@[mfld_simps]
-theorem mem_range_self (i : ι) : f i ∈ range f :=
-  ⟨i, rfl⟩
-#align set.mem_range_self Set.mem_range_self
 
 theorem forall_range_iff {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 #align set.forall_range_iff Set.forall_range_iff
@@ -1072,10 +1030,6 @@ theorem image_compl_preimage {f : α → β} {s : Set β} : f '' (f ⁻¹' s)ᶜ
   rw [compl_eq_univ_diff, image_diff_preimage, image_univ]
 #align set.image_compl_preimage Set.image_compl_preimage
 
-/-- Any map `f : ι → β` factors through a map `rangeFactorization f : ι → range f`. -/
-def rangeFactorization (f : ι → β) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
-#align set.range_factorization Set.rangeFactorization
-
 theorem rangeFactorization_eq {f : ι → β} : Subtype.val ∘ rangeFactorization f = f :=
   funext fun _ => rfl
 #align set.range_factorization_eq Set.rangeFactorization_eq
@@ -1170,22 +1124,6 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
   -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
   -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
 #align set.range_inclusion Set.range_inclusion
-
-/-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
-noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
-#align set.range_splitting Set.rangeSplitting
-
--- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
-theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
-  x.2.choose_spec
-#align set.apply_range_splitting Set.apply_rangeSplitting
-
-@[simp]
-theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = (↑) := by
-  ext
-  simp only [Function.comp_apply]
-  apply apply_rangeSplitting
-#align set.comp_range_splitting Set.comp_rangeSplitting
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :

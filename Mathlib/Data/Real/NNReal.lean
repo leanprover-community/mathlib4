@@ -6,12 +6,12 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"

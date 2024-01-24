@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 #align_import geometry.manifold.diffeomorph from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
@@ -99,7 +99,7 @@ instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
   inv Φ := Φ.toEquiv.symm
   left_inv Φ := Φ.left_inv
   right_inv Φ := Φ.right_inv
-  coe_injective' _ _ h _ := toEquiv_injective <| FunLike.ext' h
+  coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
 
 /-- Interpret a diffeomorphism as a `ContMDiffMap`. -/
 @[coe]
@@ -160,7 +160,7 @@ theorem toEquiv_inj {h h' : M ≃ₘ^n⟮I, I'⟯ M'} : h.toEquiv = h'.toEquiv �
 
 /-- Coercion to function `λ h : M ≃ₘ^n⟮I, I'⟯ M', (h : M → M')` is injective. -/
 theorem coeFn_injective : Injective ((↑) : (M ≃ₘ^n⟮I, I'⟯ M') → (M → M')) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align diffeomorph.coe_fn_injective Diffeomorph.coeFn_injective
 
 @[ext]

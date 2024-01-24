@@ -281,6 +281,11 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
+/-- If a graph is cliquefree, any graph that embeds into it is also cliquefree. -/
+theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n := by
+  intro h; contrapose h
+  exact not_cliqueFree_of_top_embedding <| f.comp (topEmbeddingOfNotCliqueFree h)
+
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
