@@ -1888,6 +1888,7 @@ import Mathlib.Data.Polynomial.Mirror
 import Mathlib.Data.Polynomial.Module
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
+import Mathlib.Data.Polynomial.OfList
 import Mathlib.Data.Polynomial.PartialFractions
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
