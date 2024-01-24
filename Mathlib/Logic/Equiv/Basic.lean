@@ -1149,8 +1149,8 @@ at corresponding points, then `{a // p a}` is equivalent to `{b // q b}`.
 For the statement where `α = β`, that is, `e : perm α`, see `Perm.subtypePerm`. -/
 def subtypeEquiv {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a, p a ↔ q (e a)) :
     { a : α // p a } ≃ { b : β // q b } where
-  toFun a := ⟨e a, (h _).mp a.property⟩
-  invFun b := ⟨e.symm b, (h _).mpr ((e.apply_symm_apply b).symm ▸ b.property)⟩
+  toFun := Subtype.map e (h · |>.mp)
+  invFun := Subtype.map e.symm <| fun b hb ↦ h _ |>.mpr (e.apply_symm_apply b |>.symm ▸ hb)
   left_inv a := Subtype.ext <| by simp
   right_inv b := Subtype.ext <| by simp
 #align equiv.subtype_equiv Equiv.subtypeEquiv
