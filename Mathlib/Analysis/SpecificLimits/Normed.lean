@@ -450,7 +450,7 @@ lemma norm_bounded_of_cauchy_series (h : CauchySeq fun n ↦ ∑ k in range n, f
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
   obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
   refine ⟨b 0, fun n ↦ ?_⟩
-  simpa only [dist_partial_sum'] using key n (n + 1) 0 (zero_le _) (zero_le _)
+  simpa only [dist_partial_sum'] using key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
 
 end SummableLeGeometric
 
