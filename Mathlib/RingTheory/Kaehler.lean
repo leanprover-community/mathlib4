@@ -268,8 +268,7 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     refine Submodule.smul_induction_on hx ?_ ?_
     · rintro x (hx : _ = _) y -
       dsimp
-      rw [show ↑(x • y) = x * ↑y by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
-        zero_smul, zero_add]
+      rw [Derivation.tensorProductTo_mul, hx, y.prop, zero_smul, zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 #align derivation.lift_kaehler_differential Derivation.liftKaehlerDifferential
 
