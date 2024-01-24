@@ -70,3 +70,51 @@ variable [SMulPosReflectLT α β]
 
 end SMulPosStrictMono
 end StrictOrderedSemiring
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+/-- Extension for `algebraMap`. -/
+@[positivity algebraMap _ _ _]
+def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
+  trace[debug] "erter"
+  let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not algebraMap"
+  let zα : Q(Zero $α) := q(inferInstance)
+  let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
+  match ← core zα pα a with
+  | .positive pa =>
+    try {
+      let _oα ← synthInstanceQ (q(OrderedCommSemiring $α) : Q(Type u_1))
+      let _oβ ← synthInstanceQ (q(StrictOrderedSemiring $β) : Q(Type u))
+      let _oβ ← synthInstanceQ (q(SMulPosStrictMono $α $β) : Q(Prop))
+      assertInstancesCommute-- Why does `assertInstancesCommute` not generate the following?
+      have : $pα =Q OrderedSemiring.toPartialOrder := ⟨⟩
+      return .positive q(algebraMap_pos $β $pa)
+    } catch _ =>
+      let _oα ← synthInstanceQ (q(OrderedCommSemiring $α) : Q(Type u_1))
+      let _oβ ← synthInstanceQ (q(OrderedSemiring $β) : Q(Type u))
+      assertInstancesCommute
+      let _instαβsmul ← synthInstanceQ (q(SMulPosMono $α $β) : Q(Prop))
+      assertInstancesCommute-- Why does `assertInstancesCommute` not generate the following?
+      have : $pα =Q OrderedSemiring.toPartialOrder := ⟨⟩
+      return .nonnegative q(algebraMap_nonneg $β $ le_of_lt $pa)
+  | .nonnegative pa =>
+    let _oα ← synthInstanceQ (q(OrderedCommSemiring $α) : Q(Type u_1))
+    let _oβ ← synthInstanceQ (q(OrderedSemiring $β) : Q(Type u))
+    assertInstancesCommute
+    let _instαβsmul ← synthInstanceQ (q(SMulPosMono $α $β) : Q(Prop))
+    assertInstancesCommute-- Why does `assertInstancesCommute` not generate the following?
+    have : $pα =Q OrderedSemiring.toPartialOrder := ⟨⟩
+    return .nonnegative q(algebraMap_nonneg $β $pa)
+  | _ => pure .none
+
+example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
+    0 ≤ algebraMap α β a := by positivity
+
+example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
+    0 ≤ algebraMap α β a := by positivity
+
+example [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
+    0 < algebraMap α β a := by positivity
+
+end Mathlib.Meta.Positivity
