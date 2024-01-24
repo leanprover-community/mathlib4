@@ -1229,6 +1229,7 @@ theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x :
     exact e.map_subtype_source (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn_of_le hUV)
 #align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
+
 end TopologicalSpace.Opens
 
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
@@ -1334,13 +1335,12 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
 #align structomorph.trans Structomorph.trans
 
 /-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
--- xxx: better name? how does this differ from `restriction_in_maximalAtlas`?
-theorem StructureGroupoid.restriction_chart {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
+theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
+    {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
     (hs : e.source.Nonempty) [HasGroupoid M G] [ClosedUnderRestriction G] :
     let s := { carrier := e.source, is_open' := e.open_source : Opens M };
     let t := { carrier := e.target, is_open' := e.open_target : Opens H };
-    ∀ c' ∈ atlas H t,
-      e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
+    ∀ c' ∈ atlas H t, e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
   intro s t c' hc'
   have : Nonempty s := nonempty_coe_sort.mpr hs
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty hs)
@@ -1364,26 +1364,20 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
   intro s t
   by_cases h : s = (∅ : Set M)
   · have : IsEmpty s := isEmpty_coe_sort.mpr h
-    have : t = (∅ : Set H) := by
-      show e.target = ∅
-      exact e.image_source_eq_target ▸ (image_eq_empty.mpr h)
-    have : IsEmpty t := isEmpty_coe_sort.mpr this
-    exact {
-      Homeomorph.empty with
+    have : IsEmpty t := isEmpty_coe_sort.mpr
+      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr h)
+    exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
-      mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim
-    }
+      mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
   · exact {
       e.toHomeomorphSourceTarget with
-      mem_groupoid := by
-        intro c c' hc hc'
-        show (c.symm).trans (e.toHomeomorphSourceTarget.toPartialHomeomorph.trans c') ∈ G
+      mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
         -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
         -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
         -- with `c'` yields a chart in the maximal atlas of `s`.
-        apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
-          (G.restriction_chart he (nmem_singleton_empty.mp h) c' hc')
+        fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
+          (G.restriction_mem_maximalAtlas_subtype he (nmem_singleton_empty.mp h) c' hc')
   }
 
 end HasGroupoid
