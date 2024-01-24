@@ -227,11 +227,11 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
 
--- @[simp, norm_cast]
--- theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
---     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
---   (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
--- #align nnrat.coe_indicator NNRat.coe_indicator
+@[simp, norm_cast]
+theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
+    ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
+  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
+#align nnrat.coe_indicator NNRat.coe_indicator
 
 @[simp, norm_cast]
 theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
