@@ -1111,7 +1111,7 @@ protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [AddMonoid β] [Mono
     FinStronglyMeasurable (c • f) μ := by
   refine' ⟨fun n => c • hf.approx n, fun n => _, fun x => (hf.tendsto_approx x).const_smul c⟩
   rw [SimpleFunc.coe_smul]
-  refine' (measure_mono (support_smul_subset_right c _)).trans_lt (hf.fin_support_approx n)
+  exact (measure_mono (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
 #align measure_theory.fin_strongly_measurable.const_smul MeasureTheory.FinStronglyMeasurable.const_smul
 
 end Arithmetic
