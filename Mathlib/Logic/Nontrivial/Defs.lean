@@ -109,12 +109,9 @@ theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsin
 protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩
-  rcases hf x with ⟨x', hx'⟩
-  rcases hf y with ⟨y', hy'⟩
-  have : x' ≠ y' := by
-    refine fun H ↦ h ?_
-    rw [← hx', ← hy', H]
-  exact ⟨⟨x', y', this⟩⟩
+  rcases hf x with ⟨x', rfl⟩
+  rcases hf y with ⟨y', rfl⟩
+  exact ⟨⟨x', y', fun H ↦ h (by rw [H])⟩⟩
 #align function.surjective.nontrivial Function.Surjective.nontrivial
 
 namespace Bool

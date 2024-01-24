@@ -110,9 +110,14 @@ theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
 
+/-- TODO: move next to `Quot.exists_rep` in core (or even replace it?) -/
+theorem exists_rep' {α : Sort u} {r : α → α → Prop} (q : Quot r) :
+    Exists (fun a => q = (Quot.mk r a)) :=
+  q.inductionOn (fun a => ⟨a, rfl⟩)
+
 @[simp] theorem surjective_lift {f : α → γ} (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
     Function.Surjective (lift f h) ↔ Function.Surjective f :=
-  ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
+  ⟨fun hf => hf.comp Quot.exists_rep', fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
 #align quot.surjective_lift Quot.surjective_lift
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
@@ -349,13 +354,13 @@ theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} [Setoid α] (f : α → 
 
 /-- `Quot.mk r` is a surjective function. -/
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
-  Quot.exists_rep
+  Quot.exists_rep'
 #align surjective_quot_mk surjective_quot_mk
 
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
+  Quot.exists_rep'
 #align surjective_quotient_mk surjective_quotient_mk'
 
 /-- Choose an element of the equivalence class using the axiom of choice.
@@ -618,7 +623,7 @@ protected def mk'' (a : α) : Quotient s₁ :=
 
 /-- `Quotient.mk''` is a surjective function. -/
 theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
-  Quot.exists_rep
+  Quot.exists_rep'
 #align quotient.surjective_quotient_mk' Quotient.surjective_Quotient_mk''
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an

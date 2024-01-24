@@ -122,7 +122,7 @@ theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s �
 infixl:80 " '' " => image
 
 @[simp]
-theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
+theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, y = f x :=
   Iff.rfl
 #align set.mem_image Set.mem_image
 
@@ -152,10 +152,10 @@ variable {ι : Sort*} {f : ι → α}
 
 This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
 and not an arbitrary Sort. -/
-def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
+def range (f : ι → α) : Set α := {x | ∃ y, x = f y}
 #align set.range Set.range
 
-@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, x = f y := Iff.rfl
 #align set.mem_range Set.mem_range
 
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
@@ -173,7 +173,7 @@ noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.
 
 -- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
-  x.2.choose_spec
+  x.2.choose_spec.symm
 #align set.apply_range_splitting Set.apply_rangeSplitting
 
 @[simp]

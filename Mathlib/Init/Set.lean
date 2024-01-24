@@ -100,7 +100,7 @@ If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity w
 for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 -/
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
-  `({x | ∃ᵉ $bs:extBinders, $t = x})
+  `({x | ∃ᵉ $bs:extBinders, x = $t})
 
 /--
 * `{ pat : X | p }` is notation for pattern matching in set-builder notation,
@@ -177,7 +177,7 @@ instance : LawfulFunctor Set where
   id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
   comp_map g h _ := funext <| λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show c = h (g a) from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
 /-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used

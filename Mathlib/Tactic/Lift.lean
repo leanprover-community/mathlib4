@@ -21,11 +21,11 @@ lift, tactic
   Used by the tactic `lift`. -/
 class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
-  prf : ∀ x : α, cond x → ∃ y : β, coe y = x
+  prf : ∀ x : α, cond x → ∃ y : β, x = coe y
 #align can_lift CanLift
 
 instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
-  ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
+  ⟨fun n hn ↦ ⟨n.natAbs, (Int.natAbs_of_nonneg hn).symm⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/
 instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
@@ -37,10 +37,10 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
 
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
-    ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
+    ∃ g : ∀ i : ι, α i, f = (fun i : Subtype p => g i) := by
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
-  exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
-    funext fun i ↦ dif_pos i.2⟩
+  refine ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
+    funext fun i ↦ by rw [eq_comm]; exact dif_pos i.2⟩
 #align subtype.exists_pi_extension Subtype.exists_pi_extension
 
 instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :

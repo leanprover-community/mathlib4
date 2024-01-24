@@ -236,20 +236,21 @@ protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : 
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
     Surjective f := by
-  specialize h (fun y ↦ ∃ x, f x = y) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
+  specialize h (fun y ↦ ∃ x, y = f x) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
   intro y; rw [congr_fun h y]; trivial
+
 #align function.surjective_of_right_cancellable_Prop Function.surjective_of_right_cancellable_Prop
 
-theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
+theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, b = f a :=
   ⟨fun hf b ↦
       let ⟨a, ha⟩ := hf.surjective b
-      ⟨a, ha, fun _ ha' ↦ hf.injective (ha'.trans ha.symm)⟩,
-    fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h rfl, fun b ↦ (he b).exists⟩⟩
+      ⟨a, ha, fun _ ha' ↦ hf.injective (ha'.symm.trans ha)⟩,
+    fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h.symm rfl, fun b ↦ (he b).exists⟩⟩
 #align function.bijective_iff_exists_unique Function.bijective_iff_existsUnique
 
 /-- Shorthand for using projection notation with `Function.bijective_iff_existsUnique`. -/
 protected theorem Bijective.existsUnique {f : α → β} (hf : Bijective f) (b : β) :
-    ∃! a : α, f a = b :=
+    ∃! a : α, b = f a :=
   (bijective_iff_existsUnique f).mp hf b
 #align function.bijective.exists_unique Function.Bijective.existsUnique
 
@@ -257,11 +258,11 @@ theorem Bijective.existsUnique_iff {f : α → β} (hf : Bijective f) {p : β �
     (∃! y, p y) ↔ ∃! x, p (f x) :=
   ⟨fun ⟨y, hpy, hy⟩ ↦
     let ⟨x, hx⟩ := hf.surjective y
-    ⟨x, by simpa [hx], fun z (hz : p (f z)) ↦ hf.injective <| hx.symm ▸ hy _ hz⟩,
+    ⟨x, by simpa [← hx], fun z (hz : p (f z)) ↦ hf.injective <| hx.symm ▸ hy _ hz⟩,
     fun ⟨x, hpx, hx⟩ ↦
     ⟨f x, hpx, fun y hy ↦
       let ⟨z, hz⟩ := hf.surjective y
-      hz ▸ congr_arg f (hx _ (by simpa [hz]))⟩⟩
+      hz ▸ congr_arg f (hx _ (by simpa [← hz]))⟩⟩
 #align function.bijective.exists_unique_iff Function.Bijective.existsUnique_iff
 
 theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g) :
@@ -278,7 +279,7 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
   | h => let ⟨D, e⟩ := h {a | ¬ f a a}
-        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
+        @iff_not_self (D ∈ f D) <| iff_of_eq <| (congr_arg (D ∈ ·) e).symm
 #align function.cantor_surjective Function.cantor_surjective
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
@@ -294,10 +295,10 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
   intro hf
   let T : Type max u v := Sigma f
   cases hf (Set T) with | intro U hU =>
-  let g : Set T → T := fun s ↦ ⟨U, cast hU.symm s⟩
+  let g : Set T → T := fun s ↦ ⟨U, cast hU s⟩
   have hg : Injective g := by
     intro s t h
-    suffices cast hU (g s).2 = cast hU (g t).2 by
+    suffices cast hU.symm (g s).2 = cast hU.symm (g t).2 by
       simp only [cast_cast, cast_eq] at this
       assumption
     · congr
@@ -457,8 +458,10 @@ theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f
         exact invFun_eq ⟨g b, hg b⟩)
 #align function.inv_fun_eq_of_injective_of_right_inverse Function.invFun_eq_of_injective_of_rightInverse
 
-theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f :=
-  fun b ↦ invFun_eq <| hf b
+theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f := by
+  intro b
+  rcases hf b with ⟨x, rfl⟩
+  exact invFun_eq ⟨x, rfl⟩
 #align function.right_inverse_inv_fun Function.rightInverse_invFun
 
 theorem leftInverse_invFun (hf : Injective f) : LeftInverse (invFun f) f :=
@@ -494,7 +497,7 @@ noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
 #align function.surj_inv Function.surjInv
 
 theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
-  Classical.choose_spec (h b)
+  (Classical.choose_spec (h b)).symm
 #align function.surj_inv_eq Function.surjInv_eq
 
 theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
@@ -530,7 +533,7 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) := fun f ↦
-  ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
+  ⟨surjInv hg ∘ f, funext fun _ ↦ (rightInverse_surjInv _ _).symm⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
 /-- Composition by a bijective function on the left is itself bijective. -/
@@ -576,7 +579,7 @@ theorem update_eq_const_of_subsingleton [Subsingleton α] (a : α) (v : α') (f 
 theorem surjective_eval {α : Sort u} {β : α → Sort v} [h : ∀ a, Nonempty (β a)] (a : α) :
     Surjective (eval a : (∀ a, β a) → β a) := fun b ↦
   ⟨@update _ _ (Classical.decEq α) (fun a ↦ (h a).some) a b,
-   @update_same _ _ (Classical.decEq α) _ _ _⟩
+   (@update_same _ _ (Classical.decEq α) _ _ _).symm⟩
 #align function.surjective_eval Function.surjective_eval
 
 theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') := fun v v' h ↦ by
@@ -781,7 +784,7 @@ theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
-  fun g ↦ ⟨extend f g g₀, extend_comp hf _ _⟩
+  fun g ↦ ⟨extend f g g₀, (extend_comp hf _ _).symm⟩
 #align function.injective.surjective_comp_right' Function.Injective.surjective_comp_right'
 
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
@@ -890,7 +893,7 @@ protected theorem rightInverse : RightInverse f f := h
 protected theorem injective : Injective f := h.leftInverse.injective
 #align function.involutive.injective Function.Involutive.injective
 
-protected theorem surjective : Surjective f := fun x ↦ ⟨f x, h x⟩
+protected theorem surjective : Surjective f := fun x ↦ ⟨f x, (h x).symm⟩
 #align function.involutive.surjective Function.Involutive.surjective
 
 protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩

@@ -124,14 +124,14 @@ theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
 def Surjective (f : α → β) : Prop :=
-  ∀ b, ∃ a, f a = b
+  ∀ b, ∃ a, b = f a
 #align function.surjective Function.Surjective
 
 theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
     Surjective (g ∘ f) := fun c : φ =>
   Exists.elim (hg c) fun b hb =>
     Exists.elim (hf b) fun a ha =>
-      Exists.intro a (show g (f a) = c from Eq.trans (congr_arg g ha) hb)
+      Exists.intro a (show c = g (f a) from Eq.trans hb (congr_arg g ha))
 #align function.surjective.comp Function.Surjective.comp
 
 /-- A function is called bijective if it is both injective and surjective. -/
@@ -182,7 +182,7 @@ theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
 #align function.right_inverse_of_injective_of_left_inverse Function.rightInverse_of_injective_of_leftInverse
 
 theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
-  fun y => ⟨g y, h y⟩
+  fun y => ⟨g y, (h y).symm⟩
 #align function.right_inverse.surjective Function.RightInverse.surjective
 
 theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
@@ -195,7 +195,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
     calc
       f (g y) = f (g (f x)) := hx ▸ rfl
       _ = f x := (Eq.symm (rfg x) ▸ rfl)
-      _ = y := hx
+      _ = y := hx.symm
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 
 theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
