@@ -471,7 +471,7 @@ theorem one_div_one_div : 1 / (1 / a) = a := by simp
 #align one_div_one_div one_div_one_div
 #align zero_sub_zero_sub zero_sub_zero_sub
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
   inv_inj.symm.trans <| by simp only [inv_div]
 
