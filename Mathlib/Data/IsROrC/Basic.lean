@@ -733,6 +733,10 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
+variable (K) in
+lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+  rw [nsmul_eq_smul_cast K, norm_smul, IsROrC.norm_natCast, nsmul_eq_mul]
+
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 #align is_R_or_C.mul_self_norm IsROrC.mul_self_norm
 

@@ -387,6 +387,7 @@ import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Interval
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
@@ -1049,6 +1050,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Basic
+import Mathlib.CategoryTheory.Galois.Examples
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
