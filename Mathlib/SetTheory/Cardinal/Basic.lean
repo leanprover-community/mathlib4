@@ -12,7 +12,6 @@ import Mathlib.Logic.Small.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PPWithUniv
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
@@ -926,7 +925,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
                   rw [Equiv.image_eq_preimage]
                   /- Porting note: Need to insert the following `have` b/c bad fun coercion
                    behaviour for Equivs -/
-                  have : FunLike.coe (Equiv.symm (Equiv.ulift (α := α))) = ULift.up (α := α) := rfl
+                  have : DFunLike.coe (Equiv.symm (Equiv.ulift (α := α))) = ULift.up (α := α) := rfl
                   rw [this]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)

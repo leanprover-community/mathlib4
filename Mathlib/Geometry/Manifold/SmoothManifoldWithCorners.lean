@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 #align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
@@ -374,9 +375,9 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated `PartialEquiv` is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
+theorem modelWithCornersSelf_partialEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
   rfl
-#align model_with_corners_self_local_equiv modelWithCornersSelf_localEquiv
+#align model_with_corners_self_local_equiv modelWithCornersSelf_partialEquiv
 
 @[simp, mfld_simps]
 theorem modelWithCornersSelf_coe : (𝓘(𝕜, E) : E → E) = id :=
@@ -619,7 +620,7 @@ theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.eq_on_source _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
 #align symm_trans_mem_cont_diff_groupoid symm_trans_mem_contDiffGroupoid
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
@@ -649,7 +650,7 @@ instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
     (by
       apply StructureGroupoid.le_iff.mpr
       rintro e ⟨s, hs, hes⟩
-      apply (contDiffGroupoid n I).eq_on_source' _ _ _ hes
+      apply (contDiffGroupoid n I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
 
 end contDiffGroupoid
@@ -779,7 +780,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
@@ -787,7 +788,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
     (by
       apply StructureGroupoid.le_iff.mpr
       rintro e ⟨s, hs, hes⟩
-      apply (analyticGroupoid I).eq_on_source' _ _ _ hes
+      apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
