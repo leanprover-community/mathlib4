@@ -440,9 +440,9 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   `toFun` and `smul` because `RingHom.id` is not reducible.
   see library note [reducible non-instances]. -/
 instance id : Algebra R R where
-    toFun x := x
-    toSMul := Mul.toSMul _
-    __ := (RingHom.id R).toAlgebra
+  toFun x := x
+  toSMul := Mul.toSMul _
+  __ := (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
 variable {R A}
