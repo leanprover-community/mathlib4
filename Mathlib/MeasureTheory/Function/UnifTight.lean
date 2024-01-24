@@ -37,8 +37,6 @@ is also proved later in the file.
 uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 
-noncomputable section
-
 
 namespace MeasureTheory
 
