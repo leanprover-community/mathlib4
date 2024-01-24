@@ -661,24 +661,24 @@ noncomputable def definedAtRight
 between finitely generated substructures can be extended to any element in the domain,
 then there exists an embedding of `M` in `N`. -/
 theorem embedding_from_cg (M_cg : Structure.CG L M) (h : (M ≃ₚ[L] N)) (h_fg : h.sub_dom.FG)
-  (H : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom) :
-  ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
-    rcases M_cg with ⟨X, _, X_gen⟩
-    have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
-    have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
-    let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
-    let S : ℕ →o M ≃ₚ[L] N :=
-      ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
-        FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
-    let F := subEquiv_limit S
-    have _ : X ⊆ F.sub_dom := by
-      intro x hx
-      have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
-      exact le_dom
-        (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
-    have isTop : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
-    exact ⟨dom_top_toEmbedding isTop,
-          by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
+    (H : ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom) :
+    ∃ f : M ↪[L] N, h ≤ f.toSubEquivalence := by
+  rcases M_cg with ⟨X, _, X_gen⟩
+  have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
+  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
+  let D : X → Order.Cofinal (FiniteEquiv L M N) := fun x ↦ definedAtLeft H x
+  let S : ℕ →o M ≃ₚ[L] N :=
+    ⟨Subtype.val ∘ (Order.sequenceOfCofinals ⟨h, h_fg⟩ D),
+      FiniteEquiv.subtype_val_monotone.comp (Order.sequenceOfCofinals.monotone _ _)⟩
+  let F := subEquiv_limit S
+  have _ : X ⊆ F.sub_dom := by
+    intro x hx
+    have := Order.sequenceOfCofinals.encode_mem ⟨h, h_fg⟩ D ⟨x, hx⟩
+    exact le_dom
+      (le_subEquiv_limit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
+  have isTop : F.sub_dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
+  exact ⟨dom_top_toEmbedding isTop,
+        by convert (le_subEquiv_limit S 0); apply Embedding.toSubEquivalence_toEmbedding⟩
 
 /-- For two countably generated structure `M` and `N`, if any subequivalence
 between finitely generated substructures can be extended to any element in the domain and to
