@@ -1479,7 +1479,7 @@ theorem aemeasurable_biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
 -/
 theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasCountableBasis p s) (hs : ∀ j, (s j).Countable) :
-    Measurable fun x => liminf (fun i => f i x) v := by
+    Measurable fun x => liminf (f · x) v := by
   /- We would like to write the liminf as `⨆ (j : Subtype p), ⨅ (i : s j), f i x`, as the
   measurability would follow from the measurability of infs and sups. Unfortunately, this is not
   true in general conditionally complete linear orders because of issues with empty sets or sets
@@ -1506,12 +1506,12 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ measurable_iInf (fun (i : s j) ↦ hf i)
   set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1
   change Measurable F1
-  let g : ℕ → Subtype p := choose (exists_surjective_nat (Subtype p))
+  let g : ℕ → Subtype p := Classical.choose (exists_surjective_nat (Subtype p))
   have Z : ∀ x, ∃ n, x ∈ m (g n) ∨ ∀ k, x ∉ m k := by
     intro x
     by_cases H : ∃ k, x ∈ m k
     · rcases H with ⟨k, hk⟩
-      rcases choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
+      rcases Classical.choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
       exact ⟨n, Or.inl hk⟩
     · push_neg at H
       exact ⟨0, Or.inr H⟩
@@ -1651,9 +1651,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       congr
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
-      have H : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      cases' H with H H
-      · simp only [H, eq_self_iff_true, or_false_iff, zero_lt_top, not_top_lt, and_false_iff]
+      obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
+      · simp only [H, eq_self_iff_true, or_false_iff, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true_iff, false_or_iff]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2
