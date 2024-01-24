@@ -7,9 +7,9 @@ import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
-# Purely inseparable extension and (relative) perfect closure
+# Purely inseparable extension and relative perfect closure
 
-This file contains basics about the purely inseparable extension and the (relative) perfect closure
+This file contains basics about the purely inseparable extension and the relative perfect closure
 of fields.
 
 ## Main definitions
@@ -18,7 +18,7 @@ of fields.
   `E / F` is purely inseparable if and only if the minimal polynomial of every element of `E ∖ F`
   is not separable.
 
-- `perfectClosure`: the (relative) perfect closure of `E / F`, consists of the elements `x` of `E`
+- `perfectClosure`: the relative perfect closure of `F` in `E`, consists of the elements `x` of `E`
   such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in
   `F`, where `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal
   purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
@@ -31,7 +31,7 @@ of fields.
   `IsPurelyInseparable.bijective_algebraMap_of_isSeparable`,
   `IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable`:
   if `E / F` is both purely inseparable and separable, then `algebraMap F E` is surjective
-  (resp. bijective). In particular, if an intermediate field of `E / F` is both purely inseparable
+  (hence bijective). In particular, if an intermediate field of `E / F` is both purely inseparable
   and separable, then it is equal to `F`.
 
 - `isPurelyInseparable_iff_pow_mem`: a field extension `E / F` of exponential characteristic `q` is
@@ -54,24 +54,24 @@ of fields.
   polynomial of `x` over `F` is of form `(X - x) ^ (q ^ n)` for some natural number `n`.
 
 - `isPurelyInseparable_iff_finSepDegree_eq_one`: an algebraic extension is purely inseparable
-  if and only if it has (finite) separable degree one.
+  if and only if it has finite separable degree (`Field.finSepDegree`) one.
 
   **TODO:** remove the algebraic assumption.
 
 - `IsPurelyInseparable.normal`: a purely inseparable extension is normal.
 
 - `separableClosure.isPurelyInseparable`: if `E / F` is algebraic, then `E` is purely inseparable
-  over the (relative) separable closure of `E / F`.
+  over the separable closure of `F` in `E`.
 
 - `separableClosure_le_iff`: if `E / F` is algebraic, then an intermediate field of `E / F` contains
-  the (relative) separable closure of `E / F` if and only if `E` is purely inseparable over it.
+  the separable closure of `F` in `E` if and only if `E` is purely inseparable over it.
 
 - `eq_separableClosure_iff`: if `E / F` is algebraic, then an intermediate field of `E / F` is equal
-  to the (relative) separable closure of `E / F` if and only if it is separable over `F`, and `E`
+  to the separable closure of `F` in `E` if and only if it is separable over `F`, and `E`
   is purely inseparable over it.
 
-- `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the (relative) perfect
-  closure of `E / F` if and only if it is purely inseparable over `F`.
+- `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the relative perfect
+  closure of `F` in `E` if and only if it is purely inseparable over `F`.
 
 - `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
@@ -86,11 +86,11 @@ of fields.
   and the degree of `(separableClosure F E) / F` are both finite or infinite, and when they are
   finite, they coincide.
 
-- `finSepDegree_mul_finInsepDegree`: the (finite) separable degree multiply by the (finite)
+- `finSepDegree_mul_finInsepDegree`: the finite separable degree multiply by the finite
   inseparable degree is equal to the (finite) field extension degree.
 
-- `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the (infinite) separable degree
-  satisfies the tower law.
+- `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the separable degrees satisfy the
+  tower law: $[E:F]_s [K:E]_s = [K:F]_s$.
 
 ## Tags
 
@@ -106,8 +106,8 @@ separable degree, degree, separable closure, purely inseparable
 
 - Restate some intermediate result in terms of linearly disjoint.
 
-- Prove that the (infinite) inseparable degree satisfies the tower law. Probably linearly disjoint
-  argument is needed.
+- Prove that the inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$.
+  Probably linearly disjoint argument is needed.
 
 -/
 
@@ -188,14 +188,14 @@ theorem IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable (L : Inte
   obtain ⟨y, hy⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable F L ⟨x, hx⟩
   exact ⟨y, congr_arg (algebraMap L E) hy⟩
 
-/-- If `E / F` is purely inseparable, then the (relative) separable closure of `E / F` is
+/-- If `E / F` is purely inseparable, then the separable closure of `F` in `E` is
 equal to `F`. -/
 theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E] :
     separableClosure F E = ⊥ :=
   bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x (mem_separableClosure_iff.1 h)
 
 variable {F E} in
-/-- If `E / F` is an algebraic extension, then the (relative) separable closure of `E / F` is
+/-- If `E / F` is an algebraic extension, then the separable closure of `F` in `E` is
 equal to `F` if and only if `E / F` is purely inseparable. -/
 theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
     separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
@@ -234,7 +234,7 @@ end IsPurelyInseparable
 
 section perfectClosure
 
-/-- The (relative) perfect closure of `E / F`, consists of the elements `x` of `E` such that there
+/-- The relative perfect closure of `F` in `E`, consists of the elements `x` of `E` such that there
 exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in `F`, where
 `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
 subextension of `E / F` (`le_perfectClosure_iff`). -/
@@ -268,14 +268,14 @@ theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [mem_perfectClosure_iff, ringExpChar.eq F q]
 
-/-- An element is contained in the (relative) perfect closure if and only if its mininal polynomial
+/-- An element is contained in the relative perfect closure if and only if its mininal polynomial
 has separable degree one. -/
 theorem mem_perfectClosure_iff_natSepDegree_eq_one {x : E} :
     x ∈ perfectClosure F E ↔ (minpoly F x).natSepDegree = 1 := by
   rw [mem_perfectClosure_iff, minpoly.natSepDegree_eq_one_iff_pow_mem (ringExpChar F)]
 
-/-- A field extension `E / F` is purely inseparable if and only if its (relative) perfect closure
-is equal to `E`. -/
+/-- A field extension `E / F` is purely inseparable if and only if the relative perfect closure of
+`F` in `E` is equal to `E`. -/
 theorem isPurelyInseparable_iff_perfectClosure_eq_top :
     IsPurelyInseparable F E ↔ perfectClosure F E = ⊤ := by
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
@@ -283,16 +283,16 @@ theorem isPurelyInseparable_iff_perfectClosure_eq_top :
 
 variable (F E)
 
-/-- The (relative) perfect closure of `E / F` is purely inseparable over `F`. -/
+/-- The relative perfect closure of `F` in `E` is purely inseparable over `F`. -/
 instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := by
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
   exact fun ⟨_, n, y, h⟩ ↦ ⟨n, y, (algebraMap _ E).injective h⟩
 
-/-- The (relative) perfect closure of `E / F` is algebraic over `F`. -/
+/-- The relative perfect closure of `F` in `E` is algebraic over `F`. -/
 theorem perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E) :=
   IsPurelyInseparable.isAlgebraic F _
 
-/-- An intermediate field of `E / F` is contained in the (relative) perfect closure of `E / F`
+/-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
 if it is purely inseparable over `F`. -/
 theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F L] :
     L ≤ perfectClosure F E := by
@@ -301,7 +301,7 @@ theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F
   obtain ⟨n, y, hy⟩ := h ⟨x, hx⟩
   exact ⟨n, y, congr_arg (algebraMap L E) hy⟩
 
-/-- An intermediate field of `E / F` is contained in the (relative) perfect closure of `E / F`
+/-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
 if and only if it is purely inseparable over `F`. -/
 theorem le_perfectClosure_iff (L : IntermediateField F E) :
     L ≤ perfectClosure F E ↔ IsPurelyInseparable F L := by
@@ -437,7 +437,7 @@ variable (E)
 
 -- TODO: remove `halg` assumption
 variable {F E} in
-/-- If an algebraic extension has (finite) separable degree one, then it is purely inseparable. -/
+/-- If an algebraic extension has finite separable degree one, then it is purely inseparable. -/
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
   rw [isPurelyInseparable_iff]
@@ -447,7 +447,7 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F
     IntermediateField.finrank_eq_one_iff] at this
   simpa only [this.1] using mem_adjoin_simple_self F x
 
-/-- A purely inseparable extension has (finite) separable degree one. -/
+/-- A purely inseparable extension has finite separable degree one. -/
 theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
     finSepDegree F E = 1 := by
   rw [finSepDegree, Nat.card, Cardinal.toNat_eq_iff Nat.one_ne_zero, Nat.cast_one]
@@ -466,7 +466,7 @@ theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
   linarith only [this, IsPurelyInseparable.natSepDegree_eq_one F x]
 
 -- TODO: remove `halg` assumption
-/-- An algebraic extension is purely inseparable if and only if it has (finite) separable
+/-- An algebraic extension is purely inseparable if and only if it has finite separable
 degree one. -/
 theorem isPurelyInseparable_iff_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E) :
     IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
@@ -495,8 +495,8 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
   rw [← splits_id_iff_splits, h]
   exact splits_pow _ (splits_X_sub_C _) _
 
-/-- If `E / F` is algebraic, then `E` is purely inseparable over the (relative)
-separable closure of `E / F`. -/
+/-- If `E / F` is algebraic, then `E` is purely inseparable over the
+separable closure of `F` in `E`. -/
 theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
@@ -506,15 +506,15 @@ theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
 
-/-- An intermediate field of `E / F` contains the (relative) separable closure of `E / F`
+/-- An intermediate field of `E / F` contains the separable closure of `F` in `E`
 if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
   obtain ⟨y, rfl⟩ := h.inseparable' _ <| (mem_separableClosure_iff.1 hx).map_minpoly L
   exact y.2
 
-/-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the (relative)
-separable closure of `E / F` if and only if `E` is purely inseparable over it. -/
+/-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
+separable closure of `F` in `E` if and only if `E` is purely inseparable over it. -/
 theorem separableClosure_le_iff (halg : Algebra.IsAlgebraic F E) (L : IntermediateField F E) :
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
@@ -525,8 +525,8 @@ theorem separableClosure_le_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
   haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact IsPurelyInseparable.tower_top (separableClosure F E) L E
 
-/-- If `E / F` is algebraic, then an intermediate field of `E / F` is equal to the (relative)
-separable closure of `E / F` if and only if it is separable over `F`, and `E` is purely inseparable
+/-- If `E / F` is algebraic, then an intermediate field of `E / F` is equal to the separable closure
+of `F` in `E` if and only if it is separable over `F`, and `E` is purely inseparable
 over it. -/
 theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : IntermediateField F E) :
     L = separableClosure F E ↔ IsSeparable F L ∧ IsPurelyInseparable L E :=
@@ -817,7 +817,7 @@ theorem finSepDegree_eq (halg : Algebra.IsAlgebraic F E) :
   rwa [finSepDegree_eq_finrank_of_isSeparable F (separableClosure F E),
     IsPurelyInseparable.finSepDegree_eq_one (separableClosure F E) E, mul_one] at h
 
-/-- The (finite) separable degree multiply by the (finite) inseparable degree is equal
+/-- The finite separable degree multiply by the finite inseparable degree is equal
 to the (finite) field extension degree. -/
 theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E = finrank F E := by
   by_cases halg : Algebra.IsAlgebraic F E
@@ -935,7 +935,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
 namespace Field
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable and `K / E`
-is separable, then the (infinite) separable degree of `K / F` is equal to the degree of `K / E`.
+is separable, then the separable degree of `K / F` is equal to the degree of `K / E`.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
 intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
@@ -972,8 +972,8 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
   exact (separableClosure F (separableClosure E K)).equivMap
     (IsScalarTower.toAlgHom F (separableClosure E K) K) |>.symm.toLinearEquiv.rank_eq
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their (infinite)
-separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
+/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
+separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
     (halg : Algebra.IsAlgebraic F E) :
     Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
