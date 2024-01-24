@@ -483,7 +483,7 @@ See also `exists_msmooth_zero_iff_one_iff_of_isClosed`, which ensures additional
 `f` is equal to `0` exactly on `s` and to `1` exactly on `t`. -/
 theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc 0 1 := by
   have : ∀ x ∈ t, sᶜ ∈ 𝓝 x := fun x hx => hs.isOpen_compl.mem_nhds (disjoint_right.1 hd hx)
   rcases SmoothBumpCovering.exists_isSubordinate I ht this with ⟨ι, f, hf⟩
   set g := f.toSmoothPartitionOfUnity
