@@ -349,7 +349,6 @@ theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n
 #align cont_mdiff_within_at_finset_prod contMDiffWithinAt_finset_prod
 #align cont_mdiff_within_at_finset_sum contMDiffWithinAt_finset_sum
 
-
 @[to_additive]
 theorem ContMDiffAt.prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x₀) :
     ContMDiffAt I' I n (fun x ↦ ∏ i in t, f i x) x₀ := by
@@ -375,6 +374,12 @@ theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
   contMDiffWithinAt_finset_prod h
 #align cont_mdiff_at_finset_prod contMDiffAt_finset_prod
 #align cont_mdiff_at_finset_sum contMDiffAt_finset_sum
+
+@[to_additive]
+theorem contMDiffOn_finprod
+    (lf : LocallyFinite fun i ↦ Function.mulSupport <| f i) (h : ∀ i, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (fun x ↦ ∏ᶠ i, f i x) s := fun x hx ↦
+  contMDiffWithinAt_finprod lf fun i ↦ h i x hx
 
 @[to_additive]
 theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
@@ -410,10 +415,8 @@ theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
-  intro x
-  rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
-  exact (contMDiff_finset_prod (fun i _ => h i) x).congr_of_eventuallyEq hs
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x :=
+  fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 #align cont_mdiff_finprod contMDiff_finprod
 #align cont_mdiff_finsum contMDiff_finsum
 
