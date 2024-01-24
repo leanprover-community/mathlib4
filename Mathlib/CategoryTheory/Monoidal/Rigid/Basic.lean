@@ -130,12 +130,14 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
+  /-- The right dual of the object `X`. -/
   rightDual : C
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
 /-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
+  /-- The left dual of the object `X`. -/
   leftDual : C
   [exact : ExactPairing leftDual Y]
 #align category_theory.has_left_dual CategoryTheory.HasLeftDual
@@ -145,8 +147,8 @@ attribute [instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
-prefix:1024 "ᘁ" => leftDual
-postfix:1024 "ᘁ" => rightDual
+@[inherit_doc] prefix:1024 "ᘁ" => leftDual
+@[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
 instance hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
