@@ -37,7 +37,7 @@ This file contains basics about the separable degree of a field extension.
   closure of `E`, as a natural number. It is zero if `Field.Emb F E` is not finite.
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
 
-  **Remark:** the (infinite) separable degree `Field.sepDegree F E` for a general algebraic
+  **Remark:** the infinite separable degree `Field.sepDegree F E` for a general algebraic
   extension `E / F` is defined to be the degree of `L / F`, where `L` is the (relative) separable
   closure `separableClosure F E` of `E / F`, which is not defined in this file yet. Later we
   will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
@@ -66,8 +66,8 @@ This file contains basics about the separable degree of a field extension.
 - `Field.embProdEmbOfIsAlgebraic`, `Field.finSepDegree_mul_finSepDegree_of_isAlgebraic`:
   if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
   then there is a non-canonical bijection `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`.
-  In particular, the separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
-  (see also `FiniteDimensional.finrank_mul_finrank'`).
+  In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
+  (see also `FiniteDimensional.finrank_mul_finrank`).
 
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
@@ -90,7 +90,7 @@ This file contains basics about the separable degree of a field extension.
 - `Irreducible.natSepDegree_dvd_natDegree`: the separable degree of an irreducible
   polynomial divides its degree.
 
-- `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the (finite) separable degree of
+- `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the separable degree of
   `F⟮α⟯ / F` is equal to the separable degree of the minimal polynomial of `α` over `F`.
 
 - `IntermediateField.finSepDegree_adjoin_simple_eq_finrank_iff`: if `α` is algebraic over `F`, then
@@ -245,7 +245,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] (halg : Algebra.
           halg).restrictScalars F).symm
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
-(finite) separable degree satisfies the tower law
+separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank'`. -/
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
@@ -516,7 +516,7 @@ end minpoly
 
 namespace IntermediateField
 
-/-- The (finite) separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
+/-- The separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
 minimal polynomial of `α` over `F`. -/
 theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
