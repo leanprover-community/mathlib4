@@ -203,17 +203,13 @@ private def reverseRule {N : Type uN} (r : ContextFreeRule T N) : ContextFreeRul
 private def reverseGrammar (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
   ⟨g.NT, g.initial, g.rules.map reverseRule⟩
 
-private lemma reverseRule_reverseRule {N : Type uN} (r : ContextFreeRule T N) :
-    reverseRule (reverseRule r) = r := by
+private lemma reverseRule_reverseRule {N : Type uN} : Function.Involutive (@reverseRule T N) := by
+  intro x
   simp [reverseRule]
 
-private lemma dual_reverseRule {N : Type uN} : reverseRule ∘ @reverseRule T N = id := by
-  ext
-  apply reverseRule_reverseRule
-
-private lemma reverseGrammar_reverseGrammar (g : ContextFreeGrammar T) :
-    reverseGrammar (reverseGrammar g) = g := by
-  simp [reverseGrammar, dual_reverseRule, List.map_map, List.map_id]
+private lemma reverseGrammar_reverseGrammar : Function.Involutive (@reverseGrammar T) := by
+  intro x
+  simp [reverseGrammar, reverseRule_reverseRule]
 
 private lemma derives_reverse {g : ContextFreeGrammar T} {s : List (Symbol T g.NT)}
     (hgs : (reverseGrammar g).Derives [Symbol.nonterminal (reverseGrammar g).initial] s) :
@@ -222,7 +218,7 @@ private lemma derives_reverse {g : ContextFreeGrammar T} {s : List (Symbol T g.N
   | refl =>
     rw [List.reverse_singleton]
     apply ContextFreeGrammar.Derives.refl
-  | @tail u v _ orig ih =>
+  | tail _ orig ih =>
     apply ContextFreeGrammar.Derives.trans_produces ih
     rcases orig with ⟨r, rin, rewr⟩
     simp only [reverseGrammar, List.mem_map] at rin
