@@ -84,15 +84,7 @@ def getFPropTheorem2Type (e : Expr) : MetaM FPropTheorem2Type :=
         if isSimple then 
           return .simple fpropName functionName mainArgs appliedArgs
         else
-          -- check if main arguments are in compositional form
-          if let .some id := mainArgs.data.find? (fun argId => 
-            if let .app (.fvar _) (.fvar xId') := args[argId]!.expr then
-              if xId == xId' then false else true
-            else
-              true) then
-            throwError s!"Argument `{← ppExpr args[id]!.expr}` is in invalid form!"
-          else
-            return .comp fpropName functionName mainArgs appliedArgs
+          return .comp fpropName functionName mainArgs appliedArgs
       | .fvar .. => 
         -- todo: do more careful check
         if fb.isAppOfArity ``DFunLike.coe 6 then
