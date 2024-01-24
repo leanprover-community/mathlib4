@@ -78,7 +78,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
 * `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Data.Real.NNReal`;
-* `∞`: a localized notation in `ℝ≥0∞` for `⊤ : ℝ≥0∞`.
+* `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
 
 -/
 

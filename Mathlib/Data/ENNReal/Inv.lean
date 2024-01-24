@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Operations
 
+#align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
+
 /-!
 # Results about division in extended non-negative reals
 
