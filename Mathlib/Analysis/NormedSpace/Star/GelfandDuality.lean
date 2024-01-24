@@ -116,7 +116,7 @@ theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
   refine' ⟨fun hz => _, _⟩
   · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes] at hf
-    exact ⟨_, hf.symm ⟩
+    exact ⟨_, hf.symm⟩
   · rintro ⟨f, rfl⟩
     exact AlgHom.apply_mem_spectrum f a
 #align weak_dual.character_space.mem_spectrum_iff_exists WeakDual.CharacterSpace.mem_spectrum_iff_exists
