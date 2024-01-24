@@ -116,6 +116,20 @@ def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i
   map_zero' := DFinsupp.mk_zero
 #align direct_sum.mk DirectSum.mk
 
+lemma mk_apply (s : Finset ι) (f : ∀ i : (↑s : Set ι), β i.1) (i : ι) :
+    mk _ s f i = if h : i ∈ s then f ⟨i, h⟩ else 0 := rfl
+
+lemma support_mk [(i : ι) → (x : (fun i ↦ β i) i) → Decidable (x ≠ 0)]
+    (s : Finset ι) (f : ∀ i : (↑s : Set ι), β i.1) :
+    (mk _ s f).support ⊆ s := by
+  intro i
+  simp only [Finset.coe_sort_coe, DFinsupp.mem_support_toFun, ne_eq]
+  erw [mk_apply]
+  intro h
+  split_ifs at h with h'
+  · exact h'
+  · exact h rfl |>.elim
+
 /-- `of i` is the natural inclusion map from `β i` to `⨁ i, β i`. -/
 def of (i : ι) : β i →+ ⨁ i, β i :=
   DFinsupp.singleAddHom β i
@@ -150,6 +164,27 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
     (∑ i in x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
+
+lemma mk_eq_sum_of  [(i : ι) → (x : (fun i ↦ β i) i) → Decidable (x ≠ 0)]
+    (s : Finset ι) (f : ∀ i : (↑s : Set ι), β i.1) :
+    mk _ s f = ∑ i in s.attach, of β i (f i) := by
+  rw [← sum_support_of β (mk β s f)]
+  rw [Finset.sum_subset]
+  pick_goal 2
+  · exact support_mk β s f
+  pick_goal 2
+  · intro x _ hx
+    simp only [Finset.coe_sort_coe, DFinsupp.mem_support_toFun, ne_eq, not_not] at hx
+    erw [hx, map_zero]
+
+  simp_rw [mk_apply]
+  calc
+    _ = ∑ i in s, if h : i ∈ s then of β i (f ⟨i, h⟩) else 0 :=
+        Finset.sum_congr rfl <| fun _ _ ↦ by split_ifs; rfl
+    _ = ∑ i in s.attach, _ := Finset.sum_attach _ _ |>.symm
+    _ = ∑ i in s.attach, of β i (f i) :=
+        Finset.sum_congr rfl <| fun x _ ↦ by rw [dif_pos x.2]; rfl
+
 
 variable {β}
 

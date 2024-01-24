@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.Quotient
 
 #align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
@@ -52,14 +53,14 @@ open SetLike DirectSum Set
 open BigOperators Pointwise DirectSum
 
 variable {ιA ιM σA σM R A M : Type*}
-variable [SetLike σA A] [SetLike σM M] [AddCommMonoid M] [AddSubmonoidClass σM M]
+variable [SetLike σA A] [SetLike σM M]
 variable [DecidableEq ιA] [DecidableEq ιM]
 
 variable (𝒜 : ιA → σA) (ℳ : ιM → σM)
-variable [Decomposition ℳ]
 
 section HomogeneousDef
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 variable [SetLike σA A] [AddSubmonoidClass σA A]
 variable [DecidableEq ιA] [AddMonoid ιA] [GradedRing 𝒜]
@@ -144,6 +145,7 @@ end HomogeneousDef
 
 section HomogeneousCore
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 
 variable (p : Submodule A M) (I : Ideal A)
@@ -178,7 +180,7 @@ end HomogeneousCore
 section IsHomogeneousSubmoduleDefs
 
 variable [AddMonoid ιA] [SetLike σA A] [SetLike σA A]
-
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [AddSubmonoidClass σA A] [Module A M] [GradedRing 𝒜]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
@@ -333,6 +335,7 @@ section Operations
 
 section Semiring
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 
 variable [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A]
@@ -667,6 +670,7 @@ section CommSemiring
 
 variable {𝒜}
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [CommSemiring A] [Module A M]
 
 variable [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
@@ -703,6 +707,7 @@ section homogeneousCore
 
 open HomogeneousSubmodule HomogeneousIdeal
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 
 variable [AddMonoid ιA]
@@ -772,6 +777,7 @@ section HomogeneousHull
 
 open HomogeneousSubmodule
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M] [DecidableEq ιA] [AddMonoid ιA]
 variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜] [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
@@ -872,6 +878,7 @@ section GaloisConnection
 
 open HomogeneousSubmodule HomogeneousIdeal
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M] [DecidableEq ιA] [AddMonoid ιA]
 
 variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜] [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
@@ -956,6 +963,7 @@ end IrrelevantIdeal
 
 section HomogeneouslyFG
 
+variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 variable [AddMonoid ιA] [AddSubmonoidClass σA A] [GradedRing 𝒜]
 variable (p : HomogeneousSubmodule A ℳ) (I : HomogeneousIdeal 𝒜)
@@ -1002,3 +1010,87 @@ lemma Ideal.fg_iff_homogeneously_fg : I.toIdeal.FG ↔ I.toIdeal.homogeneously_F
   Submodule.fg_iff_homogeneously_fg I
 
 end HomogeneouslyFG
+
+section quotient
+
+variable {A M : Type*} [Ring A] [AddCommGroup M] [Module A M]
+variable (𝒜 : ℕ → AddSubgroup A) {ℳ : ℕ → AddSubgroup M}
+variable [GradedRing 𝒜] [Decomposition ℳ] [GradedSMul 𝒜 ℳ]
+variable (p : HomogeneousSubmodule A ℳ)
+
+#check AddSubgroup.quotientAddSubgroupOfMapOfLE
+
+example (n : ℕ) : true := by
+  have := ℳ n ⧸ (AddSubgroup.comap (ℳ n).subtype <| p.toSubmodule.toAddSubgroup ⊓ ℳ n)
+  rfl
+
+namespace QuotientGrading
+
+@[simps]
+def grade : ℕ → AddSubgroup (M ⧸ p.toSubmodule) := fun n ↦
+  { carrier := {x | ∃ (m : M), m ∈ ℳ n ∧ x = Submodule.mkQ _ m }
+    add_mem' := by
+      rintro _ _ ⟨a, ha1, rfl⟩ ⟨b, hb1, rfl⟩
+      exact ⟨a + b, AddSubgroup.add_mem _ ha1 hb1, by rw [map_add]⟩
+    zero_mem' := ⟨0, AddSubgroup.zero_mem _, by rw [map_zero]⟩
+    neg_mem' := by
+      rintro _ ⟨a, ha1, rfl⟩
+      exact ⟨-a, AddSubgroup.neg_mem _ ha1, by rw [map_neg]⟩ }
+
+def proj (n : ℕ) : M ⧸ p.toSubmodule →+ M ⧸ p.toSubmodule :=
+  QuotientAddGroup.lift _
+    { toFun := fun m ↦ Quotient.mk'' (GradedModule.proj ℳ n m)
+      map_zero' := by simp
+      map_add' := by intros; simp } <| by
+    intro x hx
+    rw [AddMonoidHom.mem_ker]
+    simp only [Submodule.mem_toAddSubgroup, HomogeneousSubmodule.mem_iff, GradedModule.proj_apply,
+      Submodule.Quotient.mk''_eq_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+      Submodule.Quotient.mk_eq_zero] at hx ⊢
+    exact p.2 n hx
+
+@[simp]
+lemma proj_mk (n : ℕ) (m : M) :
+    proj p n (QuotientAddGroup.mk m) = Quotient.mk'' (GradedModule.proj ℳ n m) :=
+  rfl
+
+lemma proj_mem (n : ℕ) (x : M ⧸ p.toSubmodule) : proj p n x ∈ grade p n :=
+  QuotientAddGroup.induction_on x fun m ↦ ⟨GradedModule.proj ℳ n m, SetLike.coe_mem _, rfl⟩
+
+lemma proj_exist_support (x : M ⧸ p.toSubmodule) :
+    ∃ (s : Finset ℕ), (∀ n, n ∈ s ↔ proj p n x ≠ 0) ∧ x = ∑ i in s, proj p i x := by
+  classical
+  induction' x using QuotientAddGroup.induction_on with m
+  set s := {j | GradedModule.proj ℳ j m ∉ p}
+  have le1 : s ⊆ (decompose ℳ m).support
+  · intro x hx
+    simp only [GradedModule.proj_apply, mem_setOf_eq, Finset.mem_coe, DFinsupp.mem_support_toFun,
+      ne_eq] at hx ⊢
+    contrapose! hx
+    rw [hx]
+    exact Submodule.zero_mem _
+  have fin1 : s.Finite := (decompose ℳ m).support.finite_toSet.subset le1
+  have le2 : fin1.toFinset ⊆ (decompose ℳ m).support
+  · simp only [GradedModule.proj_apply, Finite.toFinset_subset]
+    exact le1
+  refine ⟨fin1.toFinset, by simp, ?_⟩
+  conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m, QuotientAddGroup.mk_sum]
+  rw [Finset.sum_subset (h := le2)]
+  · rfl
+  intro x _ hx
+  simpa only [proj_mk, GradedModule.proj_apply, Submodule.Quotient.mk''_eq_mk,
+    Submodule.Quotient.mk_eq_zero, HomogeneousSubmodule.mem_iff, Finite.mem_toFinset, mem_setOf_eq,
+    not_not] using hx
+
+noncomputable def proj_support (x : M ⧸ p.toSubmodule) : Finset ℕ :=
+  proj_exist_support p x |>.choose
+
+lemma mem_proj_support (x : M ⧸ p.toSubmodule) (j : ℕ) : j ∈ proj_support p x ↔ proj p j x ≠ 0 :=
+  proj_exist_support p x |>.choose_spec |>.1 j
+
+lemma eq_sum_proj (x : M ⧸ p.toSubmodule) : x = ∑ j in proj_support p x, proj p j x :=
+  proj_exist_support p x |>.choose_spec |>.2
+
+end QuotientGrading
+
+end quotient

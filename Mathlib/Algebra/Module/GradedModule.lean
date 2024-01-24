@@ -280,7 +280,7 @@ variable [GradedRing 𝒜] [DirectSum.Decomposition ℳ] [SetLike.GradedSMul �
 lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
     GradedModule.proj ℳ j (a • m) =
     if i ≤ j
-    then GradedRing.proj 𝒜 (j - i) a • GradedModule.proj ℳ i m
+    then GradedRing.proj 𝒜 (j - i) a • m
     else 0 := by
   classical
   rw [← DirectSum.sum_support_decompose ℳ (a • m), map_sum, Finset.sum_eq_single j,
@@ -314,7 +314,7 @@ lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
 
   split_ifs with h
   · rw [DFinsupp.finset_sum_apply, Finset.sum_eq_single (j - i), DirectSum.coe_of_apply,
-      if_pos (Nat.sub_add_cancel h), proj_apply, decompose_coe, DirectSum.of_eq_same]
+      if_pos (Nat.sub_add_cancel h)]
     · rfl
     · intro n _ hn2
       rw [of_eq_of_ne]
