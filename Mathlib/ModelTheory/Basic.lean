@@ -585,6 +585,14 @@ theorem comp_assoc (f : M →[L] N) (g : N →[L] P) (h : P →[L] Q) :
   rfl
 #align first_order.language.hom.comp_assoc FirstOrder.Language.Hom.comp_assoc
 
+@[simp]
+theorem comp_id (f : M →[L] N) : f.comp (id L M) = f :=
+  rfl
+
+@[simp]
+theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
+  rfl
+
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
@@ -723,12 +731,39 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 #align first_order.language.embedding.comp_assoc FirstOrder.Language.Embedding.comp_assoc
 
+theorem comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+
+@[simp]
+theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
+
+theorem toHom_comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+
+@[simp]
+theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.toHom_comp_injective eq, congr_arg h.toHom.comp⟩
+
 @[simp]
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
-    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom := by
-  ext
-  simp only [coe_toHom, comp_apply, Hom.comp_apply]
+    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
+  rfl
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
+
+@[simp]
+theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := DFunLike.coe_injective rfl
+
+@[simp]
+theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := DFunLike.coe_injective rfl
+
+@[simp]
+theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+  rfl
 
 end Embedding
 
@@ -774,6 +809,12 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
+
+-- Name would be better as symm_symm, but then can clash with Equiv.symm_symm
+@[simp]
+theorem symm_symm (f : M ≃[L] N) :
+    f.symm.symm = f :=
+  rfl
 
 @[simp]
 theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
@@ -826,6 +867,9 @@ theorem coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
 theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
+
+theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
+  intro _ _ h; apply DFunLike.coe_injective; exact congr_arg (DFunLike.coe ∘ Embedding.toHom) h
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   DFunLike.coe_injective
@@ -884,11 +928,84 @@ theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f
   rfl
 #align first_order.language.equiv.comp_apply FirstOrder.Language.Equiv.comp_apply
 
+@[simp]
+theorem comp_refl (g : M ≃[L] N) : g.comp (refl L M) = g :=
+  rfl
+
+@[simp]
+theorem refl_comp (g : M ≃[L] N) : (refl L N).comp g = g :=
+  rfl
+
+@[simp]
+theorem refl_toEmbedding : (refl L M).toEmbedding = Embedding.refl L M :=
+  rfl
+
+@[simp]
+theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+  rfl
+
 /-- Composition of first-order homomorphisms is associative. -/
 theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align first_order.language.equiv.comp_assoc FirstOrder.Language.Equiv.comp_assoc
+
+theorem injective_comp (h : N ≃[L] P) :
+    Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
+
+@[simp]
+theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
+  rfl
+
+@[simp]
+theorem comp_toEmbedding (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+    (hnp.comp hmn).toEmbedding = hnp.toEmbedding.comp hmn.toEmbedding :=
+  rfl
+
+@[simp]
+theorem self_comp_symm (f : M ≃[L] N) : f.comp f.symm = refl L N := by
+  ext; rw [comp_apply, apply_symm_apply, refl_apply]
+
+@[simp]
+theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
+  ext; rw [comp_apply, symm_apply_apply, refl_apply]
+
+@[simp]
+theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
+    f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
+  rw [← comp_toEmbedding, symm_comp_self, refl_toEmbedding]
+
+@[simp]
+theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
+    f.toEmbedding.comp f.symm.toEmbedding = Embedding.refl L N := by
+  rw [← comp_toEmbedding, self_comp_symm, refl_toEmbedding]
+
+@[simp]
+theorem symm_comp_self_toHom (f : M ≃[L] N) :
+    f.symm.toHom.comp f.toHom = Hom.id L M := by
+  rw [← comp_toHom, symm_comp_self, refl_toHom]
+
+@[simp]
+theorem self_comp_symm_toHom (f : M ≃[L] N) :
+    f.toHom.comp f.symm.toHom = Hom.id L N := by
+  rw [← comp_toHom, self_comp_symm, refl_toHom]
+
+@[simp]
+theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
+  rfl
+
+theorem comp_right_injective (h : M ≃[L] N) :
+    Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
+  intro f g hfg
+  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+    rw [comp_assoc, self_comp_symm, comp_refl]
+
+@[simp]
+theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=
+  ⟨fun eq ↦ h.comp_right_injective eq, congr_arg (fun (r : N ≃[L] P) ↦ r.comp h)⟩
 
 end Equiv
 
