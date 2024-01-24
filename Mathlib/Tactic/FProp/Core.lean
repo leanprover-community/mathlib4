@@ -205,22 +205,31 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
 
 /-- -/
-def tryTheorem? (e : Expr) (thm : FPropTheorem)
+def tryTheorem? (e : Expr) (thmName : Name)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
   withNewMCtxDepth do
-    let thmProof ← thm.getProof
+    let thmProof ← mkConstWithFreshMVarLevels thmName
     let type ← inferType thmProof
     let (xs, bis, type) ← forallMetaTelescope type
-    tryTheoremCore xs bis thmProof type e thm.origin discharge? fprop
+    tryTheoremCore xs bis thmProof type e (.decl thmName) discharge? fprop
+
+/-- -/
+def tryLocalTheorem? (e : Expr) (fvarId : FVarId)
+  (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
+  withNewMCtxDepth do
+    let thmProof := .fvar fvarId
+    let type ← inferType thmProof
+    let (xs, bis, type) ← forallMetaTelescope type
+    tryTheoremCore xs bis thmProof type e (.fvar fvarId) discharge? fprop
 
 /-- -/
 def applyIdRule (fpropDecl : FPropDecl) (e X : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .id) 
     | return none
-  let .id id_X := thm.thrmArgs | return none
+  let .id id_X := thm.thmArgs | return none
   
   let proof ← thm.getProof
   let type ← inferType proof
@@ -229,10 +238,10 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
   try 
     xs[id_X]!.mvarId!.assignIfDefeq X
   catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{e}`"
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
 
 -- TODO: try normal theorems if there is no const theorem 
@@ -241,9 +250,9 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
 def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const) | return none
-  let .const id_X id_y := thm.thrmArgs | return none
+  let .const id_X id_y := thm.thmArgs | return none
   
   let proof ← thm.getProof
   let type ← inferType proof
@@ -253,17 +262,17 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
     xs[id_X]!.mvarId!.assignIfDefeq X
     xs[id_y]!.mvarId!.assignIfDefeq y
   catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{← ppExpr e}`"
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{← ppExpr e}`"
     return none
 
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
 /-- -/
 def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr) 
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let ext := lambdaTheoremsExt.getState (← getEnv)
 
   let .forallE n X Y _ := XY | return none
 
@@ -271,7 +280,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   if ¬(Y.hasLooseBVars) then
     if let .some thm := ext.theorems.find? (fpropDecl.fpropName, .proj) then
 
-      let .proj id_x id_Y := thm.thrmArgs | return none
+      let .proj id_x id_Y := thm.thmArgs | return none
 
       let proof ← thm.getProof
       let type ← inferType proof
@@ -281,10 +290,10 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
         xs[id_x]!.mvarId!.assignIfDefeq x
         xs[id_Y]!.mvarId!.assignIfDefeq Y
       catch _ =>
-        trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{← ppExpr e}`"
+        trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{← ppExpr e}`"
         return none
 
-      return ← tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+      return ← tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
   -- dependent case
   -- can also handle non-dependent cases if non-dependent theorem is not available
@@ -293,7 +302,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep) 
     | trace[Meta.Tactic.fprop.step] "missing proj rule(`P fun f => f x`) for function property `{← ppOrigin (.decl fpropDecl.fpropName)}`"
       return none
-  let .projDep id_x id_Y := thm.thrmArgs | return none
+  let .projDep id_x id_Y := thm.thmArgs | return none
 
   let proof ← thm.getProof
   let type ← inferType proof
@@ -303,18 +312,18 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
     xs[id_x]!.mvarId!.assignIfDefeq x
     xs[id_Y]!.mvarId!.assignIfDefeq Y
   catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{e}`"
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
 /-- -/
 def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp) | return none
-  let .comp id_f id_g := thm.thrmArgs | return none
+  let .comp id_f id_g := thm.thmArgs | return none
   
   let proof ← thm.getProof
   let type ← inferType proof
@@ -324,40 +333,19 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
     xs[id_f]!.mvarId!.assignIfDefeq f
     xs[id_g]!.mvarId!.assignIfDefeq g
   catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{e}`"
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
-
-/-- -/
-def applyLetRule (fpropDecl : FPropDecl) (e f g : Expr) 
-  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
-
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .letE) | return none
-  let .letE id_f id_g := thm.thrmArgs | return none
-  
-  let proof ← thm.getProof
-  let type ← inferType proof
-  let (xs, bis, type) ← forallMetaTelescope type
-
-  try
-    xs[id_f]!.mvarId!.assignIfDefeq f
-    xs[id_g]!.mvarId!.assignIfDefeq g
-  catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{e}`"
-    return none
-
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
 /-- -/
 def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do 
 
-  let ext := fpropLambdaTheoremsExt.getState (← getEnv)
+  let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi) | return none
-  let .pi id_f := thm.thrmArgs | return none
+  let .pi id_f := thm.thmArgs | return none
   
   let proof ← thm.getProof
   let type ← inferType proof
@@ -366,10 +354,10 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   try
     xs[id_f]!.mvarId!.assignIfDefeq f
   catch _ =>
-    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thrmName)}` on `{e}`"
+    trace[Meta.Tactic.fprop.discharge] "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
-  tryTheoremCore xs bis proof type e (.decl thm.thrmName) fpropDecl.discharger fprop
+  tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
 
 /-- Changes the goal from `P fun x => f x₁ x₂ x₃` to `P fun x => f x₁ x₂`
@@ -473,15 +461,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
       -- this local theorem should be directly applicable to e
       if args = args' && numAppArgs = numAppArgs' then
 
-        let thm : FPropTheorem := {
-          fpropName := fpropDecl'.fpropName
-          keys := []
-          levelParams := #[]
-          proof := var.toExpr
-          origin := .fvar var.fvarId 
-        }
-
-        let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
+        let .some r ← tryLocalTheorem? e var.fvarId fpropDecl.discharger fprop
           | continue
 
         trace[Meta.Tactic.fprop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
@@ -526,16 +506,8 @@ def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
         | continue
       if fpropDecl'.fpropName ≠ fpropDecl.fpropName then
         continue
-
-      let thm : FPropTheorem := {
-        fpropName := fpropDecl'.fpropName
-        keys := []
-        levelParams := #[]
-        proof := var.toExpr
-        origin := .fvar var.fvarId 
-      }
       
-      let .some r ← tryTheorem? e thm fpropDecl.discharger fprop
+      let .some r ← tryLocalTheorem? e var.fvarId fpropDecl.discharger fprop
         | continue
 
       trace[Meta.Tactic.fprop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
@@ -598,17 +570,14 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : FunctionData) (fprop : E
 
 def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
-  let ext := fpropMorTheoremsExt.getState (← getEnv)
+  let ext := morTheoremsExt.getState (← getEnv)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
   let candidates := candidates.map (·.1) |>.flatten
 
-  let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
-  -- trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
-
-  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
+  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
-    if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
+    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
       return r
 
   trace[Meta.Tactic.fprop.step] "no theorem matched"
@@ -617,17 +586,17 @@ def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)  (fp
 
 def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)  (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
-  let ext := fpropTransitionTheoremsExt.getState (← getEnv)
+  let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
   let candidates := candidates.map (·.1) |>.flatten
 
   let path := (← RefinedDiscrTree.mkDTExpr e { iota := false, zeta := false }).flatten
   -- trace[Meta.Tactic.fprop.step] "looking up candidates for: {path}"
 
-  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin c.origin}"
+  trace[Meta.Tactic.fprop.step] "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
-    if let .some r ← tryTheorem? e c fpropDecl.discharger fprop then
+    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
       return r
 
   trace[Meta.Tactic.fprop.step] "no theorem matched"
@@ -648,37 +617,35 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fpro
   let .some functionName ← fData.getFnConstName? 
     | throwError "fprop bug, invalid use of `constAppCase` on {← ppExpr e}"
 
-  let ext := fpropTheorems2Ext.getState (← getEnv)
-  
-  let thms := ext.theorems.findD functionName {} |>.findD fpropDecl.fpropName #[]
-
+  let thms ← getTheoremsForFunction functionName fpropDecl.fpropName
   let thms := thms.filter (fun thm => fData.mainArgs ⊆ thm.mainArgs)
-  trace[Meta.Tactic.fprop] "applicable theorems for {functionName}: {thms.map fun thm => toString thm.theoremName}"
+  trace[Meta.Tactic.fprop] "applicable theorems for {functionName}: {thms.map fun thm => toString thm.thmName}"
 
   -- todo find the best match
 
   for thm in thms.reverse do
     match compare thm.appliedArgs fData.args.size with
     | .lt => 
-      trace[Meta.Tactic.fprop] "removing applied argument before applying {← ppOrigin (.decl thm.theoremName)}"
+      trace[Meta.Tactic.fprop] "removing applied argument before applying {← ppOrigin (.decl thm.thmName)}"
       let .some prf ← removeArgRule fpropDecl e f fprop | continue
       return prf  
     | .gt => 
-      trace[Meta.Tactic.fprop] "adding argument before applying {← ppOrigin (.decl thm.theoremName)}"
+      trace[Meta.Tactic.fprop] "adding argument before applying {← ppOrigin (.decl thm.thmName)}"
       let .some prf ← applyPiRule fpropDecl e f fprop | continue
       return prf  
     | .eq => 
-      if thm.isSimple then
+      match thm.form with
+      | .uncurried => 
         let .some (f',g') ← splitMorToCompOverArgs f thm.mainArgs
           | continue
         if (← isDefEq f' f) then
-          let .some r ← tryTheorem? e (← thm.toTheorem) fpropDecl.discharger fprop | continue
+          let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop | continue
           return r
         else
           let .some r ← applyCompRule fpropDecl e f' g' fprop | continue
           return r
-      else
-        let .some r ← tryTheorem? e (← thm.toTheorem) fpropDecl.discharger fprop | continue
+      | .comp => 
+        let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop | continue
         return r
 
   -- if functionName == ``DFunLike.coe && fData.args.size = 5 then

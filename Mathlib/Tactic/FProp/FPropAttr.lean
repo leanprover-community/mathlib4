@@ -5,9 +5,10 @@ Authors: Tomas Skrivan
 -/
 import Lean
 import Mathlib.Tactic.FProp.FPropDecl
-import Mathlib.Tactic.FProp.FPropLambdaTheorems
-import Mathlib.Tactic.FProp.FPropTheorems
-import Mathlib.Tactic.FProp.FPropTheorems2
+import Mathlib.Tactic.FProp.Theorems
+-- import Mathlib.Tactic.FProp.FPropLambdaTheorems
+-- import Mathlib.Tactic.FProp.FPropTheorems
+-- import Mathlib.Tactic.FProp.FPropTheorems2
 
 namespace Mathlib
 open Lean Meta
@@ -51,14 +52,7 @@ initialize fpropAttr : Unit ←
          if b.isProp then
            addFPropDecl declName none
          else
-           let .some (_, f) ← getFProp? b
-             | throwError "unrecognized fprop"
-
-           if (← isLambdaRule f) then
-             addLambdaTheorem declName
-           else
-             addTheorem declName attrKind 1000
-             addTheorem2 declName attrKind 1000
+           addTheorem declName attrKind
     erase := fun _declName => 
       throwError "can't remove `fprop` attribute (not implemented yet)" 
   }
