@@ -52,6 +52,16 @@ lemma target {C : SSet} [Quasicategory C] (f g : C _[1]) (τ  : C _[2]) [homotop
         Fin.coe_fin_one]
     rw [hd]
 
+/--Two 1-simplies which are homotopic have the same source.-/
+lemma source {C : SSet} [Quasicategory C] (f g : C _[1]) (τ  : C _[2]) [homotopy f g τ ]:
+    C.map (δ 1).op f = C.map (δ 1).op g := by
+    rename_i homot
+    rw [← homot.prop_δ₂,← homot.prop_δ₁]
+    repeat rw [← (types_comp_apply (C.map _) (C.map _)),← C.map_comp,← op_comp]
+    change C.map (δ 1 ≫ δ (Fin.succ 1)).op τ = C.map (δ 1 ≫ δ 1).op τ
+    rw [ δ_comp_δ]
+    rfl
+    rfl
 
 
 instance {C :SSet} [Quasicategory C] (f : C _[1]) :
@@ -95,22 +105,20 @@ lemma trans' {C :SSet} [Quasicategory C] (φ φ' φ'' : C _[1]) (τ  τ' : C _[2
         any_goals rfl
         any_goals (rw [Fin.lt_def] at i1_lt_i2; simp at i1_lt_i2)
         ·  change C.map (δ 1).op τ''=C.map (δ 0).op τ'
-           rw [homot'.prop_δ₀]
-           rw [← (types_comp_apply (C.map _) (C.map _))]
+           rw [homot'.prop_δ₀,← (types_comp_apply (C.map _) (C.map _))]
            rw [← C.map_comp,← op_comp,← Category.assoc,δ_comp_σ_succ']
            rfl
            rfl
         · change  C.map (δ 2).op τ'' =C.map (δ 0).op τ
           rw [homot.prop_δ₀]
           repeat rw [← (types_comp_apply (C.map _) (C.map _)),← C.map_comp,← op_comp]
-          have ht: (δ 2 ≫ σ 0 ≫ σ 0) ≫ δ (0: Fin 2) = σ 0≫ δ 0 := by
-              congr
-              ext
-              simp_all only [OrderHom.comp_coe, Function.comp_apply, Fin.coe_fin_one]
-          rw [ht]
+          apply congrFun
+          repeat apply congrArg
+          congr
+          ext
+          simp_all only [OrderHom.comp_coe, Function.comp_apply, Fin.coe_fin_one]
         · change  C.map (δ 2).op τ' =C.map (δ 2).op  τ
-          rw [homot.prop_δ₂]
-          rw [homot'.prop_δ₂]
+          rw [homot.prop_δ₂,homot'.prop_δ₂]
       let three_horn := SSet.horn.homMk 1 face_map hface
       have h01 : (0:Fin 4) < (1:Fin 4):=Fin.one_pos
       have h0n: (1:Fin 4) < (Fin.last 3):=Fin.one_lt_last
@@ -119,82 +127,58 @@ lemma trans' {C :SSet} [Quasicategory C] (φ φ' φ'' : C _[1]) (τ  τ' : C _[2
          ((standardSimplex.objEquiv ([3]) (op [3])).invFun  (𝟙 ([3]:SimplexCategory)))
       have lift₂ : C.map (δ 2).op lift_simplex = τ' := by
           dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) )]
-          rw [← lift.naturality]
-          rw [types_comp_apply]
-          have h12 : (2: Fin 4) ≠ (1 :Fin 4) := by
-            apply (bne_iff_ne 2 1).mp
-            rfl
-          have hτ':  τ' = (hornInclusion 3 1 ≫ lift).app (op [2])  (horn.face 1 2 h12):=by
-            rw [← hlift]
-            rw [horn.homMk_face]
+          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
+          have hτ':  τ' = (hornInclusion 3 1 ≫ lift).app (op [2])
+            (horn.face 1 2 (by {apply (bne_iff_ne 2 1).mp; rfl})):=by
+            rw [← hlift,horn.homMk_face]
             rfl
           rw [NatTrans.comp_app,types_comp_apply] at hτ'
           rw [hτ']
-          congr
+          rfl
       have lift₃ : C.map (δ 3).op lift_simplex = τ := by
           dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) )]
-          rw [← lift.naturality]
-          rw [types_comp_apply]
-          have h13 : (3: Fin 4) ≠ (1 :Fin 4) := by
-            apply (bne_iff_ne 3 1).mp
-            rfl
-          have hτ:  τ = (hornInclusion 3 1 ≫ lift).app (op [2])  (horn.face 1 3 h13):=by
-            rw [← hlift]
-            rw [horn.homMk_face]
+          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
+          have hτ:  τ = (hornInclusion 3 1 ≫ lift).app (op [2])
+           (horn.face 1 3 (Fin.ne_of_gt h0n)):=by
+            rw [← hlift,horn.homMk_face]
             rfl
           rw [NatTrans.comp_app,types_comp_apply] at hτ
           rw [hτ]
-          congr
+          rfl
       have lift₀ : C.map (δ 0).op lift_simplex = τ'' := by
           dsimp
-          rw [← (types_comp_apply (lift.app _) (C.map _) )]
-          rw [← lift.naturality]
-          rw [types_comp_apply]
-          have h10 : (0: Fin 4) ≠ (1 :Fin 4) := by
-            apply (bne_iff_ne 0 1).mp
-            rfl
-          have hτ'':  τ'' = (hornInclusion 3 1 ≫ lift).app (op [2])  (horn.face 1 0 h10):=by
-            rw [← hlift]
-            rw [horn.homMk_face]
+          rw [← (types_comp_apply (lift.app _) (C.map _) ),← lift.naturality,types_comp_apply]
+          have hτ'':  τ'' = (hornInclusion 3 1 ≫ lift).app (op [2])
+             (horn.face 1 0 (Fin.zero_ne_one)):=by
+            rw [← hlift,horn.homMk_face]
             rfl
           rw [NatTrans.comp_app,types_comp_apply] at hτ''
           change _=τ''
           rw [hτ'']
-          congr
+          rfl
       use C.map (δ 1).op lift_simplex
       fconstructor
       all_goals rw [← (types_comp_apply (C.map _) (C.map _) ),← C.map_comp,← op_comp]
       all_goals rw [show δ (1 : Fin 4)= δ (Fin.castSucc 1) from rfl]
-      · rw [← δ_comp_δ]
-        rw [op_comp,C.map_comp,types_comp_apply]
+      · rw [← δ_comp_δ,op_comp,C.map_comp,types_comp_apply]
         change C.map (δ 1).op (C.map (δ 3).op lift_simplex) = φ'
         rw [lift₃]
         exact homot.prop_δ₁
         exact Nat.le_succ 1
-      · rw [← δ_comp_δ]
-        rw [op_comp,C.map_comp,types_comp_apply]
+      · rw [← δ_comp_δ,op_comp,C.map_comp,types_comp_apply]
         change C.map (δ 1).op (C.map (δ 2).op lift_simplex) = φ''
         rw [lift₂]
         exact homot'.prop_δ₁
         rfl
-      · rw [← show δ (1 : Fin 4)= δ (Fin.castSucc 1) from rfl]
-        have h01' : Fin.castSucc 0 < (1:Fin 4) := by
-            rw [Fin.lt_def]
-            simp
-        rw [δ_comp_δ' h01']
-        rw [op_comp,C.map_comp,types_comp_apply]
-        change C.map (δ 0).op (C.map (δ 0).op lift_simplex)=_
-        rw [lift₀]
-        change C.map (δ 0).op (C.map (σ  0≫ σ 0).op (C.map (δ 0).op φ))=_
-        rw [(target φ φ' τ).symm ]
+      · rw [congrArg δ Fin.castSucc_one,δ_comp_δ' (by {rw [Fin.lt_def];simp }),op_comp,C.map_comp,
+           types_comp_apply, congrArg δ Fin.castSucc_zero,lift₀,(target φ φ' τ).symm ]
         repeat rw [← (types_comp_apply (C.map _) (C.map _)),← C.map_comp,← op_comp]
-        have ht: (δ 0 ≫ σ 0 ≫ σ 0) ≫ δ (0: Fin 2) = σ 0≫ δ 0 := by
-              congr
-              ext
-              simp_all only [OrderHom.comp_coe, Function.comp_apply, Fin.coe_fin_one]
-        rw [ht]
+        apply congrFun
+        repeat apply congrArg
+        congr
+        ext
+        simp_all only [OrderHom.comp_coe, Function.comp_apply, Fin.coe_fin_one]
+
 /--If there exists a homotopy from `φ` to `φ'` then there exists a homotopy
  from `φ'` to `φ`.-/
 lemma symm {C :SSet} [Quasicategory C] (φ φ' : C _[1]) (τ   : C _[2])
@@ -207,4 +191,5 @@ lemma trans {C :SSet} [Quasicategory C] (φ φ' φ'': C _[1]) (τ  τ' : C _[2])
     [homotopy φ φ' τ] [homotopy φ' φ'' τ']:  homotopic φ φ''   := by
           obtain ⟨τ'',homot''⟩:=symm φ φ' τ
           exact trans' φ' φ φ'' τ'' τ'
+
 end homotopy
