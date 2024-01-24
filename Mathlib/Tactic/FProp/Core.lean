@@ -566,9 +566,9 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
 
     match (yBody.hasLooseBVar 0), (yBody.hasLooseBVar 1) with
     | true, true =>
-      let f := Expr.lam xName xType (.lam yName yType yBody default) xBi
-      let g := Expr.lam xName xType yValue default
-      applyLetRule fpropDecl e f g fprop
+      let f ← mkUncurryFun 2 (Expr.lam xName xType (.lam yName yType yBody default) xBi)
+      let g := Expr.lam xName xType (mkAppN (← mkConstWithFreshMVarLevels ``Prod.mk) #[xType,yType,.bvar 0, yValue]) default
+      applyCompRule fpropDecl e f g fprop
 
     | true, false => 
       let f := Expr.lam yName yType yBody default
