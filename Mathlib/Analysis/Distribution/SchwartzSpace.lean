@@ -3,10 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
@@ -915,6 +914,10 @@ def pderivCLM (m : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
 theorem pderivCLM_apply (m : E) (f : 𝓢(E, F)) (x : E) : pderivCLM 𝕜 m f x = fderiv ℝ f x m :=
   rfl
 #align schwartz_map.pderiv_clm_apply SchwartzMap.pderivCLM_apply
+
+theorem pderivCLM_eq_lineDeriv (m : E) (f : 𝓢(E, F)) (x : E) :
+    pderivCLM 𝕜 m f x = lineDeriv ℝ f x m := by
+  simp only [pderivCLM_apply, f.differentiableAt.lineDeriv_eq_fderiv]
 
 /-- The iterated partial derivative (or directional derivative) as a continuous linear map on
 Schwartz space. -/
