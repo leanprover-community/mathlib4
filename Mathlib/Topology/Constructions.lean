@@ -894,7 +894,7 @@ theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 #align continuous_inr continuous_inr
 
-theorem isOpen_sum_iff {s : Set (Sum X Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
+theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
@@ -927,37 +927,37 @@ theorem embedding_inr : Embedding (@inr X Y) :=
   openEmbedding_inr.1
 #align embedding_inr embedding_inr
 
-theorem isOpen_range_inl : IsOpen (range (inl : X → Sum X Y)) :=
+theorem isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) :=
   openEmbedding_inl.2
 #align is_open_range_inl isOpen_range_inl
 
-theorem isOpen_range_inr : IsOpen (range (inr : Y → Sum X Y)) :=
+theorem isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) :=
   openEmbedding_inr.2
 #align is_open_range_inr isOpen_range_inr
 
-theorem isClosed_range_inl : IsClosed (range (inl : X → Sum X Y)) := by
+theorem isClosed_range_inl : IsClosed (range (inl : X → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inl]
   exact isOpen_range_inr
 #align is_closed_range_inl isClosed_range_inl
 
-theorem isClosed_range_inr : IsClosed (range (inr : Y → Sum X Y)) := by
+theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inr]
   exact isOpen_range_inl
 #align is_closed_range_inr isClosed_range_inr
 
-theorem closedEmbedding_inl : ClosedEmbedding (inl : X → Sum X Y) :=
+theorem closedEmbedding_inl : ClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨embedding_inl, isClosed_range_inl⟩
 #align closed_embedding_inl closedEmbedding_inl
 
-theorem closedEmbedding_inr : ClosedEmbedding (inr : Y → Sum X Y) :=
+theorem closedEmbedding_inr : ClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨embedding_inr, isClosed_range_inr⟩
 #align closed_embedding_inr closedEmbedding_inr
 
-theorem nhds_inl (x : X) : 𝓝 (inl x : Sum X Y) = map inl (𝓝 x) :=
+theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (openEmbedding_inl.map_nhds_eq _).symm
 #align nhds_inl nhds_inl
 
-theorem nhds_inr (x : Y) : 𝓝 (inr x : Sum X Y) = map inr (𝓝 x) :=
+theorem nhds_inr (x : Y) : 𝓝 (inr x : X ⊕ Y) = map inr (𝓝 x) :=
   (openEmbedding_inr.map_nhds_eq _).symm
 #align nhds_inr nhds_inr
 
@@ -974,7 +974,7 @@ theorem Continuous.sum_map {f : X → Y} {g : Z → δ} (hf : Continuous f) (hg 
   continuous_sum_map.2 ⟨hf, hg⟩
 #align continuous.sum_map Continuous.sum_map
 
-theorem isOpenMap_sum {f : Sum X Y → Z} :
+theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
   simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
 #align is_open_map_sum isOpenMap_sum
