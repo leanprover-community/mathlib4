@@ -8,7 +8,7 @@ import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
@@ -965,7 +965,7 @@ theorem fract_nonneg (a : α) : 0 ≤ fract a :=
 
 /-- The fractional part of `a` is positive if and only if `a ≠ ⌊a⌋`. -/
 lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
-  (fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
+  (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
 theorem fract_lt_one (a : α) : fract a < 1 :=

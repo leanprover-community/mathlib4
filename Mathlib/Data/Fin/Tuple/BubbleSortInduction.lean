@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Data.Fin.Tuple.Sort
-import Mathlib.Data.Fintype.Perm
 import Mathlib.Order.WellFounded
 
 #align_import data.fin.tuple.bubble_sort_induction from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
