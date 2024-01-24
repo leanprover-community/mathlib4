@@ -248,6 +248,7 @@ end FieldDivisionRing
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring. -/
+@[reducible]
 def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
@@ -257,6 +258,7 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
 #align ring_hom.to_algebra' RingHom.toAlgebra'
 
 /-- Creating an algebra from a morphism to a commutative semiring. -/
+@[reducible]
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 #align ring_hom.to_algebra RingHom.toAlgebra
@@ -437,7 +439,9 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
 instance id : Algebra R R :=
-  (RingHom.id R).toAlgebra
+  { (RingHom.id R).toAlgebra with
+    toFun := fun x => x
+    smul := fun r x => r*x }
 #align algebra.id Algebra.id
 
 variable {R A}
