@@ -3,7 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.PiSystem
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
 # π-systems of cylinders and square cylinders

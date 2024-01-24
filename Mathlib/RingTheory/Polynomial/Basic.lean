@@ -9,7 +9,6 @@ import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 

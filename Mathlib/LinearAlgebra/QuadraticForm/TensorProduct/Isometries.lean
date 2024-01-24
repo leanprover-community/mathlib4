@@ -51,7 +51,7 @@ theorem tmul_tensorMap_apply
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) (x : M₁ ⊗[R] M₃) :
     Q₂.tmul Q₄ (TensorProduct.map f.toLinearMap g.toLinearMap x) = Q₁.tmul Q₃ x :=
-  FunLike.congr_fun (tmul_comp_tensorMap f g) x
+  DFunLike.congr_fun (tmul_comp_tensorMap f g) x
 
 namespace Isometry
 
@@ -89,7 +89,7 @@ theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm
 theorem tmul_tensorComm_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x : M₁ ⊗[R] M₂) :
     Q₂.tmul Q₁ (TensorProduct.comm R M₁ M₂ x) = Q₁.tmul Q₂ x :=
-  FunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
+  DFunLike.congr_fun (tmul_comp_tensorComm Q₁ Q₂) x
 
 /-- `TensorProduct.comm` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
@@ -127,7 +127,7 @@ theorem tmul_tensorAssoc_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
     (x : (M₁ ⊗[R] M₂) ⊗[R] M₃):
     Q₁.tmul (Q₂.tmul Q₃) (TensorProduct.assoc R M₁ M₂ M₃ x) = (Q₁.tmul Q₂).tmul Q₃ x :=
-  FunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
+  DFunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
 /-- `TensorProduct.assoc` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
@@ -165,7 +165,7 @@ theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
 theorem tmul_tensorRId_apply
     (Q₁ : QuadraticForm R M₁) (x : M₁ ⊗[R] R) :
     Q₁ (TensorProduct.rid R M₁ x) = Q₁.tmul (sq (R := R)) x :=
-  FunLike.congr_fun (comp_tensorRId_eq Q₁) x
+  DFunLike.congr_fun (comp_tensorRId_eq Q₁) x
 
 /-- `TensorProduct.rid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
@@ -199,7 +199,7 @@ theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
 theorem tmul_tensorLId_apply
     (Q₂ : QuadraticForm R M₂) (x : R ⊗[R] M₂) :
     Q₂ (TensorProduct.lid R M₂ x) = (sq (R := R)).tmul Q₂ x :=
-  FunLike.congr_fun (comp_tensorLId_eq Q₂) x
+  DFunLike.congr_fun (comp_tensorLId_eq Q₂) x
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]

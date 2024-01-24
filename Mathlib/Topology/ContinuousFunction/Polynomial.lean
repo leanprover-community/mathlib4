@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
+import Mathlib.Algebra.Star.Subalgebra
 
 #align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -170,7 +170,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
   ext f
   fconstructor
   · rintro ⟨p, ⟨-, w⟩⟩
-    rw [FunLike.ext_iff] at w
+    rw [DFunLike.ext_iff] at w
     dsimp at w
     let q := p.comp ((b - a)⁻¹ • Polynomial.X + Polynomial.C (-a * (b - a)⁻¹))
     refine' ⟨q, ⟨_, _⟩⟩
