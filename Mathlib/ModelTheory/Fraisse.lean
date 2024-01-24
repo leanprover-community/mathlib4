@@ -294,7 +294,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   use t.toEmbedding.comp r
   change _ = t.toEmbedding.comp s
   ext x
-  have eq' := congr_fun (congr_arg FunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
+  have eq' := congr_fun (congr_arg DFunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
   simp only [Embedding.comp_apply, Hom.comp_apply,
     Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]

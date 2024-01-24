@@ -734,7 +734,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
 theorem comp_injective (h : N ↪[L] P) :
     Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
   intro f g hfg
-  ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
 @[simp]
 theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
@@ -743,7 +743,7 @@ theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f
 theorem toHom_comp_injective (h : N ↪[L] P) :
     Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
   intro f g hfg
-  ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
 @[simp]
 theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
@@ -756,10 +756,10 @@ theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
 
 @[simp]
-theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := FunLike.coe_injective rfl
+theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := DFunLike.coe_injective rfl
 
 @[simp]
-theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := FunLike.coe_injective rfl
+theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := DFunLike.coe_injective rfl
 
 @[simp]
 theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
@@ -869,7 +869,7 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
 
 theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
-  intro _ _ h; apply FunLike.coe_injective; exact congr_arg (FunLike.coe ∘ Embedding.toHom) h
+  intro _ _ h; apply DFunLike.coe_injective; exact congr_arg (DFunLike.coe ∘ Embedding.toHom) h
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   DFunLike.coe_injective
@@ -953,7 +953,7 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
 theorem injective_comp (h : N ≃[L] P) :
   Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
     intro f g hfg
-    ext x; exact h.injective (congr_fun (congr_arg FunLike.coe hfg) x)
+    ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
 
 @[simp]
 theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
