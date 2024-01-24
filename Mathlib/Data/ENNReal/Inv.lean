@@ -32,7 +32,7 @@ A few order isomorphisms are worthy of mention:
     composed with the identity order isomorphism between `Iic (1 : ℝ≥0∞)` and `Icc (0 : ℝ) 1`.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal
 
 namespace ENNReal
 
