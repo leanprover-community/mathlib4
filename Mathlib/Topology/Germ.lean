@@ -8,6 +8,7 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -88,7 +89,7 @@ build a new predicate on germs `restrict_germ_predicate P A` such that
 `forall_restrict_germ_predicate_iff` for this equivalence. -/
 def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
     (A : Set X) : ∀ x : X, Germ (𝓝 x) Y → Prop := fun x φ ↦
-  Quotient.liftOn' φ (fun f ↦ x ∈ A → ∀ᶠ y in 𝓝 x, P y f)
+  Germ.liftOn φ (fun f ↦ x ∈ A → ∀ᶠ y in 𝓝 x, P y f)
     haveI : ∀ f f' : X → Y, f =ᶠ[𝓝 x] f' → (∀ᶠ y in 𝓝 x, P y f) → ∀ᶠ y in 𝓝 x, P y f' := by
       intro f f' hff' hf
       apply (hf.and <| Eventually.eventually_nhds hff').mono
@@ -149,42 +150,46 @@ theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
   rfl
 
-/-- The germ of functions `X → Y` at `x ∈ X` is constant w.r.t. the neighbourhood filter `𝓝 x`. -/
-def IsConstant (P : Germ (𝓝 x) Y) : Prop :=
-  P.liftOn (fun f ↦ ∀ᶠ x' in 𝓝 x, f x' = f x) <| by
-    suffices : ∀ f g : X → Y, f =ᶠ[𝓝 x] g → (∀ᶠ x' in 𝓝 x, f x' = f x) → ∀ᶠ x' in 𝓝 x, g x' = g x
-    exact fun f g hfg ↦ propext ⟨fun h ↦ this f g hfg h, fun h ↦ this g f hfg.symm h⟩
-    rintro f g hfg hf
-    refine (hf.and hfg).mono fun x' hx' ↦ ?_
-    rw [← hx'.2, hx'.1, hfg.eq_of_nhds]
-
-theorem isConstant_coe {y} (h : ∀ x', f x' = y) : (↑f : Germ (𝓝 x) Y).IsConstant :=
-  eventually_of_forall fun x' ↦ by rw [h, h]
-
-@[simp]
-theorem isConstant_coe_const {y : Y} : (fun _ : X ↦ y : Germ (𝓝 x) Y).IsConstant :=
-  eventually_of_forall fun _ ↦ rfl
-
 end Filter.Germ
 
-theorem eq_of_germ_isConstant [PreconnectedSpace X]
-    (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' := by
-  revert x
-  erw [← eq_univ_iff_forall]
-  apply IsClopen.eq_univ _ (⟨x', rfl⟩ : {x | f x = f x'}.Nonempty)
-  refine ⟨isOpen_iff_eventually.mpr fun x hx ↦ hx ▸ h x, ?_⟩
-  rw [isClosed_iff_frequently]
-  rintro x hx
-  rcases ((h x).and_frequently hx).exists with ⟨x'', H⟩
-  exact H.1.symm.trans H.2
+/-- If the germ of `f` w.r.t. each `𝓝 x` is constant, `f` is locally constant. -/
+private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) :
+    IsLocallyConstant f := by
+  intro s
+  rw [isOpen_iff_mem_nhds]
+  intro a ha
+  obtain ⟨b, hb⟩ := h a
+  apply mem_of_superset hb
+  intro x hx
+  have aux : f a = b := by sorry -- the nbhd in `hb` includes a
+  have : f x = f a := aux ▸ hx
+  rw [mem_preimage, this]
+  exact ha
+
+private lemma IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X}
+    (hs : IsPreconnected s) (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f := by
+  sorry -- TODO: prove this! old proof of constantness below
+  -- haveI := isPreconnected_iff_preconnectedSpace.mp hs
+  -- let F : s → Y := f ∘ (↑)
+  -- change F ⟨x, x_in⟩ = F ⟨x', x'_in⟩
+  -- apply eq_of_germ_isConstant
+  -- rintro ⟨x, hx⟩
+  -- have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
+  -- exact this (h x hx)
+
+theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
+    (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
+  (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
+    (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)
 
 theorem eq_of_germ_isConstant_on {s : Set X}
     (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s)
-    (x'_in : x' ∈ s) : f x = f x' := by
-  haveI := isPreconnected_iff_preconnectedSpace.mp hs
-  let F : s → Y := f ∘ (↑)
-  change F ⟨x, x_in⟩ = F ⟨x', x'_in⟩
-  apply eq_of_germ_isConstant
-  rintro ⟨x, hx⟩
-  have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
-  exact this (h x hx)
+    (x'_in : x' ∈ s) : f x = f x' :=
+  (IsLocallyConstant.of_germ_isConstantOn_of_preconnected hs h).apply_eq_of_isPreconnected
+    hs x_in x'_in
+
+open scoped BigOperators in
+@[to_additive (attr := simp)]
+theorem Germ.coe_prod {α : Type*} (l : Filter α) (R : Type*) [CommMonoid R] {ι} (f : ι → α → R)
+    (s : Finset ι) : ((∏ i in s, f i : α → R) : Germ l R) = ∏ i in s, (f i : Germ l R) :=
+  map_prod (Germ.coeMulHom l : (α → R) →* Germ l R) f s

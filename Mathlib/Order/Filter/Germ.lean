@@ -118,6 +118,23 @@ def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 instance coeTC : CoeTC β (Germ l β) :=
   ⟨const⟩
 
+/-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
+def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
+  P.liftOn (fun f ↦ ∃ b : β, f =ᶠ[l] (fun _ ↦ b)) <| by
+    suffices ∀ f g : α → β, ∀ b : β, f =ᶠ[l] g → (f =ᶠ[l] fun _ ↦ b) → (g =ᶠ[l] fun _ ↦ b) from
+      fun f g h ↦ propext ⟨fun ⟨b, hb⟩ ↦ ⟨b, this f g b h hb⟩, fun ⟨b, hb⟩ ↦ ⟨b, h.trans hb⟩⟩
+    exact fun f g b hfg hf ↦ (hfg.symm).trans hf
+
+-- golfing suggestions welcome!
+theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant := by
+  use b
+  have : f = (fun _ ↦ b) := funext h
+  rw [this]
+
+@[simp]
+theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
+  use b
+
 @[simp]
 theorem quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
   rfl
@@ -255,7 +272,7 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
 
 theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β} (h : f =ᶠ[l'] g)
     {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
-  @Quotient.sound _ (l.germSetoid γ) _ _ (hφ h)
+  EventuallyEq.germ_eq (h.comp_tendsto hφ)
 
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
