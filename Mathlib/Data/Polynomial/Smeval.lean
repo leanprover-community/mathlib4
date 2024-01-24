@@ -17,7 +17,7 @@ is a generalization of `Data.Polynomial.Eval`.
 
 ## Main definitions
 
-* `Polynomial.smeval`: function for evaluating a polynomial with coefficients in a `CommSemiring`
+* `Polynomial.smeval`: function for evaluating a polynomial with coefficients in a `Semiring`
 `R` at an element `x` of an `AddCommMonoid` `S` that has natural number powers and an `R`-action.
 
 ## To do
@@ -106,6 +106,15 @@ theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
   | h_monomial n a =>
     rw [smul_monomial, smeval_monomial, smeval_monomial, smul_assoc]
 
+/-- `Polynomial.smeval` as a linear map. -/
+def smeval.linearMap : R[X] →ₗ[R] S where
+  toFun f := f.smeval x
+  map_add' f g := by simp only [smeval_add]
+  map_smul' c f := by simp only [smeval_smul, smul_eq_mul, RingHom.id_apply]
+
+@[simp]
+theorem smeval.linearMap_apply : smeval.linearMap R x p = smeval x p := rfl
+
 end Module
 
 section Comparisons
@@ -124,18 +133,7 @@ theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
   rw [leval_apply, smeval_def, eval_eq_sum]
   exact rfl
 
-/-- `Polynomial.smeval` as a linear map. -/
-def smeval.linearMap {R : Type*} [Semiring R] {S : Type*} [AddCommMonoid S] [Pow S ℕ] [Module R S]
-    (x : S) : R[X] →ₗ[R] S where
-  toFun f := f.smeval x
-  map_add' f g := by simp only [smeval_add]
-  map_smul' c f := by simp only [smeval_smul, smul_eq_mul, RingHom.id_apply]
-
-@[simp]
-theorem smeval.linearMap_apply {R : Type*} [Semiring R] {S : Type*} [AddCommMonoid S] [Pow S ℕ]
-    [Module R S] (x : S) (p : R[X]) : smeval.linearMap x p = smeval x p := rfl
-
-theorem leval_eq_smeval {R : Type*} [Semiring R] (r : R) : leval r = smeval.linearMap r := by
+theorem leval_eq_smeval {R : Type*} [Semiring R] (r : R) : leval r = smeval.linearMap R r := by
   refine LinearMap.ext ?_
   intro
   rw [leval_apply, smeval.linearMap_apply, ← eval₂_eq_smeval R (RingHom.id _), eval]
