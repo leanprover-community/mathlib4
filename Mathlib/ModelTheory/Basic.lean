@@ -810,7 +810,6 @@ instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
 
--- Name would be better as symm_symm, but then can clash with Equiv.symm_symm
 @[simp]
 theorem symm_symm (f : M ≃[L] N) :
     f.symm.symm = f :=
