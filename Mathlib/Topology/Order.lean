@@ -89,7 +89,7 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     exact (hS t htS hat).trans (principal_mono.2 <| subset_sUnion_of_mem htS)
 #align topological_space.nhds_generate_from TopologicalSpace.nhds_generateFrom
 
-lemma tendsto_nhds_generateFrom_iff  {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
+lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
     {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
