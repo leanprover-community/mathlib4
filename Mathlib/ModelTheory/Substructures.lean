@@ -1082,6 +1082,7 @@ namespace SubEquivalence
 
 variable {L} {M} {N}
 
+/-- Maps to the symmetric equivalence. -/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
   sub_dom := f.sub_cod
   sub_cod := f.sub_dom
@@ -1116,7 +1117,6 @@ theorem le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.sub_cod ≤ g.sub_cod := by
   simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
     SetLike.coe_mem]
 
-@[simp]
 theorem subtype_equiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
     (subtype _).comp (g.equiv.toEmbedding.comp (Substructure.inclusion (le_dom h))) =
       (subtype _).comp f.equiv.toEmbedding := by
@@ -1246,6 +1246,8 @@ theorem dom_top_toEmbedding_apply {f : M ≃ₚ[L] N} (h : f.sub_dom = ⊤) (m :
   cases h
   rfl
 
+/-- Given a subequivalence which has the whole structure as domain and
+as codomain, returns the corresponding equivalence.-/
 noncomputable def dom_cod_top_toEquiv {f : M ≃ₚ[L] N} (h_dom : f.sub_dom = ⊤)
     (h_cod : f.sub_cod = ⊤) : M ≃[L] N :=
   (topEquiv (M := N)).comp ((h_dom ▸ h_cod ▸ f.equiv).comp (topEquiv (M := M)).symm)

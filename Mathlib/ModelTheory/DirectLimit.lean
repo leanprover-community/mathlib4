@@ -442,7 +442,6 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
     rfl
   exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
 
-@[simp]
 theorem equiv_lift_of {i : ι} (x : G i) :
     equiv_lift L ι G f G' f' g H_commutating (of L ι G f i x) = of L ι G' f' i (g i x) := rfl
 
@@ -492,7 +491,6 @@ def liftInclusion :
   DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
     (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)
 
-@[simp]
 theorem liftInclusion_of {i : ι} (x : S i) :
     (liftInclusion S) (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.subtype (S i) x := rfl
@@ -515,12 +513,10 @@ noncomputable def Equiv_iSup :
     simpa only [Embedding.codRestrict_apply', Subtype.mk.injEq]
   exact ⟨Equiv.ofBijective F ⟨F.injective, F_surj⟩, F.map_fun', F.map_rel'⟩
 
-@[simp]
 theorem Equiv_isup_of_apply {i : ι} (x : S i) :
     Equiv_iSup S (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.inclusion (le_iSup _ _) x := rfl
 
-@[simp]
 theorem Equiv_isup_symm_inclusion_apply {i : ι} (x : S i) :
     (Equiv_iSup S).symm (Substructure.inclusion (le_iSup _ _) x)
     = of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x := by
