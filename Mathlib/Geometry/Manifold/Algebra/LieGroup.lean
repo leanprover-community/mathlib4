@@ -33,7 +33,6 @@ groups here are not necessarily finite dimensional.
   is smooth at all points at which `f` doesn't vanish.
   ``ContMDiff.div₀` and variants: if also `SmoothMul N` (i.e., `N` is a Lie group except possibly
   for smoothness of inversion at `0`), similar results hold for point-wise division.
-
 * `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
   is an additive Lie group.
 * `Instances/UnitsOfNormedAlgebra` shows that the group of units of a complete normed `𝕜`-algebra
