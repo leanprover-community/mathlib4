@@ -1751,7 +1751,20 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
-theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
+theorem ContinuousAt.eventually {x₀ : X} (hf : ContinuousAt f x₀) (P : Y → Prop)
+    (hP : IsOpen {y | P y}) (hx₀ : P (f x₀)) : ∀ᶠ x in 𝓝 x₀, P (f x) :=
+  hf (isOpen_iff_mem_nhds.mp hP _ hx₀)
+
+theorem ContinuousAt.eventually' {x₀ : X} (hf : ContinuousAt f x₀) (P : Y → Prop)
+    (hP : ∀ᶠ y in 𝓝 (f x₀), P y) : ∀ᶠ x in 𝓝 x₀, P (f x) := by
+  rw [ContinuousAt, tendsto_iff_comap] at hf
+  exact Eventually.filter_mono hf (hP.comap f)
+
+theorem Continuous.eventually {x₀ : X} (hf : Continuous f) (P : Y → Prop)
+    (hP : IsOpen {y | P y}) (hx₀ : P (f x₀)) : ∀ᶠ x in 𝓝 x₀, P (f x) :=
+  hf.continuousAt.eventually P hP hx₀
+
+theorem continuousAt_const {x : X} {b : Y} : ContinuousAt (fun _ : X => b) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 

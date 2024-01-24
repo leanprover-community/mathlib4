@@ -180,7 +180,7 @@ theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (
   suffices : ∀ᶠ x : α in comap i (𝓝 b), g (i x) ∈ s
   exact hf.mp (this.mono fun x hgx hfx => hfx ▸ hgx)
   clear hf f
-  refine' eventually_comap.2 ((hg.eventually hs).mono _)
+  refine eventually_comap.2 ((Tendsto.eventually hg hs).mono ?_)
   rintro _ hxs x rfl
   exact hxs
 #align dense_inducing.extend_unique_at DenseInducing.extend_unique_at
