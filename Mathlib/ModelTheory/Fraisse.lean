@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.DirectLimit
@@ -41,6 +41,8 @@ joint-embedding properties.
 essentially countable.
 * `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
 for a class to be the age of a countable structure in a language with countably many functions.
+* `FirstOrder.Language.IsFraisseLimit.unique_FraisseLimit` shows that any class which is Fraïsse has
+  at most one Fraïsse limit up to equivalence.
 
 ## Implementation Notes
 * Classes of structures are formalized with `Set (Bundled L.Structure)`.

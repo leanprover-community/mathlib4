@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Closure
@@ -31,6 +31,8 @@ the domain and codomain respectively of first-order homomorphisms to substructur
 * `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
 restrict the domain and codomain respectively of first-order embeddings to substructures.
 * `FirstOrder.Language.Substructure.inclusion` is the inclusion embedding between substructures.
+* `FirstOrder.Language.Substructure.SubEquivalence` is defined so that `SubEquivalence L M N` is
+the type of equivalences between substructures of `M` and `N`.
 
 ## Main Results
 * `L.Substructure M` forms a `CompleteLattice`.

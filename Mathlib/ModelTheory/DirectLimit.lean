@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Init.Align
 import Mathlib.Data.Fintype.Order
@@ -18,8 +18,23 @@ This file constructs the direct limit of a directed system of first-order embedd
 ## Main Definitions
 * `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
--/
+* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+  from the components to another module that respect the directed system structure give rise to
+  a unique map out of the direct limit.
+* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+  isomorphic direct systems.
+* `FirstOrder.Language.DirectLimit.subEquiv_limit` is the limit of a directed system
+  of subequivalences.
 
+## Main Results
+* `FirstOrder.Language.BackAndForth.embedding_from_cg` For a countably generated structure `M`
+  and a structure `N`, if any subequivalence between finitely generated substructures
+  can be extended to any element in the domain, then there exists an embedding of `M` in `N`.
+* `FirstOrder.Language.BackAndForth.equiv_between_cg` For two countably generated structure
+  `M` and `N`, if any subequivalence between finitely generated substructures can be extended to
+  any element in the domain and to any element in the codomain, then there exists an equivalence
+  between `M` and `N`.
+-/
 
 universe v w w' u₁ u₂
 
