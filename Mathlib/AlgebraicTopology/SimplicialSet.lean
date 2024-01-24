@@ -92,12 +92,12 @@ def Prod (X Y : SSet) : SSet where
   map f a := (X.map f a.1, Y.map f a.2)
 
 /-- The first projection of `Prod X Y`, onto X. -/
-@[simp]
+@[simps]
 def Prod.fst {X Y : SSet} : (Prod X Y) ⟶ X where
   app _ a := a.1
 
 /-- The second projection of `Prod X Y`, onto Y. -/
-@[simp]
+@[simps]
 def Prod.snd {X Y : SSet} : (Prod X Y) ⟶ Y where
   app _ a := a.2
 
@@ -106,21 +106,13 @@ def Prod.snd {X Y : SSet} : (Prod X Y) ⟶ Y where
 def binaryProductCone (X Y : SSet.{0}) : BinaryFan X Y :=
   BinaryFan.mk (Prod.fst) (Prod.snd)
 
-@[simp]
-theorem binaryProductCone_fst (X Y : SSet) : (binaryProductCone X Y).fst = Prod.fst :=
-  rfl
-
-@[simp]
-theorem binaryProductCone_snd (X Y : SSet) : (binaryProductCone X Y).snd = Prod.snd :=
-  rfl
-
 /-- The morphism from the point of any binary fan to `Prod X Y`. -/
-@[simp]
-def binaryProductLift {X Y : SSet} (s : BinaryFan X Y) : s.pt ⟶ (binaryProductCone X Y).pt where
+@[simps]
+def binaryProductLift {X Y : SSet} (s : BinaryFan X Y) : s.pt ⟶ Prod X Y where
   app n x := ((s.fst).app n x, (s.snd).app n x)
-  naturality j k g := by
-    ext a
-    simp [FunctorToTypes.naturality]
+  naturality _ _ _ := by
+    ext
+    simp [FunctorToTypes.naturality, Prod]
 
 /-- `Prod X Y` is a limit cone. -/
 @[simps]
@@ -138,6 +130,24 @@ def binaryProductLimitCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
 /-- The categorical binary product of simplicial sets is `Prod X Y`. -/
 noncomputable def binaryProductIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
+
+@[simp]
+lemma binaryProductIso_hom_comp_fst (X Y : SSet) :
+    (binaryProductIso X Y).hom ≫ Prod.fst = Limits.prod.fst := by aesop
+
+@[simp]
+lemma binaryProductIso_hom_comp_snd (X Y : SSet) :
+    (binaryProductIso X Y).hom ≫ Prod.snd = Limits.prod.snd := by aesop
+
+@[simp]
+lemma binaryProductIso_inv_comp_fst (X Y : SSet) :
+    (binaryProductIso X Y).inv ≫ Limits.prod.fst = Prod.fst := by
+  simp [binaryProductIso, binaryProductLimitCone]
+
+@[simp]
+lemma binaryProductIso_inv_comp_snd (X Y : SSet) :
+    (binaryProductIso X Y).inv ≫ Limits.prod.snd = Prod.snd := by
+  simp [binaryProductIso, binaryProductLimitCone]
 
 end Product
 
