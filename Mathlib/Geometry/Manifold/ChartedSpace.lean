@@ -1162,8 +1162,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    refine G.eq_on_source ?_
-      (subtypeRestr_symm_trans_subtypeRestr s ⟨x⟩ (chartAt H x) (chartAt H x'))
+    refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
