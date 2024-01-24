@@ -955,33 +955,33 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_of_volume_zero
   convert measurable_quotient_mk'
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
-sigma-finite measure, then it is itself `SigmaFinite`. -/
-@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
---instance
-lemma instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace
-   [i : SigmaFinite ν] [i' : HasFundamentalDomain G α ν]
+sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/
+@[to_additive]
+lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
+    [i : SigmaFinite ν] [i' : HasFundamentalDomain G α ν]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
     SigmaFinite μ := by
   rw [sigmaFinite_iff]
   obtain ⟨A, hA_meas, hA, hA'⟩ := Measure.toFiniteSpanningSetsIn (h := i)
+  simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    rw [projection_respects_measure (μ := μ) fund_dom_s]
-    sorry
-  -- have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
-    --   rw [this, iUnion_inter]
-    --   refine lt_of_le_of_lt ?_ (hA n)
-    --   rw [fund_dom_s.measure_eq_tsum (A n)]
-    --   exact measure_iUnion_le _
-    -- show MeasurableSet (π ⁻¹' (π '' (A n)))
-  -- have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
-    -- rw [this]
-    -- refine MeasurableSet.iUnion ?_
-    -- intro g
-    -- dsimp
-    -- rw [← preimage_smul_inv]
-    -- apply measurableSet_preimage (measurable_const_smul g⁻¹) (by apply (hA_meas n))
-  · rw [← image_iUnion,  hA']
+    have measAn := hA_meas n
+    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n)
+        (G := G)
+    have measπAn : MeasurableSet (π '' A n)
+    ·
+      sorry
+    rw [projection_respects_measure (μ := μ) fund_dom_s, Measure.map_apply, Measure.restrict_apply]
+    · simp only
+      rw [this, iUnion_inter]
+      refine lt_of_le_of_lt ?_ (hA n)
+      rw [fund_dom_s.measure_eq_tsum (A n)]
+      exact measure_iUnion_le _
+    · convert measπAn
+    · convert measurable_quotient_mk'
+    · exact measπAn
+  · rw [← image_iUnion, hA']
     refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
@@ -996,7 +996,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
   have : Fact (ν 𝓕 < ⊤) := by
     apply Fact.mk
     convert Ne.lt_top h
-    rw [h𝓕.covolume_eq_volume]
+    exact (h𝓕.covolume_eq_volume ν).symm
   exact inferInstance
 
 /-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
@@ -1012,7 +1012,7 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) MeasurableSet.univ,
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' univ))
       (measurableSet_quotient.mp MeasurableSet.univ)] at H
-  simpa [h𝓕.covolume_eq_volume] using H
+  simpa [h𝓕.covolume_eq_volume ν] using H
 
 end QuotientMeasureEqMeasurePreimage
 
