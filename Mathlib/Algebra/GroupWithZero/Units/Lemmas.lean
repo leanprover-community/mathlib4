@@ -198,8 +198,8 @@ theorem div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d =
 
 /-- The `CommGroupWithZero` version of `div_eq_div_iff_div_eq_div`. -/
 theorem div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d ↔ a / c = b / d := by
-  conv_lhs => rw [←mul_left_inj' hb, div_mul_cancel _ hb]
-  conv_rhs => rw [←mul_left_inj' hc, div_mul_cancel _ hc]
+  conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel _ hb]
+  conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
 theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
