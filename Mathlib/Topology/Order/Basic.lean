@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.Pi
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Support
+import Mathlib.Tactic.NormNum
+import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.Order.LeftRight
 
 #align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
@@ -137,6 +138,10 @@ theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 #align closure_Iic closure_Iic
 
+theorem le_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+    (h : ∃ᶠ c in x, f c ≤ b) : a ≤ b :=
+  (isClosed_le' b).mem_of_frequently_of_tendsto h lim
+
 theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   (isClosed_le' b).mem_of_tendsto lim h
@@ -164,6 +169,10 @@ theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
 theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
   isClosed_Ici.closure_eq
 #align closure_Ici closure_Ici
+
+lemma ge_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+    (h : ∃ᶠ c in x, b ≤ f c) : b ≤ a :=
+  (isClosed_ge' b).mem_of_frequently_of_tendsto h lim
 
 theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
@@ -414,7 +423,7 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
-theorem Covby.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
 
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
@@ -476,7 +485,7 @@ theorem Ioo_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[<] b :=
   Ioo_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
-theorem Covby.nhdsWithin_Iio {a b : α} (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+theorem CovBy.nhdsWithin_Iio {a b : α} (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
 
 theorem Ico_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
@@ -1043,7 +1052,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [L
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
-  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
+  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
@@ -1337,7 +1346,7 @@ variable {α}
 -- porting note: new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-theorem countable_setOf_covby_right [SecondCountableTopology α] :
+theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
   let s := { x : α | ∃ y, x ⋖ y }
@@ -1379,24 +1388,24 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-@[deprecated countable_setOf_covby_right]
+@[deprecated countable_setOf_covBy_right]
 theorem countable_of_isolated_right' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
-  simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_right
+  simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_right
 #align countable_of_isolated_right countable_of_isolated_right'
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
-theorem countable_setOf_covby_left [SecondCountableTopology α] :
+theorem countable_setOf_covBy_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y ⋖ x } := by
-  convert countable_setOf_covby_right (α := αᵒᵈ) using 5
-  exact toDual_covby_toDual_iff.symm
+  convert countable_setOf_covBy_right (α := αᵒᵈ) using 5
+  exact toDual_covBy_toDual_iff.symm
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_of_isolated_left' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y < x ∧ Ioo y x = ∅ } := by
-  simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_left
+  simpa only [← covBy_iff_Ioo_eq] using countable_setOf_covBy_left
 #align countable_of_isolated_left countable_of_isolated_left'
 
 /-- Consider a disjoint family of intervals `(x, y)` with `x < y` in a second-countable space.
@@ -1408,7 +1417,7 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : 
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
     (h.subset (diff_subset _ _)).countable_of_isOpen (fun _ _ => isOpen_Ioo)
       fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
-  this.of_diff countable_setOf_covby_right
+  this.of_diff countable_setOf_covBy_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
 
 /-- For a function taking values in a second countable space, the set of points `x` for
@@ -1689,7 +1698,7 @@ theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃
   · simp [ha, ha.isMax.Ioi_eq]
   · simp only [ha, false_or]
     rw [isTop_iff_isMax, not_isMax_iff] at ha
-    simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covby_iff_Ioo_eq]
+    simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covBy_iff_Ioo_eq]
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
@@ -1704,7 +1713,7 @@ second-countable. -/
 theorem countable_setOf_isolated_right [SecondCountableTopology α] :
     { x : α | 𝓝[>] x = ⊥ }.Countable := by
   simp only [nhdsWithin_Ioi_eq_bot_iff, setOf_or]
-  exact (subsingleton_isTop α).countable.union countable_setOf_covby_right
+  exact (subsingleton_isTop α).countable.union countable_setOf_covBy_right
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -1778,7 +1787,7 @@ theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis
 theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
     convert (config := {preTransparency := .default})
       nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
-    exact ofDual_covby_ofDual_iff
+    exact ofDual_covBy_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:
@@ -1836,17 +1845,18 @@ theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
   ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
 #align nhds_within_Ici_basis_Ico nhdsWithin_Ici_basis_Ico
 
+/-- The filter of right neighborhoods has a basis of closed intervals. -/
+theorem nhdsWithin_Ici_basis_Icc [NoMaxOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≥] a).HasBasis (a < ·) (Icc a) :=
+  (nhdsWithin_Ici_basis _).to_hasBasis
+    (fun _u hu ↦ (exists_between hu).imp fun _v hv ↦ hv.imp_right Icc_subset_Ico_right)
+    fun u hu ↦ ⟨u, hu, Ico_subset_Icc_self⟩
+
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u]`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α}
-    {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s := by
-  rw [mem_nhdsWithin_Ici_iff_exists_Ico_subset]
-  constructor
-  · rintro ⟨u, au, as⟩
-    rcases exists_between au with ⟨v, hv⟩
-    exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
-  · rintro ⟨u, au, as⟩
-    exact ⟨u, au, Subset.trans Ico_subset_Icc_self as⟩
+    {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s :=
+  nhdsWithin_Ici_basis_Icc.mem_iff
 #align mem_nhds_within_Ici_iff_exists_Icc_subset mem_nhdsWithin_Ici_iff_exists_Icc_subset
 
 open List in
@@ -1896,6 +1906,11 @@ theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered
     mem_nhdsWithin_Ici_iff_exists_Icc_subset
   _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
 #align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
+
+/-- The filter of left neighborhoods has a basis of closed intervals. -/
+theorem nhdsWithin_Iic_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≤] a).HasBasis (· < a) (Icc · a) :=
+  ⟨fun _ ↦ mem_nhdsWithin_Iic_iff_exists_Icc_subset⟩
 
 end OrderTopology
 
@@ -2937,7 +2952,7 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
   refine' tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
-        exists_lt_of_lt_csSup (nonempty_image_iff.2 h) hl
+        exists_lt_of_lt_csSup (h.image _) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)

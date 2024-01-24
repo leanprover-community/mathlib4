@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Compactness.LocallyCompact
@@ -62,21 +63,21 @@ variable [AlexandrovDiscrete α] {S : Set (Set α)} {f : ι → Set α}
 lemma isOpen_sInter : (∀ s ∈ S, IsOpen s) → IsOpen (⋂₀ S) := AlexandrovDiscrete.isOpen_sInter _
 
 lemma isOpen_iInter (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  isOpen_sInter $ forall_range_iff.2 hf
+  isOpen_sInter <| forall_range_iff.2 hf
 
 lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j)) :
     IsOpen (⋂ i, ⋂ j, f i j) :=
-  isOpen_iInter fun _ ↦ isOpen_iInter $ hf _
+  isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter $ ball_image_iff.2 hS
+  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| ball_image_iff.2 hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
-  isClosed_sUnion $ forall_range_iff.2 hf
+  isClosed_sUnion <| forall_range_iff.2 hf
 
 lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f i j)) :
     IsClosed (⋃ i, ⋃ j, f i j) :=
-  isClosed_iUnion fun _ ↦ isClosed_iUnion $ hf _
+  isClosed_iUnion fun _ ↦ isClosed_iUnion <| hf _
 
 lemma isClopen_sInter (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋂₀ S) :=
   ⟨isOpen_sInter fun s hs ↦ (hS s hs).1, isClosed_sInter fun s hs ↦ (hS s hs).2⟩
@@ -86,7 +87,7 @@ lemma isClopen_iInter (hf : ∀ i, IsClopen (f i)) : IsClopen (⋂ i, f i) :=
 
 lemma isClopen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋂ i, ⋂ j, f i j) :=
-  isClopen_iInter fun _ ↦ isClopen_iInter $ hf _
+  isClopen_iInter fun _ ↦ isClopen_iInter <| hf _
 
 lemma isClopen_sUnion (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋃₀ S) :=
   ⟨isOpen_sUnion fun s hs ↦ (hS s hs).1, isClosed_sUnion fun s hs ↦ (hS s hs).2⟩
@@ -96,11 +97,11 @@ lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋃ i, ⋃ j, f i j) :=
-  isClopen_iUnion fun _ ↦ isClopen_iUnion $ hf _
+  isClopen_iUnion fun _ ↦ isClopen_iUnion <| hf _
 
 lemma interior_iInter (f : ι → Set α) : interior (⋂ i, f i) = ⋂ i, interior (f i) :=
-  (interior_maximal (iInter_mono fun _ ↦ interior_subset) $ isOpen_iInter fun _ ↦
-    isOpen_interior).antisymm' $ subset_iInter fun _ ↦ interior_mono $ iInter_subset _ _
+  (interior_maximal (iInter_mono fun _ ↦ interior_subset) <| isOpen_iInter fun _ ↦
+    isOpen_interior).antisymm' <| subset_iInter fun _ ↦ interior_mono <| iInter_subset _ _
 
 lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
   simp_rw [sInter_eq_biInter, interior_iInter]
@@ -145,7 +146,7 @@ lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t 
   ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
 @[mono] lemma exterior_mono : Monotone (exterior : Set α → Set α) :=
-  fun _s _t h ↦ ker_mono $ nhdsSet_mono h
+  fun _s _t h ↦ ker_mono <| nhdsSet_mono h
 
 @[simp] lemma exterior_empty : exterior (∅ : Set α) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set α) = univ := isOpen_univ.exterior_eq
@@ -207,17 +208,18 @@ lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s 
   simp_rw [specializes_iff_exterior_subset] at hs
   simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
   rintro a ha
-  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior $ mem_singleton _⟩
+  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior <| mem_singleton _⟩
   rwa [isOpen_exterior.exterior_subset, singleton_subset_iff]
 
 lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := by
   classical
   refine isCompact_of_finite_subcover fun f hf hsf ↦ ?_
   choose g hg using fun a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
-  refine ⟨hs.toFinset.attach.image fun a ↦ g a.1 $ subset_exterior $ (Finite.mem_toFinset _).1 a.2,
+  refine ⟨hs.toFinset.attach.image fun a ↦
+    g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
     (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
   exact fun _ ↦ hf _
-  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ $ subset_exterior ha⟩
+  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
   exact ⟨a, ha, rfl⟩
 
@@ -251,7 +253,7 @@ instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
 
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
   local_compact_nhds a _U hU := ⟨exterior {a},
-    isOpen_exterior.mem_nhds $ subset_exterior $ mem_singleton _,
+    isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
       exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact_exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=

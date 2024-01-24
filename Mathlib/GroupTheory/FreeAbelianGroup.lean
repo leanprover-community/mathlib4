@@ -117,7 +117,7 @@ protected theorem of (x : α) : lift f (of x) = f x := by
 
 protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
 
 /-- See note [partially-applied ext lemmas]. -/

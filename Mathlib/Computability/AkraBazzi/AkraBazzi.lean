@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
@@ -591,7 +592,7 @@ lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
                     have := R.g_nonneg
-                    aesop (add safe Real.rpow_nonneg_of_nonneg,
+                    aesop (add safe Real.rpow_nonneg,
                                safe div_nonneg,
                                safe Finset.sum_nonneg)
 

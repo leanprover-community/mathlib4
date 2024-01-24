@@ -78,12 +78,12 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
--- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- porting note: added this instance so that we can use `DFunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
-    simp only [FunLike.coe_fn_eq] at h
+    simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
   map_continuous := fun γ => by continuity
 
@@ -190,7 +190,7 @@ theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
 @[simp]
 theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
-  simp only [mem_range, Path.symm, FunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
+  simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
   constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine' ⟨1 - y, mem_iff_one_sub_mem.mp hy, _⟩ <;>
     convert hxy
@@ -202,7 +202,7 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 open ContinuousMap
 
-/- porting note: because of the new `FunLike` instance, we already have a coercion to `C(I, X)`
+/- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
 so we avoid adding another.
 --instance : Coe (Path x y) C(I, X) :=
   --⟨fun γ => γ.1⟩
@@ -646,7 +646,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   rw [← γ.extend_range]
   simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
   intro x _hx
-  simp only [FunLike.coe, Path.truncate, mem_range_self]
+  simp only [DFunLike.coe, Path.truncate, mem_range_self]
 #align path.truncate_range Path.truncate_range
 
 /-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
@@ -671,7 +671,7 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
   rw [cast_coe]
-  simp only [truncate, FunLike.coe, refl, min_def, max_def]
+  simp only [truncate, DFunLike.coe, refl, min_def, max_def]
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
@@ -991,7 +991,7 @@ nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
   simp? [isPathConnected_iff] at hF ⊢ says
-    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+    simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
   refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩

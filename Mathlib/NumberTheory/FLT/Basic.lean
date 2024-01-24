@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
 /-!
@@ -65,7 +65,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         (Int.coe_nat_inj'.1 _)
       push_cast
       simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
-    · exact (by positivity : 0 < c ^ n).not_lt $ habc.symm.trans_lt $ add_neg (hn.pow_neg ha) $
+    · exact (by positivity : 0 < c ^ n).not_lt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine' h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
@@ -87,7 +87,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       push_cast
       simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
-    · exact (by positivity : 0 < a ^ n + b ^ n).not_lt $ habc.trans_lt $ hn.pow_neg hc
+    · exact (by positivity : 0 < a ^ n + b ^ n).not_lt <| habc.trans_lt <| hn.pow_neg hc
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
       push_cast
@@ -101,7 +101,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     refine' h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) _
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
-    refine' Int.cast_injective $ (div_left_inj' this).1 _
+    refine' Int.cast_injective <| (div_left_inj' this).1 _
     push_cast
     simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),

@@ -157,6 +157,10 @@ instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :
   ⟨IsNoetherian.noetherian ⊤⟩
 #align module.is_noetherian.finite Module.IsNoetherian.finite
 
+instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
+    [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
+  IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
+
 variable {R M}
 
 theorem Finite.of_injective [IsNoetherian R N] (f : M →ₗ[R] N) (hf : Function.Injective f) :
@@ -589,7 +593,7 @@ instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=
-    isNoetherian_of_fg_of_noetherian _ $ Module.finite_def.mp inferInstance
+    isNoetherian_of_fg_of_noetherian _ <| Module.finite_def.mp inferInstance
   isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_noetherian_of_fg_of_noetherian' isNoetherian_of_isNoetherianRing_of_finite
 

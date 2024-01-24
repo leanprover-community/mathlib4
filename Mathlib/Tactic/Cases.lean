@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Lean.Elab.Tactic.Induction
 import Std.Tactic.OpenPrivate
 import Std.Data.List.Basic
 import Mathlib.Lean.Expr.Basic
@@ -51,7 +51,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (fvars, g) ← g.introN numFields <| altVarNames.map (getNameOfIdent' ·[0])
     let some (g, subst) ← Cases.unifyEqs? numEqs g {} | pure ()
     let (_, g) ← g.introNP numGeneralized
-    let g ← liftM $ toClear.foldlM (·.tryClear) g
+    let g ← liftM <| toClear.foldlM (·.tryClear) g
     for fvar in fvars, stx in altVarNames do
       g.withContext <| (subst.apply <| .fvar fvar).addLocalVarInfoForBinderIdent ⟨stx⟩
     subgoals := subgoals.push g
