@@ -458,7 +458,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     have hx' : 0 < ‖x‖ := by simpa using hx
     have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
     have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    simpa [hb'] using SameRay.sameRay_nonneg_smul_right x ha'
+    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right $ by simp [hb']
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
