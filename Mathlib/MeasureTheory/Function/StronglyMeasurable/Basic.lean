@@ -1658,14 +1658,10 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   refine'
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨_, _⟩, fun H =>
       hg.continuous.comp_aestronglyMeasurable H⟩
-  · let G : β → range g := codRestrict g (range g) mem_range_self
+  · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by
-          convert isClosed_univ (α := ↥(range g))
-          apply eq_univ_of_forall
-          rintro ⟨-, ⟨x, rfl⟩⟩
-          exact mem_range_self x }
+        closed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
