@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Rat.Order
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -27,8 +28,6 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 
 open Function
-
-open BigOperators
 
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
@@ -215,10 +214,6 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   ext (coe_natCast n).symm
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
-/-- The rational numbers are an algebra over the non-negative rationals. -/
-instance : Algebra ℚ≥0 ℚ :=
-  coeHom.toAlgebra
-
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
 instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
   MulAction.compHom α coeHom.toMonoidHom
@@ -227,20 +222,16 @@ instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
 instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
   DistribMulAction.compHom α coeHom.toMonoidHom
 
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module ℚ≥0 α :=
-  Module.compHom α coeHom
-
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
 
-@[simp, norm_cast]
-theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
-    ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
-  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
-#align nnrat.coe_indicator NNRat.coe_indicator
+-- @[simp, norm_cast]
+-- theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
+--     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
+--   (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
+-- #align nnrat.coe_indicator NNRat.coe_indicator
 
 @[simp, norm_cast]
 theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
