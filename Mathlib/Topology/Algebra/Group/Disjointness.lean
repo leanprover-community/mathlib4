@@ -48,6 +48,8 @@ structure AlgDisjointElem (g h : G) :=
   /-- `comm_elem` must not be trivial -/
   comm_elem_nontrivial' : ⁅fst, ⁅snd, h⁆⁆ ≠ 1
 
+-- Note: not needed
+/-
 def AlgDisjointElem.comm_elem (elem : AlgDisjointElem g h) : G :=
   ⁅elem.fst, ⁅elem.snd, h⁆⁆
 
@@ -56,6 +58,7 @@ theorem AlgDisjointElem.comm_elem_commute (elem : AlgDisjointElem g h) :
 
 theorem AlgDisjointElem.comm_elem_nontrivial (elem : AlgDisjointElem g h) :
     elem.comm_elem ≠ 1 := elem.comm_elem_nontrivial'
+-/
 
 def AlgDisjointElem.conj (elem : AlgDisjointElem g h) (i : G) :
     AlgDisjointElem (i * g * i⁻¹) (i * h * i⁻¹) where
@@ -78,7 +81,9 @@ def AlgDisjointElem.conj (elem : AlgDisjointElem g h) (i : G) :
 `f` is said to be algebraically disjoint with `g` if for all element `h` that doesn't commute with
 `f`, one can construct `AlgDisjointElem g h`.
 -/
-def IsAlgDisjoint (f g : G) : Prop := ∀ h : G, ¬Commute f h → Nonempty (AlgDisjointElem g h)
+def IsAlgDisjoint (f g : G) := ∀ h : G, ¬Commute f h → Nonempty (AlgDisjointElem g h)
+
+-- def IsAlgDisjoint (f g : G) := Nonempty (AlgDisjointers f g)
 
 theorem IsAlgDisjoint.conj {f g : G} (disj : IsAlgDisjoint f g) (h : G) :
     IsAlgDisjoint (h * f * h⁻¹) (h * g * h⁻¹) := by
@@ -89,8 +94,6 @@ theorem IsAlgDisjoint.conj {f g : G} (disj : IsAlgDisjoint f g) (h : G) :
   have res := elem.conj h
   group at res
   rwa [zpow_neg_one] at res
-
-
 
 /--
 The algebraic centralizer of `g` contains all the elements `h` that commute with `f^12`,
@@ -236,30 +239,34 @@ section MovingFamily
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
+-- TODO: use Set.Finite?
 /--
 A finite set of elements of `G` are a moving family for `x : α` if for all `g ≠ h` of the family,
 `g • x ≠ h • x`.
 -/
-def MovingFamily (s: Finset G) (x : α): Prop :=
-  Set.Pairwise (s : Set G) (fun g h => g • x ≠ h • x)
+def MovingFamily (s: Set G) (x : α): Prop :=
+  Set.Pairwise s (fun g h => g • x ≠ h • x)
 
-theorem MovingFamily.ne_of_ne {s : Finset G} {x : α} (family : MovingFamily s x) {g h : G}
+theorem MovingFamily.ne_of_ne {s : Set G} {x : α} (family : MovingFamily s x) {g h : G}
     (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) : g • x ≠ h • x := by
   apply family <;> assumption
 
-theorem MovingFamily.of_superset {s₁ s₂ : Finset G} {x : α} (superset : s₁ ⊆ s₂)
+theorem MovingFamily.of_superset {s₁ s₂ : Set G} {x : α} (superset : s₁ ⊆ s₂)
     (family : MovingFamily s₂ x) : MovingFamily s₁ x := by
   intro g g_in_s₁ h h_in_s₁ g_ne_h
   exact family.ne_of_ne (superset g_in_s₁) (superset h_in_s₁) g_ne_h
 
-theorem MovingFamily.of_pow_moves_of_dvd [DecidableEq G] {g : G} {x : α} (n f : ℕ)
+theorem MovingFamily.of_pow_moves_of_dvd {g : G} {x : α} (n f : ℕ)
     (g_pow_moves : g ^ f • x ≠ x) (f_dvd : ∀ i, 0 < i → i < n → i ∣ f) :
-    MovingFamily ((Finset.range n).image (fun i => g^i)) x := by
+    MovingFamily (Set.range (fun i: Fin n => g ^ i.val)) x := by
+  -- TODO: investigate how much of this can be moved to MulAction.period
   intro h h_in_img i i_in_img h_ne_i ga_eq_gb
   apply g_pow_moves
-  simp only [Finset.coe_image, Finset.coe_range, Set.mem_image, Set.mem_Iio] at h_in_img i_in_img
-  let ⟨a, a_lt_n, ga_eq_h⟩ := h_in_img
-  let ⟨b, b_lt_n, gb_eq_i⟩ := i_in_img
+  simp only [Set.mem_range] at h_in_img i_in_img
+  let ⟨⟨a, a_lt_n⟩, ga_eq_h⟩ := h_in_img
+  let ⟨⟨b, b_lt_n⟩, gb_eq_i⟩ := i_in_img
+  dsimp only at ga_eq_h gb_eq_i
+
   have a_ne_b : a ≠ b := fun eq => h_ne_i ((eq ▸ ga_eq_h) ▸ gb_eq_i)
   rw [← ga_eq_h, ← gb_eq_i, smul_eq_iff_eq_inv_smul, ← mul_smul] at ga_eq_gb
   group at ga_eq_gb
@@ -297,7 +304,7 @@ theorem MovingFamily.of_pow_moves_of_dvd [DecidableEq G] {g : G} {x : α} (n f :
     rwa [Int.abs_eq_natAbs, Int.ofNat_lt]
 
 
-theorem MovingFamily.forall_ne_of_subset {s t: Finset G} {g : G} (g_in_s : g ∈ s) (t_ss_s : t ⊆ s)
+theorem MovingFamily.forall_ne_of_subset {s t: Set G} {g : G} (g_in_s : g ∈ s) (t_ss_s : t ⊆ s)
     (g_notin_t : g ∉ t) {x : α} (family : MovingFamily s x) :
     ∀ h ∈ t, g • x ≠ h • x := by
   intro h h_in_t
@@ -305,7 +312,7 @@ theorem MovingFamily.forall_ne_of_subset {s t: Finset G} {g : G} (g_in_s : g ∈
   intro g_eq_h
   exact g_notin_t (g_eq_h ▸ h_in_t)
 
-theorem MovingFamily.mem_movedBy_of_ne {s : Finset G} {x : α} (family : MovingFamily s x) {g h : G}
+theorem MovingFamily.mem_movedBy_of_ne {s : Set G} {x : α} (family : MovingFamily s x) {g h : G}
     (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) : x ∈ (fixedBy α (h⁻¹ * g))ᶜ := by
   rw [Set.mem_compl_iff, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul, inv_inv]
   apply family.ne_of_ne <;> assumption
@@ -315,21 +322,21 @@ variable [TopologicalSpace α] [T2Space α] [ContinuousConstSMul G α]
 /--
 An open set `t` for which `Disjoint t ((h⁻¹ * g) • t)`, obtained from `t2_separation_smul`.
 -/
-noncomputable def MovingFamily.t2_of_pair {s : Finset G} {x : α} (family : MovingFamily s x)
+noncomputable def MovingFamily.t2_of_pair {s : Set G} {x : α} (family : MovingFamily s x)
     {g h : G} (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) : Set α :=
   (t2_separation_smul (family.mem_movedBy_of_ne g_in_s h_in_s g_ne_h)).choose
 
-theorem MovingFamily.t2_of_pair_isOpen {s : Finset G} {x : α} (family : MovingFamily s x)
+theorem MovingFamily.t2_of_pair_isOpen {s : Set G} {x : α} (family : MovingFamily s x)
     {g h : G} (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) :
     IsOpen (family.t2_of_pair g_in_s h_in_s g_ne_h) :=
   (t2_separation_smul (family.mem_movedBy_of_ne g_in_s h_in_s g_ne_h)).choose_spec.1
 
-theorem MovingFamily.x_in_t2_of_pair {s : Finset G} {x : α} (family : MovingFamily s x)
+theorem MovingFamily.x_in_t2_of_pair {s : Set G} {x : α} (family : MovingFamily s x)
     {g h : G} (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) :
     x ∈ (family.t2_of_pair g_in_s h_in_s g_ne_h) :=
   (t2_separation_smul (family.mem_movedBy_of_ne g_in_s h_in_s g_ne_h)).choose_spec.2.1
 
-theorem MovingFamily.t2_of_pair_disjoint {s : Finset G} {x : α} (family : MovingFamily s x)
+theorem MovingFamily.t2_of_pair_disjoint {s : Set G} {x : α} (family : MovingFamily s x)
     {g h : G} (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) :
     Disjoint (family.t2_of_pair g_in_s h_in_s g_ne_h)
       ((h⁻¹ * g) • (family.t2_of_pair g_in_s h_in_s g_ne_h)) :=
@@ -339,12 +346,12 @@ theorem MovingFamily.t2_of_pair_disjoint {s : Finset G} {x : α} (family : Movin
 One can construct an open set `t` such that for every pair `g ≠ h` of `s`,
 `g • t` is disjoint from `h • t`.
 -/
-theorem MovingFamily.t2_separation {s : Finset G} {x : α} (family : MovingFamily s x) :
-    ∃ t : Set α, IsOpen t ∧ x ∈ t ∧
+theorem MovingFamily.t2_separation {s : Set G} {x : α} (family : MovingFamily s x)
+    (s_finite : s.Finite) : ∃ t : Set α, IsOpen t ∧ x ∈ t ∧
       Set.Pairwise (s : Set G) (fun g h => Disjoint (g • t) (h • t)) := by
   let pairs := { pair : G × G | pair.1 ∈ s ∧ pair.2 ∈ s ∧ pair.1 ≠ pair.2 }
   have pairs_finite : Set.Finite pairs := by
-    apply Set.Finite.subset (s := (s : Set G) ×ˢ (s : Set G)) (Set.toFinite _)
+    apply Set.Finite.subset (s_finite.prod s_finite)
     intro ⟨g, h⟩ ⟨g_in_s, h_in_s, _⟩
     exact ⟨g_in_s, h_in_s⟩
 
@@ -378,33 +385,36 @@ theorem MovingFamily.t2_separation {s : Finset G} {x : α} (family : MovingFamil
 
 end MovingFamily
 
+lemma dvd_twelve_of_lt_5_of_pos {i : ℕ} (i_pos : 0 < i) (i_lt_5 : i < 5) : i ∣ 12 := by
+  suffices ∀ i : Fin 5, 0 < (i : ℕ) → (i : ℕ) ∣ 12 by
+    exact this ⟨i, i_lt_5⟩ i_pos
+  intro i
+  fin_cases i
+  {
+    intro ff
+    exfalso
+    rwa [lt_self_iff_false] at ff
+  }
+  all_goals (intro; norm_num)
+
 /--
 If `f` and `g` are algebraically disjoint, then `(fixedBy α f)ᶜ` and `(fixedBy α g^12)ᶜ` are
 disjoint. The mysterious 12th power that is introduced comes from the well-behavedness of `g^3` and
 `g^4`.
 -/
-theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G α] [NoIsolatedPoints α] {f g : G}
+theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G α]
+    [NoIsolatedPoints α] {f g : G}
     (disj : IsAlgDisjoint f g) : Disjoint (fixedBy α f)ᶜ (fixedBy α (g^12))ᶜ := by
   classical!
   by_contra not_disj
   let ⟨x, x_in_movedBy_f, x_in_movedBy_g12⟩ := Set.not_disjoint_iff.mp not_disj
 
-  have family₁ := MovingFamily.of_pow_moves_of_dvd 5 12 x_in_movedBy_g12 (by
-    suffices ∀ i : Fin 5, 0 < (i : ℕ) → (i : ℕ) ∣ 12 by
-      intro i i_pos i_lt_5
-      exact this ⟨i, i_lt_5⟩ i_pos
-    intro i
-    fin_cases i
-    {
-      intro ff
-      exfalso
-      rwa [lt_self_iff_false] at ff
-    }
-    all_goals (intro; norm_num)
-  )
+  let fam := Set.range (fun i : Fin 5 => g ^ i.val)
+  have fam_moving : MovingFamily fam x := MovingFamily.of_pow_moves_of_dvd 5 12 x_in_movedBy_g12 (by
+    apply dvd_twelve_of_lt_5_of_pos)
 
   let ⟨s₀, s₀_open, x_in_s₀, disj_s₀_fs₀⟩ := t2_separation_smul x_in_movedBy_f
-  let ⟨s₁, s₁_open, x_in_s₁, pw_disj_s₁_gs₁⟩ := family₁.t2_separation
+  let ⟨s₁, s₁_open, x_in_s₁, pw_disj_gi⟩ := fam_moving.t2_separation (Set.finite_range _)
 
   -- let s := s₀ ∩ s₁
   have s_open := s₀_open.inter s₁_open
@@ -425,8 +435,94 @@ theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G �
     rw [Set.subset_inter_iff] at h_in_fixing
     apply subset_fixedBy_conj_of_movedBy_subset_of_disj h_in_fixing.left disj_s₀_fs₀
 
+  -- We now have the prerequisites to use the algebraic disjointness hypothesis
   let ⟨f₁, f₂, f₁_comm, f₂_comm, comm_elem_comm, comm_elem_nt⟩ := disj h h_nc
+  let c := ⁅f₁, ⁅f₂, h⁆⁆
 
+  have movedBy_c_ss_union : (fixedBy α c)ᶜ
+    ⊆ ⋃ (i : Fin 2 × Fin 2), (f₁^i.1.val * f₂^i.2.val) • (s₀ ∩ s₁) := by
+    rw [Set.compl_subset_comm] at h_in_fixing
+
+    rw [Set.compl_subset_comm, Set.compl_iUnion]
+    simp_rw [← Set.smul_set_compl]
+    apply subset_trans _ (fixedBy_commutatorElement _ _ _)
+    apply Set.subset_inter
+
+    -- Further split both cases into four cases, making sure all of them are of the form
+    -- `g • fixedBy α h`
+    apply subset_trans _ (fixedBy_commutatorElement _ _ _)
+    any_goals (
+      apply subset_trans _ (Set.smul_set_mono (fixedBy_commutatorElement _ _ _));
+      rw [Set.smul_set_inter]
+    )
+    all_goals apply Set.subset_inter
+    any_goals rw [← mul_smul]
+    rw [← one_smul G (fixedBy α h)]
+
+    -- fin_cases doesn't seem to be applicable when the term isn't in the hypothesis :/
+    all_goals apply subset_trans _ (Set.smul_set_mono h_in_fixing)
+    · apply Set.iInter_subset_of_subset ⟨0, 0⟩
+      simp only [Fin.val_zero, pow_zero, mul_one, one_smul, subset_refl]
+    · apply Set.iInter_subset_of_subset ⟨0, 1⟩
+      simp only [Fin.val_zero, pow_zero, Fin.val_one, pow_one, one_mul, subset_refl]
+    · apply Set.iInter_subset_of_subset ⟨1, 0⟩
+      simp only [Fin.val_zero, pow_zero, Fin.val_one, pow_one, mul_one, subset_refl]
+    · apply Set.iInter_subset_of_subset ⟨1, 1⟩
+      simp only [Fin.val_one, pow_one, subset_refl]
+
+  -- `c` is nontrivial, so there must exist a value it moves
+  have ⟨y, y_in_movedBy_c⟩ := fixedBy_compl_nonempty_of_ne_one α comm_elem_nt
+
+
+  have gi_in_movedBy_c : ∀ i : Fin 5, g^i.val • y ∈ (fixedBy α c)ᶜ := by
+    intro i
+    have h₁ := movedBy_mem_fixedBy_of_commute (α := α) comm_elem_comm
+    apply fixedBy_subset_fixedBy_zpow _ _ i.val at h₁
+    rw [zpow_coe_nat] at h₁
+    rw [← smul_mem_of_set_mem_fixedBy h₁]
+    exact y_in_movedBy_c
+
+  -- TODO: use the pigeonhole principle to see that different images of g^i must land in the same set
+
+  have i₁ : Fin 5 := sorry
+  have i₂ : Fin 5 := sorry
+  have i_ne : i₁ ≠ i₂ := sorry
+  have j₁ : Fin 2 := sorry
+  have j₂ : Fin 2 := sorry
+  let f := (f₁^j₁.val * f₂^j₂.val)
+  have gi₁_in_fst : g^(i₁.val) • y ∈ f • (s₀ ∩ s₁) := sorry
+  have gi₂_in_snd : g^(i₂.val) • y ∈ f • (s₀ ∩ s₁) := sorry
+
+  have gi₁_in_family : g^i₁.val ∈ fam := ⟨⟨i₁.val, i₁.prop⟩, rfl⟩
+  have gi₂_in_family : g^i₂.val ∈ fam := ⟨⟨i₂.val, i₂.prop⟩, rfl⟩
+
+  have gi₁_ne_gi₂ : g^i₁.val ≠ g^i₂.val := by
+
+    -- intro eq
+    -- apply i_ne
+    -- TODO: lemmas in periodicity to show that this is true if i₁ and i₂ divide 12
+    -- TODO: show that movedBy is equal from dvd
+    sorry
+
+  have fg_comm : ∀ i : ℕ, Commute f⁻¹ (g^i) := by
+    intro i
+    apply Commute.inv_left
+    unfold_let
+    apply Commute.mul_left
+    all_goals {
+      apply Commute.pow_left
+      apply Commute.pow_right
+      assumption
+    }
+
+  specialize pw_disj_gi gi₁_in_family gi₂_in_family gi₁_ne_gi₂
+  -- rw [Set.smul_set_disjoint f] at pw_disj_gi
+
+  -- rw [Set.disjoint_iff_inter_eq_empty] at pw_disj_gi
+  -- rw [← Set.mem_empty_iff_false y, ← pw_disj_gi]
+  -- constructor
+  -- all_goals rw [← mul_smul, fg_comm, mul_smul]
+  -- all_goals rw [Set.mem_inv_smul_set_iff]
 
   sorry
 

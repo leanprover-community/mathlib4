@@ -277,6 +277,15 @@ theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 :
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
   simp_rw [Function.funext_iff, one_smul, mem_fixedBy]
 
+variable (α) in
+/-- `m ≠ 1` implies that `m` must move some point. -/
+@[to_additive "`m ≠ 0` implies that `m` must move some point."]
+theorem fixedBy_compl_nonempty_of_ne_one {m : M} (g_ne_one : m ≠ 1) : (fixedBy α m)ᶜ.Nonempty := by
+  by_contra empty
+  rw [Set.not_nonempty_iff_eq_empty, ← Set.compl_univ, compl_inj_iff,
+    fixedBy_eq_univ_iff_eq_one] at empty
+  exact g_ne_one empty
+
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
