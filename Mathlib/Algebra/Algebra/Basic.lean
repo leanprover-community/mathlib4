@@ -247,7 +247,9 @@ end FieldDivisionRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring. -/
+/-- Creating an algebra from a morphism to the center of a semiring.
+See note [reducible non-instances]. -/
+@[reducible]
 def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
@@ -256,7 +258,9 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   toRingHom := i
 #align ring_hom.to_algebra' RingHom.toAlgebra'
 
-/-- Creating an algebra from a morphism to a commutative semiring. -/
+/-- Creating an algebra from a morphism to a commutative semiring.
+See note [reducible non-instances]. -/
+@[reducible]
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 #align ring_hom.to_algebra RingHom.toAlgebra
