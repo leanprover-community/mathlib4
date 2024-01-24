@@ -191,17 +191,22 @@ instance : MulAction αˣ β where
   mul_smul _ _ _ := by
     rw [mul_smul]
 
-@[simp]
-theorem invOf_smul_smul (c : α) [Invertible c] (x : β) : ⅟c • c • x = x :=
-  inv_smul_smul (unitOfInvertible c) _
+variable {c : α} {x y : β} [Invertible c]
 
 @[simp]
-theorem smul_invOf_smul (c : α) [Invertible c] (x : β) : c • (⅟ c • x) = x :=
-  smul_inv_smul (unitOfInvertible c) _
+theorem invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
 
-theorem invOf_smul_eq_iff (c : α) [Invertible c] {x y : β} :
-    ⅟c • x = y ↔ x = c • y :=
+@[simp]
+theorem smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
+
+variable (c) in
+theorem smul_eq_iff  : c • x = c • y ↔ x = y := smul_left_cancel_iff (g := unitOfInvertible c)
+
+theorem invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y :=
   inv_smul_eq_iff (a := unitOfInvertible c) (x := x) (y := y)
+
+theorem smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
+  smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
 
 end Monoid
 
