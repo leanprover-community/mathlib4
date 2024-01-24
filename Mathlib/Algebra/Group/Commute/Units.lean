@@ -87,7 +87,7 @@ def Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : M
 
 @[to_additive]
 theorem Commute.isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
-  ⟨fun ⟨u, hu⟩ => ⟨(u.leftOfMul a b hu.symm h).isUnit, (u.rightOfMul a b hu.symm h).isUnit⟩,
+  ⟨fun ⟨u, hu⟩ => ⟨(u.leftOfMul a b hu h).isUnit, (u.rightOfMul a b hu h).isUnit⟩,
   fun H => H.1.mul H.2⟩
 #align commute.is_unit_mul_iff Commute.isUnit_mul_iff
 #align add_commute.is_add_unit_add_iff AddCommute.isAddUnit_add_iff
@@ -120,7 +120,7 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 #align add_units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)] lemma isUnit_pow_iff (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
-  ⟨fun ⟨u, hu⟩ ↦ (u.ofPow a hn hu.symm).isUnit, IsUnit.pow n⟩
+  ⟨fun ⟨u, hu⟩ ↦ (u.ofPow a hn hu).isUnit, IsUnit.pow n⟩
 #align is_unit_pow_iff isUnit_pow_iff
 #align is_add_unit_nsmul_iff isAddUnit_nsmul_iff
 

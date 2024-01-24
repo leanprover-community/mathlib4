@@ -72,8 +72,8 @@ alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
-  simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Order.Preimage]
+  simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and', forall_exists_index, and_imp,
+    Set.forall_eq_apply_imp_iff₂, Order.Preimage]
 #align directed_on_image directedOn_image
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
@@ -113,10 +113,10 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
     Directed (· ≤ ·) (Function.extend e f ⊥) := by
   intro a b
-  rcases (em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
+  rcases (em (∃ i, a = e i)).symm with (ha | ⟨i, rfl⟩)
   · use b
     simp [Function.extend_apply' _ _ _ ha]
-  rcases (em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
+  rcases (em (∃ i, b = e i)).symm with (hb | ⟨j, rfl⟩)
   · use e i
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩

@@ -165,8 +165,8 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
   Option.map_comm h _
 #align with_bot.map_comm WithBot.map_comm
 
-theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, x = ↑a :=
+  Option.ne_none_iff_exists'
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
@@ -188,7 +188,7 @@ theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : W
 #align with_bot.unbot_coe WithBot.unbot_coe
 
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
-  prf x h := ⟨x.unbot h, coe_unbot _ _⟩
+  prf x h := ⟨x.unbot h, (coe_unbot _ _).symm⟩
 #align with_bot.can_lift WithBot.canLift
 
 section LE
@@ -800,8 +800,8 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
 
-theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, x = ↑a :=
+  Option.ne_none_iff_exists'
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
@@ -820,7 +820,7 @@ theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : W
 #align with_top.untop_coe WithTop.untop_coe
 
 instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
-  prf x h := ⟨x.untop h, coe_untop _ _⟩
+  prf x h := ⟨x.untop h, (coe_untop _ _).symm⟩
 #align with_top.can_lift WithTop.canLift
 
 section LE

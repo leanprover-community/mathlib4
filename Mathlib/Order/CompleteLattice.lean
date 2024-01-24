@@ -1549,7 +1549,7 @@ theorem iInf_image :
 
 theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨆ j, extend e f ⊥ j = ⨆ i, f i := by
-  rw [iSup_split _ fun j => ∃ i, e i = j]
+  rw [iSup_split _ fun j => ∃ i, j = e i]
   simp (config := { contextual := true }) [he.extend_apply, extend_apply', @iSup_comm _ β ι]
 #align supr_extend_bot iSup_extend_bot
 
@@ -1710,7 +1710,10 @@ theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = 
   · refine fun i hi => le_sSup ⟨i - n, ?_⟩
     dsimp only
     rw [Nat.sub_add_cancel hi]
-  · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩
+  · refine fun i => le_sSup ⟨i + n, ?_⟩
+    symm
+    exact iSup_pos (Nat.le_add_left _ _)
+
 #align supr_ge_eq_supr_nat_add iSup_ge_eq_iSup_nat_add
 
 theorem iInf_ge_eq_iInf_nat_add (u : ℕ → α) (n : ℕ) : ⨅ i ≥ n, u i = ⨅ i, u (i + n) :=
@@ -1812,7 +1815,7 @@ theorem sInf_Prop_eq {s : Set Prop} : sInf s = ∀ p ∈ s, p :=
 
 @[simp]
 theorem iSup_Prop_eq {p : ι → Prop} : ⨆ i, p i = ∃ i, p i :=
-  le_antisymm (fun ⟨_, ⟨i, (eq : p i = _)⟩, hq⟩ => ⟨i, eq.symm ▸ hq⟩) fun ⟨i, hi⟩ =>
+  le_antisymm (fun ⟨_, ⟨i, (eq : _ = p i)⟩, hq⟩ => ⟨i, eq.symm ▸ hq⟩) fun ⟨i, hi⟩ =>
     ⟨p i, ⟨i, rfl⟩, hi⟩
 #align supr_Prop_eq iSup_Prop_eq
 

@@ -155,7 +155,7 @@ variable {M₀}
 end Ring
 
 theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
-  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, Ring.inverse_unit u⟩
 #align is_unit.ring_inverse IsUnit.ring_inverse
 
 @[simp]
@@ -230,7 +230,7 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, x = ↑u) ↔ x ≠ 0 := by simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by

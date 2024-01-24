@@ -115,6 +115,11 @@ theorem exists_rep' {α : Sort u} {r : α → α → Prop} (q : Quot r) :
     Exists (fun a => q = (Quot.mk r a)) :=
   q.inductionOn (fun a => ⟨a, rfl⟩)
 
+/-- TODO: move next to `Quotient.exists_rep` in core (or even replace it?) -/
+theorem _root_.Quotient.exists_rep'
+    {α : Sort u} {s : Setoid α} (q : Quotient s) : Exists (fun (a : α) => q = Quotient.mk s a) :=
+  Quot.exists_rep' q
+
 @[simp] theorem surjective_lift {f : α → γ} (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
     Function.Surjective (lift f h) ↔ Function.Surjective f :=
   ⟨fun hf => hf.comp Quot.exists_rep', fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩

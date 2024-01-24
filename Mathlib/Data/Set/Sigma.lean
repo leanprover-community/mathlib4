@@ -30,7 +30,7 @@ theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.
 theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
     Sigma.mk i ⁻¹' (Sigma.mk j '' s) = ∅ := by
   ext x
-  simp [h.symm]
+  simp [h]
 #align set.preimage_image_sigma_mk_of_ne Set.preimage_image_sigmaMk_of_ne
 
 theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → ι')

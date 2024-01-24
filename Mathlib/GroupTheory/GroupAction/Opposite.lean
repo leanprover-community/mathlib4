@@ -187,7 +187,7 @@ theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a �
 @[to_additive "The right regular action of an additive group on itself is transitive."]
 instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] :
     MulAction.IsPretransitive Gᵐᵒᵖ G :=
-  ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
+  ⟨fun x y => ⟨op (x⁻¹ * y), (mul_inv_cancel_left _ _).symm⟩⟩
 #align mul_action.opposite_regular.is_pretransitive MulAction.OppositeRegular.isPretransitive
 #align add_action.opposite_regular.is_pretransitive AddAction.OppositeRegular.isPretransitive
 

@@ -51,7 +51,7 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
   · exact ⟨[], rfl⟩
   · cases' hfg (Set.mem_range_self b) with c hgf
     cases' H with m hgf'
-    rw [foldr_cons, ← hgf, ← hgf']
+    rw [foldr_cons, hgf, hgf']
     exact ⟨c :: m, rfl⟩
 #align list.foldr_range_subset_of_range_subset List.foldr_range_subset_of_range_subset
 

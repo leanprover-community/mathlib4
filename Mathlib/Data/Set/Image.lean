@@ -626,7 +626,7 @@ theorem image_perm {s : Set α} {σ : Equiv.Perm α} (hs : { a : α | σ a ≠ a
   · refine' ⟨_, fun h => ⟨i, h, hi.symm⟩⟩
     rintro ⟨j, hj, h⟩
     rwa [σ.injective (hi.trans h)]
-  · refine' iff_of_true ⟨σ.symm i, hs fun h => hi _, σ.apply_symm_apply _⟩ (hs hi)
+  · refine' iff_of_true ⟨σ.symm i, hs fun h => hi _, (σ.apply_symm_apply i).symm⟩ (hs hi)
     convert congr_arg σ h <;> exact (σ.apply_symm_apply _).symm
 #align set.image_perm Set.image_perm
 
@@ -772,10 +772,11 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '
   rw [← image_insert_eq, insert_eq, union_compl_self, image_univ]
 #align set.insert_image_compl_eq_range Set.insert_image_compl_eq_range
 
-theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f :=
-  ext fun x =>
-    ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨hx, mem_range_self _⟩, fun ⟨hx, ⟨y, h_eq⟩⟩ =>
-      h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_setOf]; exact hx⟩
+theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f := by
+  ext x
+  refine ⟨fun ⟨x, hx, HEq⟩ ↦ HEq ▸ ⟨hx, mem_range_self _⟩, ?_⟩
+  rintro ⟨hx, ⟨y, rfl⟩⟩
+  exact mem_image_of_mem f hx
 #align set.image_preimage_eq_inter_range Set.image_preimage_eq_inter_range
 
 theorem image_preimage_eq_of_subset {f : α → β} {s : Set β} (hs : s ⊆ range f) :
@@ -1477,13 +1478,13 @@ theorem injective_iff {α β} {f : Option α → β} :
     Injective f ↔ Injective (f ∘ some) ∧ f none ∉ range (f ∘ some) := by
   simp only [mem_range, not_exists, (· ∘ ·)]
   refine'
-    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, _⟩
+    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| (some_ne_none _).symm⟩, _⟩
   rintro ⟨h_some, h_none⟩ (_ | a) (_ | b) hab
-  exacts [rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
+  exacts [rfl, (h_none _ hab).elim, (h_none _ hab.symm).elim, congr_arg some (h_some hab)]
 #align option.injective_iff Option.injective_iff
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
-  Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
+  Set.ext fun _ => Option.exists.trans <| by simp
 #align option.range_eq Option.range_eq
 
 end Option

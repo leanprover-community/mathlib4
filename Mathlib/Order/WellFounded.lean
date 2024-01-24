@@ -156,7 +156,7 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   · rw [H c hcb] at hc
     rw [hg.injective hc] at hcb
     exact hcb.false.elim
-  · rw [← hc]
+  · rw [hc]
     exact hf.monotone hbc
 
 theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :

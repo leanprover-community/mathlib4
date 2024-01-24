@@ -161,7 +161,9 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
 
 @[to_additive]
 instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
-  prf _ := ne_one_iff_exists.1
+  prf a ha := by
+    rcases ne_one_iff_exists.1 ha with ⟨b, rfl⟩
+    exact ⟨b, rfl⟩
 #align with_one.can_lift WithOne.canLift
 #align with_zero.can_lift WithZero.canLift
 

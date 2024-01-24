@@ -154,7 +154,7 @@ theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
   Set.ext fun _ => by simpa using isFixedPt_id _
 #align function.fixed_points_id Function.fixedPoints_id
 
-theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
+theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx.symm⟩
 #align function.fixed_points_subset_range Function.fixedPoints_subset_range
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points

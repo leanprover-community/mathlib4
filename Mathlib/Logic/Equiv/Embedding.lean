@@ -27,7 +27,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
       rw [Set.disjoint_left]
       rintro _ ⟨a, h⟩ ⟨b, rfl⟩
       simp only [trans_apply, inl_apply, inr_apply] at h
-      have : Sum.inl a = Sum.inr b := f.injective h
+      have : Sum.inl a = Sum.inr b := f.injective h.symm
       simp only at this⟩
   invFun := fun ⟨⟨f, g⟩, disj⟩ =>
     ⟨fun x =>
@@ -38,9 +38,9 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
         simp only [Equiv.coe_fn_symm_mk, Sum.elim_inl, Sum.elim_inr] at f_eq
       · rw [f.injective f_eq]
       · exfalso
-        refine disj.le_bot ⟨⟨a₁, f_eq⟩, ⟨b₂, by simp [f_eq]⟩⟩
+        refine disj.le_bot ⟨⟨a₁, f_eq.symm⟩, ⟨b₂, by simp [f_eq]⟩⟩
       · exfalso
-        exact disj.le_bot ⟨⟨a₂, rfl⟩, ⟨b₁, f_eq⟩⟩
+        exact disj.le_bot ⟨⟨a₂, rfl⟩, ⟨b₁, f_eq.symm⟩⟩
       · rw [g.injective f_eq]⟩
   left_inv f := by
     dsimp only

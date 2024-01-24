@@ -897,7 +897,7 @@ theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
 theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i '' s.pi t := by
   classical
   obtain ⟨f, hf⟩ := ht
-  refine' fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
+  refine' fun y hy => ⟨update f i y, fun j hj => _, (update_same _ _ _).symm⟩
   obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
 #align set.subset_eval_image_pi Set.subset_eval_image_pi
 

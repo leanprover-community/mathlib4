@@ -318,12 +318,12 @@ section image2
 
 /-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
-def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, f a b = c}
+def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, c = f a b}
 #align set.image2 Set.image2
 
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β} {c : γ}
 
-@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, f a b = c := .rfl
+@[simp] theorem mem_image2 : c ∈ image2 f s t ↔ ∃ a ∈ s, ∃ b ∈ t, c = f a b := .rfl
 #align set.mem_image2 Set.mem_image2
 
 theorem mem_image2_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image2 f s t :=
@@ -339,7 +339,7 @@ def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f ↦ f) s t
 
 @[simp]
 theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
-    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
+    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, b = (f : α → β) a :=
   Iff.rfl
 #align set.mem_seq_iff Set.mem_seq_iff
 

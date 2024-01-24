@@ -35,18 +35,22 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
   rw [range_list_map, Subtype.range_coe]
 #align set.range_list_map_coe Set.range_list_map_coe
 
+/-- TODO: move to std close to `mem_iff_get` (or replacce it). -/
+theorem mem_iff_get' {a} {l : List α} : a ∈ l ↔ ∃ n, a = get l n := by
+  simp [mem_iff_get, eq_comm]
+
 @[simp]
 theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
   ext x
-  rw [mem_setOf_eq, mem_iff_get]
+  rw [mem_setOf_eq, mem_iff_get']
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 #align set.range_list_nth_le Set.range_list_nthLe
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_nthLe, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
-  exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
-    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
+  exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, get?_eq_get hlt⟩),
+    ⟨_, (get?_eq_none.2 le_rfl).symm⟩, range_subset_iff.2 fun k => ⟨_, (get?_eq_get _).symm⟩]
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]

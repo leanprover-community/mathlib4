@@ -635,7 +635,7 @@ The actual definition says that `a` is equal to some `u : Mˣ`, where
       The actual definition says that `a` is equal to some `u : AddUnits M`,
       where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
-  ∃ u : Mˣ, (u : M) = a
+  ∃ u : Mˣ, a = (u : M)
 #align is_unit IsUnit
 #align is_add_unit IsAddUnit
 
@@ -706,7 +706,7 @@ theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
 #align units_eq_one units_eq_one
 
 @[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
-  ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
+  ⟨fun ⟨u, hu⟩ ↦ by rw [hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid
 
@@ -728,7 +728,7 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
 theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
-      have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.val_mul]
+      have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [hv, Units.val_mul]
       rwa [mul_assoc, Units.mul_inv, mul_one] at this)
     fun v => v.mul u.isUnit
 #align units.is_unit_mul_units Units.isUnit_mul_units
@@ -741,7 +741,7 @@ theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
-      have : IsUnit (↑u⁻¹ * (↑u * a)) := by exists u⁻¹ * v; rw [← hv, Units.val_mul]
+      have : IsUnit (↑u⁻¹ * (↑u * a)) := by exists u⁻¹ * v; rw [hv, Units.val_mul]
       rwa [← mul_assoc, Units.inv_mul, one_mul] at this)
     u.isUnit.mul
 #align units.is_unit_units_mul Units.isUnit_units_mul
@@ -776,7 +776,7 @@ variable [Monoid M] {a b c : M}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
 protected noncomputable def unit (h : IsUnit a) : Mˣ :=
-  (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
+  (Classical.choose h).copy a (Classical.choose_spec h) _ rfl
 #align is_unit.unit IsUnit.unit
 
 -- Porting note: `to_additive` doesn't carry over `noncomputable` so we make an explicit defn
@@ -785,7 +785,7 @@ an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`
 `IsAddUnit.addUnit'` instead. -/
 protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
     AddUnits N :=
-  (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
+  (Classical.choose h).copy a (Classical.choose_spec h) _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
 attribute [to_additive existing] IsUnit.unit
 
@@ -815,7 +815,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
 @[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
-instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
+instance (x : M) [h : Decidable (∃ u : Mˣ, x = ↑u)] : Decidable (IsUnit x) :=
   h
 
 @[to_additive]
@@ -860,15 +860,15 @@ protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
 theorem isUnit_iff_mulLeft_bijective {a : M} :
     IsUnit a ↔ Function.Bijective (a * ·) :=
   ⟨fun h ↦ ⟨h.mul_right_injective, fun y ↦ ⟨h.unit⁻¹ * y, by simp [← mul_assoc]⟩⟩, fun h ↦
-    ⟨⟨a, _, (h.2 1).choose_spec, h.1
-      (by simpa [mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec)⟩, rfl⟩⟩
+    ⟨⟨a, _, (h.2 1).choose_spec.symm, h.1
+      (by simpa [mul_assoc] using congr_arg (· * a) (h.2 1).choose_spec.symm)⟩, rfl⟩⟩
 
 @[to_additive]
 theorem isUnit_iff_mulRight_bijective {a : M} :
     IsUnit a ↔ Function.Bijective (· * a) :=
   ⟨fun h ↦ ⟨h.mul_left_injective, fun y ↦ ⟨y * h.unit⁻¹, by simp [mul_assoc]⟩⟩,
-    fun h ↦ ⟨⟨a, _, h.1 (by simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec),
-      (h.2 1).choose_spec⟩, rfl⟩⟩
+    fun h ↦ ⟨⟨a, _, h.1 (by simpa [mul_assoc] using congr_arg (a * ·) (h.2 1).choose_spec.symm),
+      (h.2 1).choose_spec.symm⟩, rfl⟩⟩
 
 end Monoid
 
@@ -1009,8 +1009,8 @@ protected lemma one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [h]
 
 @[to_additive]
 lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
-  obtain ⟨u, hu⟩ := h
-  rw [← hu, ← Units.val_inv_eq_inv_val]
+  obtain ⟨u, rfl⟩ := h
+  rw [← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 #align is_unit.inv IsUnit.inv
 #align is_add_unit.neg IsAddUnit.neg

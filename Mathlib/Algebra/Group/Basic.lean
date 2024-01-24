@@ -660,13 +660,13 @@ theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul
 
 @[to_additive]
 theorem mul_left_surjective (a : G) : Surjective (a * ·) :=
-  fun x ↦ ⟨a⁻¹ * x, mul_inv_cancel_left a x⟩
+  fun x ↦ ⟨a⁻¹ * x, (mul_inv_cancel_left a x).symm⟩
 #align mul_left_surjective mul_left_surjective
 #align add_left_surjective add_left_surjective
 
 @[to_additive]
 theorem mul_right_surjective (a : G) : Function.Surjective fun x ↦ x * a := fun x ↦
-  ⟨x * a⁻¹, inv_mul_cancel_right x a⟩
+  ⟨x * a⁻¹, (inv_mul_cancel_right x a).symm⟩
 #align mul_right_surjective mul_right_surjective
 #align add_right_surjective add_right_surjective
 

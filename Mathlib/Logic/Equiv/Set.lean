@@ -480,8 +480,8 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
     ⟨Classical.choose p.2, (Classical.choose_spec p.2).1⟩, fun ⟨_, h⟩ =>
     Subtype.eq
       (H (Classical.choose_spec (mem_image_of_mem f h)).1 h
-        (Classical.choose_spec (mem_image_of_mem f h)).2),
-    fun ⟨_, h⟩ => Subtype.eq (Classical.choose_spec h).2⟩
+        (Classical.choose_spec (mem_image_of_mem f h)).2.symm),
+    fun ⟨_, h⟩ => Subtype.eq (Classical.choose_spec h).2.symm⟩
 #align equiv.set.image_of_inj_on Equiv.Set.imageOfInjOn
 
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
@@ -590,7 +590,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   invFun b := f_inv (nonempty_of_exists b.2) b
   left_inv a := hf ⟨a⟩ a
   right_inv := fun ⟨b, a, ha⟩ =>
-    Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
+    Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha.symm
 #align equiv.of_left_inverse Equiv.ofLeftInverse
 #align equiv.of_left_inverse_apply_coe Equiv.ofLeftInverse_apply_coe
 #align equiv.of_left_inverse_symm_apply Equiv.ofLeftInverse_symm_apply

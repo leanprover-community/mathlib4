@@ -753,7 +753,6 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 #align exists_unique_eq' exists_unique_eq'
 
--- @[simp] -- FIXME simp does not apply this lemma for some reason
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
 

@@ -283,7 +283,7 @@ end PNat
 section CanLift
 
 instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
-  ⟨fun n hn => ⟨Nat.toPNat' n, PNat.toPNat'_coe hn⟩⟩
+  ⟨fun n hn => ⟨Nat.toPNat' n, (PNat.toPNat'_coe hn).symm⟩⟩
 #align nat.can_lift_pnat Nat.canLiftPNat
 
 instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=

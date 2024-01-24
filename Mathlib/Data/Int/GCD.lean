@@ -513,6 +513,6 @@ lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a
 
 lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
     a ^ m ∈ Set.range (· ^ n : α → α) ↔ a ∈ Set.range (· ^ n : α → α) := by
-  simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
+  simp [pow_eq_pow_iff_of_coprime hmn]; aesop
 
 end CommGroupWithZero

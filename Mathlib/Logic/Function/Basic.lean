@@ -434,18 +434,18 @@ attribute [local instance] Classical.propDecidable
   and a right inverse if `f` is surjective). -/
 -- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
 noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β → α :=
-  fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
+  fun y ↦ if h : (∃ x, y = f x) then h.choose else Classical.arbitrary α
 #align function.inv_fun Function.invFun
 
-theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
-  by simp only [invFun, dif_pos h, h.choose_spec]
+theorem invFun_eq (h : ∃ a, b = f a) : f (invFun f b) = b := by
+  simp only [invFun, dif_pos h, h.choose_spec.symm]
 #align function.inv_fun_eq Function.invFun_eq
 
 theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
   @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
 
-theorem invFun_neg (h : ¬∃ a, f a = b) : invFun f b = Classical.choice ‹_› :=
+theorem invFun_neg (h : ¬∃ a, b = f a) : invFun f b = Classical.choice ‹_› :=
   dif_neg h
 #align function.inv_fun_neg Function.invFun_neg
 
@@ -455,7 +455,7 @@ theorem invFun_eq_of_injective_of_rightInverse {g : β → α} (hf : Injective f
     hf
       (by
         rw [hg b]
-        exact invFun_eq ⟨g b, hg b⟩)
+        exact invFun_eq ⟨g b, (hg b).symm⟩)
 #align function.inv_fun_eq_of_injective_of_right_inverse Function.invFun_eq_of_injective_of_rightInverse
 
 theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f := by
@@ -716,7 +716,7 @@ This definition is mathematically meaningful only when `f a₁ = f a₂ → g a�
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
 `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
-  if h : ∃ a, f a = b then g (Classical.choose h) else j b
+  if h : ∃ a, b = f a then g (Classical.choose h) else j b
 #align function.extend Function.extend
 
 /-- g factors through f : `f a = f b → g a = g b` -/
@@ -725,7 +725,7 @@ def FactorsThrough (g : α → γ) (f : α → β) : Prop :=
 #align function.factors_through Function.FactorsThrough
 
 theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [Decidable (∃ a, f a = b)] :
-    extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by
+    extend f g e' b = if h : ∃ a, b = f a then g (Classical.choose h) else e' b := by
   unfold extend
   congr
 #align function.extend_def Function.extend_def
@@ -736,8 +736,8 @@ lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
-  simp only [extend_def, dif_pos, exists_apply_eq_apply]
-  exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
+  simp only [extend_def, dif_pos, exists_apply_eq_apply']
+  exact hf (Classical.choose_spec (exists_apply_eq_apply' f a)).symm
 #align function.factors_through.extend_apply Function.FactorsThrough.extend_apply
 
 @[simp]
@@ -747,7 +747,7 @@ theorem Injective.extend_apply (hf : Injective f) (g : α → γ) (e' : β → �
 #align function.injective.extend_apply Function.Injective.extend_apply
 
 @[simp]
-theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
+theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, b = f a) :
     extend f g e' b = e' b := by
   simp [Function.extend_def, hb]
 #align function.extend_apply' Function.extend_apply'

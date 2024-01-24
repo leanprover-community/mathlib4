@@ -133,7 +133,7 @@ property. We do not provide typeclasses `*Action.IsTransitive`; users should ass
   A transitive action should furthermore have `α` nonempty. -/
 class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
   /-- There is `g` such that `g +ᵥ x = y`. -/
-  exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
+  exists_vadd_eq : ∀ x y : α, ∃ g : M, y = g +ᵥ x
 #align add_action.is_pretransitive AddAction.IsPretransitive
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
@@ -141,7 +141,7 @@ class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
 @[to_additive]
 class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
-  exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
+  exists_smul_eq : ∀ x y : α, ∃ g : M, y = g • x
 #align mul_action.is_pretransitive MulAction.IsPretransitive
 
 namespace MulAction
@@ -149,7 +149,7 @@ namespace MulAction
 variable (M) [SMul M α] [IsPretransitive M α]
 
 @[to_additive]
-theorem exists_smul_eq (x y : α) : ∃ m : M, m • x = y :=
+theorem exists_smul_eq (x y : α) : ∃ m : M, y = m • x :=
   IsPretransitive.exists_smul_eq x y
 #align mul_action.exists_smul_eq MulAction.exists_smul_eq
 #align add_action.exists_vadd_eq AddAction.exists_vadd_eq
@@ -163,7 +163,7 @@ theorem surjective_smul (x : α) : Surjective fun c : M => c • x :=
 /-- The regular action of a group on itself is transitive. -/
 @[to_additive "The regular action of a group on itself is transitive."]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
-  ⟨fun x y => ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
+  ⟨fun x y => ⟨y * x⁻¹, (inv_mul_cancel_right _ _).symm⟩⟩
 #align mul_action.regular.is_pretransitive MulAction.Regular.isPretransitive
 #align add_action.regular.is_pretransitive AddAction.Regular.isPretransitive
 
@@ -649,15 +649,15 @@ theorem isPretransitive_compHom
     IsPretransitive E G := by
   let _ : MulAction E G := MulAction.compHom _ f
   refine ⟨fun x y ↦ ?_⟩
-  obtain ⟨m, rfl⟩ : ∃ m : F, m • x = y := exists_smul_eq F x y
-  obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
+  obtain ⟨m, rfl⟩ : ∃ m : F, y = m • x := exists_smul_eq F x y
+  obtain ⟨e, rfl⟩ : ∃ e, m = f e := hf m
   exact ⟨e, rfl⟩
 
 @[to_additive]
 theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
     [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
     IsPretransitive N α :=
-  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩⟩
+  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, h.trans hf.symm⟩⟩
 
 @[to_additive]
 theorem IsPretransitive.of_compHom

@@ -127,7 +127,7 @@ def map (f : α → β) (q : Semiquot α) : Semiquot β :=
 #align semiquot.map Semiquot.map
 
 @[simp]
-theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
+theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ b = f a :=
   Set.mem_image _ _ _
 #align semiquot.mem_map Semiquot.mem_map
 

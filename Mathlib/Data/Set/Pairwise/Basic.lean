@@ -221,7 +221,8 @@ protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
-  simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
+  simp only [Set.Pairwise, mem_image, ne_eq, forall_exists_index, and_imp, forall_eq_apply_imp_iff₂]
+  simp (config := {contextual := true}) [h.eq_iff]
 #align set.inj_on.pairwise_image Set.InjOn.pairwise_image
 
 end Set
@@ -400,7 +401,7 @@ theorem pairwiseDisjoint_image_right_iff {f : α → β → γ} {s : Set α} {t 
     exact mem_image_of_mem _ hy.2
   · refine' disjoint_iff_inf_le.mpr _
     rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
-    exact h (congr_arg Prod.fst <| hs (mk_mem_prod hx ha) (mk_mem_prod hy hb) hab)
+    exact h (congr_arg Prod.fst <| hs (mk_mem_prod hx ha) (mk_mem_prod hy hb) hab.symm)
 #align set.pairwise_disjoint_image_right_iff Set.pairwiseDisjoint_image_right_iff
 
 /-- The partial images of a binary function `f` whose partial evaluations are injective are pairwise
@@ -415,7 +416,7 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     exact mem_image_of_mem _ hy.1
   · refine' disjoint_iff_inf_le.mpr _
     rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
-    exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
+    exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab.symm)
 #align set.pairwise_disjoint_image_left_iff Set.pairwiseDisjoint_image_left_iff
 
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint

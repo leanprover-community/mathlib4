@@ -200,14 +200,14 @@ theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
 
 @[simp]
 theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
-  ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
+  ⟨fun ⟨_, ⟨⟨a, (t_eq : _ = s a)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
 #align set.mem_Union Set.mem_iUnion
 
 @[simp]
 theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
-  ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
-    fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
+  ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, a = s i }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
+    fun h _ ⟨a, (eq : _ = s a)⟩ => eq ▸ h a⟩
 #align set.mem_Inter Set.mem_iInter
 
 theorem mem_iUnion₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i) (j), s i j) ↔ ∃ i j, x ∈ s i j := by
@@ -761,7 +761,7 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
     · intro y y_in
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
-      refine' ⟨Function.update z i y, _, update_same i y z⟩
+      refine' ⟨Function.update z i y, _, (update_same i y z).symm⟩
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 #align set.image_projection_prod Set.image_projection_prod
@@ -1174,7 +1174,7 @@ lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t
 lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
     ⋃₀ (f '' s) ⊆ ⋃₀ s :=
   -- If t ∈ f '' s is arbitrary; t = f u for some u : Set α.
-  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (hut ▸ hf u) hxt⟩
+  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (hut.symm ▸ hf u) hxt⟩
 
 theorem subset_sInter {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆ t') : t ⊆ ⋂₀ S :=
   le_sInf h
@@ -1670,7 +1670,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
     apply hx
   replace hx : ∀ i, x i ∈ ⋃ j, s j := fun i => (subset_iUnion _ _) (hx i)
   apply h (hx _) (hx _)
-  simp only [hy]
+  simp only [← hy]
 #align set.inj_on.image_Inter_eq Set.InjOn.image_iInter_eq
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
@@ -1813,7 +1813,7 @@ theorem biUnion_range {f : ι → α} {g : α → Set β} : ⋃ x ∈ range f, g
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
 @[simp]
 theorem iUnion_iUnion_eq' {f : ι → α} {g : α → Set β} :
-    ⋃ (x) (y) (_ : f y = x), g x = ⋃ y, g (f y) := by simpa using biUnion_range
+    ⋃ (x) (y) (_ : x = f y), g x = ⋃ y, g (f y) := by simpa using biUnion_range
 #align set.Union_Union_eq' Set.iUnion_iUnion_eq'
 
 theorem biInter_range {f : ι → α} {g : α → Set β} : ⋂ x ∈ range f, g x = ⋂ y, g (f y) :=
@@ -1823,7 +1823,7 @@ theorem biInter_range {f : ι → α} {g : α → Set β} : ⋂ x ∈ range f, g
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
 @[simp]
 theorem iInter_iInter_eq' {f : ι → α} {g : α → Set β} :
-    ⋂ (x) (y) (_ : f y = x), g x = ⋂ y, g (f y) := by simpa using biInter_range
+    ⋂ (x) (y) (_ : x = f y), g x = ⋂ y, g (f y) := by simpa using biInter_range
 #align set.Inter_Inter_eq' Set.iInter_iInter_eq'
 
 variable {s : Set γ} {f : γ → α} {g : α → Set β}
@@ -1978,7 +1978,7 @@ theorem sInter_prod_sInter {S : Set (Set α)} {T : Set (Set β)} (hS : S.Nonempt
 theorem sInter_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
     ⋂₀ S ×ˢ t = ⋂ s ∈ S, s ×ˢ t := by
   rw [← sInter_singleton t, sInter_prod_sInter hS (singleton_nonempty t), sInter_singleton]
-  simp_rw [prod_singleton, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_right]
+  simp_rw [prod_singleton, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_left]
 #align set.sInter_prod Set.sInter_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -1986,7 +1986,7 @@ theorem sInter_prod {S : Set (Set α)} (hS : S.Nonempty) (t : Set β) :
 theorem prod_sInter {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
     s ×ˢ ⋂₀ T = ⋂ t ∈ T, s ×ˢ t := by
   rw [← sInter_singleton s, sInter_prod_sInter (singleton_nonempty s) hT, sInter_singleton]
-  simp_rw [singleton_prod, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_right]
+  simp_rw [singleton_prod, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_left]
 #align set.prod_sInter Set.prod_sInter
 
 end Prod

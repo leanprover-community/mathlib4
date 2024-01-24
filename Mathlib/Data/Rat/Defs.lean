@@ -524,7 +524,7 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
-  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+  ⟨fun q hq => ⟨q.num, (coe_int_num_of_den_eq_one hq).symm⟩⟩
 #align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by

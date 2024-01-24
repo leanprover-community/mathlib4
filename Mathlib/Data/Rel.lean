@@ -400,7 +400,7 @@ namespace Set
 -- TODO: if image were defined with bounded quantification in corelib, the next two would
 -- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  simp [Set.image, Rel.image]
+  simp [Set.image, Rel.image, eq_comm]
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by

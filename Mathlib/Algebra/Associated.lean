@@ -434,7 +434,7 @@ theorem associated_one_iff_isUnit [Monoid α] {a : α} : (a : α) ~ᵤ 1 ↔ IsU
   Iff.intro
     (fun h =>
       let ⟨c, h⟩ := h.symm
-      h ▸ ⟨c, (one_mul _).symm⟩)
+      h ▸ ⟨c, one_mul _⟩)
     fun ⟨c, h⟩ => Associated.symm ⟨c, by simp [h]⟩
 #align associated_one_iff_is_unit associated_one_iff_isUnit
 
@@ -598,7 +598,7 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
     let ⟨u, hu⟩ := h
-    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
+    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [← hv, ← hu]⟩,
       hu ▸ by
         simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
         intro a b
@@ -663,8 +663,7 @@ protected theorem Associated.irreducible [Monoid α] {p q : α} (h : p ~ᵤ q) (
       calc
         p = p * u * (u⁻¹ : αˣ) := by simp
         _ = _ := by rw [hu]; simp [hab, mul_assoc]
-
-    (hp.isUnit_or_isUnit hpab).elim Or.inl fun ⟨v, hv⟩ => Or.inr ⟨v * u, by simp [hv]⟩⟩
+    (hp.isUnit_or_isUnit hpab).elim Or.inl fun ⟨v, hv⟩ => Or.inr ⟨v * u, by simp [← hv]⟩⟩
 #align associated.irreducible Associated.irreducible
 
 protected theorem Associated.irreducible_iff [Monoid α] {p q : α} (h : p ~ᵤ q) :

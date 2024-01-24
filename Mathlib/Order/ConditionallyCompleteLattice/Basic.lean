@@ -907,9 +907,10 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   congr
   apply Subset.antisymm
   · rintro - ⟨i, rfl⟩
-    simp [hp i]
-  · rintro - ⟨i, rfl⟩
     simp
+  · rintro - ⟨i, rfl⟩
+    simp only [mem_range]
+    exact ⟨_, rfl⟩
 
 theorem cbiInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f :=

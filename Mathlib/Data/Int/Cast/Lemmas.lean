@@ -122,7 +122,7 @@ theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
-  rw [← sub_nonneg, ← cast_sub, ← hk, cast_ofNat]
+  rw [← sub_nonneg, ← cast_sub, hk, cast_ofNat]
   exact k.cast_nonneg
 #align int.cast_mono Int.cast_mono
 

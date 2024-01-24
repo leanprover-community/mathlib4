@@ -201,7 +201,7 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
 
 /-- Variant of `e.map_source` and `map_source'`, stated for images of subsets of `source`. -/
 lemma map_source'' : e '' e.source ⊆ e.target :=
-  fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+  fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem hex (e.map_source' hx)
 
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=

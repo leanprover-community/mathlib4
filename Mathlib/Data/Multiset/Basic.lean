@@ -1393,10 +1393,10 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
     Function.Surjective (map f) := by
   intro s
   induction' s using Multiset.induction_on with x s ih
-  · exact ⟨0, map_zero _⟩
+  · exact ⟨0, (map_zero _).symm⟩
   · obtain ⟨y, rfl⟩ := hf x
     obtain ⟨t, rfl⟩ := ih
-    exact ⟨y ::ₘ t, map_cons _ _ _⟩
+    exact ⟨y ::ₘ t, (map_cons _ _ _).symm⟩
 #align multiset.map_surjective_of_surjective Multiset.map_surjective_of_surjective
 
 /-! ### `Multiset.fold` -/

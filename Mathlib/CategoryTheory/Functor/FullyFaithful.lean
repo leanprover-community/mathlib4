@@ -93,14 +93,14 @@ theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
-  fun f => ⟨F.preimage f, F.image_preimage f⟩
+  fun f => ⟨F.preimage f, (F.image_preimage f).symm⟩
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
 /-- Deduce that `F` is full from the existence of preimages, using choice. -/
 noncomputable def fullOfExists (F : C ⥤ D)
-    (h : ∀ (X Y : C) (f : F.obj X ⟶ F.obj Y), ∃ p, F.map p = f) : Full F := by
+    (h : ∀ (X Y : C) (f : F.obj X ⟶ F.obj Y), ∃ p, f = F.map p) : Full F := by
   choose p hp using h
-  exact ⟨@p, @hp⟩
+  exact ⟨@p, fun f ↦ (hp _ _ f).symm⟩
 #align category_theory.functor.full_of_exists CategoryTheory.Functor.fullOfExists
 
 /-- Deduce that `F` is full from surjectivity of `F.map`, using choice. -/

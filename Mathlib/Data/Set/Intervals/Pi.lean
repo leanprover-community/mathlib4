@@ -135,8 +135,8 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
   · simpa only [Function.update_same] using h i (mem_univ i)
   · ext j
     obtain rfl | hij := eq_or_ne i j
-    · exact Function.update_same _ _ _
-    · simpa only [Function.update_noteq hij.symm, le_antisymm_iff] using h j (mem_univ j)
+    · exact (Function.update_same _ _ _).symm
+    · simpa only [Function.update_noteq hij.symm, le_antisymm_iff] using (h j (mem_univ j)).symm
 #align set.image_update_Icc Set.image_update_Icc
 
 theorem image_update_Ico (f : ∀ i, α i) (i : ι) (a b : α i) :
