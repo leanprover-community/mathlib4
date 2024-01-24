@@ -17,9 +17,9 @@ The integers form a conditionally complete linear order.
 
 open Int
 
-open Classical
 
 noncomputable section
+open Classical
 
 instance : ConditionallyCompleteLinearOrder ℤ :=
   { Int.linearOrderedCommRing,
@@ -106,3 +106,8 @@ theorem csInf_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : sInf s ∈
 #align int.cInf_mem Int.csInf_mem
 
 end Int
+
+end
+
+--  this example tests that the `Lattice ℤ` instance is computable.
+example : Lattice ℤ := inferInstance
