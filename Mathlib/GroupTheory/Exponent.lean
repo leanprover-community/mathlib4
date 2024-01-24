@@ -317,9 +317,8 @@ theorem ExponentExists.of_finite [Finite G] : Monoid.ExponentExists G := by
     exact order_dvd_exponent g
 
 @[to_additive]
-theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 := by
-  simp_rw [exponent, dif_pos ExponentExists.of_finite, Ne, Nat.find_eq_zero,
-    lt_self_iff_false, false_and, not_false_eq_true]
+theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 :=
+  exponentExists_iff_ne_zero.mp ExponentExists.of_finite
 #align monoid.exponent_ne_zero_of_finite Monoid.exponent_ne_zero_of_finite
 #align add_monoid.exponent_ne_zero_of_finite AddMonoid.exponent_ne_zero_of_finite
 
