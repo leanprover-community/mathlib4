@@ -4225,6 +4225,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
+set_option linter.deprecated false in
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
     (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
