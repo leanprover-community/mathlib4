@@ -384,12 +384,12 @@ namespace CategoryTheory.MonoidalFunctor
 open Action
 
 variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
-  (F : MonoidalFunctor V W) (G : MonCat.{u})
 
-/-- A monoidal functor induces a monoidal functor between
+/-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps!]
-def mapActionAux : LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
+def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
+    LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
   (F := F.toFunctor.mapAction G)
   (ε :=
     { hom := F.ε
@@ -398,19 +398,21 @@ def mapActionAux : LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
         rw [Category.id_comp, F.map_id, Category.comp_id] })
   (μ := fun X Y =>
     { hom := F.μ X.V Y.V
-      comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) })
+      comm := fun g => F.μ_natural (X.ρ g) (Y.ρ g) })
   (μ_natural := by intros; ext; simp)
   (associativity := by intros; ext; simp)
   (left_unitality := by intros; ext; simp)
   (right_unitality := by intros; ext; simp)
 
+variable (F : MonoidalFunctor V W) (G : MonCat.{u})
+
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps!]
 def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
-  { mapActionAux F G with
-    ε_isIso := by dsimp [mapActionAux]; infer_instance
-    μ_isIso := by dsimp [mapActionAux]; infer_instance }
+  { mapActionLax F.toLaxMonoidalFunctor G with
+    ε_isIso := by dsimp [mapActionLax]; infer_instance
+    μ_isIso := by dsimp [mapActionLax]; infer_instance }
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action CategoryTheory.MonoidalFunctor.mapAction
 
