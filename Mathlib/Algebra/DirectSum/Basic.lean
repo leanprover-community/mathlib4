@@ -130,6 +130,11 @@ lemma support_mk [(i : ι) → (x : (fun i ↦ β i) i) → Decidable (x ≠ 0)]
   · exact h'
   · exact h rfl |>.elim
 
+lemma mk_empty (f : ∀ i : ((∅ : Finset ι) : Set ι), β i.1) : mk β ∅ f = 0 := by
+  simp only [Finset.coe_sort_coe]
+  refine DFinsupp.ext fun j ↦ ?_
+  erw [mk_apply]
+
 /-- `of i` is the natural inclusion map from `β i` to `⨁ i, β i`. -/
 def of (i : ι) : β i →+ ⨁ i, β i :=
   DFinsupp.singleAddHom β i
