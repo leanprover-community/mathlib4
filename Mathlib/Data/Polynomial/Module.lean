@@ -24,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Polynomial BigOperators
+open Set Function Polynomial BigOperators
 
 namespace Module
 /--
@@ -131,6 +131,18 @@ def mapSubmodule : Submodule R[X] <| AEval R M a :=
 @[simp] lemma comapSubmodule_mapSubmodule :
     comapSubmodule R M a (mapSubmodule a hp) = p := by
   ext; simp
+
+variable (R M)
+
+lemma injective_comapSubmodule : Injective (comapSubmodule R M a) := by
+  intro q₁ q₂ hq
+  rw [← mapSubmodule_comapSubmodule (q := q₁), ← mapSubmodule_comapSubmodule (q := q₂)]
+  simp_rw [hq]
+
+lemma range_comapSubmodule :
+    range (comapSubmodule R M a) = {p | p ≤ p.comap (Algebra.lsmul R R M a)} :=
+  le_antisymm (fun _ ⟨_, hq⟩ ↦ hq ▸ comapSubmodule_le_comap a)
+    (fun _ hp ↦ ⟨mapSubmodule a hp, comapSubmodule_mapSubmodule a hp⟩)
 
 end Submodule
 
