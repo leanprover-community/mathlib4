@@ -1371,20 +1371,20 @@ theorem mem_closure_iff_nhds' : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, ∃ y : s,
   simp only [mem_closure_iff_nhds, Set.inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
 #align mem_closure_iff_nhds' mem_closure_iff_nhds'
 
-theorem mem_closure_iff_comap_neBot {A : Set X} {x : X} :
-    x ∈ closure A ↔ NeBot (comap ((↑) : A → X) (𝓝 x)) := by
+theorem mem_closure_iff_comap_neBot {x : X} :
+    x ∈ closure s ↔ NeBot (comap ((↑) : s → X) (𝓝 x)) := by
   simp_rw [mem_closure_iff_nhds, comap_neBot_iff, Set.inter_nonempty_iff_exists_right,
     SetCoe.exists, exists_prop]
 #align mem_closure_iff_comap_ne_bot mem_closure_iff_comap_neBot
 
-theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 a).HasBasis p s)
-    {t : Set X} : a ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
+theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 a).HasBasis p s) :
+    a ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
   mem_closure_iff_clusterPt.trans <|
     (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [exists_prop, forall_const]
 #align mem_closure_iff_nhds_basis' mem_closure_iff_nhds_basis'
 
-theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 a).HasBasis p s)
-    {t : Set X} : a ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
+theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 a).HasBasis p s) :
+    a ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
     simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
 #align mem_closure_iff_nhds_basis mem_closure_iff_nhds_basis
@@ -1462,7 +1462,7 @@ theorem Dense.open_subset_closure_inter (hs : Dense s) (ht : IsOpen t) :
     _ ⊆ closure (t ∩ s) := ht.inter_closure
 #align dense.open_subset_closure_inter Dense.open_subset_closure_inter
 
-theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set X} {x : X} (h : x ∈ closure (s₁ ∪ s₂))
+theorem mem_closure_of_mem_closure_union {x : X} (h : x ∈ closure (s₁ ∪ s₂))
     (h₁ : s₁ᶜ ∈ 𝓝 x) : x ∈ closure s₂ := by
   rw [mem_closure_iff_nhds_neBot] at *
   rwa [←
