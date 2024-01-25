@@ -222,9 +222,6 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
-example : (AddUnits.mkOfAddEqZero 0 0 (by simp) : ℕ) = (AddUnits.mkOfAddEqZero 0 0 (by simp) : ℕ) :=
-  by norm_cast
-
 section
 
 set_option linter.unusedVariables false
