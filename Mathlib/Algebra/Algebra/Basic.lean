@@ -784,17 +784,12 @@ variable (R A)
 
 theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
-  -- porting note: todo: drop implicit args
-  have := @smul_left_injective R A CommRing.toRing Ring.toAddCommGroup Algebra.toModule
-    ‹_› 1 one_ne_zero
-  simpa only [algebraMap_eq_smul_one'] using this
+  simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
 #align no_zero_smul_divisors.algebra_map_injective NoZeroSMulDivisors.algebraMap_injective
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
-  -- porting note: todo: drop implicit args
-  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <|
-    NoZeroSMulDivisors.algebraMap_injective R A
+  NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
 #align ne_zero.of_no_zero_smul_divisors NeZero.of_noZeroSMulDivisors
 
 variable {R A}
