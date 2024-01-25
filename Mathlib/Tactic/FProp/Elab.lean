@@ -13,15 +13,26 @@ namespace Meta.FProp
 
 open Lean.Parser.Tactic
 
-/-- -/
-elab (name := fpropTac) "fprop" : tactic => do
+syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
+
+@[tactic fpropTacStx]
+def fpropTac : Tactic 
+| `(tactic| fprop $[$d]?) => do
+
+  let disch : Expr → MetaM (Option Expr) := 
+    match d with
+    | none => fun _ => pure none
+    | some d => 
+      match d with
+      | `(discharger| (discharger:=$tac)) => tacticToDischarge tac
+      | _ => fun _ => pure none
+
   let goal ← getMainGoal
   goal.withContext do
     let goalType ← goal.getType
   
-    let (.some r, _) ← fprop goalType {} |>.run {}
+    let (.some r, _) ← fprop goalType {disch := disch} |>.run {}
       | throwError "fprop was unable to prove `{← Meta.ppExpr goalType}`"
 
     goal.assign r.proof
-
-
+| _ => throwUnsupportedSyntax

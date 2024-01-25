@@ -160,7 +160,17 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
             trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
             return none
 
-      -- try discharger
+      -- try user provided discharger
+      let cfg : Config ← read
+      if (← isProp type) then
+        if let .some proof ← cfg.disch type then
+          if (← isDefEq x proof) then
+            continue 
+          else do
+            trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+            return none
+
+      -- try function property specific discharger
       if (← isProp type) then
         if let .some proof ← discharge? type then
           if (← isDefEq x proof) then
