@@ -1672,15 +1672,15 @@ theorem ContinuousAt.preimage_mem_nhds {t : Set Y} (h : ContinuousAt f x)
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated] -- 15 January 2024
-theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : X} {f : X → M₀} :
-    f =ᶠ[𝓝 a] 0 ↔ a ∉ closure (Function.support f) := by
+theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
+    f =ᶠ[𝓝 x] 0 ↔ x ∉ closure (Function.support f) := by
   rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
     EventuallyEq, eventually_iff]
   simp only [Pi.zero_apply]
 #align eventually_eq_zero_nhds eventuallyEq_zero_nhds
 
-theorem ClusterPt.map {la : Filter X} {lb : Filter Y} (H : ClusterPt x la)
-    (hfc : ContinuousAt f x) (hf : Tendsto f la lb) : ClusterPt (f x) lb :=
+theorem ClusterPt.map {lx : Filter X} {ly : Filter Y} (H : ClusterPt x lx)
+    (hfc : ContinuousAt f x) (hf : Tendsto f lx ly) : ClusterPt (f x) ly :=
   (NeBot.map H f).mono <| hfc.tendsto.inf hf
 #align cluster_pt.map ClusterPt.map
 
@@ -1744,12 +1744,12 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
-theorem continuousAt_const {b : Y} : ContinuousAt (fun _ : X => b) x :=
+theorem continuousAt_const {y : Y} : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
 @[continuity]
-theorem continuous_const {b : Y} : Continuous fun _ : X => b :=
+theorem continuous_const {y : Y} : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
 
@@ -1836,9 +1836,9 @@ theorem closure_subset_preimage_closure_image {s : Set X} (h : Continuous f) :
   exact image_closure_subset_closure_image h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
-theorem map_mem_closure {s : Set X} {t : Set Y} {a : X} (hf : Continuous f)
-    (ha : a ∈ closure s) (ht : MapsTo f s t) : f a ∈ closure t :=
-  ht.closure hf ha
+theorem map_mem_closure {s : Set X} {t : Set Y} (hf : Continuous f)
+    (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
+  ht.closure hf hx
 #align map_mem_closure map_mem_closure
 
 /-- If a continuous map `f` maps `s` to a closed set `t`, then it maps `closure s` to `t`. -/
