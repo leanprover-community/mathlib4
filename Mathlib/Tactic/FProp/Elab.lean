@@ -20,13 +20,14 @@ def fpropTac : Tactic
 | `(tactic| fprop $[$d]?) => do
 
   -- this is ugly - is there a better way of writing this?
+  -- todo: more the tracing node somewhere else and unify it with function property specific discharger
   let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
     match d with
-    | none => pure <| fun _ => pure none
+    | none => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
     | some d => 
       match d with
       | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-      | _ => pure <| fun _ => pure none
+      | _ => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
 
   let goal ← getMainGoal
   goal.withContext do
