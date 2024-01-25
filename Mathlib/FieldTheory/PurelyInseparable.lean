@@ -320,32 +320,33 @@ theorem map_mem_perfectClosure_iff (i : E →ₐ[F] K) {x : E} :
     rwa [AlgHom.commutes, map_pow]
   simpa only [AlgHom.commutes, map_pow] using congr_arg i h
 
-/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `perfectClosure F E` is equal to
-the preimage of `perfectClosure F K` under the map `i`. -/
-theorem perfectClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
-    perfectClosure F E = (perfectClosure F K).comap i := by
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of `perfectClosure F K`
+under the map `i` is equal to `perfectClosure F E`. -/
+theorem perfectClosure.comap_eq_of_algHom (i : E →ₐ[F] K) :
+    (perfectClosure F K).comap i = perfectClosure F E := by
   ext x
-  exact (map_mem_perfectClosure_iff i).symm
+  exact map_mem_perfectClosure_iff i
 
-/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `perfectClosure F K` contains
-the image of `perfectClosure F E` under the map `i`. -/
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the image of `perfectClosure F E`
+under the map `i` is contained in `perfectClosure F K`. -/
 theorem perfectClosure.map_le_of_algHom (i : E →ₐ[F] K) :
     (perfectClosure F E).map i ≤ perfectClosure F K :=
-  map_le_iff_le_comap.mpr (perfectClosure.eq_comap_of_algHom i).le
+  map_le_iff_le_comap.mpr (perfectClosure.comap_eq_of_algHom i).ge
 
-/-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `perfectClosure F K` is equal to
-the image of `perfectClosure F E` under the map `i`. -/
-theorem perfectClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
-    perfectClosure F K = (perfectClosure F E).map i.toAlgHom :=
-  le_antisymm (fun x hx ↦ ⟨i.symm x,
-    (map_mem_perfectClosure_iff i.symm.toAlgHom).2 hx, i.right_inv x⟩) (map_le_of_algHom i.toAlgHom)
+/-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `perfectClosure F E`
+under the map `i` is equal to in `perfectClosure F K`. -/
+theorem perfectClosure.map_eq_of_algEquiv (i : E ≃ₐ[F] K) :
+    (perfectClosure F E).map i.toAlgHom = perfectClosure F K :=
+  (map_le_of_algHom i.toAlgHom).antisymm (fun x hx ↦ ⟨i.symm x,
+    (map_mem_perfectClosure_iff i.symm.toAlgHom).2 hx, i.right_inv x⟩)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `perfectClosure F E` and
 `perfectClosure F K` are also isomorphic as `F`-algebras. -/
 def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     perfectClosure F E ≃ₐ[F] perfectClosure F K :=
-  ((perfectClosure F E).intermediateFieldMap i).trans
-    (equivOfEq (eq_map_of_algEquiv i).symm)
+  (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
+
+alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end perfectClosure
 
@@ -853,7 +854,7 @@ lemma adjoin_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
   have h := congr_arg IntermediateField.lift (adjoin_eq_of_isPurelyInseparable_of_isSeparable F E S)
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  rw [← h, eq_map_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
+  rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
   rfl
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
@@ -962,7 +963,7 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
   haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  rw [sepDegree, separableClosure.eq_map_of_separableClosure_eq_bot F
+  rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
   exact (separableClosure F (separableClosure E K)).equivMap
     (IsScalarTower.toAlgHom F (separableClosure E K) K) |>.symm.toLinearEquiv.rank_eq

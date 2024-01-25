@@ -98,44 +98,43 @@ theorem map_mem_separableClosure_iff (i : E →ₐ[F] K) {x : E} :
     i x ∈ separableClosure F K ↔ x ∈ separableClosure F E := by
   simp_rw [mem_separableClosure_iff, minpoly.algHom_eq i i.injective]
 
-/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `separableClosure F E` is equal to
-the preimage of `separableClosure F K` under the map `i`. -/
-theorem separableClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
-    separableClosure F E = (separableClosure F K).comap i := by
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of
+`separableClosure F K` under the map `i` is equal to `separableClosure F E`. -/
+theorem separableClosure.comap_eq_of_algHom (i : E →ₐ[F] K) :
+    (separableClosure F K).comap i = separableClosure F E := by
   ext x
-  exact (map_mem_separableClosure_iff i).symm
+  exact map_mem_separableClosure_iff i
 
-/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `separableClosure F K` contains
-the image of `separableClosure F E` under the map `i`. -/
+/-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the image of `separableClosure F E`
+under the map `i` is contained in `separableClosure F K`. -/
 theorem separableClosure.map_le_of_algHom (i : E →ₐ[F] K) :
     (separableClosure F E).map i ≤ separableClosure F K :=
-  map_le_iff_le_comap.2 (eq_comap_of_algHom i).le
+  map_le_iff_le_comap.2 (comap_eq_of_algHom i).ge
 
 variable (F) in
 /-- If `K / E / F` is a field extension tower, such that `K / E` has no non-trivial separable
 subextensions (when `K / E` is algebraic, this means that it is purely inseparable),
-then `separableClosure F K` is equal to `separableClosure F E`. -/
-theorem separableClosure.eq_map_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
+then the image of `separableClosure F E` in `K` is equal to `separableClosure F K`. -/
+theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : separableClosure E K = ⊥) :
-    separableClosure F K = (separableClosure F E).map (IsScalarTower.toAlgHom F E K) := by
-  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom _)
+    (separableClosure F E).map (IsScalarTower.toAlgHom F E K) = separableClosure F K := by
+  refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ ?_)
   obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
     (mem_separableClosure_iff.1 hx |>.map_minpoly E)
   exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
-/-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `separableClosure F K` is equal to
-the image of `separableClosure F E` under the map `i`. -/
-theorem separableClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
-    separableClosure F K = (separableClosure F E).map i :=
-  le_antisymm (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm).2 h, by simp⟩)
-    (map_le_of_algHom i.toAlgHom)
+/-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `separableClosure F E`
+under the map `i` is equal to `separableClosure F K`. -/
+theorem separableClosure.map_eq_of_algEquiv (i : E ≃ₐ[F] K) :
+    (separableClosure F E).map i = separableClosure F K :=
+  (map_le_of_algHom i.toAlgHom).antisymm
+    (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm).2 h, by simp⟩)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `separableClosure F E` and
 `separableClosure F K` are also isomorphic as `F`-algebras. -/
 def separableClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     separableClosure F E ≃ₐ[F] separableClosure F K :=
-  ((separableClosure F E).intermediateFieldMap i).trans
-    (equivOfEq (eq_map_of_algEquiv i).symm)
+  (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
 alias AlgEquiv.separableClosure := separableClosure.algEquivOfAlgEquiv
 
