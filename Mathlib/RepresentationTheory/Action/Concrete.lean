@@ -77,16 +77,17 @@ def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftReg
 set_option linter.uppercaseLean3 false in
 #align Action.diagonal_one_iso_left_regular Action.diagonalOneIsoLeftRegular
 
-section FintypeCat
+namespace FintypeCat
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-def FintypeCat.ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
+@[simps]
+def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
-theorem FintypeCat.ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
+theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
