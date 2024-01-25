@@ -83,6 +83,14 @@ theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.p
 #align category_theory.monoidal_of_has_finite_products.tensor_hom CategoryTheory.monoidalOfHasFiniteProducts.tensorHom
 
 @[simp]
+theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.prod.map (𝟙 X) f :=
+  rfl
+
+@[simp]
+theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.prod.map f (𝟙 Z) :=
+  rfl
+
+@[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.left_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_hom
@@ -130,18 +138,10 @@ open MonoidalCategory
 @[simps]
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
   braiding X Y := Limits.prod.braiding X Y
-  braiding_naturality_left f X := by dsimp; simp [← id_tensorHom, ← tensorHom_id]
-  braiding_naturality_right X _ _ f := by dsimp; simp [← id_tensorHom, ← tensorHom_id]
-  hexagon_forward X Y Z := by
-    dsimp [monoidalOfHasFiniteProducts.associator_hom]
-    simp [← id_tensorHom, ← tensorHom_id]
-  hexagon_reverse X Y Z := by
-    dsimp [monoidalOfHasFiniteProducts.associator_inv]
-    simp [← id_tensorHom, ← tensorHom_id]
-  -- braiding_naturality_left f X := by simp
-  -- braiding_naturality_right X _ _ f := by simp
-  -- hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
-  -- hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
+  braiding_naturality_left f X := by simp
+  braiding_naturality_right X _ _ f := by simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
 #align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
@@ -186,6 +186,14 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.tensor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.tensorHom
+
+@[simp]
+theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.coprod.map (𝟙 X) f :=
+  rfl
+
+@[simp]
+theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.coprod.map f (𝟙 Z) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=
@@ -235,18 +243,10 @@ open MonoidalCategory
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding
-  braiding_naturality_left f g := by dsimp [tensorHom]; simp [← id_tensorHom, ← tensorHom_id]
-  braiding_naturality_right f g := by dsimp [tensorHom]; simp [← id_tensorHom, ← tensorHom_id]
-  hexagon_forward X Y Z := by
-    dsimp [monoidalOfHasFiniteCoproducts.associator_hom]
-    simp [← id_tensorHom, ← tensorHom_id]
-  hexagon_reverse X Y Z := by
-    dsimp [monoidalOfHasFiniteCoproducts.associator_inv]
-    simp [← id_tensorHom, ← tensorHom_id]
-  -- braiding_naturality_left f g := by simp
-  -- braiding_naturality_right f g := by simp
-  -- hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
-  -- hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
+  braiding_naturality_left f g := by simp
+  braiding_naturality_right f g := by simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
 #align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
 
