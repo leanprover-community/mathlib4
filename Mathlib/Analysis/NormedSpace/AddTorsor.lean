@@ -306,3 +306,37 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp
 #align affine_map.of_map_midpoint AffineMap.ofMapMidpoint
+
+end
+
+section
+
+open Dilation
+
+variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+variable [Module 𝕜 E] [BoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
+
+-- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
+/-- Scaling by a an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
+from a normed space to a normed torsor over that space sending `0` to `c`. -/
+@[simps]
+def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P where
+  toFun := (k • · +ᵥ c)
+  invFun := k⁻¹ • (· -ᵥ c)
+  left_inv x := by simp [inv_smul_smul₀ hk]
+  right_inv p := by simp [smul_inv_smul₀ hk]
+  edist_eq' := ⟨‖k‖₊, nnnorm_ne_zero_iff.mpr hk, fun x y ↦ by
+    rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
+    exact edist_smul₀ ..⟩
+
+@[simp]
+lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
+    (h : dist x y ≠ 0) : ratio (smulTorsor c hk) = ‖k‖₊ :=
+  Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]
+
+@[simp]
+lemma DilationEquiv.smulTorsor_ball_ball {c : P} {k : 𝕜} (hk : k ≠ 0) :
+    Metric.ball (0 : E) 1 = smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖₊) := by
+  aesop (add simp norm_smul)
+
+end
