@@ -84,69 +84,22 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
       simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
     · rw [Matrix.det_vandermonde] at hn
       simp [hn]
-open Finset
 
-theorem superFactorial_eq_square_times_factorial (k : ℕ) :
-    ∃ n, IsSquare n ∧ sf (4 * k) = n * (2 * k) ! := by
-  by_cases k = 0
-  · exact ⟨1, ⟨isSquare_one, h ▸ rfl⟩⟩
-  have hk := Nat.sub_add_cancel <| succ_mul_pos 1 <| Nat.pos_of_ne_zero h
-  have h_succ : succ (2 * k - 1) = 2 * k := by linarith
-  use (∏ x in Ico 0 (2 * k - 1), (x + 1) !) * (∏ x in Ico (2 * k) (4 * k), (x + 1) !)
-  have h : sf (4 * k) = (∏ x in Ico 0 (2 * k - 1), (x + 1) !) *
-       (∏ x in Ico (2 * k) (4 * k), (x + 1) !) * (2 * k) ! := by
-    rw [mul_assoc, mul_comm _ (2 * k) !, ← range_eq_Ico, prod_range_factorial_succ,
-        ← mul_assoc, mul_comm _ (2 * k)!]
-    have := superFactorial_succ (2 * k - 1)
-    simp only [hk] at this
-    norm_num at this
-    rw [← this, ← prod_range_factorial_succ, range_eq_Ico, ← prod_range_factorial_succ,
-        range_eq_Ico, h_succ]
-    exact (Finset.prod_Ico_consecutive (fun x => (x + 1) !) (zero_le (2 * k)) (by linarith)).symm
-  constructor
-  · have h' : sf (4 * k) =
-       (2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 * (2 * k)! := by
-      calc
-        sf (4 * k) = ∏ x in Ico 0 (2 * (2 * k)), (x + 1) ! := by
-          rw [←range_eq_Ico, prod_range_factorial_succ, ← mul_assoc]
-        _ = ∏ x in Ico 0 (2 * k), ((2 * x + 1) !) * (((1 + 2 * x) + 1) !) := by
-          rw [mul_comm]
-          have prod_even_oddFin : ∀ (n : ℕ), ∀  (f : ℕ → ℕ),
-              ∏ x : Fin (n * 2), f x =  ∏ x : Fin n, (f (2 * x)) * (f (1 + 2 * x)) := by
-            intros n f
-            rw [(Equiv.prod_comp' finProdFinEquiv (fun i ↦ f ↑(finProdFinEquiv i)) (fun i ↦ f ↑i)
-                    (congrFun rfl)).symm, Fintype.prod_prod_type]
-            simp only [finProdFinEquiv_apply_val]
-            congr
-            ext x
-            rw [Fin.prod_univ_eq_prod_range (fun x_1 => f (↑x_1 + 2 * ↑x)) 2,
-                Finset.prod_range_succ]
-            simp
-          have prod_even_oddIco : ∀ (n : ℕ), ∀ (f : ℕ → ℕ),
-              ∏ x in Ico 0 (n * 2), f x =  ∏ x in Ico 0 n, (f (2 * x)) * (f (1 + 2 * x)) := by
-            intros n f
-            convert prod_even_oddFin n f
-            · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range f (n * 2))]
-            · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range _ n)]
-          exact prod_even_oddIco (2 * k) (fun x => (x + 1) !)
-        _ = ∏ x in Ico 0 (2 * k), (2 * (x + 1)) * (2 * x + 1)! ^ 2 := by
-          simp only [pow_two, ← mul_assoc]
-          apply Finset.prod_congr rfl
-          intro x _
-          rw [add_rotate 1 (2 * x) 1, mul_comm]
-          rfl
-        _ = (2 ^ k) ^ 2 *
-            (∏ x in Ico 0 (2 * k), (x + 1)) * (∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 := by
-          rw [prod_mul_distrib, prod_pow, prod_mul_distrib, pow_eq_prod_const 2]
-          simp only [prod_const, card_Ico, tsub_zero, card_range]
-          rw [← pow_mul 2 k, mul_comm 2 k]
-        _ = (2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 * (2 * k)! := by
-          rw [mul_assoc, mul_comm (∏ x in Ico 0 (2 * k), (x + 1)), ← mul_assoc, mul_pow]
-          simp only [Ico_zero_eq_range, prod_range_add_one_eq_factorial]
-    use 2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!
-    rw [← pow_two]
-    exact (mul_right_cancel₀ (factorial_ne_zero (2 * k)) (h' ▸ h)).symm
-  · exact h
+theorem superFactorial_two_mul : ∀ n : ℕ,
+    sf (2 * n) = (∏ i in range n, (2 * i + 1) !) ^ 2 * 2 ^ n * n !
+  | 0 => rfl
+  | (n + 1) => by
+    simp only [prod_range_succ, mul_pow, mul_add, mul_one, superFactorial_succ,
+      superFactorial_two_mul n, factorial_succ]
+    ring
+
+theorem superFactorial_four_mul (n : ℕ) :
+    sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
+  calc
+    sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
+      rw [← superFactorial_two_mul, ← mul_assoc]
+    _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
+      rw [pow_mul', mul_pow]
 
 private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
