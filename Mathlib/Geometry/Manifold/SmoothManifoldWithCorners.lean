@@ -1022,11 +1022,20 @@ theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
   rwa [extend_coe, comp_apply, ← I.map_nhds_eq, ← f.map_nhds_eq, map_map]
 #align local_homeomorph.map_extend_nhds PartialHomeomorph.map_extend_nhds
 
+theorem map_extend_nhds_of_boundaryless [I.Boundaryless] {x : M} (hx : x ∈ f.source) :
+    map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
+  rw [f.map_extend_nhds _ hx, I.range_eq_univ, nhdsWithin_univ]
+
 theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
     (f.extend I).target ∈ 𝓝[range I] f.extend I y := by
   rw [← PartialEquiv.image_source_eq_target, ← map_extend_nhds f I hy]
   exact image_mem_map (extend_source_mem_nhds _ _ hy)
 #align local_homeomorph.extend_target_mem_nhds_within PartialHomeomorph.extend_target_mem_nhdsWithin
+
+theorem extend_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
+    {s : Set M} (h : s ∈ 𝓝 x) : (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
+  rw [← f.map_extend_nhds_of_boundaryless _ hx, Filter.mem_map]
+  filter_upwards [h] using subset_preimage_image (f.extend I) s
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 #align local_homeomorph.extend_target_subset_range PartialHomeomorph.extend_target_subset_range
@@ -1352,6 +1361,16 @@ theorem map_extChartAt_nhds' {x y : M} (hy : y ∈ (extChartAt I x).source) :
 theorem map_extChartAt_nhds : map (extChartAt I x) (𝓝 x) = 𝓝[range I] extChartAt I x x :=
   map_extChartAt_nhds' I <| mem_extChartAt_source I x
 #align map_ext_chart_at_nhds map_extChartAt_nhds
+
+theorem map_extChartAt_nhds_of_boundaryless [I.Boundaryless] :
+    map (extChartAt I x) (𝓝 x) = 𝓝 (extChartAt I x x) := by
+  rw [extChartAt]
+  exact map_extend_nhds_of_boundaryless (chartAt H x) I (mem_chart_source H x)
+
+theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
+    (h : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
+  rw [extChartAt]
+  exact extend_image_nhd_mem_nhds_of_boundaryless _ I (mem_chart_source H x) h
 
 theorem extChartAt_target_mem_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
