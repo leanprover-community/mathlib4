@@ -47,4 +47,4 @@ theorem measurable_mabs : Measurable fun x : α ↦ mabs x :=
 
 @[to_additive (attr := measurability)]
 theorem Measurable.mabs : Measurable fun x ↦ mabs (f x) :=
-  measurable_mabs.comp  hf
+  measurable_mabs.comp hf
