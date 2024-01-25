@@ -86,6 +86,7 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
   map f := f
   ε := 𝟙 _
   μ X Y := 𝟙 _
+  -- The proof will be automated after merging #6307.
   μ_natural_left f g := by
     simp_rw [Category.id_comp, Category.comp_id]
     -- Should we provide further simp lemmas so this goal becomes visible?
