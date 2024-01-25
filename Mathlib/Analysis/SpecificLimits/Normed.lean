@@ -445,6 +445,14 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     exact h _ H
 #align normed_add_comm_group.cauchy_series_of_le_geometric'' NormedAddCommGroup.cauchy_series_of_le_geometric''
 
+/-- The term norms of any convergent series are bounded by a constant. -/
+lemma norm_bounded_of_cauchy_series (h : CauchySeq fun n ↦ ∑ k in range n, f k) :
+    ∃ C, ∀ n, ‖f n‖ ≤ C := by
+  obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
+  refine' ⟨b 0, fun n ↦ _⟩
+  replace key := key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
+  rwa [dist_partial_sum'] at key
+
 end SummableLeGeometric
 
 section NormedRingGeometric
@@ -561,6 +569,34 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCom
   filter_upwards [eventually_ge_of_tendsto_gt hr₁ h, key] with _ _ h₁
   rwa [← le_div_iff (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
 #align not_summable_of_ratio_test_tendsto_gt_one not_summable_of_ratio_test_tendsto_gt_one
+
+section NormedDivisionRing
+
+variable [NormedDivisionRing α] [CompleteSpace α] {f : ℕ → α}
+
+/-- If a power series converges at `w`, it converges absolutely at all `z` of lesser norm. -/
+theorem summable_power_of_norm_lt {w z : α}
+    (h : CauchySeq fun n ↦ ∑ i in range n, f i * w ^ i) (hz : ‖z‖ < ‖w‖) :
+    Summable fun n ↦ f n * z ^ n := by
+  -- First show `0 < ‖w‖`
+  cases' (norm_nonneg w).eq_or_gt with hw hw
+  · exact absurd ((norm_nonneg z).trans_lt (hw ▸ hz)) (lt_irrefl 0)
+  obtain ⟨C, hC⟩ := norm_bounded_of_cauchy_series h
+  rw [summable_iff_cauchySeq_finset]
+  refine' @cauchySeq_finset_of_geometric_bound _ _ (‖z‖ / ‖w‖) C _ _ (fun n ↦ _)
+  · rwa [div_lt_one hw]
+  · replace hC := hC n
+    rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
+    rw [norm_mul, norm_pow, ← _root_.le_div_iff (by positivity)] at hC
+    gcongr
+
+/-- If a power series converges at 1, it converges absolutely at all `z` of lesser norm. -/
+theorem summable_power_of_norm_lt_one {z : α}
+    (h : CauchySeq fun n ↦ ∑ i in range n, f i) (hz : ‖z‖ < 1) :
+    Summable fun n ↦ f n * z ^ n :=
+  summable_power_of_norm_lt (w := 1) (by simp [h]) (by simp [hz])
+
+end NormedDivisionRing
 
 section
 

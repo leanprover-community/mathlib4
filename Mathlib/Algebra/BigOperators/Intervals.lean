@@ -164,7 +164,7 @@ theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {
 #align finset.prod_range_sub_prod_range Finset.prod_range_div_prod_range
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
-/-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i ≤ j < b` are equal. -/
 theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i in Finset.Ico a b, ∑ j in Finset.Ico i b, f i j) =
       ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a (j + 1), f i j := by
@@ -176,6 +176,18 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   linarith
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
+
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
+theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+    (∑ i in Finset.Ico a b, ∑ j in Finset.Ico (i + 1) b, f i j) =
+      ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a j, f i j := by
+  rw [Finset.sum_sigma', Finset.sum_sigma']
+  refine' sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) _ _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) <;>
+  simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
+  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
+  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  linarith
 
 @[to_additive]
 theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
