@@ -79,9 +79,7 @@ elements. The previous results prove that these elements are closed under field 
 def separableClosure : IntermediateField F E where
   carrier := {x | (minpoly F x).Separable}
   mul_mem' := separable_mul
-  one_mem' := map_one (algebraMap F E) ▸ separable_algebraMap E 1
   add_mem' := separable_add
-  zero_mem' := map_zero (algebraMap F E) ▸ separable_algebraMap E 0
   algebraMap_mem' := separable_algebraMap E
   inv_mem' := separable_inv
 
