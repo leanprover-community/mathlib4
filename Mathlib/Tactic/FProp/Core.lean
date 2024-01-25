@@ -90,34 +90,32 @@ def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 
--- todo clean this up
+-- todo clean this up and keep on unfolding
 def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
-
-  let .some name ← fData.getFnConstName?
-    | return none
-
-  let cfg ← readThe Config
-
-  if cfg.constToUnfold.contains name then
-    let .some fn ← do
-        if let .some fn' ← withTransparency .default <| unfoldDefinition? fData.fn then
-          pure (.some fn')
-        else if let .some fn' ← reduceRecMatcher? fData.fn then
-          pure (.some fn')
-        else 
-          pure none
+  withLCtx fData.lctx fData.insts do
+    let .some name ← fData.getFnConstName?
       | return none
-    trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr fData.fn}\n==>\n{← ppExpr fn}"
 
-    let fb := Mor.headBeta (Mor.mkAppN fn fData.args)
-    return ← withLCtx fData.lctx fData.insts do
-      mkLambdaFVars #[fData.mainVar] fb
+    let cfg ← readThe Config
 
-  -- unfold any instance projections
-  if let .some f ← unfoldFunHead? (← fData.toExpr) then
-    return f
+    let mut didUnfold := false
+    let mut body := Mor.mkAppN fData.fn fData.args
 
-  return none
+    if cfg.constToUnfold.contains name then
+      if let .some body' ← withTransparency .default <| unfoldDefinition? body then
+        trace[Meta.Tactic.fprop.unfold] "unfolding {body} ==> {body'}"
+        didUnfold := true
+        body := body'
+        -- try unfold again if we have projection
+        if body'.getAppFn.isProj then
+          if let .some fn' ← reduceProj? body'.getAppFn then
+            trace[Meta.Tactic.fprop.unfold] "unfolding {body'.getAppFn} ==> {fn'}"
+            body := fn'.beta body'.getAppArgs
+
+    if didUnfold then
+      return ← mkLambdaFVars #[fData.mainVar] body.headBeta
+    else
+      return none
 
 /-- -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do

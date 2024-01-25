@@ -27,6 +27,7 @@ initialize registerTraceClass `Meta.Tactic.fprop.step
 initialize registerTraceClass `Meta.Tactic.fprop.unify
 initialize registerTraceClass `Meta.Tactic.fprop.discharge
 initialize registerTraceClass `Meta.Tactic.fprop.apply
+initialize registerTraceClass `Meta.Tactic.fprop.unfold
 initialize registerTraceClass `Meta.Tactic.fprop.cache
 
 

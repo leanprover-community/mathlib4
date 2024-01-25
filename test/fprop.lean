@@ -163,16 +163,24 @@ The theorem `Measurable.apply_continuousLinearMap` states measurability in `f` i
 attribute [fprop] 
   ContinuousLinearMap.measurable       -- Measurable fun (x : E) => DFunLike.coe L x
   ContinuousLinearMap.measurable_comp  -- Measurable φ → Measurable fun (x : E) => DFunLike.coe L (φ x)
-  ContinuousLinearMap.measurable_apply -- Measurable fun (f : E →[K] F) => f x
-  Measurable.apply_continuousLinearMap -- Measurable φ → Measurable fun (x : α) => DFunLike.coe (L x) v
+  ContinuousLinearMap.measurable_apply -- Measurable fun (f : E →L[K] F) => DFunLike.coe f x
+  Measurable.apply_continuousLinearMap -- Measurable L → Measurable fun (x : α) => DFunLike.coe (L x) v
 
+
+/-!
+A silly example that everything together works as expected
+-/
+
+set_option trace.Meta.Tactic.fprop true in
+example (f : ℝ → ℝ → (ℝ →L[ℝ] ℝ)) (hf : Continuous (fun (x,y) => f x y)) : 
+    Measurable fun x => (f (x / x) (x * x) 1 + x) := by fprop
 
 /-!
 In the current state of `fprop`, morphism theorems **have to** be stated in compositional form. 
 Sometimes they might work in uncurried form but `fprop` is not designed that way right now.
 
 
-In other cases the function property can be stated jointly in `f` and `x`. This is the case of `ContDiff n` and 
+In other cases the function property of `DFunLike.coe` can be stated jointly in `f` and `x`. This is the case of `ContDiff n` and 
 continuous linear maps. The theorem is `ContDiff.clm_apply`.
 
 -/

@@ -164,6 +164,7 @@ example : Con (fun (f : α → α → α → α → α) y x => f x y x y) := by 
 
 -- set_option pp.notation false 
 
+
 -- local hypothesis are assumed to be always in fully applied form 
 -- so `(hf : Con f)` is not considered valid 
 -- is this valid assumption? 
@@ -216,6 +217,9 @@ example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fp
 example (f : α → β ->> γ) (x) : Con fun y => f x y := by fprop
 example (f : α → α ->> (α → α)) (x) : Con fun y => f x y := by fprop
 example (f : α → α ->> (α → α)) (hf : Con ↿f) : Con fun x y => f y x x := by fprop
+
+
+example (f : α → β ->> γ) (hf : Con f) : Con ↿f := by fprop
 
 example : Con (HAdd.hAdd : α → α → α) := by fprop  -- under applied constant
 example : Con (fun x => (HAdd.hAdd : α → α → α) x) := by fprop  -- under applied constant
