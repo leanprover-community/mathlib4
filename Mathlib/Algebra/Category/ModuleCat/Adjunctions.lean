@@ -196,7 +196,7 @@ instance : LaxMonoidal.{u} (free R).obj where
   right_unitality := right_unitality R
   associativity := associativity R
 
-instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
+instance : IsIso (@LaxMonoidalStruct.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
   · -- Porting note: broken ext
     apply LinearMap.ext_ring
@@ -225,7 +225,7 @@ variable [CommRing R]
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
     -- Porting note: used to be dsimp
-    ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
+    ε_isIso := (by infer_instance : IsIso (@LaxMonoidalStruct.ε _ _ _ _ _ _ (free R).obj _ _))
     μ_isIso := fun X Y => by dsimp; infer_instance }
 #align Module.monoidal_free ModuleCat.monoidalFree
 

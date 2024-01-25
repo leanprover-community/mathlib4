@@ -47,7 +47,7 @@ theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
 variable [MonoidalCategory.{v} C]
 
 @[simps]
-instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
+instance limitLaxMonoidalStruct : LaxMonoidalStruct fun F : J ⥤ C => limit F where
   ε :=
     limit.lift _
       { pt := _
@@ -60,6 +60,8 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
             naturality := fun j j' f => by
               dsimp
               simp only [Category.id_comp, ← tensor_comp, limit.w] } }
+
+instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
   μ_natural f g := by
     ext; dsimp
     simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,

@@ -44,17 +44,28 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
+section
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategoryStruct.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategoryStruct.{v₂} D]
+
+/-- An unbundled description of lax monoidal functors without axioms. See `LaxMonoidal` for
+the full description. -/
+class LaxMonoidalStruct (F : C → D) [Functorial.{v₁, v₂} F] where
+  /-- unit morphism -/
+  ε : 𝟙_ D ⟶ F (𝟙_ C)
+  /-- tensorator -/
+  μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
+
+end
+
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [MonoidalCategory.{v₂} D]
 
 -- Perhaps in the future we'll redefine `LaxMonoidalFunctor` in terms of this,
 -- but that isn't the immediate plan.
 /-- An unbundled description of lax monoidal functors. -/
-class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
-  /-- unit morphism -/
-  ε : 𝟙_ D ⟶ F (𝟙_ C)
-  /-- tensorator -/
-  μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
+class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] extends LaxMonoidalStruct F where
   /-- naturality -/
   μ_natural :
     ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
