@@ -59,16 +59,18 @@ section Sort'
 
 variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]
 
+-- see Note [lower instance priority]
 /-- All `DFunLike`s are finite if their domain and codomain are.  -/
-instance DFunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
+instance (priority := 100) DFunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
   Finite.of_injective _ DFunLike.coe_injective
 #align fun_like.finite DFunLike.finite
 
+-- see Note [lower instance priority]
 /-- All `FunLike`s are finite if their domain and codomain are.
 
 Non-dependent version of `DFunLike.finite` that might be easier to infer.
 -/
-instance FunLike.finite [Finite α] [Finite γ] : Finite G :=
+instance (priority := 100) FunLike.finite [Finite α] [Finite γ] : Finite G :=
   DFunLike.finite G
 #align fun_like.finite' FunLike.finite
 
