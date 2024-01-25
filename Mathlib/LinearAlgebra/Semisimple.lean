@@ -47,7 +47,7 @@ namespace Module.End
 
 variable (f g : End R M)
 
-/-- A linear endomorphism of an `R`-module `M` is called semisimple if the induced `R[X]`-module
+/-- A linear endomorphism of an `R`-module `M` is called *semisimple* if the induced `R[X]`-module
 structure on `M` is semisimple. This is equivalent to saying that every `f`-invariant `R`-submodule
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
 abbrev IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
