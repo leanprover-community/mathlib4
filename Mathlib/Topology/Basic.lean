@@ -136,7 +136,7 @@ protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace X} :
   ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 #align topological_space_eq_iff TopologicalSpace.ext_iff
 
-theorem isOpen_fold {s : Set X} {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
+theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
   rfl
 #align is_open_fold isOpen_fold
 
@@ -206,7 +206,7 @@ set_option quotPrecheck false in
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
-@[simp] theorem isOpen_compl_iff {s : Set X} : IsOpen sᶜ ↔ IsClosed s :=
+@[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 #align is_open_compl_iff isOpen_compl_iff
 
@@ -237,14 +237,14 @@ theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClo
 #align is_closed_bInter isClosed_biInter
 
 @[simp]
-theorem isClosed_compl_iff {s : Set X} : IsClosed sᶜ ↔ IsOpen s := by
+theorem isClosed_compl_iff : IsClosed sᶜ ↔ IsOpen s := by
   rw [← isOpen_compl_iff, compl_compl]
 #align is_closed_compl_iff isClosed_compl_iff
 
 alias ⟨_, IsOpen.isClosed_compl⟩ := isClosed_compl_iff
 #align is_open.is_closed_compl IsOpen.isClosed_compl
 
-theorem IsOpen.sdiff {s t : Set X} (h₁ : IsOpen s) (h₂ : IsClosed t) : IsOpen (s \ t) :=
+theorem IsOpen.sdiff (h₁ : IsOpen s) (h₂ : IsClosed t) : IsOpen (s \ t) :=
   IsOpen.inter h₁ h₂.isOpen_compl
 #align is_open.sdiff IsOpen.sdiff
 
@@ -254,7 +254,7 @@ theorem IsClosed.inter (h₁ : IsClosed s₁) (h₂ : IsClosed s₂) : IsClosed 
   exact IsOpen.union h₁ h₂
 #align is_closed.inter IsClosed.inter
 
-theorem IsClosed.sdiff {s t : Set X} (h₁ : IsClosed s) (h₂ : IsOpen t) : IsClosed (s \ t) :=
+theorem IsClosed.sdiff (h₁ : IsClosed s) (h₂ : IsOpen t) : IsClosed (s \ t) :=
   IsClosed.inter h₁ (isClosed_compl_iff.mpr h₂)
 #align is_closed.sdiff IsClosed.sdiff
 
@@ -294,40 +294,40 @@ def interior (s : Set X) : Set X :=
 #align interior interior
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
-theorem mem_interior {s : Set X} {x : X} : x ∈ interior s ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
+theorem mem_interior {x : X} : x ∈ interior s ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
   simp only [interior, mem_sUnion, mem_setOf_eq, and_assoc, and_left_comm]
 #align mem_interior mem_interiorₓ
 
 @[simp]
-theorem isOpen_interior {s : Set X} : IsOpen (interior s) :=
+theorem isOpen_interior: IsOpen (interior s) :=
   isOpen_sUnion fun _ => And.left
 #align is_open_interior isOpen_interior
 
-theorem interior_subset {s : Set X} : interior s ⊆ s :=
+theorem interior_subset : interior s ⊆ s :=
   sUnion_subset fun _ => And.right
 #align interior_subset interior_subset
 
-theorem interior_maximal {s t : Set X} (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
+theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 #align interior_maximal interior_maximal
 
-theorem IsOpen.interior_eq {s : Set X} (h : IsOpen s) : interior s = s :=
+theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 #align is_open.interior_eq IsOpen.interior_eq
 
-theorem interior_eq_iff_isOpen {s : Set X} : interior s = s ↔ IsOpen s :=
+theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
   ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
 #align interior_eq_iff_is_open interior_eq_iff_isOpen
 
-theorem subset_interior_iff_isOpen {s : Set X} : s ⊆ interior s ↔ IsOpen s := by
+theorem subset_interior_iff_isOpen : s ⊆ interior s ↔ IsOpen s := by
   simp only [interior_eq_iff_isOpen.symm, Subset.antisymm_iff, interior_subset, true_and]
 #align subset_interior_iff_is_open subset_interior_iff_isOpen
 
-theorem IsOpen.subset_interior_iff {s t : Set X} (h₁ : IsOpen s) : s ⊆ interior t ↔ s ⊆ t :=
+theorem IsOpen.subset_interior_iff (h₁ : IsOpen s) : s ⊆ interior t ↔ s ⊆ t :=
   ⟨fun h => Subset.trans h interior_subset, fun h₂ => interior_maximal h₂ h₁⟩
 #align is_open.subset_interior_iff IsOpen.subset_interior_iff
 
-theorem subset_interior_iff {s t : Set X} : t ⊆ interior s ↔ ∃ U, IsOpen U ∧ t ⊆ U ∧ U ⊆ s :=
+theorem subset_interior_iff : t ⊆ interior s ↔ ∃ U, IsOpen U ∧ t ⊆ U ∧ U ⊆ s :=
   ⟨fun h => ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
@@ -336,7 +336,7 @@ lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s →
   simp [interior]
 
 @[mono]
-theorem interior_mono {s t : Set X} (h : s ⊆ t) : interior s ⊆ interior t :=
+theorem interior_mono (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
 #align interior_mono interior_mono
 
@@ -351,17 +351,17 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 #align interior_univ interior_univ
 
 @[simp]
-theorem interior_eq_univ {s : Set X} : interior s = univ ↔ s = univ :=
+theorem interior_eq_univ : interior s = univ ↔ s = univ :=
   ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
 #align interior_eq_univ interior_eq_univ
 
 @[simp]
-theorem interior_interior {s : Set X} : interior (interior s) = interior s :=
+theorem interior_interior : interior (interior s) = interior s :=
   isOpen_interior.interior_eq
 #align interior_interior interior_interior
 
 @[simp]
-theorem interior_inter {s t : Set X} : interior (s ∩ t) = interior s ∩ interior t :=
+theorem interior_inter : interior (s ∩ t) = interior s ∩ interior t :=
   (Monotone.map_inf_le (fun _ _ ↦ interior_mono) s t).antisymm <|
     interior_maximal (inter_subset_inter interior_subset interior_subset) <|
       isOpen_interior.inter isOpen_interior
@@ -387,7 +387,7 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
 
-theorem interior_union_isClosed_of_interior_empty {s t : Set X} (h₁ : IsClosed s)
+theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
     by_contradiction fun hx₂ : x ∉ s =>
@@ -433,41 +433,41 @@ set_option quotPrecheck false in
 scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 
 @[simp]
-theorem isClosed_closure {s : Set X} : IsClosed (closure s) :=
+theorem isClosed_closure : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
 #align is_closed_closure isClosed_closure
 
-theorem subset_closure {s : Set X} : s ⊆ closure s :=
+theorem subset_closure : s ⊆ closure s :=
   subset_sInter fun _ => And.right
 #align subset_closure subset_closure
 
-theorem not_mem_of_not_mem_closure {s : Set X} {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem not_mem_of_not_mem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 #align not_mem_of_not_mem_closure not_mem_of_not_mem_closure
 
-theorem closure_minimal {s t : Set X} (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
+theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 #align closure_minimal closure_minimal
 
-theorem Disjoint.closure_left {s t : Set X} (hd : Disjoint s t) (ht : IsOpen t) :
+theorem Disjoint.closure_left (hd : Disjoint s t) (ht : IsOpen t) :
     Disjoint (closure s) t :=
   disjoint_compl_left.mono_left <| closure_minimal hd.subset_compl_right ht.isClosed_compl
 #align disjoint.closure_left Disjoint.closure_left
 
-theorem Disjoint.closure_right {s t : Set X} (hd : Disjoint s t) (hs : IsOpen s) :
+theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 #align disjoint.closure_right Disjoint.closure_right
 
-theorem IsClosed.closure_eq {s : Set X} (h : IsClosed s) : closure s = s :=
+theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 #align is_closed.closure_eq IsClosed.closure_eq
 
-theorem IsClosed.closure_subset {s : Set X} (hs : IsClosed s) : closure s ⊆ s :=
+theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
 #align is_closed.closure_subset IsClosed.closure_subset
 
-theorem IsClosed.closure_subset_iff {s t : Set X} (h₁ : IsClosed t) : closure s ⊆ t ↔ s ⊆ t :=
+theorem IsClosed.closure_subset_iff (h₁ : IsClosed t) : closure s ⊆ t ↔ s ⊆ t :=
   ⟨Subset.trans subset_closure, fun h => closure_minimal h h₁⟩
 #align is_closed.closure_subset_iff IsClosed.closure_subset_iff
 
@@ -477,7 +477,7 @@ theorem IsClosed.mem_iff_closure_subset {s : Set X} (hs : IsClosed s) {x : X} :
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
 @[mono]
-theorem closure_mono {s t : Set X} (h : s ⊆ t) : closure s ⊆ closure t :=
+theorem closure_mono (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
 
@@ -485,7 +485,7 @@ theorem monotone_closure (X : Type*) [TopologicalSpace X] : Monotone (@closure X
   closure_mono
 #align monotone_closure monotone_closure
 
-theorem diff_subset_closure_iff {s t : Set X} : s \ t ⊆ closure t ↔ s ⊆ closure t := by
+theorem diff_subset_closure_iff : s \ t ⊆ closure t ↔ s ⊆ closure t := by
   rw [diff_subset_iff, union_eq_self_of_subset_left subset_closure]
 #align diff_subset_closure_iff diff_subset_closure_iff
 
@@ -541,7 +541,7 @@ theorem closure_eq_compl_interior_compl {s : Set X} : closure s = (interior sᶜ
 #align closure_eq_compl_interior_compl closure_eq_compl_interior_compl
 
 @[simp]
-theorem closure_union {s t : Set X} : closure (s ∪ t) = closure s ∪ closure t := by
+theorem closure_union : closure (s ∪ t) = closure s ∪ closure t := by
   simp [closure_eq_compl_interior_compl, compl_inter]
 #align closure_union closure_union
 
@@ -591,7 +591,7 @@ theorem mem_closure_iff {s : Set X} :
       hc (h₂ hs)⟩
 #align mem_closure_iff mem_closure_iff
 
-theorem closure_inter_open_nonempty_iff {s t : Set X} (h : IsOpen t) :
+theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
     (closure s ∩ t).Nonempty ↔ (s ∩ t).Nonempty :=
   ⟨fun ⟨_x, hxcs, hxt⟩ => inter_comm t s ▸ mem_closure_iff.1 hxcs t h hxt, fun h =>
     h.mono <| inf_le_inf_right t subset_closure⟩
@@ -1433,7 +1433,7 @@ lemma isClosed_iff_forall_filter {s : Set X} :
   exact ⟨fun hs x F F_ne FS Fx ↦ hs _ <| NeBot.mono F_ne (le_inf Fx FS),
          fun hs x hx ↦ hs x (𝓝 x ⊓ 𝓟 s) hx inf_le_right inf_le_left⟩
 
-theorem IsClosed.interior_union_left {s t : Set X} (_ : IsClosed s) :
+theorem IsClosed.interior_union_left (_ : IsClosed s) :
     interior (s ∪ t) ⊆ s ∪ interior t := fun a ⟨u, ⟨⟨hu₁, hu₂⟩, ha⟩⟩ =>
   (Classical.em (a ∈ s)).imp_right fun h =>
     mem_interior.mpr
@@ -1441,21 +1441,21 @@ theorem IsClosed.interior_union_left {s t : Set X} (_ : IsClosed s) :
         ⟨ha, h⟩⟩
 #align is_closed.interior_union_left IsClosed.interior_union_left
 
-theorem IsClosed.interior_union_right {s t : Set X} (h : IsClosed t) :
+theorem IsClosed.interior_union_right (h : IsClosed t) :
     interior (s ∪ t) ⊆ interior s ∪ t := by
   simpa only [union_comm _ t] using h.interior_union_left
 #align is_closed.interior_union_right IsClosed.interior_union_right
 
-theorem IsOpen.inter_closure {s t : Set X} (h : IsOpen s) : s ∩ closure t ⊆ closure (s ∩ t) :=
+theorem IsOpen.inter_closure (h : IsOpen s) : s ∩ closure t ⊆ closure (s ∩ t) :=
   compl_subset_compl.mp <| by
     simpa only [← interior_compl, compl_inter] using IsClosed.interior_union_left h.isClosed_compl
 #align is_open.inter_closure IsOpen.inter_closure
 
-theorem IsOpen.closure_inter {s t : Set X} (h : IsOpen t) : closure s ∩ t ⊆ closure (s ∩ t) := by
+theorem IsOpen.closure_inter (h : IsOpen t) : closure s ∩ t ⊆ closure (s ∩ t) := by
   simpa only [inter_comm t] using h.inter_closure
 #align is_open.closure_inter IsOpen.closure_inter
 
-theorem Dense.open_subset_closure_inter {s t : Set X} (hs : Dense s) (ht : IsOpen t) :
+theorem Dense.open_subset_closure_inter (hs : Dense s) (ht : IsOpen t) :
     t ⊆ closure (t ∩ s) :=
   calc
     t = t ∩ closure s := by rw [hs.closure_eq, inter_univ]
@@ -1475,24 +1475,24 @@ theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set X} {x : X} (h : x ∈ 
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/
-theorem Dense.inter_of_isOpen_left {s t : Set X} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
+theorem Dense.inter_of_isOpen_left (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
     Dense (s ∩ t) := fun x =>
   closure_minimal hso.inter_closure isClosed_closure <| by simp [hs.closure_eq, ht.closure_eq]
 #align dense.inter_of_open_left Dense.inter_of_isOpen_left
 
 /-- The intersection of a dense set with an open dense set is a dense set. -/
-theorem Dense.inter_of_isOpen_right {s t : Set X} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
+theorem Dense.inter_of_isOpen_right (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
     Dense (s ∩ t) :=
   inter_comm t s ▸ ht.inter_of_isOpen_left hs hto
 #align dense.inter_of_open_right Dense.inter_of_isOpen_right
 
-theorem Dense.inter_nhds_nonempty {s t : Set X} (hs : Dense s) {x : X} (ht : t ∈ 𝓝 x) :
+theorem Dense.inter_nhds_nonempty (hs : Dense s) {x : X} (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 #align dense.inter_nhds_nonempty Dense.inter_nhds_nonempty
 
-theorem closure_diff {s t : Set X} : closure s \ closure t ⊆ closure (s \ t) :=
+theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
     closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
     _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
