@@ -668,4 +668,4 @@ instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 @[to_additive "Any `FreeAddMonoid` has the `TwoUniqueSums` property."]
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
-  TwoUniqueProds.of_graded_mul List.length_append (fun _ _ _ _ => by exact List.append_inj)
+  TwoUniqueProds.of_graded_mul List.length_append (fun _ _ _ _ => List.append_inj)
