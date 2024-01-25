@@ -40,7 +40,7 @@ which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
 class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
-  -- braiding natural iso:
+  /-- braiding natural isomorphism -/
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
   -- Note: `𝟙 X ⊗ f` will be replaced by `X ◁ f` (and similarly for `f ⊗ 𝟙 Z`) in #6307.
   braiding_naturality_right :
@@ -115,7 +115,8 @@ theorem braiding_inv_tensor_right (X Y Z : C) :
         ((β_ X Y).inv ⊗ 𝟙 Z) ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
 
-@[reassoc (attr := simp)]
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+@[reassoc (attr := simp (low))]
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
   rw [← tensor_id_comp_id_tensor f g, ← id_tensor_comp_tensor_id g f]
