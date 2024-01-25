@@ -189,12 +189,6 @@ variable {c : α} {x y : β} [Invertible c]
 @[simp]
 theorem invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
 
-@[simp]
-theorem smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
-
-variable (c) in
-theorem smul_eq_iff  : c • x = c • y ↔ x = y := smul_left_cancel_iff (g := unitOfInvertible c)
-
 theorem invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y :=
   inv_smul_eq_iff (a := unitOfInvertible c)
 
