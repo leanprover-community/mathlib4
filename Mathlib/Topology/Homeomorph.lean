@@ -320,7 +320,7 @@ theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 
 theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
     h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
-  refine' (h.continuous.image_connectedComponentIn_subset hx).antisymm _
+  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
   have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
   rwa [image_subset_iff, h.preimage_symm, h.image_symm, h.preimage_image, h.symm_apply_apply]
     at this

@@ -708,8 +708,8 @@ theorem Continuous.image_connectedComponent_subset [TopologicalSpace β] {f : α
 #align continuous.image_connected_component_subset Continuous.image_connectedComponent_subset
 
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
-    {x : α} (hf : Continuous f) (hx : x ∈ s) :
-    f '' connectedComponentIn s x ⊆ connectedComponentIn (f '' s) (f x) :=
+    {a : α} (hf : Continuous f) (hx : a ∈ s) :
+    f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
   (isPreconnected_connectedComponentIn.image _ hf.continuousOn).subset_connectedComponentIn
     (mem_image_of_mem _ <| mem_connectedComponentIn hx)
     (image_subset _ <| connectedComponentIn_subset _ _)
@@ -718,6 +718,11 @@ theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → �
     (a : α) : MapsTo f (connectedComponent a) (connectedComponent (f a)) :=
   mapsTo'.2 <| h.image_connectedComponent_subset a
 #align continuous.maps_to_connected_component Continuous.mapsTo_connectedComponent
+
+theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
+    (h : Continuous f) {a : α} (hx : a ∈ s) :
+    MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
+  mapsTo'.2 <| image_connectedComponentIn_subset h hx
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
