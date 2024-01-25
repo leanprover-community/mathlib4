@@ -119,12 +119,12 @@ instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
 @[simps]
 instance whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨X ◁ MonoidalCoherence.hom⟩
+  ⟨𝟙 X ⊗ MonoidalCoherence.hom⟩
 
 @[simps]
 instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
-  ⟨MonoidalCoherence.hom ▷ Z⟩
+  ⟨MonoidalCoherence.hom ⊗ 𝟙 Z⟩
 
 @[simps]
 instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
