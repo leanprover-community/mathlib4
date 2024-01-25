@@ -443,6 +443,7 @@ class TopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends Contin
 #align topological_group TopologicalGroup
 --#align topological_add_group TopologicalAddGroup
 
+open TopologicalGroup
 section Conj
 
 instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
@@ -746,37 +747,38 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 
 /-- The topological closure of a normal subgroup is normal.-/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
-theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
+theorem Subgroup.normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
     [TopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where
   conj_mem n hn g := by
-    apply map_mem_closure (TopologicalGroup.continuous_conj g) hn
+    apply map_mem_closure (continuous_conj g) hn
     exact fun m hm => Subgroup.Normal.conj_mem inferInstance m hm g
-#align subgroup.is_normal_topological_closure Subgroup.is_normal_topologicalClosure
-#align add_subgroup.is_normal_topological_closure AddSubgroup.is_normal_topologicalClosure
+#align subgroup.is_normal_topological_closure Subgroup.normal_topologicalClosure
+#align add_subgroup.is_normal_topological_closure AddSubgroup.normal_topologicalClosure
 
 @[to_additive]
 theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneClass G]
     [ContinuousMul G] {g h : G} (hg : g ∈ connectedComponent (1 : G))
     (hh : h ∈ connectedComponent (1 : G)) : g * h ∈ connectedComponent (1 : G) := by
-  rw [connectedComponent_eq hg]
-  have hmul : g ∈ connectedComponent (g * h) := by
-    apply Continuous.image_connectedComponent_subset (continuous_mul_left g)
-    rw [← connectedComponent_eq hh]
-    exact ⟨(1 : G), mem_connectedComponent, by simp only [mul_one]⟩
-  simpa [← connectedComponent_eq hmul] using mem_connectedComponent
-#align mul_mem_connected_component_one mul_mem_connectedComponent_one
-#align add_mem_connected_component_zero add_mem_connectedComponent_zero
+  rw [← mul_one 1]
+  exact isPreconnected_connectedComponent.image2 isPreconnected_connectedComponent _
+    continuous_mul.continuousOn |>.subset_connectedComponent
+    (mem_image2_of_mem mem_connectedComponent mem_connectedComponent) (mem_image2_of_mem hg hh)
 
 @[to_additive]
 theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group G]
-    [TopologicalGroup G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
+    [ContinuousInv G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
     g⁻¹ ∈ connectedComponent (1 : G) := by
   rw [← inv_one]
-  exact
-    Continuous.image_connectedComponent_subset continuous_inv _
-      ((Set.mem_image _ _ _).mp ⟨g, hg, rfl⟩)
+  exact continuous_inv.image_connectedComponent_subset _ (mem_image_of_mem _ hg)
 #align inv_mem_connected_component_one inv_mem_connectedComponent_one
 #align neg_mem_connected_component_zero neg_mem_connectedComponent_zero
+
+@[to_additive]
+theorem conj_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group G]
+    [ContinuousMul G] {g h : G} (hh : h ∈ connectedComponent (1 : G)) :
+    g * h * g⁻¹ ∈ connectedComponent (1 : G) := by
+  conv in (1 : G) => rw [← mul_right_inv g]; left; rw [← mul_one g]
+  exact continuous_conj g |>.image_connectedComponent_subset _ (mem_image_of_mem _ hh)
 
 /-- The connected component of 1 is a subgroup of `G`. -/
 @[to_additive "The connected component of 0 is a subgroup of `G`."]
@@ -788,6 +790,11 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   inv_mem' hg := inv_mem_connectedComponent_one hg
 #align subgroup.connected_component_of_one Subgroup.connectedComponentOfOne
 #align add_subgroup.connected_component_of_zero AddSubgroup.connectedComponentOfZero
+
+@[to_additive]
+theorem Subgroup.normal_connectedComponentOfOne {G : Type*} [TopologicalSpace G] [Group G]
+    [TopologicalGroup G] : (Subgroup.connectedComponentOfOne G).Normal where
+  conj_mem _ hn _ := conj_mem_connectedComponent_one hn
 
 /-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
 @[to_additive

@@ -41,9 +41,9 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 open Set Function Topology TopologicalSpace Relation
 open scoped Classical
 
-universe u v
+universe u v w
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
   {s t u v : Set α}
 
 section Preconnected
@@ -506,6 +506,20 @@ theorem isConnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set (π
   rw [← eval_image_univ_pi hne]
   exact hc.image _ (continuous_apply _).continuousOn
 #align is_connected_univ_pi isConnected_univ_pi
+
+protected theorem IsPreconnected.image2 [TopologicalSpace β] [TopologicalSpace γ]
+    {s : Set α} {t : Set β} (hs : IsPreconnected s) (ht : IsPreconnected t)
+    (f : α → β → γ) (hf : ContinuousOn (uncurry f) (s ×ˢ t)) :
+    IsPreconnected (image2 f s t) := by
+  rw [← image_uncurry_prod]
+  exact (hs.prod ht).image _ hf
+
+protected theorem IsConnected.image2 [TopologicalSpace β] [TopologicalSpace γ]
+    {s : Set α} {t : Set β} (hs : IsConnected s) (ht : IsConnected t)
+    (f : α → β → γ) (hf : ContinuousOn (uncurry f) (s ×ˢ t)) :
+    IsConnected (image2 f s t) := by
+  rw [← image_uncurry_prod]
+  exact (hs.prod ht).image _ hf
 
 theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π i)} :
     IsConnected s ↔ ∃ i t, IsConnected t ∧ s = Sigma.mk i '' t := by
