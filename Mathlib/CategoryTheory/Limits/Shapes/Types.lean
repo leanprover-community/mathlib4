@@ -887,34 +887,30 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
 
 end Pushout
 
-section
+variable {f g}
 
-variable {S X₁ X₂ : Type u} {i₁ : S ⟶ X₁} {i₂ : S ⟶ X₂}
-
-lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone i₁ i₂} (e : c ≅ c')
+lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
   convert congr_arg e.hom.hom h
   · exact congr_fun (e.hom.w WalkingSpan.left).symm x₁
   · exact congr_fun (e.hom.w WalkingSpan.right).symm x₂
 
-lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone i₁ i₂} (e : c ≅ c')
+lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) :
     c.inl x₁ = c.inr x₂ ↔ c'.inl x₁ = c'.inr x₂ := by
   constructor
   · apply pushoutCocone_inl_eq_inr_imp_of_iso e
   · apply pushoutCocone_inl_eq_inr_imp_of_iso e.symm
 
-lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone i₁ i₂} (hc : IsColimit c)
-    (h₁ : Function.Injective i₁) (x₁ : X₁) (x₂ : X₂) :
-    c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), i₁ s = x₁ ∧ i₂ s = x₂ := by
+lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) (x₁ : X₁) (x₂ : X₂) :
+    c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
   rw [pushoutCocone_inl_eq_inr_iff_of_iso
-    (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone i₁ i₂))
+    (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
     (by aesop_cat))]
-  have := (mono_iff_injective i₁).2 h₁
+  have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
-
-end
 
 end Pushout
 
