@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 #align_import analysis.calculus.parametric_integral from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
@@ -37,7 +38,7 @@ variable.
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
   controlled by a positive number `ε`.
 
-* `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assume `fun x ↦ F x a` has
+* `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assumes `fun x ↦ F x a` has
    derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
    from `x` near `x₀`.
 
@@ -190,6 +191,24 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F : H → α → E} {F' 
   exact (hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas this
     bound_integrable diff_x₀).2
 #align has_fderiv_at_integral_of_dominated_of_fderiv_le hasFDerivAt_integral_of_dominated_of_fderiv_le
+
+/-- Interval version of `hasFDerivAt_integral_of_dominated_of_fderiv_le` -/
+theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
+    {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {x₀ : H} {a b : ℝ} {bound : ℝ → ℝ}
+    (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
+    (hF_int : IntervalIntegrable (F x₀) μ a b)
+    (hF'_meas : AEStronglyMeasurable (F' x₀) <| μ.restrict (Ι a b))
+    (h_bound : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x ↦ F x t) (F' x t) x) :
+    HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
+  rw [ae_restrict_uIoc_iff] at h_diff h_bound
+  simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
+  exact
+    (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas.1 hF_int.1 hF'_meas.1 h_bound.1
+          bound_integrable.1 h_diff.1).sub
+      (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
+        bound_integrable.2 h_diff.2)
 
 section
 
