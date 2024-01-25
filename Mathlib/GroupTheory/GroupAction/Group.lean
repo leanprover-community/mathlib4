@@ -184,13 +184,6 @@ section Monoid
 
 variable [Monoid α] [MulAction α β]
 
-@[to_additive]
-instance : MulAction αˣ β where
-  one_smul _ := by
-    rw [one_smul]
-  mul_smul _ _ _ := by
-    rw [mul_smul]
-
 variable {c : α} {x y : β} [Invertible c]
 
 @[simp]
@@ -203,7 +196,7 @@ variable (c) in
 theorem smul_eq_iff  : c • x = c • y ↔ x = y := smul_left_cancel_iff (g := unitOfInvertible c)
 
 theorem invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y :=
-  inv_smul_eq_iff (a := unitOfInvertible c) (x := x) (y := y)
+  inv_smul_eq_iff (a := unitOfInvertible c)
 
 theorem smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
   smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
