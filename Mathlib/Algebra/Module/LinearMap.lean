@@ -209,18 +209,18 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply DFunLike.coe_injective'
     exact h
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+-- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
-  { AddHomClass.toFunLike with }
+instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M M₃ :=
+  { AddHomClass.toDFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
@@ -236,7 +236,7 @@ theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := 
 
 @[ext]
 theorem ext {f g : M →ₛₗ[σ] M₃} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align linear_map.ext LinearMap.ext
 
 /-- Copy of a `LinearMap` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -253,7 +253,7 @@ theorem coe_copy (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : 
 #align linear_map.coe_copy LinearMap.coe_copy
 
 theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align linear_map.copy_eq LinearMap.copy_eq
 
 initialize_simps_projections LinearMap (toFun → apply)
@@ -319,21 +319,21 @@ theorem isLinear : IsLinearMap R fₗ :=
 
 variable {fₗ gₗ f g σ}
 
-theorem coe_injective : Injective (FunLike.coe : (M →ₛₗ[σ] M₃) → _) :=
-  FunLike.coe_injective
+theorem coe_injective : Injective (DFunLike.coe : (M →ₛₗ[σ] M₃) → _) :=
+  DFunLike.coe_injective
 #align linear_map.coe_injective LinearMap.coe_injective
 
 protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align linear_map.congr_arg LinearMap.congr_arg
 
 /-- If two linear maps are equal, they are equal at each point. -/
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align linear_map.congr_fun LinearMap.congr_fun
 
 theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align linear_map.ext_iff LinearMap.ext_iff
 
 @[simp]
@@ -519,7 +519,7 @@ end RestrictScalars
 
 theorem toAddMonoidHom_injective :
     Function.Injective (toAddMonoidHom : (M →ₛₗ[σ] M₃) → M →+ M₃) := fun fₗ gₗ h ↦
-  ext <| (FunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
+  ext <| (DFunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
 #align linear_map.to_add_monoid_hom_injective LinearMap.toAddMonoidHom_injective
 
 /-- If two `σ`-linear maps from `R` are equal on `1`, then they are equal. -/
@@ -955,7 +955,7 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
-  FunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
@@ -1003,7 +1003,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 
 /-- The type of linear maps is an additive group. -/
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
-  FunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end Arithmetic
