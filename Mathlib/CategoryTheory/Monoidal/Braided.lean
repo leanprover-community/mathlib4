@@ -421,6 +421,18 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
   simp only [assoc]
 #align category_theory.tensor_μ_natural CategoryTheory.tensor_μ_natural
 
+@[reassoc]
+theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
+    ((f₁ ⊗ f₂) ⊗ 𝟙 (Z₁ ⊗ Z₂)) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
+      tensor_μ C (X₁, X₂) (Z₁, Z₂) ≫ ((f₁ ⊗ 𝟙 Z₁) ⊗ (f₂ ⊗ 𝟙 Z₂)) := by
+  convert tensor_μ_natural C f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1; simp
+
+@[reassoc]
+theorem tensor_μ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
+    (𝟙 (Z₁ ⊗ Z₂) ⊗ (f₁ ⊗ f₂)) ≫ tensor_μ C (Z₁, Z₂) (Y₁, Y₂) =
+      tensor_μ C (Z₁, Z₂) (X₁, X₂) ≫ ((𝟙 Z₁ ⊗ f₁) ⊗ (𝟙 Z₂ ⊗ f₂)) := by
+  convert tensor_μ_natural C (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1; simp
+
 theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =
       ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
@@ -566,8 +578,9 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
 def tensorMonoidal : MonoidalFunctor (C × C) C :=
   { tensor C with
     ε := (λ_ (𝟙_ C)).inv
-    μ := fun X Y => tensor_μ C X Y
-    μ_natural := fun f g => tensor_μ_natural C f.1 f.2 g.1 g.2
+    μ := tensor_μ C
+    μ_natural_left := fun f Z => tensor_μ_natural_left C f.1 f.2 Z.1 Z.2
+    μ_natural_right := fun Z f => tensor_μ_natural_right C Z.1 Z.2 f.1 f.2
     associativity := fun X Y Z => tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2
     left_unitality := fun ⟨X₁, X₂⟩ => tensor_left_unitality C X₁ X₂
     right_unitality := fun ⟨X₁, X₂⟩ => tensor_right_unitality C X₁ X₂
