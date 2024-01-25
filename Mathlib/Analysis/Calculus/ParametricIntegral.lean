@@ -88,7 +88,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
   have hF_int' : ∀ x ∈ ball x₀ ε, Integrable (F x) μ := fun x x_in ↦ by
     have : ∀ᵐ a ∂μ, ‖F x₀ a - F x a‖ ≤ ε * b a := by
       simp only [norm_sub_rev (F x₀ _)]
-      refine' h_lipsch.mono fun a ha => (ha x x_in).trans _
+      refine h_lipsch.mono fun a ha => (ha x x_in).trans ?_
       rw [mul_comm ε]
       rw [mem_ball, dist_eq_norm] at x_in
       exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
@@ -98,9 +98,9 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
     have : ∀ᵐ a ∂μ, ‖F' a‖ ≤ b a := by
       apply (h_diff.and h_lipsch).mono
       rintro a ⟨ha_diff, ha_lip⟩
-      refine' ha_diff.le_of_lip' (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) <| ha_lip)
+      exact ha_diff.le_of_lip' (b_nonneg a) (mem_of_superset (ball_mem_nhds _ ε_pos) <| ha_lip)
     b_int.mono' hF'_meas this
-  refine' ⟨hF'_int, _⟩
+  refine ⟨hF'_int, ?_⟩
   have h_ball : ball x₀ ε ∈ 𝓝 x₀ := ball_mem_nhds x₀ ε_pos
   have : ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖⁻¹ * ‖((∫ a, F x a ∂μ) - ∫ a, F x₀ a ∂μ) - (∫ a, F' a ∂μ) (x - x₀)‖ =
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
@@ -183,9 +183,8 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F : H → α → E} {F' 
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (fun x => F x a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
     rintro a ⟨ha_deriv, ha_bound⟩
-    refine'
-      (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
-        (fun x x_in => (ha_deriv x x_in).hasFDerivWithinAt) fun x x_in => _
+    refine (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
+      (fun x x_in ↦ (ha_deriv x x_in).hasFDerivWithinAt) fun x x_in ↦ ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.coe_nnabs]
     exact (ha_bound x x_in).trans (le_abs_self _)
   exact (hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas this
@@ -221,7 +220,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip
       ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
       ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
       hF'_int
-  refine' ⟨hF'_int, _⟩
+  refine ⟨hF'_int, ?_⟩
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
   simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
 #align has_deriv_at_integral_of_dominated_loc_of_lip hasDerivAt_integral_of_dominated_loc_of_lip
@@ -241,8 +240,8 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (fun x : 𝕜 => F x a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
     rintro a ⟨ha_deriv, ha_bound⟩
-    refine' (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasDerivWithin_le
-      (fun x x_in => (ha_deriv x x_in).hasDerivWithinAt) fun x x_in => _
+    refine (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasDerivWithin_le
+      (fun x x_in => (ha_deriv x x_in).hasDerivWithinAt) fun x x_in ↦ ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.coe_nnabs]
     exact (ha_bound x x_in).trans (le_abs_self _)
   exact
