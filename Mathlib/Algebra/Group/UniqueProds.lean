@@ -606,6 +606,50 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 
+@[to_additive]
+theorem of_graded_mul {X G : Type*} [Mul X] [Add G] [IsRightCancelAdd G] [LinearOrder G]
+    [CovariantClass G G (· + ·) (· < ·)] [CovariantClass G G (Function.swap (· + ·)) (· < ·)]
+    {f : X → G} (hf : ∀ x y : X, f (x * y) = f x + f y)
+    (hinj : ∀ a b c d : X, a * b = c * d → f a = f c → a = c ∧ b = d) :
+    TwoUniqueProds X where
+  uniqueMul_of_one_lt_card {A} {B} h := by
+    have max_grade {s : Finset X} (hs : s.Nonempty) :
+        ∃ w ∈ s, ∀ u ∈ s, f u ≤ f w :=
+      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image f).max'_mem (hs.image _)
+      ⟨w, hws, fun u hu => hw ▸ Finset.le_max' _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
+    have min_grade {s : Finset X} (hs : s.Nonempty) :
+        ∃ w ∈ s, ∀ u ∈ s, f w ≤ f u :=
+      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image f).min'_mem (hs.image _)
+      ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
+    have ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
+    rw [Finset.card_pos] at hA hB
+    have ⟨x, hxA, hx⟩ := max_grade hA
+    have ⟨y, hyB, hy⟩ := max_grade hB
+    have ⟨x', hx'A, hx'⟩ := min_grade hA
+    have ⟨y', hy'B, hy'⟩ := min_grade hB
+    by_cases heq : (x, y) = (x', y')
+    · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
+      obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
+      · have hUniqueMul (u hu) : UniqueMul A B u y :=
+          have hl (u hu) := le_antisymm (hx u hu) (congrArg (f ·.1) heq ▸ hx' u hu)
+          fun u' v' hu' _ h => hinj u' v' u y h <| hl u hu ▸ hl u' hu'
+        exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
+          fun heq => hne (congrArg Prod.fst heq), hUniqueMul u hu, hUniqueMul v hv⟩
+      · have hUniqueMul (v hv) : UniqueMul A B x v :=
+          have hl (v hv) := le_antisymm (hy v hv) (congrArg (f ·.2) heq ▸ hy' v hv)
+          fun u' v' _ hv' h => hinj u' v' x v h <| add_right_cancel <| by
+            rw [← hf, h, hf]
+            exact congrArg (f x + ·) <| hl v' hv' ▸ hl v hv
+        exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
+          fun heq => hne (congrArg Prod.snd heq), hUniqueMul u hu, hUniqueMul v hv⟩
+    exact ⟨(x, y), Finset.mk_mem_product hxA hyB, (x', y'), Finset.mk_mem_product hx'A hy'B, heq,
+      fun u v hu hv h => hinj u v x y h <| And.left <| by
+        rw [← add_eq_add_iff_eq_and_eq (hx u hu) (hy v hv), ← hf, ← hf]
+        exact congrArg f h,
+      fun u v hu hv h => hinj u v x' y' h <| Eq.symm <| And.left <| by
+        rw [← add_eq_add_iff_eq_and_eq (hx' u hu) (hy' v hv), ← hf, ← hf]
+        exact congrArg f h.symm⟩
+
 end TwoUniqueProds
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
@@ -625,42 +669,5 @@ instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 @[to_additive "Any `FreeAddMonoid` has the `TwoUniqueSums` property."]
-instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) where
-  uniqueMul_of_one_lt_card {A} {B} h := by
-    have max_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, u.length ≤ w.length :=
-      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).max'_mem (hs.image _)
-      ⟨w, hws, fun u hu => hw ▸ Finset.le_max' _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
-    have min_length {s : Finset (FreeMonoid κ)} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, w.length ≤ u.length :=
-      have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image (·.length)).min'_mem (hs.image _)
-      ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
-    have ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
-    rw [Finset.card_pos] at hA hB
-    have ⟨x, hxA, hx⟩ := max_length hA
-    have ⟨y, hyB, hy⟩ := max_length hB
-    have ⟨x', hx'A, hx'⟩ := min_length hA
-    have ⟨y', hy'B, hy'⟩ := min_length hB
-    by_cases heq : (x, y) = (x', y')
-    · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
-      obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
-      · have hl (u) (hu) := le_antisymm (hx u hu) (congrArg (·.1.length) heq ▸ hx' u hu)
-        exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
-          fun heq => hne (congrArg Prod.fst heq),
-          fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl u hu).symm,
-          fun w z hw _ h => List.append_inj h <| (hl w hw).trans (hl v hv).symm⟩
-      · have hl (u) (hu) := le_antisymm (hy u hu) (congrArg (·.2.length) heq ▸ hy' u hu)
-        exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
-          fun heq => hne (congrArg Prod.snd heq),
-          fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl u hu).symm,
-          fun w z _ hz h => List.append_inj' h <| (hl z hz).trans (hl v hv).symm⟩
-    refine ⟨(x, y), Finset.mk_mem_product hxA hyB, (x', y'), Finset.mk_mem_product hx'A hy'B,
-        heq, fun u v hu hv h => ?_, fun u v hu hv h => ?_⟩
-    · exact List.append_inj h <| And.left <| by
-        rw [← add_eq_add_iff_eq_and_eq (hx u hu) (hy v hv),
-          ← List.length_append, ← List.length_append]
-        exact congrArg List.length h
-    · exact List.append_inj h <| And.left <| by
-        rw [eq_comm, ← add_eq_add_iff_eq_and_eq (hx' u hu) (hy' v hv), eq_comm,
-          ← List.length_append, ← List.length_append]
-        exact congrArg List.length h
+instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
+  TwoUniqueProds.of_graded_mul List.length_append (fun _ _ _ _ => by exact List.append_inj)
