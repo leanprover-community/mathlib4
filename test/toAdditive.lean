@@ -1,5 +1,4 @@
-import Mathlib.Algebra.Group.Units
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Defs
 import Std.Tactic.NormCast
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
