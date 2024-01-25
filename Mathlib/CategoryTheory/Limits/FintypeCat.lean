@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Data.FunLike.Fintype
+import Mathlib.Data.Finite.Basic
 
 /-!
 # (Co)limits in the category of finite types

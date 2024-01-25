@@ -3,6 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.Basic
 
 #align_import data.pequiv from "leanprover-community/mathlib"@"7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4"
@@ -65,7 +66,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
-instance : DFunLike (α ≃. β) α fun _ => Option β :=
+instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
     coe_injective' := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)

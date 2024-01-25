@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.Irreducible
@@ -706,10 +707,22 @@ theorem Continuous.image_connectedComponent_subset [TopologicalSpace β] {f : α
     ((mem_image f (connectedComponent a) (f a)).2 ⟨a, mem_connectedComponent, rfl⟩)
 #align continuous.image_connected_component_subset Continuous.image_connectedComponent_subset
 
+theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
+    {a : α} (hf : Continuous f) (hx : a ∈ s) :
+    f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
+  (isPreconnected_connectedComponentIn.image _ hf.continuousOn).subset_connectedComponentIn
+    (mem_image_of_mem _ <| mem_connectedComponentIn hx)
+    (image_subset _ <| connectedComponentIn_subset _ _)
+
 theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → β} (h : Continuous f)
     (a : α) : MapsTo f (connectedComponent a) (connectedComponent (f a)) :=
   mapsTo'.2 <| h.image_connectedComponent_subset a
 #align continuous.maps_to_connected_component Continuous.mapsTo_connectedComponent
+
+theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
+    (h : Continuous f) {a : α} (hx : a ∈ s) :
+    MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
+  mapsTo'.2 <| image_connectedComponentIn_subset h hx
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=

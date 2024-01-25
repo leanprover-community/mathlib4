@@ -25,7 +25,7 @@ namespace SimplexCategory
 
 open Simplicial NNReal BigOperators Classical CategoryTheory
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instDFunLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 -- porting note: added, should be moved
 instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=

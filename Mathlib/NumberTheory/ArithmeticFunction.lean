@@ -88,8 +88,8 @@ section Zero
 variable [Zero R]
 
 --  porting note: used to be `CoeFun`
-instance : DFunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
-  inferInstanceAs (DFunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
+instance : FunLike (ArithmeticFunction R) ℕ R :=
+  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
@@ -632,7 +632,7 @@ theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
 theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f) (l : ℕ)
     (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
-     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
+    f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
@@ -764,7 +764,7 @@ theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
   rw [iff_ne_zero]
   refine ⟨prodPrimeFactors_apply one_ne_zero, ?_⟩
   intro x y hx hy hxy
-  have hxy₀: x*y ≠ 0 := by exact Nat.mul_ne_zero hx hy
+  have hxy₀ : x * y ≠ 0 := mul_ne_zero hx hy
   rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
     Nat.primeFactors_mul hx hy, ← Finset.prod_union hxy.disjoint_primeFactors]
 
@@ -778,7 +778,8 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
     factors_eq]
   apply Finset.sum_congr rfl
   intro t ht
-  erw [t.prod_val, ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
+  rw [t.prod_val, Function.id_def,
+    ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
     ← hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t)]
 

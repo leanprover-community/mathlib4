@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
