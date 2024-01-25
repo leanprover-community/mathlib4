@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Group.Pointwise
 
 #align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
@@ -737,12 +738,11 @@ local notation "π" => @Quotient.mk _ α_mod_G
 
 variable {G}
 
--- @[to_additive addQuotientMeasure_apply]
--- lemma quotientMeasure_apply (s : Set α)
---     {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U)  :
---     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
---   rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
---     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
+@[to_additive addQuotientMeasure_apply]
+lemma measureRestrictMap_apply (s : Set α) {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U) :
+    (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
+  rw [map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
 @[to_additive IsAddFundamentalDomain.addQuotientMeasure_invariant]
 lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s t : Set α}
@@ -750,10 +750,7 @@ lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpa
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
-  rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
-    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U),
-    Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
-    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
+  rw [measureRestrictMap_apply (meas_U := meas_U), measureRestrictMap_apply (meas_U := meas_U)]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   · exact measurableSet_quotient.mp meas_U
   · intro g
@@ -876,13 +873,13 @@ attribute [to_additive existing MeasureTheory.AddQuotientMeasureEqMeasurePreimag
   MeasureTheory.QuotientMeasureEqMeasurePreimage
 
 @[to_additive add_projection_respects_measure]
-lemma projection_respects_measure {ν : Measure α} {μ : Measure (Quotient α_mod_G)}
+lemma projection_respects_measure (ν : Measure α := by volume_tac) {μ : Measure (Quotient α_mod_G)}
     [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
     (fund_dom_t : IsFundamentalDomain G t ν) : μ = (ν.restrict t).map π :=
   i.projection_respects_measure' t fund_dom_t
 
-variable {ν : Measure α} [Countable G] [MeasurableSpace G] [SMulInvariantMeasure G α ν]
-  [MeasurableSMul G α]
+variable (ν : Measure α := by volume_tac) [Countable G] [MeasurableSpace G]
+  [SMulInvariantMeasure G α ν] [MeasurableSMul G α]
 
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
@@ -904,7 +901,7 @@ fundamental domain. -/
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
     QuotientMeasureEqMeasurePreimage ν μ := by
-  simpa [h] using fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure
+  simpa [h] using fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure ν
 
 /-- Any two measures satisfying `QuotientMeasureEqMeasurePreimage` are equal. -/
 @[to_additive]
@@ -913,7 +910,7 @@ lemma QuotientMeasureEqMeasurePreimage.unique
     [i : QuotientMeasureEqMeasurePreimage ν μ] [i' : QuotientMeasureEqMeasurePreimage ν μ'] :
     μ = μ' := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
-  rw [projection_respects_measure (μ := μ) h𝓕, projection_respects_measure (μ := μ') h𝓕]
+  rw [projection_respects_measure (μ := μ) ν h𝓕 , projection_respects_measure (μ := μ') ν h𝓕]
 
 /-- Any measure satisfying `QuotientMeasureEqMeasurePreimage` is equal to the quotient measure
   associated to the fundamental domain. -/
@@ -923,8 +920,8 @@ lemma IsFundamentalDomain.eq_quotientMeasure
     (μ : Measure (Quotient α_mod_G)) [i : QuotientMeasureEqMeasurePreimage ν μ] :
     μ = (ν.restrict s).map π := by
   haveI inst1 : HasFundamentalDomain G α ν := ⟨⟨s, fund_dom_s⟩⟩
-  haveI inst2 := fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure
-  apply i.unique (i' := inst2)
+  haveI inst2 := fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure ν
+  apply i.unique (ν := ν) (i' := inst2)
 
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/
@@ -936,7 +933,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
     haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
-    rw [h𝓕.eq_quotientMeasure (μ := μ)] --, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
+    rw [h𝓕.eq_quotientMeasure ν (μ := μ)] --, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
 
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
 @[to_additive IsAddFundamentalDomain.AddQuotientMeasureEqMeasurePreimage_of_volume_zero]
@@ -944,14 +941,11 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_of_volume_zero
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
     (vol_s : ν s = 0) :
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by
-  apply fund_dom_s.quotientMeasureEqMeasurePreimage
+  apply fund_dom_s.quotientMeasureEqMeasurePreimage ν
   ext U meas_U
   simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
   convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
-  rw [Measure.map_apply (hs := measurableSet_quotient.mpr meas_U),
-    Measure.restrict_apply]
-  · exact measurableSet_quotient.mpr meas_U
-  convert measurable_quotient_mk'
+  rw [measureRestrictMap_apply (meas_U := meas_U)]
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/
@@ -965,23 +959,17 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have measAn := hA_meas n
-    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n)
-        (G := G)
+    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n)
-    ·
-      sorry
-    rw [projection_respects_measure (μ := μ) fund_dom_s, Measure.map_apply, Measure.restrict_apply]
-    · simp only
-      rw [this, iUnion_inter]
-      refine lt_of_le_of_lt ?_ (hA n)
-      rw [fund_dom_s.measure_eq_tsum (A n)]
-      exact measure_iUnion_le _
-    · convert measπAn
-    · convert measurable_quotient_mk'
-    · exact measπAn
-  · rw [← image_iUnion, hA']
-    refine image_univ_of_surjective (by convert surjective_quotient_mk' α)
+    · let _ : Setoid α := α_mod_G
+      rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
+      apply MeasurableSet.iUnion
+      exact fun g ↦ MeasurableSet.const_smul (hA_meas n) g
+    rw [projection_respects_measure (μ := μ) ν fund_dom_s, measureRestrictMap_apply
+      (meas_U := measπAn), this, iUnion_inter]
+    refine lt_of_le_of_lt ?_ (hA n)
+    rw [fund_dom_s.measure_eq_tsum (A n)]
+    exact measure_iUnion_le _
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
@@ -991,7 +979,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     [hasFun : HasFundamentalDomain G α ν] (h : covolume G α ν ≠ ⊤) :
     IsFiniteMeasure μ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
-  rw [h𝓕.eq_quotientMeasure μ]
+  rw [h𝓕.eq_quotientMeasure ν μ]
   have : Fact (ν 𝓕 < ⊤) := by
     apply Fact.mk
     convert Ne.lt_top h
@@ -1007,10 +995,7 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     covolume G α ν < ∞ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
   have H : μ univ < ∞ := IsFiniteMeasure.measure_univ_lt_top
-  rw [h𝓕.eq_quotientMeasure μ,
-    Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) MeasurableSet.univ,
-    Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' univ))
-      (measurableSet_quotient.mp MeasurableSet.univ)] at H
+  rw [h𝓕.eq_quotientMeasure ν μ, measureRestrictMap_apply (meas_U := MeasurableSet.univ)] at H
   simpa [h𝓕.covolume_eq_volume ν] using H
 
 end QuotientMeasureEqMeasurePreimage
