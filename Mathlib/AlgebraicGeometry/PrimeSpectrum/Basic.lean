@@ -642,7 +642,7 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
   constructor
   rw [TopologicalSpace.ext_iff]
   intro U
-  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (α := PrimeSpectrum S) (s := U)]
+  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (X := PrimeSpectrum S) (s := U)]
   generalize Uᶜ = Z
   simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus]
   constructor
