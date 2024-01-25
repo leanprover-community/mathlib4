@@ -118,7 +118,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
   · simp only [← mul_assoc]
     refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
-    exact_mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
+    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
@@ -189,7 +189,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
-    rw [tsub_eq_zero_iff_le.mpr (Nat.le_pred_of_lt h), eq_zero_of_lt R h]
+    rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
 #align bernstein_polynomial.iterate_derivative_at_0 bernsteinPolynomial.iterate_derivative_at_0
 

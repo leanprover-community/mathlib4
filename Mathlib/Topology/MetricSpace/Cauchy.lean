@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -112,13 +112,12 @@ theorem cauchySeq_of_le_tendsto_0 {s : β → α} (b : β → ℝ)
 /-- A Cauchy sequence on the natural numbers is bounded. -/
 theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, dist (u m) (u n) < R := by
   rcases Metric.cauchySeq_iff'.1 hu 1 zero_lt_one with ⟨N, hN⟩
-  suffices : ∃ R > 0, ∀ n, dist (u n) (u N) < R
-  · rcases this with ⟨R, R0, H⟩
-    exact ⟨_, add_pos R0 R0, fun m n =>
+  rsuffices ⟨R, R0, H⟩ : ∃ R > 0, ∀ n, dist (u n) (u N) < R
+  · exact ⟨_, add_pos R0 R0, fun m n =>
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
   let R := Finset.sup (Finset.range N) fun n => nndist (u n) (u N)
   refine' ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n => _⟩
-  cases' le_or_lt N n with h h
+  rcases le_or_lt N n with h | h
   · exact lt_of_lt_of_le (hN _ h) (le_add_of_nonneg_left R.2)
   · have : _ ≤ R := Finset.le_sup (Finset.mem_range.2 h)
     exact lt_of_le_of_lt this (lt_add_of_pos_right _ zero_lt_one)
@@ -156,5 +155,16 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
    fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
 #align cauchy_seq_iff_le_tendsto_0 cauchySeq_iff_le_tendsto_0
+
+lemma Metric.exists_subseq_bounded_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) (b : ℕ → ℝ)
+    (hb : ∀ n, 0 < b n) :
+    ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, ∀ m ≥ f n, dist (u m) (u (f n)) < b n := by
+  rw [cauchySeq_iff] at hu
+  have hu' : ∀ k, ∀ᶠ (n : ℕ) in atTop, ∀ m ≥ n, dist (u m) (u n) < b k := by
+    intro k
+    rw [eventually_atTop]
+    obtain ⟨N, hN⟩ := hu (b k) (hb k)
+    exact ⟨N, fun m hm r hr => hN r (hm.trans hr) m hm⟩
+  exact Filter.extraction_forall_of_eventually hu'
 
 end CauchySeq

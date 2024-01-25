@@ -265,7 +265,7 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
 end IsExposed
 
 theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun _ hx =>
-  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme
+  (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme.mem_extremePoints
 #align exposed_points_subset_extreme_points exposedPoints_subset_extremePoints
 
 end LinearOrderedRing

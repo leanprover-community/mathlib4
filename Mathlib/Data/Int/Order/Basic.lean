@@ -3,11 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Divisibility.Basic
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -28,7 +28,7 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
-open Nat
+open Function Nat
 
 namespace Int
 
@@ -62,7 +62,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.coe_nat_abs Int.coe_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-  by rw [←coe_natAbs, Int.cast_ofNat]
+  by rw [← coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
@@ -71,6 +71,26 @@ theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; r
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
+
+lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
+#align int.nat_abs_sq Int.natAbs_sq
+
+alias natAbs_pow_two := natAbs_sq
+#align int.nat_abs_pow_two Int.natAbs_pow_two
+
+lemma natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
+  rw [← Int.natAbs_sq a, sq]
+  norm_cast
+  apply Nat.le_mul_self
+#align int.abs_le_self_sq Int.natAbs_le_self_sq
+
+alias natAbs_le_self_pow_two := natAbs_le_self_sq
+
+lemma le_self_sq (b : ℤ) : b ≤ b ^ 2 := le_trans le_natAbs (natAbs_le_self_sq _)
+#align int.le_self_sq Int.le_self_sq
+
+alias le_self_pow_two := le_self_sq
+#align int.le_self_pow_two Int.le_self_pow_two
 
 theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
   Nat.cast_eq_zero
@@ -93,6 +113,14 @@ theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).si
   rw [Int.sign_eq_one_iff_pos]
   apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
+
+/-- Note this holds in marginally more generality than `Int.cast_mul` -/
+lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
+    ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
+  fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
+    simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
+#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
+
 
 /-! ### succ and pred -/
 
@@ -120,7 +148,7 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
   ⟨fun a0 => by
     let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [←zero_add 1, lt_add_one_iff] at hp
+    rw [← zero_add 1, lt_add_one_iff] at hp
     -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
     exact hp.antisymm hn,
     fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
@@ -347,7 +375,7 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
 
 #align int.mul_div_cancel' Int.mul_ediv_cancel'
 
-theorem ediv_dvd_ediv : ∀ {a b c : ℤ} (_ : a ∣ b) (_ : b ∣ c), b / a ∣ c / a
+theorem ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by
@@ -549,6 +577,38 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 #align int.to_nat_sub_of_le Int.toNat_sub_of_le
 
 end Int
+
+section bit0_bit1
+variable {R}
+set_option linter.deprecated false
+
+-- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
+
+section NonUnitalNonAssocRing
+variable [NonUnitalNonAssocRing R] (n r : R)
+
+lemma bit0_mul : bit0 n * r = (2 : ℤ) • (n * r) := by
+  rw [bit0, add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
+#align bit0_mul bit0_mul
+
+lemma mul_bit0 : r * bit0 n = (2 : ℤ) • (r * n) := by
+  rw [bit0, mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
+#align mul_bit0 mul_bit0
+
+end NonUnitalNonAssocRing
+
+section NonAssocRing
+variable [NonAssocRing R] (n r : R)
+
+lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
+#align bit1_mul bit1_mul
+
+lemma mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
+  rw [bit1, mul_add, mul_bit0, mul_one]
+#align mul_bit1 mul_bit1
+
+end NonAssocRing
+end bit0_bit1
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.range

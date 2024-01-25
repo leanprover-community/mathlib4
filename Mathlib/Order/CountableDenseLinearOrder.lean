@@ -74,7 +74,7 @@ variable (α β : Type*) [LinearOrder α] [LinearOrder β]
     of pairs which should be identified. -/
 def PartialIso : Type _ :=
   { f : Finset (α × β) //
-    ∀ (p) (_ : p ∈ f) (q) (_ : q ∈ f),
+    ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
 #align order.partial_iso Order.PartialIso
 
@@ -170,7 +170,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
     · change _ ⊆ f'.val.image _
-      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.subset_image, ← Finset.coe_image,
+      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
 #align order.partial_iso.defined_at_right Order.PartialIso.definedAtRight
 

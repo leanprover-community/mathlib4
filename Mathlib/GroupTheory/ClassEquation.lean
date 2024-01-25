@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
 
-import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.GroupTheory.Subgroup.Finite
 
 /-!
 # Class Equation
@@ -24,7 +24,7 @@ This file establishes the class equation for finite groups.
 
 set_option autoImplicit true
 
-open ConjAct MulAction ConjClasses
+open MulAction ConjClasses
 
 open scoped BigOperators
 
@@ -43,7 +43,7 @@ theorem Group.sum_card_conj_classes_eq_card [Finite G] :
     ∑ᶠ x : ConjClasses G, x.carrier.ncard = Nat.card G := by
   classical
   cases nonempty_fintype G
-  rw [Nat.card_eq_fintype_card, ←sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
+  rw [Nat.card_eq_fintype_card, ← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
   simp [Set.ncard_eq_toFinset_card']
 
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
@@ -63,7 +63,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
     Fintype.card (Subgroup.center G) = Fintype.card ((noncenter G)ᶜ : Set _) :=
       Fintype.card_congr ((mk_bijOn G).equiv _)
     _ = Finset.card (Finset.univ \ (noncenter G).toFinset) :=
-      by rw [←Set.toFinset_card, Set.toFinset_compl, Finset.compl_eq_univ_sdiff]
+      by rw [← Set.toFinset_card, Set.toFinset_compl, Finset.compl_eq_univ_sdiff]
     _ = _ := ?_
   rw [Finset.card_eq_sum_ones]
   refine Finset.sum_congr rfl ?_
@@ -79,6 +79,7 @@ theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
   ∑ x in (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
   convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
-  · rw [←finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype, ←Finset.sum_set_coe]
+  · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype,
+      ← Finset.sum_set_coe]
     simp
   · simp

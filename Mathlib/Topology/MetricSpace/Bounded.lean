@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
@@ -28,8 +28,8 @@ diameter of a subset, and its relation to boundedness
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
-open Set Filter  Bornology
-open scoped ENNReal Uniformity Topology
+open Set Filter Bornology
+open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
 
@@ -136,7 +136,7 @@ theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := 
 @[simp]
 theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
     Tendsto (fun x ↦ dist (f x) c) l atTop ↔ Tendsto f l (cobounded α) := by
-  rw [← comap_dist_right_atTop c, tendsto_comap_iff]; rfl
+  rw [← comap_dist_right_atTop c, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
 theorem tendsto_dist_left_atTop_iff (c : α) {f : β → α} {l : Filter β} :
@@ -226,6 +226,11 @@ theorem disjoint_nhdsSet_cobounded {s : Set α} (hs : IsCompact s) : Disjoint (�
 
 theorem disjoint_cobounded_nhdsSet {s : Set α} (hs : IsCompact s) : Disjoint (cobounded α) (𝓝ˢ s) :=
   (disjoint_nhdsSet_cobounded hs).symm
+
+theorem exists_isBounded_image_of_tendsto {α β : Type*} [PseudoMetricSpace β]
+    {l : Filter α} {f : α → β} {x : β} (hf : Tendsto f l (𝓝 x)) :
+    ∃ s ∈ l, IsBounded (f '' s) :=
+  (l.basis_sets.map f).disjoint_iff_left.mp <| (disjoint_nhds_cobounded x).mono_left hf
 
 /-- If a function is continuous within a set `s` at every point of a compact set `k`, then it is
 bounded on some open neighborhood of `k` in `s`. -/
@@ -337,7 +342,7 @@ section Diam
 variable {s : Set α} {x y z : α}
 
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
-should be infinite, we express it in terms of the emetric.diameter -/
+should be infinite, we express it in terms of the `EMetric.diam` -/
 noncomputable def diam (s : Set α) : ℝ :=
   ENNReal.toReal (EMetric.diam s)
 #align metric.diam Metric.diam
@@ -362,6 +367,12 @@ theorem diam_empty : diam (∅ : Set α) = 0 :=
 theorem diam_singleton : diam ({x} : Set α) = 0 :=
   diam_subsingleton subsingleton_singleton
 #align metric.diam_singleton Metric.diam_singleton
+
+@[to_additive (attr := simp)]
+theorem diam_one [One α] : diam (1 : Set α) = 0 :=
+  diam_singleton
+#align metric.diam_one Metric.diam_one
+#align metric.diam_zero Metric.diam_zero
 
 -- Does not work as a simp-lemma, since {x, y} reduces to (insert y {x})
 theorem diam_pair : diam ({x, y} : Set α) = dist x y := by

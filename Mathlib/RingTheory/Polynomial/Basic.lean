@@ -9,7 +9,6 @@ import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -44,7 +43,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
@@ -180,6 +179,72 @@ theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n)
   exact (sum_fin _ (by simp_rw [zero_mul, forall_const]) (mem_degreeLT.mp hp)).symm
 #align polynomial.eval_eq_sum_degree_lt_equiv Polynomial.eval_eq_sum_degreeLTEquiv
 
+theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n := by
+  ext x
+  by_cases x_zero : x = 0
+  · simp_rw [x_zero, Submodule.zero_mem]
+  · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
+      ← natDegree_le_iff_degree_le, Nat.lt_succ]
+
+/-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
+  `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
+theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
+    (hs : s.Nonempty) (hp : p ∈ Submodule.span R s) :
+    ∃ p' ∈ s, degree p ≤ degree p' := by
+  by_contra! h
+  by_cases hp_zero : p = 0
+  · rw [hp_zero, degree_zero] at h
+    rcases hs with ⟨x,hx⟩
+    exact not_lt_bot (h x hx)
+  · have : p ∈ degreeLT R (natDegree p) := by
+      refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
+      rw [SetLike.mem_coe, mem_degreeLT, Nat.cast_withBot]
+      exact lt_of_lt_of_le (h p' p'_mem) degree_le_natDegree
+    rwa [mem_degreeLT, Nat.cast_withBot, degree_eq_natDegree hp_zero,
+      Nat.cast_withBot, lt_self_iff_false] at this
+
+/-- A stronger version of `Polynomial.exists_degree_le_of_mem_span` under the assumption that the
+  set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree dominates the degree of
+  every element of `p ∈ span R s`-/
+theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
+    ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
+  rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
+  refine ⟨a, has, fun p hp => ?_⟩
+  rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
+  have p'max := hmax p' hp'.left
+  by_cases h : degree a ≤ degree p'
+  · rw [← p'max h] at hp'; exact hp'.right
+  · exact le_trans hp'.right (not_le.mp h).le
+
+/-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
+theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
+    ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
+  by_cases s_emp : s.Nonempty
+  · rcases exists_degree_le_of_mem_span_of_finite s_fin s_emp with ⟨p', _, hp'max⟩
+    exact ⟨natDegree p', fun p hp => mem_degreeLE.mpr ((hp'max _ hp).trans degree_le_natDegree)⟩
+  · rw [Set.not_nonempty_iff_eq_empty] at s_emp
+    rw [s_emp, Submodule.span_empty]
+    exact ⟨0, bot_le⟩
+
+/-- The span of every finite set of polynomials is contained in a `degreeLT n` for some `n`. -/
+theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
+    ∃ n : ℕ, Submodule.span R s ≤ degreeLT R n := by
+  rcases span_le_degreeLE_of_finite s_fin with ⟨n, _⟩
+  exact ⟨n + 1, by rwa [degreeLT_succ_eq_degreeLE]⟩
+
+/-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
+  rw [Module.finite_def, Submodule.fg_def]
+  push_neg
+  intro s hs contra
+  rcases span_le_degreeLE_of_finite hs with ⟨n,hn⟩
+  have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
+    rw [contra] at hn
+    exact hn Submodule.mem_top
+  rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  exact one_ne_zero this
+
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
   letI := Classical.decEq R
@@ -239,7 +304,7 @@ theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : �
   · simp only [Finset.mem_range, degree_eq_natDegree (hP.pow _).ne_zero]
     simp only [Nat.cast_lt, hP.natDegree_pow]
     intro k
-    exact nsmul_lt_nsmul hdeg
+    exact nsmul_lt_nsmul_left hdeg
   · rw [bot_lt_iff_ne_bot, Ne.def, degree_eq_bot]
     exact (hP.pow _).ne_zero
 #align polynomial.monic.geom_sum Polynomial.Monic.geom_sum
@@ -570,7 +635,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
     mem_degreeLE]
   constructor
   · rintro ⟨p, ⟨hpdeg, hpI⟩, rfl⟩
-    cases' lt_or_eq_of_le hpdeg with hpdeg hpdeg
+    rcases lt_or_eq_of_le hpdeg with hpdeg | hpdeg
     · refine' ⟨0, I.zero_mem, bot_le, _⟩
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
@@ -632,7 +697,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
       apply sum_mem
       rintro ⟨i, j⟩ e
       obtain rfl : i + j = k := mem_antidiagonal.mp e
-      apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
+      apply Ideal.pow_le_pow_right add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
         Ideal.mul_mem_mul (h _ (Finset.mem_insert.mpr <| Or.inl rfl) _)
@@ -851,8 +916,8 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
-    where
+instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
+    WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
     classical
       refine'
@@ -860,8 +925,7 @@ instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R]
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), _⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (WellFounded.prod_lex (WithTop.wellFounded_lt <| WithBot.wellFounded_lt Nat.lt_wfRel.wf)
-            ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -914,7 +978,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         intro p hp
         generalize hn : p.natDegree = k
         induction' k using Nat.strong_induction_on with k ih generalizing p
-        cases' le_or_lt k N with h h
+        rcases le_or_lt k N with h | h
         · subst k
           refine' hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
@@ -1129,7 +1193,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1222,6 +1286,22 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
+/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+only finitely many monic factors.
+(Note that its factors up to unit may be more than monic factors.)
+See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
+    Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
+  set G := { g : D[X] // g.Monic ∧ g ∣ f }
+  let y : Associates D[X] := Associates.mk f
+  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
+  let H := { x : Associates D[X] // x ∣ y }
+  let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
+  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  refine Fintype.ofInjective i fun x y heq ↦ ?_
+  rw [Subtype.mk.injEq] at heq ⊢
+  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
+
 end Polynomial
 
 namespace MvPolynomial
@@ -1249,7 +1329,8 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
-instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
+instance (priority := 100) uniqueFactorizationMonoid :
+    UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
   obtain ⟨w, h, u, hw⟩ :=

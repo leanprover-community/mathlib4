@@ -3,12 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.Noetherian
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
+import Mathlib.RingTheory.Finiteness
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -93,11 +93,14 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
+/-- An `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the
+tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
+`iff_rTensor_injective'` to extend to all ideals `I`. --/
 lemma iff_rTensor_injective :
-    Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
-  have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
-    (TensorProduct.lift ((lsmul R M).comp I.subtype))
-  · intro I; apply TensorProduct.ext'; intro x y; simp
+    Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype) := by
+  have aux : ∀ I : Ideal R, (TensorProduct.lid R M).comp (rTensor M I.subtype) =
+      TensorProduct.lift ((lsmul R M).comp I.subtype) := by
+    intro I; apply TensorProduct.ext'; intro x y; simp
   constructor
   · intro F I hI
     erw [← Equiv.comp_injective _ (TensorProduct.lid R M).toEquiv]
@@ -109,6 +112,21 @@ lemma iff_rTensor_injective :
     intro I hI
     rw [← aux]
     simp [h₁ hI]
+
+/-- An `R`-module `M` is flat iff for all ideals `I` of `R`, the tensor product of the
+inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
+restrict to finitely generated ideals `I`. --/
+theorem iff_rTensor_injective' :
+    Flat R M ↔ ∀ I : Ideal R, Injective (rTensor M I.subtype) := by
+  rewrite [Flat.iff_rTensor_injective]
+  refine ⟨fun h I => ?_, fun h I _ => h I⟩
+  letI : AddCommGroup (I ⊗[R] M) := inferInstance -- Type class reminder
+  rewrite [injective_iff_map_eq_zero]
+  intro x hx₀
+  obtain ⟨J, hfg, hle, y, rfl⟩ := exists_fg_le_eq_rTensor_inclusion x
+  rewrite [← rTensor_comp_apply] at hx₀
+  letI : AddCommGroup (J ⊗[R] M) := inferInstance -- Type class reminder
+  rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, _root_.map_zero]
 
 variable (N : Type w) [AddCommGroup N] [Module R N]
 
@@ -123,7 +141,7 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
     rw [← LinearMap.comp_apply, ← lTensor_comp, h]
     simp
   rw [← Function.Injective.of_comp_iff h₁ (rTensor N I.subtype), ← LinearMap.coe_comp]
-  rw [LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor]
+  rw [LinearMap.lTensor_comp_rTensor, ← LinearMap.rTensor_comp_lTensor]
   rw [LinearMap.coe_comp, Function.Injective.of_comp_iff (f hI)]
   apply Function.RightInverse.injective (g := lTensor _ r)
   intro x
@@ -174,7 +192,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     · subst j; simp
     · simp [h₂]
   intro a ha; rw [DirectSum.ext_iff R]; intro i
-  have f := LinearMap.congr_arg (f:= (π i)) ha
+  have f := LinearMap.congr_arg (f := (π i)) ha
   erw [LinearMap.congr_fun (h₁ i) a] at f
   rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
   have h₂ := (F i)

@@ -25,9 +25,6 @@ This file records basic facts about uniformly locally doubling measures.
   appearing in the definition of a uniformly locally doubling measure.
 -/
 
--- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
@@ -117,7 +114,7 @@ theorem one_le_scalingConstantOf (K : ℝ) : 1 ≤ scalingConstantOf μ K :=
 theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     ∃ R : ℝ,
       0 < R ∧
-        ∀ (x t r) (_ : t ∈ Ioc 0 K) (_ : r ≤ R),
+        ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
   rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩

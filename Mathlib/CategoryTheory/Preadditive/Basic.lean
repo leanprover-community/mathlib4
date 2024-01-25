@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -198,7 +198,7 @@ instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
-  Zero := inferInstance
+  zero := inferInstance
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms

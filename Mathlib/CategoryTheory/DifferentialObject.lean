@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
@@ -200,8 +201,8 @@ def mapDifferentialObject (F : C ⥤ D)
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
-  map_id := by intros; ext; simp
-  map_comp := by intros; ext; simp
+  map_id := by intros; ext; simp [autoParam]
+  map_comp := by intros; ext; simp [autoParam]
 #align category_theory.functor.map_differential_object CategoryTheory.Functor.mapDifferentialObject
 
 end Functor

@@ -181,13 +181,8 @@ structure TransversalPair : Type _ :=
   compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
 instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
-  have := fun u => exists_right_transversal (H := toSubgroup A B u) (1 : G)
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
-  apply Nonempty.intro
-  exact
-    { set := t
-      compl := fun i => (ht i).1 }
+  choose t ht using fun u ↦ (toSubgroup A B u).exists_right_transversal 1
+  exact ⟨⟨t, fun i ↦ (ht i).1⟩⟩
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
@@ -400,7 +395,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
 theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
-  · simp only [unitsSMul, dif_pos trivial, h, iff_false]
+  · simp only [unitsSMul, h, dite_true, not_true_eq_false, iff_false]
     induction w using consRecOn with
     | ofGroup => simp [Cancels, unitsSMulWithCancel]
     | cons g u' w h1 h2 _ =>
@@ -478,7 +473,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     conv_lhs => erw [IsComplement.equiv_mul_left]
-    simp
+    simp? says
+      simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=

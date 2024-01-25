@@ -225,8 +225,6 @@ theorem sizeUpTo_succ {i : ℕ} (h : i < c.length) :
     c.sizeUpTo (i + 1) = c.sizeUpTo i + c.blocks.get ⟨i, h⟩ := by
   simp only [sizeUpTo]
   rw [sum_take_succ _ _ h]
-  -- Porting note: didn't used to need `rfl`
-  rfl
 #align composition.size_up_to_succ Composition.sizeUpTo_succ
 
 theorem sizeUpTo_succ' (i : Fin c.length) :
@@ -334,7 +332,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   set i := c.index j
   push_neg at H
   have i_pos : (0 : ℕ) < i := by
-    by_contra' i_pos
+    by_contra! i_pos
     revert H
     simp [nonpos_iff_eq_zero.1 i_pos, c.sizeUpTo_zero]
   let i₁ := (i : ℕ).pred
@@ -342,7 +340,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   have i₁_succ : i₁.succ = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
   simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
-  exact Nat.lt_le_antisymm H this
+  exact Nat.lt_le_asymm H this
 #align composition.size_up_to_index_le Composition.sizeUpTo_index_le
 
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
@@ -802,13 +800,15 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · convert hj1
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
-      simp [Fin.ext_iff] at i_ne_zero i_ne_last
+      simp? [Fin.ext_iff] at i_ne_zero i_ne_last says
+        simp only [Fin.ext_iff, Fin.val_zero, Fin.val_last] at i_ne_zero i_ne_last
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
       refine' ⟨⟨i - 1, _⟩, _, _⟩
       · have : (i : ℕ) < n + 1 := i.2
-        simp [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this
+        simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
+          simp only [Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
         simp only [ge_iff_le]
@@ -837,7 +837,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · rw [add_comm] at this
         contradiction
       · cases' h with w h; cases' h with h₁ h₂
-        rw [←Fin.ext_iff] at h₂
+        rw [← Fin.ext_iff] at h₂
         rwa [h₂]
     · intro h
       apply Or.inr
@@ -996,9 +996,7 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
     c.toCompositionAsSet.blocks = c.blocks := by
   let d := c.toCompositionAsSet
   change d.blocks = c.blocks
-  have length_eq : d.blocks.length = c.blocks.length := by
-    convert c.toCompositionAsSet_length
-    simp [CompositionAsSet.blocks]
+  have length_eq : d.blocks.length = c.blocks.length := by simp [blocks_length]
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
   exact eq_of_sum_take_eq length_eq H
   intro i hi

@@ -150,7 +150,7 @@ theorem imageToKernel_isIso_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B 
     IsIso (imageToKernel f g (comp_eq_zero_of_image_eq_kernel f g p)) := by
   refine' ⟨⟨Subobject.ofLE _ _ p.ge, _⟩⟩
   dsimp [imageToKernel]
-  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl]
+  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl, and_self]
 #align category_theory.image_to_kernel_is_iso_of_image_eq_kernel CategoryTheory.imageToKernel_isIso_of_image_eq_kernel
 
 -- We'll prove the converse later, when `V` is abelian.

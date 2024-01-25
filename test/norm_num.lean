@@ -17,6 +17,10 @@ axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
 
+axiom NNReal : Type
+notation "ℝ≥0" => NNReal
+@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
+
 axiom Complex : Type
 notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
@@ -38,11 +42,15 @@ example : (7:ℝ)/2 > 3 := by norm_num1
 example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 example : 2 ^ 17 - 1 = 131071 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
--- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
--- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
+example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
+example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
+example : (-3 : ℝ) ^ (1 : ℤ) = -3 := by norm_num1
+example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (1/3 : ℝ) ^ (2 : ℤ) = 1/9 := by norm_num1
+example : (1/3 : ℝ) ^ (-2 : ℤ) = 9 := by norm_num1
+example : (-1/3 : ℝ) ^ (-1 : ℤ) = -3 := by norm_num1
+example : (3 : ℝ≥0) ^ (2 : ℤ) = 9 := by norm_num1
 
 section InvLit
 
@@ -335,11 +343,11 @@ example : (1:ℂ) / 3 ≠ 2 / 7 := by norm_num1
 
 example : (1:ℝ) ≠ 2 := by norm_num1
 
--- example : (5 / 2:ℕ) = 2 := by norm_num1
--- example : (5 / -2:ℤ) < -1 := by norm_num1
--- example : (0 + 1) / 2 < 0 + 1 := by norm_num1
+example : (5 / 2:ℕ) = 2 := by norm_num1
+example : (5 / -2:ℤ) < -1 := by norm_num1
+example : (0 + 1) / 2 < 0 + 1 := by norm_num1
 example : Nat.succ (Nat.succ (2 ^ 3)) = 10 := by norm_num1
--- example : 10 = (-1 : ℤ) % 11 := by norm_num1 -- [fixme] ⊢ False ???
+example : 10 = (-1 : ℤ) % 11 := by norm_num1
 example : (12321 - 2 : ℤ) = 12319 := by norm_num1
 example : (63:ℚ) ≥ 5 := by norm_num1
 
@@ -363,7 +371,7 @@ example (a : ℚ) (h : 3⁻¹ * a = a) : True := by
   guard_hyp h : 1 / 3 * a = a
   trivial
 
--- example (h : (5 : ℤ) ∣ 2) : False := by norm_num1 at h
+example (h : (5 : ℤ) ∣ 2) : False := by norm_num1 at h
 example (h : False) : False := by norm_num1 at h
 example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
@@ -524,11 +532,11 @@ end Transparency
 -- user command
 
 /-- info: True -/
-#guard_msgs in
-#norm_num 1 = 1
+#guard_msgs in #norm_num 1 = 1
 example : 1 = 1 := by norm_num1
--- #norm_num 2^4-1 ∣ 2^16-1
--- example : 2^4-1 ∣ 2^16-1 := by norm_num1
+/-- info: True -/
+#guard_msgs in #norm_num 2^4-1 ∣ 2^16-1
+example : 2^4-1 ∣ 2^16-1 := by norm_num1
 -- #norm_num (3 : Real) ^ (-2 : ℤ) = 1/9
 -- example : (3 : Real) ^ (-2 : ℤ) = 1/9 := by norm_num1
 
@@ -678,4 +686,7 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
 
 -- Check that we avoid deep recursion in evaluating large powers.
-example : 10^40000000 = 10^40000000 := by norm_num
+-- This used to be 10^40000000, but Lean's non-GMP multiplication is
+-- asymptotically slower than the GMP implementation.
+-- It would be great to fix that, and restore this test.
+example : 10^400000 = 10^400000 := by norm_num

@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.NormCast
+import Std.Tactic.NormCast
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
@@ -42,7 +42,7 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
+instance dummy_pow : my_has_pow ℕ <| PLift ℤ := ⟨fun _ _ => 5⟩
 
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
@@ -236,7 +236,7 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 
 
 @[to_additive]
-instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((i : I) → f i) :=
+instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
 run_cmd do

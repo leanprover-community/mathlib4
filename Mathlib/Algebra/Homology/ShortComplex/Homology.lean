@@ -214,6 +214,9 @@ lemma HasHomology.mk' (h : S.HomologyData) : HasHomology S :=
 instance [HasHomology S] : HasHomology S.op :=
   HasHomology.mk' S.homologyData.op
 
+instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
+  HasHomology.mk' S.homologyData.unop
+
 instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
   HasLeftHomology.mk' S.homologyData.left
 
@@ -1059,7 +1062,7 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary [S.HasHomology]
   rw [S.liftCycles_leftHomologyπ_eq_zero_of_boundary_assoc k x hx, zero_comp]
 
 @[reassoc]
-lemma homologyι_descOpcycles_π_eq_zero_of_boundary [S.HasHomology]
+lemma homologyι_descOpcycles_eq_zero_of_boundary [S.HasHomology]
     (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
     S.homologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
   dsimp only [homologyι]

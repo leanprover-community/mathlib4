@@ -22,7 +22,16 @@ namespace BoundedContinuousFunction
 
 section NNRealValued
 
+lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥0) (x : X) :
+    f x ≤ nndist 0 f := by
+  convert nndist_coe_le_nndist x
+  simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
+
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
+
+lemma lintegral_le_edist_mul (f : X →ᵇ ℝ≥0) (μ : Measure X) :
+    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) :=
+  le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (f.apply_le_nndist_zero x))) (by simp)
 
 theorem measurable_coe_ennreal_comp (f : X →ᵇ ℝ≥0) :
     Measurable fun x ↦ (f x : ℝ≥0∞) :=
@@ -71,16 +80,14 @@ section BochnerIntegral
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E] [TopologicalSpace.SecondCountableTopology E]
+variable {E : Type*} [NormedAddCommGroup E] [SecondCountableTopology E]
 variable [MeasurableSpace E] [BorelSpace E]
 
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := ?_
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := by gcongr; apply nnnorm_coe_le_nnnorm
     _ = ‖f‖₊ * (μ Set.univ)   := by rw [lintegral_const]
-  · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
-    exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
 
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by

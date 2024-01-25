@@ -3,9 +3,9 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 
-#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8047de4d911cdef39c2d646165eea972f7f9f539"
+#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Metric spaces
@@ -92,12 +92,12 @@ theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = 
   eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
 #align eq_of_forall_dist_le eq_of_forall_dist_le
 
-/-- Deduce the equality of points with the vanishing of the nonnegative distance-/
+/-- Deduce the equality of points from the vanishing of the nonnegative distance-/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
   simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
 #align eq_of_nndist_eq_zero eq_of_nndist_eq_zero
 
-/-- Characterize the equality of points with the vanishing of the nonnegative distance-/
+/-- Characterize the equality of points as the vanishing of the nonnegative distance-/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
   simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
@@ -371,7 +371,7 @@ end Metric
 section EqRel
 
 instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist <| fun x y x' y' hx hy => by
+  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
     rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
       ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
 

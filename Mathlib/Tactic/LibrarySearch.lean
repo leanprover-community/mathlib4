@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
-import Mathlib.Tactic.Cache
-import Mathlib.Tactic.SolveByElim
+import Std.Util.Cache
+import Std.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
+import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Library search
@@ -26,7 +29,7 @@ example : Nat := by exact?
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 initialize registerTraceClass `Tactic.librarySearch.lemmas
@@ -59,25 +62,14 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
     | (``Iff, #[lhs, rhs]) => do
-      return r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
+      r := r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
         |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
-    | _ => return r
-
-/-- Insert a lemma into the discrimination tree. -/
--- Recall that `apply?` caches the discrimination tree on disk.
--- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
--- so that the cache is rebuilt.
-def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × DeclMod)) : MetaM (DiscrTree (Name × DeclMod)) := do
-  let mut lemmas := lemmas
-  for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
-  return lemmas
+    | _ => pure ()
+    return r.filter (DiscrTree.keysSpecific ·.1)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
-  DiscrTreeCache.mk "apply?: init cache" processLemma (config := discrTreeConfig)
+  DiscrTreeCache.mk "apply?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -93,7 +85,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 Retrieve the current current of lemmas.
@@ -101,10 +93,9 @@ Retrieve the current current of lemmas.
 initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × DeclMod)) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
-      (config := discrTreeConfig)
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × DeclMod)) path
+    DiscrTreeCache.mk "apply?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
@@ -149,7 +140,7 @@ def librarySearchCore (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) : Nondet MetaM (List MVarId) :=
   .squash fun _ => do
     let ty ← goal.getType
-    let lemmas := (← librarySearchLemmas.getMatch ty discrTreeConfig).toList
+    let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (Nondet.ofList lemmas).filterMapM fun (lem, mod) =>
       observing? <| librarySearchLemma lem mod required solveByElimDepth goal
@@ -285,8 +276,8 @@ elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
   exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
-  logWarning ("`library_search` has been renamed to `apply?`" ++
-    " (or `exact?` if you only want solutions closing the goal)")
+  logWarning "`library_search` has been renamed to `apply?` \
+    (or `exact?` if you only want solutions closing the goal)"
   exact? tk none false
 
 open Elab Term in

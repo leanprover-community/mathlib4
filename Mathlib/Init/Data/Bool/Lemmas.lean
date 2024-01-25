@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.Bool.Basic
+import Std.Data.Bool
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Coe
 
@@ -50,18 +50,9 @@ theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by c
 attribute [simp] xor_self
 #align bxor_self Bool.xor_self
 
--- TODO: undo the rename in leanprover/std4#183?
-alias xor_true := xor_true_right
 #align bxor_tt Bool.xor_true
-
-theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
 #align bxor_ff Bool.xor_false
-
--- TODO: undo the rename in leanprover/std4#183?
-alias true_xor := xor_true_left
 #align tt_bxor Bool.true_xor
-
-theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
 #align ff_bxor Bool.false_xor
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
@@ -116,10 +107,10 @@ theorem coe_false : ↑false = False := by simp
 theorem coe_true : ↑true = True := by simp
 #align coe_tt Bool.coe_true
 
-theorem coe_sort_false : (↥false : Prop) = False := by simp
+theorem coe_sort_false : (false : Prop) = False := by simp
 #align coe_sort_ff Bool.coe_sort_false
 
-theorem coe_sort_true : (↥true : Prop) = True := by simp
+theorem coe_sort_true : (true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
@@ -141,7 +132,7 @@ theorem bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 #align bool_eq_false Bool.bool_eq_false
 
-theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
+theorem decide_false_iff (p : Prop) {_ : Decidable p} : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 #align to_bool_ff_iff Bool.decide_false_iff
 

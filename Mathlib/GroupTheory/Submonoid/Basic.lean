@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.GroupTheory.Subsemigroup.Basic
 
