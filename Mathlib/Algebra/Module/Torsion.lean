@@ -593,7 +593,6 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
 
 /-- Given an `R`-module `M` and an element `a` in `R`, submodules of the `a`-torsion submodule of
 `M` do not depend on whether we take scalars to be `R` or `R ⧸ R ∙ a`. -/
-@[simps]
 def submodule_torsionBy_orderIso (a : R) :
     Submodule (R ⧸ R ∙ a) (torsionBy R M a) ≃o Submodule R (torsionBy R M a) :=
   { restrictScalarsEmbedding R (R ⧸ R ∙ a) (torsionBy R M a) with
