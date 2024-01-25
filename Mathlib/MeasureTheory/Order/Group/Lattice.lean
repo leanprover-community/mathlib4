@@ -33,7 +33,7 @@ variable [MeasurableInv α]
 
 @[to_additive (attr := measurability)]
 theorem measurable_leOnePart : Measurable fun x : α ↦ leOnePart x :=
-  (measurable_sup_const _).comp  measurable_inv
+  (measurable_sup_const _).comp measurable_inv
 
 @[to_additive (attr := measurability)]
 protected theorem Measurable.leOnePart : Measurable fun x ↦ leOnePart (f x) :=
