@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
@@ -78,10 +77,6 @@ theorem id_as_one (x : SingleObj M) : 𝟙 x = 1 :=
 theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g = g * f :=
   rfl
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
-
-/-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
-instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
-  where
 
 /-- Groupoid structure on `SingleObj M`.
 

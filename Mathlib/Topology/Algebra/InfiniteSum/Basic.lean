@@ -1028,8 +1028,10 @@ theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
       rw [sub_eq_iff_eq_add, add_comm, sum_add_tsum_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
     simpa only [h₀, sub_self] using Tendsto.sub h₁ hf.hasSum.tendsto_sum_nat
-  · refine tendsto_const_nhds.congr fun n ↦ (tsum_eq_zero_of_not_summable ?_).symm
-    rwa [summable_nat_add_iff n]
+  · convert tendsto_const_nhds (α := α) (β := ℕ) (a := 0) (f := atTop)
+    rename_i i
+    rw [← summable_nat_add_iff i] at hf
+    exact tsum_eq_zero_of_not_summable hf
 #align tendsto_sum_nat_add tendsto_sum_nat_add
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both convergent then so is the `ℤ`-indexed
@@ -1315,7 +1317,8 @@ theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
     obtain ⟨s, hs⟩ := H.tsum_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · refine tendsto_const_nhds.congr fun _ ↦ (tsum_eq_zero_of_not_summable ?_).symm
+  · convert tendsto_const_nhds (α := G) (β := Finset α) (f := atTop) (a := 0)
+    apply tsum_eq_zero_of_not_summable
     rwa [Finset.summable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 

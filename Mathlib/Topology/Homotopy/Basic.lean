@@ -54,11 +54,14 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
+set_option autoImplicit true
+
+
 noncomputable section
 
 universe u v w x
 
-variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
+variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 

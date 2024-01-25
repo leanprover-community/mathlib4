@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.Int.Lemmas
+import Mathlib.Algebra.Order.Nonneg.Floor
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -40,6 +40,7 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 instance : DenselyOrdered NNRat := Nonneg.densely_ordered
+instance : Archimedean NNRat := Nonneg.archimedean
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat

@@ -27,6 +27,9 @@ We also prove that the image of a closed interval under a continuous map is a cl
 compact, extreme value theorem
 -/
 
+set_option autoImplicit true
+
+
 open Filter OrderDual TopologicalSpace Function Set
 
 open scoped Filter Topology
@@ -52,8 +55,6 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
 #align compact_Icc_space CompactIccSpace
 
 export CompactIccSpace (isCompact_Icc)
-
-variable {α : Type*}
 
 -- porting note: new lemma; TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]

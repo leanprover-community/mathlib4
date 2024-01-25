@@ -709,7 +709,7 @@ theorem HasGroupoid.comp
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine' ⟨_, hs.inter φ.open_source, _, _⟩
       · simp only [hx, hφ_dom, mfld_simps]
-      · refine' G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) _
+      · refine' G₁.eq_on_source (closedUnderRestriction' hφG₁ hs) _
         rw [PartialHomeomorph.restr_source_inter]
         refine' PartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono _)
         mfld_set_tac }

@@ -326,9 +326,14 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [hE₁ p]
     cases hp
     · cases' hA p with _ h; · contradiction
-      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
+      -- Porting note: was `simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]`
+      have := union_ae_eq_univ_of_ae_eq_univ_left (t := B ↑p) h
+      exact union_ae_eq_univ_of_ae_eq_univ_left (t := C ↑p) this
     · cases' hB p with _ h; · contradiction
-      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
+      -- Porting note: was
+      -- `simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]`
+      have := union_ae_eq_univ_of_ae_eq_univ_right (s := A ↑p) h
+      exact union_ae_eq_univ_of_ae_eq_univ_left (t := C ↑p) this
 #align add_circle.add_well_approximable_ae_empty_or_univ AddCircle.addWellApproximable_ae_empty_or_univ
 
 /-- A general version of **Dirichlet's approximation theorem**.

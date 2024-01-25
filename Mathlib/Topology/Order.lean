@@ -45,6 +45,9 @@ of sets in `α` (with the reversed inclusion ordering).
 finer, coarser, induced topology, coinduced topology
 -/
 
+set_option autoImplicit true
+
+
 open Function Set Filter Topology
 
 universe u v w
@@ -237,7 +240,7 @@ end TopologicalSpace
 
 section Lattice
 
-variable {α : Type*} {t t₁ t₂ : TopologicalSpace α} {s : Set α}
+variable {t t₁ t₂ : TopologicalSpace α} {s : Set α}
 
 theorem IsOpen.mono (hs : IsOpen[t₂] s) (h : t₁ ≤ t₂) : IsOpen[t₁] s := h s hs
 #align is_open.mono IsOpen.mono
@@ -279,7 +282,7 @@ theorem discreteTopology_bot (α : Type*) : @DiscreteTopology α ⊥ :=
 
 section DiscreteTopology
 
-variable [TopologicalSpace α] [DiscreteTopology α] {β : Type*}
+variable [TopologicalSpace α] [DiscreteTopology α]
 
 @[simp]
 theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α _).symm ▸ trivial
@@ -293,7 +296,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 @[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
 
 @[simp]
-theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
+theorem denseRange_discrete {f : ι → α} : DenseRange f ↔ Surjective f := by
   rw [DenseRange, dense_discrete, range_iff_surjective]
 
 @[nontriviality, continuity]

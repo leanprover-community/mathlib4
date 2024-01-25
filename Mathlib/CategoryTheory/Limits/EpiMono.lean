@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 
 In this file, monomorphisms and epimorphisms are characterized in terms
 of pullback and pushout squares. For example, we obtain `mono_iff_isPullback`
-which asserts that a morphism `f : X ⟶ Y` is a monomorphism iff the obvious
+which assets that a morphism `f : X ⟶ Y` is a monomorphism iff the obvious
 square
 
 ```

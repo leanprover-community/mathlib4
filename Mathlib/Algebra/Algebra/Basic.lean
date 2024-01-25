@@ -436,14 +436,8 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-/- The identity map inducing an `Algebra` structure. -/
-instance id : Algebra R R where
-  -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
-  -- be made so without a significant performance hit.
-  -- see library note [reducible non-instances].
-  toFun x := x
-  toSMul := Mul.toSMul _
-  __ := (RingHom.id R).toAlgebra
+instance id : Algebra R R :=
+  (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
 variable {R A}

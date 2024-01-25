@@ -115,9 +115,12 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
+set_option autoImplicit true
+
+
 open Set Filter Topology
 
-universe u v ua ub uc ud
+universe ua ub uc ud
 
 /-!
 ### Relations, seen as `Set (α × α)`
