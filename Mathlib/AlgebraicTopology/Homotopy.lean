@@ -256,10 +256,8 @@ lemma homotopic'_iff_homotopic_symm {C : SSet} [Quasicategory C] (f g : C _[1]) 
         · rw [ht.left,hτ₀.prop_δ₁]
 
 lemma homotopic'_iff_homotopic  {C : SSet} [Quasicategory C] (f g : C _[1]) :
-  homotopic' f g ↔ homotopic f g  := by
-    rw [homotopy.symm' g f ]
-    exact homotopic'_iff_homotopic_symm g f
-
-
+    homotopic' f g ↔ homotopic f g  := by
+      rw [homotopy.symm' g f ]
+      exact homotopic'_iff_homotopic_symm g f
 
 end dual

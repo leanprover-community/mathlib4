@@ -765,8 +765,7 @@ lemma homMk₃₁_lift_face {S :SSet} (τ₀  τ₂ τ₃  : S _[2]) (h₀₁ : 
     (lift.app (op [2+1]) ((standardSimplex.objEquiv [3] (op [3])).invFun
     (𝟙 ([3]: SimplexCategory))))):
      S.map (δ 0).op τ₁=S.map (δ 0).op τ₀  ∧  S.map (δ 1).op τ₁=S.map (δ 1).op τ₂
-    ∧ S.map (δ 2).op τ₁=S.map (δ 1).op τ₃
-      := by
+    ∧ S.map (δ 2).op τ₁=S.map (δ 1).op τ₃ := by
        let face_map : Fin (3) → S _[2]
        | 0 => τ₀
        | 1 => τ₂
@@ -808,7 +807,8 @@ def homMk₃₂ {S :SSet} (τ₀ τ₁ τ₃  : S _[2]) (h₀₁ : S.map (δ 0).
       · exact h₀₃
       · exact h₁₃
 
-lemma homMk₃₂_lift_face {S :SSet} (τ₀  τ₁ τ₃  : S _[2])  (h₀₁ : S.map (δ 0).op τ₀ =S.map (δ 0).op τ₁)
+lemma homMk₃₂_lift_face {S :SSet} (τ₀  τ₁ τ₃  : S _[2])
+    (h₀₁ : S.map (δ 0).op τ₀ =S.map (δ 0).op τ₁)
     (h₀₃ : S.map (δ 2).op τ₀ =S.map (δ 0).op τ₃) (h₁₃ : S.map (δ 2).op τ₁ =S.map (δ 1).op  τ₃)
     (lift : Δ[3]⟶ S)
     (hlift: (homMk₃₂ τ₀ τ₁ τ₃ h₀₁ h₀₃ h₁₃)  = hornInclusion 3 2 ≫ lift)
@@ -816,8 +816,7 @@ lemma homMk₃₂_lift_face {S :SSet} (τ₀  τ₁ τ₃  : S _[2])  (h₀₁ :
     (lift.app (op [2+1]) ((standardSimplex.objEquiv [3] (op [3])).invFun
     (𝟙 ([3]: SimplexCategory))))):
      S.map (δ 0).op τ₂=S.map (δ 1).op τ₀  ∧  S.map (δ 1).op τ₂=S.map (δ 1).op τ₁
-    ∧ S.map (δ 2).op τ₂=S.map (δ 2).op τ₃
-      := by
+    ∧ S.map (δ 2).op τ₂=S.map (δ 2).op τ₃ := by
        let face_map : Fin (3) → S _[2]
        | 0 => τ₀
        | 1 => τ₁
