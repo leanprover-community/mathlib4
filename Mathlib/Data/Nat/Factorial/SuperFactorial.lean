@@ -61,10 +61,8 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n
-  | 0 => rfl
-  | n + 1 => by
-    rw [Finset.prod_range_succ, prod_range_factorial_succ n, superFactorial, mul_comm, factorial]
+theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n :=
+  fun n => (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
 
 @[simp]
 theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
@@ -86,6 +84,22 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
       simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
     · rw [Matrix.det_vandermonde] at hn
       simp [hn]
+
+theorem superFactorial_two_mul : ∀ n : ℕ,
+    sf (2 * n) = (∏ i in range n, (2 * i + 1) !) ^ 2 * 2 ^ n * n !
+  | 0 => rfl
+  | (n + 1) => by
+    simp only [prod_range_succ, mul_pow, mul_add, mul_one, superFactorial_succ,
+      superFactorial_two_mul n, factorial_succ]
+    ring
+
+theorem superFactorial_four_mul (n : ℕ) :
+    sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
+  calc
+    sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
+      rw [← superFactorial_two_mul, ← mul_assoc]
+    _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
+      rw [pow_mul', mul_pow]
 
 private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
