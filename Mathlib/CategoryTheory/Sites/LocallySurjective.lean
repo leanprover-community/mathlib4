@@ -3,9 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 # Locally injective or locally surjective morphisms of presheaves
@@ -95,6 +92,17 @@ lemma app_apply_localPreimage :
   ((hφ.locally_surjective x).choose_spec.choose_spec f hf).choose_spec
 
 end
+
+instance locallyInjective_forget [LocallyInjective J φ] :
+    LocallyInjective J (whiskerRight φ (forget D)) where
+  locally_injective x y h :=
+    ⟨_, sieveOfLocallyInjective_mem J φ x y h, map_apply_eq_of_locallyInjective J φ x y h⟩
+
+instance locallySurjective_forget [LocallySurjective J φ] :
+    LocallySurjective J (whiskerRight φ (forget D)) where
+  locally_surjective x :=
+    ⟨_, sieveOfLocallySurjective_mem J φ x,
+      fun f hf => ⟨localPreimage J φ x f hf, app_apply_localPreimage J φ x f hf⟩⟩
 
 instance locallyInjective_comp [LocallyInjective J φ] [LocallyInjective J ψ] :
     LocallyInjective J (φ ≫ ψ) where
@@ -190,6 +198,58 @@ lemma locallySurjective_of_locallySurjective_fac {φψ : F₁ ⟶ F₃} (fac : �
     [LocallySurjective φψ] : LocallySurjective ψ := by
   subst fac
   exact locallySurjective_of_locallySurjective φ ψ
+
+section
+
+variable (φ)
+variable [J.HasSheafCompose (forget D)]
+
+instance locallyInjective_forget [LocallyInjective φ] :
+    LocallyInjective ((sheafCompose J (forget D)).map φ) :=
+  Presheaf.locallyInjective_forget J φ.1
+
+instance locallySurjective_forget [LocallySurjective φ] :
+    LocallySurjective ((sheafCompose J (forget D)).map φ) :=
+  Presheaf.locallySurjective_forget J φ.1
+
+lemma mono_of_locallyInjective' {F G : Sheaf J (Type w)} (φ : F ⟶ G) [LocallyInjective φ] :
+    Mono φ where
+  right_cancellation {Z} f₁ f₂ h := by
+    ext X x
+    apply ((Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 F.2)) _
+      (Presheaf.sieveOfLocallyInjective_mem J φ.1 (f₁.1.app _ x) (f₂.1.app _ x)
+      (congr_fun (congr_app (congr_arg Sheaf.Hom.val h) X) x))).ext
+    intro Y f hf
+    exact Presheaf.map_apply_eq_of_locallyInjective J φ.1 _ _ _ f hf
+
+lemma epi_of_locallySurjective' {F G : Sheaf J (Type w)} (φ : F ⟶ G) [LocallySurjective φ] :
+    Epi φ where
+  left_cancellation := by
+    intro H f₁ f₂ h₁₂
+    ext X x
+    apply ((Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 H.2)) _
+      (Presheaf.sieveOfLocallySurjective_mem J φ.1 x)).ext
+    intro Y f hf
+    have h₁ := congr_fun (f₁.1.naturality f.op) x
+    have h₂ := congr_fun (f₂.1.naturality f.op) x
+    dsimp at h₁ h₂
+    simp only [← h₁, ← h₂]
+    erw [congr_arg (f₁.val.app (op Y)) (Presheaf.app_apply_localPreimage J φ.1 x f hf).symm,
+      congr_arg (f₂.val.app (op Y)) (Presheaf.app_apply_localPreimage J φ.1 x f hf).symm]
+    exact congr_fun (congr_app (congr_arg Sheaf.Hom.val h₁₂) (op Y)) _
+
+instance : Faithful (sheafCompose J (forget D)) where
+  map_injective {F G f₁ f₂} h := by
+    ext X x
+    exact congr_fun (congr_app ((sheafToPresheaf _ _).congr_map h) X) x
+
+lemma mono_of_locallySurjective [LocallyInjective φ] : Mono φ :=
+  (sheafCompose J (forget D)).mono_of_mono_map (mono_of_locallyInjective' _)
+
+lemma epi_of_locallySurjective [LocallySurjective φ] : Epi φ :=
+  (sheafCompose J (forget D)).epi_of_epi_map (epi_of_locallySurjective' _)
+
+end
 
 end Sheaf
 

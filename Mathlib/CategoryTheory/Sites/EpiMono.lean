@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 # Characterization of mono and epi in the category of sheaves of types
 
@@ -39,70 +39,6 @@ namespace Sheaf
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
-section
-
-variable {D : Type*} [Category D] [ConcreteCategory D] {F G : Sheaf J D} (φ : F ⟶ G)
-
-structure LocallySurjective : Prop where
-  exists_local_lifting {X : Cᵒᵖ} (x : G.1.obj X) :
-    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-      ∀ {Y : C} (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F.1.obj (op Y)),
-        φ.1.app (op Y) y = G.1.map f.op x
-
-namespace LocallySurjective
-
-variable {φ}
-variable (h : LocallySurjective φ) {X : Cᵒᵖ} (x : G.1.obj X)
-
-noncomputable def liftingSieve : Sieve X.unop := (h.exists_local_lifting x).choose
-
-lemma liftingSieve_mem : h.liftingSieve x ∈ J X.unop :=
-  (h.exists_local_lifting x).choose_spec.choose
-
-noncomputable def lifting {Y : C} (f : Y ⟶ X.unop) (hf : h.liftingSieve x f) :
-    F.1.obj (op Y) :=
-  ((h.exists_local_lifting x).choose_spec.choose_spec f hf).choose
-
-@[simp]
-lemma app_apply_lifting {Y : C} (f : Y ⟶ X.unop) (hf : h.liftingSieve x f) :
-    φ.1.app (op Y) (h.lifting x f hf) = G.1.map f.op x :=
-  ((h.exists_local_lifting x).choose_spec.choose_spec f hf).choose_spec
-
-lemma epi' {F G : Sheaf J (Type w)} {φ : F ⟶ G} (h : LocallySurjective φ) : Epi φ where
-  left_cancellation := by
-    intro H f₁ f₂ h₁₂
-    ext X x
-    apply ((Presieve.isSeparated_of_isSheaf _ _
-      ((isSheaf_iff_isSheaf_of_type _ _).1 H.2)) _ (h.liftingSieve_mem x)).ext
-    intro Y f hf
-    have h₁ := congr_fun (f₁.1.naturality f.op) x
-    have h₂ := congr_fun (f₂.1.naturality f.op) x
-    dsimp at h₁ h₂
-    simp only [← h₁, ← h₂]
-    erw [congr_arg (f₁.val.app (op Y)) (h.app_apply_lifting x f hf).symm,
-      congr_arg (f₂.val.app (op Y)) (h.app_apply_lifting x f hf).symm]
-    exact congr_fun (congr_app (congr_arg Sheaf.Hom.val h₁₂) (op Y)) _
-
-variable [J.HasSheafCompose (forget D)]
-
-lemma sheafCompose_forget : LocallySurjective ((sheafCompose J (forget D)).map φ) where
-  exists_local_lifting x := ⟨h.liftingSieve x, h.liftingSieve_mem x, fun f hf =>
-    ⟨h.lifting x f hf, h.app_apply_lifting x f hf⟩⟩
-
-instance : Faithful (sheafCompose J (forget D)) where
-  map_injective {F G f₁ f₂} h := by
-    ext X x
-    exact congr_fun (congr_app ((sheafToPresheaf _ _).congr_map h) X) x
-
-lemma epi : Epi φ :=
-  (sheafCompose J (forget D)).epi_of_epi_map (h.sheafCompose_forget.epi')
-
-end LocallySurjective
-
-end
-
 variable {F G : Sheaf J (Type w)} (φ : F ⟶ G)
 
 lemma mono_of_injective
@@ -121,8 +57,6 @@ lemma mono_iff_injective [HasWeakSheafify J (Type w)] :
     infer_instance
   · intro hφ
     exact mono_of_injective φ hφ
-
-lemma epi_of_locally_surjective (h : LocallySurjective φ) : Epi φ := h.epi
 
 lemma isIso_iff_bijective :
     IsIso φ ↔ ∀ (X : Cᵒᵖ), Function.Bijective (fun (x : F.1.obj X) => φ.1.app _ x) := by
@@ -215,14 +149,14 @@ def π : F ⟶ I φ where
         ext x
         exact Subtype.ext (congr_fun (φ.val.naturality g) x) }
 
-lemma locallySurjective_π : LocallySurjective (π φ) where
-  exists_local_lifting  x := by
+instance locallySurjective_π : LocallySurjective (π φ) where
+  locally_surjective x := by
     obtain ⟨S, hS, hS'⟩ := x.2
     refine ⟨S, hS, fun f hf => ?_⟩
     obtain ⟨y, hy⟩ := hS' f hf
     exact ⟨y, Subtype.ext hy⟩
 
-instance : Epi (π φ) := (locallySurjective_π φ).epi
+instance : Epi (π φ) := epi_of_locallySurjective _
 
 instance : Mono (ι φ) := by
   apply mono_of_injective
@@ -308,8 +242,8 @@ lemma epi_iff_locally_surjective [HasSheafify J (Type w)] :
     obtain ⟨⟨y, hy⟩, rfl⟩ :=
       ((isIso_iff_bijective (EpiMonoFactorization.ι φ)).1 inferInstance X).2 x
     exact hy
-  · intro hφ
-    exact epi_of_locally_surjective φ hφ
+  · intro
+    exact epi_of_locallySurjective φ
 
 end Sheaf
 
