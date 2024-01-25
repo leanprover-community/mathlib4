@@ -1621,7 +1621,7 @@ set_option quotPrecheck false in
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-variable {f : X → Y} {x : X}
+variable {f : X → Y} {x : X} {y : Y}
 
 theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
@@ -1719,7 +1719,7 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
 #align continuous_at.comp ContinuousAt.comp
 
 /-- See note [comp_of_eq lemmas] -/
-theorem ContinuousAt.comp_of_eq {g : Y → Z} {y : Y} (hg : ContinuousAt g y)
+theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
     (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
 #align continuous_at.comp_of_eq ContinuousAt.comp_of_eq
 
@@ -1744,16 +1744,16 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
-theorem continuousAt_const {y : Y} : ContinuousAt (fun _ : X => y) x :=
+theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
 @[continuity]
-theorem continuous_const {y : Y} : Continuous fun _ : X => y :=
+theorem continuous_const : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
 
-theorem Filter.EventuallyEq.continuousAt {y : Y} (h : f =ᶠ[𝓝 x] fun _ => y) :
+theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
     ContinuousAt f x :=
   (continuousAt_congr h).2 tendsto_const_nhds
 #align filter.eventually_eq.continuous_at Filter.EventuallyEq.continuousAt
