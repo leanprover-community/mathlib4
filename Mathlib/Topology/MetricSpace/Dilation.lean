@@ -267,7 +267,7 @@ variable (f : F) (g : G) {x y z : α} {s : Set α}
 
 /-- Every isometry is a dilation of ratio `1`. -/
 @[simps]
-def _root_.Isometry.toDilation {f : α → β} (hf : Isometry f) : α →ᵈ β where
+def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
   toFun := f
   edist_eq' := ⟨1, one_ne_zero, by simpa using hf⟩
 
