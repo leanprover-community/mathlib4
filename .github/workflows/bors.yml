@@ -262,12 +262,15 @@ jobs:
           lake exe shake
 
       - name: test mathlib
-        id: test
-        run: |
-          # Tests use parts of ProofWidgets not imported by Mathlib.
-          # Ensure everything has been built.
-          lake build ProofWidgets
-          make -j 8 test
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "
+            # Tests use parts of ProofWidgets not imported by Mathlib.
+            # Ensure everything has been built.
+            lake build ProofWidgets
+            make -j 8 test"
 
       - name: lint mathlib
         id: lint
