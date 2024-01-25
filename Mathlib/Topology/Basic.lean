@@ -105,7 +105,7 @@ scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 
 open Topology
 
-lemma isOpen_mk {p h₁ h₂ h₃} {s : Set X} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
+lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 #align is_open_mk isOpen_mk
 
 @[ext]
@@ -471,7 +471,7 @@ theorem IsClosed.closure_subset_iff (h₁ : IsClosed t) : closure s ⊆ t ↔ s 
   ⟨Subset.trans subset_closure, fun h => closure_minimal h h₁⟩
 #align is_closed.closure_subset_iff IsClosed.closure_subset_iff
 
-theorem IsClosed.mem_iff_closure_subset {s : Set X} (hs : IsClosed s) {x : X} :
+theorem IsClosed.mem_iff_closure_subset (hs : IsClosed s) {x : X} :
     x ∈ s ↔ closure ({x} : Set X) ⊆ s :=
   (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
@@ -494,15 +494,15 @@ theorem closure_inter_subset_inter_closure (s t : Set X) :
   (monotone_closure X).map_inf_le s t
 #align closure_inter_subset_inter_closure closure_inter_subset_inter_closure
 
-theorem isClosed_of_closure_subset {s : Set X} (h : closure s ⊆ s) : IsClosed s := by
+theorem isClosed_of_closure_subset (h : closure s ⊆ s) : IsClosed s := by
   rw [subset_closure.antisymm h]; exact isClosed_closure
 #align is_closed_of_closure_subset isClosed_of_closure_subset
 
-theorem closure_eq_iff_isClosed {s : Set X} : closure s = s ↔ IsClosed s :=
+theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
   ⟨fun h => h ▸ isClosed_closure, IsClosed.closure_eq⟩
 #align closure_eq_iff_is_closed closure_eq_iff_isClosed
 
-theorem closure_subset_iff_isClosed {s : Set X} : closure s ⊆ s ↔ IsClosed s :=
+theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
 #align closure_subset_iff_is_closed closure_subset_iff_isClosed
 
@@ -517,7 +517,7 @@ theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
 #align closure_empty_iff closure_empty_iff
 
 @[simp]
-theorem closure_nonempty_iff {s : Set X} : (closure s).Nonempty ↔ s.Nonempty := by
+theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
   simp only [nonempty_iff_ne_empty, Ne.def, closure_empty_iff]
 #align closure_nonempty_iff closure_nonempty_iff
 
@@ -531,11 +531,11 @@ theorem closure_univ : closure (univ : Set X) = univ :=
 #align closure_univ closure_univ
 
 @[simp]
-theorem closure_closure {s : Set X} : closure (closure s) = closure s :=
+theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 #align closure_closure closure_closure
 
-theorem closure_eq_compl_interior_compl {s : Set X} : closure s = (interior sᶜ)ᶜ := by
+theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
   rw [interior, closure, compl_sUnion, compl_image_set_of]
   simp only [compl_subset_compl, isOpen_compl_iff]
 #align closure_eq_compl_interior_compl closure_eq_compl_interior_compl
@@ -565,21 +565,21 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
 
-theorem interior_subset_closure {s : Set X} : interior s ⊆ closure s :=
+theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 #align interior_subset_closure interior_subset_closure
 
 @[simp]
-theorem interior_compl {s : Set X} : interior sᶜ = (closure s)ᶜ := by
+theorem interior_compl : interior sᶜ = (closure s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align interior_compl interior_compl
 
 @[simp]
-theorem closure_compl {s : Set X} : closure sᶜ = (interior s)ᶜ := by
+theorem closure_compl : closure sᶜ = (interior s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align closure_compl closure_compl
 
-theorem mem_closure_iff {s : Set X} :
+theorem mem_closure_iff :
     a ∈ closure s ↔ ∀ o, IsOpen o → a ∈ o → (o ∩ s).Nonempty :=
   ⟨fun h o oo ao =>
     by_contradiction fun os =>
@@ -623,24 +623,24 @@ def Dense (s : Set X) : Prop :=
   ∀ x, x ∈ closure s
 #align dense Dense
 
-theorem dense_iff_closure_eq {s : Set X} : Dense s ↔ closure s = univ :=
+theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
 #align dense_iff_closure_eq dense_iff_closure_eq
 
 alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
 #align dense.closure_eq Dense.closure_eq
 
-theorem interior_eq_empty_iff_dense_compl {s : Set X} : interior s = ∅ ↔ Dense sᶜ := by
+theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 #align interior_eq_empty_iff_dense_compl interior_eq_empty_iff_dense_compl
 
-theorem Dense.interior_compl {s : Set X} (h : Dense s) : interior sᶜ = ∅ :=
+theorem Dense.interior_compl (h : Dense s) : interior sᶜ = ∅ :=
   interior_eq_empty_iff_dense_compl.2 <| by rwa [compl_compl]
 #align dense.interior_compl Dense.interior_compl
 
 /-- The closure of a set `s` is dense if and only if `s` is dense. -/
 @[simp]
-theorem dense_closure {s : Set X} : Dense (closure s) ↔ Dense s := by
+theorem dense_closure : Dense (closure s) ↔ Dense s := by
   rw [Dense, Dense, closure_closure]
 #align dense_closure dense_closure
 
@@ -654,7 +654,7 @@ theorem dense_univ : Dense (univ : Set X) := fun _ => subset_closure trivial
 #align dense_univ dense_univ
 
 /-- A set is dense if and only if it has a nonempty intersection with each nonempty open set. -/
-theorem dense_iff_inter_open {s : Set X} :
+theorem dense_iff_inter_open :
     Dense s ↔ ∀ U, IsOpen U → U.Nonempty → (U ∩ s).Nonempty := by
   constructor <;> intro h
   · rintro U U_op ⟨x, x_in⟩
@@ -668,19 +668,19 @@ theorem dense_iff_inter_open {s : Set X} :
 alias ⟨Dense.inter_open_nonempty, _⟩ := dense_iff_inter_open
 #align dense.inter_open_nonempty Dense.inter_open_nonempty
 
-theorem Dense.exists_mem_open {s : Set X} (hs : Dense s) {U : Set X} (ho : IsOpen U)
+theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
     (hne : U.Nonempty) : ∃ x ∈ s, x ∈ U :=
   let ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
   ⟨x, hx.2, hx.1⟩
 #align dense.exists_mem_open Dense.exists_mem_open
 
-theorem Dense.nonempty_iff {s : Set X} (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
+theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
   ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>
     let ⟨y, hy⟩ := hs.inter_open_nonempty _ isOpen_univ ⟨x, trivial⟩
     ⟨y, hy.2⟩⟩
 #align dense.nonempty_iff Dense.nonempty_iff
 
-theorem Dense.nonempty [h : Nonempty X] {s : Set X} (hs : Dense s) : s.Nonempty :=
+theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 #align dense.nonempty Dense.nonempty
 
@@ -731,11 +731,11 @@ theorem self_diff_frontier (s : Set X) : s \ frontier s = interior s := by
     inter_eq_self_of_subset_right interior_subset, empty_union]
 #align self_diff_frontier self_diff_frontier
 
-theorem frontier_eq_closure_inter_closure {s : Set X} : frontier s = closure s ∩ closure sᶜ := by
+theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
 #align frontier_eq_closure_inter_closure frontier_eq_closure_inter_closure
 
-theorem frontier_subset_closure {s : Set X} : frontier s ⊆ closure s :=
+theorem frontier_subset_closure : frontier s ⊆ closure s :=
   diff_subset _ _
 #align frontier_subset_closure frontier_subset_closure
 
@@ -743,11 +743,11 @@ theorem IsClosed.frontier_subset (hs : IsClosed s) : frontier s ⊆ s :=
   frontier_subset_closure.trans hs.closure_eq.subset
 #align is_closed.frontier_subset IsClosed.frontier_subset
 
-theorem frontier_closure_subset {s : Set X} : frontier (closure s) ⊆ frontier s :=
+theorem frontier_closure_subset : frontier (closure s) ⊆ frontier s :=
   diff_subset_diff closure_closure.subset <| interior_mono subset_closure
 #align frontier_closure_subset frontier_closure_subset
 
-theorem frontier_interior_subset {s : Set X} : frontier (interior s) ⊆ frontier s :=
+theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
   diff_subset_diff (closure_mono interior_subset) interior_interior.symm.subset
 #align frontier_interior_subset frontier_interior_subset
 
@@ -777,25 +777,25 @@ theorem frontier_union_subset (s t : Set X) :
   simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
 #align frontier_union_subset frontier_union_subset
 
-theorem IsClosed.frontier_eq {s : Set X} (hs : IsClosed s) : frontier s = s \ interior s := by
+theorem IsClosed.frontier_eq (hs : IsClosed s) : frontier s = s \ interior s := by
   rw [frontier, hs.closure_eq]
 #align is_closed.frontier_eq IsClosed.frontier_eq
 
-theorem IsOpen.frontier_eq {s : Set X} (hs : IsOpen s) : frontier s = closure s \ s := by
+theorem IsOpen.frontier_eq (hs : IsOpen s) : frontier s = closure s \ s := by
   rw [frontier, hs.interior_eq]
 #align is_open.frontier_eq IsOpen.frontier_eq
 
-theorem IsOpen.inter_frontier_eq {s : Set X} (hs : IsOpen s) : s ∩ frontier s = ∅ := by
+theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
   rw [hs.frontier_eq, inter_diff_self]
 #align is_open.inter_frontier_eq IsOpen.inter_frontier_eq
 
 /-- The frontier of a set is closed. -/
-theorem isClosed_frontier {s : Set X} : IsClosed (frontier s) := by
+theorem isClosed_frontier : IsClosed (frontier s) := by
   rw [frontier_eq_closure_inter_closure]; exact IsClosed.inter isClosed_closure isClosed_closure
 #align is_closed_frontier isClosed_frontier
 
 /-- The frontier of a closed set has no interior point. -/
-theorem interior_frontier {s : Set X} (h : IsClosed s) : interior (frontier s) = ∅ := by
+theorem interior_frontier (h : IsClosed s) : interior (frontier s) = ∅ := by
   have A : frontier s = s \ interior s := h.frontier_eq
   have B : interior (frontier s) ⊆ interior s := by rw [A]; exact interior_mono (diff_subset _ _)
   have C : interior (frontier s) ⊆ frontier s := interior_subset
@@ -821,12 +821,12 @@ theorem Disjoint.frontier_right (hs : IsOpen s) (hd : Disjoint s t) : Disjoint s
   (hd.symm.frontier_left hs).symm
 #align disjoint.frontier_right Disjoint.frontier_right
 
-theorem frontier_eq_inter_compl_interior {s : Set X} :
+theorem frontier_eq_inter_compl_interior :
     frontier s = (interior s)ᶜ ∩ (interior sᶜ)ᶜ := by
   rw [← frontier_compl, ← closure_compl, ← diff_eq, closure_diff_interior]
 #align frontier_eq_inter_compl_interior frontier_eq_inter_compl_interior
 
-theorem compl_frontier_eq_union_interior {s : Set X} :
+theorem compl_frontier_eq_union_interior :
     (frontier s)ᶜ = interior s ∪ interior sᶜ := by
   rw [frontier_eq_inter_compl_interior]
   simp only [compl_inter, compl_compl]
@@ -901,12 +901,12 @@ theorem le_nhds_iff {f a} : f ≤ 𝓝 a ↔ ∀ s : Set X, a ∈ s → IsOpen s
 
 /-- To show a filter is above the neighborhood filter at `a`, it suffices to show that it is above
 the principal filter of some open set `s` containing `a`. -/
-theorem nhds_le_of_le {f a} {s : Set X} (h : a ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : 𝓝 a ≤ f := by
+theorem nhds_le_of_le {f a} (h : a ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : 𝓝 a ≤ f := by
   rw [nhds_def]; exact iInf₂_le_of_le s ⟨h, o⟩ sf
 #align nhds_le_of_le nhds_le_of_le
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
-theorem mem_nhds_iff {s : Set X} : s ∈ 𝓝 a ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ a ∈ t :=
+theorem mem_nhds_iff : s ∈ 𝓝 a ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ a ∈ t :=
   (nhds_basis_opens a).mem_iff.trans <| exists_congr fun _ =>
     ⟨fun h => ⟨h.2, h.1.2, h.1.1⟩, fun h => ⟨⟨h.2.2, h.2.1⟩, h.1⟩⟩
 #align mem_nhds_iff mem_nhds_iffₓ
@@ -918,7 +918,7 @@ theorem eventually_nhds_iff {p : X → Prop} :
   mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
 #align eventually_nhds_iff eventually_nhds_iff
 
-theorem mem_interior_iff_mem_nhds {s : Set X} : a ∈ interior s ↔ s ∈ 𝓝 a :=
+theorem mem_interior_iff_mem_nhds : a ∈ interior s ↔ s ∈ 𝓝 a :=
   mem_interior.trans mem_nhds_iff.symm
 #align mem_interior_iff_mem_nhds mem_interior_iff_mem_nhds
 
@@ -927,7 +927,7 @@ theorem map_nhds {f : X → α} :
   ((nhds_basis_opens a).map f).eq_biInf
 #align map_nhds map_nhds
 
-theorem mem_of_mem_nhds {s : Set X} : s ∈ 𝓝 a → a ∈ s := fun H =>
+theorem mem_of_mem_nhds : s ∈ 𝓝 a → a ∈ s := fun H =>
   let ⟨_t, ht, _, hs⟩ := mem_nhds_iff.1 H; ht hs
 #align mem_of_mem_nhds mem_of_mem_nhds
 
@@ -936,19 +936,19 @@ theorem Filter.Eventually.self_of_nhds {p : X → Prop} (h : ∀ᶠ y in 𝓝 a,
   mem_of_mem_nhds h
 #align filter.eventually.self_of_nhds Filter.Eventually.self_of_nhds
 
-theorem IsOpen.mem_nhds {s : Set X} (hs : IsOpen s) (ha : a ∈ s) : s ∈ 𝓝 a :=
+theorem IsOpen.mem_nhds (hs : IsOpen s) (ha : a ∈ s) : s ∈ 𝓝 a :=
   mem_nhds_iff.2 ⟨s, Subset.refl _, hs, ha⟩
 #align is_open.mem_nhds IsOpen.mem_nhds
 
-protected theorem IsOpen.mem_nhds_iff {s : Set X} (hs : IsOpen s) : s ∈ 𝓝 a ↔ a ∈ s :=
+protected theorem IsOpen.mem_nhds_iff (hs : IsOpen s) : s ∈ 𝓝 a ↔ a ∈ s :=
   ⟨mem_of_mem_nhds, fun ha => mem_nhds_iff.2 ⟨s, Subset.rfl, hs, ha⟩⟩
 #align is_open.mem_nhds_iff IsOpen.mem_nhds_iff
 
-theorem IsClosed.compl_mem_nhds {s : Set X} (hs : IsClosed s) (ha : a ∉ s) : sᶜ ∈ 𝓝 a :=
+theorem IsClosed.compl_mem_nhds (hs : IsClosed s) (ha : a ∉ s) : sᶜ ∈ 𝓝 a :=
   hs.isOpen_compl.mem_nhds (mem_compl ha)
 #align is_closed.compl_mem_nhds IsClosed.compl_mem_nhds
 
-theorem IsOpen.eventually_mem {s : Set X} (hs : IsOpen s) (ha : a ∈ s) :
+theorem IsOpen.eventually_mem (hs : IsOpen s) (ha : a ∈ s) :
     ∀ᶠ x in 𝓝 a, x ∈ s :=
   IsOpen.mem_nhds hs ha
 #align is_open.eventually_mem IsOpen.eventually_mem
@@ -963,14 +963,14 @@ theorem nhds_basis_opens' (a : X) :
 
 /-- If `U` is a neighborhood of each point of a set `s` then it is a neighborhood of `s`:
 it contains an open set containing `s`. -/
-theorem exists_open_set_nhds {s U : Set X} (h : ∀ x ∈ s, U ∈ 𝓝 x) :
+theorem exists_open_set_nhds {U : Set X} (h : ∀ x ∈ s, U ∈ 𝓝 x) :
     ∃ V : Set X, s ⊆ V ∧ IsOpen V ∧ V ⊆ U :=
   ⟨interior U, fun x hx => mem_interior_iff_mem_nhds.2 <| h x hx, isOpen_interior, interior_subset⟩
 #align exists_open_set_nhds exists_open_set_nhds
 
 /-- If `U` is a neighborhood of each point of a set `s` then it is a neighborhood of s:
 it contains an open set containing `s`. -/
-theorem exists_open_set_nhds' {s U : Set X} (h : U ∈ ⨆ x ∈ s, 𝓝 x) :
+theorem exists_open_set_nhds' {U : Set X} (h : U ∈ ⨆ x ∈ s, 𝓝 x) :
     ∃ V : Set X, s ⊆ V ∧ IsOpen V ∧ V ⊆ U :=
   exists_open_set_nhds (by simpa using h)
 #align exists_open_set_nhds' exists_open_set_nhds'
@@ -997,7 +997,7 @@ theorem frequently_frequently_nhds {p : X → Prop} :
 #align frequently_frequently_nhds frequently_frequently_nhds
 
 @[simp]
-theorem eventually_mem_nhds {s : Set X} : (∀ᶠ x in 𝓝 a, s ∈ 𝓝 x) ↔ s ∈ 𝓝 a :=
+theorem eventually_mem_nhds : (∀ᶠ x in 𝓝 a, s ∈ 𝓝 x) ↔ s ∈ 𝓝 a :=
   eventually_eventually_nhds
 #align eventually_mem_nhds eventually_mem_nhds
 
@@ -1132,12 +1132,12 @@ theorem clusterPt_iff_not_disjoint {x : X} {F : Filter X} :
 
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
-theorem clusterPt_principal_iff {x : X} {s : Set X} :
+theorem clusterPt_principal_iff {x : X} :
     ClusterPt x (𝓟 s) ↔ ∀ U ∈ 𝓝 x, (U ∩ s).Nonempty :=
   inf_principal_neBot_iff
 #align cluster_pt_principal_iff clusterPt_principal_iff
 
-theorem clusterPt_principal_iff_frequently {x : X} {s : Set X} :
+theorem clusterPt_principal_iff_frequently {x : X} :
     ClusterPt x (𝓟 s) ↔ ∃ᶠ y in 𝓝 x, y ∈ s := by
   simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, exists_prop, mem_inter_iff]
 #align cluster_pt_principal_iff_frequently clusterPt_principal_iff_frequently
@@ -1233,16 +1233,16 @@ theorem AccPt.mono {x : X} {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : Ac
 ### Interior, closure and frontier in terms of neighborhoods
 -/
 
-theorem interior_eq_nhds' {s : Set X} : interior s = { a | s ∈ 𝓝 a } :=
+theorem interior_eq_nhds' : interior s = { a | s ∈ 𝓝 a } :=
   Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
 #align interior_eq_nhds' interior_eq_nhds'
 
-theorem interior_eq_nhds {s : Set X} : interior s = { a | 𝓝 a ≤ 𝓟 s } :=
+theorem interior_eq_nhds : interior s = { a | 𝓝 a ≤ 𝓟 s } :=
   interior_eq_nhds'.trans <| by simp only [le_principal_iff]
 #align interior_eq_nhds interior_eq_nhds
 
 @[simp]
-theorem interior_mem_nhds {s : Set X} : interior s ∈ 𝓝 a ↔ s ∈ 𝓝 a :=
+theorem interior_mem_nhds : interior s ∈ 𝓝 a ↔ s ∈ 𝓝 a :=
   ⟨fun h => mem_of_superset h interior_subset, fun h =>
     IsOpen.mem_nhds isOpen_interior (mem_interior_iff_mem_nhds.2 h)⟩
 #align interior_mem_nhds interior_mem_nhds
@@ -1255,26 +1255,26 @@ theorem isOpen_setOf_eventually_nhds {p : X → Prop} : IsOpen { x | ∀ᶠ y in
   simp only [← interior_setOf_eq, isOpen_interior]
 #align is_open_set_of_eventually_nhds isOpen_setOf_eventually_nhds
 
-theorem subset_interior_iff_nhds {s V : Set X} : s ⊆ interior V ↔ ∀ x ∈ s, V ∈ 𝓝 x := by
+theorem subset_interior_iff_nhds {V : Set X} : s ⊆ interior V ↔ ∀ x ∈ s, V ∈ 𝓝 x := by
   simp_rw [subset_def, mem_interior_iff_mem_nhds]
 #align subset_interior_iff_nhds subset_interior_iff_nhds
 
-theorem isOpen_iff_nhds {s : Set X} : IsOpen s ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s :=
+theorem isOpen_iff_nhds : IsOpen s ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s :=
   calc
     IsOpen s ↔ s ⊆ interior s := subset_interior_iff_isOpen.symm
     _ ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 #align is_open_iff_nhds isOpen_iff_nhds
 
-theorem isOpen_iff_mem_nhds {s : Set X} : IsOpen s ↔ ∀ a ∈ s, s ∈ 𝓝 a :=
+theorem isOpen_iff_mem_nhds : IsOpen s ↔ ∀ a ∈ s, s ∈ 𝓝 a :=
   isOpen_iff_nhds.trans <| forall_congr' fun _ => imp_congr_right fun _ => le_principal_iff
 #align is_open_iff_mem_nhds isOpen_iff_mem_nhds
 
 /-- A set `s` is open iff for every point `x` in `s` and every `y` close to `x`, `y` is in `s`. -/
-theorem isOpen_iff_eventually {s : Set X} : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, y ∈ s :=
+theorem isOpen_iff_eventually : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, y ∈ s :=
   isOpen_iff_mem_nhds
 #align is_open_iff_eventually isOpen_iff_eventually
 
-theorem isOpen_iff_ultrafilter {s : Set X} :
+theorem isOpen_iff_ultrafilter :
     IsOpen s ↔ ∀ x ∈ s, ∀ (l : Ultrafilter X), ↑l ≤ 𝓝 x → s ∈ l := by
   simp_rw [isOpen_iff_mem_nhds, ← mem_iff_ultrafilter]
 #align is_open_iff_ultrafilter isOpen_iff_ultrafilter
@@ -1294,7 +1294,7 @@ theorem isOpen_singleton_iff_punctured_nhds (a : X) : IsOpen ({a} : Set X) ↔ �
     nhds_neBot.le_pure_iff]
 #align is_open_singleton_iff_punctured_nhds isOpen_singleton_iff_punctured_nhds
 
-theorem mem_closure_iff_frequently {s : Set X} : a ∈ closure s ↔ ∃ᶠ x in 𝓝 a, x ∈ s := by
+theorem mem_closure_iff_frequently : a ∈ closure s ↔ ∃ᶠ x in 𝓝 a, x ∈ s := by
   rw [Filter.Frequently, Filter.Eventually, ← mem_interior_iff_mem_nhds,
     closure_eq_compl_interior_compl, mem_compl_iff, compl_def]
 #align mem_closure_iff_frequently mem_closure_iff_frequently
@@ -1304,7 +1304,7 @@ alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
 
 /-- A set `s` is closed iff for every point `x`, if there is a point `y` close to `x` that belongs
 to `s` then `x` is in `s`. -/
-theorem isClosed_iff_frequently {s : Set X} : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y ∈ s) → x ∈ s := by
+theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y ∈ s) → x ∈ s := by
   rw [← closure_subset_iff_isClosed]
   refine' forall_congr' fun x => _
   rw [mem_closure_iff_frequently]
@@ -1318,19 +1318,19 @@ theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f }
   exacts [isOpen_setOf_eventually_nhds, isOpen_const]
 #align is_closed_set_of_cluster_pt isClosed_setOf_clusterPt
 
-theorem mem_closure_iff_clusterPt {s : Set X} : a ∈ closure s ↔ ClusterPt a (𝓟 s) :=
+theorem mem_closure_iff_clusterPt : a ∈ closure s ↔ ClusterPt a (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm
 #align mem_closure_iff_cluster_pt mem_closure_iff_clusterPt
 
-theorem mem_closure_iff_nhds_neBot {s : Set X} : a ∈ closure s ↔ 𝓝 a ⊓ 𝓟 s ≠ ⊥ :=
+theorem mem_closure_iff_nhds_neBot : a ∈ closure s ↔ 𝓝 a ⊓ 𝓟 s ≠ ⊥ :=
   mem_closure_iff_clusterPt.trans neBot_iff
 #align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_neBot
 
-theorem mem_closure_iff_nhdsWithin_neBot {s : Set X} {x : X} : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
+theorem mem_closure_iff_nhdsWithin_neBot {x : X} : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
 
-lemma not_mem_closure_iff_nhdsWithin_eq_bot {s : Set X} {x : X} : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+lemma not_mem_closure_iff_nhdsWithin_eq_bot {x : X} : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
@@ -1359,15 +1359,15 @@ theorem not_isOpen_singleton (x : X) [NeBot (𝓝[≠] x)] : ¬IsOpen ({x} : Set
   dense_compl_singleton_iff_not_open.1 (dense_compl_singleton x)
 #align not_is_open_singleton not_isOpen_singleton
 
-theorem closure_eq_cluster_pts {s : Set X} : closure s = { a | ClusterPt a (𝓟 s) } :=
+theorem closure_eq_cluster_pts : closure s = { a | ClusterPt a (𝓟 s) } :=
   Set.ext fun _ => mem_closure_iff_clusterPt
 #align closure_eq_cluster_pts closure_eq_cluster_pts
 
-theorem mem_closure_iff_nhds {s : Set X} : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, (t ∩ s).Nonempty :=
+theorem mem_closure_iff_nhds : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, (t ∩ s).Nonempty :=
   mem_closure_iff_clusterPt.trans clusterPt_principal_iff
 #align mem_closure_iff_nhds mem_closure_iff_nhds
 
-theorem mem_closure_iff_nhds' {s : Set X} : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, ∃ y : s, ↑y ∈ t := by
+theorem mem_closure_iff_nhds' : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, ∃ y : s, ↑y ∈ t := by
   simp only [mem_closure_iff_nhds, Set.inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
 #align mem_closure_iff_nhds' mem_closure_iff_nhds'
 
@@ -1411,23 +1411,23 @@ theorem clusterPt_lift'_closure_iff {F : Filter X} :
 
 /-- `x` belongs to the closure of `s` if and only if some ultrafilter
   supported on `s` converges to `x`. -/
-theorem mem_closure_iff_ultrafilter {s : Set X} {x : X} :
+theorem mem_closure_iff_ultrafilter {x : X} :
     x ∈ closure s ↔ ∃ u : Ultrafilter X, s ∈ u ∧ ↑u ≤ 𝓝 x := by
   simp [closure_eq_cluster_pts, ClusterPt, ← exists_ultrafilter_iff, and_comm]
 #align mem_closure_iff_ultrafilter mem_closure_iff_ultrafilter
 
-theorem isClosed_iff_clusterPt {s : Set X} : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s :=
+theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s :=
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
-theorem isClosed_iff_nhds {s : Set X} :
+theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by
   simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
 #align is_closed_iff_nhds isClosed_iff_nhds
 
-lemma isClosed_iff_forall_filter {s : Set X} :
+lemma isClosed_iff_forall_filter :
     IsClosed s ↔ ∀ x, ∀ F : Filter X, F.NeBot → F ≤ 𝓟 s → F ≤ 𝓝 x → x ∈ s := by
   simp_rw [isClosed_iff_clusterPt]
   exact ⟨fun hs x F F_ne FS Fx ↦ hs _ <| NeBot.mono F_ne (le_inf Fx FS),
@@ -1500,7 +1500,7 @@ theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
 #align closure_diff closure_diff
 
-theorem Filter.Frequently.mem_of_closed {s : Set X} (h : ∃ᶠ x in 𝓝 a, x ∈ s)
+theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 a, x ∈ s)
     (hs : IsClosed s) : a ∈ s :=
   hs.closure_subset h.mem_closure
 #align filter.frequently.mem_of_closed Filter.Frequently.mem_of_closed
@@ -1510,7 +1510,7 @@ theorem IsClosed.mem_of_frequently_of_tendsto {f : α → X} {b : Filter α} {s 
   (hf.frequently <| show ∃ᶠ x in b, (fun y => y ∈ s) (f x) from h).mem_of_closed hs
 #align is_closed.mem_of_frequently_of_tendsto IsClosed.mem_of_frequently_of_tendsto
 
-theorem IsClosed.mem_of_tendsto {f : α → X} {b : Filter α} {s : Set X} [NeBot b]
+theorem IsClosed.mem_of_tendsto {f : α → X} {b : Filter α} [NeBot b]
     (hs : IsClosed s) (hf : Tendsto f b (𝓝 a)) (h : ∀ᶠ x in b, f x ∈ s) : a ∈ s :=
   hs.mem_of_frequently_of_tendsto h.frequently hf
 #align is_closed.mem_of_tendsto IsClosed.mem_of_tendsto
@@ -1520,7 +1520,7 @@ theorem mem_closure_of_frequently_of_tendsto {f : α → X} {b : Filter α} {s :
   (hf.frequently h).mem_closure
 #align mem_closure_of_frequently_of_tendsto mem_closure_of_frequently_of_tendsto
 
-theorem mem_closure_of_tendsto {f : α → X} {b : Filter α} {s : Set X} [NeBot b]
+theorem mem_closure_of_tendsto {f : α → X} {b : Filter α} [NeBot b]
     (hf : Tendsto f b (𝓝 a)) (h : ∀ᶠ x in b, f x ∈ s) : a ∈ closure s :=
   mem_closure_of_frequently_of_tendsto h.frequently hf
 #align mem_closure_of_tendsto mem_closure_of_tendsto
@@ -1621,7 +1621,7 @@ set_option quotPrecheck false in
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-variable {f : X → Y} {x : X} {y : Y}
+variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
@@ -1783,7 +1783,7 @@ theorem IsClosed.preimage (hf : Continuous f) {t : Set Y} (h : IsClosed t) :
   continuous_iff_isClosed.mp hf t h
 #align is_closed.preimage IsClosed.preimage
 
-theorem mem_closure_image {s : Set X} (hf : ContinuousAt f x)
+theorem mem_closure_image (hf : ContinuousAt f x)
     (hx : x ∈ closure s) : f x ∈ closure (f '' s) :=
   mem_closure_of_frequently_of_tendsto
     ((mem_closure_iff_frequently.1 hx).mono fun _ => mem_image_of_mem _) hf
@@ -1811,38 +1811,38 @@ theorem Continuous.frontier_preimage_subset (hf : Continuous f) (t : Set Y) :
 #align continuous.frontier_preimage_subset Continuous.frontier_preimage_subset
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
-protected theorem Set.MapsTo.closure {s : Set X} {t : Set Y} (h : MapsTo f s t)
+protected theorem Set.MapsTo.closure {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) : MapsTo f (closure s) (closure t) := by
   simp only [MapsTo, mem_closure_iff_clusterPt]
   exact fun x hx => hx.map hc.continuousAt (tendsto_principal_principal.2 h)
 #align set.maps_to.closure Set.MapsTo.closure
 
 /-- See also `IsClosedMap.closure_image_eq_of_continuous`. -/
-theorem image_closure_subset_closure_image {s : Set X} (h : Continuous f) :
+theorem image_closure_subset_closure_image (h : Continuous f) :
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
 -- porting note: new lemma
-theorem closure_image_closure {s : Set X} (h : Continuous f) :
+theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
     (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
     (closure_mono <| image_subset _ subset_closure)
 
-theorem closure_subset_preimage_closure_image {s : Set X} (h : Continuous f) :
+theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by
   rw [← Set.image_subset_iff]
   exact image_closure_subset_closure_image h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
-theorem map_mem_closure {s : Set X} {t : Set Y} (hf : Continuous f)
+theorem map_mem_closure {t : Set Y} (hf : Continuous f)
     (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
   ht.closure hf hx
 #align map_mem_closure map_mem_closure
 
 /-- If a continuous map `f` maps `s` to a closed set `t`, then it maps `closure s` to `t`. -/
-theorem Set.MapsTo.closure_left {s : Set X} {t : Set Y} (h : MapsTo f s t)
+theorem Set.MapsTo.closure_left {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) (ht : IsClosed t) : MapsTo f (closure s) t :=
   ht.closure_eq ▸ h.closure hc
 #align set.maps_to.closure_left Set.MapsTo.closure_left
