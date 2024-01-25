@@ -141,7 +141,7 @@ as a natural number. It is defined to be zero if there are infinitely many of th
 Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
 def finSepDegree : ℕ := Nat.card (Emb F E)
 
-instance instNonemptyEmb : Nonempty (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
+instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
 
 instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
   ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
@@ -200,7 +200,7 @@ namespace Field
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every
 element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
-Combined with `Field.instNonemptyEmb`, it can be viewed as a stronger version of
+Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
 def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :

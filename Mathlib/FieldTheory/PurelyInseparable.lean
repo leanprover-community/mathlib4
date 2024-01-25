@@ -100,7 +100,7 @@ separable degree, degree, separable closure, purely inseparable
 
 - `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
   containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
-  injective, then `E / F` is purely inseparable. In other words, epimorphisms in the category of
+  injective, then `E / F` is purely inseparable. As a corollary, epimorphisms in the category of
   fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infinite
   (or just not a singleton) when `E / F` is (purely) transcendental.
 
@@ -456,18 +456,24 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
   simp_rw [map_pow, ← iterate_frobenius] at heq
   exact (frobenius_inj L q).iterate n heq
 
+/-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
+`F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
     [CommRing L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
   allEq f g := AlgHom.coe_ringHom_injective <|
     IsPurelyInseparable.injective_comp_algebraMap F E L (by simp_rw [AlgHom.comp_algebraMap])
 
-instance instSubsingletonEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
-    Subsingleton (Emb F E) := by rw [Emb]; infer_instance
+instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
+    [CommRing L] [IsReduced L] [Algebra F L] [Algebra E L] [IsScalarTower F E L] :
+    Unique (E →ₐ[F] L) := uniqueOfSubsingleton (IsScalarTower.toAlgHom F E L)
+
+/-- If `E / F` is purely inseparable, then `Field.Emb F E` has exactly one element. -/
+instance instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
+    Unique (Emb F E) := instUniqueAlgHomOfIsPurelyInseparable F E _
 
 /-- A purely inseparable extension has finite separable degree one. -/
 theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
-    finSepDegree F E = 1 := by
-  rw [finSepDegree, Nat.card_eq_one_iff_unique]; constructor <;> infer_instance
+    finSepDegree F E = 1 := Nat.card_unique
 
 -- TODO: remove `halg` assumption
 /-- An algebraic extension is purely inseparable if and only if it has finite separable
@@ -547,7 +553,7 @@ theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
 set_option linter.unusedVariables false in
 /-- If `L` is an algebraically closed field containing `E`, such that the map
 `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
-purely inseparable. In other words, epimorphisms in the category of fields must be
+purely inseparable. As a corollary, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
 proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
     (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
