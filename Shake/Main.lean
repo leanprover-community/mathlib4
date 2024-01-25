@@ -248,7 +248,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
             toFixArr := toFixArr.push j
         edits := toFixArr.foldl (init := edits) fun edits n =>
           edits.add s.modNames[n]! r.toNat
-        println! "  fix {s.modNames[r]!}: {toFixArr.map (s.modNames[·]!)}"
+        println! "  instead import {s.modNames[r]!} in: {toFixArr.map (s.modNames[·]!)}"
   return edits
 
 /-- Convert a list of module names to a bitset of module indexes -/
@@ -361,6 +361,9 @@ def main (args : List String) : IO Unit := do
   if args.downstream then
     s := { s with needs := needs.map (·.get!.get) }
 
+  if args.fix then
+    println!"The following changes will be made automatically:"
+
   -- Check all selected modules
   let mut edits : Edits := mkHashMap
   for i in [0:s.mods.size], t in needs do
@@ -454,3 +457,7 @@ def main (args : List String) : IO Unit := do
       out := out ++ text.extract insertion text.endPos
 
       IO.FS.writeFile path out
+
+  -- Since we throw an error upon encountering issues, we can be sure that everything worked
+  -- if we reach this point of the script.
+  println!"All suggestions applied successfully."
