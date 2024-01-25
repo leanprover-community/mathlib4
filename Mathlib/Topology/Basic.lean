@@ -1621,21 +1621,22 @@ set_option quotPrecheck false in
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
-    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+variable {f : X → Y} {x : X}
+
+theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 
-theorem IsOpen.preimage {f : X → Y} (hf : Continuous f) {s : Set Y} (h : IsOpen s) :
+theorem IsOpen.preimage (hf : Continuous f) {s : Set Y} (h : IsOpen s) :
     IsOpen (f ⁻¹' s) :=
   hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
-theorem continuous_congr {f g : X → Y} (h : ∀ x, f x = g x) :
+theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
     Continuous f ↔ Continuous g :=
   .of_eq <| congrArg _ <| funext h
 
-theorem Continuous.congr {f g : X → Y} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g :=
+theorem Continuous.congr {g : X → Y} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g :=
   continuous_congr h' |>.mp h
 #align continuous.congr Continuous.congr
 
@@ -1645,26 +1646,26 @@ def ContinuousAt (f : X → Y) (x : X) :=
   Tendsto f (𝓝 x) (𝓝 (f x))
 #align continuous_at ContinuousAt
 
-theorem ContinuousAt.tendsto {f : X → Y} {x : X} (h : ContinuousAt f x) :
+theorem ContinuousAt.tendsto (h : ContinuousAt f x) :
     Tendsto f (𝓝 x) (𝓝 (f x)) :=
   h
 #align continuous_at.tendsto ContinuousAt.tendsto
 
-theorem continuousAt_def {f : X → Y} {x : X} : ContinuousAt f x ↔ ∀ A ∈ 𝓝 (f x), f ⁻¹' A ∈ 𝓝 x :=
+theorem continuousAt_def : ContinuousAt f x ↔ ∀ A ∈ 𝓝 (f x), f ⁻¹' A ∈ 𝓝 x :=
   Iff.rfl
 #align continuous_at_def continuousAt_def
 
-theorem continuousAt_congr {f g : X → Y} {x : X} (h : f =ᶠ[𝓝 x] g) :
+theorem continuousAt_congr {g : X → Y} (h : f =ᶠ[𝓝 x] g) :
     ContinuousAt f x ↔ ContinuousAt g x := by
   simp only [ContinuousAt, tendsto_congr' h, h.eq_of_nhds]
 #align continuous_at_congr continuousAt_congr
 
-theorem ContinuousAt.congr {f g : X → Y} {x : X} (hf : ContinuousAt f x) (h : f =ᶠ[𝓝 x] g) :
+theorem ContinuousAt.congr {g : X → Y} (hf : ContinuousAt f x) (h : f =ᶠ[𝓝 x] g) :
     ContinuousAt g x :=
   (continuousAt_congr h).1 hf
 #align continuous_at.congr ContinuousAt.congr
 
-theorem ContinuousAt.preimage_mem_nhds {f : X → Y} {x : X} {t : Set Y} (h : ContinuousAt f x)
+theorem ContinuousAt.preimage_mem_nhds {t : Set Y} (h : ContinuousAt f x)
     (ht : t ∈ 𝓝 (f x)) : f ⁻¹' t ∈ 𝓝 x :=
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
@@ -1678,13 +1679,13 @@ theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : X} {f : X → M₀} :
   simp only [Pi.zero_apply]
 #align eventually_eq_zero_nhds eventuallyEq_zero_nhds
 
-theorem ClusterPt.map {x : X} {la : Filter X} {lb : Filter Y} (H : ClusterPt x la) {f : X → Y}
+theorem ClusterPt.map {la : Filter X} {lb : Filter Y} (H : ClusterPt x la)
     (hfc : ContinuousAt f x) (hf : Tendsto f la lb) : ClusterPt (f x) lb :=
   (NeBot.map H f).mono <| hfc.tendsto.inf hf
 #align cluster_pt.map ClusterPt.map
 
 /-- See also `interior_preimage_subset_preimage_interior`. -/
-theorem preimage_interior_subset_interior_preimage {f : X → Y} {s : Set Y} (hf : Continuous f) :
+theorem preimage_interior_subset_interior_preimage {s : Set Y} (hf : Continuous f) :
     f ⁻¹' interior s ⊆ interior (f ⁻¹' s) :=
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 #align preimage_interior_subset_interior_preimage preimage_interior_subset_interior_preimage
@@ -1698,52 +1699,52 @@ theorem continuous_id : Continuous (id : X → X) :=
 @[continuity]
 theorem continuous_id' : Continuous (fun (x : X) => x) := continuous_id
 
-theorem Continuous.comp {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
+theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (g ∘ f) :=
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf
 #align continuous.comp Continuous.comp
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
 @[continuity]
-theorem Continuous.comp' {g : Y → Z} {f : X → Y} (hg : Continuous g) (hf : Continuous f) :
+theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
 #align continuous.iterate Continuous.iterate
 
-nonrec theorem ContinuousAt.comp {g : Y → Z} {f : X → Y} {x : X} (hg : ContinuousAt g (f x))
+nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (g ∘ f) x :=
   hg.comp hf
 #align continuous_at.comp ContinuousAt.comp
 
 /-- See note [comp_of_eq lemmas] -/
-theorem ContinuousAt.comp_of_eq {g : Y → Z} {f : X → Y} {x : X} {y : Y} (hg : ContinuousAt g y)
+theorem ContinuousAt.comp_of_eq {g : Y → Z} {y : Y} (hg : ContinuousAt g y)
     (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
 #align continuous_at.comp_of_eq ContinuousAt.comp_of_eq
 
-theorem Continuous.tendsto {f : X → Y} (hf : Continuous f) (x) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
+theorem Continuous.tendsto (hf : Continuous f) (x) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   ((nhds_basis_opens x).tendsto_iff <| nhds_basis_opens <| f x).2 fun t ⟨hxt, ht⟩ =>
     ⟨f ⁻¹' t, ⟨hxt, ht.preimage hf⟩, Subset.rfl⟩
 #align continuous.tendsto Continuous.tendsto
 
 /-- A version of `Continuous.tendsto` that allows one to specify a simpler form of the limit.
 E.g., one can write `continuous_exp.tendsto' 0 1 exp_zero`. -/
-theorem Continuous.tendsto' {f : X → Y} (hf : Continuous f) (x : X) (y : Y) (h : f x = y) :
+theorem Continuous.tendsto' (hf : Continuous f) (x : X) (y : Y) (h : f x = y) :
     Tendsto f (𝓝 x) (𝓝 y) :=
   h ▸ hf.tendsto x
 #align continuous.tendsto' Continuous.tendsto'
 
-theorem Continuous.continuousAt {f : X → Y} {x : X} (h : Continuous f) : ContinuousAt f x :=
+theorem Continuous.continuousAt (h : Continuous f) : ContinuousAt f x :=
   h.tendsto x
 #align continuous.continuous_at Continuous.continuousAt
 
-theorem continuous_iff_continuousAt {f : X → Y} : Continuous f ↔ ∀ x, ContinuousAt f x :=
+theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :=
   ⟨Continuous.tendsto, fun hf => continuous_def.2 fun _U hU => isOpen_iff_mem_nhds.2 fun x hx =>
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
-theorem continuousAt_const {x : X} {b : Y} : ContinuousAt (fun _ : X => b) x :=
+theorem continuousAt_const {b : Y} : ContinuousAt (fun _ : X => b) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
@@ -1752,96 +1753,96 @@ theorem continuous_const {b : Y} : Continuous fun _ : X => b :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
 
-theorem Filter.EventuallyEq.continuousAt {x : X} {f : X → Y} {y : Y} (h : f =ᶠ[𝓝 x] fun _ => y) :
+theorem Filter.EventuallyEq.continuousAt {y : Y} (h : f =ᶠ[𝓝 x] fun _ => y) :
     ContinuousAt f x :=
   (continuousAt_congr h).2 tendsto_const_nhds
 #align filter.eventually_eq.continuous_at Filter.EventuallyEq.continuousAt
 
-theorem continuous_of_const {f : X → Y} (h : ∀ x y, f x = f y) : Continuous f :=
+theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
     Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
 #align continuous_of_const continuous_of_const
 
-theorem continuousAt_id {x : X} : ContinuousAt id x :=
+theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
 #align continuous_at_id continuousAt_id
 
-theorem ContinuousAt.iterate {f : X → X} {x : X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
+theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
     ContinuousAt f^[n] x :=
   Nat.recOn n continuousAt_id fun n ihn =>
     show ContinuousAt (f^[n] ∘ f) x from ContinuousAt.comp (hx.symm ▸ ihn) hf
 #align continuous_at.iterate ContinuousAt.iterate
 
-theorem continuous_iff_isClosed {f : X → Y} : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=
+theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=
   continuous_def.trans <| compl_surjective.forall.trans <| by
     simp only [isOpen_compl_iff, preimage_compl]
 #align continuous_iff_is_closed continuous_iff_isClosed
 
-theorem IsClosed.preimage {f : X → Y} (hf : Continuous f) {s : Set Y} (h : IsClosed s) :
+theorem IsClosed.preimage (hf : Continuous f) {s : Set Y} (h : IsClosed s) :
     IsClosed (f ⁻¹' s) :=
   continuous_iff_isClosed.mp hf s h
 #align is_closed.preimage IsClosed.preimage
 
-theorem mem_closure_image {f : X → Y} {x : X} {s : Set X} (hf : ContinuousAt f x)
+theorem mem_closure_image {s : Set X} (hf : ContinuousAt f x)
     (hx : x ∈ closure s) : f x ∈ closure (f '' s) :=
   mem_closure_of_frequently_of_tendsto
     ((mem_closure_iff_frequently.1 hx).mono fun _ => mem_image_of_mem _) hf
 #align mem_closure_image mem_closure_image
 
-theorem continuousAt_iff_ultrafilter {f : X → Y} {x} :
+theorem continuousAt_iff_ultrafilter :
     ContinuousAt f x ↔ ∀ g : Ultrafilter X, ↑g ≤ 𝓝 x → Tendsto f g (𝓝 (f x)) :=
   tendsto_iff_ultrafilter f (𝓝 x) (𝓝 (f x))
 #align continuous_at_iff_ultrafilter continuousAt_iff_ultrafilter
 
-theorem continuous_iff_ultrafilter {f : X → Y} :
+theorem continuous_iff_ultrafilter :
     Continuous f ↔ ∀ (x) (g : Ultrafilter X), ↑g ≤ 𝓝 x → Tendsto f g (𝓝 (f x)) := by
   simp only [continuous_iff_continuousAt, continuousAt_iff_ultrafilter]
 #align continuous_iff_ultrafilter continuous_iff_ultrafilter
 
-theorem Continuous.closure_preimage_subset {f : X → Y} (hf : Continuous f) (t : Set Y) :
+theorem Continuous.closure_preimage_subset (hf : Continuous f) (t : Set Y) :
     closure (f ⁻¹' t) ⊆ f ⁻¹' closure t := by
   rw [← (isClosed_closure.preimage hf).closure_eq]
   exact closure_mono (preimage_mono subset_closure)
 #align continuous.closure_preimage_subset Continuous.closure_preimage_subset
 
-theorem Continuous.frontier_preimage_subset {f : X → Y} (hf : Continuous f) (t : Set Y) :
+theorem Continuous.frontier_preimage_subset (hf : Continuous f) (t : Set Y) :
     frontier (f ⁻¹' t) ⊆ f ⁻¹' frontier t :=
   diff_subset_diff (hf.closure_preimage_subset t) (preimage_interior_subset_interior_preimage hf)
 #align continuous.frontier_preimage_subset Continuous.frontier_preimage_subset
 
 /-- If a continuous map `f` maps `s` to `t`, then it maps `closure s` to `closure t`. -/
-protected theorem Set.MapsTo.closure {s : Set X} {t : Set Y} {f : X → Y} (h : MapsTo f s t)
+protected theorem Set.MapsTo.closure {s : Set X} {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) : MapsTo f (closure s) (closure t) := by
   simp only [MapsTo, mem_closure_iff_clusterPt]
   exact fun x hx => hx.map hc.continuousAt (tendsto_principal_principal.2 h)
 #align set.maps_to.closure Set.MapsTo.closure
 
 /-- See also `IsClosedMap.closure_image_eq_of_continuous`. -/
-theorem image_closure_subset_closure_image {f : X → Y} {s : Set X} (h : Continuous f) :
+theorem image_closure_subset_closure_image {s : Set X} (h : Continuous f) :
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
 -- porting note: new lemma
-theorem closure_image_closure {f : X → Y} {s : Set X} (h : Continuous f) :
+theorem closure_image_closure {s : Set X} (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
     (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
     (closure_mono <| image_subset _ subset_closure)
 
-theorem closure_subset_preimage_closure_image {f : X → Y} {s : Set X} (h : Continuous f) :
+theorem closure_subset_preimage_closure_image {s : Set X} (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by
   rw [← Set.image_subset_iff]
   exact image_closure_subset_closure_image h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
-theorem map_mem_closure {s : Set X} {t : Set Y} {f : X → Y} {a : X} (hf : Continuous f)
+theorem map_mem_closure {s : Set X} {t : Set Y} {a : X} (hf : Continuous f)
     (ha : a ∈ closure s) (ht : MapsTo f s t) : f a ∈ closure t :=
   ht.closure hf ha
 #align map_mem_closure map_mem_closure
 
 /-- If a continuous map `f` maps `s` to a closed set `t`, then it maps `closure s` to `t`. -/
-theorem Set.MapsTo.closure_left {s : Set X} {t : Set Y} {f : X → Y} (h : MapsTo f s t)
+theorem Set.MapsTo.closure_left {s : Set X} {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) (ht : IsClosed t) : MapsTo f (closure s) t :=
   ht.closure_eq ▸ h.closure hc
 #align set.maps_to.closure_left Set.MapsTo.closure_left
