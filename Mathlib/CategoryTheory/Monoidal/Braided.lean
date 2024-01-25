@@ -40,11 +40,16 @@ which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
 class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
-  -- braiding natural iso:
+  /-- braiding natural isomorphism -/
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
-  braiding_naturality :
-    ∀ {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
-      (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
+  -- Note: `𝟙 X ⊗ f` will be replaced by `X ◁ f` (and similarly for `f ⊗ 𝟙 Z`) in #6307.
+  braiding_naturality_right :
+    ∀ (X : C) {Y Z : C} (f : Y ⟶ Z),
+      (𝟙 X ⊗ f) ≫ (braiding X Z).hom = (braiding X Y).hom ≫ (f ⊗ 𝟙 X) := by
+    aesop_cat
+  braiding_naturality_left :
+    ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
+      (f ⊗ 𝟙 Z) ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ (𝟙 Z ⊗ f) := by
     aesop_cat
   -- hexagon identities:
   hexagon_forward :
@@ -59,7 +64,9 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
     aesop_cat
 #align category_theory.braided_category CategoryTheory.BraidedCategory
 
-attribute [reassoc (attr := simp)] BraidedCategory.braiding_naturality
+attribute [reassoc (attr := simp)]
+  BraidedCategory.braiding_naturality_left
+  BraidedCategory.braiding_naturality_right
 attribute [reassoc] BraidedCategory.hexagon_forward BraidedCategory.hexagon_reverse
 
 open Category
@@ -68,7 +75,54 @@ open MonoidalCategory
 
 open BraidedCategory
 
-notation "β_" => braiding
+notation "β_" => BraidedCategory.braiding
+
+namespace BraidedCategory
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
+
+@[simp]
+theorem braiding_tensor_left (X Y Z : C) :
+    (β_ (X ⊗ Y) Z).hom  =
+      (α_ X Y Z).hom ≫ (𝟙 X ⊗ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫
+        ((β_ X Z).hom ⊗ 𝟙 Y) ≫ (α_ Z X Y).hom := by
+  intros
+  apply (cancel_epi (α_ X Y Z).inv).1
+  apply (cancel_mono (α_ Z X Y).inv).1
+  simp [hexagon_reverse]
+
+@[simp]
+theorem braiding_tensor_right (X Y Z : C) :
+    (β_ X (Y ⊗ Z)).hom  =
+      (α_ X Y Z).inv ≫ ((β_ X Y).hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).hom ≫
+        (𝟙 Y ⊗ (β_ X Z).hom) ≫ (α_ Y Z X).inv := by
+  intros
+  apply (cancel_epi (α_ X Y Z).hom).1
+  apply (cancel_mono (α_ Y Z X).hom).1
+  simp [hexagon_forward]
+
+@[simp]
+theorem braiding_inv_tensor_left (X Y Z : C) :
+    (β_ (X ⊗ Y) Z).inv  =
+      (α_ Z X Y).inv ≫ ((β_ X Z).inv ⊗ 𝟙 Y) ≫ (α_ X Z Y).hom ≫
+        (𝟙 X ⊗ (β_ Y Z).inv) ≫ (α_ X Y Z).inv :=
+  eq_of_inv_eq_inv (by simp)
+
+@[simp]
+theorem braiding_inv_tensor_right (X Y Z : C) :
+    (β_ X (Y ⊗ Z)).inv  =
+      (α_ Y Z X).hom ≫ (𝟙 Y ⊗ (β_ X Z).inv) ≫ (α_ Y X Z).inv ≫
+        ((β_ X Y).inv ⊗ 𝟙 Z) ≫ (α_ X Y Z).hom :=
+  eq_of_inv_eq_inv (by simp)
+
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+@[reassoc (attr := simp (low))]
+theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
+  rw [← tensor_id_comp_id_tensor f g, ← id_tensor_comp_tensor_id g f]
+  simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
+
+end BraidedCategory
 
 /--
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
@@ -79,12 +133,18 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
     (w : ∀ X Y, F.μ _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ F.μ _ _) : BraidedCategory C where
   braiding := β
-  braiding_naturality := by
+  braiding_naturality_left := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_assoc, w, Functor.map_comp, reassoc_of% w,
-      braiding_naturality_assoc, LaxMonoidalFunctor.μ_natural]
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
+  braiding_naturality_right := by
+    intros
+    apply F.map_injective
+    refine (cancel_epi (F.μ ?_ ?_)).1 ?_
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
   hexagon_forward := by
     intros
     apply F.map_injective
