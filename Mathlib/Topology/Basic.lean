@@ -1858,7 +1858,7 @@ variable {α ι : Type*} (f : α → X) (g : X → Y)
 def DenseRange := Dense (range f)
 #align dense_range DenseRange
 
-variable {f}
+variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/
 theorem Function.Surjective.denseRange (hf : Function.Surjective f) : DenseRange f := fun x => by
@@ -1877,33 +1877,33 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 #align dense_range.closure_range DenseRange.closure_range
 
-theorem Dense.denseRange_val {s : Set X} (h : Dense s) : DenseRange ((↑) : s → X) := by
+theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) := by
   simpa only [DenseRange, Subtype.range_coe_subtype]
 #align dense.dense_range_coe Dense.denseRange_val
 
-theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f) {s : Set X}
+theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)
     (hs : Dense s) : range f ⊆ closure (f '' s) := by
   rw [← image_univ, ← hs.closure_eq]
   exact image_closure_subset_closure_image hf
 #align continuous.range_subset_closure_image_dense Continuous.range_subset_closure_image_dense
 
 /-- The image of a dense set under a continuous map with dense range is a dense set. -/
-theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuous f) {s : Set X}
+theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuous f)
     (hs : Dense s) : Dense (f '' s) :=
   (hf'.mono <| hf.range_subset_closure_image_dense hs).of_closure
 #align dense_range.dense_image DenseRange.dense_image
 
 /-- If `f` has dense range and `s` is an open set in the codomain of `f`, then the image of the
 preimage of `s` under `f` is dense in `s`. -/
-theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) {s : Set X}
-    (hs : IsOpen s) : s ⊆ closure (f '' (f ⁻¹' s)) := by
+theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) (hs : IsOpen s) :
+    s ⊆ closure (f '' (f ⁻¹' s)) := by
   rw [image_preimage_eq_inter_range]
   exact hf.open_subset_closure_inter hs
 #align dense_range.subset_closure_image_preimage_of_is_open DenseRange.subset_closure_image_preimage_of_isOpen
 
 /-- If a continuous map with dense range maps a dense set to a subset of `t`, then `t` is a dense
 set. -/
-theorem DenseRange.dense_of_mapsTo {f : X → Y} (hf' : DenseRange f) (hf : Continuous f) {s : Set X}
+theorem DenseRange.dense_of_mapsTo {f : X → Y} (hf' : DenseRange f) (hf : Continuous f)
     (hs : Dense s) {t : Set Y} (ht : MapsTo f s t) : Dense t :=
   (hf'.dense_image hf hs).mono ht.image_subset
 #align dense_range.dense_of_maps_to DenseRange.dense_of_mapsTo
@@ -1929,14 +1929,14 @@ def DenseRange.some (hf : DenseRange f) (b : X) : α :=
   Classical.choice <| hf.nonempty_iff.mpr ⟨b⟩
 #align dense_range.some DenseRange.some
 
-nonrec theorem DenseRange.exists_mem_open (hf : DenseRange f) {s : Set X} (ho : IsOpen s)
-    (hs : s.Nonempty) : ∃ a, f a ∈ s :=
+nonrec theorem DenseRange.exists_mem_open (hf : DenseRange f) (ho : IsOpen s) (hs : s.Nonempty) :
+    ∃ a, f a ∈ s :=
   exists_range_iff.1 <| hf.exists_mem_open ho hs
 #align dense_range.exists_mem_open DenseRange.exists_mem_open
 
-theorem DenseRange.mem_nhds (h : DenseRange f) {b : X} {U : Set X} (U_in : U ∈ 𝓝 b) :
-    ∃ a, f a ∈ U :=
-  let ⟨a, ha⟩ := h.exists_mem_open isOpen_interior ⟨b, mem_interior_iff_mem_nhds.2 U_in⟩
+theorem DenseRange.mem_nhds (h : DenseRange f) {x : X} (hs : s ∈ 𝓝 x) :
+    ∃ a, f a ∈ s :=
+  let ⟨a, ha⟩ := h.exists_mem_open isOpen_interior ⟨x, mem_interior_iff_mem_nhds.2 hs⟩
   ⟨a, interior_subset ha⟩
 #align dense_range.mem_nhds DenseRange.mem_nhds
 
