@@ -49,7 +49,6 @@ attribute [reassoc] Mon_.one_mul Mon_.mul_one
 
 attribute [simp] Mon_.one_mul Mon_.mul_one
 
-
 -- We prove a more general `@[simp]` lemma below.
 attribute [reassoc (attr := simp)] Mon_.mul_assoc
 
