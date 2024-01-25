@@ -25,7 +25,7 @@ structure FPropDecl where
   /-- argument index of a function this function property talks about. For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
   /-- Custom discharger for this function property. -/
-  dischargeStx? : Option Syntax
+  dischargeStx? : Option (TSyntax `tactic)
   deriving Inhabited, BEq
 
 /-- -/
@@ -46,7 +46,7 @@ initialize fpropDeclsExt : FPropDeclsExt ←
   }
 
 /-- -/
-def addFPropDecl (declName : Name) (dischargeStx? : Option Syntax) : MetaM Unit := do
+def addFPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -119,9 +119,9 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
 
 open Elab Term in
 /-- -/
-def tacticToDischarge (tacticCode : Syntax) : Expr → MetaM (Option Expr) := fun e =>
+def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
-    let mvar ← mkFreshExprSyntheticOpaqueMVar e `simp.discharger
+    let mvar ← mkFreshExprSyntheticOpaqueMVar e `fprop.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
         /- We must only save messages and info tree changes. Recall that `simp` uses temporary metavariables (`withNewMCtxDepth`).

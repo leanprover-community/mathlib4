@@ -19,13 +19,14 @@ syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
 def fpropTac : Tactic 
 | `(tactic| fprop $[$d]?) => do
 
-  let disch : Expr → MetaM (Option Expr) := 
+  -- this is ugly - is there a better way of writing this?
+  let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
     match d with
-    | none => fun _ => pure none
+    | none => pure <| fun _ => pure none
     | some d => 
       match d with
-      | `(discharger| (discharger:=$tac)) => tacticToDischarge tac
-      | _ => fun _ => pure none
+      | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
+      | _ => pure <| fun _ => pure none
 
   let goal ← getMainGoal
   goal.withContext do
