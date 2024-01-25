@@ -570,6 +570,10 @@ theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
 
+theorem isNNRat_eq_true [Semiring α] : {a b : α} → {n : ℕ} → {d : ℕ} →
+    IsNNRat a n d → IsNNRat b n d → a = b
+  | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
+
 theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
     IsRat a n d → IsRat b n d → a = b
   | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim

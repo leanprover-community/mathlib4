@@ -199,7 +199,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       have ⟨nc, r1⟩ := evalNatPow na nb
       have ⟨dc, r2⟩ := evalNatPow da nb
-      let qc := ⟨mkRat nc.natLit! dc.natLit!, by sorry⟩
+      let qc := ⟨mkRat nc.natLit! dc.natLit!, by rw [Rat.mkRat_eq]; sorry⟩
       return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
     | .isNegNNRat dα qa na da pa =>
       assumeInstancesCommute
@@ -229,6 +229,18 @@ theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne 
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
 
+theorem isNNRat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℕ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsNNRat (a^nb) num den) :
+    IsNNRat (a^b) num den := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isNNRat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℕ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat ((a^nb)⁻¹) num den) :
+    IsNNRat (a^b) num den := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
 theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
@@ -251,7 +263,7 @@ def evalZPow : NormNumExt where eval {u α} e := do
   have h : $e =Q $a ^ $b := ⟨⟩
   h.check
   match rb with
-  | .isBool .. | .isRat _ .. => failure
+  | .isBool .. | .isNNRat _ .. | .isNegNNRat _ .. => failure
   | .isNat sβ nb pb =>
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
@@ -262,9 +274,13 @@ def evalZPow : NormNumExt where eval {u α} e := do
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
+    | .isNNRat dsα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
+      return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_pos $pb $pe')
+    | .isNegNNRat dα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      let proof := q(isRat_zpow_pos $pb $pe')
+      return .isRat dα' qe' nume' dene' proof
   | .isNegNat sβ nb pb =>
     match ← derive q(($a ^ $nb)⁻¹) with
     | .isBool .. => failure
@@ -275,6 +291,10 @@ def evalZPow : NormNumExt where eval {u α} e := do
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
+    | .isNNRat dsα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
+      return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_neg $pb $pe')
+    | .isNegNNRat dα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      let proof := q(isRat_zpow_neg $pb $pe')
+      return .isRat dα' qe' nume' dene' proof

@@ -47,6 +47,12 @@ def inferCharZeroOfDivisionRing {α : Q(Type u)}
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
     throwError "not a characteristic zero division ring"
 
+/-- Helper function to synthesize a typed `CharZero α` expression given `Divisionsemiring α`, if it
+exists. -/
+def inferCharZeroOfDivisionSemiring? {α : Q(Type u)}
+    (_i : Q(DivisionSemiring $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
+  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}

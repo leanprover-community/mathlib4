@@ -25,10 +25,10 @@ def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
     throwError "does not support scientific notation"
 
 -- see note [norm_num lemma function equality]
-theorem isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
-    {m e : ℕ} → {n : ℤ} → {d : ℕ} →
+theorem isNNRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
+    {m e : ℕ} → {n : ℕ} → {d : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
-    IsRat (mkRat m (10 ^ e) : α) n d → IsRat (@OfScientific.ofScientific α σα m true e) n d
+    IsNNRat (mkRat m (10 ^ e) : α) n d → IsNNRat (@OfScientific.ofScientific α σα m true e) n d
   | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by simp only [σh, Rat.ofScientific_true_def]; exact eq⟩
 
 -- see note [norm_num lemma function equality]
@@ -52,8 +52,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   match b with
   | ~q(true) =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
-    let some ⟨q, n, d, p⟩ := rme.toRat' dα | failure
-    return .isRat dα q n d q(isRat_ofScientific_of_true $σα $lh $p)
+    let some ⟨q, n, d, p⟩ := rme.toNNRat' q(DivisionRing.toDivisionSemiring) | failure
+    return .isNNRat q(DivisionRing.toDivisionSemiring) q n d q(isNNRat_ofScientific_of_true $σα $lh $p)
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)
