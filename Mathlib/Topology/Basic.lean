@@ -896,12 +896,12 @@ theorem nhds_basis_closeds (a : X) : (𝓝 a).HasBasis (fun s : Set X => a ∉ s
 #align nhds_basis_closeds nhds_basis_closeds
 
 /-- A filter lies below the neighborhood filter at `a` iff it contains every open set around `a`. -/
-theorem le_nhds_iff {f a} : f ≤ 𝓝 a ↔ ∀ s : Set X, a ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
+theorem le_nhds_iff {f} : f ≤ 𝓝 a ↔ ∀ s : Set X, a ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
 #align le_nhds_iff le_nhds_iff
 
 /-- To show a filter is above the neighborhood filter at `a`, it suffices to show that it is above
 the principal filter of some open set `s` containing `a`. -/
-theorem nhds_le_of_le {f a} (h : a ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : 𝓝 a ≤ f := by
+theorem nhds_le_of_le {f} (h : a ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : 𝓝 a ≤ f := by
   rw [nhds_def]; exact iInf₂_le_of_le s ⟨h, o⟩ sf
 #align nhds_le_of_le nhds_le_of_le
 
@@ -1527,7 +1527,7 @@ theorem mem_closure_of_tendsto {f : α → X} {b : Filter α} [NeBot b]
 
 /-- Suppose that `f` sends the complement to `s` to a single point `a`, and `l` is some filter.
 Then `f` tends to `a` along `l` restricted to `s` if and only if it tends to `a` along `l`. -/
-theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter α} {s : Set α} {a : X}
+theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter α} {s : Set α}
     (h : ∀ x ∉ s, f x = a) : Tendsto f (l ⊓ 𝓟 s) (𝓝 a) ↔ Tendsto f l (𝓝 a) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
   replace h : 𝓟 sᶜ ≤ comap f (𝓝 a)
