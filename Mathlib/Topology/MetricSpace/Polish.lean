@@ -412,7 +412,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by
   rcases hs with ⟨t, t_le, t_polish, h, h'⟩
-  exact ⟨t, t_le, t_polish, @IsOpen.isClosed_compl α s t h', @IsClosed.isOpen_compl α t s h⟩
+  exact ⟨t, t_le, t_polish, @IsOpen.isClosed_compl α t s h', @IsClosed.isOpen_compl α t s h⟩
 #align polish_space.is_clopenable.compl PolishSpace.IsClopenable.compl
 
 theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}

@@ -642,7 +642,7 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
   constructor
   rw [TopologicalSpace.ext_iff]
   intro U
-  rw [← isClosed_compl_iff, ← @isClosed_compl_iff _ U (_)]
+  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (X := PrimeSpectrum S) (s := U)]
   generalize Uᶜ = Z
   simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus]
   constructor
@@ -691,7 +691,7 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
   induced := by
     simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
       ← @isClosed_compl_iff (PrimeSpectrum S)
-        _ ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
+        ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
       isClosed_iff_zeroLocus]
     refine' fun s =>
       ⟨fun ⟨F, hF⟩ =>

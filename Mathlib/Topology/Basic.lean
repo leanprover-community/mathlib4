@@ -237,7 +237,7 @@ theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClo
 #align is_closed_bInter isClosed_biInter
 
 @[simp]
-theorem isClosed_compl_iff : IsClosed sᶜ ↔ IsOpen s := by
+theorem isClosed_compl_iff {s : Set X} : IsClosed sᶜ ↔ IsOpen s := by
   rw [← isOpen_compl_iff, compl_compl]
 #align is_closed_compl_iff isClosed_compl_iff
 
