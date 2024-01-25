@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Rat.NNRat
 import Mathlib.Data.Int.Cast.Basic
 import Qq.MetaM
 
@@ -279,7 +280,7 @@ inductive Result' where
   /-- Untyped version of `Result.isNegNat`. -/
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isNNRat`. -/
-  | isNNRat (inst : Expr) (q : { q : ℚ // 0 ≤ q }) (n d proof : Expr)
+  | isNNRat (inst : Expr) (q : NNRat) (n d proof : Expr)
   /-- Untyped version of `Result.isNegNNRat`. -/
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
@@ -316,7 +317,7 @@ and `proof : isInt x (.negOfNat lit)`. -/
 with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
 and `q` is the value of `n / d`. -/
 @[match_pattern, inline] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
-    ∀ (inst : Q(DivisionSemiring $α) := by assumption) (q : { q : ℚ // 0 ≤ q }) (n : Q(ℕ)) (d : Q(ℕ))
+    ∀ (inst : Q(DivisionSemiring $α) := by assumption) (q : NNRat) (n : Q(ℕ)) (d : Q(ℕ))
       (proof : Q(IsNNRat $x $n $d)), Result x := Result'.isNNRat
 
 /-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
@@ -340,6 +341,19 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
   else
     .isNegNat inst lit proof
 
+/-- The result is `q : NNRat` and `proof : isNNRat x q`. -/
+-- Note the independent arguments `q : Q(ℚ)` and `n : ℚ`.
+-- We ensure these are "the same" when calling.
+def Result.isNNRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionSemiring $α) := by assumption)
+    (q : NNRat) (n : Q(ℕ)) (d : Q(ℕ)) (proof : Q(IsNNRat $x $n $d)) : Result x :=
+  have lit : Q(ℕ) := n.appArg!
+  if q.den = 1 then
+    have proof : Q(IsNNRat $x $n (nat_lit 1)) := proof
+    .isNat q(instAddMonoidWithOne') n q(IsNNRat.to_isNat $proof)
+  else
+    let proof : Q(IsNNRat $x ($lit) $d) := proof
+    .isNNRat inst q lit d proof
+
 /-- The result is `q : ℚ` and `proof : isRat x q`. -/
 -- Note the independent arguments `q : Q(ℚ)` and `n : ℚ`.
 -- We ensure these are "the same" when calling.
@@ -362,7 +376,7 @@ instance : ToMessageData (Result x) where
   | .isBool false proof => m!"isFalse ({proof})"
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
-  | .isNNRat _ q _ _ proof => m!"isNNRat {q} ({proof})"
+  | .isNNRat _ q _ _ proof => m!"isNNRat {q.val} ({proof})"
   | .isNegNNRat _ q _ _ proof => m!"isNegNNRat {q} ({proof})"
 
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
@@ -400,7 +414,7 @@ and the proof that the original expression is equal to this rational number.
 -/
 def Result.toNNRat' {α : Q(Type u)} {e : Q($α)}
     (_i : Q(DivisionSemiring $α) := by with_reducible assumption) :
-    Result e → Option (ℚ × (n : Q(ℕ)) × (d : Q(ℕ)) × Q(IsNNRat $e $n $d))
+    Result e → Option (NNRat × (n : Q(ℕ)) × (d : Q(ℕ)) × Q(IsNNRat $e $n $d))
   | .isNat _ lit proof =>
     have proof : Q(@IsNat _ instAddMonoidWithOne' $e $lit) := proof
     some ⟨lit.natLit!, q($lit), q(nat_lit 1), q(($proof).to_isNNRat)⟩
@@ -471,7 +485,7 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
 /-- Constructs a `Result` out of a raw rat cast.
 Assumes `e` is a raw rat cast expression denoting `n`. -/
 def Result.ofRawNNRat
-    {α : Q(Type u)} (q : {q : ℚ // 0 ≤ q}) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
+    {α : Q(Type u)} (q : NNRat) (e : Q($α)) (hyp : Option Expr := none) : Result e :=
   if q.val.den = 1 then
     Result.ofRawInt q.val.num e
   else Id.run do
