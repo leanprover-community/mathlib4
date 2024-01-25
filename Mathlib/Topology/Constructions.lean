@@ -39,7 +39,7 @@ open Topology TopologicalSpace Set Filter Function Classical
 
 universe u v
 
-variable {X : Type u} {Y : Type v} {Z δ ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
 section Constructions
 
@@ -314,7 +314,7 @@ end Constructions
 
 section Prod
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
 -- porting note: todo: Lean 4 fails to deduce implicit args
@@ -417,30 +417,30 @@ theorem Continuous.Prod.mk_left (b : Y) : Continuous fun a : X => (a, b) :=
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
-lemma IsClosed.setOf_mapsTo {f : X → Y → Z} {s : Set Y} {t : Set Z} (ht : IsClosed t)
-    (hf : ∀ y ∈ s, Continuous (f · y)) : IsClosed {x | MapsTo (f x) s t} := by
+lemma IsClosed.setOf_mapsTo {α : Type*} {f : X → α → Z} {s : Set α} {t : Set Z} (ht : IsClosed t)
+    (hf : ∀ a ∈ s, Continuous (f · a)) : IsClosed {x | MapsTo (f x) s t} := by
   simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
-theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : δ → X} (he : Continuous e)
-    {f : δ → Y} (hf : Continuous f) : Continuous fun x => g (e x, f x) :=
+theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : W → X} (he : Continuous e)
+    {f : W → Y} (hf : Continuous f) : Continuous fun w => g (e w, f w) :=
   hg.comp <| he.prod_mk hf
 #align continuous.comp₂ Continuous.comp₂
 
-theorem Continuous.comp₃ {g : X × Y × Z → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
-    {f : δ → Y} (hf : Continuous f) {k : δ → Z} (hk : Continuous k) :
-    Continuous fun x => g (e x, f x, k x) :=
+theorem Continuous.comp₃ {g : X × Y × Z → ε} (hg : Continuous g) {e : W → X} (he : Continuous e)
+    {f : W → Y} (hf : Continuous f) {k : W → Z} (hk : Continuous k) :
+    Continuous fun w => g (e w, f w, k w) :=
   hg.comp₂ he <| hf.prod_mk hk
 #align continuous.comp₃ Continuous.comp₃
 
-theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e : δ → X} (he : Continuous e)
-    {f : δ → Y} (hf : Continuous f) {k : δ → Z} (hk : Continuous k) {l : δ → ζ}
-    (hl : Continuous l) : Continuous fun x => g (e x, f x, k x, l x) :=
+theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e : W → X} (he : Continuous e)
+    {f : W → Y} (hf : Continuous f) {k : W → Z} (hk : Continuous k) {l : W → ζ}
+    (hl : Continuous l) : Continuous fun w => g (e w, f w, k w, l w) :=
   hg.comp₃ he hf <| hk.prod_mk hl
 #align continuous.comp₄ Continuous.comp₄
 
 @[continuity]
-theorem Continuous.prod_map {f : Z → X} {g : δ → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x : Z × δ => (f x.1, g x.2) :=
+theorem Continuous.prod_map {f : Z → X} {g : W → Y} (hf : Continuous f) (hg : Continuous g) :
+    Continuous fun a : Z × W => (f a.1, g a.2) :=
   hf.fst'.prod_mk hg.snd'
 #align continuous.prod_map Continuous.prod_map
 
@@ -611,12 +611,12 @@ theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt
   hf.prod_mk_nhds hg
 #align continuous_at.prod ContinuousAt.prod
 
-theorem ContinuousAt.prod_map {f : X → Z} {g : Y → δ} {p : X × Y} (hf : ContinuousAt f p.fst)
+theorem ContinuousAt.prod_map {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
     (hg : ContinuousAt g p.snd) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) p :=
   hf.fst''.prod hg.snd''
 #align continuous_at.prod_map ContinuousAt.prod_map
 
-theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → δ} {x : X} {y : Y} (hf : ContinuousAt f x)
+theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : ContinuousAt f x)
     (hg : ContinuousAt g y) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) (x, y) :=
   hf.fst'.prod hg.snd'
 #align continuous_at.prod_map' ContinuousAt.prod_map'
@@ -674,7 +674,7 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
 #align is_open_prod_iff isOpen_prod_iff
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : X → Y) (g : Z → δ) :
+theorem prod_induced_induced (f : X → Y) (g : Z → W) :
     @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
@@ -806,9 +806,9 @@ theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ →
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 #align dense_range.prod_map DenseRange.prod_map
 
-theorem Inducing.prod_map {f : X → Y} {g : Z → δ} (hf : Inducing f) (hg : Inducing g) :
+theorem Inducing.prod_map {f : X → Y} {g : Z → W} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
-  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
+  inducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
@@ -824,13 +824,13 @@ theorem inducing_prod_const {b : Y} {f : X → Z} : (Inducing fun x => (f x, b))
     induced_const, inf_top_eq]
 #align inducing_prod_const inducing_prod_const
 
-theorem Embedding.prod_map {f : X → Y} {g : Z → δ} (hf : Embedding f) (hg : Embedding g) :
+theorem Embedding.prod_map {f : X → Y} {g : Z → W} (hf : Embedding f) (hg : Embedding g) :
     Embedding (Prod.map f g) :=
   { hf.toInducing.prod_map hg.toInducing with
-    inj := fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
+    inj := fun ⟨x₁, z₁⟩ ⟨x₂, z₂⟩ => by simp [hf.inj.eq_iff, hg.inj.eq_iff] }
 #align embedding.prod_mk Embedding.prod_map
 
-protected theorem IsOpenMap.prod {f : X → Y} {g : Z → δ} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+protected theorem IsOpenMap.prod {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap fun p : X × Z => (f p.1, g p.2) := by
   rw [isOpenMap_iff_nhds_le]
   rintro ⟨a, b⟩
@@ -838,7 +838,7 @@ protected theorem IsOpenMap.prod {f : X → Y} {g : Z → δ} (hf : IsOpenMap f)
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 #align is_open_map.prod IsOpenMap.prod
 
-protected theorem OpenEmbedding.prod {f : X → Y} {g : Z → δ} (hf : OpenEmbedding f)
+protected theorem OpenEmbedding.prod {f : X → Y} {g : Z → W} (hf : OpenEmbedding f)
     (hg : OpenEmbedding g) : OpenEmbedding fun x : X × Z => (f x.1, g x.2) :=
   openEmbedding_of_embedding_open (hf.1.prod_map hg.1) (hf.isOpenMap.prod hg.isOpenMap)
 #align open_embedding.prod OpenEmbedding.prod
@@ -856,7 +856,7 @@ section Sum
 
 open Sum
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
 
 theorem continuous_sum_dom {f : X ⊕ Y → Z} :
     Continuous f ↔ Continuous (f ∘ Sum.inl) ∧ Continuous (f ∘ Sum.inr) :=
@@ -962,14 +962,14 @@ theorem nhds_inr (x : Y) : 𝓝 (inr x : X ⊕ Y) = map inr (𝓝 x) :=
 #align nhds_inr nhds_inr
 
 @[simp]
-theorem continuous_sum_map {f : X → Y} {g : Z → δ} :
+theorem continuous_sum_map {f : X → Y} {g : Z → W} :
     Continuous (Sum.map f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_elim.trans <|
     embedding_inl.continuous_iff.symm.and embedding_inr.continuous_iff.symm
 #align continuous_sum_map continuous_sum_map
 
 @[continuity]
-theorem Continuous.sum_map {f : X → Y} {g : Z → δ} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sum_map.2 ⟨hf, hg⟩
 #align continuous.sum_map Continuous.sum_map
@@ -1695,14 +1695,14 @@ section Monad
 variable [TopologicalSpace X] {s : Set X} {t : Set s}
 
 theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
-  rcases isOpen_induced_iff.mp ht with ⟨δ, hδ, rfl⟩
+  rcases isOpen_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact IsOpen.inter hδ hs
+  exact hs'.inter hs
 
 theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
-  rcases isClosed_induced_iff.mp ht with ⟨δ, hδ, rfl⟩
+  rcases isClosed_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert IsClosed.inter hδ hs
+  convert hs'.inter hs
 
 end Monad
 
