@@ -628,16 +628,16 @@ theorem of_graded_mul {X G : Type*} [Mul X] [Add G] [IsRightCancelAdd G] [Linear
     by_cases heq : (x, y) = (x', y')
     · rw [Finset.one_lt_card, Finset.one_lt_card] at hAB
       obtain (⟨u, hu, v, hv, hne⟩ | ⟨u, hu, v, hv, hne⟩) := hAB
-      · have hUniqueMul (u hu) : UniqueMul A B u y :=
-          have hl (u hu) := le_antisymm (hx u hu) (congrArg (f ·.1) heq ▸ hx' u hu)
-          fun u' v' hu' _ h => hinj u' v' u y h <| hl u hu ▸ hl u' hu'
+      · have hUniqueMul (t ht) : UniqueMul A B t y :=
+          have hl (w hw) := le_antisymm (hx w hw) (congrArg (f ·.1) heq ▸ hx' w hw)
+          fun u' v' hu' _ h => hinj u' v' t y h <| hl t ht ▸ hl u' hu'
         exact ⟨(u, y), Finset.mk_mem_product hu hyB, (v, y), Finset.mk_mem_product hv hyB,
           fun heq => hne (congrArg Prod.fst heq), hUniqueMul u hu, hUniqueMul v hv⟩
-      · have hUniqueMul (v hv) : UniqueMul A B x v :=
-          have hl (v hv) := le_antisymm (hy v hv) (congrArg (f ·.2) heq ▸ hy' v hv)
-          fun u' v' _ hv' h => hinj u' v' x v h <| add_right_cancel <| by
+      · have hUniqueMul (t ht) : UniqueMul A B x t :=
+          have hl (w hw) := le_antisymm (hy w hw) (congrArg (f ·.2) heq ▸ hy' w hw)
+          fun u' v' _ hv' h => hinj u' v' x t h <| add_right_cancel <| by
             rw [← hf, h, hf]
-            exact congrArg (f x + ·) <| hl v' hv' ▸ hl v hv
+            exact congrArg (f x + ·) <| hl v' hv' ▸ hl t ht
         exact ⟨(x, u), Finset.mk_mem_product hxA hu, (x, v), Finset.mk_mem_product hxA hv,
           fun heq => hne (congrArg Prod.snd heq), hUniqueMul u hu, hUniqueMul v hv⟩
     exact ⟨(x, y), Finset.mk_mem_product hxA hyB, (x', y'), Finset.mk_mem_product hx'A hy'B, heq,
