@@ -97,6 +97,7 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
+    -- The proof will be automated after merging #6307.
     μ_natural_left := fun f X => by
       ext Z
       dsimp
