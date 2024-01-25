@@ -75,7 +75,7 @@ of fields.
 
 - `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
-  In other words, a purely inseparable field extension is an epimorphism in the category of fields.
+  In particular, a purely inseparable field extension is an epimorphism in the category of fields.
 
 - `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
   characteristic `q`, then `F(S) / F` is a purely inseparable extension if and only if for any
@@ -101,13 +101,13 @@ separable degree, degree, separable closure, purely inseparable
 - `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
   containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
   injective, then `E / F` is purely inseparable. In other words, epimorphisms in the category of
-  fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infintie
-  when `E / F` is (purely) transcendental.
+  fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infinite
+  (or just not a singleton) when `E / F` is (purely) transcendental.
 
-- Restate some intermediate result in terms of linearly disjoint.
+- Restate some intermediate result in terms of linearly disjointness.
 
 - Prove that the inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$.
-  Probably linearly disjoint argument is needed.
+  Probably an argument using linearly disjointness is needed.
 
 -/
 
@@ -199,9 +199,8 @@ variable {F E} in
 equal to `F` if and only if `E / F` is purely inseparable. -/
 theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
     separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
-  ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ have hx := (halg x).isIntegral; ⟨hx, fun hs ↦ by
-    simpa only [h] using mem_separableClosure_iff.2 hs⟩,
-      fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
+  ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ⟨(halg x).isIntegral, fun hs ↦ by
+    simpa only [h] using mem_separableClosure_iff.2 hs⟩, fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
   ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
@@ -228,7 +227,7 @@ theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [ExpChar F q] :
 
 theorem IsPurelyInseparable.pow_mem (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] (x : E) :
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range :=
-  (isPurelyInseparable_iff_pow_mem F q).1 (by assumption) x
+  (isPurelyInseparable_iff_pow_mem F q).1 ‹_› x
 
 end IsPurelyInseparable
 
@@ -240,8 +239,6 @@ exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in 
 subextension of `E / F` (`le_perfectClosure_iff`). -/
 def perfectClosure : IntermediateField F E where
   carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
-  zero_mem' := ⟨0, by rw [pow_zero, pow_one]; exact zero_mem _⟩
-  one_mem' := ⟨0, by rw [pow_zero, pow_one]; exact one_mem _⟩
   add_mem' := by
     rintro x y ⟨n, hx⟩ ⟨m, hy⟩
     use n + m
@@ -333,21 +330,15 @@ theorem perfectClosure.eq_comap_of_algHom (i : E →ₐ[F] K) :
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `perfectClosure F K` contains
 the image of `perfectClosure F E` under the map `i`. -/
 theorem perfectClosure.map_le_of_algHom (i : E →ₐ[F] K) :
-    (perfectClosure F E).map i ≤ perfectClosure F K := fun x hx ↦ by
-  change x ∈ (_ : Set K) at hx
-  rw [coe_map, Set.mem_image] at hx
-  obtain ⟨y, hy, rfl⟩ := hx
-  exact (map_mem_perfectClosure_iff i).2 hy
+    (perfectClosure F E).map i ≤ perfectClosure F K :=
+  map_le_iff_le_comap.mpr (perfectClosure.eq_comap_of_algHom i).le
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then `perfectClosure F K` is equal to
 the image of `perfectClosure F E` under the map `i`. -/
 theorem perfectClosure.eq_map_of_algEquiv (i : E ≃ₐ[F] K) :
-    perfectClosure F K = (perfectClosure F E).map i.toAlgHom := by
-  refine le_antisymm (fun x hx ↦ ?_) (map_le_of_algHom i.toAlgHom)
-  change x ∈ (_ : Set K)
-  rw [coe_map, Set.mem_image]
-  exact ⟨i.symm.toAlgHom x,
-    (map_mem_perfectClosure_iff i.symm.toAlgHom).2 hx, i.apply_symm_apply x⟩
+    perfectClosure F K = (perfectClosure F E).map i.toAlgHom :=
+  le_antisymm (fun x hx ↦ ⟨i.symm x,
+    (map_mem_perfectClosure_iff i.symm.toAlgHom).2 hx, i.right_inv x⟩) (map_le_of_algHom i.toAlgHom)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `perfectClosure F E` and
 `perfectClosure F K` are also isomorphic as `F`-algebras. -/
@@ -367,9 +358,7 @@ theorem IsPurelyInseparable.tower_bot [Algebra E K] [IsScalarTower F E K]
   refine ⟨fun x ↦ (isIntegral F (algebraMap E K x)).tower_bot_of_field, fun x h ↦ ?_⟩
   rw [← minpoly.algebraMap_eq (algebraMap E K).injective] at h
   obtain ⟨y, h⟩ := inseparable F _ h
-  use y
-  apply_fun algebraMap E K using (algebraMap E K).injective
-  exact h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm
+  exact ⟨y, (algebraMap E K).injective (h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm)⟩
 
 /-- If `K / E / F` is a field extension tower such that `K / F` is purely inseparable,
 then `K / E` is also purely inseparable. -/
