@@ -34,7 +34,7 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
 @[to_additive (attr := simp)]
 theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
-@[to_additive (attr := simp, nolint simpNF)] lemma op_toSubmonoid (H : Subgroup G) :
+@[to_additive (attr := simp)] lemma op_toSubmonoid (H : Subgroup G) :
     H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
@@ -50,7 +50,7 @@ protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
 @[to_additive (attr := simp)]
 theorem mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
 
-@[to_additive (attr := simp, nolint simpNF)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
+@[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
 
