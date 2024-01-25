@@ -2496,7 +2496,7 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
 Assume the designated element `a₂` is present in neither `x₁` nor `z₁`.
 We conclude that the lists are equal (`l₁ = l₂`) if and only if their respective parts are equal
 (`x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂`). -/
-lemma append_cons_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
     (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
     x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
   constructor
