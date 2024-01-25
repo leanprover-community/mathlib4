@@ -97,11 +97,19 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
-    μ_natural := fun f g => by
+    -- The proof will be automated after merging #6307.
+    μ_natural_left := fun f X => by
       ext Z
       dsimp
-      simp only [← id_tensor_comp_tensor_id g f, id_tensor_comp, ← tensor_id, Category.assoc,
+      simp only [← id_tensor_comp_tensor_id f (𝟙 X), id_tensor_comp, ← tensor_id, Category.assoc,
         associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.id_comp]
+    μ_natural_right := fun X g => by
+      ext Z
+      dsimp
+      simp only [← id_tensor_comp_tensor_id (𝟙 X) g, id_tensor_comp, ← tensor_id, Category.assoc,
+        associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.comp_id]
     associativity := fun X Y Z => by
       ext W
       simp [pentagon]

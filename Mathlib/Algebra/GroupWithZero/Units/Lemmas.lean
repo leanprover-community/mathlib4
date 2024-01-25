@@ -150,6 +150,7 @@ theorem divp_mk0 (a : G₀) {b : G₀} (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = 
 
 namespace Commute
 
+/-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
 protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
     a / b = c / d ↔ a * d = c * b := hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
 
@@ -194,6 +195,12 @@ theorem mul_eq_mul_of_div_eq_div (a : G₀) {b : G₀} (c : G₀) {d : G₀} (hb
 theorem div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
   IsUnit.div_eq_div_iff hb.isUnit hd.isUnit
 #align div_eq_div_iff div_eq_div_iff
+
+/-- The `CommGroupWithZero` version of `div_eq_div_iff_div_eq_div`. -/
+theorem div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d ↔ a / c = b / d := by
+  conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel _ hb]
+  conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel _ hc]
+  rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
 theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
   IsUnit.div_div_cancel ha.isUnit
