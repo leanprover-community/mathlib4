@@ -706,7 +706,7 @@ lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) 
       congr 1
       exact SimplexImage.firstEdgeNIImageGe.preimage_δ_exe j hij
 
-lemma homMk_lift_face (lift : Δ[n+2]⟶ S)
+lemma homMk_lift_face (j : Fin (n+2)) (lift : Δ[n+2]⟶ S)
     (hlift: (homMk i face_map hface)  = hornInclusion (n+2) i ≫ lift):
     S.map (δ ((δ i).toOrderHom j)).op (lift.app (op [n+2])
     ((standardSimplex.objEquiv ([n+2]) (op [n+2])).invFun  (𝟙 ([n+2]:SimplexCategory))))
@@ -739,9 +739,114 @@ lemma homMk_lift_face (lift : Δ[n+2]⟶ S)
           ((Hom.toOrderHom (δ i)) j))))=_
        congr
        exact id hj.symm
-
-
 end homMk
+/--A specific case of `homMk` for the horn `Λ[3,1]`. -/
+def homMk₃₁ {S :SSet} (τ'' τ' τ  : S _[2]) (h₀₁ : S.map (δ 1).op τ''=S.map (δ 0).op τ')
+    (h₀₂ : S.map (δ 2).op τ'' =S.map (δ 0).op τ) (h₁₂ : S.map (δ 2).op τ' =S.map (δ 2).op  τ) :
+    Λ[3,1]⟶ S := by
+      let face_map : Fin (3) → S _[2]
+      | 0 => τ''
+      | 1 => τ'
+      | 2 => τ
+      refine SSet.horn.homMk 1 face_map ?_
+      intro i1 i2 i1_lt_i2
+      fin_cases i1, i2
+      any_goals rfl
+      any_goals (rw [Fin.lt_def] at i1_lt_i2; simp at i1_lt_i2)
+      · exact h₀₁
+      · exact h₀₂
+      · exact h₁₂
+
+lemma homMk₃₁_lift_face {S :SSet} (τ₀  τ₂ τ₃  : S _[2]) (h₀₁ : S.map (δ 1).op τ₀ =S.map (δ 0).op τ₂)
+    (h₀₂ : S.map (δ 2).op τ₀ =S.map (δ 0).op τ₃) (h₁₂ : S.map (δ 2).op τ₂ =S.map (δ 2).op  τ₃)
+    (lift : Δ[3]⟶ S)
+    (hlift: (homMk₃₁ τ₀ τ₂ τ₃ h₀₁ h₀₂ h₁₂)  = hornInclusion 3 1 ≫ lift)
+    (τ₁: S _[2]) (hτ₁: τ₁=S.map (δ 1).op
+    (lift.app (op [2+1]) ((standardSimplex.objEquiv [3] (op [3])).invFun
+    (𝟙 ([3]: SimplexCategory))))):
+     S.map (δ 0).op τ₁=S.map (δ 0).op τ₀  ∧  S.map (δ 1).op τ₁=S.map (δ 1).op τ₂
+    ∧ S.map (δ 2).op τ₁=S.map (δ 1).op τ₃
+      := by
+       let face_map : Fin (3) → S _[2]
+       | 0 => τ₀
+       | 1 => τ₂
+       | 2 => τ₃
+       let lift_simplex : S _[2+1] :=  lift.app (op [2+1])
+         ((standardSimplex.objEquiv _ _).invFun  (𝟙 ([2+1]:SimplexCategory)))
+       rw [hτ₁]
+       repeat rw [← (types_comp_apply (S.map _) (S.map _) ),← S.map_comp,← op_comp]
+       let lf :=homMk_lift_face 1 face_map (@homMk₃₁.proof_3 S τ₀ τ₂ τ₃ h₀₁ h₀₂ h₁₂)
+       apply And.intro
+       · rw [δ_comp_δ',op_comp,S.map_comp,types_comp_apply]
+         change S.map (δ 0).op (S.map (δ 0).op lift_simplex)=_
+         rw [show S.map (δ 0).op lift_simplex = τ₀ from (lf 0 lift hlift)]
+         exact Fin.coe_sub_iff_lt.mp rfl
+       · apply And.intro
+         · rw [δ_comp_δ_self',op_comp,S.map_comp,types_comp_apply]
+           change S.map (δ 1).op (S.map (δ 2).op lift_simplex)=_
+           rw [show S.map (δ 2).op lift_simplex = τ₂ from (lf 1 lift hlift)]
+           rfl
+         · rw [← congrArg δ Fin.castSucc_one,← δ_comp_δ,op_comp,S.map_comp,types_comp_apply]
+           change S.map (δ 1).op (S.map (δ 3).op lift_simplex)=_
+           rw [show S.map (δ 3).op lift_simplex = τ₃ from (lf 2 lift hlift)]
+           exact Fin.coe_sub_iff_le.mp rfl
+
+/--A specific case of `homMk` for the horn `Λ[3,2]`. -/
+def homMk₃₂ {S :SSet} (τ₀ τ₁ τ₃  : S _[2]) (h₀₁ : S.map (δ 0).op τ₀ =S.map (δ 0).op τ₁)
+    (h₀₃ : S.map (δ 2).op τ₀ =S.map (δ 0).op τ₃) (h₁₃ : S.map (δ 2).op τ₁ =S.map (δ 1).op  τ₃) :
+    Λ[3,2]⟶ S := by
+      let face_map : Fin (3) → S _[2]
+      | 0 => τ₀
+      | 1 => τ₁
+      | 2 => τ₃
+      refine SSet.horn.homMk 2 face_map ?_
+      intro i1 i2 i1_lt_i2
+      fin_cases i1, i2
+      any_goals rfl
+      any_goals (rw [Fin.lt_def] at i1_lt_i2; simp at i1_lt_i2)
+      · exact h₀₁
+      · exact h₀₃
+      · exact h₁₃
+
+lemma homMk₃₂_lift_face {S :SSet} (τ₀  τ₁ τ₃  : S _[2])  (h₀₁ : S.map (δ 0).op τ₀ =S.map (δ 0).op τ₁)
+    (h₀₃ : S.map (δ 2).op τ₀ =S.map (δ 0).op τ₃) (h₁₃ : S.map (δ 2).op τ₁ =S.map (δ 1).op  τ₃)
+    (lift : Δ[3]⟶ S)
+    (hlift: (homMk₃₂ τ₀ τ₁ τ₃ h₀₁ h₀₃ h₁₃)  = hornInclusion 3 2 ≫ lift)
+    (τ₂: S _[2]) (hτ₂: τ₂=S.map (δ 2).op
+    (lift.app (op [2+1]) ((standardSimplex.objEquiv [3] (op [3])).invFun
+    (𝟙 ([3]: SimplexCategory))))):
+     S.map (δ 0).op τ₂=S.map (δ 1).op τ₀  ∧  S.map (δ 1).op τ₂=S.map (δ 1).op τ₁
+    ∧ S.map (δ 2).op τ₂=S.map (δ 2).op τ₃
+      := by
+       let face_map : Fin (3) → S _[2]
+       | 0 => τ₀
+       | 1 => τ₁
+       | 2 => τ₃
+       let lift_simplex : S _[2+1] :=  lift.app (op [2+1])
+         ((standardSimplex.objEquiv _ _).invFun  (𝟙 ([2+1]:SimplexCategory)))
+       rw [hτ₂]
+       repeat rw [← (types_comp_apply (S.map _) (S.map _) ),← S.map_comp,← op_comp]
+       unfold homMk₃₂  at hlift
+       let lf :=homMk_lift_face 2 face_map (@homMk₃₂.proof_3 S τ₀ τ₁ τ₃ h₀₁ h₀₃ h₁₃)
+       apply And.intro
+       · rw [δ_comp_δ',op_comp,S.map_comp,types_comp_apply]
+         change S.map (δ 1).op (S.map (δ 0).op lift_simplex)=_
+         rw [show (S.map (δ 0).op lift_simplex) = τ₀ from (lf 0 lift hlift)]
+         exact Fin.coe_sub_iff_lt.mp rfl
+       · apply And.intro
+         · rw [δ_comp_δ',op_comp,S.map_comp,types_comp_apply]
+           change S.map (δ 1).op (S.map (δ 1).op lift_simplex)=_
+           rw [show (S.map (δ 1).op lift_simplex) = τ₁ from (lf 1 lift hlift)]
+           exact Fin.coe_sub_iff_lt.mp rfl
+         · rw [ δ_comp_δ_self',op_comp,S.map_comp,types_comp_apply]
+           change S.map (δ 2).op (S.map (δ 3).op lift_simplex)=_
+           rw [show (S.map (δ 3).op lift_simplex) = τ₃ from (lf 2 lift hlift)]
+           rfl
+
+
+
+
+
 end horn
 
 section Examples
