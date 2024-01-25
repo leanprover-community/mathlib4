@@ -518,6 +518,26 @@ theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h)
   exact hf.comp h.symm.isOpenMap
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 
+/-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
+predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
+@[simps!]
+def subtype {p : X → Prop} {q : Y → Prop} (h : X ≃ₜ Y) (h_iff : ∀ x, p x ↔ q (h x)) :
+    {x // p x} ≃ₜ {y // q y} where
+  continuous_toFun := by simpa [Equiv.coe_subtypeEquiv_eq_map] using h.continuous.subtype_map _
+  continuous_invFun := by simpa [Equiv.coe_subtypeEquiv_eq_map] using
+    h.symm.continuous.subtype_map _
+  __ := h.subtypeEquiv h_iff
+
+@[simp]
+lemma subtype_toEquiv {p : X → Prop} {q : Y → Prop} (h : X ≃ₜ Y) (h_iff : ∀ x, p x ↔ q (h x)) :
+    (h.subtype h_iff).toEquiv = h.toEquiv.subtypeEquiv h_iff :=
+  rfl
+
+/-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between sets `s : Set X` and `t : Set Y`
+whenever `h` maps `s` onto `t`. -/
+abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s ≃ₜ t :=
+  h.subtype <| Set.ext_iff.mp h_eq
+
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   continuous_toFun := continuous_inclusion h.subset
