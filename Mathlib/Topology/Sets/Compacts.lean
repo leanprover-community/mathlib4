@@ -484,7 +484,7 @@ def toOpens (s : CompactOpens α) : Opens α := ⟨s, s.isOpen⟩
 /-- Reinterpret a compact open as a clopen. -/
 @[simps]
 def toClopens [T2Space α] (s : CompactOpens α) : Clopens α :=
-  ⟨s, s.isOpen, s.isCompact.isClosed⟩
+  ⟨s, s.isCompact.isClosed, s.isOpen⟩
 #align topological_space.compact_opens.to_clopens TopologicalSpace.CompactOpens.toClopens
 
 @[ext]
