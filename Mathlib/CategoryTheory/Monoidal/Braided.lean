@@ -123,12 +123,6 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
 
 end BraidedCategory
 
-open Category
-
-open MonoidalCategory
-
-open BraidedCategory
-
 /--
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
