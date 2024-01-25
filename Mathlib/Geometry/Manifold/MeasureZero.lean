@@ -64,9 +64,8 @@ namespace MeasureZero
 protected lemma mono {s t : Set M} (hst : s ⊆ t) (ht : MeasureZero I t) :
     (MeasureZero I s) := by
   intro μ hμ e he
-  have : I ∘ e '' (e.source ∩ s) ⊆  I ∘ e '' (e.source ∩ t) := by
-    apply image_subset
-    exact inter_subset_inter_right e.source hst
+  have : I ∘ e '' (e.source ∩ s) ⊆  I ∘ e '' (e.source ∩ t) :=
+    image_subset _ (inter_subset_inter_right e.source hst)
   exact measure_mono_null this (ht μ e he)
 
 /-- The empty set has measure zero. -/
@@ -76,23 +75,20 @@ protected lemma empty : MeasureZero I (∅: Set M) := by
 
 /-- A countable indexed union of measure zero sets has measure zero. -/
 protected lemma iUnion {ι : Type*} [Encodable ι] {s : ι → Set M}
-  (hs : ∀ n : ι, MeasureZero I (s n)) : MeasureZero I (⋃ (n : ι),  s n) := by
+    (hs : ∀ n : ι, MeasureZero I (s n)) : MeasureZero I (⋃ (n : ι),  s n) := by
   intro μ hμ e he
   have : I ∘ e '' (e.source ∩ (⋃ (n : ι),  s n)) = ⋃ (n : ι), I ∘ e '' (e.source ∩ s n) := by
     rw [inter_iUnion]
     exact image_iUnion
   -- union of null sets is a null set
   simp_all only [comp_apply, OuterMeasure.iUnion_null_iff]
-  intro i
-  apply hs
-  exact he
+  exact fun i ↦ hs _ _ _ he
 
 /-- A finite union of measure zero sets has measure zero. -/
 protected lemma union {s t : Set M} (hs : MeasureZero I s) (ht : MeasureZero I t):
     MeasureZero I (s ∪ t) := by
   let u : Bool → Set M := fun b ↦ cond b s t
-  have : ∀ i : Bool, MeasureZero I (u i) := by
-    intro i
+  have (i : Bool): MeasureZero I (u i) := by
     cases i
     · exact ht
     · exact hs
@@ -106,8 +102,8 @@ def ModelWithCorners.ae
     {M : Type*} [TopologicalSpace M] [ChartedSpace F M] [MeasurableSpace E] : Filter M where
   sets := { s | MeasureZero I sᶜ }
   univ_sets := by
-    rw [@mem_setOf, compl_univ]
-    apply MeasureZero.empty
+    rw [mem_setOf, compl_univ]
+    exact MeasureZero.empty
   inter_sets hx hy:= by
     simp only [mem_setOf_eq] at *
     rw [compl_inter]
@@ -121,42 +117,34 @@ protected lemma open_implies_empty {s : Set M} (h₁s : IsOpen s) (h₂s : Measu
     by_contra h
     obtain ⟨x, hx⟩ : Set.Nonempty s := Iff.mp nmem_singleton_empty h
     specialize this (chartAt H x) (chart_mem_atlas H x)
-    have h₂: x ∈ (chartAt H x).toLocalEquiv.source ∩ s := by
+    have h₂: x ∈ (chartAt H x).toPartialEquiv.source ∩ s := by
       constructor
-      simp
+      simp only [mem_chart_source]
       exact hx
     rw [this] at h₂
     contradiction
 
   intro e he
-  simp [MeasureZero] at h₂s
+  simp only [MeasureZero, comp_apply] at h₂s
   -- Choose any Haar measure μ on E.
   obtain ⟨K''⟩ : Nonempty (PositiveCompacts E) := PositiveCompacts.nonempty'
   let μ : Measure E := addHaarMeasure K''
   -- By h₂s μ e, we have μ (I∘e '' s) = 0.
-  specialize h₂s μ e he
   by_contra h
   -- In particular, e.source ∩ s is an open subset contained in that set, hence has measure zero.
   have h' : Set.Nonempty (interior (I ∘ e '' (e.source ∩ s))) := by
-    have : Set.Nonempty (I ∘ e '' (e.source ∩ s)) := by
-      exact (Iff.mp Set.nmem_singleton_empty h).image _
-    have : IsOpen (e '' (e.source ∩ s)) := by
-        apply e.image_open_of_open'
-        exact h₁s
+    have : Set.Nonempty (I ∘ e '' (e.source ∩ s)) := (Iff.mp Set.nmem_singleton_empty h).image _
     have : IsOpen (I ∘ e '' (e.source ∩ s)) := by
       rw [Set.image_comp]
-      apply I.toHomeomorph.isOpenMap
-      apply this
+      exact I.toHomeomorph.isOpenMap _ (e.isOpen_image_source_inter h₁s)
     rwa [this.interior_eq]
-  apply (measure_pos_of_nonempty_interior (μ := μ) h').ne'
-  exact h₂s
+  exact (measure_pos_of_nonempty_interior (μ := μ) h').ne' (h₂s μ e he)
 
 /-- A subset of a manifold `M` with measure zero has empty interior.
 
 In particular, a *closed* measure zero subset of M is nowhere dense.
 (Closedness is required: there are generalised Cantor sets of positive Lebesgue measure.) -/
 protected lemma MeasureZero_implies_empty_interior {s : Set M}
-    (h₂s : MeasureZero I s) : (interior s) = ∅ := by
-  have : MeasureZero I (interior s) := h₂s.mono interior_subset
-  apply MeasureZero.open_implies_empty isOpen_interior this
+    (h₂s : MeasureZero I s) : (interior s) = ∅ :=
+  (h₂s.mono interior_subset).open_implies_empty isOpen_interior
 end MeasureZero
