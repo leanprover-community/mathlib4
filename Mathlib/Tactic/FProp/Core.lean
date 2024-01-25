@@ -159,25 +159,25 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
           else do
             trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
             return none
+      else 
+        -- try user provided discharger
+        let cfg : Config ← read
+        if (← isProp type) then
+          if let .some proof ← cfg.disch type then
+            if (← isDefEq x proof) then
+              continue 
+            else do
+              trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+              return none
 
-      -- try user provided discharger
-      let cfg : Config ← read
-      if (← isProp type) then
-        if let .some proof ← cfg.disch type then
-          if (← isDefEq x proof) then
-            continue 
-          else do
-            trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-            return none
-
-      -- try function property specific discharger
-      if (← isProp type) then
-        if let .some proof ← discharge? type then
-          if (← isDefEq x proof) then
-            continue 
-          else do
-            trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-            return none
+        -- try function property specific discharger
+        if (← isProp type) then
+          if let .some proof ← discharge? type then
+            if (← isDefEq x proof) then
+              continue 
+            else do
+              trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+              return none
 
       trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
       return none
@@ -664,15 +664,21 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fpro
     if let .some r ← fprop e then
       return r
 
-  -- this should be done only `f` can't be decomposed and can't be unfolded
-  if let .some r ← applyTransitionRules fpropDecl e fData fprop then
-    return r
+  let .some (f',g') ← splitMorToComp f 
+    | throwError "fprop bug: unexpected failure in constAppCase" 
+  
+  if ¬(← isDefEq f' f) then
+    applyCompRule fpropDecl e f' g' fprop
+  else
+    -- this should be done only `f` can't be decomposed and can't be unfolded
+    if let .some r ← applyTransitionRules fpropDecl e fData fprop then
+      return r
 
-  -- nothing got applied
-  let .some f' ← unfoldFunHead? f | return none
+    -- nothing got applied
+    let .some f' ← unfoldFunHead? f | return none
 
-  let e' := e.setArg fpropDecl.funArgId f'
-  return (← fprop e')
+    let e' := e.setArg fpropDecl.funArgId f'
+    return (← fprop e')
 
 /-- -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
