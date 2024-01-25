@@ -65,13 +65,37 @@ noncomputable def generating_set : Finset A :=
 lemma homogeneous_of_mem_generating_set (a : A) (ha : a ∈ generating_set 𝒜) : Homogeneous 𝒜 a :=
   (Ideal.fg_iff_homogeneously_fg _  |>.mp <|
     isNoetherianRing_iff_ideal_fg A |>.mp inferInstance
-      (HomogeneousIdeal.irrelevant 𝒜).toIdeal).choose_spec.1 a ha
+      (HomogeneousIdeal.irrelevant 𝒜).toIdeal).choose_spec.1 a ha |>.1
+
+lemma ne_zero_of_mem_generating_set (a : A) (ha : a ∈ generating_set 𝒜) : a ≠ 0 :=
+  (Ideal.fg_iff_homogeneously_fg _  |>.mp <|
+    isNoetherianRing_iff_ideal_fg A |>.mp inferInstance
+      (HomogeneousIdeal.irrelevant 𝒜).toIdeal).choose_spec.1 a ha |>.2
 
 lemma irrelevant_eq_span_generating_set :
     (HomogeneousIdeal.irrelevant 𝒜).toIdeal = Ideal.span (generating_set 𝒜) :=
   (Ideal.fg_iff_homogeneously_fg _  |>.mp <|
     isNoetherianRing_iff_ideal_fg A |>.mp inferInstance
       (HomogeneousIdeal.irrelevant 𝒜).toIdeal).choose_spec.2
+
+
+variable {𝒜} in
+noncomputable def degA : ⦃a : A⦄ → (ha : a ∈ generating_set 𝒜) → ℕ :=
+  fun _ ha ↦ (homogeneous_of_mem_generating_set 𝒜 _ ha).choose
+
+variable {𝒜} in
+lemma h_degA : ⦃a : A⦄ → (ha : a ∈ generating_set 𝒜) → a ∈ 𝒜 (degA ha) :=
+  fun _ ha ↦ (homogeneous_of_mem_generating_set 𝒜 _ ha).choose_spec
+
+lemma pos_deg_of_mem (a : A) (h1 : a ∈ generating_set 𝒜) (h2 : a ≠ 0) : 0 < degA h1 := by
+  by_contra! rid
+  simp only [nonpos_iff_eq_zero] at rid
+  have m : a ∈ Ideal.span (generating_set 𝒜) := Ideal.subset_span h1
+  have h_deg1 := h_degA h1
+  rw [rid] at h_deg1
+  erw [← irrelevant_eq_span_generating_set 𝒜, HomogeneousIdeal.mem_irrelevant_iff,
+    GradedRing.proj_apply, DirectSum.decompose_of_mem_same (hx := h_deg1)] at m
+  exact h2 m
 
 lemma algebra_eq_join : (⊤ : Subalgebra (𝒜 0) A) = Algebra.adjoin (𝒜 0) (generating_set 𝒜) := by
   classical
@@ -337,7 +361,7 @@ noncomputable def generatingSetModule : Finset M :=
 lemma homogeneous_of_mem_generatingSetModule (m : M) (hm : m ∈ generatingSetModule A ℳ) :
     Homogeneous ℳ m :=
   Submodule.fg_iff_homogeneously_fg (A := A) (ℳ := ℳ) (p := ⊤) |>.mp finite_module.out
-  |>.choose_spec.1 m hm
+  |>.choose_spec.1 m hm |>.1
 
 lemma generatingSetModule_span :
     (⊤ : Submodule A M) = Submodule.span A (generatingSetModule A ℳ) :=
@@ -347,14 +371,6 @@ lemma generatingSetModule_span :
 
 open finite_algebra_over_degree_zero_subring
 
-variable {𝒜} in
-noncomputable def degA : ⦃a : A⦄ → (ha : a ∈ generating_set 𝒜) → ℕ :=
-  fun _ ha ↦ (homogeneous_of_mem_generating_set 𝒜 _ ha).choose
-
-variable {𝒜} in
-lemma h_degA : ⦃a : A⦄ → (ha : a ∈ generating_set 𝒜) → a ∈ 𝒜 (degA ha) :=
-  fun _ ha ↦ (homogeneous_of_mem_generating_set 𝒜 _ ha).choose_spec
-
 variable {ℳ} in
 noncomputable def degM : (m : M) → m ∈ generatingSetModule A ℳ → ℕ :=
   fun m hm ↦ homogeneous_of_mem_generatingSetModule (A := A) ℳ m hm |>.choose
@@ -363,13 +379,108 @@ variable {ℳ} in
 lemma h_degM : ∀ (m : M) (hm : m ∈ generatingSetModule A ℳ), m ∈ ℳ (degM m hm) :=
   fun m hm ↦ homogeneous_of_mem_generatingSetModule (A := A) ℳ m hm |>.choose_spec
 
-lemma finite1 (k : ℕ) :
+lemma Finset.single_le_sum' {ι : Type*}
+    {s : Finset ι} {f : s → ℕ} (a : s) : f a ≤ ∑ x in s.attach, f x := by
+  classical
+  induction' s using Finset.induction_on with i s h ih
+  · cases' a with a ha
+    simp only [Finset.not_mem_empty] at ha
+  · cases' a with a ha
+    simp only [Finset.mem_insert] at ha
+
+    rw [Finset.attach_insert, Finset.sum_insert (by simpa)]
+    simp only [Finset.mem_attach, Subtype.mk.injEq, forall_true_left, Subtype.forall, imp_self,
+      implies_true, Finset.sum_image]
+    cases' ha with ha ha
+    · subst ha
+      rw [le_add_iff_nonneg_right]
+      norm_num
+
+    · specialize ih (f := fun x ↦ f ⟨x.1, by aesop⟩) ⟨a, ha⟩
+      refine ih.trans ?_
+      rw [le_add_iff_nonneg_left]
+      norm_num
+
+lemma monomial_finite_of_bounded_degree (k : ℕ) :
+    {p | ∃ (hp1 : p.support ⊆ generating_set 𝒜),
+      (degree_monomial p fun a ha ↦ degA (hp1 ha)) ≤ k}.Finite := by
+  let S := {p | ∃ (hp1 : p.support ⊆ generating_set 𝒜),
+    (degree_monomial p fun a ha ↦ degA (hp1 ha)) ≤ k}
+  let e : (s : S) → (generating_set 𝒜 → Finset.range (k + 1)) :=
+    fun s a ↦ ⟨s.1 a, by
+      have le1 : Finset.sum _ _ ≤ _ := s.2.2
+      dsimp only at le1
+      simp only [Set.mem_setOf_eq] at le1
+      by_cases mem1 : a.1 ∈ s.1.support
+      · have le2 : degA (s.2.1 mem1) * s.1 a.1 ≤ k
+        · refine le_trans ?_ le1
+          exact Finset.single_le_sum' (s := s.1.support)
+            (f := fun i ↦ degA (s.2.1 i.2) * s.1 i.1) (a := ⟨a, mem1⟩)
+        by_cases le3 : a.1 = 0
+        · exfalso
+          exact ne_zero_of_mem_generating_set 𝒜 a (s.2.1 mem1) le3
+        · have le4 := pos_deg_of_mem 𝒜 a (s.2.1 mem1) le3
+          have le5 : s.1 a.1 ≤ k
+          · have := Nat.div_le_div_right (c := degA (s.2.1 mem1)) le2
+            erw [mul_comm, Nat.mul_div_cancel _ le4] at this
+            refine this.trans (Nat.div_le_self _ _)
+          simp only [Set.mem_setOf_eq, Finset.mem_union, Finset.mem_range, Finset.mem_singleton]
+          rw [Nat.lt_succ_iff]
+          exact le5
+      · simp only [Set.mem_setOf_eq, Finsupp.mem_support_iff, ne_eq, not_not] at mem1
+        rw [mem1]
+        aesop⟩
+  suffices : Finite S
+  · exact Set.toFinite _
+  suffices inj : Function.Injective e
+  · exact Finite.of_injective _ inj
+
+  intro s1 s2 h
+  ext a
+  simp only [Set.coe_setOf, Set.mem_setOf_eq] at h
+  by_cases mem1 : a ∈ s1.1.support ∨ a ∈ s2.1.support
+  · refine Subtype.ext_iff.mp <| congr_fun h ⟨a, ?_⟩
+    rcases mem1 with mem1|mem1
+    · exact s1.2.1 mem1
+    · exact s2.2.1 mem1
+  · push_neg at mem1
+    simp only [Set.mem_setOf_eq, Finsupp.mem_support_iff, ne_eq, not_not] at mem1
+    rw [mem1.1, mem1.2]
+
+lemma generatingSet_is_finite (k : ℕ) :
     {x : ℳ k |
-      ∃ (ω : M) (_ : ω ∈ generatingSetModule A ℳ )
+      ∃ (ω : M) (_ : ω ∈ generatingSetModule A ℳ)
         (p : A →₀ ℕ) (hp1 : p.support ⊆ generating_set 𝒜),
       degree_monomial p (fun a ha ↦ degA (hp1 ha)) ≤ k ∧
       (x : M) = eval_monomial p • ω }.Finite := by
-  sorry
+  let S := {x : ℳ k |
+      ∃ (ω : M) (_ : ω ∈ generatingSetModule A ℳ)
+        (p : A →₀ ℕ) (hp1 : p.support ⊆ generating_set 𝒜),
+      degree_monomial p (fun a ha ↦ degA (hp1 ha)) ≤ k ∧
+      (x : M) = eval_monomial p • ω }
+  change S.Finite
+  have eq1 := calc
+      S = ⋃ (ω ∈ generatingSetModule A ℳ),
+            {x : ℳ k | ∃ (p : A →₀ ℕ) (hp1 : p.support ⊆ generating_set 𝒜),
+              degree_monomial p (fun a ha ↦ degA (hp1 ha)) ≤ k ∧
+              (x : M) = eval_monomial p • ω} := by ext s; simp
+      _ = ⋃ (ω ∈ generatingSetModule A ℳ),
+          ⋃ (p ∈ {p : A →₀ ℕ |
+                ∃ (hp1 : p.support ⊆ generating_set 𝒜),
+                    degree_monomial p (fun a ha ↦ degA (hp1 ha)) ≤ k}),
+            {x : ℳ k | (x : M) = eval_monomial p • ω} := by ext; simp
+  rw [eq1]
+  apply Set.Finite.biUnion' (hs := (generatingSetModule A ℳ).finite_toSet)
+  intro ω _
+  apply Set.Finite.biUnion
+  · apply monomial_finite_of_bounded_degree
+  · rintro p ⟨_, _⟩
+    have fin1 : Subsingleton {x : ℳ k | ↑x = eval_monomial p • ω}
+    · constructor
+      rintro ⟨x, (hx : _ = _)⟩ ⟨y, (hy : _ = _)⟩
+      ext
+      rw [hx, hy]
+    exact Set.toFinite _
 
 set_option maxHeartbeats 400000 in
 lemma kth_degree_eq_span (k : ℕ) :
@@ -592,7 +703,7 @@ end finite_module_over_degree_zero_subring
 
 open finite_module_over_degree_zero_subring finite_algebra_over_degree_zero_subring in
 instance (k : ℕ) : Module.Finite (𝒜 0) (ℳ k) :=
-  ⟨Set.Finite.toFinset (finite1 𝒜 ℳ k),
+  ⟨Set.Finite.toFinset (generatingSet_is_finite 𝒜 ℳ k),
     by simpa only [Set.Finite.coe_toFinset] using (kth_degree_eq_span 𝒜 ℳ k).symm⟩
 
 end CommRing

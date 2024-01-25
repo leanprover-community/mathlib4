@@ -960,7 +960,6 @@ theorem HomogeneousIdeal.toIdeal_irrelevant :
 
 end IrrelevantIdeal
 
-
 section HomogeneouslyFG
 
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
@@ -969,7 +968,7 @@ variable [AddMonoid ιA] [AddSubmonoidClass σA A] [GradedRing 𝒜]
 variable (p : HomogeneousSubmodule A ℳ) (I : HomogeneousIdeal 𝒜)
 
 def Submodule.homogeneously_FG (p : Submodule A M) : Prop :=
-  ∃ (s : Finset M), (∀ m ∈ s, Homogeneous ℳ m) ∧ p = Submodule.span A s
+  ∃ (s : Finset M), (∀ m ∈ s, Homogeneous ℳ m ∧ m ≠ 0) ∧ p = Submodule.span A s
 
 def Ideal.homogeneously_FG (I : Ideal A) : Prop := Submodule.homogeneously_FG 𝒜 I
 
@@ -982,7 +981,13 @@ lemma Submodule.fg_iff_homogeneously_fg : p.toSubmodule.FG ↔ p.toSubmodule.hom
     refine ⟨s.sup (GradedModule.homogeneousComponents ℳ), fun m hs ↦ ?_, ?_⟩
     · rw [Finset.mem_sup] at hs
       rcases hs with ⟨v, -, hv⟩
-      exact GradedModule.homogeneous_of_mem_homogeneousComponents ℳ hv
+      refine ⟨GradedModule.homogeneous_of_mem_homogeneousComponents ℳ hv, ?_⟩
+      simp only [GradedModule.homogeneousComponents, Finset.mem_image, DFinsupp.mem_support_toFun,
+        ne_eq] at hv
+      obtain ⟨a, ha1, rfl⟩ := hv
+      contrapose! ha1
+      ext
+      exact ha1
     · refine le_antisymm ?_ ?_ <;>
       rw [Submodule.span_le]
       · intro x hx
@@ -1011,86 +1016,192 @@ lemma Ideal.fg_iff_homogeneously_fg : I.toIdeal.FG ↔ I.toIdeal.homogeneously_F
 
 end HomogeneouslyFG
 
-section quotient
+-- section quotient
 
-variable {A M : Type*} [Ring A] [AddCommGroup M] [Module A M]
-variable (𝒜 : ℕ → AddSubgroup A) {ℳ : ℕ → AddSubgroup M}
-variable [GradedRing 𝒜] [Decomposition ℳ] [GradedSMul 𝒜 ℳ]
-variable (p : HomogeneousSubmodule A ℳ)
+-- variable {A M : Type*} [Ring A] [AddCommGroup M] [Module A M]
+-- variable (𝒜 : ℕ → AddSubgroup A) {ℳ : ℕ → AddSubgroup M}
+-- variable [GradedRing 𝒜] [Decomposition ℳ] [GradedSMul 𝒜 ℳ]
+-- variable (p : HomogeneousSubmodule A ℳ)
 
-#check AddSubgroup.quotientAddSubgroupOfMapOfLE
+-- #check AddSubgroup.quotientAddSubgroupOfMapOfLE
 
-example (n : ℕ) : true := by
-  have := ℳ n ⧸ (AddSubgroup.comap (ℳ n).subtype <| p.toSubmodule.toAddSubgroup ⊓ ℳ n)
-  rfl
+-- example (n : ℕ) : true := by
+--   have := ℳ n ⧸ (AddSubgroup.comap (ℳ n).subtype <| p.toSubmodule.toAddSubgroup ⊓ ℳ n)
+--   rfl
 
-namespace QuotientGrading
+-- namespace QuotientGrading
 
-@[simps]
-def grade : ℕ → AddSubgroup (M ⧸ p.toSubmodule) := fun n ↦
-  { carrier := {x | ∃ (m : M), m ∈ ℳ n ∧ x = Submodule.mkQ _ m }
-    add_mem' := by
-      rintro _ _ ⟨a, ha1, rfl⟩ ⟨b, hb1, rfl⟩
-      exact ⟨a + b, AddSubgroup.add_mem _ ha1 hb1, by rw [map_add]⟩
-    zero_mem' := ⟨0, AddSubgroup.zero_mem _, by rw [map_zero]⟩
-    neg_mem' := by
-      rintro _ ⟨a, ha1, rfl⟩
-      exact ⟨-a, AddSubgroup.neg_mem _ ha1, by rw [map_neg]⟩ }
+-- @[simps]
+-- def grade : ℕ → AddSubgroup (M ⧸ p.toSubmodule) := fun n ↦
+--   { carrier := {x | ∃ (m : M), m ∈ ℳ n ∧ x = Submodule.mkQ _ m }
+--     add_mem' := by
+--       rintro _ _ ⟨a, ha1, rfl⟩ ⟨b, hb1, rfl⟩
+--       exact ⟨a + b, AddSubgroup.add_mem _ ha1 hb1, by rw [map_add]⟩
+--     zero_mem' := ⟨0, AddSubgroup.zero_mem _, by rw [map_zero]⟩
+--     neg_mem' := by
+--       rintro _ ⟨a, ha1, rfl⟩
+--       exact ⟨-a, AddSubgroup.neg_mem _ ha1, by rw [map_neg]⟩ }
 
-def proj (n : ℕ) : M ⧸ p.toSubmodule →+ M ⧸ p.toSubmodule :=
-  QuotientAddGroup.lift _
-    { toFun := fun m ↦ Quotient.mk'' (GradedModule.proj ℳ n m)
-      map_zero' := by simp
-      map_add' := by intros; simp } <| by
-    intro x hx
-    rw [AddMonoidHom.mem_ker]
-    simp only [Submodule.mem_toAddSubgroup, HomogeneousSubmodule.mem_iff, GradedModule.proj_apply,
-      Submodule.Quotient.mk''_eq_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-      Submodule.Quotient.mk_eq_zero] at hx ⊢
-    exact p.2 n hx
+-- def proj (n : ℕ) : M ⧸ p.toSubmodule →+ M ⧸ p.toSubmodule :=
+--   QuotientAddGroup.lift _
+--     { toFun := fun m ↦ Quotient.mk'' (GradedModule.proj ℳ n m)
+--       map_zero' := by simp
+--       map_add' := by intros; simp } <| by
+--     intro x hx
+--     rw [AddMonoidHom.mem_ker]
+--     simp only [Submodule.mem_toAddSubgroup, HomogeneousSubmodule.mem_iff, GradedModule.proj_apply,
+--       Submodule.Quotient.mk''_eq_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+--       Submodule.Quotient.mk_eq_zero] at hx ⊢
+--     exact p.2 n hx
 
-@[simp]
-lemma proj_mk (n : ℕ) (m : M) :
-    proj p n (QuotientAddGroup.mk m) = Quotient.mk'' (GradedModule.proj ℳ n m) :=
-  rfl
+-- @[simp]
+-- lemma proj_mk (n : ℕ) (m : M) :
+--     proj p n (QuotientAddGroup.mk m) = Quotient.mk'' (GradedModule.proj ℳ n m) :=
+--   rfl
 
-lemma proj_mem (n : ℕ) (x : M ⧸ p.toSubmodule) : proj p n x ∈ grade p n :=
-  QuotientAddGroup.induction_on x fun m ↦ ⟨GradedModule.proj ℳ n m, SetLike.coe_mem _, rfl⟩
+-- lemma proj_mem (n : ℕ) (x : M ⧸ p.toSubmodule) : proj p n x ∈ grade p n :=
+--   QuotientAddGroup.induction_on x fun m ↦ ⟨GradedModule.proj ℳ n m, SetLike.coe_mem _, rfl⟩
 
-lemma proj_exist_support (x : M ⧸ p.toSubmodule) :
-    ∃ (s : Finset ℕ), (∀ n, n ∈ s ↔ proj p n x ≠ 0) ∧ x = ∑ i in s, proj p i x := by
-  classical
-  induction' x using QuotientAddGroup.induction_on with m
-  set s := {j | GradedModule.proj ℳ j m ∉ p}
-  have le1 : s ⊆ (decompose ℳ m).support
-  · intro x hx
-    simp only [GradedModule.proj_apply, mem_setOf_eq, Finset.mem_coe, DFinsupp.mem_support_toFun,
-      ne_eq] at hx ⊢
-    contrapose! hx
-    rw [hx]
-    exact Submodule.zero_mem _
-  have fin1 : s.Finite := (decompose ℳ m).support.finite_toSet.subset le1
-  have le2 : fin1.toFinset ⊆ (decompose ℳ m).support
-  · simp only [GradedModule.proj_apply, Finite.toFinset_subset]
-    exact le1
-  refine ⟨fin1.toFinset, by simp, ?_⟩
-  conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m, QuotientAddGroup.mk_sum]
-  rw [Finset.sum_subset (h := le2)]
-  · rfl
-  intro x _ hx
-  simpa only [proj_mk, GradedModule.proj_apply, Submodule.Quotient.mk''_eq_mk,
-    Submodule.Quotient.mk_eq_zero, HomogeneousSubmodule.mem_iff, Finite.mem_toFinset, mem_setOf_eq,
-    not_not] using hx
+-- lemma proj_exist_support (x : M ⧸ p.toSubmodule) :
+--     ∃ (s : Finset ℕ), (∀ n, n ∈ s ↔ proj p n x ≠ 0) ∧ x = ∑ i in s, proj p i x := by
+--   classical
+--   induction' x using QuotientAddGroup.induction_on with m
+--   set s := {j | GradedModule.proj ℳ j m ∉ p}
+--   have le1 : s ⊆ (decompose ℳ m).support
+--   · intro x hx
+--     simp only [GradedModule.proj_apply, mem_setOf_eq, Finset.mem_coe, DFinsupp.mem_support_toFun,
+--       ne_eq] at hx ⊢
+--     contrapose! hx
+--     rw [hx]
+--     exact Submodule.zero_mem _
+--   have fin1 : s.Finite := (decompose ℳ m).support.finite_toSet.subset le1
+--   have le2 : fin1.toFinset ⊆ (decompose ℳ m).support
+--   · simp only [GradedModule.proj_apply, Finite.toFinset_subset]
+--     exact le1
+--   refine ⟨fin1.toFinset, by simp, ?_⟩
+--   conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m, QuotientAddGroup.mk_sum]
+--   rw [Finset.sum_subset (h := le2)]
+--   · rfl
+--   intro x _ hx
+--   simpa only [proj_mk, GradedModule.proj_apply, Submodule.Quotient.mk''_eq_mk,
+--     Submodule.Quotient.mk_eq_zero, HomogeneousSubmodule.mem_iff, Finite.mem_toFinset, mem_setOf_eq,
+--     not_not] using hx
 
-noncomputable def proj_support (x : M ⧸ p.toSubmodule) : Finset ℕ :=
-  proj_exist_support p x |>.choose
+-- noncomputable def proj_support (x : M ⧸ p.toSubmodule) : Finset ℕ :=
+--   proj_exist_support p x |>.choose
 
-lemma mem_proj_support (x : M ⧸ p.toSubmodule) (j : ℕ) : j ∈ proj_support p x ↔ proj p j x ≠ 0 :=
-  proj_exist_support p x |>.choose_spec |>.1 j
+-- lemma mem_proj_support (x : M ⧸ p.toSubmodule) (j : ℕ) : j ∈ proj_support p x ↔ proj p j x ≠ 0 :=
+--   proj_exist_support p x |>.choose_spec |>.1 j
 
-lemma eq_sum_proj (x : M ⧸ p.toSubmodule) : x = ∑ j in proj_support p x, proj p j x :=
-  proj_exist_support p x |>.choose_spec |>.2
+-- lemma eq_sum_proj (x : M ⧸ p.toSubmodule) : x = ∑ j in proj_support p x, proj p j x :=
+--   proj_exist_support p x |>.choose_spec |>.2
 
-end QuotientGrading
+-- lemma proj_support_zero : proj_support p 0 = ∅ := by
+--   ext j
+--   simp only [mem_proj_support, map_zero, ne_eq, not_true_eq_false, Finset.not_mem_empty]
 
-end quotient
+-- -- lemma proj_support_of_mem_grade (x : M ⧸ p.toSubmodule) (j : ℕ) (hx : x ∈ grade p j) :
+-- --     proj_support p x ⊆ {j} := by
+-- --   -- simp only [Finset.subset_singleton_iff]
+-- --   -- ext i
+-- --   intro i
+-- --   simp only [Finset.mem_singleton]
+-- --   simp only [grade, Submodule.mkQ_apply, AddSubgroup.mem_mk, mem_setOf_eq] at hx
+-- --   obtain ⟨x, hx, rfl⟩ := hx
+-- --   simp only [mem_proj_support, ne_eq]
+-- --   erw [proj_mk]
+-- --   simp only [GradedModule.proj_apply, Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_eq_zero,
+-- --     HomogeneousSubmodule.mem_iff]
+-- --   intro hx'
+-- --   -- x ∉ p
+-- --   -- rw [decompose_of_mem_same (hx := hx)]
+-- --   constructor
+-- --   ·
+-- --     sorry
+-- --   · rintro rfl h
+-- --     sorry
+
+-- instance : AddCommGroup (⨁ (i : ℕ), grade p i) := inferInstance
+
+-- -- set_option maxHeartbeats 300000 in
+-- set_option synthInstance.maxHeartbeats 50000 in
+-- instance (n : ℕ) : Decomposition (grade p) where
+--   decompose' m := DirectSum.mk _ (proj_support p m) fun j ↦ ⟨proj p j m, proj_mem p j m⟩
+--   left_inv := by
+--     classical
+--     intro x
+--     induction' x using QuotientAddGroup.induction_on with m
+--     simp only [Finset.coe_sort_coe, proj_mk, GradedModule.proj_apply, Submodule.Quotient.mk''_eq_mk]
+--     erw [DirectSum.mk_eq_sum_of, map_sum]
+--     simp only [coeAddMonoidHom_of]
+--     change _ = Submodule.mkQ _ m
+--     conv_rhs => rw [eq_sum_proj p (Submodule.mkQ _ m), ← Finset.sum_attach]
+--   right_inv := by
+--     classical
+--     letI : Zero (⨁ (i : ℕ), grade p i) := inferInstance
+--     rintro x
+--     simp only [Finset.coe_sort_coe]
+
+--     induction' x using DirectSum.induction_on with j x x y hx hy
+--     · erw [show DirectSum.coeAddMonoidHom (grade p) (0 : ⨁ (i : ℕ), grade p i) = 0
+--         by rw [map_zero], proj_support_zero, DirectSum.mk_empty]
+--     · simp only [coeAddMonoidHom_of, grade_coe, Submodule.mkQ_apply, mem_setOf_eq]
+--       -- erw [show DirectSum.coeAddMonoidHom (grade p) (of _ j x : ⨁ (i : ℕ), grade p i) = x by sorry]
+--     -- erw [DirectSum.mk_eq_sum_of]
+--     -- simp?
+--     -- refine DFinsupp.ext fun i ↦ ?_
+--     -- erw [DirectSum.mk_apply]
+--     -- split_ifs with h
+--     -- · sorry
+--     -- · rw [mem_proj_support] at h
+--     --   simp only [ne_eq, not_not] at h
+--     --   rw [← DirectSum.sum_support_of _ x] at h ⊢
+--     --   simp only [map_sum, coeAddMonoidHom_of, grade_coe, Submodule.mkQ_apply, mem_setOf_eq] at h ⊢
+
+--     --     -- induction' x using DirectSum.induction_on with j x x y hx hy
+--     --           -- · rfl
+--     --           -- · simp only [coeAddMonoidHom_of, grade_coe, Submodule.mkQ_apply, mem_setOf_eq] at h
+--     --           --   by_cases eq0 : i = j
+--     --           --   · subst eq0
+--     --           --     simp only [of_eq_same]
+--     --           --     rcases x with ⟨x, hx⟩
+--     --           --     simp only [grade, Submodule.mkQ_apply, AddSubgroup.mem_mk, mem_setOf_eq] at hx
+--     --           --     obtain ⟨x, hx', rfl⟩ := hx
+--     --           --     ext
+--     --           --     erw [proj_mk, Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_eq_zero,
+--     --           --       GradedModule.proj_apply, DirectSum.decompose_of_mem_same (hx := hx')] at h
+--     --           --     erw [ZeroMemClass.coe_zero, eq_comm, Submodule.Quotient.mk_eq_zero]
+--     --           --     exact h
+--     --           --   · rw [of_eq_of_ne]
+--     --           --     exact Ne.symm eq0
+--     --   -- induction' x using DirectSum.induction_on with j x x y hx hy
+--     --   -- · rfl
+--     --   -- · simp only [coeAddMonoidHom_of, grade_coe, Submodule.mkQ_apply, mem_setOf_eq] at h
+--     --   --   by_cases eq0 : i = j
+--     --   --   · subst eq0
+--     --   --     simp only [of_eq_same]
+--     --   --     rcases x with ⟨x, hx⟩
+--     --   --     simp only [grade, Submodule.mkQ_apply, AddSubgroup.mem_mk, mem_setOf_eq] at hx
+--     --   --     obtain ⟨x, hx', rfl⟩ := hx
+--     --   --     ext
+--     --   --     erw [proj_mk, Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_eq_zero,
+--     --   --       GradedModule.proj_apply, DirectSum.decompose_of_mem_same (hx := hx')] at h
+--     --   --     erw [ZeroMemClass.coe_zero, eq_comm, Submodule.Quotient.mk_eq_zero]
+--     --   --     exact h
+--     --   --   · rw [of_eq_of_ne]
+--     --   --     exact Ne.symm eq0
+--     --   sorry
+--     -- -- induction' x using DirectSum.induction_on with j x x y hx hy
+--     -- -- · erw [map_zero]
+--     -- -- simp only [Finset.coe_sort_coe]
+--     -- -- refine DFinsupp.ext fun i ↦ ?_
+--     -- -- erw [DirectSum.mk_apply]
+--     -- -- split_ifs with h
+--     -- -- · sorry
+--     -- -- · rw [mem_proj_support] at h
+--     -- --   simp only [ne_eq, not_not] at h
+--     -- --   sorry
+
+-- end QuotientGrading
+
+-- end quotient
