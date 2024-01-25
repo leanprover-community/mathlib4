@@ -27,9 +27,7 @@ has to be `DenseInducing` (not necessarily injective).
 
 noncomputable section
 
-open Set Filter
-
-open Classical Topology Filter
+open Set Topology Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -100,7 +98,7 @@ protected theorem prod [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α �
   dense := de₁.dense.prod_map de₂.dense
 #align dense_inducing.prod DenseInducing.prod
 
-open TopologicalSpace
+open TopologicalSpace (SeparableSpace)
 
 /-- If the domain of a `DenseInducing` map is a separable space, then so is the codomain. -/
 protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
