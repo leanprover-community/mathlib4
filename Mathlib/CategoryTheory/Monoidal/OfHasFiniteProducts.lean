@@ -138,6 +138,10 @@ def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Symmetr
   hexagon_reverse X Y Z := by
     dsimp [monoidalOfHasFiniteProducts.associator_inv]
     simp [← id_tensorHom, ← tensorHom_id]
+  -- braiding_naturality_left f X := by simp
+  -- braiding_naturality_right X _ _ f := by simp
+  -- hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
+  -- hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
 #align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
@@ -239,6 +243,10 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   hexagon_reverse X Y Z := by
     dsimp [monoidalOfHasFiniteCoproducts.associator_inv]
     simp [← id_tensorHom, ← tensorHom_id]
+  -- braiding_naturality_left f g := by simp
+  -- braiding_naturality_right f g := by simp
+  -- hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
+  -- hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
   symmetry X Y := by dsimp; simp
 #align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
 

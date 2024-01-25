@@ -46,6 +46,26 @@ attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whi
 variable {C}
 variable [MonoidalPreadditive C]
 
+namespace MonoidalPreadditive
+
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+@[simp (low)]
+theorem tensor_zero {W X Y Z : C} (f : W ⟶ X) : f ⊗ (0 : Y ⟶ Z) = 0 := by
+  simp [tensorHom_def]
+
+-- The priority setting will not be needed when we replace `f ⊗ 𝟙 X` by `f ▷ X`.
+@[simp (low)]
+theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ f = 0 := by
+  simp [tensorHom_def]
+
+theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
+  simp [tensorHom_def]
+
+theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
+  simp [tensorHom_def]
+
+end MonoidalPreadditive
+
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
 #align category_theory.tensor_left_additive CategoryTheory.tensorLeft_additive
 
