@@ -89,6 +89,7 @@ variable {Y : C} (f : Y ⟶ X.unop) (hf : sieveOfLocallySurjective J φ x f)
 noncomputable def localPreimage : F₁.obj (op Y) :=
   ((hφ.locally_surjective x).choose_spec.choose_spec f hf).choose
 
+@[simp]
 lemma app_apply_localPreimage :
     φ.app _ (localPreimage J φ x f hf) = F₂.map f.op x :=
   ((hφ.locally_surjective x).choose_spec.choose_spec f hf).choose_spec
@@ -129,10 +130,27 @@ lemma locallyInjective_of_locallyInjective_fac {φψ : F₁ ⟶ F₃} (fac : φ 
 
 variable (φ ψ)
 
-/-instance locallySurjective_comp [LocallySurjective J φ] [LocallySurjective J ψ] :
+instance locallySurjective_comp [LocallySurjective J φ] [LocallySurjective J ψ] :
     LocallySurjective J (φ ≫ ψ) where
   locally_surjective {X} x := by
-    sorry-/
+    let S := sieveOfLocallySurjective J ψ x
+    let hS : S ∈ J X.unop := sieveOfLocallySurjective_mem J ψ x
+    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y :=
+      fun Y f hf => sieveOfLocallySurjective J φ (localPreimage J ψ x f hf)
+    refine ⟨_, J.transitive hS (Sieve.bind S.1 T) ?_, ?_⟩
+    · intro Y f hf
+      exact J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
+        (by apply sieveOfLocallySurjective_mem)
+    · intro Y f hf
+      obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
+      exact ⟨localPreimage J φ (localPreimage J ψ x g hg) a ha, by simp⟩
+
+lemma locallySurjective_of_locallySurjective [LocallySurjective J (φ ≫ ψ)] :
+    LocallySurjective J ψ where
+  locally_surjective {X} x :=
+    ⟨_, sieveOfLocallySurjective_mem J (φ ≫ ψ) x, fun f hf =>
+      ⟨φ.app _ (localPreimage J (φ ≫ ψ) x f hf),
+        by simpa using app_apply_localPreimage J (φ ≫ ψ) x f hf⟩⟩
 
 end Presheaf
 
@@ -149,9 +167,17 @@ instance locallyInjective_comp [LocallyInjective φ] [LocallyInjective ψ] :
     LocallyInjective (φ ≫ ψ) :=
   Presheaf.locallyInjective_comp J φ.1 ψ.1
 
+instance locallySurjective_comp [LocallySurjective φ] [LocallySurjective ψ] :
+    LocallySurjective (φ ≫ ψ) :=
+  Presheaf.locallySurjective_comp J φ.1 ψ.1
+
 lemma locallyInjective_of_locallyInjective [LocallyInjective (φ ≫ ψ)] :
     LocallyInjective φ :=
   Presheaf.locallyInjective_of_locallyInjective J φ.1 ψ.1
+
+lemma locallySurjective_of_locallySurjective [LocallySurjective (φ ≫ ψ)] :
+    LocallySurjective ψ :=
+  Presheaf.locallySurjective_of_locallySurjective J φ.1 ψ.1
 
 variable {φ ψ}
 
@@ -159,6 +185,11 @@ lemma locallyInjective_of_locallyInjective_fac {φψ : F₁ ⟶ F₃} (fac : φ 
     [LocallyInjective φψ] : LocallyInjective φ := by
   subst fac
   exact locallyInjective_of_locallyInjective φ ψ
+
+lemma locallySurjective_of_locallySurjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
+    [LocallySurjective φψ] : LocallySurjective ψ := by
+  subst fac
+  exact locallySurjective_of_locallySurjective φ ψ
 
 end Sheaf
 
