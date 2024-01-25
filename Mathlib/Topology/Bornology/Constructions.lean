@@ -42,8 +42,18 @@ def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
 
+/-- Image of a bornology. -/
+@[reducible]
+def Bornology.coinduced {α β : Type*} [Bornology α] (f : α → β) (hf : f.Injective) : Bornology β
+    where
+  cobounded' := map f (cobounded α)
+  le_cofinite' := map_mono (Bornology.le_cofinite α) |>.trans hf.tendsto_cofinite
+
 instance {p : α → Prop} : Bornology (Subtype p) :=
   Bornology.induced (Subtype.val : Subtype p → α)
+
+instance ULift.instBornology[Bornology α] : Bornology (ULift α) :=
+  Bornology.coinduced ULift.up ULift.up_injective
 
 namespace Bornology
 
@@ -148,6 +158,19 @@ theorem isBounded_image_subtype_val {p : α → Prop} {s : Set { x // p x }} :
   isBounded_induced.symm
 #align bornology.is_bounded_image_subtype_coe Bornology.isBounded_image_subtype_val
 
+/-!
+### Bounded sets in `ULift α`
+-/
+
+theorem isBounded_coinduced {α β : Type*} [Bornology α] {f : α → β} {hf : f.Injective} {s : Set β} :
+    @IsBounded β (Bornology.coinduced f hf) s ↔ IsBounded (f ⁻¹' s) :=
+  Iff.rfl
+
+theorem isBounded_preimage_uLift_up {s : Set (ULift α)} :
+    IsBounded (ULift.up ⁻¹' s) ↔ IsBounded s :=
+  Iff.rfl
+
+
 end Bornology
 
 /-!
@@ -186,6 +209,16 @@ alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
   (IsBounded.all { x | p x }).boundedSpace_subtype
+
+theorem boundedSpace_coinduced_iff {α β : Type*} [Bornology α] {f : α → β} {hf : f.Injective} :
+    @BoundedSpace _ (Bornology.coinduced f hf) ↔ BoundedSpace α := by
+  rw [← @isBounded_univ _ (Bornology.coinduced f hf), ← isBounded_univ, isBounded_coinduced,
+    preimage_univ]
+
+instance ULift.instBoundedSpace {α : Type*} [Bornology α] [BoundedSpace α] :
+    BoundedSpace (ULift α) := by
+  unfold ULift.instBornology
+  exact boundedSpace_coinduced_iff.mpr ‹BoundedSpace α›
 
 /-!
 ### `Additive`, `Multiplicative`

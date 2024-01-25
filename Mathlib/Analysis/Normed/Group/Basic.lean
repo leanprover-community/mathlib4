@@ -2232,14 +2232,15 @@ instance seminormedGroup [SeminormedGroup E] : SeminormedGroup (ULift E) :=
 #align ulift.seminormed_add_group ULift.seminormedAddGroup
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup (ULift E) :=
-  SeminormedCommGroup.induced _ _
-  { toFun := ULift.down,
-    map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+instance seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup (ULift E) where
+  __ := SeminormedCommGroup.induced _ _
+    { toFun := ULift.down,
+      map_one' := rfl,
+      map_mul' := fun _ _ => rfl : ULift E →* E }
+  toTopologicalSpace := inferInstance
 #align ulift.seminormed_comm_group ULift.seminormedCommGroup
 #align ulift.seminormed_add_comm_group ULift.seminormedAddCommGroup
-
+#exit
 @[to_additive]
 instance normedGroup [NormedGroup E] : NormedGroup (ULift E) :=
   NormedGroup.induced _ _

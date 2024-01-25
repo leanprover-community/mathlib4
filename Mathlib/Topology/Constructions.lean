@@ -72,7 +72,7 @@ instance Pi.topologicalSpace {β : α → Type v} [t₂ : (a : α) → Topologic
 #align Pi.topological_space Pi.topologicalSpace
 
 instance ULift.topologicalSpace [t : TopologicalSpace α] : TopologicalSpace (ULift.{v, u} α) :=
-  t.induced ULift.down
+  t.coinduced ULift.up
 #align ulift.topological_space ULift.topologicalSpace
 
 /-!
@@ -1657,10 +1657,8 @@ end Sigma
 section ULift
 
 theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
-    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
-  unfold ULift.topologicalSpace
-  erw [← Equiv.ulift.coinduced_symm]
-  rfl
+    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) :=
+  Iff.rfl
 
 theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
     IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
@@ -1668,16 +1666,16 @@ theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
 
 @[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=
-  continuous_induced_dom
+  continuous_coinduced_rng
 #align continuous_ulift_down continuous_uLift_down
 
 @[continuity]
 theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α → ULift.{v, u} α) :=
-  continuous_induced_rng.2 continuous_id
+  continuous_coinduced_rng
 #align continuous_ulift_up continuous_uLift_up
 
 theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULift.{v, u} α → α) :=
-  ⟨⟨rfl⟩, ULift.down_injective⟩
+  ⟨⟨congr_fun Equiv.ulift.coinduced_symm _⟩, ULift.down_injective⟩
 #align embedding_ulift_down embedding_uLift_down
 
 theorem ULift.closedEmbedding_down [TopologicalSpace α] :
