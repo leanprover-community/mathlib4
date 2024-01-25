@@ -84,9 +84,9 @@ theorem unop_le_unop_iff {S₁ S₂ : Subgroup Gᵐᵒᵖ} : S₁.unop ≤ S₂.
 def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   toFun := Subgroup.op
   invFun := Subgroup.unop
-  left_inv _ := SetLike.coe_injective rfl
-  right_inv _ := SetLike.coe_injective rfl
-  map_rel_iff' := MulOpposite.op_surjective.forall
+  left_inv := unop_op
+  right_inv := op_unop
+  map_rel_iff' := op_le_op_iff
 #align subgroup.opposite Subgroup.opEquiv
 #align add_subgroup.opposite AddSubgroup.opEquiv
 

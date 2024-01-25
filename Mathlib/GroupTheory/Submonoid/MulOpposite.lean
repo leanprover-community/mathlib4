@@ -71,7 +71,7 @@ def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   invFun := Submonoid.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_rel_iff' := MulOpposite.op_surjective.forall
+  map_rel_iff' := op_le_op_iff
 
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Submonoid M).op = ⊥ := opEquiv.map_bot
