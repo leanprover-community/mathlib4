@@ -32,6 +32,8 @@ types. To that effect, we have `PSigma`, which takes value in `Sort*` and carrie
 complicated universe signature as a consequence.
 -/
 
+open Function
+
 section Sigma
 
 variable {α α₁ α₂ : Type*} {β : α → Type*} {β₁ : α₁ → Type*} {β₂ : α₂ → Type*}
@@ -76,7 +78,7 @@ theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
     a = b ∧ HEq f g := by
   rcases ‹Nonempty γ› with ⟨i⟩
   obtain rfl : a = b := congr_arg Sigma.fst (congr_fun h i)
-  simpa [Function.funext_iff] using h
+  simpa [funext_iff] using h
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
@@ -101,10 +103,27 @@ theorem «exists» {p : (Σa, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a
 #align sigma.exists Sigma.exists
 
 lemma exists' {p : ∀ a, β a → Prop} : (∃ a b, p a b) ↔ ∃ x : Σ a, β a, p x.1 x.2 :=
-(Sigma.exists (p := λ x ↦ p x.1 x.2)).symm
+  (Sigma.exists (p := λ x ↦ p x.1 x.2)).symm
 
 lemma forall' {p : ∀ a, β a → Prop} : (∀ a b, p a b) ↔ ∀ x : Σ a, β a, p x.1 x.2 :=
-(Sigma.forall (p := λ x ↦ p x.1 x.2)).symm
+  (Sigma.forall (p := λ x ↦ p x.1 x.2)).symm
+
+theorem _root_.sigma_mk_injective {i : α} : Injective (@Sigma.mk α β i)
+  | _, _, rfl => rfl
+#align sigma_mk_injective sigma_mk_injective
+
+theorem fst_surjective [h : ∀ a, Nonempty (β a)] : Surjective (fst : (Σ a, β a) → α) := fun a ↦
+  let ⟨b⟩ := h a; ⟨⟨a, b⟩, rfl⟩
+
+theorem fst_surjective_iff : Surjective (fst : (Σ a, β a) → α) ↔ ∀ a, Nonempty (β a) :=
+  ⟨fun h a ↦ let ⟨x, hx⟩ := h a; hx ▸ ⟨x.2⟩, @fst_surjective _ _⟩
+
+theorem fst_injective [h : ∀ a, Subsingleton (β a)] : Injective (fst : (Σ a, β a) → α) := by
+  rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (rfl : a₁ = a₂)
+  exact congr_arg (mk a₁) <| Subsingleton.elim _ _
+
+theorem fst_injective_iff : Injective (fst : (Σ a, β a) → α) ↔ ∀ a, Subsingleton (β a) :=
+  ⟨fun h _ ↦ ⟨fun _ _ ↦ sigma_mk_injective <| h rfl⟩, @fst_injective _ _⟩
 
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x : Sigma β₁) : Sigma β₂ :=
@@ -115,13 +134,8 @@ lemma map_mk (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a))
     map f₁ f₂ ⟨x, y⟩ = ⟨f₁ x, f₂ x y⟩ := rfl
 end Sigma
 
-theorem sigma_mk_injective {i : α} : Function.Injective (@Sigma.mk α β i)
-  | _, _, rfl => rfl
-#align sigma_mk_injective sigma_mk_injective
-
 theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-    (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
-    Function.Injective (Sigma.map f₁ f₂)
+    (h₁ : Injective f₁) (h₂ : ∀ a, Injective (f₂ a)) : Injective (Sigma.map f₁ f₂)
   | ⟨i, x⟩, ⟨j, y⟩, h => by
     obtain rfl : i = j := h₁ (Sigma.mk.inj_iff.mp h).1
     obtain rfl : x = y := h₂ i (sigma_mk_injective h)
@@ -129,21 +143,18 @@ theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β�
 #align function.injective.sigma_map Function.Injective.sigma_map
 
 theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-    (h : Function.Injective (Sigma.map f₁ f₂)) (a : α₁) : Function.Injective (f₂ a) :=
-  fun x y hxy ↦
+    (h : Injective (Sigma.map f₁ f₂)) (a : α₁) : Injective (f₂ a) := fun x y hxy ↦
   sigma_mk_injective <| @h ⟨a, x⟩ ⟨a, y⟩ (Sigma.ext rfl (heq_of_eq hxy))
 #align function.injective.of_sigma_map Function.Injective.of_sigma_map
 
 theorem Function.Injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-    (h₁ : Function.Injective f₁) :
-    Function.Injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.Injective (f₂ a) :=
+    (h₁ : Injective f₁) : Injective (Sigma.map f₁ f₂) ↔ ∀ a, Injective (f₂ a) :=
   ⟨fun h ↦ h.of_sigma_map, h₁.sigma_map⟩
 #align function.injective.sigma_map_iff Function.Injective.sigma_map_iff
 
 theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-    (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
-    Function.Surjective (Sigma.map f₁ f₂) := by
-  simp only [Function.Surjective, Sigma.forall, h₁.forall]
+    (h₁ : Surjective f₁) (h₂ : ∀ a, Surjective (f₂ a)) : Surjective (Sigma.map f₁ f₂) := by
+  simp only [Surjective, Sigma.forall, h₁.forall]
   exact fun i ↦ (h₂ _).forall.2 fun x ↦ ⟨⟨i, x⟩, rfl⟩
 #align function.surjective.sigma_map Function.Surjective.sigma_map
 
