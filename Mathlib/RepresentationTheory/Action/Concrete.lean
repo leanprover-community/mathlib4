@@ -80,7 +80,6 @@ set_option linter.uppercaseLean3 false in
 namespace FintypeCat
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-@[simps]
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
