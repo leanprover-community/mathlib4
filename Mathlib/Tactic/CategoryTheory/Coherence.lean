@@ -333,7 +333,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 47) : TacticM Unit :=
+def coherence_loop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do
