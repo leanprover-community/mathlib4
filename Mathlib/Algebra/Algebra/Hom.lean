@@ -562,6 +562,7 @@ def ofId : R →ₐ[R] A :=
 
 variable {R}
 
+@[aesop simp] -- We have many more theorems about `algebraMap` compared to `ofId`
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply

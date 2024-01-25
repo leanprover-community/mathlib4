@@ -269,17 +269,20 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     rwa [degree_C h_contra, zero_le_degree_iff]
 #align adjoin_root.of.injective_of_degree_ne_zero AdjoinRoot.of.injective_of_degree_ne_zero
 
--- TODO: generalize this to an `aesop` tactic that applies more lemmas for `Commute`.
 /-- `commutativity` is a tactic that discharges goals of the form `Commute a b`
-in commutative semirings by applying `Commute.all`.
+in commutative semirings by using `aesop`.
 
 It is currently only used in `AdjoinRoot.lift`. -/
 macro "commutativity" : tactic =>
-  `(tactic| first | { intro; apply Commute.all } |
-    fail "tactic 'commutativity' failed to find a proof")
+  `(tactic| first | aesop |
+    fail "tactic 'commutativity' failed to find a proof. Hint: tag more results with `@[aesop]`.")
 
 /-- Given `x : S`, lift to `AdjoinRoot f →+* S`.
-  a ring homomorphism `i : R →+* S` whose image commutes with `x` -/
+a ring homomorphism `i : R →+* S` whose image commutes with `x`.
+
+We write `(lift i x h) y` to have `commutativity` automatically fill in a proof that the image
+commutes with `x`.
+-/
 def lift [Semiring S] (i : R →+* S) (x : S) (h : f.eval₂ i x = 0)
     (hcomm : ∀ r, Commute (i r) x := by commutativity) :
     AdjoinRoot f →+* S := by
@@ -290,63 +293,69 @@ def lift [Semiring S] (i : R →+* S) (x : S) (h : f.eval₂ i x = 0)
 
 variable [Semiring S]
 
-variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0) ⦃hcomm : ∀ r, Commute (i r) a⦄
+variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
 
-@[simp]
+section AutoParam
+
+/-! Here we use the `commutativity` auto-param to phrase lemmas, for easy application.
+Unfortunately `simp` can't use these so we're going to copy them below.
+-/
+
+variable (hcomm : ∀ r, Commute (i r) a := by commutativity)
+
 theorem lift_mk (g : R[X]) :
-    lift i a h hcomm (mk f g) = g.eval₂ i a :=
+    (lift i a h) (mk f g) = g.eval₂ i a :=
   Ideal.Quotient.lift_mk _ _ _
 #align adjoin_root.lift_mk AdjoinRoot.lift_mk
 
-@[simp]
-theorem lift_root : lift i a h hcomm (root f) = a := by rw [root, lift_mk, eval₂_X]
+theorem lift_root : (lift i a h) (root f) = a := by rw [root, lift_mk, eval₂_X]
 #align adjoin_root.lift_root AdjoinRoot.lift_root
 
-@[simp]
-theorem lift_of {x : R} : lift i a h hcomm x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
+theorem lift_of {x : R} : (lift i a h) x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
 #align adjoin_root.lift_of AdjoinRoot.lift_of
 
-@[simp]
-theorem lift_comp_of : (lift i a h hcomm).comp (of f) = i :=  by
-  -- RingHom.ext fun _ => lift_of h hcomm
-  ext x
-  simp only [RingHom.coe_comp, Function.comp_apply, lift_of]
+theorem lift_comp_of : (lift i a h).comp (of f) = i :=
+  RingHom.ext fun _ => lift_of h
 #align adjoin_root.lift_comp_of AdjoinRoot.lift_comp_of
+end AutoParam
+
+section Implicit
+
+/-! Here we restate `@[simp]` lemmas using implicit parameters.
+This is somewhat more annoying to apply but `simp` can't infer auto-params. -/
+
+variable ⦃hcomm : ∀ r, Commute (i r) a⦄
+
+@[simp] theorem lift_mk' (g : R[X]) : lift i a h hcomm (mk f g) = g.eval₂ i a := (lift_mk h) g
+
+@[simp] theorem lift_root' : lift i a h hcomm (root f) = a := lift_root _
+
+@[simp] theorem lift_of' {x : R} : lift i a h hcomm x = i x := lift_of _
+
+@[simp] theorem lift_comp_of' : (lift i a h hcomm).comp (of f) = i := lift_comp_of _
+
+end Implicit
 
 variable (f) [Algebra R S]
 
 /-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
 a root of `f` in `S`. -/
 def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
-  { lift (algebraMap R S) x hfx (fun r ↦ Algebra.commute_algebraMap_left r x) with
-    commutes' := fun r => by
-    -- show lift _ _ hfx _ r = _ from lift_of hfx _ }
-      rw [RingHom.toMonoidHom_eq_coe, algebraMap_eq, OneHom.toFun_eq_coe,
-        MonoidHom.toOneHom_coe, MonoidHom.coe_coe, lift_of] }
+  { lift (algebraMap R S) x hfx with
+    commutes' := fun r =>
+    show lift _ _ hfx _ r = _ from lift_of hfx }
 #align adjoin_root.lift_hom AdjoinRoot.liftHom
 
 @[simp]
 theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
-    (liftHom f x hfx : AdjoinRoot f →+* S) =
-      lift (algebraMap R S) x hfx (fun r ↦ Algebra.commute_algebraMap_left r x) :=
+    (liftHom f x hfx : AdjoinRoot f →+* S) = lift (algebraMap R S) x hfx :=
   rfl
 #align adjoin_root.coe_lift_hom AdjoinRoot.coe_liftHom
 
 @[simp]
-theorem liftHom_root (hfa : aeval a f = 0) : liftHom f a hfa (root f) = a := by
-  rw [root, liftHom]
-  simp only [RingHom.toMonoidHom_eq_coe, mk_X, AlgHom.coe_mk, RingHom.coe_mk,
-    MonoidHom.coe_coe, lift_root]
-#align adjoin_root.lift_hom_root AdjoinRoot.liftHom_root
-
-@[simp]
-theorem liftHom_comp_of_eq_algebraMap (ϕ : AdjoinRoot f →ₐ[R] S) :
-    RingHom.comp ϕ (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
-
-@[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
-  rw [aeval_def, ← liftHom_comp_of_eq_algebraMap,
-    ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
+  have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
+  rw [aeval_def, ← h, ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 #align adjoin_root.aeval_alg_hom_eq_zero AdjoinRoot.aeval_algHom_eq_zero
 
@@ -356,22 +365,24 @@ theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
   suffices ϕ.equalizer (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
     exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
   rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
-  -- exact (lift_root (aeval_algHom_eq_zero f ϕ)).symm
-  simp only [SetLike.mem_coe, AlgHom.mem_equalizer, liftHom_root]
+  exact (lift_root (aeval_algHom_eq_zero f ϕ)).symm
 #align adjoin_root.lift_hom_eq_alg_hom AdjoinRoot.liftHom_eq_algHom
 
 variable (hfa : aeval a f = 0)
 
 @[simp]
 theorem liftHom_mk {g : R[X]} : liftHom f a hfa (mk f g) = aeval a g :=
-  lift_mk hfa g
+  (lift_mk hfa) g
 #align adjoin_root.lift_hom_mk AdjoinRoot.liftHom_mk
 
 @[simp]
-theorem liftHom_of {x : R} : liftHom f a hfa (of f x) = algebraMap _ _ x := by
-  -- exact lift_of hfa
-  rw [← liftHom_comp_of_eq_algebraMap]
-  congr
+theorem liftHom_root : liftHom f a hfa (root f) = a :=
+  lift_root hfa
+#align adjoin_root.lift_hom_root AdjoinRoot.liftHom_root
+
+@[simp]
+theorem liftHom_of {x : R} : liftHom f a hfa (of f x) = algebraMap _ _ x :=
+  lift_of hfa
 #align adjoin_root.lift_hom_of AdjoinRoot.liftHom_of
 
 section AdjoinInv
@@ -578,9 +589,9 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
-    · simp only [RingHom.comp_apply, mk_C, lift_of]
+    · simp only [RingHom.comp_apply, mk_C, lift_of']
       rfl
-    · simp only [RingHom.comp_apply, mk_X, lift_root]
+    · simp only [RingHom.comp_apply, mk_X, lift_root']
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
     Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   apply natDegree_le_of_dvd

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
+import Aesop
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -132,7 +133,7 @@ protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
 
 end Semigroup
 
-@[to_additive]
+@[to_additive (attr := aesop unsafe 50% apply)]
 protected theorem all {S : Type*} [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ

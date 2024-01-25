@@ -355,9 +355,11 @@ theorem commutes (r : R) (x : A) : algebraMap R A r * x = x * algebraMap R A r :
   Algebra.commutes' r x
 #align algebra.commutes Algebra.commutes
 
+@[aesop safe apply]
 lemma commute_algebraMap_left (r : R) (x : A) : Commute (algebraMap R A r) x :=
   Algebra.commutes r x
 
+@[aesop safe apply]
 lemma commute_algebraMap_right (r : R) (x : A) : Commute x (algebraMap R A r) :=
   (Algebra.commutes r x).symm
 
