@@ -161,21 +161,37 @@ private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (�
   obtain ⟨b, hb⟩ := h a
   apply mem_of_superset hb
   intro x hx
-  have aux : f a = b := by sorry -- the nbhd in `hb` includes a
-  have : f x = f a := aux ▸ hx
+  have : f x = f a := (mem_of_mem_nhds hb) ▸ hx
   rw [mem_preimage, this]
   exact ha
 
+section IsConstant  -- missing API about IsConstant
+-- xxx: is this true, under appropriate hypotheses on g?
+/- lemma Germ.isConstant_comp {α β γ : Type*} {l : Filter α} {f : α → β} {g : β → γ}
+    (h : (↑f : Germ l β).IsConstant) /-(hg : Continuous g)-/ : ((g ∘ f) : Germ l γ).IsConstant :=
+  sorry -/
+
+lemma foo {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y} {g : Y → Z} {x : X}
+    (hf : (f : Germ (𝓝 x) Y).IsConstant) (hg : Continuous g) : ((g ∘ f) : Germ (𝓝 x) Z).IsConstant := by
+  sorry
+
+-- this should imply `bar2`
+lemma bar {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : Y → Z} {g : X → Y} {y : Y}
+    (hf : (f : Germ (𝓝 (g x)) Z).IsConstant) (hg : Continuous g) :
+    ((f ∘ g) : Germ (𝓝 x) Z).IsConstant := by
+  sorry
+
+lemma bar2 {s : Set X} {f : X → Y} {x : s} (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
+    ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant := sorry
+end IsConstant
+
 private lemma IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X}
     (hs : IsPreconnected s) (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f := by
-  sorry -- TODO: prove this! old proof of constantness below
-  -- haveI := isPreconnected_iff_preconnectedSpace.mp hs
-  -- let F : s → Y := f ∘ (↑)
-  -- change F ⟨x, x_in⟩ = F ⟨x', x'_in⟩
-  -- apply eq_of_germ_isConstant
-  -- rintro ⟨x, hx⟩
-  -- have : ContinuousAt ((↑) : s → X) ⟨x, hx⟩ := continuousAt_subtype_val
-  -- exact this (h x hx)
+  haveI := isPreconnected_iff_preconnectedSpace.mp hs
+  let F : s → Y := f ∘ (↑)
+  suffices IsLocallyConstant F by
+    sorry -- TODO: if F is locally constant, so is f
+  exact IsLocallyConstant.of_germ_isConstant (fun ⟨x, hx⟩ ↦ bar2 (h x hx))
 
 theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
