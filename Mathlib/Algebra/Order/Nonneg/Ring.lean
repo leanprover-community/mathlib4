@@ -3,10 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
@@ -24,7 +24,7 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddMonoid` if `α` is a `LinearOrderedRing`.
+* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddCommMonoid` if `α` is a `LinearOrderedRing`.
 
 ## Implementation Notes
 
@@ -199,8 +199,8 @@ theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
 
-instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
-    where mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
+instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x } where
+  mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
 #align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
@@ -233,8 +233,8 @@ theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : {
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_nat_cast
 
-instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
-    where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
+  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
 @[simp, norm_cast]
@@ -318,26 +318,26 @@ def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
     map_add' := Nonneg.coe_add }
 #align nonneg.coe_ring_hom Nonneg.coeRingHom
 
-instance canonicallyOrderedAddMonoid [OrderedRing α] :
-    CanonicallyOrderedAddMonoid { x : α // 0 ≤ x } :=
+instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
+    CanonicallyOrderedAddCommMonoid { x : α // 0 ≤ x } :=
   { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
-#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddMonoid
+#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
 
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
     CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
-  { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
+  { Nonneg.canonicallyOrderedAddCommMonoid, Nonneg.orderedCommSemiring with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
 
-instance canonicallyLinearOrderedAddMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddMonoid with }
-#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddMonoid
+instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
+    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
+  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder
 

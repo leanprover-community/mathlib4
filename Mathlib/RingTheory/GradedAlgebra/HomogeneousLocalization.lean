@@ -342,7 +342,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
-    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
+    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by

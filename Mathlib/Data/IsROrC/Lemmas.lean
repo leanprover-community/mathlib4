@@ -34,18 +34,13 @@ library_note "IsROrC instance"/--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `IsROrC ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
-
 /-- An `IsROrC` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 -- Porting note: was @[nolint dangerous_instance]
 instance isROrC_to_real : FiniteDimensional ℝ K :=
-  ⟨⟨{1, I}, by
-      rw [eq_top_iff]
-      intro a _
-      rw [Finset.coe_insert, Finset.coe_singleton, Submodule.mem_span_insert]
-      refine' ⟨re a, im a • I, _, _⟩
-      · rw [Submodule.mem_span_singleton]
-        use im a
-      simp [re_add_im a, Algebra.smul_def, algebraMap_eq_ofReal]⟩⟩
+  ⟨{1, I}, by
+    suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
+      simpa [Submodule.eq_top_iff', Submodule.mem_span_pair]
+    exact fun x ↦ ⟨re x, im x, by simp [real_smul_eq_coe_mul]⟩⟩
 #align finite_dimensional.is_R_or_C_to_real FiniteDimensional.isROrC_to_real
 
 variable (K E)

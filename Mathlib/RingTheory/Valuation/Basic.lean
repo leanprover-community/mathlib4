@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -55,7 +56,7 @@ In the `DiscreteValuation` locale:
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `FunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
 
@@ -127,21 +128,21 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_add_le_max f := f.map_add_le_max'
 
 -- porting note: is this still helpful? Let's find out!!
-/- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 -- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
-  -- FunLike.hasCoeToFun
+  -- DFunLike.hasCoeToFun
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
 @[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
-theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v
-    := rfl
+theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
+    (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align valuation.ext Valuation.ext
 
 variable (v : Valuation R Γ₀) {x y z : R}
@@ -212,10 +213,10 @@ theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
 
-/-- Deprecated. Use `FunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `FunLike.ext_iff` is not viable below for now
+/-- Deprecated. Use `DFunLike.ext_iff`. -/
+-- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
 theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align valuation.ext_iff Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
@@ -455,7 +456,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     intro x
     constructor
     · intro hx
-      cases' lt_or_eq_of_le hx with hx' hx'
+      rcases lt_or_eq_of_le hx with hx' | hx'
       · have : v (1 + x) = 1 := by
           rw [← v.map_one]
           apply map_add_eq_of_lt_left
@@ -467,7 +468,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
       · rw [h] at hx'
         exact le_of_eq hx'
     · intro hx
-      cases' lt_or_eq_of_le hx with hx' hx'
+      rcases lt_or_eq_of_le hx with hx' | hx'
       · have : v' (1 + x) = 1 := by
           rw [← v'.map_one]
           apply map_add_eq_of_lt_left
@@ -499,7 +500,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       cases ne_iff_lt_or_gt.1 h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
       | inr h_2 =>
-          rw [← inv_one, ←inv_eq_iff_eq_inv, ← map_inv₀] at hh
+          rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
           exact hh.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
@@ -564,7 +565,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
     one_ne_zero (α := Γ₀) <|
       calc
         1 = v 1 := v.map_one.symm
-        _ = 0 := by rw [←mem_supp_iff, h]; exact Submodule.mem_top,
+        _ = 0 := by rw [← mem_supp_iff, h]; exact Submodule.mem_top,
    fun {x y} hxy => by
     simp only [mem_supp_iff] at hxy ⊢
     rw [v.map_mul x y] at hxy
@@ -613,7 +614,7 @@ section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-    FunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
+    FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 

@@ -218,7 +218,7 @@ Both this and `PGame.recOn` describe Conway induction on games. -/
 @[elab_as_elim]
 def moveRecOn {C : PGame → Sort*} (x : PGame)
     (IH : ∀ y : PGame, (∀ i, C (y.moveLeft i)) → (∀ j, C (y.moveRight j)) → C y) : C x :=
-  x.recOn <| fun yl yr yL yR => IH (mk yl yr yL yR)
+  x.recOn fun yl yr yL yR => IH (mk yl yr yL yR)
 #align pgame.move_rec_on SetTheory.PGame.moveRecOn
 
 /-- `IsOption x y` means that `x` is either a left or right option for `y`. -/
@@ -399,12 +399,12 @@ instance le : LE PGame :=
 /-- The less or fuzzy relation on pre-games.
 
 If `0 ⧏ x`, then Left can win `x` as the first player. -/
-def Lf (x y : PGame) : Prop :=
+def LF (x y : PGame) : Prop :=
   ¬y ≤ x
-#align pgame.lf SetTheory.PGame.Lf
+#align pgame.lf SetTheory.PGame.LF
 
 @[inherit_doc]
-scoped infixl:50 " ⧏ " => PGame.Lf
+scoped infixl:50 " ⧏ " => PGame.LF
 
 @[simp]
 protected theorem not_le {x y : PGame} : ¬x ≤ y ↔ y ⧏ x :=
@@ -420,9 +420,9 @@ theorem _root_.LE.le.not_gf {x y : PGame} : x ≤ y → ¬y ⧏ x :=
   not_lf.2
 #align has_le.le.not_gf LE.le.not_gf
 
-theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
+theorem LF.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
   id
-#align pgame.lf.not_ge SetTheory.PGame.Lf.not_ge
+#align pgame.lf.not_ge SetTheory.PGame.LF.not_ge
 
 /-- Definition of `x ≤ y` on pre-games, in terms of `⧏`.
 
@@ -454,7 +454,7 @@ The ordering here is chosen so that `or.inl` refer to moves by Left, and `or.inr
 moves by Right. -/
 theorem lf_iff_exists_le {x y : PGame} :
     x ⧏ y ↔ (∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y := by
-  rw [Lf, le_iff_forall_lf, not_and_or]
+  rw [LF, le_iff_forall_lf, not_and_or]
   simp
 #align pgame.lf_iff_exists_le SetTheory.PGame.lf_iff_exists_le
 
@@ -581,8 +581,8 @@ instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf
 #align has_le.le.trans_lf LE.le.trans_lf
 
-alias Lf.trans_le := lf_of_lf_of_le
-#align pgame.lf.trans_le SetTheory.PGame.Lf.trans_le
+alias LF.trans_le := lf_of_lf_of_le
+#align pgame.lf.trans_le SetTheory.PGame.LF.trans_le
 
 @[trans]
 theorem lf_of_lt_of_lf {x y z : PGame} (h₁ : x < y) (h₂ : y ⧏ z) : x ⧏ z :=
@@ -597,8 +597,8 @@ theorem lf_of_lf_of_lt {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y < z) : x ⧏ z
 alias _root_.LT.lt.trans_lf := lf_of_lt_of_lf
 #align has_lt.lt.trans_lf LT.lt.trans_lf
 
-alias Lf.trans_lt := lf_of_lf_of_lt
-#align pgame.lf.trans_lt SetTheory.PGame.Lf.trans_lt
+alias LF.trans_lt := lf_of_lf_of_lt
+#align pgame.lf.trans_lt SetTheory.PGame.LF.trans_lt
 
 theorem moveLeft_lf {x : PGame} : ∀ i, x.moveLeft i ⧏ x :=
   le_rfl.moveLeft_lf
@@ -809,14 +809,14 @@ instance : Trans
     ((· ≤ ·) : PGame → PGame → Prop) where
   trans := le_of_equiv_of_le
 
-theorem Lf.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
-#align pgame.lf.not_equiv SetTheory.PGame.Lf.not_equiv
+theorem LF.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
+#align pgame.lf.not_equiv SetTheory.PGame.LF.not_equiv
 
-theorem Lf.not_equiv' {x y : PGame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
-#align pgame.lf.not_equiv' SetTheory.PGame.Lf.not_equiv'
+theorem LF.not_equiv' {x y : PGame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
+#align pgame.lf.not_equiv' SetTheory.PGame.LF.not_equiv'
 
-theorem Lf.not_gt {x y : PGame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
-#align pgame.lf.not_gt SetTheory.PGame.Lf.not_gt
+theorem LF.not_gt {x y : PGame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
+#align pgame.lf.not_gt SetTheory.PGame.LF.not_gt
 
 theorem le_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ ≤ y₁) : x₂ ≤ y₂ :=
   hx.2.trans (h.trans hy.1)
@@ -1066,7 +1066,7 @@ def mk' (L : y.LeftMoves ≃ x.LeftMoves) (R : y.RightMoves ≃ x.RightMoves)
 #align pgame.relabelling.mk' SetTheory.PGame.Relabelling.mk'
 
 /-- The equivalence between left moves of `x` and `y` given by the relabelling. -/
-def leftMovesEquiv : ∀ _ : x ≡r y, x.LeftMoves ≃ y.LeftMoves
+def leftMovesEquiv : x ≡r y → x.LeftMoves ≃ y.LeftMoves
   | ⟨L,_, _,_⟩ => L
 #align pgame.relabelling.left_moves_equiv SetTheory.PGame.Relabelling.leftMovesEquiv
 
@@ -1082,7 +1082,7 @@ theorem mk'_leftMovesEquiv {x y L R hL hR} :
 #align pgame.relabelling.mk'_left_moves_equiv SetTheory.PGame.Relabelling.mk'_leftMovesEquiv
 
 /-- The equivalence between right moves of `x` and `y` given by the relabelling. -/
-def rightMovesEquiv : ∀ _ : x ≡r y, x.RightMoves ≃ y.RightMoves
+def rightMovesEquiv : x ≡r y → x.RightMoves ≃ y.RightMoves
   | ⟨_, R, _, _⟩ => R
 #align pgame.relabelling.right_moves_equiv SetTheory.PGame.Relabelling.rightMovesEquiv
 
@@ -1256,7 +1256,7 @@ theorem neg_ofLists (L R : List PGame) :
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
-  rw [IsOption_iff, IsOption_iff, or_comm]
+  rw [isOption_iff, isOption_iff, or_comm]
   cases y;
   apply or_congr <;>
     · apply exists_congr
@@ -1663,7 +1663,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
-      · dsimp [leftMoves_add, rightMoves_add]
+      · dsimp
         apply addCommRelabelling
 termination_by _ x y => (x, y)
 #align pgame.add_comm_relabelling SetTheory.PGame.addCommRelabelling

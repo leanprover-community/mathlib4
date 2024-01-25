@@ -6,6 +6,8 @@ Authors: Adam Topaz
 
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Extensive
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 
@@ -24,7 +26,7 @@ namespace CompHaus
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 section Pullbacks
 
@@ -74,11 +76,11 @@ def pullback.lift {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = 
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
+    pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_snd {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
+    pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
 
 lemma pullback.hom_ext {Z : CompHaus.{u}} (a b : Z ⟶ pullback f g)
     (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
@@ -165,7 +167,7 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
 lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
@@ -229,6 +231,16 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
 -- `elementwise` should work here, but doesn't
+
+instance : PreservesFiniteCoproducts compHausToTop := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop
+  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)
+  exact TopCat.sigmaCofanIsColimit _
+
+instance : FinitaryExtensive CompHaus :=
+  finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts
 

@@ -47,7 +47,11 @@ ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # Trailing whitespace
+ERR_TWS = 15 # trailing whitespace
+ERR_CLN = 16 # line starts with a colon
+ERR_IND = 17 # second line not correctly indented
+ERR_ARR = 18 # space after "←"
+ERR_NUM_LIN = 19 # file is too large
 
 exceptions = []
 
@@ -57,20 +61,22 @@ ROOT_DIR = SCRIPTS_DIR.parent
 
 with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
-        filename, _, _, _, _, errno, *_ = exline.split()
+        filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path)]
+            exceptions += [(ERR_COP, path, None)]
         if errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path)]
+            exceptions += [(ERR_MOD, path, None)]
         if errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path)]
+            exceptions += [(ERR_LIN, path, None)]
         if errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path)]
+            exceptions += [(ERR_OPT, path, None)]
         if errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path)]
+            exceptions += [(ERR_AUT, path, None)]
         if errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path)]
+            exceptions += [(ERR_TAC, path, None)]
+        if errno == "ERR_NUM_LIN":
+            exceptions += [(ERR_NUM_LIN, path, extra[1])]
 
 new_exceptions = False
 
@@ -84,7 +90,7 @@ def annotate_comments(enumerate_lines):
     """
     in_comment = False
     for line_nr, line, *rem in enumerate_lines:
-        if line.startswith("--"):
+        if line.lstrip().startswith("--"):
             yield line_nr, line, *rem, True
             continue
         if "/-" in line:
@@ -159,6 +165,40 @@ def line_endings_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
+def four_spaces_in_second_line(lines, path):
+    # TODO: also fix the space for all lines before ":=", right now we only fix the line after
+    # the first line break
+    errors = []
+    # We never alter the first line, as it does not occur as next_line in the iteration over the
+    # zipped lines below, hence we add it here
+    newlines = [lines[0]]
+    annotated_lines = list(annotate_comments(lines))
+    for (_, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines,
+                                                                   annotated_lines[1:]):
+        # Check if the current line matches "(lemma|theorem) .* :"
+        new_next_line = next_line
+        if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$",
+                                          line):
+            # Calculate the number of spaces before the first non-space character in the next line
+            stripped_next_line = next_line.lstrip()
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--")):
+                num_spaces = len(next_line) - len(stripped_next_line)
+                # The match with "| " could potentially match with a different usage of the same
+                # symbol, e.g. some sort of norm. In that case a space is not necessary, so
+                # looking for "| " should be enough.
+                if stripped_next_line.startswith("| ") or line.endswith("where\n"):
+                    # Check and fix if the number of leading space is not 2
+                    if num_spaces != 2:
+                        errors += [(ERR_IND, next_line_nr, path)]
+                        new_next_line = ' ' * 2 + stripped_next_line
+                # Check and fix if the number of leading spaces is not 4
+                else:
+                    if num_spaces != 4:
+                        errors += [(ERR_IND, next_line_nr, path)]
+                        new_next_line = ' ' * 4 + stripped_next_line
+        newlines.append((next_line_nr, new_next_line))
+    return errors, newlines
+
 def long_lines_check(lines, path):
     errors = []
     # TODO: find a good way to break long lines
@@ -218,7 +258,7 @@ def regular_check(lines, path):
         if copy_done and line == "\n":
             continue
         words = line.split()
-        if words[0] != "import" and words[0] != "/-!" and words[0] != "#align_import":
+        if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
             errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
@@ -250,13 +290,28 @@ def isolated_by_dot_semicolon_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", count=1)
+            line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
+        if line.lstrip().startswith(":"):
+            errors += [(ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
+    return errors, newlines
+
+def left_arrow_check(lines, path):
+    errors = []
+    newlines = []
+    for line_nr, line, is_comment, in_string in annotate_strings(annotate_comments(lines)):
+        if is_comment or in_string:
+            newlines.append((line_nr, line))
+            continue
+        new_line = re.sub(r'←(?!%)(\S)', r'← \1', line)
+        if new_line != line:
+            errors += [(ERR_ARR, line_nr, path)]
+        newlines.append((line_nr, new_line))
     return errors, newlines
 
 def output_message(path, line_nr, code, msg):
@@ -276,7 +331,7 @@ def output_message(path, line_nr, code, msg):
 def format_errors(errors):
     global new_exceptions
     for errno, line_nr, path in errors:
-        if (errno, path.resolve()) in exceptions:
+        if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
         if errno == ERR_COP:
@@ -301,6 +356,12 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
+        if errno == ERR_CLN:
+            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
+        if errno == ERR_IND:
+            output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
+        if errno == ERR_ARR:
+            output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -308,19 +369,35 @@ def lint(path, fix=False):
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
-        errs, newlines = line_endings_check(enum_lines, path)
-        format_errors(errs)
-
-        errs,newlines = long_lines_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = isolated_by_dot_semicolon_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = set_option_check(newlines, path)
-        format_errors(errs)
-        if not import_only_check(newlines, path):
-            errs,newlines = regular_check(newlines, path)
+        newlines = enum_lines
+        for error_check in [line_endings_check,
+                            four_spaces_in_second_line,
+                            long_lines_check,
+                            isolated_by_dot_semicolon_check,
+                            set_option_check,
+                            left_arrow_check]:
+            errs, newlines = error_check(newlines, path)
             format_errors(errs)
-            errs,newlines = banned_import_check(newlines, path)
+
+        if not import_only_check(newlines, path):
+            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
+            # Each exception contains a "watermark". If the file is longer than that, we also complain.
+            if len(lines) > 1500:
+                ex = [e for e in exceptions if e[1] == path.resolve()]
+                if ex:
+                    (_ERR_NUM, _path, watermark) = list(ex)[0]
+                    assert int(watermark) > 500 # protect against parse error
+                    is_too_long = len(lines) > int(watermark)
+                else:
+                    is_too_long = True
+                if is_too_long:
+                    new_exceptions = True
+                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
+                    watermark = len(lines) // 100 * 100 + 200
+                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
+            errs, newlines = regular_check(newlines, path)
+            format_errors(errs)
+            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:

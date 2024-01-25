@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
+import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 
 #align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
@@ -42,7 +43,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
       rw [Fintype.sum_eq_single (0 : Fin (n + 2))]
       · simp only [Fin.val_zero, pow_zero, one_zsmul]
         erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
-          Splitting.ι_πSummand_eq_id, comp_id]
+          Splitting.cofan_inj_πSummand_eq_id, comp_id]
       · intro i hi
         dsimp
         simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
@@ -119,23 +120,45 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: added to speed up elaboration
 attribute [irreducible] N₁Γ₀
 
-theorem N₂Γ₂_toKaroubi : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ = Γ₀ ⋙ N₁ := by
-  have h := Functor.congr_obj (functorExtension₂_comp_whiskeringLeft_toKaroubi
-    (ChainComplex C ℕ) (SimplicialObject C)) Γ₀
-  have h' := Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi
-    (SimplicialObject C) (ChainComplex C ℕ)) N₁
-  dsimp [N₂, Γ₂, functorExtension₁] at h h' ⊢
-  rw [← Functor.assoc, h, Functor.assoc, h']
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₂Γ₂_to_karoubi AlgebraicTopology.DoldKan.N₂Γ₂_toKaroubi
-
 /-- Compatibility isomorphism between `toKaroubi _ ⋙ Γ₂ ⋙ N₂` and `Γ₀ ⋙ N₁` which
 are functors `ChainComplex C ℕ ⥤ Karoubi (ChainComplex C ℕ)`. -/
-@[simps!]
 def N₂Γ₂ToKaroubiIso : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ ≅ Γ₀ ⋙ N₁ :=
-  eqToIso N₂Γ₂_toKaroubi
+  calc
+    toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ ≅
+      toKaroubi (ChainComplex C ℕ) ⋙ (Γ₂ ⋙ N₂) := (Functor.associator _ _ _).symm
+    _ ≅ (Γ₀ ⋙ toKaroubi (SimplicialObject C)) ⋙ N₂ :=
+        isoWhiskerRight ((functorExtension₂CompWhiskeringLeftToKaroubiIso _ _).app Γ₀) N₂
+    _ ≅ Γ₀ ⋙ toKaroubi (SimplicialObject C) ⋙ N₂ := Functor.associator _ _ _
+    _ ≅ Γ₀ ⋙ N₁ :=
+      isoWhiskerLeft Γ₀ ((functorExtension₁CompWhiskeringLeftToKaroubiIso _ _).app N₁)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_to_karoubi_iso AlgebraicTopology.DoldKan.N₂Γ₂ToKaroubiIso
+
+@[simp]
+lemma N₂Γ₂ToKaroubiIso_hom_app (X : ChainComplex C ℕ) :
+    (N₂Γ₂ToKaroubiIso.hom.app X).f = PInfty := by
+  ext n
+  dsimp [N₂Γ₂ToKaroubiIso]
+  simp only [comp_id, assoc, PInfty_f_idem]
+  conv_rhs =>
+    rw [← PInfty_f_idem]
+  congr 1
+  apply (Γ₀.splitting X).hom_ext'
+  intro A
+  rw [Splitting.ι_desc_assoc, assoc]
+  apply id_comp
+
+@[simp]
+lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
+    (N₂Γ₂ToKaroubiIso.inv.app X).f = PInfty := by
+  ext n
+  dsimp [N₂Γ₂ToKaroubiIso]
+  simp only [comp_id, PInfty_f_idem_assoc, AlternatingFaceMapComplex.obj_X, Γ₀_obj_obj]
+  convert comp_id _
+  apply (Γ₀.splitting X).hom_ext'
+  intro A
+  rw [Splitting.ι_desc]
+  erw [comp_id, id_comp]
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] N₂Γ₂ToKaroubiIso
@@ -150,17 +173,16 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
-      X.p.f n ≫ (Γ₀.splitting X.X).ιSummand (Splitting.IndexSet.id (op [n])) := by
-  simp only [N₂Γ₂, Functor.preimageIso, Iso.trans,
-    whiskeringLeft_obj_preimage_app, N₂Γ₂ToKaroubiIso_inv, assoc,
-    Functor.id_map, NatTrans.comp_app, eqToHom_app, Karoubi.comp_f,
-    Karoubi.eqToHom_f, Karoubi.decompId_p_f, HomologicalComplex.comp_f,
-    N₁Γ₀_inv_app_f_f, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f,
-    Functor.comp_map, Functor.comp_obj, Karoubi.decompId_i_f,
-    eqToHom_refl, comp_id, N₂_map_f_f, Γ₂_map_f_app, N₁_obj_p,
-    PInfty_on_Γ₀_splitting_summand_eq_self_assoc, toKaroubi_obj_X,
-    Splitting.ι_desc, Splitting.IndexSet.id_fst, SimplexCategory.len_mk, unop_op,
-    Karoubi.HomologicalComplex.p_idem_assoc]
+      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
+  dsimp [N₂Γ₂]
+  simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
+    Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
+    N₁Γ₀_inv_app_f_f, toKaroubi_obj_X, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f,
+    Γ₀.obj_obj, PInfty_on_Γ₀_splitting_summand_eq_self, N₂_map_f_f,
+    Γ₂_map_f_app, unop_op, Karoubi.decompId_p_f, PInfty_f_idem_assoc,
+    PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Splitting.IndexSet.id_fst, SimplexCategory.len_mk,
+    Splitting.ι_desc]
+  apply Karoubi.HomologicalComplex.p_idem_assoc
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂Γ₂_inv_app_f_f AlgebraicTopology.DoldKan.N₂Γ₂_inv_app_f_f
 

@@ -74,7 +74,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
-      cases' eq_or_ne a b with hab hab
+      rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
         let i := wf.min _ hab
@@ -245,14 +245,14 @@ instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
 noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCancelCommMonoid (β i)] :
     LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
-  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
-  __ := (inferInstance: OrderedCancelCommMonoid (Lex (∀ i, β i)))
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
 
 @[to_additive]
 noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCommGroup (β i)] :
     LinearOrderedCommGroup (Lex (∀ i, β i)) where
-  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
   mul_le_mul_left _ _ := mul_le_mul_left'
 
 end OrderedMonoid

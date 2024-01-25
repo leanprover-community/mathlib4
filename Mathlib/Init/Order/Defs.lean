@@ -7,6 +7,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.TypeStar
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -262,7 +263,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 macro "compareOfLessAndEq_rfl" : tactic =>
   `(tactic| (intros a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
-    (induction a <;> induction b <;> simp only [])))
+    (induction a <;> induction b <;> simp (config := {decide := true}) only [])))
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
@@ -399,8 +400,8 @@ instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
 #align is_strict_weak_order_of_linear_order isStrictWeakOrder_of_linearOrder
 
 -- TODO(Leo): decide whether we should keep this instance or not
-instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·)
-    where trichotomous := lt_trichotomy
+instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·) where
+  trichotomous := lt_trichotomy
 #align is_strict_total_order_of_linear_order isStrictTotalOrder_of_linearOrder
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
@@ -430,22 +431,22 @@ theorem compare_gt_iff_gt {a b : α} : (compare a b = .gt) ↔ a > b := by
 
 theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only []
+  split_ifs <;> try simp only
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h
 
 theorem compare_le_iff_le {a b : α} : (compare a b ≠ .gt) ↔ a ≤ b := by
-  cases h : compare a b <;> simp only []
-  · exact true_iff_iff.2 <| le_of_lt <| compare_lt_iff_lt.1 h
-  · exact true_iff_iff.2 <| le_of_eq <| compare_eq_iff_eq.1 h
-  · exact false_iff_iff.2 <| not_le_of_gt <| compare_gt_iff_gt.1 h
+  cases h : compare a b <;> simp
+  · exact le_of_lt <| compare_lt_iff_lt.1 h
+  · exact le_of_eq <| compare_eq_iff_eq.1 h
+  · exact compare_gt_iff_gt.1 h
 
 theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
-  cases h : compare a b <;> simp only []
-  · exact false_iff_iff.2 <| (lt_iff_not_ge a b).1 <| compare_lt_iff_lt.1 h
-  · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
+  cases h : compare a b <;> simp
+  · exact compare_lt_iff_lt.1 h
+  · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · exact le_of_lt <| compare_gt_iff_gt.1 h
 
 theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
   cases o <;> simp only [Ordering.toRel]

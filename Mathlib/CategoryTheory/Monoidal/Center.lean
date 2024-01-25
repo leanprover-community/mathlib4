@@ -230,7 +230,7 @@ instance : MonoidalCategory (Center C) where
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   -- Todo: replace it by `f.f ▷ Y.1`
   whiskerRight f Y := tensorHom f (𝟙 Y)
-  tensorUnit' := tensorUnit
+  tensorUnit := tensorUnit
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
@@ -325,11 +325,6 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
-  braiding_naturality f g := by
-    ext
-    dsimp
-    rw [← tensor_id_comp_id_tensor, Category.assoc, HalfBraiding.naturality, f.comm_assoc,
-      id_tensor_comp_tensor_id]
 #align category_theory.center.braided_category_center CategoryTheory.Center.braidedCategoryCenter
 
 -- `aesop_cat` handles the hexagon axioms

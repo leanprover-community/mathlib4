@@ -3,6 +3,7 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
 
@@ -114,47 +115,50 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 #align same_ray.trans SameRay.trans
 
+variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
+  [IsScalarTower S R M] {a : S}
+
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
-theorem sameRay_nonneg_smul_right (v : M) {r : R} (h : 0 ≤ r) : SameRay R v (r • v) :=
-  Or.inr <|
-    h.eq_or_lt.imp (fun (h : 0 = r) => h ▸ zero_smul R v) fun h =>
-      ⟨r, 1, h, by
-        nontriviality R
-        exact zero_lt_one, (one_smul _ _).symm⟩
+lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
+  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  · rw [← algebraMap_smul R a v, h, zero_smul]
+    exact zero_right _
+  · refine Or.inr $ Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
+    rw [algebraMap_smul, one_smul]
 #align same_ray_nonneg_smul_right SameRay.sameRay_nonneg_smul_right
 
-/-- A vector is in the same ray as a positive multiple of itself. -/
-theorem sameRay_pos_smul_right (v : M) {r : R} (h : 0 < r) : SameRay R v (r • v) :=
-  sameRay_nonneg_smul_right v h.le
-#align same_ray_pos_smul_right SameRay.sameRay_pos_smul_right
-
-/-- A vector is in the same ray as a nonnegative multiple of one it is in the same ray as. -/
-theorem nonneg_smul_right {r : R} (h : SameRay R x y) (hr : 0 ≤ r) : SameRay R x (r • y) :=
-  h.trans (sameRay_nonneg_smul_right y hr) fun hy => Or.inr <| by rw [hy, smul_zero]
-#align same_ray.nonneg_smul_right SameRay.nonneg_smul_right
-
-/-- A vector is in the same ray as a positive multiple of one it is in the same ray as. -/
-theorem pos_smul_right {r : R} (h : SameRay R x y) (hr : 0 < r) : SameRay R x (r • y) :=
-  h.nonneg_smul_right hr.le
-#align same_ray.pos_smul_right SameRay.pos_smul_right
-
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/
-theorem sameRay_nonneg_smul_left (v : M) {r : R} (h : 0 ≤ r) : SameRay R (r • v) v :=
-  (sameRay_nonneg_smul_right v h).symm
+lemma sameRay_nonneg_smul_left (v : M) (ha : 0 ≤ a) : SameRay R (a • v) v :=
+  (sameRay_nonneg_smul_right v ha).symm
 #align same_ray_nonneg_smul_left SameRay.sameRay_nonneg_smul_left
 
+/-- A vector is in the same ray as a positive multiple of itself. -/
+lemma sameRay_pos_smul_right (v : M) (ha : 0 < a) : SameRay R v (a • v) :=
+  sameRay_nonneg_smul_right v ha.le
+#align same_ray_pos_smul_right SameRay.sameRay_pos_smul_right
+
 /-- A positive multiple of a vector is in the same ray as that vector. -/
-theorem sameRay_pos_smul_left (v : M) {r : R} (h : 0 < r) : SameRay R (r • v) v :=
-  sameRay_nonneg_smul_left v h.le
+lemma sameRay_pos_smul_left (v : M) (ha : 0 < a) : SameRay R (a • v) v :=
+  sameRay_nonneg_smul_left v ha.le
 #align same_ray_pos_smul_left SameRay.sameRay_pos_smul_left
 
+/-- A vector is in the same ray as a nonnegative multiple of one it is in the same ray as. -/
+lemma nonneg_smul_right (h : SameRay R x y) (ha : 0 ≤ a) : SameRay R x (a • y) :=
+  h.trans (sameRay_nonneg_smul_right y ha) fun hy => Or.inr <| by rw [hy, smul_zero]
+#align same_ray.nonneg_smul_right SameRay.nonneg_smul_right
+
 /-- A nonnegative multiple of a vector is in the same ray as one it is in the same ray as. -/
-theorem nonneg_smul_left {r : R} (h : SameRay R x y) (hr : 0 ≤ r) : SameRay R (r • x) y :=
-  (h.symm.nonneg_smul_right hr).symm
+lemma nonneg_smul_left (h : SameRay R x y) (ha : 0 ≤ a) : SameRay R (a • x) y :=
+  (h.symm.nonneg_smul_right ha).symm
 #align same_ray.nonneg_smul_left SameRay.nonneg_smul_left
 
+/-- A vector is in the same ray as a positive multiple of one it is in the same ray as. -/
+theorem pos_smul_right (h : SameRay R x y) (ha : 0 < a) : SameRay R x (a • y) :=
+  h.nonneg_smul_right ha.le
+#align same_ray.pos_smul_right SameRay.pos_smul_right
+
 /-- A positive multiple of a vector is in the same ray as one it is in the same ray as. -/
-theorem pos_smul_left {r : R} (h : SameRay R x y) (hr : 0 < r) : SameRay R (r • x) y :=
+theorem pos_smul_left (h : SameRay R x y) (hr : 0 < a) : SameRay R (a • x) y :=
   h.nonneg_smul_left hr.le
 #align same_ray.pos_smul_left SameRay.pos_smul_left
 
@@ -313,7 +317,7 @@ variable {G : Type*} [Group G] [DistribMulAction G M]
 when `G = Rˣ` -/
 instance {R : Type*} : MulAction G (RayVector R M)
     where
-  smul r := Subtype.map ((· • ·) r) fun _ => (smul_ne_zero_iff_ne _).2
+  smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
   one_smul _ := Subtype.ext <| one_smul _ _
 
@@ -323,7 +327,7 @@ variable [SMulCommClass R G M]
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M)
     where
-  smul r := Quotient.map ((· • ·) r) fun _ _ h => h.smul _
+  smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
   mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
   one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
 
@@ -507,7 +511,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
-theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (↥Units.posSubgroup R) v₂) :
+theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit ↥(Units.posSubgroup R) v₂) :
     SameRay R v₁ v₂ := by
   rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr

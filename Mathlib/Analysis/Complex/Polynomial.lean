@@ -3,9 +3,10 @@ Copyright (c) 2019 Chris Hughes All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
+import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Analysis.Complex.Liouville
-import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
 #align_import analysis.complex.polynomial from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
@@ -18,7 +19,7 @@ This file proves that every nonconstant complex polynomial has a root using Liou
 As a consequence, the complex numbers are algebraically closed.
 -/
 
-open Polynomial
+open Polynomial Bornology
 
 open scoped Polynomial
 
@@ -27,14 +28,17 @@ namespace Complex
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
-  contrapose! hf
-  have : Metric.Bounded (Set.range (eval · f)⁻¹)
-  · obtain ⟨z₀, h₀⟩ := f.exists_forall_norm_le
-    simp only [Pi.inv_apply, bounded_iff_forall_norm_le, Set.forall_range_iff, norm_inv]
-    exact ⟨‖eval z₀ f‖⁻¹, fun z => inv_le_inv_of_le (norm_pos_iff.2 <| hf z₀) (h₀ z)⟩
-  obtain ⟨c, hc⟩ := (f.differentiable.inv hf).exists_const_forall_eq_of_bounded this
-  · obtain rfl : f = C c⁻¹ := Polynomial.funext fun z => by rw [eval_C, ← hc z, inv_inv]
-    exact degree_C_le
+  by_contra! hf'
+  /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
+  infinity at infinity, thus `f⁻¹` tends to zero at infinity. By Liouville's theorem, `f⁻¹ = 0`. -/
+  have (z : ℂ) : (f.eval z)⁻¹ = 0 :=
+    (f.differentiable.inv hf').apply_eq_of_tendsto_cocompact z <|
+      Metric.cobounded_eq_cocompact (α := ℂ) ▸ (Filter.tendsto_inv₀_cobounded.comp <| by
+        simpa only [tendsto_norm_atTop_iff_cobounded]
+          using f.tendsto_norm_atTop hf tendsto_norm_cobounded_atTop)
+  -- Thus `f = 0`, contradicting the fact that `0 < degree f`.
+  obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
+  simp at hf
 #align complex.exists_root Complex.exists_root
 
 instance isAlgClosed : IsAlgClosed ℂ :=

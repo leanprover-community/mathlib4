@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Basic
+import Std.Data.Fin.Basic
 
 set_option autoImplicit true
 
@@ -16,7 +16,7 @@ namespace BinaryHeap
 /-- Core operation for binary heaps, expressed directly on arrays.
 Given an array which is a max-heap, push item `i` down to restore the max-heap property. -/
 def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
-  {a' : Array α // a'.size = a.size} :=
+    {a' : Array α // a'.size = a.size} :=
   let left := 2 * i.1 + 1
   let right := left + 1
   have left_le : i ≤ left := Nat.le_trans
@@ -49,7 +49,7 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
   | i+1, a, h =>
     let h := Nat.lt_of_succ_le h
     let a' := heapifyDown lt a ⟨i, h⟩
-    let ⟨a₂, h₂⟩ := loop i a' ((heapifyDown ..).2.symm ▸ le_of_lt h)
+    let ⟨a₂, h₂⟩ := loop i a' ((heapifyDown ..).2.symm ▸ Nat.le_of_lt h)
     ⟨a₂, h₂.trans a'.2⟩
   loop (a.size / 2) a (Nat.div_le_self ..)
 
@@ -59,11 +59,11 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
 /-- Core operation for binary heaps, expressed directly on arrays.
 Given an array which is a max-heap, push item `i` up to restore the max-heap property. -/
 def heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
-  {a' : Array α // a'.size = a.size} :=
+    {a' : Array α // a'.size = a.size} :=
 if i0 : i.1 = 0 then ⟨a, rfl⟩ else
-  have : (i.1 - 1) / 2 < i := lt_of_le_of_lt (Nat.div_le_self ..) $
-    Nat.sub_lt (Nat.pos_iff_ne_zero.2 i0) Nat.one_pos
-  let j := ⟨(i.1 - 1) / 2, lt_trans this i.2⟩
+  have : (i.1 - 1) / 2 < i := Nat.lt_of_le_of_lt (Nat.div_le_self ..) <|
+    Nat.sub_lt (Nat.pos_of_ne_zero i0) Nat.zero_lt_one
+  let j := ⟨(i.1 - 1) / 2, Nat.lt_trans this i.2⟩
   if lt (a.get j) (a.get i) then
     let a' := a.swap i j
     let ⟨a₂, h₂⟩ := heapifyUp lt a' ⟨j.1, by rw [a.size_swap i j]; exact j.2⟩

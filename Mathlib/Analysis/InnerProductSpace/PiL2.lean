@@ -53,8 +53,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
@@ -139,6 +137,24 @@ theorem EuclideanSpace.edist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintyp
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y
 #align euclidean_space.edist_eq EuclideanSpace.edist_eq
+
+theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
+  ext x
+  have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
+
+theorem EuclideanSpace.closedBall_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.closedBall (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 ≤ r ^ 2} := by
+  ext
+  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
+
+theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.sphere (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 = r ^ 2} := by
+  ext x
+  have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
+    sqrt_eq_iff_sq_eq this hr, eq_comm]
 
 variable [Fintype ι]
 
@@ -334,10 +350,6 @@ variable {ι 𝕜 E}
 
 namespace OrthonormalBasis
 
-instance instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
-  ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 (EuclideanSpace 𝕜 ι))⟩
-#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
-
 theorem repr_injective :
     Injective (repr : OrthonormalBasis ι 𝕜 E → E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) := fun f g h => by
   cases f
@@ -346,7 +358,7 @@ theorem repr_injective :
 
 -- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
+instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
@@ -357,7 +369,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
-        simp only [LinearEquiv.comp_coe, SMulHomClass.map_smul, LinearEquiv.coe_coe,
+        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
           LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_single,
           LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
         rw [h]
@@ -368,7 +380,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
     ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   funext
   congr!
 #align orthonormal_basis.coe_of_repr OrthonormalBasis.coe_ofRepr
@@ -377,7 +389,7 @@ theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 �
 protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   congr!
 #align orthonormal_basis.repr_symm_single OrthonormalBasis.repr_symm_single
 
@@ -426,8 +438,9 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr,
-    LinearIsometryEquiv.coe_toLinearEquiv]
+  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr];
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [LinearIsometryEquiv.coe_toLinearEquiv]
 #align orthonormal_basis.coe_to_basis_repr_apply OrthonormalBasis.coe_toBasis_repr_apply
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
@@ -444,7 +457,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
   rw [map_sum] at this
   convert this
-  rw [SMulHomClass.map_smul, b.repr_apply_apply, mul_comm]
+  rw [map_smul, b.repr_apply_apply, mul_comm]
   simp only [innerSL_apply, smul_eq_mul] -- Porting note: was `rfl`
 #align orthonormal_basis.sum_inner_mul_inner OrthonormalBasis.sum_inner_mul_inner
 
@@ -612,6 +625,31 @@ protected theorem repr_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι')
 
 end OrthonormalBasis
 
+namespace EuclideanSpace
+
+variable (𝕜 ι)
+
+/-- The basis `Pi.basisFun`, bundled as an orthornormal basis of `EuclideanSpace 𝕜 ι`. -/
+noncomputable def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :=
+  ⟨LinearIsometryEquiv.refl _ _⟩
+
+@[simp]
+theorem basisFun_apply [DecidableEq ι] (i : ι) : basisFun ι 𝕜 i = EuclideanSpace.single i 1 :=
+  PiLp.basisFun_apply _ _ _ _
+
+@[simp]
+theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) : (basisFun ι 𝕜).repr x i = x i := rfl
+
+theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι := rfl
+
+end EuclideanSpace
+
+instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
+  ⟨EuclideanSpace.basisFun ι 𝕜⟩
+#align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
+
+section Complex
+
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
 def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
   Complex.basisOneI.toOrthonormalBasis
@@ -671,6 +709,8 @@ theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F)
   simp [← v.sum_repr_symm]
 #align complex.isometry_of_orthonormal_apply Complex.isometryOfOrthonormal_apply
 
+end Complex
+
 open FiniteDimensional
 
 /-! ### Matrix representation of an orthonormal basis with respect to another -/
@@ -698,11 +738,10 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
 unit length. -/
 @[simp]
 theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ = 1 := by
-  have : (normSq (a.toBasis.det b) : 𝕜) = 1 := by
-    simpa [IsROrC.mul_conj] using
-      (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
+  have := (Matrix.det_of_mem_unitary (a.toMatrix_orthonormalBasis_mem_unitary b)).2
+  rw [star_def, IsROrC.mul_conj] at this
   norm_cast at this
-  rwa [← sqrt_normSq_eq_norm, sqrt_eq_one]
+  rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
 #align orthonormal_basis.det_to_matrix_orthonormal_basis OrthonormalBasis.det_to_matrix_orthonormalBasis
 
 end
@@ -765,11 +804,10 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
     ∃ (u : Finset E) (b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
   obtain ⟨u₀, hu₀s, hu₀, hu₀_max⟩ := exists_maximal_orthonormal hv
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
-  have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
+  have hu₀_finite : u₀.Finite := hu₀.linearIndependent.setFinite
   let u : Finset E := hu₀_finite.toFinset
-  let fu : ↥u ≃ ↥u₀ := Equiv.cast (congr_arg (↥) hu₀_finite.coe_toFinset)
-  have hfu : ((↑) : u → E) = ((↑) : u₀ → E) ∘ fu := by ext; simp
-  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa [hfu] using hu₀.comp _ fu.injective
+  let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
+  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
   refine' ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu _, _, _⟩
   · simpa using hu₀_max
   · simpa using hu₀s
@@ -995,6 +1033,11 @@ theorem toEuclideanLin_eq_toLin :
       Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
   rfl
 #align matrix.to_euclidean_lin_eq_to_lin Matrix.toEuclideanLin_eq_toLin
+
+open EuclideanSpace in
+lemma toEuclideanLin_eq_toLin_orthonormal :
+    toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
+  rfl
 
 end Matrix
 

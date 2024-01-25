@@ -29,11 +29,11 @@ open Polynomial Real
 
 open scoped Nat Real
 
-theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprime n) :
+theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
-  have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast h0
+  have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
   constructor
   · use i
     field_simp [hn0, mul_comm (i : ℂ), mul_comm (n : ℂ)]
@@ -55,8 +55,8 @@ theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 *
 #align complex.is_primitive_root_exp Complex.isPrimitiveRoot_exp
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
-    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.coprime n, exp (2 * π * I * (i / n)) = ζ := by
-  have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast hn
+    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
+  have hn0 : (n : ℂ) ≠ 0 := mod_cast hn
   constructor; swap
   · rintro ⟨i, -, hi, rfl⟩; exact isPrimitiveRoot_exp_of_coprime i n hn hi
   intro h
@@ -73,7 +73,7 @@ complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `
 nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < (n : ℕ), exp (2 * π * I * (i / n)) = x := by
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
-  have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast n.ne_zero
+  have hn0 : (n : ℂ) ≠ 0 := mod_cast n.ne_zero
   constructor
   · intro h
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
@@ -143,7 +143,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       rw [mul_neg_one, sub_eq_add_neg]
   on_goal 2 =>
     split_ifs with h₂
-    · exact_mod_cast h
+    · exact mod_cast h
     suffices (i - n : ℤ).natAbs = n - i by
       rw [this]
       apply tsub_lt_self hn.bot_lt
@@ -164,24 +164,24 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     rw [← mul_rotate', mul_div_assoc]
     rw [← mul_one n] at h₂
     exact mul_le_of_le_one_right Real.pi_pos.le
-      ((div_le_iff' <| by exact_mod_cast pos_of_gt h).mpr <| by exact_mod_cast h₂)
+      ((div_le_iff' <| mod_cast pos_of_gt h).mpr <| mod_cast h₂)
   rw [← Complex.cos_sub_two_pi, ← Complex.sin_sub_two_pi]
   convert Complex.arg_cos_add_sin_mul_I _
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
-    exact_mod_cast hn
+    exact mod_cast hn
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
-    exact_mod_cast hn
+    exact mod_cast hn
   field_simp [hn]
   refine' ⟨_, le_trans _ Real.pi_pos.le⟩
   on_goal 2 =>
     rw [mul_div_assoc]
-    exact mul_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr <| by exact_mod_cast h.le)
+    exact mul_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr <| mod_cast h.le)
       (div_nonneg (by simp [Real.pi_pos.le]) <| by simp)
   rw [← mul_rotate', mul_div_assoc, neg_lt, ← mul_neg, mul_lt_iff_lt_one_right Real.pi_pos, ←
     neg_div, ← neg_mul, neg_sub, div_lt_iff, one_mul, sub_mul, sub_lt_comm, ← mul_sub_one]
   norm_num
-  exact_mod_cast not_le.mp h₂
+  exact mod_cast not_le.mp h₂
   · exact Nat.cast_pos.mpr hn.bot_lt
 #align is_primitive_root.arg IsPrimitiveRoot.arg

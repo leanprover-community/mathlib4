@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.Module.Basic
 
@@ -84,6 +84,8 @@ instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
 instance : Inhabited (FreeAbelianGroup α) :=
   ⟨0⟩
 
+instance [IsEmpty α] : Unique (FreeAbelianGroup α) := by unfold FreeAbelianGroup; infer_instance
+
 variable {α}
 
 namespace FreeAbelianGroup
@@ -115,7 +117,7 @@ protected theorem of (x : α) : lift f (of x) = f x := by
 
 protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -289,7 +291,7 @@ theorem sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
 /-- If `f : FreeAbelianGroup (α → β)`, then `f <*>` is an additive morphism
 `FreeAbelianGroup α →+ FreeAbelianGroup β`. -/
 def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
-  AddMonoidHom.mk' ((· <*> ·) f) fun x y ↦
+  AddMonoidHom.mk' (f <*> ·) fun x y ↦
     show lift (· <$> (x + y)) _ = _ by
       simp only [FreeAbelianGroup.map_add]
       exact lift.add' f _ _
@@ -439,7 +441,6 @@ instance one [One α] : One (FreeAbelianGroup α) :=
 
 instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
-    mul := (· * ·)
     mul_assoc := fun x y z ↦ by
       refine' FreeAbelianGroup.induction_on z (by simp only [mul_zero])
           (fun L3 ↦ _) (fun L3 ih ↦ _) fun z₁ z₂ ih₁ ih₂ ↦ _
@@ -462,7 +463,6 @@ variable {R : Type*} [Monoid α] [Ring R]
 instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
-    mul := (· * ·)
     mul_one := fun x ↦ by
       dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       rw [lift.of]

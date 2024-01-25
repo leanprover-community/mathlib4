@@ -87,7 +87,7 @@ General algebra:
     $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomainPolynomialToSemiringToDivisionSemiringToSemifield'
     Hilbert basis theorem: 'Polynomial.isNoetherianRing'
     $A[X]$ has gcd and lcm if $A$ does: 'Polynomial.normalizedGcdMonoid'
-    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.instUniqueFactorizationMonoidMvPolynomialToCommSemiringToCancelCommMonoidWithZeroCommSemiringInstIsDomainMvPolynomialToCommSemiringToSemiringCommSemiring'
+    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
     irreducible polynomial: 'Irreducible'
     Eisenstein's criterion: 'Polynomial.irreducible_of_eisenstein_criterion'
     polynomial in several indeterminates: 'MvPolynomial'
@@ -138,6 +138,10 @@ General algebra:
     perfection of a ring: 'Ring.Perfection'
   Transcendental numbers:
     Liouville's theorem on existence of transcendental numbers: 'transcendental_liouvilleNumber'
+
+  Algebraic Number Theory:
+    Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
+    Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
 
   Representation theory:
     representation : 'Representation'
@@ -213,7 +217,7 @@ Topology:
     Stone-Cech compactification: 'StoneCech'
     topological fiber bundle: 'FiberBundle'
     topological vector bundle: 'VectorBundle'
-    Urysohn's lemma: 'exists_continuous_zero_one_of_closed'
+    Urysohn's lemma: 'exists_continuous_zero_one_of_isClosed'
     Stone-Weierstrass theorem: 'ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints'
   Uniform notions:
     uniform space: 'UniformSpace'
@@ -245,7 +249,7 @@ Topology:
     Lipschitz continuity: 'LipschitzWith'
     Hölder continuity: 'HolderWith'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
-    Baire theorem: 'dense_iInter_of_open'
+    Baire theorem: 'dense_iInter_of_isOpen'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
     Hausdorff distance: 'EMetric.hausdorffEdist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'
@@ -265,7 +269,7 @@ Analysis:
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
-    absolutely convergent series in Banach spaces: 'summable_of_summable_norm'
+    absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
     dual of a normed space: 'NormedSpace.Dual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
@@ -366,14 +370,14 @@ Probability Theory:
     conditional probability: 'ProbabilityTheory.cond'
     conditional expectation: 'MeasureTheory.condexp'
   Random variables and their laws:
-    discrete law: 'Pmf'
+    discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     independence of random variables: 'ProbabilityTheory.iIndepFun'
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
     mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_of_integrable'
     moment of a random variable: 'ProbabilityTheory.moment'
-    Bernoulli law: 'Pmf.bernoulli'
+    Bernoulli law: 'PMF.bernoulli'
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
@@ -404,7 +408,7 @@ Geometry:
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
-    sphere: 'smoothMfldWithCorners'
+    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'

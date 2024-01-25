@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -82,8 +84,7 @@ set_option linter.uppercaseLean3 false -- A B D
 
 noncomputable section
 
-open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory
-open TopologicalSpace (SecondCountableTopology)
+open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory TopologicalSpace
 open scoped Topology
 
 namespace ContinuousLinearMap
@@ -115,9 +116,7 @@ namespace FDerivMeasurableAux
 at scale `r` by the linear map `L`, up to an error `ε`. We tweak the definition to make sure that
 this is an open set.-/
 def A (f : E → F) (L : E →L[𝕜] F) (r ε : ℝ) : Set E :=
-  { x |
-    ∃ r' ∈ Ioc (r / 2) r,
-      ∀ (y) (_ : y ∈ ball x r') (z) (_ : z ∈ ball x r'), ‖f z - f y - L (z - y)‖ < ε * r }
+  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ y ∈ ball x r', ∀ z ∈ ball x r', ‖f z - f y - L (z - y)‖ < ε * r }
 #align fderiv_measurable_aux.A FDerivMeasurableAux.A
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a continuous linear map
@@ -165,32 +164,29 @@ theorem le_of_mem_A {r ε : ℝ} {L : E →L[𝕜] F} {x : E} (hx : x ∈ A f L 
 
 theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : DifferentiableAt 𝕜 f x) :
     ∃ R > 0, ∀ r ∈ Ioo (0 : ℝ) R, x ∈ A f (fderiv 𝕜 f x) r ε := by
-  have := hx.hasFDerivAt
-  simp only [HasFDerivAt, HasFDerivAtFilter, isLittleO_iff] at this
-  let δ := (ε/2)/2
-  have hδ : 0 < δ := by positivity
-  rcases eventually_nhds_iff_ball.1 (this hδ) with ⟨R, R_pos, hR⟩
+  let δ := (ε / 2) / 2
+  obtain ⟨R, R_pos, hR⟩ :
+      ∃ R > 0, ∀ y ∈ ball x R, ‖f y - f x - fderiv 𝕜 f x (y - x)‖ ≤ δ * ‖y - x‖ :=
+    eventually_nhds_iff_ball.1 <| hx.hasFDerivAt.isLittleO.bound <| by positivity
   refine' ⟨R, R_pos, fun r hr => _⟩
-  have : r ∈ Ioc (r / 2) r := ⟨half_lt_self hr.1, le_rfl⟩
+  have : r ∈ Ioc (r / 2) r := right_mem_Ioc.2 <| half_lt_self hr.1
   refine' ⟨r, this, fun y hy z hz => _⟩
   calc
     ‖f z - f y - (fderiv 𝕜 f x) (z - y)‖ =
         ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ :=
-      by congr 1; simp only [ContinuousLinearMap.map_sub]; abel
+      by simp only [map_sub]; abel_nf
     _ ≤ ‖f z - f x - (fderiv 𝕜 f x) (z - x)‖ + ‖f y - f x - (fderiv 𝕜 f x) (y - x)‖ :=
-      (norm_sub_le _ _)
+      norm_sub_le _ _
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
-      (add_le_add (hR _ (lt_trans (mem_ball.1 hz) hr.2)) (hR _ (lt_trans (mem_ball.1 hy) hr.2)))
+      add_le_add (hR _ (ball_subset_ball hr.2.le hz)) (hR _ (ball_subset_ball hr.2.le hy))
     _ ≤ δ * r + δ * r := by rw [mem_ball_iff_norm] at hz hy; gcongr
-    _ = (ε /2) * r := by ring
+    _ = (ε / 2) * r := by ring
     _ < ε * r := by gcongr; exacts [hr.1, half_lt_self hε]
 #align fderiv_measurable_aux.mem_A_of_differentiable FDerivMeasurableAux.mem_A_of_differentiable
 
 theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0 < ε) (hr : 0 < r) {x : E}
     {L₁ L₂ : E →L[𝕜] F} (h₁ : x ∈ A f L₁ r ε) (h₂ : x ∈ A f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ‖c‖ * ε := by
-  have : 0 ≤ 4 * ‖c‖ * ε :=
-    mul_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 4) (norm_nonneg _)) hε.le
-  refine' op_norm_le_of_shell (half_pos hr) this hc _
+  refine' op_norm_le_of_shell (half_pos hr) (by positivity) hc _
   intro y ley ylt
   rw [div_div, div_le_iff' (mul_pos (by norm_num : (0 : ℝ) < 2) (zero_lt_one.trans hc))] at ley
   calc
@@ -206,7 +202,7 @@ theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
         · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
         · simp only [dist_eq_norm, add_sub_cancel', mem_closedBall, ylt.le]
     _ = 2 * ε * r := by ring
-    _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := (mul_le_mul_of_nonneg_left ley (mul_nonneg (by norm_num) hε.le))
+    _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := by gcongr
     _ = 4 * ‖c‖ * ε * ‖y‖ := by ring
 #align fderiv_measurable_aux.norm_sub_le_of_mem_A FDerivMeasurableAux.norm_sub_le_of_mem_A
 
@@ -216,7 +212,7 @@ theorem differentiable_set_subset_D :
   intro x hx
   rw [D, mem_iInter]
   intro e
-  have : (0 : ℝ) < (1 / 2) ^ e := pow_pos (by norm_num) _
+  have : (0 : ℝ) < (1 / 2) ^ e := by positivity
   rcases mem_A_of_differentiable this hx.1 with ⟨R, R_pos, hR⟩
   obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2) ^ n < R :=
     exists_pow_lt_of_lt_one R_pos (by norm_num : (1 : ℝ) / 2 < 1)
@@ -231,7 +227,6 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     D f K ⊆ { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } := by
   have P : ∀ {n : ℕ}, (0 : ℝ) < (1 / 2) ^ n := fun {n} => pow_pos (by norm_num) n
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have cpos : 0 < ‖c‖ := lt_trans zero_lt_one hc
   intro x hx
   have :
     ∀ e : ℕ, ∃ n : ℕ, ∀ p q, n ≤ p → n ≤ q →
@@ -290,13 +285,13 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     rw [Metric.cauchySeq_iff']
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / (12 * ‖c‖) :=
-      exists_pow_lt_of_lt_one (div_pos εpos (mul_pos (by norm_num) cpos)) (by norm_num)
+      exists_pow_lt_of_lt_one (by positivity) (by norm_num)
     refine' ⟨e, fun e' he' => _⟩
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos]; ring
+      _ = ε := by field_simp; ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -332,10 +327,10 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     -- the scale is large enough (as `y` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_trans hk y_lt
-      rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
@@ -343,7 +338,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     have J1 : ‖f (x + y) - f x - L e (n e) m (x + y - x)‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
       apply le_of_mem_A (hn e (n e) m le_rfl m_ge).2.2
       · simp only [mem_closedBall, dist_self]
-        exact div_nonneg (le_of_lt P) zero_le_two
+        positivity
       · simpa only [dist_eq_norm, add_sub_cancel', mem_closedBall, pow_succ', mul_one_div] using
           h'k
     have J2 : ‖f (x + y) - f x - L e (n e) m y‖ ≤ 4 * (1 / 2) ^ e * ‖y‖ :=
@@ -351,15 +346,13 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         ‖f (x + y) - f x - L e (n e) m y‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
           simpa only [add_sub_cancel'] using J1
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
-        _ ≤ 4 * (1 / 2) ^ e * ‖y‖ :=
-          mul_le_mul_of_nonneg_left (le_of_lt hk) (mul_nonneg (by norm_num) (le_of_lt P))
+        _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
     calc
       ‖f (x + y) - f x - f' y‖ = ‖f (x + y) - f x - L e (n e) m y + (L e (n e) m - f') y‖ :=
         congr_arg _ (by simp)
       _ ≤ 4 * (1 / 2) ^ e * ‖y‖ + 12 * ‖c‖ * (1 / 2) ^ e * ‖y‖ :=
-        (norm_add_le_of_le J2
-          ((le_op_norm _ _).trans (mul_le_mul_of_nonneg_right (Lf' _ _ m_ge) (norm_nonneg _))))
+        norm_add_le_of_le J2 <| (le_op_norm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
       _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
       _ = ε * ‖y‖ := by field_simp [ne_of_gt pos]; ring
@@ -388,12 +381,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete {K : Set (E →L[𝕜] F
   -- simp [differentiable_set_eq_D K hK, D, isOpen_B.measurableSet, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [D, differentiable_set_eq_D K hK]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact isOpen_B.measurableSet
 #align measurable_set_of_differentiable_at_of_is_complete measurableSet_of_differentiableAt_of_isComplete
 
@@ -436,9 +424,12 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
 #align measurable_deriv measurable_deriv
 
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [SecondCountableTopology F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
+    [h : SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
-  exact (measurable_deriv f).stronglyMeasurable
+  rcases h.out with h𝕜|hF
+  · exact stronglyMeasurable_iff_measurable_separable.2
+      ⟨measurable_deriv f, isSeparable_range_deriv _⟩
+  · exact (measurable_deriv f).stronglyMeasurable
 #align strongly_measurable_deriv stronglyMeasurable_deriv
 
 theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
@@ -447,7 +438,8 @@ theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [M
 #align ae_measurable_deriv aemeasurable_deriv
 
 theorem aestronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
-    [SecondCountableTopology F] (f : 𝕜 → F) (μ : Measure 𝕜) : AEStronglyMeasurable (deriv f) μ :=
+    [SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) (μ : Measure 𝕜) :
+    AEStronglyMeasurable (deriv f) μ :=
   (stronglyMeasurable_deriv f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv aestronglyMeasurable_deriv
 
@@ -465,10 +457,8 @@ namespace RightDerivMeasurableAux
 at scale `r` by the linear map `h ↦ h • L`, up to an error `ε`. We tweak the definition to
 make sure that this is open on the right. -/
 def A (f : ℝ → F) (L : F) (r ε : ℝ) : Set ℝ :=
-  { x |
-    ∃ r' ∈ Ioc (r / 2) r,
-      ∀ (y) (_ : y ∈ Icc x (x + r')) (z) (_ : z ∈ Icc x (x + r')),
-        ‖f z - f y - (z - y) • L‖ ≤ ε * r }
+  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ᵉ (y ∈ Icc x (x + r')) (z ∈ Icc x (x + r')),
+    ‖f z - f y - (z - y) • L‖ ≤ ε * r }
 #align right_deriv_measurable_aux.A RightDerivMeasurableAux.A
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a vector
@@ -502,7 +492,7 @@ theorem B_mem_nhdsWithin_Ioi {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s 
     B f K r s ε ∈ 𝓝[>] x := by
   obtain ⟨L, LK, hL₁, hL₂⟩ : ∃ L : F, L ∈ K ∧ x ∈ A f L r ε ∧ x ∈ A f L s ε := by
     simpa only [B, mem_iUnion, mem_inter_iff, exists_prop] using hx
-  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂]with y hy₁ hy₂
+  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂] with y hy₁ hy₂
   simp only [B, mem_iUnion, mem_inter_iff, exists_prop]
   exact ⟨L, LK, hy₁, hy₂⟩
 #align right_deriv_measurable_aux.B_mem_nhds_within_Ioi RightDerivMeasurableAux.B_mem_nhdsWithin_Ioi
@@ -513,7 +503,7 @@ theorem measurableSet_B {K : Set F} {r s ε : ℝ} : MeasurableSet (B f K r s ε
 
 theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
-  refine' ⟨r', r'r, fun y hy z hz => (hr' y hy z hz).trans (mul_le_mul_of_nonneg_right h _)⟩
+  refine ⟨r', r'r, fun y hy z hz => (hr' y hy z hz).trans (mul_le_mul_of_nonneg_right h ?_)⟩
   linarith [hy.1, hy.2, r'r.2]
 #align right_deriv_measurable_aux.A_mono RightDerivMeasurableAux.A_mono
 
@@ -562,10 +552,9 @@ theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F}
         ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂ -
             (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ :=
       by simp [smul_sub]
-    _ ≤
-        ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂‖ +
+    _ ≤ ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂‖ +
           ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₁‖ :=
-      (norm_sub_le _ _)
+      norm_sub_le _ _
     _ ≤ ε * r + ε * r := by
       apply add_le_add
       · apply le_of_mem_A h₂ <;> simp [(half_pos hr).le]
@@ -681,7 +670,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have xmem : x ∈ Ico x (x + (1 / 2) ^ (n e + 1)) := by
       simp only [one_div, left_mem_Ico, lt_add_iff_pos_right, inv_pos, pow_pos, zero_lt_two,
         zero_lt_one]
-    filter_upwards [Icc_mem_nhdsWithin_Ici xmem]with y hy
+    filter_upwards [Icc_mem_nhdsWithin_Ici xmem] with y hy
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
     rcases eq_or_lt_of_le hy.1 with (rfl | xy)
@@ -696,10 +685,10 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     -- the scale is large enough (as `y - x` is small enough)
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_of_lt_of_le hk y_le
-      rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
+      rw [pow_lt_pow_iff_right_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
@@ -709,24 +698,20 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
         ‖f y - f x - (y - x) • L e (n e) m‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
           apply le_of_mem_A (hn e (n e) m le_rfl m_ge).2.2
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
-            exact div_nonneg (inv_nonneg.2 (pow_nonneg zero_le_two _)) zero_le_two
+            positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
             simpa only [hy.1, mem_Icc, true_and_iff, one_div, pow_one] using h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
-        _ ≤ 4 * (1 / 2) ^ e * (y - x) :=
-          (mul_le_mul_of_nonneg_left (le_of_lt hk) (mul_nonneg (by norm_num) (le_of_lt P)))
+        _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
-
     calc
       ‖f y - f x - (y - x) • f'‖ =
           ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ :=
         by simp only [smul_sub, sub_add_sub_cancel]
       _ ≤ 4 * (1 / 2) ^ e * ‖y - x‖ + ‖y - x‖ * (12 * (1 / 2) ^ e) :=
-        (norm_add_le_of_le J
-          (by rw [norm_smul]; exact mul_le_mul_of_nonneg_left (Lf' _ _ m_ge) (norm_nonneg _)))
+        norm_add_le_of_le J <| by rw [norm_smul]; gcongr; exact Lf' _ _ m_ge
       _ = 16 * ‖y - x‖ * (1 / 2) ^ e := by ring
-      _ ≤ 16 * ‖y - x‖ * (ε / 16) :=
-        (mul_le_mul_of_nonneg_left he.le (mul_nonneg (by norm_num) (norm_nonneg _)))
+      _ ≤ 16 * ‖y - x‖ * (ε / 16) := by gcongr
       _ = ε * ‖y - x‖ := by ring
 
   rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.left_mem_Ici)] at f'K
@@ -751,12 +736,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici_of_isComplete {K : Set F} (h
   -- simp [differentiable_set_eq_d K hK, D, measurableSet_b, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [differentiable_set_eq_D K hK, D]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact measurableSet_B
 #align measurable_set_of_differentiable_within_at_Ici_of_is_complete measurableSet_of_differentiableWithinAt_Ici_of_isComplete
 
@@ -786,10 +766,25 @@ theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
       ((measurableSet_of_differentiableWithinAt_Ici _).compl.inter (MeasurableSet.const _))
 #align measurable_deriv_within_Ici measurable_derivWithin_Ici
 
-theorem stronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] :
-    StronglyMeasurable fun x => derivWithin f (Ici x) x := by
+theorem stronglyMeasurable_derivWithin_Ici :
+    StronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) := by
   borelize F
-  exact (measurable_derivWithin_Ici f).stronglyMeasurable
+  apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_derivWithin_Ici f, ?_⟩
+  obtain ⟨t, t_count, ht⟩ : ∃ t : Set ℝ, t.Countable ∧ Dense t := exists_countable_dense ℝ
+  suffices H : range (fun x ↦ derivWithin f (Ici x) x) ⊆ closure (Submodule.span ℝ (f '' t)) from
+    IsSeparable.mono (t_count.image f).isSeparable.span.closure H
+  rintro - ⟨x, rfl⟩
+  suffices H' : range (fun y ↦ derivWithin f (Ici x) y) ⊆ closure (Submodule.span ℝ (f '' t)) from
+    H' (mem_range_self _)
+  apply range_derivWithin_subset_closure_span_image
+  calc Ici x
+    = closure (Ioi x ∩ closure t) := by simp [dense_iff_closure_eq.1 ht]
+  _ ⊆ closure (closure (Ioi x ∩ t)) := by
+      apply closure_mono
+      simpa [inter_comm] using (isOpen_Ioi (a := x)).closure_inter (s := t)
+  _ ⊆ closure (Ici x ∩ t) := by
+      rw [closure_closure]
+      exact closure_mono (inter_subset_inter_left _ Ioi_subset_Ici_self)
 #align strongly_measurable_deriv_within_Ici stronglyMeasurable_derivWithin_Ici
 
 theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
@@ -797,7 +792,7 @@ theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Me
   (measurable_derivWithin_Ici f).aemeasurable
 #align ae_measurable_deriv_within_Ici aemeasurable_derivWithin_Ici
 
-theorem aestronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] (μ : Measure ℝ) :
+theorem aestronglyMeasurable_derivWithin_Ici (μ : Measure ℝ) :
     AEStronglyMeasurable (fun x => derivWithin f (Ici x) x) μ :=
   (stronglyMeasurable_derivWithin_Ici f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ici aestronglyMeasurable_derivWithin_Ici
@@ -815,10 +810,9 @@ theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f
 #align measurable_deriv_within_Ioi measurable_derivWithin_Ioi
 
-theorem stronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] :
-    StronglyMeasurable fun x => derivWithin f (Ioi x) x := by
-  borelize F
-  exact (measurable_derivWithin_Ioi f).stronglyMeasurable
+theorem stronglyMeasurable_derivWithin_Ioi :
+    StronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) := by
+  simpa [derivWithin_Ioi_eq_Ici] using stronglyMeasurable_derivWithin_Ici f
 #align strongly_measurable_deriv_within_Ioi stronglyMeasurable_derivWithin_Ioi
 
 theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
@@ -826,7 +820,7 @@ theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Me
   (measurable_derivWithin_Ioi f).aemeasurable
 #align ae_measurable_deriv_within_Ioi aemeasurable_derivWithin_Ioi
 
-theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : Measure ℝ) :
+theorem aestronglyMeasurable_derivWithin_Ioi (μ : Measure ℝ) :
     AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
   (stronglyMeasurable_derivWithin_Ioi f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ioi aestronglyMeasurable_derivWithin_Ioi
@@ -865,7 +859,10 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
     have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by
-      continuity
+      -- `continuity` took several seconds to solve this.
+      refine continuous_norm.comp' <| Continuous.sub ?_ ?_
+      · exact ha.comp' continuous_snd |>.sub <| ha.comp' continuous_fst
+      · exact L.continuous.comp' continuous_snd |>.sub <| L.continuous.comp' continuous_fst
     have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
       C B.continuousOn with ⟨p, pt, hp⟩
@@ -874,13 +871,16 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
       hr p.1 (pt.1.trans_lt htr') p.2 (pt.2.trans_lt htr'), fun y hy z hz ↦ ?_⟩
     have D : (y, z) ∈ closedBall x t ×ˢ closedBall x t := mem_prod.2 ⟨hy, hz⟩
     exact hp D
-  obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ b + 2 * ε < s * r := ⟨(s * r - b)/3, by linarith, by linarith⟩
+  obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ b + 2 * ε < s * r :=
+    ⟨(s * r - b) / 3, by linarith, by linarith⟩
   obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
-    have C : Continuous (fun (p : α × E) ↦ f a p.2) := by continuity
+    have C : Continuous (fun (p : α × E) ↦ f a p.2) :=
+      -- `continuity` took several seconds to solve this.
+      ha.comp' continuous_snd
     have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
-      simp at hb
+      simp only [mem_singleton_iff] at hb
       simp [hb]
     obtain ⟨v, v_open, sub_v, hv⟩ : ∃ v, IsOpen v ∧ {a} ×ˢ closedBall x t ⊆ v ∧
         ∀ p ∈ v, dist (Function.uncurry f p) (f a p.2) < ε :=
@@ -986,11 +986,27 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  exact (measurable_deriv_with_param hf).stronglyMeasurable
+  rcases h.out with hα|hF
+  · have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+    apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
+    have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
+        ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by
+      rintro - ⟨p, rfl⟩
+      have A : deriv (f p.1) p.2 ∈ closure (Submodule.span 𝕜 (range (f p.1))) := by
+        rw [← image_univ]
+        apply range_deriv_subset_closure_span_image _ dense_univ (mem_range_self _)
+      have B : range (f p.1) ⊆ range (f.uncurry) := by
+        rintro - ⟨x, rfl⟩
+        exact mem_range_self (p.1, x)
+      exact closure_mono (Submodule.span_mono B) A
+    apply (IsSeparable.span _).closure.mono this
+    rw [← image_univ]
+    exact (isSeparable_of_separableSpace univ).image hf
+  · exact (measurable_deriv_with_param hf).stronglyMeasurable
 
 theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
@@ -999,7 +1015,7 @@ theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpac
   (measurable_deriv_with_param hf).aemeasurable
 
 theorem aestronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) (μ : Measure (α × 𝕜)) :
     AEStronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) μ :=
   (stronglyMeasurable_deriv_with_param hf).aestronglyMeasurable

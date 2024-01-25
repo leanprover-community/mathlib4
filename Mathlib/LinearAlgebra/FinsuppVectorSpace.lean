@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
 
 #align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
@@ -78,7 +79,8 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, FunLike.ext_iff]
+            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
+                DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
@@ -136,6 +138,21 @@ end Semiring
 
 end Finsupp
 
+namespace DFinsupp
+variable {ι : Type*} {R : Type*} {M : ι → Type*}
+variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+/-- The direct sum of free modules is free.
+
+Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
+noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
+    Basis (Σi, η i) R (Π₀ i, M i) :=
+  .ofRepr
+    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
+#align dfinsupp.basis DFinsupp.basis
+
+end DFinsupp
+
 /-! TODO: move this section to an earlier file. -/
 
 
@@ -163,12 +180,6 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
     rwa [mem_singleton_iff] at hx
   simp [hx']
 #align finset.sum_single_ite Finset.sum_single_ite
-
--- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
-@[simp]
-theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
-    (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
-  simp only [ite_smul, zero_smul, one_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by

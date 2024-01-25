@@ -429,8 +429,8 @@ structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`,
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
-def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y
-    where isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
+  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/

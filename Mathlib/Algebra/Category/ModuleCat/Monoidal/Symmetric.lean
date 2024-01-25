@@ -12,6 +12,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 # The symmetric monoidal structure on `Module R`.
 -/
 
+suppress_compilation
 
 universe v w x u
 
@@ -39,6 +40,18 @@ set_option linter.uppercaseLean3 false in
 #align Module.monoidal_category.braiding_naturality ModuleCat.MonoidalCategory.braiding_naturality
 
 @[simp]
+theorem braiding_naturality_left {X Y : ModuleCat R} (f : X ⟶ Y) (Z : ModuleCat R) :
+    f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
+  simp_rw [← id_tensorHom]
+  apply braiding_naturality
+
+@[simp]
+theorem braiding_naturality_right (X : ModuleCat R) {Y Z : ModuleCat R} (f : Y ⟶ Z) :
+    X ◁ f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ f ▷ X := by
+  simp_rw [← id_tensorHom]
+  apply braiding_naturality
+
+@[simp]
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).hom ≫ (braiding X _).hom ≫ (α_ Y Z X).hom =
       ((braiding X Y).hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).hom ≫ (𝟙 Y ⊗ (braiding X Z).hom) := by
@@ -64,7 +77,8 @@ attribute [local ext] TensorProduct.ext
 /-- The symmetric monoidal structure on `Module R`. -/
 instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
-  braiding_naturality f g := braiding_naturality f g
+  braiding_naturality_left := braiding_naturality_left
+  braiding_naturality_right := braiding_naturality_right
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
   -- porting note: this proof was automatic in Lean3

@@ -30,7 +30,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 -/
 
 
-section SmulLemmas
+section SMulLemmas
 
 variable {R M : Type*}
 
@@ -70,7 +70,7 @@ theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
 
-end SmulLemmas
+end SMulLemmas
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
@@ -174,12 +174,13 @@ variable (A)
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 -- Porting note: This attribute causes a `timeout at 'whnf'`.
--- @[simps!]
+@[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext <;> simp
+  -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
+  ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]

@@ -178,8 +178,8 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
 
 
 instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
-    SMulCommClass α (ConjAct Mˣ) M
-    where smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct Mˣ) M where
+  smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
 instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
@@ -235,8 +235,8 @@ instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
 instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass α (ConjAct G₀) G₀
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G₀) G₀ where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
 instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
@@ -282,8 +282,8 @@ instance : MulDistribMulAction (ConjAct G) G where
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 
 instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
-    SMulCommClass α (ConjAct G) G
-    where smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
+    SMulCommClass α (ConjAct G) G where
+  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class ConjAct.smulCommClass
 
 instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :

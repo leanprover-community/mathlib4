@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.Topology.Category.Stonean.Basic
+import Mathlib.Topology.Category.CompHaus.Limits
 /-!
 # Explicit (co)limits in the category of Stonean spaces
 
@@ -61,7 +62,7 @@ def finiteCoproduct.desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) :
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
@@ -74,17 +75,17 @@ lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
 @[simps]
 def finiteCoproduct.cocone (F : Discrete α ⥤ Stonean) :
     Cocone F where
-  pt := finiteCoproduct F.obj
-  ι := Discrete.natTrans fun a => finiteCoproduct.ι F.obj a
+  pt := finiteCoproduct (F.obj ∘ Discrete.mk)
+  ι := Discrete.natTrans fun a => finiteCoproduct.ι (F.obj ∘ Discrete.mk) a.as
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
 @[simps]
 def finiteCoproduct.isColimit (F : Discrete α ⥤ Stonean) :
     IsColimit (finiteCoproduct.cocone F) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app a
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm a
+    specialize hm ⟨a⟩
     ext t
     apply_fun (fun q => q t) at hm
     exact hm
@@ -139,6 +140,13 @@ lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
     finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
+
+instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus
+  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
+  exact CompHaus.finiteCoproduct.isColimit _
 
 end FiniteCoproducts
 
@@ -210,7 +218,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
     use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
+    exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact a.continuous
@@ -222,7 +230,8 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   obtain ⟨y, hy⟩ := h
   simp only [fst, snd, comp_apply]
   change f x = _
-  rw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
   congr
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
@@ -231,7 +240,7 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
-  pullback.lift f hi a b w ≫ pullback.fst f hi = a := rfl
+    pullback.lift f hi a b w ≫ pullback.fst f hi = a := rfl
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
@@ -239,7 +248,7 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
   congr
   ext z
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
+  have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
   suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
   · exact this.symm
@@ -296,6 +305,34 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
       · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd] }
 
 end Isos
+
+/-- The forgetful from `Stonean` to `TopCat` creates pullbacks along open embeddings -/
+noncomputable
+def createsPullbacksOfOpenEmbedding :
+    CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
+  createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
+    refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
+      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
+    refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
+    exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
+
+instance : HasPullbacksOfInclusions Stonean where
+  hasPullbackInl f := by
+    apply (config := { allowSynthFailures := true }) hasPullback_symmetry
+    apply Stonean.HasPullbackOpenEmbedding
+    apply Stonean.Sigma.openEmbedding_ι
+
+noncomputable
+instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
+  preservesPullbackInl := by
+    intros X Y Z f
+    apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
+    have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
+    have := Stonean.createsPullbacksOfOpenEmbedding f this
+    exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
+
+instance : FinitaryExtensive Stonean.{u} :=
+  finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean
 

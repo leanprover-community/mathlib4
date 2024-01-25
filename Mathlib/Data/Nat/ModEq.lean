@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
 
@@ -105,7 +106,8 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
-lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] := modEq_of_dvd $ d.natCast.trans h.dvd
+lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
+  modEq_of_dvd <| d.natCast.trans h.dvd
 #align nat.modeq.of_dvd Nat.ModEq.of_dvd
 
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
@@ -224,10 +226,10 @@ theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (
 
 end ModEq
 
-lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd $ by rw [Int.ofNat_sub h]).symm
+lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd <| by rw [Int.ofNat_sub h]).symm
 #align nat.modeq_sub Nat.modEq_sub
 
-lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd $ one_dvd _
+lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd <| one_dvd _
 #align nat.modeq_one Nat.modEq_one
 
 @[simp] lemma modEq_zero_iff : a ≡ b [MOD 0] ↔ a = b := by rw [ModEq, mod_zero, mod_zero]
@@ -272,9 +274,9 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
 #align nat.modeq.eq_of_abs_lt Nat.ModEq.eq_of_abs_lt
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-  h.eq_of_abs_lt $ abs_sub_lt_iff.2
-    ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
-    (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
+  h.eq_of_abs_lt <| abs_sub_lt_iff.2
+    ⟨(sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 hb,
+    (sub_le_self _ <| Int.coe_nat_nonneg _).trans_lt <| Int.ofNat_lt.2 ha⟩
 #align nat.modeq.eq_of_lt_of_lt Nat.ModEq.eq_of_lt_of_lt
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -301,13 +303,13 @@ lemma cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [MOD m]) : a ≡ b 
 #align nat.modeq.cancel_right_div_gcd Nat.ModEq.cancel_right_div_gcd
 
 lemma cancel_left_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : c * a ≡ d * b [MOD m]) :
-  a ≡ b [MOD m / gcd m c] :=
-(h.trans $ hcd.symm.mul_right b).cancel_left_div_gcd hm
+    a ≡ b [MOD m / gcd m c] :=
+  (h.trans <| hcd.symm.mul_right b).cancel_left_div_gcd hm
 #align nat.modeq.cancel_left_div_gcd' Nat.ModEq.cancel_left_div_gcd'
 
 lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ b * d [MOD m]) :
-  a ≡ b [MOD m / gcd m c] :=
-(h.trans $ hcd.symm.mul_left b).cancel_right_div_gcd hm
+    a ≡ b [MOD m / gcd m c] :=
+  (h.trans <| hcd.symm.mul_left b).cancel_right_div_gcd hm
 #align nat.modeq.cancel_right_div_gcd' Nat.ModEq.cancel_right_div_gcd'
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
@@ -322,7 +324,7 @@ lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) :
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
 lemma cancel_right_of_coprime (hmc : gcd m c = 1) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m] :=
-  cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
+  cancel_left_of_coprime hmc <| by simpa [mul_comm] using h
 #align nat.modeq.cancel_right_of_coprime Nat.ModEq.cancel_right_of_coprime
 
 end ModEq
@@ -365,7 +367,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
 #align nat.chinese_remainder' Nat.chineseRemainder'
 
 /-- The natural number less than `n*m` congruent to `a` mod `n` and `b` mod `m` -/
-def chineseRemainder (co : n.coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
+def chineseRemainder (co : n.Coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
   chineseRemainder' (by convert @modEq_one a b)
 #align nat.chinese_remainder Nat.chineseRemainder
 
@@ -377,12 +379,12 @@ theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm 
   exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)
 #align nat.chinese_remainder'_lt_lcm Nat.chineseRemainder'_lt_lcm
 
-theorem chineseRemainder_lt_mul (co : n.coprime m) (a b : ℕ) (hn : n ≠ 0) (hm : m ≠ 0) :
+theorem chineseRemainder_lt_mul (co : n.Coprime m) (a b : ℕ) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder co a b) < n * m :=
   lt_of_lt_of_le (chineseRemainder'_lt_lcm _ hn hm) (le_of_eq co.lcm_eq_mul)
 #align nat.chinese_remainder_lt_mul Nat.chineseRemainder_lt_mul
 
-theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.coprime n) :
+theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
   ⟨fun h => by
     rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs,
@@ -392,7 +394,7 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.coprime n) :
     ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align nat.modeq_and_modeq_iff_modeq_mul Nat.modEq_and_modEq_iff_modEq_mul
 
-theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.coprime n := by
+theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.Coprime n := by
   obtain ⟨g, hh⟩ := Nat.gcd_dvd_right a n
   rw [Nat.coprime_iff_gcd_eq_one, ← Nat.dvd_one, ← Nat.modEq_zero_iff_dvd]
   calc
@@ -458,7 +460,7 @@ theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
     by simpa only [mul_add, add_comm, add_left_comm, add_assoc]
   rw [mod_add_div, mod_add_div, mod_add_div, mul_ite, add_assoc, add_assoc]
   conv_lhs => rw [← add_mod_add_ite]
-  simp
+  simp only [mul_one, mul_zero]
   ac_rfl
 #align nat.add_div Nat.add_div
 
@@ -526,7 +528,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by norm_num : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 

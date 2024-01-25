@@ -110,8 +110,8 @@ theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
-instance : NonarchimedeanGroup (G × K)
-    where is_nonarchimedean U hU :=
+instance : NonarchimedeanGroup (G × K) where
+  is_nonarchimedean U hU :=
     let ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩
 
@@ -130,8 +130,8 @@ variable [Ring R] [TopologicalSpace R] [NonarchimedeanRing R]
 variable [Ring S] [TopologicalSpace S] [NonarchimedeanRing S]
 
 /-- The cartesian product of two nonarchimedean rings is nonarchimedean. -/
-instance : NonarchimedeanRing (R × S)
-    where is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
+instance : NonarchimedeanRing (R × S) where
+  is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
 
 /-- Given an open subgroup `U` and an element `r` of a nonarchimedean ring, there is an open
   subgroup `V` such that `r • V` is contained in `U`. -/
@@ -142,13 +142,10 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
 
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
-  let ⟨V, H⟩ :=
-    prod_self_subset
-      (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.isOpen)
-        (by simpa only [Set.mem_preimage, SetLike.mem_coe, Prod.snd_zero,
-            mul_zero] using U.zero_mem))
+  let ⟨V, H⟩ := prod_self_subset <| (U.isOpen.preimage continuous_mul).mem_nhds <| by
+    simpa only [Set.mem_preimage, Prod.snd_zero, mul_zero] using U.zero_mem
   use V
-  rintro v ⟨a, b, ha, hb, hv⟩
+  rintro v ⟨a, ha, b, hb, hv⟩
   have hy := H (Set.mk_mem_prod ha hb)
   simp only [Set.mem_preimage, SetLike.mem_coe, hv] at hy
   rw [SetLike.mem_coe]

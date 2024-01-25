@@ -332,7 +332,8 @@ def botCoeIsoZero {B : C} : ((⊥ : Subobject B) : C) ≅ 0 :=
 variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
-  mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial) (by simp)
+  mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial)
+    (by simp [eq_iff_true_of_subsingleton])
 #align category_theory.subobject.bot_eq_zero CategoryTheory.Subobject.bot_eq_zero
 
 @[simp]

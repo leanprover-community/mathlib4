@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
@@ -39,14 +40,14 @@ example : Nat.sqrt 122 = 11 := by norm_num1
 example : Nat.sqrt (123456^2) = 123456 := by norm_num1
 example : Nat.sqrt (123456^2 + 123456) = 123456 := by norm_num1
 
-theorem ex11 : Nat.coprime 1 2 := by norm_num1
-theorem ex12 : Nat.coprime 2 1 := by norm_num1
-theorem ex13 : ¬ Nat.coprime 0 0 := by norm_num1
-theorem ex14 : ¬ Nat.coprime 0 3 := by norm_num1
-theorem ex15 : ¬ Nat.coprime 2 0 := by norm_num1
-theorem ex16 : Nat.coprime 2 3 := by norm_num1
-theorem ex16' : Nat.coprime 3 2 := by norm_num1
-theorem ex17 : ¬ Nat.coprime 2 4 := by norm_num1
+theorem ex11 : Nat.Coprime 1 2 := by norm_num1
+theorem ex12 : Nat.Coprime 2 1 := by norm_num1
+theorem ex13 : ¬ Nat.Coprime 0 0 := by norm_num1
+theorem ex14 : ¬ Nat.Coprime 0 3 := by norm_num1
+theorem ex15 : ¬ Nat.Coprime 2 0 := by norm_num1
+theorem ex16 : Nat.Coprime 2 3 := by norm_num1
+theorem ex16' : Nat.Coprime 3 2 := by norm_num1
+theorem ex17 : ¬ Nat.Coprime 2 4 := by norm_num1
 
 theorem ex21 : Nat.gcd 1 2 = 1 := by norm_num1
 theorem ex22 : Nat.gcd 2 1 = 1 := by norm_num1
@@ -128,61 +129,61 @@ example : Nat.gcd 35 29 = 1 := by norm_num1
 example : Int.gcd 35 29 = 1 := by norm_num1
 example : Nat.lcm 35 29 = 1015 := by norm_num1
 example : Int.gcd 35 29 = 1 := by norm_num1
-example : Nat.coprime 35 29 := by norm_num1
+example : Nat.Coprime 35 29 := by norm_num1
 
 example : Nat.gcd 80 2 = 2 := by norm_num1
 example : Int.gcd 80 2 = 2 := by norm_num1
 example : Nat.lcm 80 2 = 80 := by norm_num1
 example : Int.gcd 80 2 = 2 := by norm_num1
-example : ¬ Nat.coprime 80 2 := by norm_num1
+example : ¬ Nat.Coprime 80 2 := by norm_num1
 
 example : Nat.gcd 19 17 = 1 := by norm_num1
 example : Int.gcd 19 17 = 1 := by norm_num1
 example : Nat.lcm 19 17 = 323 := by norm_num1
 example : Int.gcd 19 17 = 1 := by norm_num1
-example : Nat.coprime 19 17 := by norm_num1
+example : Nat.Coprime 19 17 := by norm_num1
 
 example : Nat.gcd 11 18 = 1 := by norm_num1
 example : Int.gcd 11 18 = 1 := by norm_num1
 example : Nat.lcm 11 18 = 198 := by norm_num1
 example : Int.gcd 11 18 = 1 := by norm_num1
-example : Nat.coprime 11 18 := by norm_num1
+example : Nat.Coprime 11 18 := by norm_num1
 
 example : Nat.gcd 23 73 = 1 := by norm_num1
 example : Int.gcd 23 73 = 1 := by norm_num1
 example : Nat.lcm 23 73 = 1679 := by norm_num1
 example : Int.gcd 23 73 = 1 := by norm_num1
-example : Nat.coprime 23 73 := by norm_num1
+example : Nat.Coprime 23 73 := by norm_num1
 
 example : Nat.gcd 73 68 = 1 := by norm_num1
 example : Int.gcd 73 68 = 1 := by norm_num1
 example : Nat.lcm 73 68 = 4964 := by norm_num1
 example : Int.gcd 73 68 = 1 := by norm_num1
-example : Nat.coprime 73 68 := by norm_num1
+example : Nat.Coprime 73 68 := by norm_num1
 
 example : Nat.gcd 28 16 = 4 := by norm_num1
 example : Int.gcd 28 16 = 4 := by norm_num1
 example : Nat.lcm 28 16 = 112 := by norm_num1
 example : Int.gcd 28 16 = 4 := by norm_num1
-example : ¬ Nat.coprime 28 16 := by norm_num1
+example : ¬ Nat.Coprime 28 16 := by norm_num1
 
 example : Nat.gcd 44 98 = 2 := by norm_num1
 example : Int.gcd 44 98 = 2 := by norm_num1
 example : Nat.lcm 44 98 = 2156 := by norm_num1
 example : Int.gcd 44 98 = 2 := by norm_num1
-example : ¬ Nat.coprime 44 98 := by norm_num1
+example : ¬ Nat.Coprime 44 98 := by norm_num1
 
 example : Nat.gcd 21 79 = 1 := by norm_num1
 example : Int.gcd 21 79 = 1 := by norm_num1
 example : Nat.lcm 21 79 = 1659 := by norm_num1
 example : Int.gcd 21 79 = 1 := by norm_num1
-example : Nat.coprime 21 79 := by norm_num1
+example : Nat.Coprime 21 79 := by norm_num1
 
 example : Nat.gcd 93 34 = 1 := by norm_num1
 example : Int.gcd 93 34 = 1 := by norm_num1
 example : Nat.lcm 93 34 = 3162 := by norm_num1
 example : Int.gcd 93 34 = 1 := by norm_num1
-example : Nat.coprime 93 34 := by norm_num1
+example : Nat.Coprime 93 34 := by norm_num1
 
 example : ¬ Nat.Prime 912 := by norm_num1
 example : Nat.minFac 912 = 2 := by norm_num1
@@ -322,12 +323,6 @@ example : Nat.fib 65 = 17167680177565 := by norm_num1
 example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num1
 example : Nat.fib 1000 + Nat.fib 1001 = Nat.fib 1002 := by norm_num1
 
-/-
-example : (2 : ℝ) ^ (3 : ℝ) = 8 := by norm_num
-example : (1 : ℝ) ^ (20 : ℝ) = 1 := by norm_num
-example : (2 : ℝ) ^ (-3 : ℝ) = 1/8 := by norm_num
--/
-
 section big_operators
 
 variable {α : Type _} [CommRing α]
@@ -335,18 +330,24 @@ variable {α : Type _} [CommRing α]
 open BigOperators
 
 -- Lists:
+-- `by decide` closes the three goals below.
+/-
 example : ([1, 2, 1, 3]).sum = 7 := by norm_num only
--- example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map] --TODO
 example : (List.range 10).sum = 45 := by norm_num only
 example : (List.finRange 10).sum = 45 := by norm_num only
+-/
+-- example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map] --TODO
 
 -- Multisets:
+-- `by decide` closes the three goals below.
+/-
 example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num only
 example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by norm_num only
--- example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by -- TODO
---   norm_num [-Multiset.map_cons]
 example : (Multiset.range 10).sum = 45 := by norm_num only
 example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
+-/
+-- example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by -- TODO
+--   norm_num [-Multiset.map_cons]
 
 -- Finsets:
 example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
@@ -369,8 +370,9 @@ example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_
 example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
 example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
 -/
-example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num1
-example : (∏ i in Finset.range 4, ((i+1)^2 : ℕ)) = 576 := by norm_num1
+example : ∑ i in Finset.range 10, i = 45 := by norm_num1
+example : ∑ i in Finset.range 10, (i^2 : ℕ) = 285 := by norm_num1
+example : ∏ i in Finset.range 4, ((i+1)^2 : ℕ) = 576 := by norm_num1
 /-
 example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
 example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
@@ -414,3 +416,29 @@ instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
+
+section mod
+
+example : (5 : ℕ) % 4 = 1 := by norm_num1
+example : (3 : ℕ) % 2 = 1 := by norm_num1
+example : 3 + (42 : ℕ) % 5 = 5 := by norm_num1
+
+example : (5 : ℤ) % 4 = 1 := by norm_num1
+example : (2 : ℤ) % 2 = 0 := by norm_num1
+example : (3 : ℤ) % 2 = 1 := by norm_num1
+example : (3 : ℤ) % 4 = 3 := by norm_num1
+example : (-3 : ℤ) % 4 = 1 := by norm_num1
+example : (3 : ℤ) % -4 = 3 := by norm_num1
+example : 3 + (42 : ℤ) % 5 = 5 := by norm_num1
+
+example : 2 ∣ 4 := by norm_num1
+example : ¬ 2 ∣ 5 := by norm_num1
+example : 553105253 ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ 553105253 ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : (2 : ℤ) ∣ 4 := by norm_num1
+example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
+example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+end mod

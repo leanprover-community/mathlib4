@@ -7,6 +7,8 @@ import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Pow
+import Mathlib.Data.Int.Bitwise
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 
@@ -46,7 +48,7 @@ theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
 
 protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
   apply zpow_pos_of_pos
-  exact_mod_cast h
+  exact mod_cast h
 #align nat.zpow_pos_of_pos Nat.zpow_pos_of_pos
 
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
@@ -58,7 +60,7 @@ theorem one_lt_zpow (ha : 1 < a) : ∀ n : ℤ, 0 < n → 1 < a ^ n
   | -[_+1], h => ((Int.negSucc_not_pos _).mp h).elim
 #align one_lt_zpow one_lt_zpow
 
-theorem zpow_strictMono (hx : 1 < a) : StrictMono ((· ^ ·) a : ℤ → α) :=
+theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
   strictMono_int_of_lt_succ fun n =>
     have xpos : 0 < a := zero_lt_one.trans hx
     calc
@@ -66,7 +68,7 @@ theorem zpow_strictMono (hx : 1 < a) : StrictMono ((· ^ ·) a : ℤ → α) :=
       _ = a ^ (n + 1) := (zpow_add_one₀ xpos.ne' _).symm
 #align zpow_strict_mono zpow_strictMono
 
-theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti ((· ^ ·) a : ℤ → α) :=
+theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ → α) :=
   strictAnti_int_of_succ_lt fun n =>
     calc
       a ^ (n + 1) = a ^ n * a := zpow_add_one₀ h₀.ne' _
@@ -89,7 +91,7 @@ theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
   div_le_self ha <| one_le_pow_of_one_le hb _
 #align div_pow_le div_pow_le
 
-theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective ((· ^ ·) a : ℤ → α) := by
+theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
   · exact (zpow_strictAnti h₀ H).injective
   · exact (zpow_strictMono H).injective
@@ -218,8 +220,7 @@ theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ bit0 p = a ^ bit0 p :=
   (even_bit0 _).zpow_abs _
 #align zpow_bit0_abs zpow_bit0_abs
 
-/-! ### Miscellaneous lemmmas -/
-
+/-! ### Bernoulli's inequality -/
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=

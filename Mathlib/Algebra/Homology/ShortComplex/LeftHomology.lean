@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-/-! LeftHomology of short complexes
+/-!
+# Left Homology of short complexes
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
@@ -41,7 +42,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
-and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` --/
+and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
@@ -53,11 +54,11 @@ structure LeftHomologyData where
   π : K ⟶ H
   /-- the kernel condition for `i` -/
   wi : i ≫ S.g = 0
-  /-- `i : K ⟶ S.X₂ ` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
+  /-- `i : K ⟶ S.X₂` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
   hi : IsLimit (KernelFork.ofι i wi)
   /-- the cokernel condition for `π` -/
   wπ : hi.lift (KernelFork.ofι _ S.zero) ≫ π = 0
-  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
+  /-- `π : K ⟶ H` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   hπ : IsColimit (CokernelCofork.ofπ π wπ)
 
 initialize_simps_projections LeftHomologyData (-hi, -hπ)

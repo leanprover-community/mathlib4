@@ -278,12 +278,12 @@ theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : 
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := (nnnorm_sum_le _ _)
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
-      _ = (∑ i, ‖v.equivFun e i‖₊) * M := Finset.sum_mul.symm
+      _ = (∑ i, ‖v.equivFun e i‖₊) * M := by rw [Finset.sum_mul]
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
         gcongr
         calc
           ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
-          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_of_le_right (φ.le_op_nnnorm e) _
+          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_op_nnnorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.op_nnnorm_le
 
@@ -397,7 +397,7 @@ bounded by `R` and at distance at least `1`. For a version not assuming `c` and 
 `exists_seq_norm_le_one_le_norm_sub`. -/
 theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) :
-    ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ := by
+    ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
   have : IsSymm E fun x y : E => 1 ≤ ‖x - y‖ := by
     constructor
     intro x y hxy
@@ -410,7 +410,7 @@ theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : �
 #align exists_seq_norm_le_one_le_norm_sub' exists_seq_norm_le_one_le_norm_sub'
 
 theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
-    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ := by
+    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 1 < ‖c‖ := NormedField.exists_one_lt_norm 𝕜
   have A : ‖c‖ < ‖c‖ + 1 := by linarith
   rcases exists_seq_norm_le_one_le_norm_sub' hc A h with ⟨f, hf⟩
@@ -425,7 +425,7 @@ theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     (h : IsCompact (Metric.closedBall (0 : E) r)) : FiniteDimensional 𝕜 E := by
   by_contra hfin
   obtain ⟨R, f, Rgt, fle, lef⟩ :
-    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ :=
+    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ :=
     exists_seq_norm_le_one_le_norm_sub hfin
   have rRpos : 0 < r / R := div_pos rpos (zero_lt_one.trans Rgt)
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < r / R := NormedField.exists_norm_lt _ rRpos
@@ -448,7 +448,7 @@ theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
       conv_lhs => rw [← mul_one ‖c‖]
       simp only [dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
-      apply lef _ _ (ne_of_gt _)
+      apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closedBall₀
@@ -488,7 +488,7 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   obtain ⟨r : ℝ, rpos : 0 < r, hr : Metric.closedBall x r ⊆ Function.mulSupport f⟩ :=
     Metric.nhds_basis_closedBall.mem_iff.1 this
   have : IsCompact (Metric.closedBall x r) :=
-    isCompact_of_isClosed_subset hf Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
+    hf.of_isClosed_subset Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
   exact finiteDimensional_of_isCompact_closedBall 𝕜 rpos this
 #align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
@@ -509,14 +509,24 @@ lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
       · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
       · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
         simp [smul_smul, mul_inv_cancel this]
-    exact isCompact_of_isClosed_subset (hr.image Cf) isClosed_ball A
+    exact (hr.image Cf).of_isClosed_subset isClosed_ball A
   refine ⟨fun x s ↦ ?_⟩
   have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
     have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
       Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
     exact Tendsto.eventually_ge_atTop this s
   rcases L.exists with ⟨n, hn⟩
-  exact isCompact_of_isClosed_subset (M n x) isClosed_ball (closedBall_subset_closedBall hn)
+  exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
+
+variable (E)
+lemma properSpace_of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
+    ProperSpace 𝕜 := by
+  have : LocallyCompactSpace 𝕜 := by
+    obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
+    let L : 𝕜 → E := fun t ↦ t • v
+    have : ClosedEmbedding L := closedEmbedding_smul_left hv
+    apply ClosedEmbedding.locallyCompactSpace this
+  exact properSpace_of_locallyCompactSpace 𝕜
 
 end Riesz
 
@@ -558,7 +568,7 @@ theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
   let e₁ : E ≃L[𝕜] Fin d → 𝕜 := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
     (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← Function.comp.left_id f, ← e₂.symm_comp_self]
+  rw [← f.id_comp, ← e₂.symm_comp_self]
   exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
 #align continuous_on_clm_apply continuousOn_clm_apply
 
@@ -569,21 +579,22 @@ theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional
 
 end CompleteField
 
-section ProperField
+section LocallyCompactField
 
 variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [ProperSpace 𝕜]
+  [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
-/-- Any finite-dimensional vector space over a proper field is proper.
+/-- Any finite-dimensional vector space over a locally compact field is proper.
 We do not register this as an instance to avoid an instance loop when trying to prove the
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
 #align finite_dimensional.proper FiniteDimensional.proper
 
-end ProperField
+end LocallyCompactField
 
 /- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
@@ -591,6 +602,16 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=
   FiniteDimensional.proper ℝ E
 #align finite_dimensional.proper_real FiniteDimensional.proper_real
+
+/-- A submodule of a locally compact space over a complete field is also locally compact (and even
+proper). -/
+instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
+    ProperSpace S := by
+  nontriviality E
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  exact FiniteDimensional.proper 𝕜 S
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
@@ -620,7 +641,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
       finiteDimensional_of_isCompact_closedBall ℝ hr₀
-        (isCompact_of_isClosed_subset hK Metric.isClosed_ball hrK)
+        (hK.of_isClosed_subset Metric.isClosed_ball hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine' ⟨x, hx', _⟩
     rw [frontier_eq_closure_inter_closure] at hx'
@@ -632,39 +653,44 @@ summable if and only if the series `∑ x, f x` is unconditionally summable. One
 any complete normed space, while the other holds only in finite dimensional spaces. -/
 theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
-  refine' ⟨summable_of_summable_norm, fun hf => _⟩
+  refine ⟨Summable.of_norm, fun hf ↦ ?_⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
   suffices ∀ {N : ℕ} {g : α → Fin N → ℝ}, Summable g → Summable fun x => ‖g x‖ by
     obtain v := finBasis ℝ E
     set e := v.equivFunL
-    have : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
-    refine'
-      summable_of_norm_bounded _ (this.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊)
-        fun i => _
+    have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
+    refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
     simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_op_norm (e <| f i)
   clear! E
   -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg
   have : ∀ i, Summable fun x => ‖g x i‖ := fun i => (Pi.summable.1 hg i).abs
-  refine'
-    summable_of_norm_bounded _ (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => _
+  refine' .of_norm_bounded _ (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => _
   rw [norm_norm, pi_norm_le_iff_of_nonneg]
   · refine' fun i => Finset.single_le_sum (f := fun i => ‖g x i‖) (fun i _ => _) (Finset.mem_univ i)
     exact norm_nonneg (g x i)
   · exact Finset.sum_nonneg fun _ _ => norm_nonneg _
 #align summable_norm_iff summable_norm_iff
 
+alias ⟨_, Summable.norm⟩ := summable_norm_iff
+
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  summable_of_isBigO (summable_norm_iff.mpr hg) h.norm_right
+  summable_of_isBigO hg.norm h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O' summable_of_isBigO'
+
+lemma Asymptotics.IsBigO.comp_summable {ι E F : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [NormedAddCommGroup F] [CompleteSpace F]
+    {f : E → F} (hf : f =O[𝓝 0] id) {g : ι → E} (hg : Summable g) : Summable (f ∘ g) :=
+  .of_norm <| hf.comp_summable_norm hg.norm
 
 theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
-  summable_of_isBigO_nat (summable_norm_iff.mpr hg) h.norm_right
+  summable_of_isBigO_nat hg.norm h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat' summable_of_isBigO_nat'
 

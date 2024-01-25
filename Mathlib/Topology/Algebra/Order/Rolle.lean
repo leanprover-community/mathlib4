@@ -14,7 +14,7 @@ import Mathlib.Topology.LocalExtr
 # Rolle's Theorem (topological part)
 
 In this file we prove the purely topological part of Rolle's Theorem:
-a function that is continuous on an interval $[a, b]$, $a<b$,
+a function that is continuous on an interval $[a, b]$, $a < b$,
 has a local extremum at a point $x ∈ (a, b)$ provided that $f(a)=f(b)$.
 We also prove several variations of this statement.
 
@@ -25,11 +25,9 @@ to prove several versions of Rolle's Theorem from calculus.
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 
-set_option autoImplicit true
-
 open Filter Set Topology
 
-variable
+variable {X Y : Type*}
   [ConditionallyCompleteLinearOrder X] [DenselyOrdered X] [TopologicalSpace X] [OrderTopology X]
   [LinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
   {f : X → Y} {a b : X} {l : Y}
@@ -83,4 +81,4 @@ lemma exists_isLocalExtr_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo
     (ha : Tendsto f (𝓝[>] a) (𝓝 l)) (hb : Tendsto f (𝓝[<] b) (𝓝 l)) :
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_isExtrOn_Ioo_of_tendsto hab hfc ha hb
-  ⟨c, cmem, hc.isLocalExtr $ Ioo_mem_nhds cmem.1 cmem.2⟩
+  ⟨c, cmem, hc.isLocalExtr <| Ioo_mem_nhds cmem.1 cmem.2⟩

@@ -48,12 +48,6 @@ jobs:
       - name: Look for ignored files
         uses: credfeto/action-no-ignored-files@v1.1.0
 
-      - name: Install bibtool
-        if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
         uses: actions/setup-python@v4
@@ -63,6 +57,12 @@ jobs:
       - name: lint
         run: |
           ./scripts/lint-style.sh
+
+      - name: Install bibtool
+        if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
 
       - name: lint references.bib
         run: |
@@ -102,6 +102,25 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
+  check_workflows:
+    if: github.repository != 'leanprover-community/mathlib4'
+    name: check workflows (fork)
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: update workflows
+        run: |
+          cd .github/workflows/
+          ./mk_build_yml.sh
+
+      - name: check that workflows were consistent
+        run: git diff --exit-code
+
   build:
     if: github.repository != 'leanprover-community/mathlib4'
     name: Build (fork)
@@ -110,8 +129,10 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete any elan toolchains older than two weeks.
-          find $HOME/.elan/toolchains/ -maxdepth 1 -type d -ctime +14 -exec rm -rf {} || true
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -120,7 +141,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
@@ -139,6 +160,24 @@ jobs:
             elan toolchain uninstall `cat lean-toolchain`
           fi
 
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
+      - name: build cache
+        run: |
+          lake build cache
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+
       - name: get cache
         run: |
           lake exe cache clean
@@ -153,21 +192,39 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
       - name: check for noisy stdout lines
+        id: noisy
         run: |
-          ! grep "stdout:" stdout.log
+          ! grep --after-context=1 "stdout:" stdout.log
 
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
       - name: upload cache
-        if: always()
+        # We only upload the cache if the build ran (either succeeding or failing),
+        # but not if it was skipped.
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         run: |
+          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
+          # lake exe cache pack! || true
           lake exe cache commit || true
           lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+
+      - name: check the cache
+        run: |
+          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
+          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
+          if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            lake exe cache get || (sleep 1; lake exe cache get)
+            # We pipe the output of `lake build` to a file,
+            # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
+            lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
+          fi
 
       - name: build archive
+        id: archive
         run: |
           # Note: we should not be including `Archive` and `Countexamples` in the cache.
           # We do this for now for the sake of not rebuilding them in every CI run
@@ -181,40 +238,78 @@ jobs:
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: build counterexamples
+        id: counterexamples
         run: |
           lake exe cache get Counterexamples.lean
           lake build Counterexamples
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe checkYaml
 
+      - name: verify `lake exe graph` works
+        run: |
+          lake exe graph
+          rm import_graph.dot
+
+      - name: verify `lake exe shake` works
+        # Later, we may want to make output from `shake` a CI error?
+        run: |
+          lake exe shake
+
       - name: test mathlib
-        id: test
-        run: make -j 8 test
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "
+            # Tests use parts of ProofWidgets not imported by Mathlib.
+            # Ensure everything has been built.
+            lake build ProofWidgets
+            make -j 8 test"
 
       - name: lint mathlib
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+
+      - name: check environments using lean4checker
+        id: lean4checker
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          git checkout toolchain/v4.5.0-rc1
+          # Now that the git hash is embedded in each olean,
+          # we need to compile lean4checker on the same toolchain
+          cp ../lean-toolchain .
+          lake build
+          ./test.sh
+          cd ..
+          lake env lean4checker/.lake/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          NOISY_OUTCOME: ${{ steps.noisy.outcome }}
+          ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
+          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
-          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 

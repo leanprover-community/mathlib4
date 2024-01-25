@@ -8,6 +8,7 @@ import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
 
+private axiom test_sorry : ∀ {α}, α
 open List Set
 
 example (x y z k : ℕ)
@@ -59,20 +60,20 @@ example {x y z : ℕ} : true := by
   have : y + x ≤ y + z := by
     mono
     guard_target = x ≤ z
-    admit
+    exact test_sorry
   trivial
 
 example {x y z : ℕ} : true := by
-  suffices : x + y ≤ z + y; trivial
+  suffices _this : x + y ≤ z + y; trivial
   mono
   guard_target = x ≤ z
-  admit
+  exact test_sorry
 
 example {x y z w : ℕ} : true := by
   have : x + y ≤ z + w := by
     mono
-    guard_target = x ≤ z; admit
-    guard_target = y ≤ w; admit
+    guard_target = x ≤ z; exact test_sorry
+    guard_target = y ≤ w; exact test_sorry
   trivial
 
 -- example
@@ -418,7 +419,7 @@ example {x y z w : ℕ} : true := by
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
---   · exact (real.continuous_exp.comp $ continuous_add_right 1)
+--   · exact (real.continuous_exp.comp <| continuous_add_right 1)
 --       .locally_integrable.integrable_on_is_compact is_compact_Icc
 --   intro x
 --   dsimp only
