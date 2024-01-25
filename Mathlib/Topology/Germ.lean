@@ -172,14 +172,16 @@ section IsConstant  -- missing API about IsConstant
   sorry -/
 
 lemma foo {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y} {g : Y → Z} {x : X}
-    (hf : (f : Germ (𝓝 x) Y).IsConstant) (hg : Continuous g) : ((g ∘ f) : Germ (𝓝 x) Z).IsConstant := by
-  sorry
+    (hf : (f : Germ (𝓝 x) Y).IsConstant) : ((g ∘ f) : Germ (𝓝 x) Z).IsConstant := by
+  obtain ⟨b, hb⟩ := hf
+  exact ⟨g b, hb.fun_comp g⟩
 
 -- this should imply `bar2`
 lemma bar {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : Y → Z} {g : X → Y} {y : Y}
     (hf : (f : Germ (𝓝 (g x)) Z).IsConstant) (hg : Continuous g) :
     ((f ∘ g) : Germ (𝓝 x) Z).IsConstant := by
-  sorry
+  obtain ⟨b, hb⟩ := hf
+  sorry -- something like: apply hb.comp_tendsto --hg
 
 lemma bar2 {s : Set X} {f : X → Y} {x : s} (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
     ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant := sorry
