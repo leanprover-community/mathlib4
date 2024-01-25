@@ -48,7 +48,9 @@ We prove the main properties of the Jacobi symbol, including the following.
 * The symbol depends on `a` only via its residue class mod `b` (`jacobiSym.mod_left`)
   and on `b` only via its residue class mod `4*a` (`jacobiSym.mod_right`)
 
-* A `csimp` rule `jacobiSym_eq_fastJacobiSym`.
+* A `csimp` rule for `jacobiSym` and `legendreSym` that evaluates `J(a | b)` efficiently by
+  reducing to the case `0 ≤ a < b` and `a`, `b` odd, and then swaps `a`, `b` and recurses using
+  quadratic reciprocity.
 
 ## Notations
 
