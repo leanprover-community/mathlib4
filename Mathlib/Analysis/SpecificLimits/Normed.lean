@@ -577,7 +577,7 @@ variable [NormedDivisionRing α] [CompleteSpace α] {f : ℕ → α}
 theorem summable_power_of_norm_lt {w z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i * w ^ i) (hz : ‖z‖ < ‖w‖) :
     Summable fun n ↦ f n * z ^ n := by
-  have hw := (norm_nonneg z).trans_lt hz -- `0 < ‖w‖`
+  have hw : 0 < ‖w‖ := (norm_nonneg z).trans_lt hz
   obtain ⟨C, hC⟩ := norm_bounded_of_cauchy_series h
   rw [summable_iff_cauchySeq_finset]
   refine cauchySeq_finset_of_geometric_bound (r := ‖z‖ / ‖w‖) (C := C) ((div_lt_one hw).mpr hz)
