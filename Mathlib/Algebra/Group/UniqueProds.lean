@@ -613,12 +613,10 @@ theorem of_graded_mul {X G : Type*} [Mul X] [Add G] [IsRightCancelAdd G] [Linear
     (hinj : ∀ a b c d : X, a * b = c * d → f a = f c → a = c ∧ b = d) :
     TwoUniqueProds X where
   uniqueMul_of_one_lt_card {A} {B} h := by
-    have max_grade {s : Finset X} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, f u ≤ f w :=
+    have max_grade {s : Finset X} (hs : s.Nonempty) : ∃ w ∈ s, ∀ u ∈ s, f u ≤ f w :=
       have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image f).max'_mem (hs.image _)
       ⟨w, hws, fun u hu => hw ▸ Finset.le_max' _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
-    have min_grade {s : Finset X} (hs : s.Nonempty) :
-        ∃ w ∈ s, ∀ u ∈ s, f w ≤ f u :=
+    have min_grade {s : Finset X} (hs : s.Nonempty) : ∃ w ∈ s, ∀ u ∈ s, f w ≤ f u :=
       have ⟨w, hws, hw⟩ := Finset.mem_image.1 <| (s.image f).min'_mem (hs.image _)
       ⟨w, hws, fun u hu => hw ▸ Finset.min'_le _ _ (Finset.mem_image.2 ⟨_, hu, rfl⟩)⟩
     have ⟨hA, hB, hAB⟩ := Nat.one_lt_mul_iff.mp h
