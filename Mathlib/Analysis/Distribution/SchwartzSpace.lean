@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -119,6 +119,10 @@ theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 #align schwartz_map.continuous SchwartzMap.continuous
+
+instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F :=
+  { instFunLike with
+    map_continuous := SchwartzMap.continuous }
 
 /-- Every Schwartz function is differentiable. -/
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
@@ -968,6 +972,11 @@ section BoundedContinuousFunction
 
 open scoped BoundedContinuousFunction
 
+instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F :=
+  { instContinuousMapClass with
+    map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
+      (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩ }
+
 /-- Schwartz functions as bounded continuous functions -/
 def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
   BoundedContinuousFunction.ofNormedAddCommGroup f (SchwartzMap.continuous f)
@@ -1016,8 +1025,7 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
         BoundedContinuousFunction.norm_le (map_nonneg _ _)]
-      intro x
-      exact norm_le_seminorm 𝕜 _ _ }
+      exact norm_le_seminorm 𝕜 _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionCLM
 
 @[simp]
@@ -1039,5 +1047,85 @@ theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :
 #align schwartz_map.delta_apply SchwartzMap.delta_apply
 
 end BoundedContinuousFunction
+
+section ZeroAtInfty
+
+open scoped ZeroAtInfty
+
+variable [ProperSpace E]
+
+instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F :=
+  { instContinuousMapClass with
+    zero_at_infty := by
+      intro f
+      rw [tendsto_zero_iff_norm_tendsto_zero]
+      intro s hs
+      simp only [Filter.mem_map, Filter.mem_cocompact]
+      rw [Metric.mem_nhds_iff] at hs
+      rcases hs with ⟨ε, hε, hs⟩
+      use Metric.closedBall 0 ((SchwartzMap.seminorm ℝ 1 0) f / ε)
+      refine ⟨isCompact_closedBall _ _, ?_⟩
+      intro x hx
+      simp only [Set.mem_compl_iff, Metric.mem_closedBall, dist_zero_right, not_le,
+        Set.mem_preimage] at hx ⊢
+      apply hs
+      simp only [Metric.mem_ball, dist_zero_right, norm_norm]
+      rw [div_lt_iff hε] at hx
+      have hxpos : 0 < ‖x‖ := by
+        rw [norm_pos_iff']
+        intro hxzero
+        simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
+        exact hx (map_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
+      have := norm_pow_mul_le_seminorm ℝ f 1 x
+      rw [pow_one, ← le_div_iff' hxpos] at this
+      apply lt_of_le_of_lt this
+      rwa [div_lt_iff' hxpos] }
+
+/-- Schwartz functions as continuous functions vanishing at infinity. -/
+def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
+  toFun := f
+  zero_at_infty' := zero_at_infty f
+
+@[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : f.toZeroAtInfty x = f x :=
+  rfl
+
+@[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
+    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction := by
+  ext
+  rfl
+
+variable (𝕜 E F)
+variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+/-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
+linear map. -/
+def toZeroAtInftyLM : 𝓢(E, F) →ₗ[𝕜] C₀(E, F) where
+  toFun f := f.toZeroAtInfty
+  map_add' f g := by ext; exact add_apply
+  map_smul' a f := by ext; exact smul_apply
+
+@[simp] theorem toZeroAtInftyLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyLM 𝕜 E F f x = f x :=
+  rfl
+
+/-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
+continuous linear map. -/
+def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
+  { toZeroAtInftyLM 𝕜 E F with
+    cont := by
+      change Continuous (toZeroAtInftyLM 𝕜 E F)
+      refine'
+        Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
+          (norm_withSeminorms 𝕜 (C₀(E, F))) _ fun _ => ⟨{0}, 1, fun f => _⟩
+      haveI : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
+      simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
+        schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
+        ← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
+        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+      exact norm_le_seminorm 𝕜 _ }
+
+@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
+  rfl
+
+end ZeroAtInfty
 
 end SchwartzMap
