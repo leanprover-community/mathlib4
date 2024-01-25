@@ -166,6 +166,28 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F : H → α → E} {F' : 
   apply hasFDerivAt_integral_of_dominated_loc_of_lip' δ_pos <;> assumption
 #align has_fderiv_at_integral_of_dominated_loc_of_lip hasFDerivAt_integral_of_dominated_loc_of_lip
 
+/-- Interval version of `hasFDerivAt_integral_of_dominated_loc_of_lip` -/
+theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H] {μ : Measure ℝ}
+    {F : H → ℝ → E} {F' : ℝ → H →L[ℝ] E} {x₀ : H} {a b : ℝ} {bound : ℝ → ℝ}
+    (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
+    (hF_int : IntervalIntegrable (F x₀) μ a b)
+    (hF'_meas : AEStronglyMeasurable F' <| μ.restrict (Ι a b))
+    (h_lip : ∀ᵐ t ∂μ.restrict (Ι a b),
+      LipschitzOnWith (Real.nnabs <| bound t) (fun x ↦ F x t) (ball x₀ ε))
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), HasFDerivAt (fun x ↦ F x t) (F' t) x₀) :
+    IntervalIntegrable F' μ a b ∧
+      HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
+  simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
+  rw [ae_restrict_uIoc_iff] at h_lip h_diff
+  have H₁ :=
+    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas.1 hF_int.1 hF'_meas.1 h_lip.1
+      bound_integrable.1 h_diff.1
+  have H₂ :=
+    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas.2 hF_int.2 hF'_meas.2 h_lip.2
+      bound_integrable.2 h_diff.2
+  exact ⟨⟨H₁.1, H₂.1⟩, H₁.2.sub H₂.2⟩
+
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
 derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
