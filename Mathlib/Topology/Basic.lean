@@ -1627,9 +1627,9 @@ theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 
-theorem IsOpen.preimage (hf : Continuous f) {s : Set Y} (h : IsOpen s) :
-    IsOpen (f ⁻¹' s) :=
-  hf.isOpen_preimage s h
+theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
+    IsOpen (f ⁻¹' t) :=
+  hf.isOpen_preimage t h
 #align is_open.preimage IsOpen.preimage
 
 theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
@@ -1685,8 +1685,8 @@ theorem ClusterPt.map {lx : Filter X} {ly : Filter Y} (H : ClusterPt x lx)
 #align cluster_pt.map ClusterPt.map
 
 /-- See also `interior_preimage_subset_preimage_interior`. -/
-theorem preimage_interior_subset_interior_preimage {s : Set Y} (hf : Continuous f) :
-    f ⁻¹' interior s ⊆ interior (f ⁻¹' s) :=
+theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous f) :
+    f ⁻¹' interior t ⊆ interior (f ⁻¹' t) :=
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 #align preimage_interior_subset_interior_preimage preimage_interior_subset_interior_preimage
 
@@ -1778,9 +1778,9 @@ theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClose
     simp only [isOpen_compl_iff, preimage_compl]
 #align continuous_iff_is_closed continuous_iff_isClosed
 
-theorem IsClosed.preimage (hf : Continuous f) {s : Set Y} (h : IsClosed s) :
-    IsClosed (f ⁻¹' s) :=
-  continuous_iff_isClosed.mp hf s h
+theorem IsClosed.preimage (hf : Continuous f) {t : Set Y} (h : IsClosed t) :
+    IsClosed (f ⁻¹' t) :=
+  continuous_iff_isClosed.mp hf t h
 #align is_closed.preimage IsClosed.preimage
 
 theorem mem_closure_image {s : Set X} (hf : ContinuousAt f x)
