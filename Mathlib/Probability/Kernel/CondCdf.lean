@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.Logic.Encodable.Basic
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
@@ -50,21 +51,6 @@ open scoped NNReal ENNReal MeasureTheory Topology
 section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
-
-namespace Directed
-
--- todo after the port: move this to logic.encodable.basic near sequence_mono
-variable [Encodable α] [Inhabited α] [Preorder β] {f : α → β} (hf : Directed (· ≥ ·) f)
-
-theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
-  antitone_nat_of_succ_le <| hf.sequence_mono_nat
-#align directed.sequence_anti Directed.sequence_anti
-
-theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
-  hf.rel_sequence a
-#align directed.sequence_le Directed.sequence_le
-
-end Directed
 
 -- todo: move to data/set/lattice next to prod_sUnion or prod_sInter
 theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
