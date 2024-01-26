@@ -137,6 +137,14 @@ theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
 alias pow_two_sub_pow_two := sq_sub_sq
 #align nat.pow_two_sub_pow_two Nat.pow_two_sub_pow_two
 
+lemma pow_eq_one_iff {m n : ℕ} : m ^ n = 1 ↔ m = 1 ∨ n = 0 := by
+  refine ⟨fun H ↦ (eq_or_ne n 0).elim Or.inr fun h ↦ Or.inl ?_, fun H ↦ ?_⟩
+  · rcases m.eq_zero_or_pos with rfl | hm
+    · simp [h] at H
+    by_contra! hm'
+    exact (H ▸ (one_lt_pow_iff h).mpr <| lt_of_le_of_ne hm hm'.symm).false
+  · rcases H with rfl | rfl <;> simp
+
 /-! ### `pow` and `mod` / `dvd` -/
 
 
