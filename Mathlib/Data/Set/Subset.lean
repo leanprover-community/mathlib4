@@ -107,7 +107,7 @@ lemma restrict_subsetRestrict_iff : A ∩ B ⊆ A ∩ C ↔ A ↓∩ B ⊆ A ↓
 
 @[simp]
 lemma setRestrict_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
-  simp only [subset_antisymm_iff, ← restrict_subsetRestrict_iff, subset_inter_iff,
+  simp only [subset_antisymm_iff,← restrict_subsetRestrict_iff, subset_inter_iff,
     inter_subset_left, true_and]
 
 @[simp]
@@ -141,7 +141,7 @@ lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B 
   exact h
 
 lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
-  simp only [←restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
+  simp only [← restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
   apply subset_trans (inter_subset_right A B) h
 
 lemma mem_coe_iff (x : α) : x ∈ (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x := by rfl
