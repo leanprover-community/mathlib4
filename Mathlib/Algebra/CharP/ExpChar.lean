@@ -332,6 +332,11 @@ nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobeni
   map_smul' f s := show iterateFrobenius S p n _ = _ by
     simp_rw [iterateFrobenius_def, Algebra.smul_def, mul_pow, ← map_pow]; rfl
 
+theorem LinearMap.frobenius_def [Algebra R S] (x : S) : frobenius R S p x = x ^ p := rfl
+
+theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
+    iterateFrobenius R S p n x = x ^ p ^ n := rfl
+
 theorem frobenius_zero : frobenius R p 0 = 0 :=
   (frobenius R p).map_zero
 #align frobenius_zero frobenius_zero
