@@ -3,8 +3,8 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
@@ -110,7 +110,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
@@ -232,7 +232,7 @@ is another `r`-series
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1

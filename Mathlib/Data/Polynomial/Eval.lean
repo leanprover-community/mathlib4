@@ -1092,7 +1092,7 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 #align polynomial.coe_eval_ring_hom Polynomial.coe_evalRingHom
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  FunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
+  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
 #align polynomial.eval_ring_hom_zero Polynomial.evalRingHom_zero
 
 @[simp]

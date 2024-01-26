@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 #align_import geometry.manifold.instances.sphere from "leanprover-community/mathlib"@"0dc4079202c28226b2841a51eb6d3cc2135bb80f"
 
@@ -382,7 +382,7 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance chartedSpace {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
@@ -411,7 +411,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
-instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1) :=
   smoothManifoldWithCorners_of_contDiffOn (𝓡 n) (sphere (0 : E) 1)
     (by
@@ -443,7 +443,7 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
-  have := smoothMfldWithCorners (E := E) (n := n)
+  have := EuclideanSpace.instSmoothManifoldWithCornersSphere (E := E) (n := n)
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -568,7 +568,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  have := congr_arg FunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
+  have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
   simpa using Subtype.coe_injective
@@ -589,10 +589,10 @@ attribute [local instance] finrank_real_complex_fact'
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
-  chartedSpace
+  EuclideanSpace.instChartedSpaceSphere
 
 instance : SmoothManifoldWithCorners (𝓡 1) circle :=
-  smoothMfldWithCorners (E := ℂ)
+  EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
 instance : LieGroup (𝓡 1) circle where
@@ -610,7 +610,7 @@ instance : LieGroup (𝓡 1) circle where
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
-    exact Complex.conjCle.contDiff.contMDiff.comp contMDiff_coe_sphere
+    exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
 theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=

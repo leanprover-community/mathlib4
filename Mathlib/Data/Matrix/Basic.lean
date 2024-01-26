@@ -94,7 +94,7 @@ theorem ext : (∀ i j, M i j = N i j) → M = N :=
 -- and restore the `@[ext]` attribute on `Matrix.ext` above.
 @[ext]
 theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext <| fun i => by simp[h]
+  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 
@@ -2567,9 +2567,9 @@ theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
-    simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.mul_one, submatrix_submatrix, Function.comp.right_id, submatrix_id_id,
+  simp only [Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
@@ -2579,9 +2579,9 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
-    simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.one_mul, submatrix_submatrix, Function.comp.right_id, submatrix_id_id,
+  simp only [Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.one_submatrix_mul Matrix.one_submatrix_mul
 

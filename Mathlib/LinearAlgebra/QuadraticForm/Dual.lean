@@ -113,7 +113,7 @@ variable {R M N}
 @[simps!]
 def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
   toLinearEquiv := f.dualMap.symm.prod f
-  map_app' x := FunLike.congr_arg x.fst <| f.symm_apply_apply _
+  map_app' x := DFunLike.congr_arg x.fst <| f.symm_apply_apply _
 #align quadratic_form.dual_prod_isometry QuadraticForm.dualProdIsometry
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
@@ -124,7 +124,7 @@ def dualProdProdIsometry : (dualProd R (M × N)).IsometryEquiv ((dualProd R M).p
     (Module.dualProdDualEquivDual R M N).symm.prod (LinearEquiv.refl R (M × N)) ≪≫ₗ
       LinearEquiv.prodProdProdComm R _ _ M N
   map_app' m :=
-    (m.fst.map_add _ _).symm.trans <| FunLike.congr_arg m.fst <| Prod.ext (add_zero _) (zero_add _)
+    (m.fst.map_add _ _).symm.trans <| DFunLike.congr_arg m.fst <| Prod.ext (add_zero _) (zero_add _)
 #align quadratic_form.dual_prod_prod_isometry QuadraticForm.dualProdProdIsometry
 
 end Semiring
@@ -135,7 +135,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 variable {R M}
 
-/-- The isometry sending `(Q.prod $ -Q)` to `(QuadraticForm.dualProd R M)`.
+/-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
 [*Hermitian K-Theory and Geometric Applications*][hyman1973]; though we swap the order of the pairs.

@@ -158,7 +158,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
-      rintro x ⟨a, b, haH, hbH, rfl⟩
+      rintro x ⟨a, haH, b, hbH, rfl⟩
       exact H.mul_mem haH hbH⟩
   inv' {U} hU :=
     ⟨U, hU, by
@@ -222,7 +222,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
-      cases' FunLike.exists_ne hfg with x hx
+      cases' DFunLike.exists_ne hfg with x hx
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
@@ -263,11 +263,11 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
   apply isTotallyDisconnected_of_isClopen_set
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
-  rcases FunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
+  rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)
   haveI := IntermediateField.adjoin.finiteDimensional (h_int x)
   refine' ⟨σ • E.fixingSubgroup,
-    ⟨E.fixingSubgroup_isOpen.leftCoset σ, E.fixingSubgroup_isClosed.leftCoset σ⟩,
+    ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]

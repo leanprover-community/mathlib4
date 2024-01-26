@@ -123,10 +123,10 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.refl MvQPF.wEquiv.refl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
-  intro h; induction h
-  case ind a f' f₀ f₁ _h ih => exact WEquiv.ind _ _ _ _ ih
-  case abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => exact WEquiv.abs _ _ _ _ _ _ h.symm
-  case trans x y z _e₁ _e₂ ih₁ ih₂ => exact MvQPF.WEquiv.trans _ _ _ ih₂ ih₁
+  intro h; induction h with
+  | ind a f' f₀ f₁ _h ih => exact WEquiv.ind _ _ _ _ ih
+  | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => exact WEquiv.abs _ _ _ _ _ _ h.symm
+  | trans x y z _e₁ _e₂ ih₁ ih₂ => exact MvQPF.WEquiv.trans _ _ _ ih₂ ih₁
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.symm MvQPF.wEquiv.symm
 
@@ -156,16 +156,15 @@ set_option linter.uppercaseLean3 false in
 
 theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
-  intro h; induction h
-  case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
-  case
-    abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
+  intro h; induction h with
+  | ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
+  | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
     show
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
-  case trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  | trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wEquiv_map
 

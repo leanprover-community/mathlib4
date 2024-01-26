@@ -3,7 +3,8 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Logic
+import Std.Logic
+import Mathlib.Mathport.Rename
 
 #align_import init.data.subtype.basic from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
