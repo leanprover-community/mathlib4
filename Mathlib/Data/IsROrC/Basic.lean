@@ -1067,18 +1067,18 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 #align is_R_or_C.conj_ae_coe IsROrC.conjAe_coe
 
 /-- Conjugate as a linear isometry -/
-noncomputable def conjLie : K ≃ₗᵢ[ℝ] K :=
+noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
   ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
-#align is_R_or_C.conj_lie IsROrC.conjLie
+#align is_R_or_C.conj_lie IsROrC.conjLIE
 
 @[simp, isROrC_simps]
-theorem conjLie_apply : (conjLie : K → K) = conj :=
+theorem conjLIE_apply : (conjLIE : K → K) = conj :=
   rfl
-#align is_R_or_C.conj_lie_apply IsROrC.conjLie_apply
+#align is_R_or_C.conj_lie_apply IsROrC.conjLIE_apply
 
 /-- Conjugate as a continuous linear equivalence -/
 noncomputable def conjCLE : K ≃L[ℝ] K :=
-  @conjLie K _
+  @conjLIE K _
 #align is_R_or_C.conj_cle IsROrC.conjCLE
 
 @[simp, isROrC_simps]
@@ -1092,7 +1092,7 @@ theorem conjCLE_apply : (conjCLE : K → K) = conj :=
 #align is_R_or_C.conj_cle_apply IsROrC.conjCLE_apply
 
 instance (priority := 100) : ContinuousStar K :=
-  ⟨conjLie.continuous⟩
+  ⟨conjLIE.continuous⟩
 
 @[continuity]
 theorem continuous_conj : Continuous (conj : K → K) :=
@@ -1110,19 +1110,19 @@ theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
 #align is_R_or_C.of_real_am_coe IsROrC.ofRealAm_coe
 
 /-- The ℝ → K coercion, as a linear isometry -/
-noncomputable def ofRealLi : ℝ →ₗᵢ[ℝ] K where
+noncomputable def ofRealLI : ℝ →ₗᵢ[ℝ] K where
   toLinearMap := ofRealAm.toLinearMap
   norm_map' := norm_ofReal
-#align is_R_or_C.of_real_li IsROrC.ofRealLi
+#align is_R_or_C.of_real_li IsROrC.ofRealLI
 
 @[simp, isROrC_simps]
-theorem ofRealLi_apply : (ofRealLi : ℝ → K) = ofReal :=
+theorem ofRealLI_apply : (ofRealLI : ℝ → K) = ofReal :=
   rfl
-#align is_R_or_C.of_real_li_apply IsROrC.ofRealLi_apply
+#align is_R_or_C.of_real_li_apply IsROrC.ofRealLI_apply
 
 /-- The `ℝ → K` coercion, as a continuous linear map -/
 noncomputable def ofRealCLM : ℝ →L[ℝ] K :=
-  ofRealLi.toContinuousLinearMap
+  ofRealLI.toContinuousLinearMap
 #align is_R_or_C.of_real_clm IsROrC.ofRealCLM
 
 @[simp, isROrC_simps]
@@ -1137,7 +1137,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
 
 @[continuity]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
-  ofRealLi.continuous
+  ofRealLI.continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal
 
 @[continuity]

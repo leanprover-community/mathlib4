@@ -30,7 +30,7 @@ it defines functions:
 
 They are bundled versions of the real part, the imaginary part, the embedding of `ℝ` in `ℂ`, and
 the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
-isometries in `ofRealLi` and `conjLie`.
+isometries in `ofRealLI` and `conjLIE`.
 
 We also register the fact that `ℂ` is an `IsROrC` field.
 -/
@@ -314,22 +314,22 @@ theorem restrictScalars_one_smulRight (x : ℂ) :
 #align complex.restrict_scalars_one_smul_right Complex.restrictScalars_one_smulRight
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
-def conjLie : ℂ ≃ₗᵢ[ℝ] ℂ :=
+def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
   ⟨conjAe.toLinearEquiv, abs_conj⟩
-#align complex.conj_lie Complex.conjLie
+#align complex.conj_lie Complex.conjLIE
 
 @[simp]
-theorem conjLie_apply (z : ℂ) : conjLie z = conj z :=
+theorem conjLIE_apply (z : ℂ) : conjLIE z = conj z :=
   rfl
-#align complex.conj_lie_apply Complex.conjLie_apply
+#align complex.conj_lie_apply Complex.conjLIE_apply
 
 @[simp]
-theorem conjLie_symm : conjLie.symm = conjLie :=
+theorem conjLIE_symm : conjLIE.symm = conjLIE :=
   rfl
-#align complex.conj_lie_symm Complex.conjLie_symm
+#align complex.conj_lie_symm Complex.conjLIE_symm
 
 theorem isometry_conj : Isometry (conj : ℂ → ℂ) :=
-  conjLie.isometry
+  conjLIE.isometry
 #align complex.isometry_conj Complex.isometry_conj
 
 @[simp]
@@ -351,7 +351,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
 #align complex.nndist_conj_comm Complex.nndist_conj_comm
 
 instance : ContinuousStar ℂ :=
-  ⟨conjLie.continuous⟩
+  ⟨conjLIE.continuous⟩
 
 @[continuity]
 theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
@@ -367,7 +367,7 @@ theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
 def conjCLE : ℂ ≃L[ℝ] ℂ :=
-  conjLie
+  conjLIE
 #align complex.conj_cle Complex.conjCLE
 
 @[simp]
@@ -381,17 +381,17 @@ theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
 #align complex.conj_cle_apply Complex.conjCLE_apply
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
-def ofRealLi : ℝ →ₗᵢ[ℝ] ℂ :=
+def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
   ⟨ofRealAm.toLinearMap, norm_real⟩
-#align complex.of_real_li Complex.ofRealLi
+#align complex.of_real_li Complex.ofRealLI
 
 theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
-  ofRealLi.isometry
+  ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
 @[continuity]
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
-  ofRealLi.continuous
+  ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
@@ -402,7 +402,7 @@ theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) :
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealCLM : ℝ →L[ℝ] ℂ :=
-  ofRealLi.toContinuousLinearMap
+  ofRealLI.toContinuousLinearMap
 #align complex.of_real_clm Complex.ofRealCLM
 
 @[simp]

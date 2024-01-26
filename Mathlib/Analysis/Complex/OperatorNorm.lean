@@ -22,17 +22,17 @@ open ContinuousLinearMap
 
 namespace Complex
 
-/-- The determinant of `conjLie`, as a linear map. -/
+/-- The determinant of `conjLIE`, as a linear map. -/
 @[simp]
-theorem det_conjLie : LinearMap.det (conjLie.toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = -1 :=
+theorem det_conjLIE : LinearMap.det (conjLIE.toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = -1 :=
   det_conjAe
-#align complex.det_conj_lie Complex.det_conjLie
+#align complex.det_conj_lie Complex.det_conjLIE
 
-/-- The determinant of `conjLie`, as a linear equiv. -/
+/-- The determinant of `conjLIE`, as a linear equiv. -/
 @[simp]
-theorem linearEquiv_det_conjLie : LinearEquiv.det conjLie.toLinearEquiv = -1 :=
+theorem linearEquiv_det_conjLIE : LinearEquiv.det conjLIE.toLinearEquiv = -1 :=
   linearEquiv_det_conjAe
-#align complex.linear_equiv_det_conj_lie Complex.linearEquiv_det_conjLie
+#align complex.linear_equiv_det_conj_lie Complex.linearEquiv_det_conjLIE
 
 @[simp]
 theorem reCLM_norm : ‖reCLM‖ = 1 :=
@@ -62,7 +62,7 @@ theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
 
 @[simp]
 theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
-  conjLie.toLinearIsometry.norm_toContinuousLinearMap
+  conjLIE.toLinearIsometry.norm_toContinuousLinearMap
 #align complex.conj_cle_norm Complex.conjCLE_norm
 
 @[simp]
@@ -72,7 +72,7 @@ theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
-  ofRealLi.norm_toContinuousLinearMap
+  ofRealLI.norm_toContinuousLinearMap
 #align complex.of_real_clm_norm Complex.ofRealCLM_norm
 
 @[simp]

@@ -37,8 +37,8 @@ noncomputable section
 
 open Complex ContinuousLinearMap ComplexConjugate
 
-theorem isConformalMap_conj : IsConformalMap (conjLie : ℂ →L[ℝ] ℂ) :=
-  conjLie.toLinearIsometry.isConformalMap
+theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
+  conjLIE.toLinearIsometry.isConformalMap
 #align is_conformal_map_conj isConformalMap_conj
 
 section ConformalIntoComplexNormed
@@ -97,7 +97,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     rw [coe_restrictScalars', smul_apply, smul_apply, comp_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap, LinearIsometryEquiv.coe_toLinearIsometry,
       LinearIsometryEquiv.trans_apply, rotation_apply, id_apply, smul_eq_mul,
-      ContinuousLinearEquiv.coe_coe, conjCLE_apply, conjLie_apply, conj_conj]
+      ContinuousLinearEquiv.coe_coe, conjCLE_apply, conjLIE_apply, conj_conj]
 #align is_conformal_map.is_complex_or_conj_linear IsConformalMap.is_complex_or_conj_linear
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
