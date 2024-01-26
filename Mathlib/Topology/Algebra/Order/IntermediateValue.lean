@@ -659,7 +659,7 @@ theorem ContinuousOn.StrictMonoOn_of_InjOn_Icc {a b : α} {f : α → δ}
 -- I learned this proof from
 -- <https://www.math.cuhk.edu.hk/course_builder/2021/math1050b/1050b-l14h-3.pdf>
   intro s hs t ht hst
-  by_contra' hfts
+  by_contra! hfts
   replace hfts : f t < f s := lt_of_le_of_ne hfts <| hf_i.ne ht hs hst.ne'
   by_cases hsa : f s ≤ f a
   · have hat : Icc t b ⊆ Icc a b := Icc_subset_Icc_left ht.1
@@ -739,9 +739,9 @@ private lemma ContinuousOn.StrictMonoOn_of_InjOn_Ioo_rigidity {a b : α} {f : α
   have (h : StrictAntiOn f (Icc s t)) : False := by
     have : Icc c d ⊆ Icc s t := Icc_subset_Icc hsc hdt
     replace : StrictAntiOn f (Icc c d) := StrictAntiOn.mono h this
-    replace : c = d := StrictMonoOn.Icc_singleton hf_mono this hcd.le
-    apply hcd.ne
-    exact this
+    replace : IsAntichain (· ≤ ·) (Icc c d) := IsAntichain.of_strictMonoOn_antitoneOn hf_mono this.antitoneOn
+    replace := this.not_lt (left_mem_Icc.mpr (le_of_lt hcd)) (right_mem_Icc.mpr (le_of_lt hcd))
+    exact this hcd
   replace hf_mono_st : StrictMonoOn f (Icc s t) := hf_mono_st.resolve_right this
   have hsx : s ≤ x := min_le_right c x
   have hyt : y ≤ t := le_max_right d y
