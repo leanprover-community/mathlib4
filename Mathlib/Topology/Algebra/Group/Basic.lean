@@ -755,6 +755,9 @@ theorem Subgroup.normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Gro
 #align subgroup.is_normal_topological_closure Subgroup.normal_topologicalClosure
 #align add_subgroup.is_normal_topological_closure AddSubgroup.normal_topologicalClosure
 
+@[to_additive (attr := deprecated Subgroup.normal_topologicalClosure)]
+alias Subgroup.is_normal_topologicalClosure := Subgroup.normal_topologicalClosure
+
 @[to_additive]
 theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneClass G]
     [ContinuousMul G] {g h : G} (hg : g ∈ connectedComponent (1 : G))
@@ -792,8 +795,8 @@ def Subgroup.identityComponent (G : Type*) [TopologicalSpace G] [Group G]
 #align add_subgroup.connected_component_of_zero AddSubgroup.identityComponent
 
 -- deprecated on 26 January 2024
-@[to_additive (attr := deprecated Subgroup.identityComponent)] alias Subgroup.connectedComponentOfOne :=
-  Subgroup.identityComponent
+@[to_additive (attr := deprecated Subgroup.identityComponent)]
+alias Subgroup.connectedComponentOfOne := Subgroup.identityComponent
 
 @[to_additive]
 theorem Subgroup.normal_identityComponent {G : Type*} [TopologicalSpace G] [Group G]
