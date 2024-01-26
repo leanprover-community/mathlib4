@@ -108,7 +108,7 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
       (minpoly.dvd_map_of_isScalarTower R K x) hy
 #align minpoly.aeval_of_is_scalar_tower minpoly.aeval_of_isScalarTower
 
-/-- See also `minpoly.ker_eval` which which relaxes the assumptions on `A` in exchange for
+/-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
 stronger assumptions on `B`. -/
 @[simp]
 lemma ker_aeval_eq_span_minpoly :
