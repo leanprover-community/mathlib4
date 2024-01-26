@@ -260,6 +260,14 @@ theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     F.map (f ⊗ g) = inv (F.μ X X') ≫ (F.map f ⊗ F.map g) ≫ F.μ Y Y' := by simp
 #align category_theory.monoidal_functor.map_tensor CategoryTheory.MonoidalFunctor.map_tensor
 
+-- Note: `𝟙 X ⊗ f` will be replaced by `X ◁ f` in #6307.
+theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    F.map (𝟙 X ⊗ f) = inv (F.μ X Y) ≫ (𝟙 (F.obj X) ⊗ F.map f) ≫ F.μ X Z := by simp
+
+-- Note: `f ⊗ 𝟙 Z` will be replaced by `f ▷ Z` in #6307.
+theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
+    F.map (f ⊗ 𝟙 Z) = inv (F.μ X Z) ≫ (F.map f ⊗ 𝟙 (F.obj Z)) ≫ F.μ Y Z := by simp
+
 theorem map_leftUnitor (X : C) :
     F.map (λ_ X).hom = inv (F.μ (𝟙_ C) X) ≫ (inv F.ε ⊗ 𝟙 (F.obj X)) ≫ (λ_ (F.obj X)).hom := by
   simp only [LaxMonoidalFunctor.left_unitality]
