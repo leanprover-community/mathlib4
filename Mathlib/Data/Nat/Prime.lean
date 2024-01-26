@@ -740,7 +740,7 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
 
 /-- Two prime powers with positive exponents are equal only when the primes and the
 exponents are equal. -/
-lemma Prime.pow_injective {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
+lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
     (h : p ^ (m + 1) = q ^ (n + 1)) : p = q ∧ m = n := by
   have H := dvd_antisymm (Prime.dvd_of_dvd_pow hp <| h ▸ dvd_pow_self p (succ_ne_zero m))
     (Prime.dvd_of_dvd_pow hq <| h.symm ▸ dvd_pow_self q (succ_ne_zero n))
