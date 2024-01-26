@@ -675,12 +675,10 @@ def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃
     { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
       map_add' := fun x y => by
         ext z
-        rw [ContinuousLinearMap.add_apply, mkContinuousOfExistsBound_apply,
-          mkContinuousOfExistsBound_apply, mkContinuousOfExistsBound_apply, map_add, add_apply]
+        simp
       map_smul' := fun c x => by
         ext z
-        rw [ContinuousLinearMap.smul_apply, mkContinuousOfExistsBound_apply,
-          mkContinuousOfExistsBound_apply, map_smulₛₗ, smul_apply] } <|
+        simp } <|
     let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
@@ -972,7 +970,7 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       rintro ⟨φ, ψ⟩
       refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
       dsimp
-      simp [add_apply, comp_apply])
+      simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
 variable {M₁ M₂ M₃ M₄}
