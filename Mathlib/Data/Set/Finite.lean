@@ -57,9 +57,7 @@ coerced to a type.
 
 Note: this is a custom inductive type rather than `Nonempty (Fintype s)`
 so that it won't be frozen as a local instance. -/
-protected
-inductive Finite (s : Set α) : Prop
-  | intro : Fintype s → s.Finite
+protected def Finite (s : Set α) : Prop := Finite s
 #align set.finite Set.Finite
 
 -- The `protected` attribute does not take effect within the same namespace block.
