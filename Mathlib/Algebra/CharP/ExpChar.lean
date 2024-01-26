@@ -251,7 +251,7 @@ section frobenius
 
 section CommSemiring
 
-variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →* S) (g : R →+* S) (p n : ℕ)
+variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →* S) (g : R →+* S) (p m n : ℕ)
   [ExpChar R p] [ExpChar S p] (x y : R)
 
 /-- The frobenius map that sends x to x^p -/
@@ -281,6 +281,29 @@ theorem iterate_frobenius (n : ℕ) : (frobenius R p)^[n] x = x ^ p ^ n := by
   | succ n n_ih =>
       rw [Function.iterate_succ', pow_succ', pow_mul, Function.comp_apply, frobenius_def, n_ih]
 #align iterate_frobenius iterate_frobenius
+
+theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
+  funext fun x ↦ (iterate_frobenius p x n).symm
+
+@[simp]
+theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p := by
+  simp_rw [iterateFrobenius, frobenius, pow_one]
+
+@[simp]
+theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R := by
+  simp_rw [iterateFrobenius, powMonoidHom, pow_zero, pow_one]
+  rfl
+
+theorem iterateFrobenius_add :
+    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) := by
+  ext x
+  simp_rw [RingHom.coe_comp, Function.comp_apply, iterateFrobenius_def, add_comm m n,
+    pow_add, pow_mul]
+
+theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
+  induction n with
+  | zero => rw [Nat.zero_eq, mul_zero, iterateFrobenius_zero]; rfl
+  | succ n h => rw [Function.iterate_succ, Nat.mul_succ, iterateFrobenius_add, RingHom.coe_comp, h]
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
   (frobenius R p).map_mul x y
