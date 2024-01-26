@@ -306,7 +306,7 @@ theorem mem_interior : x ∈ interior s ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x �
 #align mem_interior mem_interiorₓ
 
 @[simp]
-theorem isOpen_interior: IsOpen (interior s) :=
+theorem isOpen_interior : IsOpen (interior s) :=
   isOpen_sUnion fun _ => And.left
 #align is_open_interior isOpen_interior
 
