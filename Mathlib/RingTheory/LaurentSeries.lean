@@ -58,10 +58,6 @@ def ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) : Lauren
   coeff := f
   isPWO_support' := suppBddBelow_supp_PWO f hf
 
-@[simp]
-theorem coeff_ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) (m : ℤ) :
-    coeff (ofSuppBddBelow f hf) m = f m := rfl
-
 theorem BddBelow_zero : BddBelow (Function.support (0 : ℤ → R)) := by
   simp_all only [Function.support_zero', bddBelow_empty]
 
