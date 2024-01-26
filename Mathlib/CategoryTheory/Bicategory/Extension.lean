@@ -202,6 +202,7 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
     rw [← LeftLift.w η]
     simp [- LeftLift.w]
 
+/-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
     s ⟶ t :=
