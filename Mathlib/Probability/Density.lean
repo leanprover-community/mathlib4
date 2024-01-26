@@ -398,39 +398,59 @@ theorem hasPDF₀ {X : Ω → E} {s : Set E} (hms : NullMeasurableSet s μ) (hns
   unfold IsUniform
   rw [measure_toMeasurable, restrict_congr_set hms.toMeasurable_ae_eq, hu]
 
-theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s) (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
+    (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
+  rcases hμs with H|H
+  · simp only [IsUniform, H, ENNReal.inv_zero, restrict_eq_zero.mpr H, smul_zero] at hu
+    simp [pdf, hu]
+  · simp only [IsUniform, H, ENNReal.inv_top, zero_smul] at hu
+    simp [pdf, hu]
+
+theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
     (hu : IsUniform X s ℙ μ) : pdf X ℙ μ =ᵐ[μ] s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) := by
+  by_cases hnt : μ s = ∞
+  · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
+  by_cases hns : μ s = 0
+  · filter_upwards [measure_zero_iff_ae_nmem.mp hns,
+      pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inl hns)] with x hx h'x
+    simp [hx, h'x, hns]
   have : HasPDF X ℙ μ := hasPDF hms hns hnt hu
   have : IsProbabilityMeasure ℙ := isProbabilityMeasure hns hnt hu
   apply (eq_of_map_eq_withDensity _ _).mp
   · rw [hu, withDensity_indicator hms, withDensity_smul _ measurable_one, withDensity_one]
   · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
 
-theorem pdf_toReal_ae_eq {X : Ω → E}
-    {s : Set E} (hms : MeasurableSet s) (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
+theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
     (hX : IsUniform X s ℙ μ) :
     (fun x => (pdf X ℙ μ x).toReal) =ᵐ[μ] fun x =>
       (s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x).toReal :=
-  Filter.EventuallyEq.fun_comp (pdf_eq hms hns hnt hX) ENNReal.toReal
+  Filter.EventuallyEq.fun_comp (pdf_eq hms hX) ENNReal.toReal
 #align measure_theory.pdf.is_uniform.pdf_to_real_ae_eq MeasureTheory.pdf.IsUniform.pdf_toReal_ae_eq
 
-variable {X : Ω → ℝ} {s : Set ℝ} (hms : MeasurableSet s) (hns : volume s ≠ 0) (hnt : volume s ≠ ∞)
+variable {X : Ω → ℝ} {s : Set ℝ}
 
-theorem mul_pdf_integrable [IsFiniteMeasure ℙ] (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
+theorem mul_pdf_integrable
+    (hms : MeasurableSet s) (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
-  constructor -- porting note: `refine` was failing, don't know why
+  by_cases hnt : volume s = 0 ∨ volume s = ∞
+  · have I : Integrable (fun x ↦ x * ENNReal.toReal (0)) := by simp
+    apply I.congr
+    filter_upwards [pdf_eq_zero_of_measure_eq_zero_or_top huX hnt] with x hx
+    simp [hx]
+  simp only [not_or] at hnt
+  have : IsProbabilityMeasure ℙ := isProbabilityMeasure hnt.1 hnt.2 huX
+  constructor
   · exact aestronglyMeasurable_id.mul
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
-  refine' hasFiniteIntegral_mul (pdf_eq hms hns hnt huX) _
+  refine' hasFiniteIntegral_mul (pdf_eq hms huX) _
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
   simp only [this, lintegral_indicator _ hms, mul_one, Algebra.id.smul_eq_mul, Pi.one_apply,
     Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
-  refine' (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hnt hcs continuous_nnnorm).ne
-    (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hns)).ne).ne
-#align measure_theory.pdf.is_uniform.mul_pdf_integrable MeasureTheory.pdf.IsUniform.mul_pdf_integrable
+  exact (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
+    (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne).ne
 
 /-- A real uniform random variable `X` with support `s` has expectation
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
