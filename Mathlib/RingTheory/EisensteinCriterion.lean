@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import ring_theory.eisenstein_criterion from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 

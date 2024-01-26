@@ -145,9 +145,6 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
-set_option autoImplicit true
-
-
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators
@@ -176,7 +173,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • ∫ y : ℝ in z.im..w.im, f (re z + y * I) =
       ∫ x : ℝ in z.re..w.re, ∫ y : ℝ in z.im..w.im, I • f' (x + y * I) 1 - f' (x + y * I) I := by
-  set e : (ℝ × ℝ) ≃L[ℝ] ℂ := equivRealProdClm.symm
+  set e : (ℝ × ℝ) ≃L[ℝ] ℂ := equivRealProdCLM.symm
   have he : ∀ x y : ℝ, ↑x + ↑y * I = e (x, y) := fun x y => (mk_eq_add_mul_I x y).symm
   have he₁ : e (1, 0) = 1 := rfl; have he₂ : e (0, 1) = I := rfl
   simp only [he] at *
@@ -607,7 +604,7 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOn hs).contDiffOn
 

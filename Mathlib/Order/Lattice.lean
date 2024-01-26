@@ -163,12 +163,12 @@ theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
 
 @[simp]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
-  le_antisymm_iff.trans $ by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp [le_rfl]
 #align sup_eq_left sup_eq_left
 
 @[simp]
 theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
-  le_antisymm_iff.trans $ by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp [le_rfl]
 #align sup_eq_right sup_eq_right
 
 @[simp]
@@ -192,12 +192,12 @@ attribute [simp] sup_of_le_left sup_of_le_right
 
 @[simp]
 theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
-  le_sup_left.lt_iff_ne.trans $ not_congr left_eq_sup
+  le_sup_left.lt_iff_ne.trans <| not_congr left_eq_sup
 #align left_lt_sup left_lt_sup
 
 @[simp]
 theorem right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
-  le_sup_right.lt_iff_ne.trans $ not_congr right_eq_sup
+  le_sup_right.lt_iff_ne.trans <| not_congr right_eq_sup
 #align right_lt_sup right_lt_sup
 
 theorem left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
@@ -280,11 +280,11 @@ theorem sup_sup_distrib_right (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ (b ⊔ 
 #align sup_sup_distrib_right sup_sup_distrib_right
 
 theorem sup_congr_left (hb : b ≤ a ⊔ c) (hc : c ≤ a ⊔ b) : a ⊔ b = a ⊔ c :=
-  (sup_le le_sup_left hb).antisymm $ sup_le le_sup_left hc
+  (sup_le le_sup_left hb).antisymm <| sup_le le_sup_left hc
 #align sup_congr_left sup_congr_left
 
 theorem sup_congr_right (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ⊔ c = b ⊔ c :=
-  (sup_le ha le_sup_right).antisymm $ sup_le hb le_sup_right
+  (sup_le ha le_sup_right).antisymm <| sup_le hb le_sup_right
 #align sup_congr_right sup_congr_right
 
 theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a ⊔ b :=
@@ -420,12 +420,12 @@ theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
 
 @[simp]
 theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
-  le_antisymm_iff.trans $ by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp [le_rfl]
 #align inf_eq_left inf_eq_left
 
 @[simp]
 theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
-  le_antisymm_iff.trans $ by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp [le_rfl]
 #align inf_eq_right inf_eq_right
 
 @[simp]
@@ -894,7 +894,7 @@ theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α �
   ext x y
   unfold maxDefault
   split_ifs with h'
-  exacts [sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [sup_of_le_right h', sup_of_le_left <| (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_maxDefault
 
 theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
@@ -903,7 +903,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α �
   ext x y
   unfold minDefault
   split_ifs with h'
-  exacts [inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [inf_of_le_left h', inf_of_le_right <| (total_of (· ≤ ·) x y).resolve_left h']
 #align inf_eq_min_default inf_eq_minDefault
 
 /-- A lattice with total order is a linear order.
@@ -930,10 +930,11 @@ instance (priority := 100) {α : Type u} [LinearOrder α] :
   __ := inferInstanceAs (Lattice α)
   le_sup_inf _ b c :=
     match le_total b c with
-    | Or.inl h => inf_le_of_left_le $ sup_le_sup_left (le_inf (le_refl b) h) _
-    | Or.inr h => inf_le_of_right_le $ sup_le_sup_left (le_inf h (le_refl c)) _
+    | Or.inl h => inf_le_of_left_le <| sup_le_sup_left (le_inf (le_refl b) h) _
+    | Or.inr h => inf_le_of_right_le <| sup_le_sup_left (le_inf h (le_refl c)) _
 
 instance : DistribLattice ℕ := inferInstance
+instance : Lattice ℤ := inferInstance
 
 /-! ### Dual order -/
 
@@ -1098,7 +1099,7 @@ theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : 
 
 theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
     (h : ∀ x y, f (x ⊓ y) = f x ⊓ f y) : Monotone f :=
-  fun x y hxy => inf_eq_left.1 $ by rw [← h, inf_eq_left.2 hxy]
+  fun x y hxy => inf_eq_left.1 <| by rw [← h, inf_eq_left.2 hxy]
 #align monotone.of_map_inf Monotone.of_map_inf
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}

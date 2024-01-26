@@ -6,10 +6,9 @@ Authors: Scott Morrison
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Lean.Meta.DiscrTree
 import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -113,11 +112,11 @@ only the types of the lemmas in the `using` clause.
 
 Suggestions are printed as `have := f a b c`.
 -/
-syntax (name := propose') "have?" "!"? (" : " term)? " using " (colGt term),+ : tactic
+syntax (name := propose') "have?" "!"? (ident)? (" : " term)? " using " (colGt term),+ : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
-  | `(tactic| have?%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+  | `(tactic| have?%$tk $[!%$lucky]? $[$h:ident]? $[ : $type:term]? using $[$terms:term],*) => do
     let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
@@ -130,7 +129,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (← inferType p.2) p.2 stx
+        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do

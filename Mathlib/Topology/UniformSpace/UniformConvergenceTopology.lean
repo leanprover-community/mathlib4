@@ -167,9 +167,9 @@ open UniformConvergence
 
 variable {α β : Type*} {𝔖 : Set (Set α)}
 
-instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.Nonempty
+instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
-instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.Nonempty
+instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
 instance {α β} [Subsingleton β] : Subsingleton (α →ᵤ β) :=
   instSubsingletonForAll
@@ -521,7 +521,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     -- that some square commutes.
     @Equiv.toUniformEquivOfUniformInducing
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
-    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) $ by
+    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
       refine @UniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
       change comap (Prod.map Function.swap Function.swap) _ = _
       rw [← uniformity_comap]
@@ -877,7 +877,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
   -- but it turns out to be more annoying.
   ((UniformOnFun.ofFun 𝔖).symm.trans <|
     (Equiv.arrowProdEquivProdArrow _ _ _).trans <|
-      (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing $ by
+      (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing <| by
       constructor
       rw [uniformity_prod, comap_inf, comap_comap, comap_comap]
       have H := @UniformOnFun.inf_eq α (β × γ) 𝔖
@@ -904,7 +904,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
   -- We could also deduce this from `UniformFun.uniformEquivPiComm`, but it turns out
   -- to be more annoying.
   @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i:ι) → δ i)) ((i:ι) → α →ᵤ[𝔖] δ i)
-      _ _ (Equiv.piComm _) $ by
+      _ _ (Equiv.piComm _) <| by
     constructor
     change comap (Prod.map Function.swap Function.swap) _ = _
     erw [← uniformity_comap]

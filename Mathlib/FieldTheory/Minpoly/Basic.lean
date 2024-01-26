@@ -200,6 +200,34 @@ theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A 
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
 #align minpoly.degree_pos minpoly.degree_pos
 
+section
+variable [Nontrivial B]
+
+open Polynomial in
+theorem degree_eq_one_iff : (minpoly A x).degree = 1 ↔ x ∈ (algebraMap A B).range := by
+  refine ⟨minpoly.mem_range_of_degree_eq_one _ _, ?_⟩
+  rintro ⟨x, rfl⟩
+  haveI := Module.nontrivial A B
+  exact (degree_X_sub_C x ▸ minpoly.min A (algebraMap A B x) (monic_X_sub_C x) (by simp)).antisymm
+    (Nat.WithBot.add_one_le_of_lt <| minpoly.degree_pos isIntegral_algebraMap)
+
+theorem natDegree_eq_one_iff :
+    (minpoly A x).natDegree = 1 ↔ x ∈ (algebraMap A B).range := by
+  rw [← Polynomial.degree_eq_iff_natDegree_eq_of_pos zero_lt_one]
+  exact degree_eq_one_iff
+
+theorem two_le_natDegree_iff (int : IsIntegral A x) :
+    2 ≤ (minpoly A x).natDegree ↔ x ∉ (algebraMap A B).range := by
+  rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
+  exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
+
+theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
+    {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
+  rw [two_le_natDegree_iff int, Iff.not]
+  apply Set.ext_iff.mp Subtype.range_val_subtype
+
+end
+
 /-- If `B/A` is an injective ring extension, and `a` is an element of `A`,
 then the minimal polynomial of `algebraMap A B a` is `X - C a`. -/
 theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMap A B)) :

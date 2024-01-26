@@ -50,9 +50,9 @@ namespace PointedSmoothMap
 
 open scoped Derivation
 
-instance funLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M fun _ => 𝕜 :=
-  ContMDiffMap.funLike
-#align pointed_smooth_map.fun_like PointedSmoothMap.funLike
+instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
+  ContMDiffMap.instFunLike
+#align pointed_smooth_map.fun_like PointedSmoothMap.instFunLike
 
 instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   SmoothMap.commRing

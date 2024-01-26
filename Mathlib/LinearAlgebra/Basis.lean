@@ -8,8 +8,6 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 #align_import linear_algebra.basis from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
@@ -84,7 +82,7 @@ variable (ι R M)
 
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
 
-The basis vectors are available as `FunLike.coe (b : Basis ι R M) : ι → M`.
+The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
 To turn a linear independent family of vectors spanning `M` into a basis, use `Basis.mk`.
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
@@ -119,11 +117,11 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 #align basis.repr_injective Basis.repr_injective
 
 /-- `b i` is the `i`th basis vector. -/
-instance funLike : FunLike (Basis ι R M) ι fun _ => M where
+instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
-#align basis.fun_like Basis.funLike
+#align basis.fun_like Basis.instFunLike
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
@@ -218,7 +216,7 @@ def coord : M →ₗ[R] R :=
 #align basis.coord Basis.coord
 
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
-  Iff.trans (by simp only [b.coord_apply, FunLike.ext_iff, Finsupp.zero_apply])
+  Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
     b.repr.map_eq_zero_iff
 #align basis.forall_coord_eq_zero_iff Basis.forall_coord_eq_zero_iff
 
@@ -289,7 +287,7 @@ theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
-  simp only [← FunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
+  simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 #align basis.ext_elem_iff Basis.ext_elem_iff
 
 alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
@@ -337,7 +335,7 @@ theorem eq_ofRepr_eq_repr {b₁ b₂ : Basis ι R M} (h : ∀ x i, b₁.repr x i
 /-- Two bases are equal if their basis vectors are the same. -/
 @[ext]
 theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) → b₁ = b₂ :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align basis.eq_of_apply_eq Basis.eq_of_apply_eq
 
 end Ext
@@ -436,7 +434,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
 
 @[simp]
 theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
-  FunLike.ext _ _ <| by simp [repr_reindex_apply]
+  DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 #align basis.repr_reindex Basis.repr_reindex
 
 @[simp]
@@ -835,7 +833,7 @@ theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
 
 theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
@@ -1407,7 +1405,7 @@ lemma Basis.mem_center_iff {A}
           ∧ (b i * z) * b j = b i * (z * b j)
           ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
-  · intro h;
+  · intro h
     constructor
     · intro i
       apply (h.1 (b i)).symm
@@ -1470,7 +1468,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
-    by exact FunLike.congr_fun (LinearMap.congr_fun this m) i
+    by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -1601,7 +1599,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       apply_fun fun x => b.repr x b' at z
       simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
         Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
-      erw [FunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
+      erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
       simpa [Finsupp.total_apply, w] using z
     -- Then all the other coefficients are zero, because `v` is linear independent.
     have l₁ : l.some = 0 := by
@@ -1610,7 +1608,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     -- Finally we put those facts together to show the linear combination is trivial.
     ext (_ | a)
     · simp only [l₀, Finsupp.coe_zero, Pi.zero_apply]
-    · erw [FunLike.congr_fun l₁ a]
+    · erw [DFunLike.congr_fun l₁ a]
       simp only [Finsupp.coe_zero, Pi.zero_apply]
   rw [LinearIndependent.Maximal] at m
   specialize m (range v') i' r

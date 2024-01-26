@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
-import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.Ring.RingNF
 
 #align_import data.fp.basic from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -97,7 +98,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       ring_nf
       rw [mul_comm]
       assumption
-    le_trans C.precMax (Nat.le_mul_of_pos_left (by decide)),
+    le_trans C.precMax (Nat.le_mul_of_pos_left _ two_pos),
     by (rw [max_eq_right]; simp [sub_eq_add_neg])⟩
 #align fp.float.zero.valid FP.Float.Zero.valid
 
@@ -147,10 +148,10 @@ def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
 @[nolint docBlame]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
-  cases' h₁ : Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
+  cases' Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
   let e₃ := max e₂ emin
-  cases' h₂ : Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
+  cases' Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
   let r := mkRat n₂ d₂
   let m := r.floor
   refine' (Float.finite Bool.false e₃ (Int.toNat m) _, r.den = 1)
