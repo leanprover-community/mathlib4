@@ -59,12 +59,9 @@ instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
 
 section Module
 
-/- `derive` is not able to find the module structure, probably because Lean is confused by the
-dependent types. We register it explicitly. -/
--- Porting note: rewrote with `inferInstanceAs`
-instance {𝕜} [CommRing 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousConstSMul 𝕜 E]
-    [ContinuousConstSMul 𝕜 F] : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| Module 𝕜 <| ∀ n : ℕ, E[×n]→L[𝕜] F
+instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    Module 𝕜' (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| Module 𝕜' <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 end Module
 
