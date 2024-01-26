@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Invertible.Defs
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
