@@ -49,6 +49,8 @@ noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
   sInf {ε | ∀ B, MeasurableSet B →
             μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε}
 
+/- This result is not placed in earlier more generic files, since it is rather specialized;
+it mixes measure and metric in a very particular way. -/
 lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁):
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
@@ -62,13 +64,13 @@ lemma left_measure_le_of_levyProkhorovEDist_lt {μ ν : Measure Ω} {c : ℝ≥0
     (h : levyProkhorovEDist μ ν < c) {B : Set Ω} (B_mble : MeasurableSet B) :
     μ B ≤ ν (thickening c.toReal B) + c := by
   obtain ⟨c', ⟨hc', lt_c⟩⟩ := sInf_lt_iff.mp h
-  exact measure_apply_le_of_le_of_forall_le_measure_thickening_add μ ν lt_c.le (hc' B B_mble).1
+  exact meas_le_of_le_of_forall_le_meas_thickening_add μ ν lt_c.le (hc' B B_mble).1
 
 lemma right_measure_le_of_levyProkhorovEDist_lt {μ ν : Measure Ω} {c : ℝ≥0∞}
     (h : levyProkhorovEDist μ ν < c) {B : Set Ω} (B_mble : MeasurableSet B) :
     ν B ≤ μ (thickening c.toReal B) + c := by
   obtain ⟨c', ⟨hc', lt_c⟩⟩ := sInf_lt_iff.mp h
-  exact measure_apply_le_of_le_of_forall_le_measure_thickening_add ν μ lt_c.le (hc' B B_mble).2
+  exact meas_le_of_le_of_forall_le_meas_thickening_add ν μ lt_c.le (hc' B B_mble).2
 
 lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B →
