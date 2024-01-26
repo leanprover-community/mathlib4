@@ -229,12 +229,8 @@ theorem contract_one {f : R[X]} : contract 1 f = f :=
 
 section ExpChar
 
-variable [ExpChar R p]
-
-theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
+theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
     (hp : p ≠ 0) : expand R p (contract p f) = f := by
-  cases ‹ExpChar R p›
-  · rw [expand_one, contract_one]
   ext n
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
   split_ifs with h
@@ -249,6 +245,14 @@ theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivativ
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'
     exact absurd h' h
 #align polynomial.expand_contract Polynomial.expand_contract
+
+variable [ExpChar R p]
+
+theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0) :
+    expand R p (contract p f) = f := by
+  obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  · rw [expand_one, contract_one]
+  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
 theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine' f.induction_on' (fun a b ha hb => _) fun n a => _
