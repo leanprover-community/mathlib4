@@ -106,6 +106,13 @@ theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
 #align add_monoid.exponent_exists_iff_ne_zero AddMonoid.exponentExists_iff_ne_zero
 
 @[to_additive]
+alias ⟨ExponentExists.exponent_ne_zero, _⟩ := exponentExists_iff_ne_zero
+
+@[to_additive]
+theorem ExponentExists.exponent_pos (h : ExponentExists G) : 0 < exponent G :=
+  h.exponent_ne_zero.bot_lt
+
+@[to_additive]
 theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
   exponentExists_iff_ne_zero.symm.not_right
 #align monoid.exponent_eq_zero_iff Monoid.exponent_eq_zero_iff
@@ -137,10 +144,8 @@ theorem pow_eq_mod_exponent {n : ℕ} (g : G) : g ^ n = g ^ (n % exponent G) :=
 
 @[to_additive]
 theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) :
-    0 < exponent G := by
-  have h : ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1 := ⟨n, hpos, hG⟩
-  rw [exponent, dif_pos]
-  exact (Nat.find_spec h).1
+    0 < exponent G :=
+  ExponentExists.exponent_pos ⟨n, hpos, hG⟩
 #align monoid.exponent_pos_of_exists Monoid.exponent_pos_of_exists
 #align add_monoid.exponent_pos_of_exists AddMonoid.exponent_pos_of_exists
 
@@ -179,31 +184,43 @@ theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
 #align add_monoid.add_order_dvd_exponent AddMonoid.addOrder_dvd_exponent
 
 @[to_additive addOrder_le_exponent]
-theorem order_le_exponent (h : exponent G ≠ 0) (g : G) : orderOf g ≤ exponent G :=
-  Nat.le_of_dvd h.bot_lt (order_dvd_exponent g)
+theorem order_le_exponent (h : ExponentExists G) (g : G) : orderOf g ≤ exponent G :=
+  Nat.le_of_dvd h.exponent_pos (order_dvd_exponent g)
 
 variable (G)
 
 @[to_additive]
-theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
-    exponent G ∣ n := by
+theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ (∀ g : G, g ^ n = 1) := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
-  · exact dvd_zero _
-  apply Nat.dvd_of_mod_eq_zero
-  by_contra h
-  have h₁ := Nat.pos_of_ne_zero h
-  have h₂ : n % exponent G < exponent G := Nat.mod_lt _ (exponent_pos_of_exists n hpos hG)
-  have h₃ : exponent G ≤ n % exponent G := by
-    apply exponent_min' _ h₁
-    simp_rw [← pow_eq_mod_exponent]
-    exact hG
-  linarith
+  · simp
+  constructor
+  · intro h g
+    rw [Nat.dvd_iff_mod_eq_zero] at h
+    rw [pow_eq_mod_exponent, h, pow_zero]
+  · intro hG
+    by_contra h
+    rw [Nat.dvd_iff_mod_eq_zero, ← Ne, ← pos_iff_ne_zero] at h
+    have h₂ : n % exponent G < exponent G := Nat.mod_lt _ (exponent_pos_of_exists n hpos hG)
+    have h₃ : exponent G ≤ n % exponent G := by
+      apply exponent_min' _ h
+      simp_rw [← pow_eq_mod_exponent]
+      exact hG
+    exact h₂.not_le h₃
+
+@[to_additive]
+theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
+    exponent G ∣ n :=
+  (exponent_dvd_iff_forall_pow_eq_one G).mpr hG
 #align monoid.exponent_dvd_of_forall_pow_eq_one Monoid.exponent_dvd_of_forall_pow_eq_one
 #align add_monoid.exponent_dvd_of_forall_nsmul_eq_zero AddMonoid.exponent_dvd_of_forall_nsmul_eq_zero
 
 @[to_additive]
+theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n := by
+  simp_rw [exponent_dvd_iff_forall_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
+
+@[to_additive]
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
-  exponent_dvd_of_forall_pow_eq_one G n <| forall_imp (fun _ => orderOf_dvd_iff_pow_eq_one.mp) h
+  (exponent_dvd G).mpr h
 
 @[to_additive]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
@@ -293,13 +310,16 @@ theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf 
 #align monoid.exponent_eq_zero_iff_range_order_of_infinite Monoid.exponent_eq_zero_iff_range_orderOf_infinite
 #align add_monoid.exponent_eq_zero_iff_range_order_of_infinite AddMonoid.exponent_eq_zero_iff_range_addOrderOf_infinite
 
-@[to_additive lcm_addOrder_eq_exponent]
-theorem lcm_order_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G :=
+@[to_additive]
+theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G :=
   Nat.dvd_antisymm
     (lcm_orderOf_dvd_exponent G)
     (exponent_dvd_of_forall_orderOf_dvd G _ fun g => Finset.dvd_lcm (Finset.mem_univ g))
-#align monoid.lcm_order_eq_exponent Monoid.lcm_order_eq_exponent
-#align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrder_eq_exponent
+#align monoid.lcm_order_eq_exponent Monoid.lcm_orderOf_eq_exponent
+#align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrderOf_eq_exponent
+
+@[to_additive (attr := deprecated) AddMonoid.lcm_addOrder_eq_exponent] -- 2024-01-26
+alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
 
 end Monoid
 
@@ -313,7 +333,7 @@ theorem ExponentExists.of_finite [Finite G] : Monoid.ExponentExists G := by
   simp only [Monoid.ExponentExists]
   refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
   · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (orderOf_pos x).ne'
-  · rw [← orderOf_dvd_iff_pow_eq_one, lcm_order_eq_exponent]
+  · rw [← orderOf_dvd_iff_pow_eq_one, lcm_orderOf_eq_exponent]
     exact order_dvd_exponent g
 
 @[to_additive]
@@ -376,7 +396,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
   · rw [he, Set.Infinite.Nat.sSup_eq_zero <| (exponent_eq_zero_iff_range_orderOf_infinite h).1 he]
   rw [csSup_eq_of_forall_le_of_forall_lt_exists_gt (Set.range_nonempty _)]
   · simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    apply order_le_exponent he
+    apply order_le_exponent <| exponentExists_iff_ne_zero.mpr he
   intro x hx
   obtain ⟨g, hg⟩ := exists_orderOf_eq_exponent h he
   rw [← hg] at hx
@@ -422,7 +442,7 @@ variable [Group G]
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G := by
   let _inst := Fintype.ofFinite G
   obtain ⟨g, hg⟩ := exists_ne (1 : G)
-  rw [← Monoid.lcm_order_eq_exponent]
+  rw [← Monoid.lcm_orderOf_eq_exponent]
   have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) <| by
     simpa [eq_comm, orderOf_eq_one_iff] using hg
   refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
