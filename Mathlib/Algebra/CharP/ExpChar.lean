@@ -320,11 +320,13 @@ theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n
 
 variable (R S)
 
+/-- The frobenius map of an algebra as a frobenius-semilinear map. -/
 nonrec def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
   __ := frobenius S p
   map_smul' r s := show frobenius S p _ = _ by
     simp_rw [Algebra.smul_def, map_mul, ← (algebraMap R S).map_frobenius]; rfl
 
+/-- The iterated frobenius map of an algebra as a iterated-frobenius-semilinear map. -/
 nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
   __ := iterateFrobenius S p n
   map_smul' f s := show iterateFrobenius S p n _ = _ by
