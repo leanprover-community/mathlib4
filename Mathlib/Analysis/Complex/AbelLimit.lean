@@ -16,15 +16,34 @@ import Mathlib.Analysis.SpecificLimits.Normed
 -/
 
 
-open Finset Filter Complex
+open Finset Filter
 
 open scoped BigOperators Topology
 
-/-- The Stolz set for a given `M`. -/
-def stolzSet (M : ℝ) : Set ℂ := {z | ‖1 - z‖ < M * (1 - ‖z‖)}
+namespace Complex
+
+section StolzSet
+
+/-- The Stolz set for a given `M`, roughly teardrop-shaped with the tip at 1 but tending to the
+open unit disc as `M` tends to infinity. -/
+def stolzSet (M : ℝ) : Set ℂ := {z | ‖z‖ < 1 ∧ ‖1 - z‖ < M * (1 - ‖z‖)}
+
+theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
+  ext z
+  rw [stolzSet, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
+  intro zn
+  calc
+    _ ≤ 1 * (1 - ‖z‖) := mul_le_mul_of_nonneg_right hM zn.le
+    _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
+    _ ≤ _ := norm_sub_norm_le _ _
+
+end StolzSet
 
 variable {f : ℕ → ℂ} {l : ℂ} (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l))
 
+/-- Auxiliary lemma for Abel's limit theorem. The difference between the sum `l` at 1 and the
+power series's value at a point `z` away from 1 can be rewritten as `1 - z` times a power series
+whose coefficients are tail sums of `l`. -/
 lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
     Tendsto (fun n ↦ (1 - z) * ∑ i in range n, (l - ∑ j in range (i + 1), f j) * z ^ i)
       atTop (𝓝 (l - ∑' n, f n * z ^ n)) := by
@@ -63,8 +82,11 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
-theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} (hM : 1 ≤ M) :
+theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
+  -- If `1 ≤ M` the Stolz set is empty and the statement is trivial
+  cases' le_or_lt M 1 with hM hM
+  · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
   let s := fun n ↦ ∑ i in range n, f i
   let g := fun z ↦ ∑' n, f n * z ^ n
@@ -75,32 +97,20 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} (hM : 1 ≤ M) :
   intro ε εpos
   -- First bound, handles the tail
   obtain ⟨B₁, hB₁⟩ := hm (ε / 4 / M) (by positivity)
-  clear hm
   -- Second bound, handles the head
   let F := ∑ i in range B₁, ‖l - s (i + 1)‖
-  have Fpos : 0 ≤ F := sum_nonneg (fun _ _ ↦ by positivity)
+  have Fnonneg : 0 ≤ F := sum_nonneg (fun _ _ ↦ by positivity)
   use ε / 4 / (F + 1), by positivity
-  intro z zm zd
-  simp only [stolzSet, Set.mem_setOf_eq] at zm
-  have zn : ‖z‖ < 1 := by
-    by_contra! y
-    rw [← tsub_nonpos, ← mul_le_mul_left (show 0 < M by positivity), mul_zero] at y
-    exact absurd (norm_nonneg _) ((zm.trans_le y).not_le)
-  have zv : 0 < ‖1 - z‖ := by
-    by_contra! y
-    replace y := le_antisymm y (norm_nonneg _)
-    rw [norm_sub_eq_zero_iff] at y
-    rw [← y, norm_one] at zn
-    linarith only [zn]
+  intro z ⟨zn, zm⟩ zd
   have p := abel_aux h zn
   simp_rw [Metric.tendsto_atTop, dist_eq_norm, norm_sub_rev] at p
   -- Third bound, regarding the distance between `l - g z` and the rearranged sum
   obtain ⟨B₂, hB₂⟩ := p (ε / 2) (by positivity)
-  clear p
+  clear hm p
   replace hB₂ := hB₂ (max B₁ B₂) (by simp)
   suffices : ‖(1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ < ε / 2
   · calc
-      ‖g z - l‖ = ‖l - g z‖ := by rw [norm_sub_rev]
+      _ = ‖l - g z‖ := by rw [norm_sub_rev]
       _ = ‖l - g z - (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i +
           (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by rw [sub_add_cancel _]
       _ ≤ ‖l - g z - (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ +
@@ -109,9 +119,8 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} (hM : 1 ≤ M) :
       _ = _ := add_halves ε
   -- We break the rearranged sum along `B₁`
   calc
-    ‖(1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ =
-        ‖(1 - z) * ∑ i in range B₁, (l - s (i + 1)) * z ^ i +
-          (1 - z) * ∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
+    _ = ‖(1 - z) * ∑ i in range B₁, (l - s (i + 1)) * z ^ i +
+        (1 - z) * ∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
       rw [← mul_add, sum_range_add_sum_Ico _ (le_max_left B₁ B₂)]
     _ ≤ ‖(1 - z) * ∑ i in range B₁, (l - s (i + 1)) * z ^ i‖ +
         ‖(1 - z) * ∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := norm_add_le _ _
@@ -122,18 +131,18 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} (hM : 1 ≤ M) :
         ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i := by
       gcongr <;> simp_rw [← norm_pow, ← norm_mul, norm_sum_le]
   -- then prove that the two pieces are each less than `ε / 4`
-  have S₁ : ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 := by
+  have S₁ : ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ := by
         gcongr; nth_rw 2 [← mul_one ‖_‖]
         gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
-      _ < ‖1 - z‖ * (F + 1) := by gcongr; linarith
+      _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
       _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
-  have S₂ : ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 := by
+  have S₂ : ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
         gcongr with i hi
-        have := hB₁ (i + 1) (by linarith [(mem_Ico.mp hi).1])
+        have := hB₁ (i + 1) (by linarith only [(mem_Ico.mp hi).1])
         rw [norm_sub_rev] at this
         exact this.le
       _ = ‖1 - z‖ * (ε / 4 / M) * ∑ i in Ico B₁ (max B₁ B₂), ‖z‖ ^ i := by
@@ -149,4 +158,6 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} (hM : 1 ≤ M) :
         rw [← mul_rotate, mul_div_cancel _ (by linarith only [zn]),
           div_mul_cancel _ (by linarith only [hM])]
   convert add_lt_add S₁ S₂ using 1
-  linarith
+  linarith only
+
+end Complex
