@@ -36,8 +36,7 @@ open Function
 
 namespace ZMod
 
-instance charZero : CharZero (ZMod 0) :=
-  (by infer_instance : CharZero ℤ)
+instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
   - for `a : ZMod 0` it is the absolute value of `a`
@@ -80,6 +79,11 @@ theorem val_neg' {n : ZMod 0} : (-n).val = n.val :=
 theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
   Int.natAbs_mul m n
 #align zmod.val_mul' ZMod.val_mul'
+
+lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
+  have := Int.isUnit_iff.mp h
+  norm_cast at this
+  exact this.resolve_right not_false
 
 @[simp]
 theorem val_nat_cast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
@@ -747,6 +751,17 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
   rw [← nat_cast_zmod_val ((u * u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1))]
   rw [Units.val_mul, val_mul, nat_cast_mod]
 #align zmod.val_coe_unit_coprime ZMod.val_coe_unit_coprime
+
+lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
+  refine ⟨fun H ↦ ?_, fun H ↦ (unitOfCoprime m H).isUnit⟩
+  have H' := val_coe_unit_coprime H.unit
+  rw [IsUnit.unit_spec, val_nat_cast m, Nat.coprime_iff_gcd_eq_one] at H'
+  rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
+  exact Nat.gcd_rec n m
+
+lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) := by
+  rw [isUnit_iff_coprime]
+  exact (Nat.Prime.coprime_iff_not_dvd hp).mpr h
 
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
