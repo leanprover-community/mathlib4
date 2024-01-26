@@ -233,3 +233,10 @@ theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
     LocallyFinite (Option.elim' s f) :=
   locallyFinite_option.2 hf
 #align locally_finite.option_elim LocallyFinite.option_elim'
+
+theorem LocallyFinite.eventually_subset {s : ι → Set X}
+    (hs : LocallyFinite s) (hs' : ∀ i, IsClosed (s i)) (x : X) :
+    ∀ᶠ y in 𝓝 x, {i | y ∈ s i} ⊆ {i | x ∈ s i} := by
+  filter_upwards [hs.iInter_compl_mem_nhds hs' x] with y hy i hi
+  simp only [mem_iInter, mem_compl_iff] at hy
+  exact not_imp_not.mp (hy i) hi
