@@ -7,6 +7,7 @@ Authors: Emilie Burgun
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Int.Lemmas
 
 /-!
 # Period of a group action
@@ -170,5 +171,40 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
 
 end MonoidExponent
 
+section InjOn
+
+/-! ## Injectivity of the action in relation to `period`
+-/
+
+/--
+All the values `g ^ i` with `i < period g x` will map `x` to different points.
+-/
+@[to_additive "All the values `i • g` with `i < period g x` will map `x` to different points."]
+theorem smul_injOn_pow_lt_period (g : G) (x : α) :
+    { g ^ i | i < period g x }.InjOn (· • x) := by
+  intro h ⟨a, a_lt_n, ga_eq_h⟩ i ⟨b, b_lt_n, gb_eq_i⟩ img_eq
+  rw [← ga_eq_h, ← gb_eq_i, MulAction.smul_pow_eq_of_period_dvd] at img_eq
+  rw [← ga_eq_h, ← gb_eq_i]
+  by_cases eq : a = b
+  · rw [eq]
+  · exfalso
+    refine Nat.not_lt.mpr
+      (Nat.le_of_dvd ?pos img_eq)
+      (Int.natAbs_coe_sub_coe_lt_of_lt b_lt_n a_lt_n)
+    rwa [Int.natAbs_sub_pos_iff, ne_eq, Nat.cast_inj]
+
+/--
+If the action of `g` on `x` is aperiodic, then the action of `g ^ i` on `x` is injective.
+-/
+@[to_additive
+  "If the action of `g` on `x` is aperiodic, then the action of `i • g` on `x` is injective."]
+theorem smul_injOn_zpow_of_period_eq_zero {g : G} {x : α} (period_eq_zero : period g x = 0) :
+    { g ^ i | i : ℤ }.InjOn (· • x) := by
+  intro g₁ ⟨i, g₁_eq⟩ g₂ ⟨j, g₂_eq⟩ img_eq
+  rw [← g₁_eq, ← g₂_eq, MulAction.smul_zpow_eq_of_period_dvd, period_eq_zero,
+    Int.ofNat_zero, zero_dvd_iff, sub_eq_zero] at img_eq
+  rw [← g₁_eq, ← g₂_eq, img_eq]
+
+end InjOn
 
 end MulAction

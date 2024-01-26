@@ -219,8 +219,19 @@ lemma commutatorElement_smul_eq_of_subset_fixedBy_conj {f g : G} {s : Set α}
   rw [← smul_fixedBy, ← fixedBy_inv_eq_fixedBy, smul_fixedBy] at subset
   exact set_mem_fixedBy_of_subset_fixedBy subset
 
-
 end Pointwise
+
+section InjOn
+
+/-! ## `fixedBy` and `Set.InjOn s (· • x)`
+-/
+
+theorem mem_fixedBy_compl_mul_of_smul_injOn {s : Set G} {x : α} (inj_on : s.InjOn (· • x)) {g h : G}
+    (g_in_s : g ∈ s) (h_in_s : h ∈ s) (g_ne_h : g ≠ h) : x ∈ (fixedBy α (h⁻¹ * g))ᶜ := by
+  rw [Set.mem_compl_iff, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul, inv_inv]
+  exact mt (inj_on g_in_s h_in_s) g_ne_h
+
+end InjOn
 
 section Commute
 
