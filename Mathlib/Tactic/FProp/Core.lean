@@ -138,6 +138,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) 
   : FPropM (Option (List MVarId)) := do
   let mut subgoals : List MVarId := []
+  let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
     let type ← inferType x
     if bi.isInstImplicit then
@@ -179,7 +180,17 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
               trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
               return none
 
-      trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
+      if ¬(← isProp type) then
+        postponed := postponed.push x
+        continue
+      else
+
+        trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
+        return none
+
+  for x in postponed do
+    if (← instantiateMVars x).isMVar then
+      trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to infer data {indentExpr x}"
       return none
 
   return .some subgoals
@@ -215,7 +226,8 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 /-- -/
 def tryTheorem? (e : Expr) (thmName : Name)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
-  withNewMCtxDepth do
+  -- is extra depth important?
+  -- withNewMCtxDepth do
     let thmProof ← mkConstWithFreshMVarLevels thmName
     let type ← inferType thmProof
     let (xs, bis, type) ← forallMetaTelescope type
@@ -224,7 +236,8 @@ def tryTheorem? (e : Expr) (thmName : Name)
 /-- -/
 def tryLocalTheorem? (e : Expr) (fvarId : FVarId)
   (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
-  withNewMCtxDepth do
+  -- is extra depth important?
+  -- withNewMCtxDepth do
     let thmProof := .fvar fvarId
     let type ← inferType thmProof
     let (xs, bis, type) ← forallMetaTelescope type
