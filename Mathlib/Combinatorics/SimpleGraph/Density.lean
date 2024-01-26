@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
