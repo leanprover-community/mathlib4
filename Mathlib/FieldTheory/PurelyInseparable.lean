@@ -646,33 +646,15 @@ of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `
 theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : ExpChar F q] (n : ℕ)
     [IsSeparable F E] {ι : Type*} {v : ι → E} (h : Submodule.span F (Set.range v) = ⊤) :
     Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
-  cases id hF
-  · simpa only [one_pow, pow_one]
-  haveI := Fact.mk ‹q.Prime›
-  haveI := charP_of_injective_algebraMap (algebraMap F E).injective q
-  have halg := IsSeparable.isAlgebraic F E
-  have := congr(Subalgebra.toSubmodule $(adjoin_univ F E).toSubalgebra)
-  rw [adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n, Set.image_univ] at this
-  set S := Set.range fun x : E ↦ x ^ q ^ n
-  have hS : Submonoid.closure S = S := by
-    let f : E →* E := {
-      toFun := (frobenius E q)^[n]
-      map_one' := MonoidHom.iterate_map_one _ n
-      map_mul' := fun x y ↦ iterate_map_mul _ n x y
-    }
-    simpa only [← iterate_frobenius] using congr_arg SetLike.coe (MonoidHom.mrange f).closure_eq
-  rw [adjoin_algebraic_toSubalgebra (fun x _ ↦ halg x), Algebra.adjoin_eq_span, hS,
-    top_toSubalgebra, Algebra.top_toSubmodule] at this
-  apply top_unique
-  rw [← this, Submodule.span_le]
-  rintro _ ⟨y, rfl⟩
-  have hy : y ∈ (⊤ : Submodule F E) := trivial
-  rw [← h] at hy
-  erw [Finsupp.mem_span_range_iff_exists_finsupp] at hy ⊢
-  obtain ⟨c, hy⟩ := hy
-  use c.mapRange (· ^ q ^ n) (zero_pow (expChar_pow_pos F q n))
-  rw [Finsupp.sum_mapRange_index (fun _ ↦ by exact zero_smul _ _)]
-  simp_rw [← hy, Finsupp.sum, sum_pow_char_pow, Algebra.smul_def, mul_pow, map_pow]
+  erw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
+    adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
+    adjoin_algebraic_toSubalgebra fun x _ ↦ IsSeparable.isAlgebraic F E x,
+    Set.image_univ, Algebra.adjoin_eq_span, (powMonoidHom _).mrange.closure_eq]
+  refine (Submodule.span_mono <| Set.range_comp_subset_range _ _).antisymm (Submodule.span_le.2 ?_)
+  rw [Set.range_comp]
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  refine subset_trans ?_ (Submodule.image_span_subset_span (LinearMap.iterateFrobenius F E q n) _)
+  rw [h, ← Set.image_univ]; rfl
 
 variable {F E} in
 /-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
