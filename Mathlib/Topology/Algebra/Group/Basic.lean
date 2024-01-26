@@ -791,6 +791,7 @@ def Subgroup.identityComponent (G : Type*) [TopologicalSpace G] [Group G]
 #align subgroup.connected_component_of_one Subgroup.identityComponent
 #align add_subgroup.connected_component_of_zero AddSubgroup.identityComponent
 
+-- deprecated on 26 January 2024
 @[to_additive (attr := deprecated Subgroup.identityComponent)] alias Subgroup.connectedComponentOfOne :=
   Subgroup.identityComponent
 
