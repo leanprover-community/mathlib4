@@ -3,10 +3,11 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Lean.Linter.Deprecated
+import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
-import Lean.Linter.Deprecated
 import Mathlib.Init.ZeroOne
 
 #align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
