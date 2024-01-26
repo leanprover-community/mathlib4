@@ -148,13 +148,8 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
 @[simp]
-theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
-  ⟨fun a0 => by
-    let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [lt_iff_add_one_le, Int.add_left_neg] at hn
-    rw [← zero_add 1, lt_add_one_iff] at hp
-    exact hp.antisymm hn,
-    fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
+theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
+  rw [← zero_add 1, lt_add_one_iff, abs_nonpos_iff]
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
