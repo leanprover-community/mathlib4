@@ -34,12 +34,10 @@ theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
 #align is_square_of_char_two' isSquare_of_charTwo'
 
-namespace CharP
-
 variable {R : Type*} [CommRing R] [IsReduced R]
 
 @[simp]
-theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
+theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
   induction' k with k hk
   · rw [pow_zero, one_mul]
@@ -47,6 +45,6 @@ theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     · rw [pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at h
       exact hk.1 (frobenius_inj R p h)
     · rw [pow_mul', h, one_pow]
-#align char_p.pow_prime_pow_mul_eq_one_iff CharP.pow_prime_pow_mul_eq_one_iff
+#align char_p.pow_prime_pow_mul_eq_one_iff ExpChar.pow_prime_pow_mul_eq_one_iff
 
-end CharP
+@[deprecated] alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff
