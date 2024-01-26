@@ -374,11 +374,19 @@ variable [HasWeakSheafify J D]
   [∀ (P : Cᵒᵖ ⥤ D), Presheaf.LocallySurjective J (toSheafify J P)]
   {F G : Cᵒᵖ ⥤ D} (φ : F ⟶ G)
 
-/-lemma presheafToSheaf_map_locallyInjective_iff :
-    Sheaf.LocallyInjective ((presheafToSheaf J D).map φ) ↔
+/-lemma sheafifyMap_locallyInjective_iff :
+    LocallyInjective J (sheafifyMap J φ) ↔
       LocallyInjective J φ := by
   rw [← locallyInjective_comp_iff J _ (toSheafify J G), toSheafify_naturality J φ]
-  sorry-/
+  constructor
+  · intro
+    infer_instance
+  · sorry
+
+lemma presheafToSheaf_map_locallyInjective_iff :
+    Sheaf.LocallyInjective ((presheafToSheaf J D).map φ) ↔
+      LocallyInjective J φ :=
+  sheafifyMap_locallyInjective_iff J φ-/
 
 end Presheaf
 
