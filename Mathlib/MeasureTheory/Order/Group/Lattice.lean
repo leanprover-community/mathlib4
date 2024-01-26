@@ -36,7 +36,7 @@ theorem measurable_leOnePart : Measurable (leOnePart : α → α) :=
   (measurable_sup_const _).comp measurable_inv
 
 @[to_additive (attr := measurability)]
-protected theorem Measurable.leOnePart : Measurable (fun x ↦ leOnePart (f x)) :=
+protected theorem Measurable.leOnePart : Measurable fun x ↦ leOnePart (f x) :=
   measurable_leOnePart.comp hf
 
 variable [MeasurableSup₂ α]
