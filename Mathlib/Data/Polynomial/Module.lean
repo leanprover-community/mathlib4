@@ -88,6 +88,14 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
+@[simp]
+lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
+    (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by
+  ext p
+  simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
+  change (∀ m : M, aeval a p • m = 0) ↔ _
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+
 section Submodule
 
 variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
