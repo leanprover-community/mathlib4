@@ -212,6 +212,66 @@ end Stabilizers
 
 end MulAction
 
+namespace MulDistribMulAction
+
+variable (M : Type u) [Monoid M] (A : Type v)
+
+/-- The submonoid of elements fixed under the whole action. -/
+def fixedSubmonoid [Monoid A] [MulDistribMulAction M A] : Submonoid A where
+  carrier := MulAction.fixedPoints M A
+  one_mem' := smul_one
+  mul_mem' := fun ha hb _ => by rw [smul_mul, ha, hb]
+
+@[simp]
+lemma mem_fixedSubmonoid [Monoid A] [MulDistribMulAction M A] (a : A) :
+    a ∈ fixedSubmonoid M A ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+/-- The subgroup of elements fixed under the whole action. -/
+def fixedSubgroup [Group A] [MulDistribMulAction M A] : Subgroup A where
+  __ := fixedSubmonoid M A
+  inv_mem' := fun ha m => by rw [smul_inv', ha]
+
+/-- The notation for `MulDistribMulAction.fixedSubgroup`, chosen to resemble `αᴹ`. -/
+notation α "^*" M:51 => fixedSubgroup M α
+
+@[simp]
+lemma mem_fixedSubgroup [Group A] [MulDistribMulAction M A] (a : A) :
+    a ∈ fixedSubgroup M A ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end MulDistribMulAction
+
+namespace DistribMulAction
+
+variable (M : Type u) [Monoid M] (α : Type v)
+
+/-- The additive submonoid of elements fixed under the whole action. -/
+def fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] : AddSubmonoid α where
+  carrier := MulAction.fixedPoints M α
+  zero_mem' := smul_zero
+  add_mem' := fun ha hb _ => by rw [smul_add, ha, hb]
+
+@[simp]
+lemma mem_fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] (a : α) :
+    a ∈ fixedAddSubmonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+/-- The additive subgroup of elements fixed under the whole action. -/
+def fixedAddSubgroup [AddGroup α] [DistribMulAction M α] : AddSubgroup α where
+  __ := fixedAddSubmonoid M α
+  neg_mem' := fun ha _ => by rw [smul_neg, ha]
+
+/-- The notation for `DistribMulAction.fixedAddSubgroup`, chosen to resemble `αᴹ`. -/
+notation α "^+" M:51 => fixedAddSubgroup M α
+
+@[simp]
+lemma mem_fixedAddSubgroup [AddGroup α] [DistribMulAction M α] (a : α) :
+    a ∈ fixedAddSubgroup M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end DistribMulAction
+
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
