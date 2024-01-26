@@ -227,7 +227,7 @@ variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 namespace MonoidalCategory
 
 @[reassoc (attr := simp)]
-theorem hom_inv_whiskerLeft (X : C) {Y Z : C} (f : Y ≅ Z) :
+theorem whiskerLeft_hom_inv (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by
   simp [← id_tensorHom, ← tensor_comp]
 
@@ -237,7 +237,7 @@ theorem hom_inv_whiskerRight {X Y : C} (f : X ≅ Y) (Z : C) :
   simp [← tensorHom_id, ← tensor_comp]
 
 @[reassoc (attr := simp)]
-theorem inv_hom_whiskerLeft (X : C) {Y Z : C} (f : Y ≅ Z) :
+theorem whiskerLeft_inv_hom (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.inv ≫ X ◁ f.hom = 𝟙 (X ⊗ Z) := by
   simp [← id_tensorHom, ← tensor_comp]
 
