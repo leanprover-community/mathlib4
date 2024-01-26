@@ -121,6 +121,13 @@ lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
+@[simp]
+theorem natAbs_add_neg_pos_iff (i j : ℤ) : 0 < Int.natAbs (i + -j) ↔ i ≠ j := by
+  rw [natAbs_pos, ne_eq, add_neg_eq_zero]
+
+@[simp]
+theorem natAbs_sub_pos_iff (i j : ℤ) : 0 < Int.natAbs (i - j) ↔ i ≠ j := by
+  rw [natAbs_pos, ne_eq, sub_eq_zero]
 
 /-! ### succ and pred -/
 
