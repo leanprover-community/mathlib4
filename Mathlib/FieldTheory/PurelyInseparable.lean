@@ -639,12 +639,15 @@ theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [IsSeparable F E] (S : Set 
 
 end IntermediateField
 
-variable {F E} in
+section
+
+variable (q n : ℕ) [hF : ExpChar F q] {ι : Type*} {v : ι → E} {F E}
+
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a family
 of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `F`-linearly spans
 `E` for any natural number `n`. -/
-theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : ExpChar F q] (n : ℕ)
-    [IsSeparable F E] {ι : Type*} {v : ι → E} (h : Submodule.span F (Set.range v) = ⊤) :
+theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [IsSeparable F E]
+    (h : Submodule.span F (Set.range v) = ⊤) :
     Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
   erw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
     adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
@@ -655,17 +658,16 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : Exp
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
   apply h ▸ Submodule.image_span_subset_span (LinearMap.iterateFrobenius F E q n) _
 
-variable {F E} in
 /-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
 `F`-linearly independent for any natural number `n`. A special case of
 `LinearIndependent.map_pow_expChar_pow_of_isSeparable`
 and is an intermediate result used to prove it. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (q : ℕ) [ExpChar F q]
-    (n : ℕ) [FiniteDimensional F E] [IsSeparable F E] {ι : Type*} {v : ι → E}
+private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
+    [FiniteDimensional F E] [IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   have h' := h.coe_range
-  let ι' := h'.extend (Set.subset_univ (Set.range v))
+  let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
   letI : Fintype ι' := fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
@@ -675,12 +677,10 @@ theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (q : ℕ) [ExpCh
   convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [Subtype.mk.injEq] using heq)
   simp_rw [Function.comp_apply, Basis.extend_apply_self]
 
-variable {F E} in
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
 `F`-linearly independent for any natural number `n`. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable (q : ℕ) [ExpChar F q]
-    (n : ℕ) [IsSeparable F E] {ι : Type*} {v : ι → E}
+theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   have halg := IsSeparable.isAlgebraic F E
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
@@ -693,12 +693,11 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable (q : ℕ) [ExpChar 
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 
-variable {F E} in
 /-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
 family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
 is also `F`-linearly independent for any natural number `n`. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_separable (q : ℕ) [ExpChar F q]
-    (n : ℕ) {ι : Type*} {v : ι → E} (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
+theorem LinearIndependent.map_pow_expChar_pow_of_separable
+    (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
   haveI : IsSeparable F E' := (isSeparable_adjoin_iff_separable F _).2 <| by
@@ -708,14 +707,15 @@ theorem LinearIndependent.map_pow_expChar_pow_of_separable (q : ℕ) [ExpChar F 
   exact (h'.map_pow_expChar_pow_of_isSeparable q n).map'
     E'.val.toLinearMap (LinearMap.ker_eq_bot_of_injective E'.val.injective)
 
-variable {F E} in
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
 `F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
 for any natural number `n`. -/
-def Basis.mapPowExpCharPowOfIsSeparable (q : ℕ) [ExpChar F q] (n : ℕ)
-    [IsSeparable F E] {ι : Type*} (b : Basis ι F E) : Basis ι F E :=
+def Basis.mapPowExpCharPowOfIsSeparable [IsSeparable F E]
+    (b : Basis ι F E) : Basis ι F E :=
   Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
     (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
+
+end
 
 variable {F E} in
 /-- If `E / F` is an algebraic extension, `F` is separably closed,
@@ -794,8 +794,7 @@ theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E 
   by_cases halg : Algebra.IsAlgebraic F E
   · have := congr_arg Cardinal.toNat (sepDegree_mul_insepDegree F E)
     rwa [Cardinal.toNat_mul, ← finSepDegree_eq F E halg] at this
-  change _ * finrank (separableClosure F E) E = _
-  rw [finrank_of_infinite_dimensional (K := F) (V := E) fun _ ↦
+  rw [finInsepDegree, finrank_of_infinite_dimensional (K := F) (V := E) fun _ ↦
       halg (Algebra.IsAlgebraic.of_finite F E),
     finrank_of_infinite_dimensional (K := separableClosure F E) (V := E) fun _ ↦
       halg ((separableClosure.isAlgebraic F E).trans (Algebra.IsAlgebraic.of_finite _ E)),
@@ -831,7 +830,7 @@ lemma adjoin_eq_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E] 
 lemma adjoin_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     adjoin E (separableClosure F K) = separableClosure E K := by
   set S := separableClosure E K
-  have h := congr_arg IntermediateField.lift (adjoin_eq_of_isPurelyInseparable_of_isSeparable F E S)
+  have h := congr_arg lift (adjoin_eq_of_isPurelyInseparable_of_isSeparable F E S)
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
@@ -861,46 +860,29 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     (h : LinearIndependent F v) : LinearIndependent E v := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
-  rw [linearIndependent_iff]
-  intro l hl
-  obtain ⟨f, hf⟩ := Classical.axiom_of_choice fun i : ι ↦
-    (isPurelyInseparable_iff_pow_mem F q).1 ‹_› (l i)
-  obtain ⟨n, hn⟩ := (Finset.image f l.support).exists_le
+  refine linearIndependent_iff.mpr fun l hl ↦ Finsupp.ext fun i ↦ ?_
+  choose f hf using fun i ↦ (isPurelyInseparable_iff_pow_mem F q).1 ‹_› (l i)
+  let n := l.support.sup f
   replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
     by_cases hs : i ∈ l.support
-    · obtain ⟨y, hy⟩ := hf i
-      exact ⟨y ^ q ^ (n - f i), by rw [map_pow, hy, ← pow_mul, ← pow_add,
-        Nat.add_sub_of_le (hn (f i) (Finset.mem_image.2 ⟨i, hs, rfl⟩))]⟩
+    · convert pow_mem (hf i) (q ^ (n - f i)) using 1
+      rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
     exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]⟩
-  obtain ⟨lF, hlF⟩ := Classical.axiom_of_choice hf
-  let lF' (i : ι) : F := if i ∈ l.support then lF i else 0
-  let lF₀ := Finsupp.onFinset l.support lF' fun i ↦ by
+  choose lF hlF using hf
+  let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
     contrapose!
-    intro hs
-    simp only [hs, ite_false]
+    refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
+    rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow,
-      zero_pow (expChar_pow_pos F q n)] at hl
+    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow (expChar_pow_pos F q n)] at hl
     rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl ?_
-    intro i hs
-    simp_rw [hs, ite_true, Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF,
-      map_pow]
-  replace hlF (i : ι) : (algebraMap F E) (lF' i) = l i ^ q ^ n := by
-    by_cases hs : i ∈ l.support
-    · simp only [hs, ite_true, hlF i]
-    simp only [hs, ite_false, map_zero, Finsupp.not_mem_support_iff.1 hs,
-      zero_pow (expChar_pow_pos F q n)]
-  ext i
-  by_cases hs : i ∈ l.support
-  · replace h := congr($h i)
-    rw [Finsupp.onFinset_apply] at h
-    have := (hlF i).symm
-    erw [h, map_zero, pow_eq_zero_iff (expChar_pow_pos F q n)] at this
-    exact this
-  rw [Finsupp.not_mem_support_iff.1 hs]
-  rfl
+    intro i _
+    simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
+  refine pow_eq_zero ((hlF _).symm.trans ?_)
+  convert map_zero _
+  exact congr($h i)
 
 namespace Field
 
