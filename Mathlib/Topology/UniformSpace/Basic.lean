@@ -1258,7 +1258,9 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
-  is the inverse image in the filter sense of the induced function `α × α → β × β`. -/
+  is the inverse image in the filter sense of the induced function `α × α → β × β`.
+  See note [reducible non-instances]. -/
+@[reducible]
 def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :=
   .ofNhdsEqComap
     { uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
@@ -1570,10 +1572,10 @@ section Prod
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
--- check the above produces no diamond
+-- check the above produces no diamond for `simp` and typeclass search
 example [UniformSpace α] [UniformSpace β] :
-    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace :=
-  rfl
+    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace := by
+  with_reducible_and_instances rfl
 
 theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
