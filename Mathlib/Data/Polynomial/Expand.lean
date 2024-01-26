@@ -224,12 +224,17 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
   simp [coeff_contract hp, coeff_expand hp.bot_lt, Nat.mul_div_cancel _ hp.bot_lt]
 #align polynomial.contract_expand Polynomial.contract_expand
 
+theorem contract_one {f : R[X]} : contract 1 f = f :=
+  ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
+
 section ExpChar
 
 variable [ExpChar R p]
 
 theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
     (hp : p ≠ 0) : expand R p (contract p f) = f := by
+  cases ‹ExpChar R p›
+  · rw [expand_one, contract_one]
   ext n
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
   split_ifs with h
@@ -262,7 +267,7 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
     expand_mul, ← map_expand]
 #align polynomial.map_expand_pow_char Polynomial.map_expand_pow_char
 
-end CharP
+end ExpChar
 
 end CommSemiring
 
