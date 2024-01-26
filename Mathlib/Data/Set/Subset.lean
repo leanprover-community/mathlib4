@@ -54,7 +54,7 @@ namespace Subset
 Given two sets `A` and `B`, `setRestrict A B` is the set of `↑A` formed by the elements
 whose value is in `B`.
 -/
-def setRestrict (A B : Set α) : Set ↑A := restrict A B
+def setRestrict (A B : Set α) : Set ↑A := (↑) ⁻¹' B
 
 /--
 `A ↓∩ B` denotes `restrict A B`.
