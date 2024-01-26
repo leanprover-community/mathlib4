@@ -782,18 +782,21 @@ theorem conj_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group 
 
 /-- The connected component of 1 is a subgroup of `G`. -/
 @[to_additive "The connected component of 0 is a subgroup of `G`."]
-def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
+def Subgroup.identityComponent (G : Type*) [TopologicalSpace G] [Group G]
     [TopologicalGroup G] : Subgroup G where
   carrier := connectedComponent (1 : G)
   one_mem' := mem_connectedComponent
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
-#align subgroup.connected_component_of_one Subgroup.connectedComponentOfOne
-#align add_subgroup.connected_component_of_zero AddSubgroup.connectedComponentOfZero
+#align subgroup.connected_component_of_one Subgroup.identityComponent
+#align add_subgroup.connected_component_of_zero AddSubgroup.identityComponent
+
+@[to_additive (attr := deprecated Subgroup.identityComponent)] alias Subgroup.connectedComponentOfOne :=
+  Subgroup.identityComponent
 
 @[to_additive]
-theorem Subgroup.normal_connectedComponentOfOne {G : Type*} [TopologicalSpace G] [Group G]
-    [TopologicalGroup G] : (Subgroup.connectedComponentOfOne G).Normal where
+theorem Subgroup.normal_identityComponent {G : Type*} [TopologicalSpace G] [Group G]
+    [TopologicalGroup G] : (Subgroup.identityComponent G).Normal where
   conj_mem _ hn _ := conj_mem_connectedComponent_one hn
 
 /-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
