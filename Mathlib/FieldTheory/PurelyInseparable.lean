@@ -651,10 +651,9 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : Exp
     adjoin_algebraic_toSubalgebra fun x _ ↦ IsSeparable.isAlgebraic F E x,
     Set.image_univ, Algebra.adjoin_eq_span, (powMonoidHom _).mrange.closure_eq]
   refine (Submodule.span_mono <| Set.range_comp_subset_range _ _).antisymm (Submodule.span_le.2 ?_)
-  rw [Set.range_comp]
+  rw [Set.range_comp, ← Set.image_univ]
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  refine subset_trans ?_ (Submodule.image_span_subset_span (LinearMap.iterateFrobenius F E q n) _)
-  rw [h, ← Set.image_univ]; rfl
+  apply h ▸ Submodule.image_span_subset_span (LinearMap.iterateFrobenius F E q n) _
 
 variable {F E} in
 /-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
@@ -881,7 +880,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     simp only [hs, ite_false]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_expChar_pow,
+    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow,
       zero_pow (expChar_pow_pos F q n)] at hl
     rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl ?_
