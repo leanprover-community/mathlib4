@@ -665,6 +665,16 @@ theorem le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
   hf.rel_sequence a
 #align directed.le_sequence Directed.le_sequence
 
+variable (hf : Directed (· ≥ ·) f)
+
+theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
+  antitone_nat_of_succ_le <| hf.sequence_mono_nat
+#align directed.sequence_anti Directed.sequence_anti
+
+theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
+  hf.rel_sequence a
+#align directed.sequence_le Directed.sequence_le
+
 end Directed
 
 section Quotient
