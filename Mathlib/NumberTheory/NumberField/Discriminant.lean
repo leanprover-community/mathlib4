@@ -111,7 +111,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast,
-      ← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
+      - [ ] depends on:← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
       mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), coe_one, mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
@@ -199,7 +199,6 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
-  have : Algebra (𝓞 K) K := by exact Subalgebra.toAlgebra (𝓞 K)
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
