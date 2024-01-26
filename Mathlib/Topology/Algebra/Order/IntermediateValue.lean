@@ -713,9 +713,7 @@ theorem ContinuousOn.StrictAntiOn_of_InjOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f b ≤ f a)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictAntiOn f (Icc a b) := by
-    let g (x : α) : OrderDual δ := f x
-    have hgab : g a ≤ g b := hfab
-    exact ContinuousOn.StrictMonoOn_of_InjOn_Icc hab hgab hf_c hf_i
+ContinuousOn.StrictMonoOn_of_InjOn_Icc (δ := δᵒᵈ) hab hfab hf_c hf_i
 
 /-- Suppose `f : [a, b] → δ` is continuous and injective. Then `f` is strictly monotone
 or antitone (increasing or decreasing).-/
