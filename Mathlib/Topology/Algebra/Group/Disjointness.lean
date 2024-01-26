@@ -472,7 +472,7 @@ theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G �
   have h_nc : ¬Commute f h := by
     intro comm
     apply h_moving
-    nth_rewrite 2 [←one_smul G x]
+    nth_rewrite 2 [← one_smul G x]
     rw [← commutatorElement_eq_one_iff_commute.mpr comm.symm, ← Set.singleton_eq_singleton_iff,
       ← Set.smul_set_singleton, ← Set.smul_set_singleton, eq_comm]
     apply commutatorElement_smul_eq_of_subset_fixedBy_conj
