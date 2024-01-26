@@ -1258,7 +1258,8 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
-  is the inverse image in the filter sense of the induced function `α × α → β × β`. -/
+  is the inverse image in the filter sense of the induced function `α × α → β × β`.
+  See note [reducible non-instances]. -/
 @[reducible]
 def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :=
   .ofNhdsEqComap
