@@ -217,6 +217,66 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 #align smooth_partition_of_unity.finsum_smul_mem_convex SmoothPartitionOfUnity.finsum_smul_mem_convex
 
+--attribute [simps] SmoothPartitionOfUnity.toPartitionOfUnity
+
+section finsupport
+
+variable {s : Set M} (ρ : SmoothPartitionOfUnity ι I M s) (x₀ : M)
+
+/-- The support of a smooth partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+def finsupport : Finset ι := ρ.toPartitionOfUnity.finsupport x₀
+
+@[simp]
+theorem mem_finsupport {i : ι} : i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ :=
+  ρ.toPartitionOfUnity.mem_finsupport x₀
+
+@[simp]
+theorem coe_finsupport : (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ :=
+  ρ.toPartitionOfUnity.coe_finsupport x₀
+
+theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i in ρ.finsupport x₀, ρ i x₀ = 1 :=
+  ρ.toPartitionOfUnity.sum_finsupport hx₀
+
+theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport x₀ ⊆ I) :
+    ∑ i in I, ρ i x₀ = 1 :=
+  ρ.toPartitionOfUnity.sum_finsupport' hx₀ hI
+
+theorem sum_finsupport_smul_eq_finsum {A : Type*} [AddCommGroup A] [Module ℝ A] (φ : ι → M → A) :
+    ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
+  ρ.toPartitionOfUnity.sum_finsupport_smul_eq_finsum φ
+
+end finsupport
+
+section fintsupport -- smooth partitions of unity have locally finite `tsupport`
+variable {s : Set M} (ρ : SmoothPartitionOfUnity ι I M s) (x₀ : M)
+
+/-- The `tsupport`s of a smooth partition of unity are locally finite. -/
+theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite :=
+  ρ.toPartitionOfUnity.finite_tsupport _
+
+/-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+def fintsupport (x : M ): Finset ι :=
+  (ρ.finite_tsupport x).toFinset
+
+theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
+  Finite.mem_toFinset _
+
+theorem eventually_fintsupport_subset :
+    ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ :=
+  ρ.toPartitionOfUnity.eventually_fintsupport_subset _
+
+theorem finsupport_subset_fintsupport : ρ.finsupport x₀ ⊆ ρ.fintsupport x₀ :=
+  ρ.toPartitionOfUnity.finsupport_subset_fintsupport x₀
+
+theorem eventually_finsupport_subset : ∀ᶠ y in 𝓝 x₀, ρ.finsupport y ⊆ ρ.fintsupport x₀ :=
+  ρ.toPartitionOfUnity.eventually_finsupport_subset x₀
+
+end fintsupport
+
+section IsSubordinate
+
 /-- A smooth partition of unity `f i` is subordinate to a family of sets `U i` indexed by the same
 type if for each `i` the closure of the support of `f i` is a subset of `U i`. -/
 def IsSubordinate (f : SmoothPartitionOfUnity ι I M s) (U : ι → Set M) :=
@@ -251,6 +311,8 @@ theorem IsSubordinate.smooth_finsum_smul {g : ι → M → F} (hf : f.IsSubordin
     Smooth I 𝓘(ℝ, F) fun x => ∑ᶠ i, f i x • g i x :=
   hf.contMDiff_finsum_smul ho hg
 #align smooth_partition_of_unity.is_subordinate.smooth_finsum_smul SmoothPartitionOfUnity.IsSubordinate.smooth_finsum_smul
+
+end IsSubordinate
 
 end SmoothPartitionOfUnity
 

@@ -220,7 +220,7 @@ theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M
 
 end finsupport
 
-section fintsupport -- partitions of unity have finite `tsupport`
+section fintsupport -- partitions of unity have locally finite `tsupport`
 
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
