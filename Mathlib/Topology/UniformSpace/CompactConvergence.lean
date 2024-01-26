@@ -271,7 +271,7 @@ theorem compactOpen_eq_compactConvergence :
   · refine' fun X hX => isOpen_iff_forall_mem_open.mpr fun f hf => _
     have hXf : X ∈ (compactConvergenceFilterBasis f).filter := by
       rw [← nhds_compactConvergence]
-      exact @IsOpen.mem_nhds C(α, β) compactConvergenceTopology _ _ hX hf
+      exact @IsOpen.mem_nhds C(α, β) _ _ compactConvergenceTopology hX hf
     obtain ⟨-, ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩, hXf⟩ := hXf
     obtain ⟨ι, hι, C, hC, U, hU, h₁, h₂⟩ := iInter_compactOpen_gen_subset_compactConvNhd f hK hV
     haveI := hι

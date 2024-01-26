@@ -130,7 +130,7 @@ theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u 
     rcases h_nhds a univ trivial isOpen_univ with ⟨u, h₁, h₂, -⟩
     exact ⟨u, h₁, h₂⟩
   · refine' (le_generateFrom h_open).antisymm fun u hu => _
-    refine' (@isOpen_iff_nhds α (generateFrom s) u).mpr fun a ha => _
+    refine (@isOpen_iff_nhds α u (generateFrom s)).mpr fun a ha ↦ ?_
     rcases h_nhds a u ha hu with ⟨v, hvs, hav, hvu⟩
     rw [nhds_generateFrom]
     exact iInf₂_le_of_le v ⟨hav, hvs⟩ (le_principal_iff.2 hvu)
