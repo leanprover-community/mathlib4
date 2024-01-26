@@ -942,7 +942,7 @@ private def commClosure (s : Set K) : Subfield K where
   neg_mem' {x} := by
     rintro ⟨y, hy, z, hz, x_eq⟩
     exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
-  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
+  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm⟩
   add_mem' x_mem y_mem := by
     -- Use `id` in the next 2 `obtain`s so that assumptions stay there for the `rwa`s below
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem

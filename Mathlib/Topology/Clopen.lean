@@ -154,7 +154,7 @@ theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
   constructor
   · intro hc
     rw [← U.preimage_boolIndicator_true]
-    exact ⟨(isClosed_discrete _).preimage hc, (isOpen_discrete _).preimage hc, ⟩
+    exact ⟨(isClosed_discrete _).preimage hc, (isOpen_discrete _).preimage hc⟩
   · refine' fun hU => ⟨fun s _ => _⟩
     rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
     exacts [isOpen_univ, hU.2, hU.1.isOpen_compl, isOpen_empty]

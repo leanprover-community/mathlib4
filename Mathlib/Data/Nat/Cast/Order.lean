@@ -144,7 +144,7 @@ variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
-  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
+  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 #align ne_zero.nat_of_injective NeZero.nat_of_injective
 
 end RingHomClass

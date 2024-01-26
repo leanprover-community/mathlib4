@@ -91,7 +91,7 @@ theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Rat.cast_le) fun r =>
     let ⟨n, hn⟩ := exists_nat_ge (-r)
-    ⟨-n, by simpa [neg_le] ⟩
+    ⟨-n, by simpa [neg_le]⟩
 #align rat.comap_coe_at_bot Rat.comap_cast_atBot
 
 theorem tendsto_rat_cast_atTop_iff [LinearOrderedField R] [Archimedean R] {f : α → ℚ}

@@ -158,7 +158,7 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   obtain ⟨k, g, hg⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
-  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply] ⟩
+  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
 #align category_theory.functor.is_mittag_leffler.subset_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.subset_image_eventualRange
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
