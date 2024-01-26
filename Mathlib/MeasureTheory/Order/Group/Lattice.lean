@@ -26,7 +26,7 @@ theorem measurable_oneLePart : Measurable (oneLePart : α → α) :=
   measurable_sup_const _
 
 @[to_additive (attr := measurability)]
-protected theorem Measurable.oneLePart : Measurable (fun x ↦ oneLePart (f x)) :=
+protected theorem Measurable.oneLePart : Measurable fun x ↦ oneLePart (f x) :=
   measurable_oneLePart.comp hf
 
 variable [MeasurableInv α]
@@ -46,5 +46,5 @@ theorem measurable_mabs : Measurable (mabs : α → α) :=
   measurable_id'.sup measurable_inv
 
 @[to_additive (attr := measurability)]
-theorem Measurable.mabs : Measurable (fun x ↦ mabs (f x)) :=
+theorem Measurable.mabs : Measurable fun x ↦ mabs (f x) :=
   measurable_mabs.comp hf
