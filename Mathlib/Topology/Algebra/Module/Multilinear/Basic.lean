@@ -533,12 +533,13 @@ end DistribMulAction
 section Module
 
 variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂]
-  [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [ContinuousAdd M₂] [∀ i, Module A (M₁ i)]
-  [Module A M₂] [Module R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
+  [AddCommMonoid M₃] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [TopologicalSpace M₃]
+  [ContinuousAdd M₃] [∀ i, Module A (M₁ i)] [Module A M₂] [Module A M₃] [Module R' M₃]
+  [ContinuousConstSMul R' M₃] [SMulCommClass A R' M₃]
 
 /-- The space of continuous multilinear maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance : Module R' (ContinuousMultilinearMap A M₁ M₃) :=
   Function.Injective.module _
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
@@ -548,7 +549,7 @@ instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
 /-- Linear map version of the map `toMultilinearMap` associating to a continuous multilinear map
 the corresponding multilinear map. -/
 @[simps]
-def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₂ →ₗ[R'] MultilinearMap A M₁ M₂ where
+def toMultilinearMapLinear : ContinuousMultilinearMap A M₁ M₃ →ₗ[R'] MultilinearMap A M₁ M₃ where
   toFun := toMultilinearMap
   map_add' := toMultilinearMap_add
   map_smul' := toMultilinearMap_smul
@@ -564,6 +565,25 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 #align continuous_multilinear_map.pi_linear_equiv ContinuousMultilinearMap.piLinearEquiv
+
+/-- `ContinuousMultilinearMap.domDomCongr` as a `LinearEquiv`. -/
+@[simps apply symm_apply]
+def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
+    ContinuousMultilinearMap A (fun _ : ι₁ ↦ M₂) M₃ ≃ₗ[R']
+    ContinuousMultilinearMap A (fun _ : ι₂ ↦ M₂) M₃ where
+  __ := domDomCongrEquiv σ
+  map_smul' _ _ := rfl
+  map_add' _ _ := rfl
+
+variable [Fintype ι] [DecidableEq ι] (R')
+
+/-- Symmetrization of a continuous multilinear map (without the `1/(#ι)!` normalization). -/
+def symmetrize : Module.End R' (ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) :=
+  ∑ σ : Equiv.Perm ι, (domDomCongrLinearEquiv σ).toLinearMap
+
+theorem symmetrize_apply (m : ContinuousMultilinearMap A (fun _ : ι ↦ M₂) M₃) (x : ι → M₂) :
+    symmetrize R' m x = ∑ σ : Equiv.Perm ι, m (x ∘ σ) := by
+  rw [symmetrize, LinearMap.sum_apply, sum_apply]; rfl
 
 end Module
 

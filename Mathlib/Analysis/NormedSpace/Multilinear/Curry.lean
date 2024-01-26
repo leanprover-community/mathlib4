@@ -540,13 +540,34 @@ theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (f
 /-- An equivalence of the index set defines a linear isometric equivalence between the spaces
 of multilinear maps. -/
 def domDomCongrₗᵢ (σ : ι ≃ ι') :
-    ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G' ≃ₗᵢ[𝕜]
-      ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G' :=
-  { domDomCongrEquiv σ with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl
-    norm_map' := norm_domDomCongr 𝕜 G G' σ }
+    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' ≃ₗᵢ[𝕜]
+    ContinuousMultilinearMap 𝕜 (fun _ : ι' ↦ G) G' where
+  __ := domDomCongrLinearEquiv σ
+  norm_map' := norm_domDomCongr 𝕜 G G' σ
 #align continuous_multilinear_map.dom_dom_congrₗᵢ ContinuousMultilinearMap.domDomCongrₗᵢ
+
+section symmetrize
+
+variable [DecidableEq ι] (ι) (m : ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G') (x : ι → G)
+
+/-- Symmetrization of a continuous multilinear map as a continuous linear map
+  (without the `1/(#ι)!` normalization). -/
+def continuousSymmetrize :
+    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' →L[𝕜]
+    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' :=
+  ∑ σ : Equiv.Perm ι, (domDomCongrₗᵢ 𝕜 G G' σ).toLinearIsometry.toContinuousLinearMap
+
+theorem continuousSymmetrize_apply :
+    continuousSymmetrize 𝕜 ι G G' m x = ∑ σ : Equiv.Perm ι, m (x ∘ σ) := by
+  rw [continuousSymmetrize, ContinuousLinearMap.sum_apply, sum_apply]; rfl
+
+theorem norm_continuousSymmetrize_le :
+    ‖continuousSymmetrize 𝕜 ι G G'‖ ≤ (Fintype.card ι).factorial :=
+  (norm_sum_le _ _).trans <|
+    (sum_le_sum fun _ _ ↦ LinearIsometry.norm_toContinuousLinearMap_le _).trans_eq <| by
+      rw [Finset.sum_const, nsmul_eq_mul, mul_one, ← Fintype.card, Fintype.card_perm]
+
+end symmetrize
 
 variable {𝕜 G G'}
 

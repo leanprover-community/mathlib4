@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
@@ -759,6 +760,14 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
   (domDomCongrEquiv σ : _ ≃+ MultilinearMap R (fun _ => M₂) M₃).apply_eq_iff_eq
 #align multilinear_map.dom_dom_congr_eq_iff MultilinearMap.domDomCongr_eq_iff
 
+variable [Fintype ι₁] [DecidableEq ι₁] (m : MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃)
+
+/-- Symmetrization of a multilinear map (without dividing by the factorial). -/
+def symmetrize : MultilinearMap R (fun _ : ι₁ ↦ M₂) M₃ := ∑ σ : Equiv.Perm ι₁, m.domDomCongr σ
+
+theorem symmetrize_apply (x : ι₁ → M₂) : m.symmetrize x = ∑ σ : Equiv.Perm ι₁, m (x ∘ σ) :=
+  sum_apply ..
+
 end
 
 /-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // ¬ P a}) → M₁ i`,
@@ -947,12 +956,8 @@ def domDomCongrLinearEquiv' {ι' : Type*} (σ : ι ≃ ι') :
         rw [← σ.symm_apply_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_update, f.map_smul] }
-  map_add' f₁ f₂ := by
-    ext
-    simp only [Function.comp, coe_mk, add_apply]
-  map_smul' c f := by
-    ext
-    simp only [Function.comp, coe_mk, smul_apply, RingHom.id_apply]
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   left_inv f := by
     ext
     simp only [coe_mk, comp_apply, Equiv.symm_apply_apply]
@@ -982,12 +987,9 @@ variable [AddCommMonoid M₃] [Module R M₃] [Module S M₃] [SMulCommClass R S
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
 def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
-    MultilinearMap R (fun _ : ι₁ => M₂) M₃ ≃ₗ[S] MultilinearMap R (fun _ : ι₂ => M₂) M₃ :=
-  { (domDomCongrEquiv σ :
-      MultilinearMap R (fun _ : ι₁ => M₂) M₃ ≃+ MultilinearMap R (fun _ : ι₂ => M₂) M₃) with
-    map_smul' := fun c f => by
-      ext
-      simp [MultilinearMap.domDomCongr] }
+    MultilinearMap R (fun _ : ι₁ => M₂) M₃ ≃ₗ[S] MultilinearMap R (fun _ : ι₂ => M₂) M₃ where
+  __ := domDomCongrEquiv σ
+  map_smul' _ _ := rfl
 #align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
 #align multilinear_map.dom_dom_congr_linear_equiv_apply MultilinearMap.domDomCongrLinearEquiv_apply
 #align multilinear_map.dom_dom_congr_linear_equiv_symm_apply MultilinearMap.domDomCongrLinearEquiv_symm_apply

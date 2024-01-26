@@ -101,6 +101,12 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 #align has_fpower_series_on_ball.fderiv HasFPowerSeriesOnBall.fderiv
 
+open ContinuousMultilinearMap in
+theorem HasFPowerSeriesOnBall.iteratedFDeriv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
+    (n : ℕ) : HasFPowerSeriesOnBall (iteratedFDeriv 𝕜 n f) ((continuousSymmetrize 𝕜 (Fin n) E F)
+      |>.compFormalMultilinearSeries <| p.changeOriginSeries n) x r :=
+  sorry
+
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
 theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fderiv 𝕜 f) s := by
