@@ -15,9 +15,11 @@ open Manifold BigOperators
 open Bundle--open scoped Bundle --open_locale Manifold big_operators
 --open Bundle
 
+universe u -- FIXME
+
 variable
-  (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
-  (M : Type*) [_i : TopologicalSpace M] [ChartedSpace E M]
+  (E : Type u) [NormedAddCommGroup E] [NormedSpace ℝ E]
+  (M : Type u) [_i : TopologicalSpace M] [ChartedSpace E M]
   [SmoothManifoldWithCorners 𝓘(ℝ, E) M]
 
 -- move this
@@ -36,80 +38,96 @@ instance (x : M) : ContinuousSMul ℝ (TangentSpace 𝓘(ℝ, E) x) := sorry
 
 
 /-- The cotangent space at a point `x` in a smooth manifold `M`. -/
---@[derive [inhabited, TopologicalSpace, add_comm_group, module ℝ]]
-def CotangentSpace (x : M) : Type* := Bundle.ContinuousLinearMap
-  (RingHom.id ℝ) E /-(TangentSpace 𝓘(ℝ, E))-/ ℝ /-(trivial M ℝ)-/ x
-#exit
+--@[derive inhabited, TopologicalSpace, add_comm_group, module ℝ]
+def CotangentSpace (x : M) : Type u := Bundle.ContinuousLinearMap
+  (RingHom.id ℝ) /-E-/ (TangentSpace 𝓘(ℝ, E)) /-ℝ-/ (Trivial M ℝ) x
+
+-- TODO: add these instances; they were previously derived
+instance (x : M) : TopologicalSpace (CotangentSpace E M x) := sorry
+
+instance (x : M) : Inhabited (CotangentSpace E M x) := sorry
+
+instance (x : M): AddCommGroup (CotangentSpace E M x) := sorry
+
+instance (x : M) : SMul ℝ (CotangentSpace E M x) := sorry
+
+instance (x : M) : Module ℝ (CotangentSpace E M x) := sorry
+
 namespace CotangentSpace
 
-instance : TopologicalSpace (TotalSpace (CotangentSpace E M)) :=
-ContinuousLinearMap.topologicalSpaceTotalSpace
-  (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) ℝ (Trivial M ℝ)
+/- instance : TopologicalSpace (TotalSpace (CotangentSpace E M)) :=
+  ContinuousLinearMap.topologicalSpaceTotalSpace
+    (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) ℝ (Trivial M ℝ)
 
 instance : FiberBundle (E →L[ℝ] ℝ) (CotangentSpace E M) :=
-  ContinuousLinearMap.FiberBundle _ _ _ _ _
+  ContinuousLinearMap.fiberBundle _ _ _ _ _
 
 instance : VectorBundle ℝ (E →L[ℝ] ℝ) (CotangentSpace E M) :=
-ContinuousLinearMap.VectorBundle (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) ℝ (trivial M ℝ)
+  ContinuousLinearMap.vectorBundle (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) ℝ (Trivial M ℝ)
 
 instance : SmoothVectorBundle (E →L[ℝ] ℝ) (CotangentSpace E M) 𝓘(ℝ, E) :=
-SmoothVectorBundle.ContinuousLinearMap
+  SmoothVectorBundle.continuousLinearMap -/
 
-instance (x : M) : linear_map_class (CotangentSpace E M x) ℝ (TangentSpace 𝓘(ℝ, E) x) ℝ :=
-ContinuousLinearMap.semilinear_map_class (RingHom.id ℝ) _ _ _ _ _
+instance (x : M) : LinearMapClass (CotangentSpace E M x) ℝ (TangentSpace 𝓘(ℝ, E) x) ℝ :=
+  sorry -- ContinuousSemilinearMapClass (RingHom.id ℝ) _ _ _ _ _
 
 instance (x : M) : TopologicalAddGroup (CotangentSpace E M x) :=
-ContinuousLinearMap.TopologicalAddGroup
+  sorry --ContinuousLinearMap.topologicalAddGroup
 
 instance (x : M) : ContinuousSMul ℝ (CotangentSpace E M x) :=
-ContinuousLinearMap.ContinuousSMul
+  sorry --ContinuousLinearMap.continuousSMul
 
-instance (x : M) : TopologicalAddGroup (TangentSpace 𝓘(ℝ, E) x →L[ℝ] trivial M ℝ x) :=
-ContinuousLinearMap.TopologicalAddGroup
+instance (x : M) : TopologicalAddGroup (TangentSpace 𝓘(ℝ, E) x →L[ℝ] Trivial M ℝ x) :=
+  ContinuousLinearMap.topologicalAddGroup
 
-instance (x : M) : ContinuousSMul ℝ (TangentSpace 𝓘(ℝ, E) x →L[ℝ] trivial M ℝ x) :=
-ContinuousLinearMap.ContinuousSMul
+instance (x : M) : ContinuousSMul ℝ (TangentSpace 𝓘(ℝ, E) x →L[ℝ] Trivial M ℝ x) :=
+  ContinuousLinearMap.continuousSMul
 
 end CotangentSpace
--/
 
 /-- The "bicotangent space" at a point `x` in a smooth manifold `M`; that is, the space of bilinear
 maps from `TangentSpace 𝓘(ℝ, E) x` to `ℝ`. -/
 --@[derive [inhabited, TopologicalSpace, add_comm_group, module ℝ]]
-def biCotangentSpace (x : M) : Type* :=
-Bundle.ContinuousLinearMap
-  (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) (E →L[ℝ] ℝ) (CotangentSpace E M) x
+def biCotangentSpace (x : M) : Type u := Bundle.ContinuousLinearMap
+  (RingHom.id ℝ) (TangentSpace 𝓘(ℝ, E)) /-(E →L[ℝ] ℝ)-/ (CotangentSpace E M) x
+
+-- TODO: fill in these instances/derive them
+instance (x : M) : Inhabited (biCotangentSpace E M x) := sorry
+
+instance (x : M) : TopologicalSpace (biCotangentSpace E M x) := sorry
+
+instance (x : M) : AddCommGroup (biCotangentSpace E M x) := sorry
+
+instance (x : M) : Module ℝ (biCotangentSpace E M x) := sorry
 
 namespace biCotangentSpace
 
-instance : TopologicalSpace (TotalSpace (biCotangentSpace E M)) :=
+/- instance : TopologicalSpace (TotalSpace (biCotangentSpace E M)) :=
 ContinuousLinearMap.topologicalSpaceTotalSpace
   (RingHom.id ℝ) E (TangentSpace 𝓘(ℝ, E)) (E →L[ℝ] ℝ) (CotangentSpace E M)
 
 instance : FiberBundle (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M) :=
-ContinuousLinearMap.FiberBundle _ _ _ _ _
+  ContinuousLinearMap.fiberBundle _ _ _ _ _
 
 instance : VectorBundle ℝ (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M) :=
-  ContinuousLinearMap.VectorBundle _ _ _ _ _
+  ContinuousLinearMap.vectorBundle _ _ _ _ _
 
 instance : SmoothVectorBundle (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M) 𝓘(ℝ, E) :=
-  SmoothVectorBundle.ContinuousLinearMap
+  SmoothVectorBundle.continuousLinearMap -/
 
-instance (x : M) : linear_map_class (biCotangentSpace E M x) ℝ (TangentSpace 𝓘(ℝ, E) x)
+instance (x : M) : LinearMapClass (biCotangentSpace E M x) ℝ (TangentSpace 𝓘(ℝ, E) x)
     (CotangentSpace E M x) :=
-ContinuousLinearMap.semilinear_map_class (RingHom.id ℝ) _ _ _ _ _
+  sorry -- ContinuousSemilinearMapClass (RingHom.id ℝ) _ _ _ _ _
 
 instance (x : M) : TopologicalAddGroup (biCotangentSpace E M x) :=
-  ContinuousLinearMap.TopologicalAddGroup
+  sorry -- ContinuousLinearMap.topologicalAddGroup
 
 instance (x : M) : ContinuousSMul ℝ (biCotangentSpace E M x) :=
-  ContinuousLinearMap.ContinuousSMul
+  sorry -- ContinuousLinearMap.continuousSMul
 
 end biCotangentSpace
 
-#exit
-
-variables {E M}
+variable {E M}
 
 /-- A Riemannian metric on `M` is a smooth, symmetric, positive-definite section of the Bundle of
 continuous bilinear maps from the tangent Bundle of `M` to `ℝ`. -/
@@ -121,95 +139,81 @@ structure RiemannianMetric (g : SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[�
 lemma RiemannianMetric.add
   {g₁ g₂ : SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M)}
   (hg₁ : RiemannianMetric g₁) (hg₂ : RiemannianMetric g₂) :
-  RiemannianMetric (g₁ + g₂) := {
-  symm := λ x v w,
-  begin
+  RiemannianMetric (g₁ + g₂) where--:= {
+  symm := fun x v w ↦ by
     simp only [pi.add_apply, cont_mdiff_section.coe_add, ContinuousLinearMap.add_apply,
-      hg₁.symm x v w, hg₂.symm x v w],
-  end,
-  posdef := λ x v hv,
-  begin
-    have h₁ : 0 < g₁ x v v := hg₁.posdef x v hv,
-    have h₂ : 0 < g₂ x v v := hg₂.posdef x v hv,
+      hg₁.symm x v w, hg₂.symm x v w]
+  posdef := fun x v hv ↦ by
+    have h₁ : 0 < g₁ x v v := hg₁.posdef x v hv
+    have h₂ : 0 < g₂ x v v := hg₂.posdef x v hv
     simpa only [pi.add_apply, cont_mdiff_section.coe_add, ContinuousLinearMap.add_apply]
-      using add_pos h₁ h₂,
-  end }
+      using add_pos h₁ h₂
 
 /-- The scaling of a Riemannian metric by a positive real number is a Riemannian metric. -/
 lemma RiemannianMetric.smul
-  {g : SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M)}
-  (hg : RiemannianMetric g) {c : ℝ} (hc : 0 < c) :
-  RiemannianMetric (c • g) :=
-{ symm := λ x v w,
-  begin
+    {g : SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M)}
+    (hg : RiemannianMetric g) {c : ℝ} (hc : 0 < c) :
+  RiemannianMetric (c • g) where
+  symm := fun x v w ↦by
     simp only [pi.smul_apply, cont_mdiff_section.coe_smul, ContinuousLinearMap.smul_apply,
-      hg.symm x v w],
-  end,
-  posdef := λ x v hv,
-  begin
-    have h : 0 < g x v v := hg.posdef x v hv,
+      hg.symm x v w]
+  posdef := fun x v hv ↦ by
+    have h : 0 < g x v v := hg.posdef x v hv
     simpa only [pi.smul_apply, cont_mdiff_section.coe_smul, ContinuousLinearMap.smul_apply]
-      using smul_pos hc h,
-  end }
+      using smul_pos hc h
 
-variables (M E)
+variable (M E)
 
 /-- Riemannian metrics form a convex cone in the space of sections. -/
-noncomputable! def RiemannianMetric_cone :
-  convex_cone ℝ (SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M)) :=
-{ carrier := {g | RiemannianMetric g},
-  smul_mem' := λ c hc g hg, hg.smul hc,
-  add_mem' := λ g₁ hg₁ g₂ hg₂, hg₁.add hg₂ }
+noncomputable def RiemannianMetric_cone :
+  ConvexCone ℝ (SmoothSection 𝓘(ℝ, E) (E →L[ℝ] E →L[ℝ] ℝ) (biCotangentSpace E M)) where
+    carrier := {g | RiemannianMetric g}
+    smul_mem' := fun c hc g hg ↦ hg.smul hc
+    add_mem' := fun g₁ hg₁ g₂ hg₂ ↦ hg₁.add hg₂
 
-variables
-  (F : Type*) [NormedAddCommGroup F] [inner_product_space ℝ F] [ChartedSpace F M]
+variable
+  (F : Type*) [NormedAddCommGroup F] [InnerProductSpace ℝ F] [ChartedSpace F M]
   [SmoothManifoldWithCorners 𝓘(ℝ, F) M]
-  [finite_dimensional ℝ F] [sigma_compact_space M] [t2_space M]
+  [FiniteDimensional ℝ F] [SigmaCompactSpace M] [T2Space M]
 
 -- move this
-def charts_PartitionOfUnity : SmoothPartitionOfUnity M 𝓘(ℝ, F) M :=
-begin
-  let U : M → set M := λ x, (chart_at F x).source,
-  have hU : ∀ i, is_open (U i) := λ x, (chart_at F x).open_source,
-  have hUM : set.univ ⊆ ⋃ i, U i,
-  { intros x _,
-    rw [set.mem_Union],
-    use x,
-    exact mem_chart_source _ x, },
-  exact (SmoothPartitionOfUnity.exists_isSubordinate 𝓘(ℝ, F) is_closed_univ U hU hUM).some,
-end
+def charts_PartitionOfUnity : SmoothPartitionOfUnity M 𝓘(ℝ, F) M := by
+  let U : M → Set M := fun x ↦ (chartAt F x).source
+  have hU : ∀ i, IsOpen (U i) := fun x ↦ (chartAt F x).open_source
+  have hUM : Set.univ ⊆ ⋃ i, U i := by
+    intros x _
+    rw [Set.mem_iUnion]
+    use x
+    exact mem_chart_source _ x
+  sorry -- exact (SmoothPartitionOfUnity.exists_isSubordinate 𝓘(ℝ, F) isClosed_univ U hU hUM).some
 
 -- move this
 lemma charts_PartitionOfUnity_isSubordinate :
-  (charts_PartitionOfUnity M F).IsSubordinate (λ x, (chart_at F x).source) :=
-begin
-  let U : M → set M := λ x, (chart_at F x).source,
-  have hU : ∀ i, is_open (U i) := λ x, (chart_at F x).open_source,
-  have hUM : set.univ ⊆ ⋃ i, U i,
-  { intros x _,
-    rw [set.mem_Union],
-    use x,
-    exact mem_chart_source _ x, },
-  exact (SmoothPartitionOfUnity.exists_isSubordinate 𝓘(ℝ, F) is_closed_univ U hU hUM).some_spec,
+  (charts_PartitionOfUnity M F).IsSubordinate (fun x ↦ (chartAt F x).source) := by
+
+  let U : M → Set M := fun x ↦ (chartAt F x).source
+  have hU : ∀ i, IsOpen (U i) := fun x ↦ (chartAt F x).open_source
+  have hUM : Set.univ ⊆ ⋃ i, U i := by
+    intros x _
+    rw [Set.mem_iUnion]
+    use x
+    exact mem_chart_source _ x
+  sorry -- exact (SmoothPartitionOfUnity.exists_isSubordinate 𝓘(ℝ, F) isClosed_univ U hU hUM).some_spec
 end
 
-def patch (x : M) : TangentSpace 𝓘(ℝ, F) x →L[ℝ] TangentSpace 𝓘(ℝ, F) x →L[ℝ] ℝ :=
-begin
-  let s : SmoothPartitionOfUnity M 𝓘(ℝ, F) M := charts_PartitionOfUnity M F,
-  let g₀ : F →L[ℝ] F →L[ℝ] ℝ := innerSL ℝ,
+def patch (x : M) : TangentSpace 𝓘(ℝ, F) x →L[ℝ] TangentSpace 𝓘(ℝ, F) x →L[ℝ] ℝ := by
+  let s : SmoothPartitionOfUnity M 𝓘(ℝ, F) M := charts_PartitionOfUnity M F
+  let g₀ : F →L[ℝ] F →L[ℝ] ℝ := innerSL ℝ
   let e : Π y : M, TangentSpace 𝓘(ℝ, F) x →L[ℝ] F :=
-    λ y, (trivialization_at F (TangentSpace 𝓘(ℝ, F)) y).ContinuousLinearMap_at ℝ x,
+    fun y ↦ (trivialization_at F (TangentSpace 𝓘(ℝ, F)) y).ContinuousLinearMap_at ℝ x
   let G : Π y : M, TangentSpace 𝓘(ℝ, F) x →L[ℝ] TangentSpace 𝓘(ℝ, F) x →L[ℝ] ℝ :=
-    λ y, (g₀ ∘L (e y)).flip ∘L (e y),
-  exact ∑ᶠ y : M, s y x • G y,
-end
+    fun y, (g₀ ∘L (e y)).flip ∘L (e y)
+  exact ∑ᶠ y : M, s y x • G y
 
 /- A (σ-compact, Hausdorff, finite-dimensional) manifold admits a Riemannian metric. -/
 lemma exists_RiemannianMetric :
-  ∃ g : SmoothSection 𝓘(ℝ, F) (F →L[ℝ] F →L[ℝ] ℝ) (biCotangentSpace F M),
-  RiemannianMetric g :=
-begin
-  refine ⟨⟨patch M F, _⟩, _⟩,
-  { sorry },
-  { sorry },
-end
+    ∃ g : SmoothSection 𝓘(ℝ, F) (F →L[ℝ] F →L[ℝ] ℝ) (biCotangentSpace F M),
+  RiemannianMetric g := by
+  refine ⟨⟨patch M F, ?_⟩, ?_⟩
+  · sorry
+  · sorry
