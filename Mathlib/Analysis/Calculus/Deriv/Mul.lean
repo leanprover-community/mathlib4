@@ -334,7 +334,7 @@ theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d
 
 end Div
 
-section ClmCompApply
+section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
@@ -410,4 +410,4 @@ theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 
   (hc.hasDerivAt.clm_apply hu.hasDerivAt).deriv
 #align deriv_clm_apply deriv_clm_apply
 
-end ClmCompApply
+end CLMCompApply

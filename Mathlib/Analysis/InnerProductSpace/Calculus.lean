@@ -45,14 +45,14 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 variable (𝕜) [NormedSpace ℝ E]
 
 /-- Derivative of the inner product. -/
-def fderivInnerClm (p : E × E) : E × E →L[ℝ] 𝕜 :=
+def fderivInnerCLM (p : E × E) : E × E →L[ℝ] 𝕜 :=
   isBoundedBilinearMap_inner.deriv p
-#align fderiv_inner_clm fderivInnerClm
+#align fderiv_inner_clm fderivInnerCLM
 
 @[simp]
-theorem fderivInnerClm_apply (p x : E × E) : fderivInnerClm 𝕜 p x = ⟪p.1, x.2⟫ + ⟪x.1, p.2⟫ :=
+theorem fderivInnerCLM_apply (p x : E × E) : fderivInnerCLM 𝕜 p x = ⟪p.1, x.2⟫ + ⟪x.1, p.2⟫ :=
   rfl
-#align fderiv_inner_clm_apply fderivInnerClm_apply
+#align fderiv_inner_clm_apply fderivInnerCLM_apply
 
 variable {𝕜} -- porting note: Lean 3 magically switches back to `{𝕜}` here
 
@@ -93,18 +93,18 @@ theorem ContDiff.inner (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
 
 theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
-    HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') s
+    HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
       x :=
   (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 #align has_fderiv_within_at.inner HasFDerivWithinAt.inner
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
-    HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') x :=
+    HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
   (isBoundedBilinearMap_inner.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
 #align has_strict_fderiv_at.inner HasStrictFDerivAt.inner
 
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') x :=
+    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
   (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 #align has_fderiv_at.inner HasFDerivAt.inner
 
@@ -151,7 +151,7 @@ theorem deriv_inner_apply {f g : ℝ → E} {x : ℝ} (hf : DifferentiableAt ℝ
 #align deriv_inner_apply deriv_inner_apply
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
-  convert (reClm : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
+  convert (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
   exact (inner_self_eq_norm_sq _).symm
 #align cont_diff_norm_sq contDiff_norm_sq
 
