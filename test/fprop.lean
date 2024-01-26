@@ -129,6 +129,23 @@ mark it with `@[fprop]`
 attribute [fprop]
   Continuous.measurable -- Continuous f → Measurable f
 
+/-!
+For this theorem to be used properly we also need to set up `Continuous` with `fprop`.
+The bare bones setup is
+-/
+
+attribute [fprop]
+
+  Continuous
+  continuous_id'
+  continuous_const
+  Continuous.comp'
+  continuous_pi
+  continuous_apply
+  Continuous.prod_mk
+  Continuous.fst
+  Continuous.snd
+
 
 /-!
 Now we can prove one of the earlier examples assuming the function is continuous instead of

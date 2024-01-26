@@ -672,7 +672,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
       | .uncurried =>
         let .some (f',g') ← splitMorToCompOverArgs f thm.mainArgs
           | continue
-        if (← isDefEq f' f) then
+        if ((← isDefEq f' f) || (← isDefEq g' f)) then
           let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop | continue
           return r
         else
@@ -693,7 +693,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
   let .some (f',g') ← splitMorToComp f
     | throwError "fprop bug: unexpected failure in constAppCase"
 
-  if ¬(← isDefEq f' f) then
+  if ¬((← isDefEq f' f) || (← isDefEq g' f)) then
     applyCompRule fpropDecl e f' g' fprop
   else
     -- this should be done only `f` can't be decomposed and can't be unfolded
@@ -716,7 +716,7 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     | throwError "fprop bug: failed to decompose {f}"
 
   -- trivial case, this prevents an infinite loop
-  if (← isDefEq f' f) then
+  if ((← isDefEq f' f) || (← isDefEq g' f)) then
     trace[Meta.Tactic.fprop.step] "fvar app case: trivial"
     let .some (fvarId, args, n) ← isFVarFProp fpropDecl e
       | trace[Meta.Tactic.fprop.step] "fvar app case: unexpected goal {e}"
