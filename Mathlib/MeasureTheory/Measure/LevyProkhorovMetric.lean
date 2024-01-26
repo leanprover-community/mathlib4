@@ -49,7 +49,7 @@ noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
   sInf {ε | ∀ B, MeasurableSet B →
             μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε}
 
-lemma measure_apply_le_of_le_of_forall_le_measure_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
+lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁):
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
