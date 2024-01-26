@@ -119,23 +119,19 @@ theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁
 
 @[to_additive]
 theorem op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
-  (opEquiv.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.image_eq_preimage _
+  opEquiv.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem unop_sSup (S : Set (Subgroup Gᵐᵒᵖ)) : (sSup S).unop = sSup (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem op_sInf (S : Set (Subgroup G)) : (sInf S).op = sInf (.unop ⁻¹' S) :=
-  (opEquiv.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.image_eq_preimage _
+  opEquiv.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem unop_sInf (S : Set (Subgroup Gᵐᵒᵖ)) : (sInf S).unop = sInf (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem op_iSup (S : ι → Subgroup G) : (iSup S).op = ⨆ i, (S i).op := opEquiv.map_iSup _
