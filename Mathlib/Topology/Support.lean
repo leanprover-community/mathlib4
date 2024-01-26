@@ -422,7 +422,7 @@ theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
 
 theorem LocallyFinite.smul_left [Zero R] [Zero M] [SMulWithZero R M]
     {s : ι → X → R} (h : LocallyFinite fun i ↦ support <| s i) (f : ι → X → M) :
-    LocallyFinite fun i ↦ support (s i • f i) :=
+    LocallyFinite fun i ↦ support <| s i • f i :=
   h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, zero_smul]
 
 theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
