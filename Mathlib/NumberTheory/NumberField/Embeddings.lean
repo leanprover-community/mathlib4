@@ -561,7 +561,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
       rw [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
         zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
       exact h₃.resolve_left hw
-  . exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
+  · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 open Fintype FiniteDimensional
 
