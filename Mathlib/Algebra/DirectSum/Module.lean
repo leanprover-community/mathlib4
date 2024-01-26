@@ -103,7 +103,7 @@ variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
 def toModule : (⨁ i, M i) →ₗ[R] N :=
-  FunLike.coe (DFinsupp.lsum ℕ) φ
+  DFunLike.coe (DFinsupp.lsum ℕ) φ
 #align direct_sum.to_module DirectSum.toModule
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
@@ -150,7 +149,8 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
 
 private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
-  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage $ FunLike.coe_injective.injOn _).to_subtype
+  ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
+    DFunLike.coe_injective.injOn _).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := finite_setOf_bounded σ N

@@ -8,6 +8,7 @@ import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 #align_import measure_theory.integral.divergence_theorem from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -376,7 +377,7 @@ See also
 * `interval_integral.integral_eq_sub_of_has_deriv_right_of_le` for a version that only assumes right
 differentiability of `f`;
 
-* `MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable` for a version that works both
+* `MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable` for a version that works both
   for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
 theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
     (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
@@ -415,7 +416,7 @@ interval and is differentiable off a countable set `s`.
 See also `measure_theory.interval_integral.integral_eq_sub_of_has_deriv_right` for a version that
 only assumes right differentiability of `f`.
 -/
-theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
+theorem integral_eq_of_hasDerivWithinAt_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
     (hs : s.Countable) (Hc : ContinuousOn f [[a, b]])
     (Hd : ∀ x ∈ Ioo (min a b) (max a b) \ s, HasDerivAt f (f' x) x)
     (Hi : IntervalIntegrable f' volume a b) : ∫ x in a..b, f' x = f b - f a := by
@@ -425,7 +426,7 @@ theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b
   · simp only [uIcc_of_ge hab, min_eq_right hab, max_eq_left hab] at *
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
-#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable
+#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable
 
 /-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where

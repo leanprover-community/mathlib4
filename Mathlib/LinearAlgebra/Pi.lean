@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.Algebra.BigOperators.Pi
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -540,7 +542,7 @@ end Extend
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
-`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons $ f₂.vecCons $ f₃.vecCons $ vecEmpty`.
+`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons <| f₂.vecCons <| f₃.vecCons <| vecEmpty`.
 
 While the same thing could be achieved using `LinearMap.pi ![f₁, f₂, f₃]`, this is not
 definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and function
