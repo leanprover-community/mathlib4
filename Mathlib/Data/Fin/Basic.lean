@@ -1809,6 +1809,15 @@ theorem castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a 
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]
 
+/-- `rev` commutes with `succAbove`. -/
+lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
+    rev (succAbove p i) = succAbove (rev p) (rev i) := by
+  cases' lt_or_le (castSucc i) p with h h
+  · rw [succAbove_below _ _ h, rev_castSucc, succAbove_above]
+    rwa [← rev_succ, rev_le_rev]
+  · rw [succAbove_above _ _ h, rev_succ, succAbove_below]
+    rwa [← rev_succ, rev_lt_rev, lt_def, val_succ, Nat.lt_succ_iff]
+
 --@[simp] -- porting note: can be proved by `simp`
 theorem one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
   rfl
@@ -1836,14 +1845,6 @@ theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simp only [succ_zero_eq_one, val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
   exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
-
-lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
-    rev (succAbove p i) = succAbove (rev p) (rev i) := by
-  cases' lt_or_le (castSucc i) p with h h
-  · rw [succAbove_below _ _ h, rev_castSucc, succAbove_above]
-    rwa [← rev_succ, rev_le_rev]
-  · rw [succAbove_above _ _ h, rev_succ, succAbove_below]
-    rwa [← rev_succ, rev_lt_rev, lt_def, val_succ, Nat.lt_succ_iff]
 
 end SuccAbove
 
@@ -1978,6 +1979,15 @@ theorem castSucc_predAbove_castSucc {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     castSucc_pred_eq_pred_castSucc]
   · rw [Fin.predAbove_below _ _ h, castSucc_castPred,
     Fin.predAbove_below _ _ (castSucc_le_castSucc_iff.mpr h), castPred_castSucc]
+
+/-- `rev` commutes with `predAbove`. -/
+theorem rev_predAbove {n : ℕ} (p : Fin n) (i : Fin (n + 1)) :
+    (predAbove p i).rev = predAbove p.rev i.rev := by
+  rcases lt_or_le (castSucc p) i with (h | h)
+  · rw [predAbove_above _ _ h, rev_pred,
+    predAbove_below _ _ (by rwa [← rev_succ, rev_le_rev, ← castSucc_lt_iff_succ_le])]
+  · rw [predAbove_below _ _ h, rev_castPred,
+    predAbove_above _ _ (by rwa [← rev_succ, rev_lt_rev, ← le_castSucc_iff])]
 
 end PredAbove
 
