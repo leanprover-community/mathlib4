@@ -269,21 +269,16 @@ def iterateFrobenius : R →+* R where
 
 variable {R}
 
-theorem frobenius_def : frobenius R p x = x ^ p :=
-  rfl
+theorem frobenius_def : frobenius R p x = x ^ p := rfl
 #align frobenius_def frobenius_def
 
 theorem iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 
-theorem iterate_frobenius (n : ℕ) : (frobenius R p)^[n] x = x ^ p ^ n := by
-  induction n with
-  | zero => simp
-  | succ n n_ih =>
-      rw [Function.iterate_succ', pow_succ', pow_mul, Function.comp_apply, frobenius_def, n_ih]
+theorem iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
 #align iterate_frobenius iterate_frobenius
 
 theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
-  funext fun x ↦ (iterate_frobenius p x n).symm
+  (pow_iterate p n).symm
 
 @[simp]
 theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p := by
@@ -297,13 +292,10 @@ theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R := by
 theorem iterateFrobenius_add :
     iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) := by
   ext x
-  simp_rw [RingHom.coe_comp, Function.comp_apply, iterateFrobenius_def, add_comm m n,
-    pow_add, pow_mul]
+  simp_rw [RingHom.comp_apply, iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
 
 theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
-  induction n with
-  | zero => rw [Nat.zero_eq, mul_zero, iterateFrobenius_zero]; rfl
-  | succ n h => rw [Function.iterate_succ, Nat.mul_succ, iterateFrobenius_add, RingHom.coe_comp, h]
+  simp_rw [coe_iterateFrobenius, Function.iterate_mul]
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
   (frobenius R p).map_mul x y
