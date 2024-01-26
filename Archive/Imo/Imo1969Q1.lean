@@ -63,7 +63,7 @@ theorem int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
 
 theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (hc : m * n = (c : ℤ)) :
     ¬Nat.Prime c :=
-  not_prime_of_int_mul (int_large hm) (int_large hn) hc
+  not_prime_of_int_mul (int_large hm).ne' (int_large hn).ne' hc
 #align imo1969_q1.not_prime_of_int_mul' Imo1969Q1.not_prime_of_int_mul'
 
 /-- Every natural number of the form `n^4 + 4*m^4` is not prime. -/
@@ -86,7 +86,7 @@ theorem aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
 /-- `aChoice` is a strictly monotone function; this is easily proven by chaining together lemmas
 in the `strictMono` namespace. -/
 theorem aChoice_strictMono : StrictMono aChoice :=
-  ((strictMono_id.const_add 2).nat_pow (by decide : 0 < 4)).const_mul (by decide : 0 < 4)
+  ((strictMono_id.const_add 2).nat_pow (by decide)).const_mul (by decide)
 #align imo1969_q1.a_choice_strict_mono Imo1969Q1.aChoice_strictMono
 
 end Imo1969Q1

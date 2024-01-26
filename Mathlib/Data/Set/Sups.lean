@@ -170,7 +170,7 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
 lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
-  image_image2_distrib $ map_sup f
+  image_image2_distrib <| map_sup f
 
 lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
@@ -337,7 +337,7 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
 
 lemma image_infs (f : F) (s t : Set α) : f '' (s ⊼ t) = f '' s ⊼ f '' t :=
-  image_image2_distrib $ map_inf f
+  image_image2_distrib <| map_inf f
 
 lemma subset_infs_self : s ⊆ s ⊼ s := λ _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Hom
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Bilinear form
@@ -297,7 +298,7 @@ def isPairSelfAdjointSubmodule : Submodule R₂ (Module.End R₂ M₂) where
 
 @[simp]
 theorem mem_isPairSelfAdjointSubmodule (f : Module.End R₂ M₂) :
-    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f :=  by rfl
+    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := Iff.rfl
 #align bilin_form.mem_is_pair_self_adjoint_submodule BilinForm.mem_isPairSelfAdjointSubmodule
 
 theorem isPairSelfAdjoint_equiv (e : M₂' ≃ₗ[R₂] M₂) (f : Module.End R₂ M₂) :
@@ -461,6 +462,17 @@ theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDua
   rfl
 #align bilin_form.to_dual_def BilinForm.toDual_def
 
+lemma Nondegenerate.flip {B : BilinForm K V} (hB : B.Nondegenerate) :
+    B.flip.Nondegenerate := by
+  intro x hx
+  apply (Module.evalEquiv K V).injective
+  ext f
+  obtain ⟨y, rfl⟩ := (B.toDual hB).surjective f
+  simpa using hx y
+
+lemma nonDegenerateFlip_iff {B : BilinForm K V} :
+    B.flip.Nondegenerate ↔ B.Nondegenerate := ⟨Nondegenerate.flip, Nondegenerate.flip⟩
+
 section DualBasis
 
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
@@ -470,6 +482,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
     Basis ι K V :=
+  haveI := FiniteDimensional.of_fintype_basis b
   b.dualBasis.map (B.toDual hB).symm
 #align bilin_form.dual_basis BilinForm.dualBasis
 
@@ -482,6 +495,7 @@ theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Bas
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
+  have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
 #align bilin_form.apply_dual_basis_left BilinForm.apply_dualBasis_left
@@ -490,6 +504,29 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
   rw [sym, apply_dualBasis_left]
 #align bilin_form.apply_dual_basis_right BilinForm.apply_dualBasis_right
+
+@[simp]
+lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
+    [Fintype ι] [DecidableEq ι] (b : Basis ι K V) :
+    B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
+  ext i
+  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
+  rw [toLin_apply, apply_dualBasis_left, toLin_apply, ← B.flip_apply (R₂ := K),
+    apply_dualBasis_left]
+  simp_rw [@eq_comm _ i j]
+
+@[simp]
+lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
+    [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+    B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
+  dualBasis_dualBasis_flip _ hB.flip b
+
+@[simp]
+lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
+    [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+    B.dualBasis hB (B.dualBasis hB b) = b := by
+  convert dualBasis_dualBasis_flip _ hB.flip b
+  rwa [eq_comm, ← isSymm_iff_flip]
 
 end DualBasis
 

@@ -299,7 +299,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
           · rw [Fintype.card_units, Nat.cast_sub,
               cast_card_eq_zero, Nat.cast_one, zero_sub]
             show 1 ≤ q; exact Fintype.card_pos_iff.mpr ⟨0⟩
-        rw [← forall_pow_eq_one_iff, FunLike.ext_iff]
+        rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [Units.ext_iff]
 #align finite_field.sum_pow_units FiniteField.sum_pow_units
 
@@ -339,7 +339,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ (Nat.pos_of_ne_zero hn) hp
+  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
@@ -352,7 +352,7 @@ set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
 theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ (Nat.pos_of_ne_zero hn) hp
+  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
 
@@ -586,17 +586,9 @@ theorem isSquare_of_char_two (hF : ringChar F = 2) (a : F) : IsSquare a :=
 /-- In a finite field of odd characteristic, not every element is a square. -/
 theorem exists_nonsquare (hF : ringChar F ≠ 2) : ∃ a : F, ¬IsSquare a := by
   -- Idea: the squaring map on `F` is not injective, hence not surjective
-  let sq : F → F := fun x => x ^ 2
-  have h : ¬Function.Injective sq := by
-    simp only [Function.Injective, not_forall, exists_prop]
-    refine' ⟨-1, 1, _, Ring.neg_one_ne_one_of_char_ne_two hF⟩
-    simp only [one_pow, neg_one_sq]
-  rw [Finite.injective_iff_surjective] at h
-  -- sq not surjective
-  simp_rw [IsSquare, ← pow_two, @eq_comm _ _ (_ ^ 2)]
-  unfold Function.Surjective at h
-  push_neg at h ⊢
-  exact h
+  have h : ¬Function.Injective fun x : F ↦ x * x := fun h ↦
+    h.ne (Ring.neg_one_ne_one_of_char_ne_two hF) <| by simp
+  simpa [Finite.injective_iff_surjective, Function.Surjective, IsSquare, eq_comm] using h
 #align finite_field.exists_nonsquare FiniteField.exists_nonsquare
 
 end Finite
@@ -606,14 +598,8 @@ variable [Fintype F]
 /-- The finite field `F` has even cardinality iff it has characteristic `2`. -/
 theorem even_card_iff_char_two : ringChar F = 2 ↔ Fintype.card F % 2 = 0 := by
   rcases FiniteField.card F (ringChar F) with ⟨n, hp, h⟩
-  rw [h, Nat.pow_mod]
-  constructor
-  · intro hF
-    simp [hF]
-  · rw [← Nat.even_iff, Nat.even_pow]
-    rintro ⟨hev, hnz⟩
-    rw [Nat.even_iff, Nat.mod_mod] at hev
-    exact (Nat.Prime.eq_two_or_odd hp).resolve_right (ne_of_eq_of_ne hev zero_ne_one)
+  rw [h, ← Nat.even_iff, Nat.even_pow, hp.even_iff]
+  simp
 #align finite_field.even_card_iff_char_two FiniteField.even_card_iff_char_two
 
 theorem even_card_of_char_two (hF : ringChar F = 2) : Fintype.card F % 2 = 0 :=

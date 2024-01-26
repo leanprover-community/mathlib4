@@ -106,7 +106,7 @@ theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
   refine (contMDiffOn_symm_of_mem_maximalAtlas he).comp
     (contMDiffOn_model_symm.mono <| image_subset_range _ _) ?_
-  simp_rw [image_subset_iff, LocalEquiv.restr_coe_symm, I.toLocalEquiv_coe_symm,
+  simp_rw [image_subset_iff, PartialEquiv.restr_coe_symm, I.toPartialEquiv_coe_symm,
     preimage_preimage, I.left_inv, preimage_id']; rfl
 #align cont_mdiff_on_extend_symm contMDiffOn_extend_symm
 
@@ -226,7 +226,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       mfld_set_tac
     refine' ⟨e.symm, StructureGroupoid.symm _ he, h3e, _⟩
     rw [h2X]; exact e.mapsTo hex
-  · -- We now show the converse: a local homeomorphism `f : M → M'` which is smooth in both
+  · -- We now show the converse: a partial homeomorphism `f : M → M'` which is smooth in both
     -- directions is a local structomorphism.  We do this by proposing
     -- `((chart_at H x).symm.trans f).trans (chart_at H (f x))` as a candidate for a structomorphism
     -- of `H`.

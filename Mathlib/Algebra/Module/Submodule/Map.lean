@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -165,6 +166,12 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
     (equivMapOfInjective f i p x : M₂) = f x :=
   rfl
 #align submodule.coe_equiv_map_of_injective_apply Submodule.coe_equivMapOfInjective_apply
+
+@[simp]
+theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submodule R M)
+    (x : p.map f) : f ((equivMapOfInjective f i p).symm x) = x := by
+  rw [← LinearEquiv.apply_symm_apply (equivMapOfInjective f i p) x, coe_equivMapOfInjective_apply,
+    i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
@@ -442,6 +449,11 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 #align submodule.map_neg Submodule.map_neg
 
+@[simp]
+lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
+    p.comap (-f) = p.comap f := by
+  ext; simp
+
 end AddCommGroup
 
 end Submodule
@@ -619,3 +631,23 @@ def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
 #align submodule.compatible_maps Submodule.compatibleMaps
 
 end Submodule
+
+namespace LinearMap
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- A linear map between two modules restricts to a linear map from any submodule p of the
+domain onto the image of that submodule.
+
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.-/
+def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
+  f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
+
+@[simp]
+theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p) :
+    ↑(f.submoduleMap p x) = f x := rfl
+
+theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
+    Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
+
+end LinearMap

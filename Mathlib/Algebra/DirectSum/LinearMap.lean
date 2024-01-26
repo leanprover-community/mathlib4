@@ -3,7 +3,8 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.Module
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Trace
 
@@ -16,10 +17,6 @@ domain and codomain.
 -/
 
 open Set BigOperators DirectSum
-
-attribute [local instance]
-  isNoetherian_of_isNoetherianRing_of_finite
-  Module.free_of_finite_type_torsion_free'
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   {N : ι → Submodule R M} [DecidableEq ι] (h : IsInternal N)
