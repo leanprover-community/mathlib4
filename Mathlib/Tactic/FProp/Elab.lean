@@ -16,7 +16,7 @@ open Lean.Parser.Tactic
 syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
 
 @[tactic fpropTacStx]
-def fpropTac : Tactic 
+def fpropTac : Tactic
 | `(tactic| fprop $[$d]?) => do
 
   -- this is ugly - is there a better way of writing this?
@@ -24,7 +24,7 @@ def fpropTac : Tactic
   let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
     match d with
     | none => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
-    | some d => 
+    | some d =>
       match d with
       | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
       | _ => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
@@ -32,7 +32,7 @@ def fpropTac : Tactic
   let goal ← getMainGoal
   goal.withContext do
     let goalType ← goal.getType
-  
+
     let (.some r, _) ← fprop goalType {disch := disch} |>.run {}
       | throwError "fprop was unable to prove `{← Meta.ppExpr goalType}`"
 

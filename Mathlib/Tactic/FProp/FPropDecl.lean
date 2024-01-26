@@ -22,7 +22,8 @@ structure FPropDecl where
   fpropName : Name
   /-- path for discriminatory tree -/
   path : Array DiscrTree.Key
-  /-- argument index of a function this function property talks about. For example, this would be 4 for `@Continuous α β _ _ f` -/
+  /-- argument index of a function this function property talks about.
+  For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
   /-- Custom discharger for this function property. -/
   dischargeStx? : Option (TSyntax `tactic)
@@ -41,7 +42,7 @@ initialize fpropDeclsExt : FPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
-    addEntry := fun d e => 
+    addEntry := fun d e =>
       {d with decls := d.decls.insertCore e.path e {}}
   }
 
@@ -77,9 +78,10 @@ def addFPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : 
 
   modifyEnv fun env => fpropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.fprop.attr] "added new function property `{declName}`\nlook up pattern is `{path}`"
+  trace[Meta.Tactic.fprop.attr]
+    "added new function property `{declName}`\nlook up pattern is `{path}`"
 
-  
+
 /-- -/
 def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
   let ext := fpropDeclsExt.getState (← getEnv)
@@ -90,7 +92,9 @@ def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
     return none
 
   if decls.size > 1 then
-    throwError "expression {← ppExpr e} matches multiple function properties {decls.map (fun d => d.fpropName)}, this is a bug!"
+    throwError "\
+fprop bug: expression {← ppExpr e} matches multiple function properties
+{decls.map (fun d => d.fpropName)}"
 
   let decl := decls[0]!
   let f := e.getArg! decl.funArgId
@@ -120,17 +124,17 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
 open Elab Term in
 /-- -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
-  withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+  withTraceNode `Meta.Tactic.fprop
+    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `fprop.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
-        /- We must only save messages and info tree changes. Recall that `simp` uses temporary metavariables (`withNewMCtxDepth`).
-           So, we must not save references to them at `Term.State`. -/
         withoutModifyingStateWithInfoAndMessages do
           instantiateMVarDeclMVars mvar.mvarId!
 
           let _ ←
-            withSynthesize (mayPostpone := false) do Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+            withSynthesize (mayPostpone := false) do
+              Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
           let result ← instantiateMVars mvar
           if result.hasExprMVar then
@@ -139,8 +143,8 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
             return some result
       catch _ =>
         return none
-    let (result?, _) ← runTac?.run {} {} 
-    
+    let (result?, _) ← runTac?.run {} {}
+
     return result?
 
 /-- -/

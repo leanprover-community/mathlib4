@@ -9,7 +9,7 @@ import Std.Lean.Meta.DiscrTree
 import Mathlib.Tactic.FProp.Meta
 
 /-!
-## `fprop` 
+## `fprop`
 
 this file defines enviroment extension for `fprop`
 -/
@@ -47,13 +47,14 @@ structure Config where
 
 /-- -/
 structure State where
-  /-- Simp's cache is used as the `fprop` tactic is designed to be used inside of simp and utilize its cache -/
+  /-- Simp's cache is used as the `fprop` tactic is designed to be used inside of simp and utilize
+  its cache -/
   cache        : Simp.Cache := {}
 
 /-- -/
 abbrev FPropM := ReaderT FProp.Config $ StateRefT FProp.State MetaM
 
-/-- Result of `fprop`, it is a proof of function property `P f` and list of 
+/-- Result of `fprop`, it is a proof of function property `P f` and list of
 pending subgoals. These subgoals are meant to be solved by the user or passed to another automation.
 -/
 structure Result where
@@ -77,8 +78,8 @@ HAdd.hAdd y
 ```-/
 def fpropNormalizeFun (f : Expr) : MetaM Expr := do
   let f := f.consumeMData.eta
-  let f ← 
-    if f.isLambda 
+  let f ←
+    if f.isLambda
     then pure f
     else do
       let X := (← inferType f).bindingDomain!
@@ -94,13 +95,13 @@ structure FunctionData where
   mainArgs : ArraySet Nat -- indices of `args` that contain `mainVars`
 
 
-def FunctionData.isConstantFun (f : FunctionData) : Bool := 
+def FunctionData.isConstantFun (f : FunctionData) : Bool :=
   if f.mainArgs.size = 0 && !f.fn.containsFVar f.mainVar.fvarId! then
-    true 
+    true
   else
     false
 
-def FunctionData.domainType (f : FunctionData) : MetaM Expr := 
+def FunctionData.domainType (f : FunctionData) : MetaM Expr :=
   withLCtx f.lctx f.insts do
     inferType f.mainVar
 
@@ -108,14 +109,14 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
 
   match f.fn with
   | .const n _ => return n
-  | .proj typeName idx _ => 
+  | .proj typeName idx _ =>
     let .some info := getStructureInfo? (← getEnv) typeName | return none
     let .some projName := info.getProjFn? idx | return none
     return projName
   | _ => return none
 
 def getFunctionData (f : Expr) : MetaM FunctionData := do
-  let f ← fpropNormalizeFun f 
+  let f ← fpropNormalizeFun f
   lambdaTelescope f fun xs b => do
     if xs.size ≠ 1 then
       throwError "fprop bug: invalid function {← ppExpr f}"
@@ -143,4 +144,3 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
   withLCtx f.lctx f.insts do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
-

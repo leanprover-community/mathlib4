@@ -35,7 +35,7 @@ def joinrM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β
   if h : 0 < xs.size then
     let n := xs.size - 1
     have : n < xs.size := by apply Nat.sub_one_lt_of_le h (by simp)
-    xs[0:n].foldrM (init:=(← map xs[n])) λ x acc => do op (← map x) acc 
+    xs[0:n].foldrM (init:=(← map xs[n])) λ x acc => do op (← map x) acc
   else
     pure default
 
@@ -89,7 +89,7 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM ``Prod.snd #[x]) i' n'
 
 /-- -/
-def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) := 
+def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
   (Array.mkArray n 0)
     |>.mapIdx (λ i _ => i.1)
     |>.mapM (λ i => mkProdProj xs i n)
@@ -99,7 +99,7 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
   if n ≤ 1 then
     return f
   forallBoundedTelescope (← inferType f) n λ xs _ => do
-    let xProdName : String ← xs.foldlM (init:="") λ n x => 
+    let xProdName : String ← xs.foldlM (init:="") λ n x =>
       do return (n ++ toString (← x.fvarId!.getUserName).eraseMacroScopes)
     let xProdType ← inferType (← mkProdElem xs)
 
@@ -111,18 +111,20 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
 
 
 /--
-  Split lambda function into composition by specifying over which auguments in the lambda body this split should be done.
+Split lambda function into composition by specifying over which auguments in the lambda body this
+split should be done.
  -/
-def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
-  let e ← 
-    if e.isLambda 
+def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) :
+    MetaM (Option (Expr × Expr)) := do
+  let e ←
+    if e.isLambda
     then pure e
-    else do 
+    else do
       let X := (← inferType e).bindingDomain!
       pure (.lam `x X (.app e (.bvar 0)) default)
-    
-  match e with 
-  | .lam name _ _ _ => 
+
+  match e with
+  | .lam name _ _ _ =>
     let e ← instantiateMVars e
     lambdaTelescope e λ xs b => do
       let x := xs[0]!
@@ -139,12 +141,13 @@ def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option
 
       let xIds := xs.map fun x => x.fvarId!
       let xIds' := xIds[1:].toArray
-      
+
       for argId in argIds.toArray do
         let yVal := args[argId]!
 
         -- abstract over trailing arguments
-        let xs'' := xIds'.filterMap (fun xId => if yVal.containsFVar xId then .some (Expr.fvar xId) else .none)
+        let xs'' := xIds'.filterMap
+          (fun xId => if yVal.containsFVar xId then .some (Expr.fvar xId) else .none)
         let yVal' ← mkLambdaFVars xs'' yVal
         let yId ← withLCtx lctx instances mkFreshFVarId
         lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
@@ -155,32 +158,32 @@ def splitLambdaToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option
 
       let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
       let f ← withLCtx lctx instances do
-        (mkLambdaFVars (yVars ++ xs[1:]) (mkAppN fn args)) 
-        >>= 
+        (mkLambdaFVars (yVars ++ xs[1:]) (mkAppN fn args))
+        >>=
         mkUncurryFun yVars.size
 
-      -- `f` should not contain `x` and `g` should not contain `xs[1:]` 
+      -- `f` should not contain `x` and `g` should not contain `xs[1:]`
       -- if they do then the split is unsuccessful
       if f.containsFVar xIds[0]! then
         return none
 
       return (f, g)
-    
+
   | _ => return none
 
 
-/-- Takes lambda function `fun x => b` and splits it into composition of two functions. 
+/-- Takes lambda function `fun x => b` and splits it into composition of two functions.
 
-  Example:
-    fun x => f (g x)      ==>   f ∘ g 
-    fun x => f x + c      ==>   (fun y => y + c) ∘ f
-    fun x => f x + g x    ==>   (fun (y₁,y₂) => y₁ + y₂) ∘ (fun x => (f x, g x))
-    fun x i => f (g₁ x i) (g₂ x i) i  ==>   (fun (y₁,y₂) i => f y₁ y₂ i) ∘' (fun x i => (g₁ x i, g₂ x i))
-    fun x i => x i        ==>   (fun x i => x i) ∘' (fun x i => x)
+Example:
+  fun x => f (g x)      ==>   f ∘ g
+  fun x => f x + c      ==>   (fun y => y + c) ∘ f
+  fun x => f x + g x    ==>   (fun (y₁,y₂) => y₁ + y₂) ∘ (fun x => (f x, g x))
+  fun x i => x i        ==>   (fun x i => x i) ∘' (fun x i => x)
+  fun x i => f (g₁ x i) (g₂ x i) i ==> (fun (y₁,y₂) i => f y₁ y₂ i) ∘' (fun x i => (g₁ x i, g₂ x i))
  -/
 def splitLambdaToComp (e : Expr) : MetaM (Expr × Expr) := do
-  match e with 
-  | .lam name _ _ _ => 
+  match e with
+  | .lam name _ _ _ =>
     let e ← instantiateMVars e
     lambdaTelescope e λ xs b => do
       let x := xs[0]!
@@ -222,8 +225,8 @@ def splitLambdaToComp (e : Expr) : MetaM (Expr × Expr) := do
       f ← mkUncurryFun zs.size f
 
       return (f, g)
-    
-  | _ => 
+
+  | _ =>
     let XY ← inferType e
     if ¬XY.isForall then
       throwError "can't split {← ppExpr e} not a function!"
@@ -235,19 +238,21 @@ structure FunTelescopeConfig where
   /-- telescope through coercions via  -/
   funCoe := false
 
-partial def funTelescopeImpl {α} (f : Expr) (config : FunTelescopeConfig) (k : Array Expr → Expr → MetaM α) : MetaM α := do
+partial
+def funTelescopeImpl {α} (f : Expr) (config : FunTelescopeConfig)
+    (k : Array Expr → Expr → MetaM α) : MetaM α := do
   let F ← inferType f
   forallTelescope F fun xs B => do
 
     let b := (mkAppN f xs).headBeta
 
     if config.funCoe = false then
-      k xs b 
+      k xs b
     else
       try
         let b' ← mkAppM `DFunLike.coe #[b]
         funTelescopeImpl b' config fun xs' b'' => k (xs ++ xs') b''
-      catch _ => 
+      catch _ =>
         k xs b
 
 variable [MonadControlT MetaM n] [Monad n]
@@ -273,10 +278,10 @@ partial def getAppNumArgs (e : Expr) :=
 where
   go : Expr → Nat → Nat
     | .mdata _ b, n => go b n
-    | .app f _  , n => 
+    | .app f _  , n =>
       if f.isAppOfArity' ``DFunLike.coe 5 then
         go f.appArg! (n + 1)
-      else 
+      else
         go f (n + 1)
     | _        , n => n
 
@@ -286,24 +291,24 @@ def withApp (e : Expr) (k : Expr → Array Arg → α) : α :=
 where
   go : Expr → Array Arg → Nat → α
     | .mdata _ b, as, i => go b as i
-    | .app (.app c f) a  , as, i => 
+    | .app (.app c f) a  , as, i =>
       if c.isAppOfArity' ``DFunLike.coe 4 then
         go f (as.set! i ⟨a,.some c⟩) (i-1)
-      else 
+      else
         go (.app c f) (as.set! i ⟨a,.none⟩) (i-1)
-    | .app f a  , as, i => 
+    | .app f a  , as, i =>
       go f (as.set! i ⟨a,.none⟩) (i-1)
     | f        , as, _ => k f as
 
 def getAppFn (e : Expr) : Expr :=
   match e with
   | .mdata _ b => getAppFn b
-  | .app (.app c f) _ => 
+  | .app (.app c f) _ =>
     if c.isAppOfArity' ``DFunLike.coe 4 then
       getAppFn f
-    else 
+    else
       getAppFn (.app c f)
-  | .app f _ => 
+  | .app f _ =>
     getAppFn f
   | e => e
 
@@ -317,10 +322,10 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
 
 private partial def getTypeArityAux (type : Expr) (n:Nat) : MetaM Nat := do
   forallTelescopeReducing type fun xs b => do
-    try 
+    try
       let c ← mkAppOptM ``DFunLike.coe #[b,none,none,none]
       return ← getTypeArityAux (← inferType c) (xs.size-1 + n)
-    catch _ => 
+    catch _ =>
       return xs.size + n
 
 def getArity (e : Expr) : MetaM Nat := do
@@ -333,8 +338,8 @@ def constArity (decl : Name) : MetaM Nat := do
 
 -- todo: provide faster implementation
 def headBeta (e : Expr) : Expr :=
-  Mor.withApp e fun f xs => 
-    xs.foldl (init := f) fun e x => 
+  Mor.withApp e fun f xs =>
+    xs.foldl (init := f) fun e x =>
       match x.coe with
       | none => e.beta #[x.expr]
       | .some c => (c.app e).app x.expr
@@ -344,18 +349,19 @@ end Mor
 
 
 /--
-  Split morphism function into composition by specifying over which auguments in the lambda body this split should be done.
+Split morphism function into composition by specifying over which auguments in the lambda body this
+split should be done.
  -/
 def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
-  let e ← 
-    if e.isLambda 
+  let e ←
+    if e.isLambda
     then pure e
-    else do 
+    else do
       let X := (← inferType e).bindingDomain!
       pure (.lam `x X (.app e (.bvar 0)) default)
-    
-  match e with 
-  | .lam name _ _ _ => 
+
+  match e with
+  | .lam name _ _ _ =>
     lambdaTelescope e λ xs b => do
       let x := xs[0]!
 
@@ -370,12 +376,13 @@ def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (E
 
       let xIds := xs.map fun x => x.fvarId!
       let xIds' := xIds[1:].toArray
-      
+
       for argId in argIds.toArray do
         let yVal := args[argId]!
 
         -- abstract over trailing arguments
-        let xs'' := xIds'.filterMap (fun xId => if yVal.expr.containsFVar xId then .some (Expr.fvar xId) else .none)
+        let xs'' := xIds'.filterMap
+          (fun xId => if yVal.expr.containsFVar xId then .some (Expr.fvar xId) else .none)
         let yVal' ← mkLambdaFVars xs'' yVal.expr
         let yId ← withLCtx lctx instances mkFreshFVarId
         lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
@@ -386,8 +393,8 @@ def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (E
 
       let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
       let f ← withLCtx lctx instances do
-        (mkLambdaFVars (yVars ++ xs[1:]) (Mor.mkAppN fn args)) 
-        >>= 
+        (mkLambdaFVars (yVars ++ xs[1:]) (Mor.mkAppN fn args))
+        >>=
         mkUncurryFun yVars.size
 
       -- `f` should not contain `x`
@@ -396,26 +403,26 @@ def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (E
         return none
 
       return (f, g)
-    
+
   | _ => return none
 
 
 /--
-  Split morphism function into composition by specifying over which auguments in the lambda body this split should be done.
+Split morphism function into composition by specifying over which auguments in the lambda body this
+split should be done.
  -/
 def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
-  match e with 
-  | .lam .. => 
+  match e with
+  | .lam .. =>
     lambdaTelescope e λ xs b => do
       let xId := xs[0]!.fvarId!
 
-      Mor.withApp b fun _ xs => 
+      Mor.withApp b fun _ xs =>
         let argIds := xs
           |>.mapIdx (fun i x => if x.expr.containsFVar xId then .some i.1 else none)
           |>.filterMap id
           |>.toArraySet
         splitMorToCompOverArgs e argIds
 
-  | _ => 
+  | _ =>
    splitMorToCompOverArgs e #[Mor.getAppNumArgs e].toArraySet
-

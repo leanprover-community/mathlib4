@@ -22,7 +22,7 @@ deriving Hashable
 
 instance {α} [Ord α] : Inhabited (ArraySet α) := ⟨⟨#[], sorry⟩⟩
 
-namespace ArraySet 
+namespace ArraySet
 
   variable {α} [ord : Ord α]
 
@@ -50,12 +50,12 @@ namespace ArraySet
   instance [DecidableEq α] : Membership α (ArraySet α) where
     mem a as := as.mem a
 
-  instance [DecidableEq α] (a : α) (as : ArraySet α) : Decidable (a ∈ as) := 
+  instance [DecidableEq α] (a : α) (as : ArraySet α) : Decidable (a ∈ as) :=
     if h : as.mem a then
       .isTrue h
     else
       .isFalse h
-  
+
   instance : HasSubset (ArraySet α) where
     Subset as bs := (List.Subset as.toList bs.toList)
 
@@ -68,12 +68,12 @@ namespace ArraySet
       if h' : j < a.size then
         have _ := h.2
         match compare b[i] a[j] with
-        | .eq => 
+        | .eq =>
           j := j + 1
           continue
-        | .lt => 
+        | .lt =>
           continue
-        | .gt => 
+        | .gt =>
           return isFalse sorry
       else
         -- we have exhausted whole as
@@ -95,11 +95,11 @@ namespace ArraySet
     else
       return isFalse sorry
 
-  -- def lexOrd [Ord α] (a b : ArraySet α) : Ordering := a.data.lexOrd b.data 
-      
+  -- def lexOrd [Ord α] (a b : ArraySet α) : Ordering := a.data.lexOrd b.data
+
   -- def a := #[1,2,3,4].toArraySet
   -- def b := #[4,3,2].toArraySet
 
   -- #eval (b ⊆ a)
 
-  -- #exit 
+  -- #exit

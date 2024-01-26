@@ -18,11 +18,11 @@ namespace Meta.FProp
 /-- -/
 def isLambdaRule (f : Expr) : MetaM Bool :=
   match f with
-  | .lam _ _ xBody _ => 
+  | .lam _ _ xBody _ =>
     let fn := xBody.getAppFn
-    if fn.isConst then 
+    if fn.isConst then
       return false
-    else 
+    else
       return true
   | .fvar .. => do
     if (← inferType f).forallArity ≥ 2 then
@@ -37,7 +37,7 @@ def isLambdaRule (f : Expr) : MetaM Bool :=
 -- syntax (name:=Attr.fprop) "fprop" (prio)? (discharger)? : attr
 
 def fpropHelpString : String :=
-"`fprop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap` etc."
+"`fprop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap` ..."
 
 initialize fpropAttr : Unit ←
   registerBuiltinAttribute {
@@ -53,10 +53,6 @@ initialize fpropAttr : Unit ←
            addFPropDecl declName none
          else
            addTheorem declName attrKind
-    erase := fun _declName => 
-      throwError "can't remove `fprop` attribute (not implemented yet)" 
+    erase := fun _declName =>
+      throwError "can't remove `fprop` attribute (not implemented yet)"
   }
-
-
-
-

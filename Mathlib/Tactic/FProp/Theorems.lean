@@ -17,19 +17,20 @@ namespace Meta.FProp
 
 For example
 ```
-  theorem Continuous_const {α β} [TopologicalSpace α] [TopologicalSpace β] (y : β) : Continuous fun _ : α => y
+theorem Continuous_const {α β} [TopologicalSpace α] [TopologicalSpace β] (y : β) :
+    Continuous fun _ : α => y
 ```
 is represented by
 ```
   .const 0 4
 ```
  -/
-inductive LambdaTheoremArgs 
-  | id (X : Nat) 
-  | const (X y : Nat) 
-  | proj (x Y : Nat) 
-  | projDep (x Y : Nat) 
-  | comp (f g : Nat) 
+inductive LambdaTheoremArgs
+  | id (X : Nat)
+  | const (X y : Nat)
+  | proj (x Y : Nat)
+  | projDep (x Y : Nat)
+  | comp (f g : Nat)
   | pi (f : Nat)
   deriving Inhabited, BEq, Repr, Hashable
 
@@ -41,7 +42,7 @@ inductive LambdaTheoremArgs
 - projDep `Continous fun (f : (x : X) → Y x => f x)`
 - comp    `Continous f → Continous g → Continous fun x => f (g x)`
 - pi      `∀ y, Continuous (f · y) → Continous fun x y => f x y` -/
-inductive LambdaTheoremType 
+inductive LambdaTheoremType
   | id  | const | proj| projDep | comp  | pi
   deriving Inhabited, BEq, Repr, Hashable
 
@@ -57,20 +58,21 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
 
 set_option linter.unusedVariables false in
 /--  -/
-def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) : MetaM (Option LambdaTheoremArgs) := do
+def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
+    MetaM (Option LambdaTheoremArgs) := do
 
   -- eta expand but beta reduce body
-  let f ← forallTelescope (← inferType f) fun xs b => 
+  let f ← forallTelescope (← inferType f) fun xs b =>
     mkLambdaFVars xs (mkAppN f xs).headBeta
-  
+
   match f with
-  | .lam xName xType xBody xBi => 
-    match xBody with 
-    | .bvar 0 => 
+  | .lam xName xType xBody xBi =>
+    match xBody with
+    | .bvar 0 =>
       -- fun x => x
       let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
       return .some (.id argId_X)
-    | .fvar yId => 
+    | .fvar yId =>
       -- fun x => y
       let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
       let .some argId_y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
@@ -87,7 +89,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) : MetaM (Option La
          let .some argId_Y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
          return .some <| .projDep argId_x argId_Y
        | _ => return none
-    | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) => 
+    | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
       let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
       let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
@@ -129,7 +131,8 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
   }
 
 /-- -/
-def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) : CoreM (Option LambdaTheorem) := do
+def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) :
+    CoreM (Option LambdaTheorem) := do
   return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (fpropName,type)
 
 
@@ -139,7 +142,7 @@ def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) : CoreM (Opti
 
 uncurried
 ```
-theorem Continuous_add : Continuous (fun x => x.1 + x.2) 
+theorem Continuous_add : Continuous (fun x => x.1 + x.2)
 ```
 
 compositional
@@ -148,7 +151,7 @@ theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun
 ```
  -/
 inductive TheoremForm where
-  | uncurried | comp 
+  | uncurried | comp
   deriving Inhabited, BEq, Repr
 
 
@@ -185,12 +188,12 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e => 
-      {d with 
-        theorems := 
-          d.theorems.alter e.funName fun funProperties => 
+    addEntry := fun d e =>
+      {d with
+        theorems :=
+          d.theorems.alter e.funName fun funProperties =>
             let funProperties := funProperties.getD {}
-            funProperties.alter e.fpropName fun thms => 
+            funProperties.alter e.fpropName fun thms =>
               let thms := thms.getD #[]
               thms.push e}
   }
@@ -226,14 +229,16 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+    addEntry := fun d e =>
+      {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e => {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+    addEntry := fun d e =>
+      {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
 
@@ -244,7 +249,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
 /-- There are four types of theorems:
 - lam - theorem about basic lambda calculus terms
 - function - theorem about a specific function(declared or free variable) in specific arguments
-- mor - special theorems talking about bundled morphisms/DFunLike.coe 
+- mor - special theorems talking about bundled morphisms/DFunLike.coe
 - transition - theorems infering one function property from another
 
 Examples:
@@ -255,18 +260,21 @@ Examples:
 ```
 - function
 ```
-  theorem Continuous_add : Continuous (fun x => x.1 + x.2) 
-  theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x => (f x) + (g x))
+  theorem Continuous_add : Continuous (fun x => x.1 + x.2)
+  theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
+      Continuous (fun x => (f x) + (g x))
 ```
 - mor - the head of function body has to be ``DFunLike.code
 ```
-  theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) : 
-    ContDiff 𝕜 n fun x => (f x) (g x)
+  theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
+      (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+      ContDiff 𝕜 n fun x => (f x) (g x)
   theorem clm_linear {f : E →L[𝕜] F} : IsLinearMap 𝕜 f
 ```
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable
 ```
-  theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) : Conttinuous f
+  theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
+      Conttinuous f
 ```
 
 -/
@@ -294,9 +302,9 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
 
     let fData ← getFunctionData f
-    
+
     match fData.fn with
-    | .const funName _ => 
+    | .const funName _ =>
 
       let .some (f',_) ← splitMorToComp f
         | throwError s!"fprop bug: failed at detecting theorem type `{← ppExpr b}`"
@@ -304,7 +312,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       let form : TheoremForm := if (← isDefEq f' f) then .uncurried else .comp
 
       return .function {
--- fpropName funName fData.mainArgs fData.args.size thmForm  
+-- fpropName funName fData.mainArgs fData.args.size thmForm
         fpropName := fpropName
         thmName := declName
         funName := funName
@@ -313,7 +321,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         priority := prio
         form := form
       }
-    | .fvar .. => 
+    | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
       let keys := ← RefinedDiscrTree.mkDTExprs b'
       let thm : GeneralTheorem := {
@@ -328,21 +336,35 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         return .mor thm
       else
         return .transition thm
-    | _ => 
+    | _ =>
       throwError "unrecognized theoremType `{← ppExpr b}`"
 
 
-def addTheorem (declName : Name) (attrKind : AttributeKind := .global) (prio : Nat := eval_prio default) : MetaM Unit := do
+def addTheorem (declName : Name) (attrKind : AttributeKind := .global)
+    (prio : Nat := eval_prio default) : MetaM Unit := do
   match (← getTheoremFromConst declName prio) with
   | .lam thm =>
-    trace[Meta.Tactic.fprop.attr] "lambda theorem: {thm.thmName}\nfunction property: {thm.fpropName}\ntype: {repr thm.thmArgs.type}"
+    trace[Meta.Tactic.fprop.attr] "\
+lambda theorem: {thm.thmName}
+function property: {thm.fpropName}
+type: {repr thm.thmArgs.type}"
     lambdaTheoremsExt.add thm attrKind
   | .function thm =>
-    trace[Meta.Tactic.fprop.attr] "function theorem: {thm.thmName}\nfunction property: {thm.fpropName}\nfunction name: {thm.funName}\nmain arguments: {thm.mainArgs}\napplied arguments: {thm.appliedArgs}\nform: {repr thm.form}"
+    trace[Meta.Tactic.fprop.attr] "\
+function theorem: {thm.thmName}
+function property: {thm.fpropName}
+function name: {thm.funName}
+main arguments: {thm.mainArgs}
+applied arguments: {thm.appliedArgs}
+form: {repr thm.form}"
     functionTheoremsExt.add thm attrKind
-  | .mor thm => 
-    trace[Meta.Tactic.fprop.attr] "morphism theorem: {thm.thmName}\nfunction property: {thm.fpropName}"
+  | .mor thm =>
+    trace[Meta.Tactic.fprop.attr] "\
+morphism theorem: {thm.thmName}
+function property: {thm.fpropName}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
-    trace[Meta.Tactic.fprop.attr] "transition theorem: {thm.thmName}\nfunction property: {thm.fpropName}"
+    trace[Meta.Tactic.fprop.attr] "\
+transition theorem: {thm.thmName}
+function property: {thm.fpropName}"
     transitionTheoremsExt.add thm attrKind
