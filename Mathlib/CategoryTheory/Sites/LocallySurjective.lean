@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.LeftExact
 /-!
-# Locally injective or locally surjective morphisms of presheaves
+# Locally injective and locally surjective morphisms of presheaves
 
 
 -/
@@ -41,6 +44,13 @@ lemma locallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injective
     LocallyInjective J φ where
   locally_injective {X} x y h := ⟨⊤, J.top_mem _, fun f _ => hφ _ (by simp [h])⟩
 
+instance [IsIso φ] :
+    LocallyInjective J φ := locallyInjective_of_injective J φ (fun X => by
+  apply Function.Bijective.injective
+  rw [← isIso_iff_bijective]
+  change IsIso ((forget D).map (φ.app X))
+  infer_instance)
+
 section
 
 variable [hφ : LocallyInjective J φ]
@@ -69,6 +79,12 @@ class LocallySurjective : Prop where
 lemma locallySurjective_of_surjective (hφ : ∀ (X : Cᵒᵖ), Function.Surjective (φ.app X)) :
     LocallySurjective J φ where
   locally_surjective _ := ⟨⊤, J.top_mem _, fun _ _ => hφ _ _⟩
+
+instance [IsIso φ] : LocallySurjective J φ := locallySurjective_of_surjective J φ (fun X => by
+  apply Function.Bijective.surjective
+  rw [← isIso_iff_bijective]
+  change IsIso ((forget D).map (φ.app X))
+  infer_instance)
 
 section
 
@@ -136,7 +152,20 @@ lemma locallyInjective_of_locallyInjective_fac {φψ : F₁ ⟶ F₃} (fac : φ 
   subst fac
   exact locallyInjective_of_locallyInjective J φ ψ
 
+lemma locallyInjective_iff_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ) [LocallyInjective J ψ] :
+    LocallyInjective J φψ ↔ LocallyInjective J φ := by
+  constructor
+  · intro
+    exact locallyInjective_of_locallyInjective_fac J fac
+  · intro
+    rw [← fac]
+    infer_instance
+
 variable (φ ψ)
+
+lemma locallyInjective_comp_iff [LocallyInjective J ψ] :
+    LocallyInjective J (φ ≫ ψ) ↔ LocallyInjective J φ :=
+  locallyInjective_iff_fac J rfl
 
 instance locallySurjective_comp [LocallySurjective J φ] [LocallySurjective J ψ] :
     LocallySurjective J (φ ≫ ψ) where
@@ -159,6 +188,91 @@ lemma locallySurjective_of_locallySurjective [LocallySurjective J (φ ≫ ψ)] :
     ⟨_, sieveOfLocallySurjective_mem J (φ ≫ ψ) x, fun f hf =>
       ⟨φ.app _ (localPreimage J (φ ≫ ψ) x f hf),
         by simpa using app_apply_localPreimage J (φ ≫ ψ) x f hf⟩⟩
+
+variable {φ ψ}
+
+lemma locallySurjective_of_locallySurjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
+    [LocallySurjective J φψ] : LocallySurjective J ψ := by
+  subst fac
+  exact locallySurjective_of_locallySurjective J φ ψ
+
+lemma locallySurjective_iff_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ) [LocallySurjective J φ] :
+    LocallySurjective J φψ ↔ LocallySurjective J ψ := by
+  constructor
+  · intro
+    exact locallySurjective_of_locallySurjective_fac J fac
+  · intro
+    rw [← fac]
+    infer_instance
+
+variable (φ ψ)
+
+lemma locallySurjective_comp_iff [LocallySurjective J φ] :
+    LocallySurjective J (φ ≫ ψ) ↔ LocallySurjective J ψ :=
+  locallySurjective_iff_fac J rfl
+
+section
+
+variable {E : Type u'} [Category.{max u v} E] [ConcreteCategory E]
+  [PreservesLimits (forget E)]
+  [∀ (P : Cᵒᵖ ⥤ E) (X : C) (S : J.Cover X),
+    HasMultiequalizer (GrothendieckTopology.Cover.index S P)]
+  [∀ (X : C), HasColimitsOfShape (GrothendieckTopology.Cover J X)ᵒᵖ E]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [ReflectsIsomorphisms (forget E)]
+
+variable (P : Cᵒᵖ ⥤ E)
+
+section
+
+open GrothendieckTopology Plus
+
+instance locallyInjective_toPlus : LocallyInjective J (J.toPlus P) where
+  locally_injective {X} x y h := by
+    erw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
+    obtain ⟨W, h₁, h₂, eq⟩ := h
+    exact ⟨W.1, W.2, fun {Y} f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩⟩
+
+instance locallySurjective_toPlus : LocallySurjective J (J.toPlus P) where
+  locally_surjective {X} x := by
+    obtain ⟨S, x, rfl⟩ := exists_rep x
+    refine' ⟨S.1, S.2, fun {Y} f hf => ⟨x.1 ⟨Y, f, hf⟩, _⟩⟩
+    dsimp
+    erw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
+    refine' ⟨S.pullback f, homOfLE le_top, 𝟙 _, _⟩
+    ext ⟨Z, g, hg⟩
+    simpa using x.2 (Cover.Relation.mk _ _ _ g (𝟙 Z) f (g ≫ f) hf
+      (S.1.downward_closed hf g) (by simp))
+
+end
+
+instance locallyInjective_toSheafify : LocallyInjective J (J.toSheafify P) := by
+  dsimp [GrothendieckTopology.toSheafify]
+  rw [GrothendieckTopology.plusMap_toPlus]
+  infer_instance
+
+instance locallySurjective_toSheafify : LocallySurjective J (J.toSheafify P) := by
+  dsimp [GrothendieckTopology.toSheafify]
+  rw [GrothendieckTopology.plusMap_toPlus]
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma toSheafify_plusPlusIsoSheafify_hom :
+    J.toSheafify P ≫ (plusPlusIsoSheafify J E P).hom = toSheafify J P := by
+  convert Adjunction.unit_leftAdjointUniq_hom_app
+    (plusPlusAdjunction J E) (sheafificationAdjunction J E) P
+  ext1 P
+  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
+  rw [Category.comp_id]
+
+instance locallyInjective_toSheafify' : LocallyInjective J (toSheafify J P) := by
+  rw [← toSheafify_plusPlusIsoSheafify_hom]
+  infer_instance
+
+instance locallySurjective_toSheafify' : LocallySurjective J (toSheafify J P) := by
+  rw [← toSheafify_plusPlusIsoSheafify_hom]
+  infer_instance
+
+end
 
 end Presheaf
 
@@ -252,5 +366,20 @@ lemma epi_of_locallySurjective [LocallySurjective φ] : Epi φ :=
 end
 
 end Sheaf
+
+namespace Presheaf
+
+variable [HasWeakSheafify J D]
+  [∀ (P : Cᵒᵖ ⥤ D), Presheaf.LocallyInjective J (toSheafify J P)]
+  [∀ (P : Cᵒᵖ ⥤ D), Presheaf.LocallySurjective J (toSheafify J P)]
+  {F G : Cᵒᵖ ⥤ D} (φ : F ⟶ G)
+
+/-lemma presheafToSheaf_map_locallyInjective_iff :
+    Sheaf.LocallyInjective ((presheafToSheaf J D).map φ) ↔
+      LocallyInjective J φ := by
+  rw [← locallyInjective_comp_iff J _ (toSheafify J G), toSheafify_naturality J φ]
+  sorry-/
+
+end Presheaf
 
 end CategoryTheory
