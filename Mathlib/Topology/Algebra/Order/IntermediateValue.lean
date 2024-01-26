@@ -761,7 +761,8 @@ private lemma ContinuousOn.StrictMonoOn_of_InjOn_Ioo_rigidity {a b : α} {f : α
   have (h : StrictAntiOn f (Icc s t)) : False := by
     have : Icc c d ⊆ Icc s t := Icc_subset_Icc hsc hdt
     replace : StrictAntiOn f (Icc c d) := StrictAntiOn.mono h this
-    replace : IsAntichain (· ≤ ·) (Icc c d) := IsAntichain.of_strictMonoOn_antitoneOn hf_mono this.antitoneOn
+    replace : IsAntichain (· ≤ ·) (Icc c d) :=
+      IsAntichain.of_strictMonoOn_antitoneOn hf_mono this.antitoneOn
     replace := this.not_lt (left_mem_Icc.mpr (le_of_lt hcd)) (right_mem_Icc.mpr (le_of_lt hcd))
     exact this hcd
   replace hf_mono_st : StrictMonoOn f (Icc s t) := hf_mono_st.resolve_right this
