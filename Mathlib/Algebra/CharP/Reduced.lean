@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.RingTheory.Nilpotent
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
@@ -17,7 +17,7 @@ open Finset
 
 open BigOperators
 
-theorem frobenius_inj (R : Type*) [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
+theorem frobenius_inj (R : Type*) [CommRing R] [IsReduced R] (p : ℕ) [ExpChar R p] :
     Function.Injective (frobenius R p) := fun x h H => by
   rw [← sub_eq_zero] at H ⊢
   rw [← frobenius_sub] at H
@@ -39,7 +39,7 @@ namespace CharP
 variable {R : Type*} [CommRing R] [IsReduced R]
 
 @[simp]
-theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [Fact p.Prime] [CharP R p] (x : R) :
+theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
   induction' k with k hk
   · rw [pow_zero, one_mul]
