@@ -609,11 +609,11 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
-theorem map_injective {f : L →ₐ[K] L'} (hf : Function.Injective f) :
+theorem map_injective (f : L →ₐ[K] L'):
     Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
-    (Subalgebra.map_injective hf).eq_iff, toSubalgebra_injective.eq_iff] at h
+    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
 
 variable (S)
 
@@ -653,7 +653,7 @@ instance hasLift {F : IntermediateField K L} :
 #align intermediate_field.has_lift IntermediateField.hasLift
 
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
-  map_injective Subtype.val_injective
+  map_injective F.val
 
 section RestrictScalars
 
