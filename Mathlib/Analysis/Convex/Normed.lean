@@ -8,7 +8,6 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.AddTorsor
-import Mathlib.Analysis.NormedSpace.Ray
 
 #align_import analysis.convex.normed from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 

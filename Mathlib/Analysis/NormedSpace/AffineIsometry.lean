@@ -71,7 +71,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : DFunLike (P →ᵃⁱ[𝕜] P₂) P fun _ => P₂ :=
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
 

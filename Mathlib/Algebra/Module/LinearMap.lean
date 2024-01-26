@@ -219,7 +219,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 #noalign LinearMap.has_coe_to_fun
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
-instance instDFunLike {σ : R →+* S} : DFunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
+instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M M₃ :=
   { AddHomClass.toDFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
@@ -1444,7 +1444,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f g : M →ₗ[R] M₂)
 
 /-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
-to the space of linear maps `M₂ → M₃`. -/
+to the space of linear maps `M → M₃`. -/
 def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
   toFun := f.comp
   map_add' _ _ := LinearMap.ext fun _ => map_add f _ _

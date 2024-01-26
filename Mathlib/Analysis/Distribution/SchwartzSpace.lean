@@ -6,11 +6,10 @@ Authors: Moritz Doll
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -92,10 +91,10 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instDFunLike : DFunLike 𝓢(E, F) E fun _ => F where
+instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align schwartz_map.fun_like SchwartzMap.instDFunLike
+#align schwartz_map.fun_like SchwartzMap.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
@@ -210,7 +209,8 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _), norm_smul]
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+    norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 #align schwartz_map.decay_smul_aux SchwartzMap.decay_smul_aux
 
 end Aux

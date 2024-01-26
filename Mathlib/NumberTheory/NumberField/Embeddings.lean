@@ -278,7 +278,7 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : DFunLike (InfinitePlace K) K (fun _ => ℝ) :=
+instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
 { coe := fun w x => w.1 x
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 

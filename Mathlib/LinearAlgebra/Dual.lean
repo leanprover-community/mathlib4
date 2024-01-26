@@ -1295,7 +1295,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 #align submodule.dual_copairing Submodule.dualCopairing
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : DFunLike (W.dualAnnihilator) M fun _ => R :=
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
   { coe := fun φ => φ.val,
     coe_injective' := fun φ ψ h => by
       ext
@@ -1422,7 +1422,9 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note: broken dot notation lean4#1910
-  · change range ((range f).subtype.comp f.rangeRestrict).dualMap = _
+  · calc
+      _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
+      _ = _ := ?_
     rw [← dualMap_comp_dualMap, range_comp_of_range_eq_top]
     rwa [range_eq_top]
   · apply congr_arg

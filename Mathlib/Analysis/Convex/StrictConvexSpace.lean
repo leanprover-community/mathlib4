@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.NormedSpace.Ray
 
 #align_import analysis.convex.strict_convex_space from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 

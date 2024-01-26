@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
 import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -88,26 +88,20 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
   · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonneg_iff, this]
-    rw [one_le_div] <;> norm_num1
-    apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
-    apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg; norm_num1
-    apply rpow_pos_of_pos; norm_num1
-    apply hf' 18; norm_num1
+    rw [hf _ (by norm_num1), log_nonneg_iff (by positivity), this, one_le_div (by norm_num1)]
     norm_num1
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    · conv in 512 => equals 2 ^ 9 => norm_num1
-      conv in 1024 => equals 2 ^ 10 => norm_num1
-      conv in 32 => rw [← Nat.cast_ofNat]
-      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
-      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
-      rw [← rpow_mul, ← rpow_nat_cast]
-      apply rpow_le_rpow_of_exponent_le
-      all_goals norm_num1
-    · apply rpow_pos_of_pos four_pos
+    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)), this,
+        div_le_one (by positivity)]
+    conv in 512 => equals 2 ^ 9 => norm_num1
+    conv in 2 * 512 => equals 2 ^ 10 => norm_num1
+    conv in 32 => rw [← Nat.cast_ofNat]
+    rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+    conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+    rw [← rpow_mul, ← rpow_nat_cast]
+    apply rpow_le_rpow_of_exponent_le
+    all_goals norm_num1
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
