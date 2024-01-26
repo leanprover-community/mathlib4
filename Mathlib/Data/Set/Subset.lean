@@ -10,14 +10,14 @@ import Mathlib.Lean.Expr.ExtraRecognizers
 /-!
 # Subsets as subtypes
 
-This file defines the function `set_restrict` that converts sets in a type, to sets in a subtype
+This file defines the function `setRestrict` that converts sets in a type, to sets in a subtype
 (as the elements in the subtype whose lift lives in the set), and some notation and simplification
 lemmas for convenience.
 
-More precisely, given `α : Type` and `A : Set α`, `set_restrict A : Set α → Set A` takes
+More precisely, given `α : Type` and `A : Set α`, `setRestrict A : Set α → Set A` takes
 some `B : Set α` and produces some `Set ↑A` whose elements are `{ x : ↑A | ↑x ∈ B}`.
 
-It also defines the notation `A ↓∩ B` for `set_restrict A B`.
+It also defines the notation `A ↓∩ B` for `setRestrict A B`.
 
 ## Implementation
 
@@ -51,47 +51,47 @@ variable {S : Set (Set α)} {T : Set (Set ↑A)} {i : β → Set α} {j : β →
 namespace Subset
 
 /--
-Given two sets `A` and `B`, `set_restrict A B` is the set of `↑A` formed by the elements
+Given two sets `A` and `B`, `setRestrict A B` is the set of `↑A` formed by the elements
 whose value is in `B`.
 -/
-def set_restrict (A B : Set α) : Set ↑A := restrict A B
+def setRestrict (A B : Set α) : Set ↑A := restrict A B
 
 /--
 `A ↓∩ B` denotes `restrict A B`.
 -/
-infixl:67 " ↓∩ "  => set_restrict
+infixl:67 " ↓∩ "  => setRestrict
 
 @[simp]
-lemma mem_set_restrict_iff (x : A): x ∈  (A ↓∩ B) ↔ ↑x ∈ B := by rfl
+lemma mem_setRestrict_iff (x : A): x ∈  (A ↓∩ B) ↔ ↑x ∈ B := by rfl
 
 @[simp]
-lemma set_restrict_empty : A ↓∩ (∅ : Set α) = (∅ : Set A) := rfl
+lemma setRestrict_empty : A ↓∩ (∅ : Set α) = (∅ : Set A) := rfl
 
 @[simp]
-lemma set_restrict_self : A ↓∩ A = univ := by
+lemma setRestrict_self : A ↓∩ A = univ := by
   ext x
-  simp only [mem_set_restrict_iff, Subtype.coe_prop, mem_univ]
+  simp only [mem_setRestrict_iff, Subtype.coe_prop, mem_univ]
 
 @[simp]
-lemma set_restrict_univ : A ↓∩ (univ : Set α) = (univ : Set A) := rfl
+lemma setRestrict_univ : A ↓∩ (univ : Set α) = (univ : Set A) := rfl
 
 @[simp]
-lemma set_restrict_union :  A ↓∩  (B ∪ C) = (A ↓∩ B) ∪ (A ↓∩ C) :=  rfl
+lemma setRestrict_union :  A ↓∩  (B ∪ C) = (A ↓∩ B) ∪ (A ↓∩ C) :=  rfl
 
 @[simp]
-lemma set_restrict_inter : A ↓∩ (B ∩ C) = (A ↓∩ B) ∩ (A ↓∩ C) :=  rfl
+lemma setRestrict_inter : A ↓∩ (B ∩ C) = (A ↓∩ B) ∩ (A ↓∩ C) :=  rfl
 
 @[simp]
 lemma set_restrit_compl : A ↓∩ Bᶜ = (A ↓∩ B)ᶜ  := by
   apply Eq.refl
 
-lemma set_restrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
+lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x
-  simp only [mem_set_restrict_iff, mem_univ, iff_true]
+  simp only [mem_setRestrict_iff, mem_univ, iff_true]
   exact h x.2
 
 @[simp]
-lemma restrict_subset_restrict_iff: A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
+lemma restrict_subsetRestrict_iff: A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
   · rintro h x ⟨hxA,hxB⟩
     constructor
@@ -107,42 +107,42 @@ lemma restrict_subset_restrict_iff: A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A 
     exact h.2
 
 @[simp]
-lemma set_restrict_eq_iff :  A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C  := by
-  simp only [subset_antisymm_iff, restrict_subset_restrict_iff, subset_inter_iff,
+lemma setRestrict_eq_iff :  A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C  := by
+  simp only [subset_antisymm_iff, restrict_subsetRestrict_iff, subset_inter_iff,
     inter_subset_right, and_true]
 
 @[simp]
-lemma set_restrict_diff : A ↓∩ (B \ C) = (A ↓∩ B) \ (A ↓∩ C) := by
+lemma setRestrict_diff : A ↓∩ (B \ C) = (A ↓∩ B) \ (A ↓∩ C) := by
   apply Eq.refl
 
 @[simp]
-lemma set_restrict_sUnion: A ↓∩ (⋃₀ S) = ⋃₀ {(A ↓∩ B) | B ∈ S} := by
+lemma setRestrict_sUnion: A ↓∩ (⋃₀ S) = ⋃₀ {(A ↓∩ B) | B ∈ S} := by
   ext x
-  simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_set_restrict_iff]
+  simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_setRestrict_iff]
 
 @[simp]
-lemma set_restrict_iUnion: A ↓∩ (⋃ (B : β ), i B) = ⋃ (B : β), A ↓∩ i B := by
+lemma setRestrict_iUnion: A ↓∩ (⋃ (B : β ), i B) = ⋃ (B : β), A ↓∩ i B := by
   ext x
-  simp only [mem_iUnion, mem_set_restrict_iff]
+  simp only [mem_iUnion, mem_setRestrict_iff]
 
 @[simp]
-lemma set_restrict_iInter: A ↓∩ (⋂ (B : β ), i B) = ⋂ (B : β), A ↓∩ i B   := by
+lemma setRestrict_iInter: A ↓∩ (⋂ (B : β ), i B) = ⋂ (B : β), A ↓∩ i B   := by
   ext x
-  simp only [mem_iInter, mem_set_restrict_iff]
+  simp only [mem_iInter, mem_setRestrict_iff]
 
 @[simp]
-lemma set_restrict_sInter:  A ↓∩ (⋂₀ S)  = ⋂₀ {(A ↓∩ B) | B ∈ S} := by
+lemma setRestrict_sInter:  A ↓∩ (⋂₀ S)  = ⋂₀ {(A ↓∩ B) | B ∈ S} := by
   ext x
   simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    mem_set_restrict_iff]
+    mem_setRestrict_iff]
 
 lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
-  simp only [set_restrict_eq_iff,hB,hC] at h
+  simp only [setRestrict_eq_iff,hB,hC] at h
   exact h
 
 lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
-  simp only [restrict_subset_restrict_iff, subset_inter_iff, inter_subset_left, true_and]
+  simp only [restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
   apply subset_trans (inter_subset_right A B) h
 
 lemma mem_coe_iff (x : α): x ∈  (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x  := by rfl
@@ -163,13 +163,13 @@ lemma coe_union : (↑(D ∪ E) : Set α)  = ↑D ∪ ↑E := by
   simp_all only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
   apply Iff.intro
   · intro a
-    aesop_destruct_products
+    cases a
     simp_all only [exists_true_left]
   · intro a
-    cases a
-    · aesop_destruct_products
+    cases' a with h h
+    · cases h
       simp_all only [true_or, exists_const]
-    · aesop_destruct_products
+    · cases h
       simp_all only [or_true, exists_const]
 
 @[simp]
@@ -178,15 +178,15 @@ lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D  ∩ ↑E := by
   simp_all only [mem_inter_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
   apply Iff.intro
   · intro a
-    aesop_destruct_products
+    cases a
     simp_all only [and_self, exists_const]
   · intro a
-    aesop_destruct_products
+    rcases a with ⟨⟨_,_⟩,⟨_,_⟩⟩
     simp_all only [exists_const, and_self]
 
 @[simp]
 lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
-  unhygienic ext
+  ext
   simp_all only [mem_image, mem_compl_iff, Subtype.exists, exists_and_right, exists_eq_right,
     mem_diff, not_exists]
   apply Iff.intro
@@ -202,7 +202,7 @@ lemma coe_diff :  (↑(D \ E) : Set α) =  ↑D \ ↑E  := by
   simp_all only [mem_diff, mem_image, Subtype.exists, exists_and_right, exists_eq_right, not_exists]
   apply Iff.intro
   · intro a
-    aesop_destruct_products
+    cases a
     simp_all only [exists_const, not_false_eq_true, forall_true_left, and_self]
   · intro a
     simp_all only [not_false_eq_true, and_true]
@@ -214,18 +214,18 @@ lemma coe_sUnion : ↑(⋃₀ T)  = ⋃₀ { (B : Set α) | B ∈ T} := by
     exists_and_right, exists_eq_right]
   apply Iff.intro
   · intro a
-    unhygienic with_reducible aesop_destruct_products
+    rcases a with ⟨_,⟨_,⟨_,right⟩⟩⟩
     simp_all only [exists_true_left]
     apply Exists.intro
     apply And.intro
     on_goal 2 => exact right
     simp_all only
   · intro a
-    unhygienic with_reducible aesop_destruct_products
+    rcases a with ⟨_,⟨hT,⟨_,_⟩⟩⟩
     simp_all only [exists_true_left]
     apply Exists.intro
     apply And.intro
-    exact left
+    exact hT
     simp_all only
 
 
@@ -233,7 +233,7 @@ lemma coe_sUnion : ↑(⋃₀ T)  = ⋃₀ { (B : Set α) | B ∈ T} := by
 lemma coe_iUnion : ↑(⋃ (B : β ), j B) = ⋃ (B : β), (j B : Set α) := image_iUnion
 
 @[simp]
-lemma coe_sInter (hT : ∃ L, L ∈ T) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T}  := by
+lemma coe_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T}  := by
   ext x
   cases' hT with L hL
   apply Iff.intro
@@ -241,7 +241,7 @@ lemma coe_sInter (hT : ∃ L, L ∈ T) : (↑(⋂₀ T) : Set α) = ⋂₀ { (�
     simp_all only [mem_image, mem_sInter, Subtype.exists, exists_and_right, exists_eq_right,
       mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro a a_1
-    unhygienic with_reducible aesop_destruct_products
+    rcases h with ⟨_,_⟩
     simp_all only [exists_const]
   · intro h
     have haux : x ∈ (L : Set α)
@@ -263,7 +263,7 @@ lemma coe_iInter (b : β) : (↑(⋂ (B : β ), j B) : Set α) =  ⋂ (B : β), 
   · intro a
     simp_all only [mem_image, mem_iInter, Subtype.exists, exists_and_right, exists_eq_right]
     intro i_1
-    unhygienic with_reducible aesop_destruct_products
+    cases a
     simp_all only [exists_const]
   · intro h
     simp only [mem_iInter, mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
@@ -328,19 +328,19 @@ Relations between restriction and coercion.
 -/
 
 @[simp]
-lemma set_restrict_coe_eq_self : A ↓∩ ↑D  = D := by
+lemma setRestrict_coe_eq_self : A ↓∩ ↑D  = D := by
   ext x
-  simp only [mem_set_restrict_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+  simp only [mem_setRestrict_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
     Subtype.coe_eta, Subtype.coe_prop, exists_const]
 
 @[simp]
-lemma coe_set_restrict_eq_inter : ↑(A ↓∩ B) = A ∩ B := by
+lemma coe_setRestrict_eq_inter : ↑(A ↓∩ B) = A ∩ B := by
   ext x
-  simp only [mem_image, mem_set_restrict_iff, Subtype.exists, exists_and_left, exists_prop,
+  simp only [mem_image, mem_setRestrict_iff, Subtype.exists, exists_and_left, exists_prop,
     exists_eq_right_right, mem_inter_iff]
   rw [and_comm]
 
-lemma coe_set_restrict_subset_self : ↑(A ↓∩ B) ⊆ B  := by
-  simp only [coe_set_restrict_eq_inter, inter_subset_right]
+lemma coe_setRestrict_subset_self : ↑(A ↓∩ B) ⊆ B  := by
+  simp only [coe_setRestrict_eq_inter, inter_subset_right]
 
 end Subset
