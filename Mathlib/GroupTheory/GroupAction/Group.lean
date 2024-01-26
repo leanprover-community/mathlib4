@@ -186,9 +186,11 @@ variable [Monoid α] [MulAction α β]
 
 variable {c : α} {x y : β} [Invertible c]
 
+variable (c) (x) in
 @[simp]
 theorem invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
 
+variable (c) (x) in
 @[simp]
 theorem smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
 
