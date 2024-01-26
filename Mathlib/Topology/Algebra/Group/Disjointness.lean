@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 
+import Mathlib.Data.Int.Lemmas
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.LocallyDense
@@ -60,6 +61,9 @@ theorem AlgDisjointElem.comm_elem_nontrivial (elem : AlgDisjointElem g h) :
     elem.comm_elem ≠ 1 := elem.comm_elem_nontrivial'
 -/
 
+/--
+The witness for the conjugation of `AlgDisjointElem g h` with `i`.
+-/
 def AlgDisjointElem.conj (elem : AlgDisjointElem g h) (i : G) :
     AlgDisjointElem (i * g * i⁻¹) (i * h * i⁻¹) where
   fst := i * elem.fst * i⁻¹
@@ -239,7 +243,6 @@ section MovingFamily
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
--- TODO: use Set.Finite?
 /--
 A finite set of elements of `G` are a moving family for `x : α` if for all `g ≠ h` of the family,
 `g • x ≠ h • x`.
@@ -253,16 +256,42 @@ theorem MovingFamily.ne_of_ne {s : Set G} {x : α} (family : MovingFamily s x) {
 
 theorem MovingFamily.of_superset {s₁ s₂ : Set G} {x : α} (superset : s₁ ⊆ s₂)
     (family : MovingFamily s₂ x) : MovingFamily s₁ x := by
-  intro g g_in_s₁ h h_in_s₁ g_ne_h
-  exact family.ne_of_ne (superset g_in_s₁) (superset h_in_s₁) g_ne_h
+  apply Set.Pairwise.mono superset family
 
+theorem MovingFamily.of_le_period (g : G) (x : α) :
+    MovingFamily (Set.range (fun i : Fin (period g x) => g ^ i.val)) x := by
+  intro h h_in_img i i_in_img h_ne_i ga_eq_gb
+  let ⟨⟨a, a_lt_n⟩, ga_eq_h⟩ := h_in_img
+  let ⟨⟨b, b_lt_n⟩, gb_eq_i⟩ := i_in_img
+  dsimp only at ga_eq_h gb_eq_i
+
+  rw [← ga_eq_h, ← gb_eq_i, MulAction.smul_pow_eq_of_period_dvd] at ga_eq_gb
+  refine Nat.not_lt.mpr
+    (Nat.le_of_dvd ?pos ga_eq_gb)
+    (Int.natAbs_coe_sub_coe_lt_of_lt b_lt_n a_lt_n)
+
+  rw [Int.natAbs_sub_pos_iff, ne_eq, Nat.cast_inj]
+  exact fun eq => h_ne_i ((eq ▸ ga_eq_h) ▸ gb_eq_i)
+
+theorem MovingFamily.of_period_eq_zero {g : G} {x : α} (period_eq_zero : period g x = 0) :
+    MovingFamily (Set.range (fun i : ℤ => g ^ i)) x := by
+  intro h h_in_img i i_in_img h_ne_i ga_eq_gb
+  let ⟨a, ga_eq_h⟩ := h_in_img
+  let ⟨b, gb_eq_i⟩ := i_in_img
+
+  rw [← ga_eq_h, ← gb_eq_i, MulAction.smul_zpow_eq_of_period_dvd, period_eq_zero,
+    Int.ofNat_zero, zero_dvd_iff, sub_eq_zero] at ga_eq_gb
+  rw [← ga_eq_h, ← gb_eq_i, ga_eq_gb] at h_ne_i
+  exact h_ne_i rfl
+
+@[deprecated]
 theorem MovingFamily.of_pow_moves_of_dvd {g : G} {x : α} (n f : ℕ)
     (g_pow_moves : g ^ f • x ≠ x) (f_dvd : ∀ i, 0 < i → i < n → i ∣ f) :
     MovingFamily (Set.range (fun i: Fin n => g ^ i.val)) x := by
   -- TODO: investigate how much of this can be moved to MulAction.period
   intro h h_in_img i i_in_img h_ne_i ga_eq_gb
   apply g_pow_moves
-  simp only [Set.mem_range] at h_in_img i_in_img
+  rw [Set.mem_range] at h_in_img i_in_img
   let ⟨⟨a, a_lt_n⟩, ga_eq_h⟩ := h_in_img
   let ⟨⟨b, b_lt_n⟩, gb_eq_i⟩ := i_in_img
   dsimp only at ga_eq_h gb_eq_i
@@ -270,38 +299,16 @@ theorem MovingFamily.of_pow_moves_of_dvd {g : G} {x : α} (n f : ℕ)
   have a_ne_b : a ≠ b := fun eq => h_ne_i ((eq ▸ ga_eq_h) ▸ gb_eq_i)
   rw [← ga_eq_h, ← gb_eq_i, smul_eq_iff_eq_inv_smul, ← mul_smul] at ga_eq_gb
   group at ga_eq_gb
-  rw [add_comm, eq_comm, ← mem_fixedBy] at ga_eq_gb
-
-  have abs_lt_n : Int.natAbs (↑b + -↑a : ℤ) < n := by
-    cases Int.natAbs_eq (↑b + -↑a) with
-    | inl eq =>
-      zify
-      rw [Int.abs_eq_natAbs, ← eq]
-      simp only [add_neg_lt_iff_lt_add]
-      calc
-        (b : ℤ) < n := Nat.cast_lt.mpr b_lt_n
-        _ ≤ n + a := by
-          simp only [le_add_iff_nonneg_right, Nat.cast_nonneg]
-    | inr eq =>
-      rw [← Int.eq_neg_comm] at eq
-      zify
-      rw [Int.abs_eq_natAbs, eq]
-      simp only [neg_add_rev, neg_neg, add_neg_lt_iff_lt_add]
-      calc
-        (a : ℤ) < n := Nat.cast_lt.mpr a_lt_n
-        _ ≤ n + b := by
-          simp only [le_add_iff_nonneg_right, Nat.cast_nonneg]
+  rw [add_comm, eq_comm, ← mem_fixedBy, ← sub_eq_add_neg] at ga_eq_gb
 
   rw [← zpow_ofNat, ← mem_fixedBy]
-
   apply fixedBy_zpow_subset_of_dvd α _ _ ga_eq_gb
+
   rw [← abs_dvd, Int.abs_eq_natAbs, Int.ofNat_dvd]
   apply f_dvd
-  · zify
-    rw [abs_pos, ne_eq, add_eq_zero_iff_eq_neg, neg_neg, Nat.cast_inj]
-    exact a_ne_b.symm
-  · zify
-    rwa [Int.abs_eq_natAbs, Int.ofNat_lt]
+  · rwa [← Nat.cast_lt (α := ℤ), Int.coe_natAbs, Int.ofNat_zero, abs_pos, ne_eq, sub_eq_zero,
+      Nat.cast_inj, eq_comm]
+  · exact Int.natAbs_coe_sub_coe_lt_of_lt a_lt_n b_lt_n
 
 
 theorem MovingFamily.forall_ne_of_subset {s t: Set G} {g : G} (g_in_s : g ∈ s) (t_ss_s : t ⊆ s)
@@ -397,6 +404,29 @@ lemma dvd_twelve_of_lt_5_of_pos {i : ℕ} (i_pos : 0 < i) (i_lt_5 : i < 5) : i �
   }
   all_goals (intro; norm_num)
 
+lemma MulAction.smul_pow_inj_of_le_period {g : G} {x : α} {n m : ℕ}
+    (n_lt_period : n < MulAction.period g x) (m_lt_period : m < MulAction.period g x)
+    (pow_eq : g ^ n = g ^ m): n = m := by
+  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
+    ← sub_eq_add_neg] at pow_eq
+  by_contra ne
+  apply lt_iff_not_le.mp (Int.natAbs_coe_sub_coe_lt_of_lt m_lt_period n_lt_period)
+
+  apply MulAction.period_le_natAbs_of_fixed
+  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
+  · rw [pow_eq, one_smul]
+
+lemma MulAction.smul_pow_inj_of_period_eq_zero {g : G} {x : α} {n m : ℕ}
+    (period_eq_zero : MulAction.period g x = 0) (pow_eq : g ^ n = g ^ m) : n = m := by
+  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
+    ← sub_eq_add_neg] at pow_eq
+  by_contra ne
+
+  rw [MulAction.period_eq_zero_iff_forall_zpow] at period_eq_zero
+  apply period_eq_zero (↑n - ↑m)
+  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
+  · rw [pow_eq, one_smul]
+
 /--
 If `f` and `g` are algebraically disjoint, then `(fixedBy α f)ᶜ` and `(fixedBy α g^12)ᶜ` are
 disjoint. The mysterious 12th power that is introduced comes from the well-behavedness of `g^3` and
@@ -405,23 +435,38 @@ disjoint. The mysterious 12th power that is introduced comes from the well-behav
 theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G α]
     [NoIsolatedPoints α] {f g : G}
     (disj : IsAlgDisjoint f g) : Disjoint (fixedBy α f)ᶜ (fixedBy α (g^12))ᶜ := by
-  classical!
   by_contra not_disj
   let ⟨x, x_in_movedBy_f, x_in_movedBy_g12⟩ := Set.not_disjoint_iff.mp not_disj
 
+  have g_period : 5 ≤ MulAction.period g x ∨ MulAction.period g x = 0 := by
+    by_cases h : 0 < period g x
+    · left
+      refine MulAction.le_period h fun n n_pos n_lt_5 gpow_eq => x_in_movedBy_g12 ?x_fixed
+      apply fixedBy_pow_subset_of_dvd α g _ gpow_eq
+      apply dvd_twelve_of_lt_5_of_pos <;> assumption
+    · right
+      exact Nat.eq_zero_of_not_pos h
+
   let fam := Set.range (fun i : Fin 5 => g ^ i.val)
-  have fam_moving : MovingFamily fam x := MovingFamily.of_pow_moves_of_dvd 5 12 x_in_movedBy_g12 (by
-    apply dvd_twelve_of_lt_5_of_pos)
+  have fam_moving : MovingFamily fam x := by
+    cases g_period with
+    | inl five_le_period =>
+      apply MovingFamily.of_superset _ (MovingFamily.of_le_period g x)
+      intro h ⟨⟨a, a_lt_5⟩, ga_eq_h⟩
+      refine ⟨⟨a, ?a_lt_period⟩, ga_eq_h⟩
+      exact Nat.lt_of_lt_of_le a_lt_5 five_le_period
+    | inr period_eq_zero =>
+      apply MovingFamily.of_superset _ (MovingFamily.of_period_eq_zero period_eq_zero)
+      intro h ⟨⟨a, a_lt_5⟩, ga_eq_h⟩
+      use a
+      rw [← ga_eq_h]
+      simp only [zpow_coe_nat]
 
   let ⟨s₀, s₀_open, x_in_s₀, disj_s₀_fs₀⟩ := t2_separation_smul x_in_movedBy_f
   let ⟨s₁, s₁_open, x_in_s₁, pw_disj_gi⟩ := fam_moving.t2_separation (Set.finite_range _)
 
-  -- let s := s₀ ∩ s₁
-  have s_open := s₀_open.inter s₁_open
-  have x_in_s : x ∈ s₀ ∩ s₁ := ⟨x_in_s₀, x_in_s₁⟩
-
   have ⟨h, h_in_fixing, h_moving⟩ := LocallyDenseSMul.moving_elem_in_fixingSubgroup_compl
-    G s_open ⟨x_in_s₀, x_in_s₁⟩
+    G (s₀_open.inter s₁_open) ⟨x_in_s₀, x_in_s₁⟩
   rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at h_in_fixing
 
   have h_nc : ¬Commute f h := by
@@ -434,6 +479,10 @@ theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G �
     apply subset_trans (Set.singleton_subset_iff.mpr x_in_s₀)
     rw [Set.subset_inter_iff] at h_in_fixing
     apply subset_fixedBy_conj_of_movedBy_subset_of_disj h_in_fixing.left disj_s₀_fs₀
+
+  -- TODO: split here
+  clear s₀_open s₁_open x_in_s₁ x_in_s₀ h_moving disj_s₀_fs₀ fam_moving x_in_movedBy_g12
+    not_disj x_in_movedBy_f
 
   -- We now have the prerequisites to use the algebraic disjointness hypothesis
   let ⟨f₁, f₂, f₁_comm, f₂_comm, comm_elem_comm, comm_elem_nt⟩ := disj h h_nc
@@ -482,31 +531,40 @@ theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G �
     rw [← smul_mem_of_set_mem_fixedBy h₁]
     exact y_in_movedBy_c
 
-  -- TODO: use the pigeonhole principle to see that different images of g^i must land in the same set
+  have gi_in_image := fun i => (Set.mem_iUnion.mp (movedBy_c_ss_union (gi_in_movedBy_c i)))
 
-  have i₁ : Fin 5 := sorry
-  have i₂ : Fin 5 := sorry
-  have i_ne : i₁ ≠ i₂ := sorry
-  have j₁ : Fin 2 := sorry
-  have j₂ : Fin 2 := sorry
-  let f := (f₁^j₁.val * f₂^j₂.val)
-  have gi₁_in_fst : g^(i₁.val) • y ∈ f • (s₀ ∩ s₁) := sorry
-  have gi₂_in_snd : g^(i₂.val) • y ∈ f • (s₀ ∩ s₁) := sorry
+  -- Note: Set's version gives me hell with this, but it probably leads to a cleaner proof
+  have ⟨i₁, _, i₂, _, i_ne, same_choice⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to
+    (by norm_num : Fintype.card (Fin 5) > Fintype.card (Fin 2 × Fin 2))
+    (fun i _ => Finset.mem_univ (gi_in_image i).choose)
+  let pair := (gi_in_image i₁).choose
+
+  let f := (f₁ ^ pair.fst.val * f₂ ^ pair.snd.val)
+  have gi₁_in_fst : g^(i₁.val) • y ∈ f • (s₀ ∩ s₁) := (gi_in_image i₁).choose_spec
+  have gi₂_in_snd : g^(i₂.val) • y ∈ f • (s₀ ∩ s₁) := by
+    unfold_let
+    rw [same_choice]
+    exact (gi_in_image i₂).choose_spec
 
   have gi₁_in_family : g^i₁.val ∈ fam := ⟨⟨i₁.val, i₁.prop⟩, rfl⟩
   have gi₂_in_family : g^i₂.val ∈ fam := ⟨⟨i₂.val, i₂.prop⟩, rfl⟩
 
   have gi₁_ne_gi₂ : g^i₁.val ≠ g^i₂.val := by
+    intro eq
+    apply i_ne
+    rw [Fin.mk.injEq]
+    cases g_period with
+    | inl g_period_le_5 =>
+      apply MulAction.smul_pow_inj_of_le_period (x := x) _ _ eq
+      all_goals {
+        apply lt_of_lt_of_le _ g_period_le_5
+        apply Fin.is_lt
+      }
+    | inr period_eq_zero =>
+      exact MulAction.smul_pow_inj_of_period_eq_zero period_eq_zero eq
 
-    -- intro eq
-    -- apply i_ne
-    -- TODO: lemmas in periodicity to show that this is true if i₁ and i₂ divide 12
-    -- TODO: show that movedBy is equal from dvd
-    sorry
-
-  have fg_comm : ∀ i : ℕ, Commute f⁻¹ (g^i) := by
+  have fg_comm : ∀ i : ℕ, Commute f (g^i) := by
     intro i
-    apply Commute.inv_left
     unfold_let
     apply Commute.mul_left
     all_goals {
@@ -516,14 +574,15 @@ theorem IsAlgDisjoint.disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G �
     }
 
   specialize pw_disj_gi gi₁_in_family gi₂_in_family gi₁_ne_gi₂
-  -- rw [Set.smul_set_disjoint f] at pw_disj_gi
+  rw [Set.smul_set_disjoint_inv_of_comm (Commute.pow_left (Commute.pow_right rfl _) _),
+    Set.smul_set_disjoint f, ← mul_smul, ← mul_smul, (fg_comm _).inv_right, (fg_comm _).inv_right,
+    Set.disjoint_iff_inter_eq_empty] at pw_disj_gi
 
-  -- rw [Set.disjoint_iff_inter_eq_empty] at pw_disj_gi
-  -- rw [← Set.mem_empty_iff_false y, ← pw_disj_gi]
-  -- constructor
-  -- all_goals rw [← mul_smul, fg_comm, mul_smul]
-  -- all_goals rw [Set.mem_inv_smul_set_iff]
-
-  sorry
+  rw [← Set.mem_empty_iff_false y, ← pw_disj_gi]
+  apply Set.mem_inter
+  · rw [← Set.mem_inv_smul_set_iff, ← mul_smul] at gi₁_in_fst
+    exact Set.smul_set_mono (Set.inter_subset_right s₀ s₁) gi₁_in_fst
+  · rw [← Set.mem_inv_smul_set_iff, ← mul_smul] at gi₂_in_snd
+    exact Set.smul_set_mono (Set.inter_subset_right s₀ s₁) gi₂_in_snd
 
 end Rubin

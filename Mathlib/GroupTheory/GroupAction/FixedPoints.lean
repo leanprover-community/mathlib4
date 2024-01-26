@@ -95,6 +95,13 @@ theorem fixedBy_zpow_subset_of_dvd (g : G) {j k : ℤ} (dvd : j ∣ k):
   apply fixedBy_subset_fixedBy_zpow
   exact a_in_fixedBy
 
+variable (α) in
+@[to_additive]
+theorem fixedBy_pow_subset_of_dvd (g : G) {n m : ℕ} (dvd : n ∣ m):
+    fixedBy α (g ^ n) ⊆ fixedBy α (g ^ m) := by
+  rw [← zpow_ofNat, ← zpow_ofNat]
+  exact fixedBy_zpow_subset_of_dvd α g (Nat.coe_nat_dvd dvd)
+
 variable (M α) in
 @[to_additive (attr := simp)]
 theorem fixedBy_one_eq_univ : fixedBy α (1 : M) = Set.univ :=
@@ -118,6 +125,10 @@ theorem fixedBy_commutatorElement (g h : G) :
     fixedBy α h ∩ g • fixedBy α h ⊆ fixedBy α ⁅g, h⁆ := by
   rw [smul_fixedBy, commutatorElement_def, Set.inter_comm, ← fixedBy_inv_eq_fixedBy α (g := h)]
   apply fixedBy_mul α
+
+@[to_additive]
+theorem mem_fixedBy_pow_period (g : G) (x : α) : x ∈ fixedBy α (g ^ period g x) := by
+  rw [mem_fixedBy, smul_pow_period_fixed]
 
 end FixedPoints
 
