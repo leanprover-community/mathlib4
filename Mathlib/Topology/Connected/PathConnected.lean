@@ -1276,17 +1276,17 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     rw [pathConnectedSpace_iff_eq]
     use Classical.arbitrary X
     refine' IsClopen.eq_univ ⟨_, _⟩ (by simp)
+    · rw [isClosed_iff_nhds]
+      intro y H
+      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
+      rcases H U U_in with ⟨z, hz, hz'⟩
+      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
     · rw [isOpen_iff_mem_nhds]
       intro y y_in
       rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
       apply mem_of_superset U_in
       rw [← pathComponent_congr y_in]
       exact hU.subset_pathComponent (mem_of_mem_nhds U_in)
-    · rw [isClosed_iff_nhds]
-      intro y H
-      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
-      rcases H U U_in with ⟨z, hz, hz'⟩
-      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace
 
 theorem pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)
