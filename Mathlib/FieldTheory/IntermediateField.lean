@@ -3,8 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 
 #align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
@@ -611,6 +609,12 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
+theorem map_injective {f : L →ₐ[K] L'} (hf : Function.Injective f) :
+    Function.Injective (map f) := by
+  intro _ _ h
+  rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
+    (Subalgebra.map_injective hf).eq_iff, toSubalgebra_injective.eq_iff] at h
+
 variable (S)
 
 theorem set_range_subset : Set.range (algebraMap K L) ⊆ S :=
@@ -647,6 +651,9 @@ instance hasLift {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩
 #align intermediate_field.has_lift IntermediateField.hasLift
+
+theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
+  map_injective Subtype.val_injective
 
 section RestrictScalars
 
