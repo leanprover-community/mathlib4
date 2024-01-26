@@ -999,25 +999,25 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
 #align is_R_or_C.re_lm_coe IsROrC.reLm_coe
 
 /-- The real part in an `IsROrC` field, as a continuous linear map. -/
-noncomputable def reClm : K →L[ℝ] ℝ :=
+noncomputable def reCLM : K →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by
     rw [one_mul]
     exact abs_re_le_norm x
-#align is_R_or_C.re_clm IsROrC.reClm
+#align is_R_or_C.re_clm IsROrC.reCLM
 
 @[simp, isROrC_simps, norm_cast]
-theorem reClm_coe : ((reClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm :=
+theorem reCLM_coe : ((reCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = reLm :=
   rfl
-#align is_R_or_C.re_clm_coe IsROrC.reClm_coe
+#align is_R_or_C.re_clm_coe IsROrC.reCLM_coe
 
 @[simp, isROrC_simps]
-theorem reClm_apply : ((reClm : K →L[ℝ] ℝ) : K → ℝ) = re :=
+theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
-#align is_R_or_C.re_clm_apply IsROrC.reClm_apply
+#align is_R_or_C.re_clm_apply IsROrC.reCLM_apply
 
 @[continuity]
 theorem continuous_re : Continuous (re : K → ℝ) :=
-  reClm.continuous
+  reCLM.continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
 /-- The imaginary part in an `IsROrC` field, as a linear map. -/
@@ -1031,25 +1031,25 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
 #align is_R_or_C.im_lm_coe IsROrC.imLm_coe
 
 /-- The imaginary part in an `IsROrC` field, as a continuous linear map. -/
-noncomputable def imClm : K →L[ℝ] ℝ :=
+noncomputable def imCLM : K →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by
     rw [one_mul]
     exact abs_im_le_norm x
-#align is_R_or_C.im_clm IsROrC.imClm
+#align is_R_or_C.im_clm IsROrC.imCLM
 
 @[simp, isROrC_simps, norm_cast]
-theorem imClm_coe : ((imClm : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm :=
+theorem imCLM_coe : ((imCLM : K →L[ℝ] ℝ) : K →ₗ[ℝ] ℝ) = imLm :=
   rfl
-#align is_R_or_C.im_clm_coe IsROrC.imClm_coe
+#align is_R_or_C.im_clm_coe IsROrC.imCLM_coe
 
 @[simp, isROrC_simps]
-theorem imClm_apply : ((imClm : K →L[ℝ] ℝ) : K → ℝ) = im :=
+theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
-#align is_R_or_C.im_clm_apply IsROrC.imClm_apply
+#align is_R_or_C.im_clm_apply IsROrC.imCLM_apply
 
 @[continuity]
 theorem continuous_im : Continuous (im : K → ℝ) :=
-  imClm.continuous
+  imCLM.continuous
 #align is_R_or_C.continuous_im IsROrC.continuous_im
 
 /-- Conjugate as an `ℝ`-algebra equivalence -/
@@ -1077,17 +1077,17 @@ theorem conjLie_apply : (conjLie : K → K) = conj :=
 #align is_R_or_C.conj_lie_apply IsROrC.conjLie_apply
 
 /-- Conjugate as a continuous linear equivalence -/
-noncomputable def conjCle : K ≃L[ℝ] K :=
+noncomputable def conjCLE : K ≃L[ℝ] K :=
   @conjLie K _
-#align is_R_or_C.conj_cle IsROrC.conjCle
+#align is_R_or_C.conj_cle IsROrC.conjCLE
 
 @[simp, isROrC_simps]
-theorem conjCle_coe : (@conjCle K _).toLinearEquiv = conjAe.toLinearEquiv :=
+theorem conjCLE_coe : (@conjCLE K _).toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 #align is_R_or_C.conj_cle_coe IsROrC.conjCle_coe
 
 @[simp, isROrC_simps]
-theorem conjCle_apply : (conjCle : K → K) = conj :=
+theorem conjCLE_apply : (conjCLE : K → K) = conj :=
   rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
 
@@ -1121,19 +1121,19 @@ theorem ofRealLi_apply : (ofRealLi : ℝ → K) = ofReal :=
 #align is_R_or_C.of_real_li_apply IsROrC.ofRealLi_apply
 
 /-- The `ℝ → K` coercion, as a continuous linear map -/
-noncomputable def ofRealClm : ℝ →L[ℝ] K :=
+noncomputable def ofRealCLM : ℝ →L[ℝ] K :=
   ofRealLi.toContinuousLinearMap
-#align is_R_or_C.of_real_clm IsROrC.ofRealClm
+#align is_R_or_C.of_real_clm IsROrC.ofRealCLM
 
 @[simp, isROrC_simps]
-theorem ofRealClm_coe : (@ofRealClm K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap :=
+theorem ofRealCLM_coe : (@ofRealCLM K _ : ℝ →ₗ[ℝ] K) = ofRealAm.toLinearMap :=
   rfl
-#align is_R_or_C.of_real_clm_coe IsROrC.ofRealClm_coe
+#align is_R_or_C.of_real_clm_coe IsROrC.ofRealCLM_coe
 
 @[simp, isROrC_simps]
-theorem ofRealClm_apply : (ofRealClm : ℝ → K) = ofReal :=
+theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
   rfl
-#align is_R_or_C.of_real_clm_apply IsROrC.ofRealClm_apply
+#align is_R_or_C.of_real_clm_apply IsROrC.ofRealCLM_apply
 
 @[continuity]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=

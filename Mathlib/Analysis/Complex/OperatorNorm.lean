@@ -11,10 +11,10 @@ import Mathlib.Data.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 
-The continuous linear maps `Complex.reClm` (real part), `Complex.imClm` (imaginary part),
-`Complex.conjCle` (conjugation), and `Complex.ofRealClm` (inclusion of `ℝ`) were introduced in
+The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imaginary part),
+`Complex.conjCLE` (conjugation), and `Complex.ofRealCLM` (inclusion of `ℝ`) were introduced in
 `Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
-the operator norm and (for `Complex.conjCle`) the determinant.
+the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
 
 
@@ -35,49 +35,49 @@ theorem linearEquiv_det_conjLie : LinearEquiv.det conjLie.toLinearEquiv = -1 :=
 #align complex.linear_equiv_det_conj_lie Complex.linearEquiv_det_conjLie
 
 @[simp]
-theorem reClm_norm : ‖reClm‖ = 1 :=
+theorem reCLM_norm : ‖reCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
-      1 = ‖reClm 1‖ := by simp
-      _ ≤ ‖reClm‖ := unit_le_op_norm _ _ (by simp)
-#align complex.re_clm_norm Complex.reClm_norm
+      1 = ‖reCLM 1‖ := by simp
+      _ ≤ ‖reCLM‖ := unit_le_op_norm _ _ (by simp)
+#align complex.re_clm_norm Complex.reCLM_norm
 
 @[simp]
-theorem reClm_nnnorm : ‖reClm‖₊ = 1 :=
-  Subtype.ext reClm_norm
-#align complex.re_clm_nnnorm Complex.reClm_nnnorm
+theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
+  Subtype.ext reCLM_norm
+#align complex.re_clm_nnnorm Complex.reCLM_nnnorm
 
 @[simp]
-theorem imClm_norm : ‖imClm‖ = 1 :=
+theorem imCLM_norm : ‖imCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
-      1 = ‖imClm I‖ := by simp
-      _ ≤ ‖imClm‖ := unit_le_op_norm _ _ (by simp)
-#align complex.im_clm_norm Complex.imClm_norm
+      1 = ‖imCLM I‖ := by simp
+      _ ≤ ‖imCLM‖ := unit_le_op_norm _ _ (by simp)
+#align complex.im_clm_norm Complex.imCLM_norm
 
 @[simp]
-theorem imClm_nnnorm : ‖imClm‖₊ = 1 :=
-  Subtype.ext imClm_norm
-#align complex.im_clm_nnnorm Complex.imClm_nnnorm
+theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
+  Subtype.ext imCLM_norm
+#align complex.im_clm_nnnorm Complex.imCLM_nnnorm
 
 @[simp]
-theorem conjCle_norm : ‖(conjCle : ℂ →L[ℝ] ℂ)‖ = 1 :=
+theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLie.toLinearIsometry.norm_toContinuousLinearMap
 #align complex.conj_cle_norm Complex.conjCle_norm
 
 @[simp]
-theorem conjCle_nnorm : ‖(conjCle : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCle_norm
 #align complex.conj_cle_nnorm Complex.conjCle_nnorm
 
 @[simp]
-theorem ofRealClm_norm : ‖ofRealClm‖ = 1 :=
+theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
   ofRealLi.norm_toContinuousLinearMap
-#align complex.of_real_clm_norm Complex.ofRealClm_norm
+#align complex.of_real_clm_norm Complex.ofRealCLM_norm
 
 @[simp]
-theorem ofRealClm_nnnorm : ‖ofRealClm‖₊ = 1 :=
-  Subtype.ext <| ofRealClm_norm
-#align complex.of_real_clm_nnnorm Complex.ofRealClm_nnnorm
+theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
+  Subtype.ext <| ofRealCLM_norm
+#align complex.of_real_clm_nnnorm Complex.ofRealCLM_nnnorm
 
 end Complex

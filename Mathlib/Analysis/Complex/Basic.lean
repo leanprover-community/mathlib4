@@ -23,10 +23,10 @@ This file registers `ℂ` as a normed field, expresses basic properties of the n
 tools on the real vector space structure of `ℂ`. Notably, in the namespace `Complex`,
 it defines functions:
 
-* `reClm`
-* `imClm`
-* `ofRealClm`
-* `conjCle`
+* `reCLM`
+* `imCLM`
+* `ofRealCLM`
+* `conjCLE`
 
 They are bundled versions of the real part, the imaginary part, the embedding of `ℝ` in `ℂ`, and
 the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
@@ -234,16 +234,16 @@ instance : CompleteSpace ℂ :=
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
-def equivRealProdClm : ℂ ≃L[ℝ] ℝ × ℝ :=
+def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
-#align complex.equiv_real_prod_clm Complex.equivRealProdClm
+#align complex.equiv_real_prod_clm Complex.equivRealProdCLM
 
-theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
-    Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdCLM.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 instance : ProperSpace ℂ :=
-  (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdClm.toHomeomorph).properSpace
+  (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdCLM.toHomeomorph).properSpace
 
 /-- The `abs` function on `ℂ` is proper. -/
 theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
@@ -259,48 +259,48 @@ theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
 open ContinuousLinearMap
 
 /-- Continuous linear map version of the real part function, from `ℂ` to `ℝ`. -/
-def reClm : ℂ →L[ℝ] ℝ :=
+def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_abs]
-#align complex.re_clm Complex.reClm
+#align complex.re_clm Complex.reCLM
 
 @[continuity]
 theorem continuous_re : Continuous re :=
-  reClm.continuous
+  reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
 
 @[simp]
-theorem reClm_coe : (reClm : ℂ →ₗ[ℝ] ℝ) = reLm :=
+theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
-#align complex.re_clm_coe Complex.reClm_coe
+#align complex.re_clm_coe Complex.reCLM_coe
 
 @[simp]
-theorem reClm_apply (z : ℂ) : (reClm : ℂ → ℝ) z = z.re :=
+theorem reCLM_apply (z : ℂ) : (reCLM : ℂ → ℝ) z = z.re :=
   rfl
-#align complex.re_clm_apply Complex.reClm_apply
+#align complex.re_clm_apply Complex.reCLM_apply
 
 /-- Continuous linear map version of the imaginary part function, from `ℂ` to `ℝ`. -/
-def imClm : ℂ →L[ℝ] ℝ :=
+def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
-#align complex.im_clm Complex.imClm
+#align complex.im_clm Complex.imCLM
 
 @[continuity]
 theorem continuous_im : Continuous im :=
-  imClm.continuous
+  imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
 
 @[simp]
-theorem imClm_coe : (imClm : ℂ →ₗ[ℝ] ℝ) = imLm :=
+theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
   rfl
-#align complex.im_clm_coe Complex.imClm_coe
+#align complex.im_clm_coe Complex.imCLM_coe
 
 @[simp]
-theorem imClm_apply (z : ℂ) : (imClm : ℂ → ℝ) z = z.im :=
+theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
-#align complex.im_clm_apply Complex.imClm_apply
+#align complex.im_clm_apply Complex.imCLM_apply
 
 theorem restrictScalars_one_smulRight' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
-      reClm.smulRight x + I • imClm.smulRight x := by
+      reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
   simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 #align complex.restrict_scalars_one_smul_right' Complex.restrictScalars_one_smulRight'
@@ -366,17 +366,17 @@ theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous
 #align complex.ring_hom_eq_id_or_conj_of_continuous Complex.ringHom_eq_id_or_conj_of_continuous
 
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
-def conjCle : ℂ ≃L[ℝ] ℂ :=
+def conjCLE : ℂ ≃L[ℝ] ℂ :=
   conjLie
-#align complex.conj_cle Complex.conjCle
+#align complex.conj_cle Complex.conjCLE
 
 @[simp]
-theorem conjCle_coe : conjCle.toLinearEquiv = conjAe.toLinearEquiv :=
+theorem conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 #align complex.conj_cle_coe Complex.conjCle_coe
 
 @[simp]
-theorem conjCle_apply (z : ℂ) : conjCle z = conj z :=
+theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
 #align complex.conj_cle_apply Complex.conjCle_apply
 
@@ -401,19 +401,19 @@ theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) :
 #align complex.ring_hom_eq_of_real_of_continuous Complex.ringHom_eq_ofReal_of_continuous
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
-def ofRealClm : ℝ →L[ℝ] ℂ :=
+def ofRealCLM : ℝ →L[ℝ] ℂ :=
   ofRealLi.toContinuousLinearMap
-#align complex.of_real_clm Complex.ofRealClm
+#align complex.of_real_clm Complex.ofRealCLM
 
 @[simp]
-theorem ofRealClm_coe : (ofRealClm : ℝ →ₗ[ℝ] ℂ) = ofRealAm.toLinearMap :=
+theorem ofRealCLM_coe : (ofRealCLM : ℝ →ₗ[ℝ] ℂ) = ofRealAm.toLinearMap :=
   rfl
-#align complex.of_real_clm_coe Complex.ofRealClm_coe
+#align complex.of_real_clm_coe Complex.ofRealCLM_coe
 
 @[simp]
-theorem ofRealClm_apply (x : ℝ) : ofRealClm x = x :=
+theorem ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
   rfl
-#align complex.of_real_clm_apply Complex.ofRealClm_apply
+#align complex.of_real_clm_apply Complex.ofRealCLM_apply
 
 noncomputable instance : IsROrC ℂ where
   re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
@@ -531,11 +531,11 @@ variable {α : Type*} (𝕜 : Type*) [IsROrC 𝕜]
 
 @[simp]
 theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
-  conjCle.hasSum
+  conjCLE.hasSum
 #align is_R_or_C.has_sum_conj IsROrC.hasSum_conj
 
 theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
-  conjCle.hasSum'
+  conjCLE.hasSum'
 #align is_R_or_C.has_sum_conj' IsROrC.hasSum_conj'
 
 @[simp]
@@ -553,38 +553,38 @@ variable (𝕜)
 
 @[simp, norm_cast]
 theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
-  ⟨fun h => by simpa only [IsROrC.reClm_apply, IsROrC.ofReal_re] using reClm.hasSum h,
-    ofRealClm.hasSum⟩
+  ⟨fun h => by simpa only [IsROrC.reCLM_apply, IsROrC.ofReal_re] using reCLM.hasSum h,
+    ofRealCLM.hasSum⟩
 #align is_R_or_C.has_sum_of_real IsROrC.hasSum_ofReal
 
 @[simp, norm_cast]
 theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
-  ⟨fun h => by simpa only [IsROrC.reClm_apply, IsROrC.ofReal_re] using reClm.summable h,
-    ofRealClm.summable⟩
+  ⟨fun h => by simpa only [IsROrC.reCLM_apply, IsROrC.ofReal_re] using reCLM.summable h,
+    ofRealCLM.summable⟩
 #align is_R_or_C.summable_of_real IsROrC.summable_ofReal
 
 @[norm_cast]
 theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a : 𝕜) := by
   by_cases h : Summable f
-  · exact ContinuousLinearMap.map_tsum ofRealClm h
+  · exact ContinuousLinearMap.map_tsum ofRealCLM h
   · rw [tsum_eq_zero_of_not_summable h,
       tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
 #align is_R_or_C.of_real_tsum IsROrC.ofReal_tsum
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
-  reClm.hasSum h
+  reCLM.hasSum h
 #align is_R_or_C.has_sum_re IsROrC.hasSum_re
 
 theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
-  imClm.hasSum h
+  imCLM.hasSum h
 #align is_R_or_C.has_sum_im IsROrC.hasSum_im
 
 theorem re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
-  reClm.map_tsum h
+  reCLM.map_tsum h
 #align is_R_or_C.re_tsum IsROrC.re_tsum
 
 theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, im (f a) :=
-  imClm.map_tsum h
+  imCLM.map_tsum h
 #align is_R_or_C.im_tsum IsROrC.im_tsum
 
 variable {𝕜}
