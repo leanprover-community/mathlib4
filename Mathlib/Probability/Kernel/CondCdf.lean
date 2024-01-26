@@ -108,13 +108,6 @@ theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [O
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
--- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
-    Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
-#align tendsto_of_antitone tendsto_of_antitone
-
 -- todo: move to data/real/ennreal
 theorem ENNReal.ofReal_cinfi (f : α → ℝ) [Nonempty α] :
     ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
