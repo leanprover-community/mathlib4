@@ -1,6 +1,18 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 import Mathlib.CategoryTheory.Sites.Equivalence
+/-!
+
+# Coherence and equivalence of categories
+
+This file proves that the coherent and regular topologies transfer nicely along equivalences of
+categories.
+-/
 
 namespace CategoryTheory
 
@@ -17,6 +29,7 @@ section Coherent
 
 variable [Precoherent C]
 
+/-- `Precoherent` is preserved by equivalence of categories. -/
 theorem precoherent : Precoherent D where
   pullback f α _ X₁ π₁ _ := by
     obtain ⟨β, x, X₂', π₂', _, i, ι', h'⟩ :=
@@ -29,6 +42,12 @@ theorem precoherent : Precoherent D where
       infer_instance
     · simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) (h' b)
 
+instance [EssentiallySmall C] [Precoherent C] :
+    Precoherent (SmallModel C) := (equivSmallModel C).precoherent
+
+/--
+Transferring the coherent topology along an equivalence of categories gives the coherent topology.
+-/
 theorem precoherent_eq : haveI := precoherent e
     (e.locallyCoverDense (coherentTopology C)).inducedTopology =
     coherentTopology D := by
@@ -58,6 +77,9 @@ theorem precoherent_eq : haveI := precoherent e
 
 variable (A : Type*) [Category A]
 
+/--
+Equivalent precoherent categories give equivalent coherent toposes.
+-/
 @[simps!]
 def sheafCongrPrecoherent : haveI := e.precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
@@ -65,6 +87,9 @@ def sheafCongrPrecoherent : haveI := e.precoherent
 
 open Presheaf
 
+/--
+The coherent sheaf condition can be checked after precomposing with the equivalence.
+-/
 theorem precoherent_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.precoherent
     IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology D) (e.inverse.op ⋙ F) := by
   refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
@@ -72,12 +97,21 @@ theorem precoherent_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.precoherent
   · exact (e.sheafCongrPrecoherent A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
   · exact isoWhiskerRight e.op.unitIso F
 
+/--
+The coherent sheaf condition on an essentially small site can be checked after precomposing with
+the equivalence with a small category.
+-/
+theorem precoherent_isSheaf_iff_of_essentiallySmall [EssentiallySmall C] (F : Cᵒᵖ ⥤ A) :
+    IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology (SmallModel C))
+    ((equivSmallModel C).inverse.op ⋙ F) := precoherent_isSheaf_iff _ _ _
+
 end Coherent
 
 section Regular
 
 variable [Preregular C]
 
+/-- `Preregular` is preserved by equivalence of categories. -/
 theorem preregular : Preregular D where
   exists_fac f π _ := by
     obtain ⟨W, h', _, i', w⟩ := Preregular.exists_fac (e.inverse.map f) (e.inverse.map π)
@@ -85,6 +119,12 @@ theorem preregular : Preregular D where
       e.functor.map i' ≫ e.counit.app _, ?_⟩
     simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) w
 
+instance [EssentiallySmall C] [Preregular C] :
+    Preregular (SmallModel C) := (equivSmallModel C).preregular
+
+/--
+Transferring the regular topology along an equivalence of categories gives the regular topology.
+-/
 theorem preregular_eq : haveI := preregular e
     (e.locallyCoverDense (regularTopology C)).inducedTopology =
     regularTopology D := by
@@ -106,6 +146,9 @@ theorem preregular_eq : haveI := preregular e
 
 variable (A : Type*) [Category A]
 
+/--
+Equivalent preregular categories give equivalent regular toposes.
+-/
 @[simps!]
 def sheafCongrPreregular : haveI := e.preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
@@ -113,6 +156,9 @@ def sheafCongrPreregular : haveI := e.preregular
 
 open Presheaf
 
+/--
+The regular sheaf condition can be checked after precomposing with the equivalence.
+-/
 theorem preregular_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.preregular
     IsSheaf (regularTopology C) F ↔ IsSheaf (regularTopology D) (e.inverse.op ⋙ F) := by
   refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
@@ -120,12 +166,14 @@ theorem preregular_isSheaf_iff (F : Cᵒᵖ ⥤ A) : haveI := e.preregular
   · exact (e.sheafCongrPreregular A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
   · exact isoWhiskerRight e.op.unitIso F
 
+/--
+The regular sheaf condition on an essentially small site can be checked after precomposing with
+the equivalence with a small category.
+-/
+theorem preregular_isSheaf_iff_of_essentiallySmall [EssentiallySmall C] (F : Cᵒᵖ ⥤ A) :
+    IsSheaf (regularTopology C) F ↔ IsSheaf (regularTopology (SmallModel C))
+    ((equivSmallModel C).inverse.op ⋙ F) := preregular_isSheaf_iff _ _ _
+
 end Regular
 
 end Equivalence
-
-instance [EssentiallySmall C] [Precoherent C] :
-    Precoherent (SmallModel C) := (equivSmallModel C).precoherent
-
-instance [EssentiallySmall C] [Preregular C] :
-    Preregular (SmallModel C) := (equivSmallModel C).preregular
