@@ -34,18 +34,13 @@ library_note "IsROrC instance"/--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `IsROrC ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
-
 /-- An `IsROrC` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 -- Porting note: was @[nolint dangerous_instance]
 instance isROrC_to_real : FiniteDimensional ℝ K :=
-  ⟨⟨{1, I}, by
-      rw [eq_top_iff]
-      intro a _
-      rw [Finset.coe_insert, Finset.coe_singleton, Submodule.mem_span_insert]
-      refine' ⟨re a, im a • I, _, _⟩
-      · rw [Submodule.mem_span_singleton]
-        use im a
-      simp [re_add_im a, Algebra.smul_def, algebraMap_eq_ofReal]⟩⟩
+  ⟨{1, I}, by
+    suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
+      simpa [Submodule.eq_top_iff', Submodule.mem_span_pair]
+    exact fun x ↦ ⟨re x, im x, by simp [real_smul_eq_coe_mul]⟩⟩
 #align finite_dimensional.is_R_or_C_to_real FiniteDimensional.isROrC_to_real
 
 variable (K E)
@@ -73,22 +68,22 @@ end FiniteDimensional
 namespace IsROrC
 
 @[simp, isROrC_simps]
-theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
+theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_op_norm (reClm : K →L[ℝ] ℝ) (1 : K)
+  convert ContinuousLinearMap.ratio_le_op_norm (reCLM : K →L[ℝ] ℝ) (1 : K)
   simp
-#align is_R_or_C.re_clm_norm IsROrC.reClm_norm
+#align is_R_or_C.re_clm_norm IsROrC.reCLM_norm
 
 @[simp, isROrC_simps]
-theorem conjCle_norm : ‖(@conjCle K _ : K →L[ℝ] K)‖ = 1 :=
-  (@conjLie K _).toLinearIsometry.norm_toContinuousLinearMap
-#align is_R_or_C.conj_cle_norm IsROrC.conjCle_norm
+theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
+  (@conjLIE K _).toLinearIsometry.norm_toContinuousLinearMap
+#align is_R_or_C.conj_cle_norm IsROrC.conjCLE_norm
 
 @[simp, isROrC_simps]
-theorem ofRealClm_norm : ‖(ofRealClm : ℝ →L[ℝ] K)‖ = 1 :=
+theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
   -- Porting note: the following timed out
-  -- LinearIsometry.norm_toContinuousLinearMap ofRealLi
+  -- LinearIsometry.norm_toContinuousLinearMap ofRealLI
   LinearIsometry.norm_toContinuousLinearMap _
-#align is_R_or_C.of_real_clm_norm IsROrC.ofRealClm_norm
+#align is_R_or_C.of_real_clm_norm IsROrC.ofRealCLM_norm
 
 end IsROrC
