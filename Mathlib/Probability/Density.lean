@@ -378,7 +378,7 @@ theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ
 theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : IsProbabilityMeasure ℙ :=
   ⟨by
-    have : X ⁻¹' Set.univ = Set.univ := by simp only [Set.preimage_univ]
+    have : X ⁻¹' Set.univ = Set.univ := Set.preimage_univ
     rw [← this, hu.measure_preimage hns hnt MeasurableSet.univ, Set.inter_univ,
       ENNReal.div_self hns hnt]⟩
 #align measure_theory.pdf.is_uniform.is_probability_measure MeasureTheory.pdf.IsUniform.isProbabilityMeasure
@@ -436,21 +436,11 @@ theorem mul_pdf_integrable [IsFiniteMeasure ℙ] (hcs : IsCompact s) (huX : IsUn
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
 theorem integral_eq (huX : IsUniform X s ℙ) :
     ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
-  haveI := hasPDF hms hns hnt huX
-  haveI := huX.isProbabilityMeasure hns hnt
-  rw [← integral_mul_eq_integral]
-  rw [integral_congr_ae (Filter.EventuallyEq.mul (ae_eq_refl _) (pdf_toReal_ae_eq hms hns hnt huX))]
-  have :
-    ∀ x,
-      x * (s.indicator ((volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)) x).toReal =
-        x * s.indicator ((volume s)⁻¹.toReal • (1 : ℝ → ℝ)) x := by
-    refine' fun x => congr_arg (x * ·) _
-    by_cases hx : x ∈ s
-    · simp [Set.indicator_of_mem hx]
-    · simp [Set.indicator_of_not_mem hx]
-  simp_rw [this, ← s.indicator_mul_right fun x => x, integral_indicator hms]
-  change ∫ x in s, x * (volume s)⁻¹.toReal • (1 : ℝ) = _
-  rw [integral_mul_right, mul_comm, smul_eq_mul, mul_one]
+  rw [← smul_eq_mul, ← integral_smul_measure, ← huX]
+  by_cases hX : AEMeasurable X ℙ
+  · exact (integral_map hX aestronglyMeasurable_id).symm
+  · rw [map_of_not_aemeasurable hX, integral_zero_measure, integral_non_aestronglyMeasurable]
+    rwa [aestronglyMeasurable_iff_aemeasurable]
 #align measure_theory.pdf.is_uniform.integral_eq MeasureTheory.pdf.IsUniform.integral_eq
 
 end IsUniform
