@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
-import Mathlib.NumberTheory.NumberField.Norm
 
 /-!
 # Number field discriminant
@@ -17,8 +16,11 @@ This file defines the discriminant of a number field.
 
 ## Main result
 
-* `NumberField.discr_gt_one`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-nontrivial discriminant.
+* `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
+  nontrivial discriminant.
+
+* `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
+finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
 number field, discriminant
@@ -29,9 +31,9 @@ number field, discriminant
 
 namespace NumberField
 
-open Classical NumberField Matrix NumberField.InfinitePlace FiniteDimensional
+open NumberField Matrix NumberField.InfinitePlace FiniteDimensional
 
-open scoped Real
+open scoped Real Classical nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -100,51 +102,61 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
-theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
-    ∃ (a : 𝓞 K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
+theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
+      |Algebra.norm ℚ (a:K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
-  -- The smallest possible value for `exists_ne_zero_mem_ringOfIntegers_of_norm_le`
-  let B := (minkowskiBound K * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
-  have hB : 0 ≤ B := Real.rpow_nonneg toReal_nonneg _
-  have h_le : (minkowskiBound K) ≤ volume (convexBodySum K B) := by
+  -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
+  let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
+  have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
-    rw [convexBodySum_volume, ← ENNReal.ofReal_pow hB, ← Real.rpow_nat_cast, ← Real.rpow_mul
-      toReal_nonneg, div_mul_cancel _ (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos)), Real.rpow_one,
-      ofReal_toReal, mul_comm, mul_assoc, ENNReal.inv_mul_cancel (convexBodySumFactor_ne_zero K)
-      (convexBodySumFactor_ne_top K), mul_one]
-    exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K))
-      (ENNReal.inv_ne_top.mpr (convexBodySumFactor_ne_zero K))
-  obtain ⟨x, h_nz, h_bd⟩ := exists_ne_zero_mem_ringOfIntegers_of_norm_le K h_le
-  refine ⟨x, h_nz, ?_⟩
-  convert h_bd
+    rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast,
+      ← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
+      mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), coe_one, mul_one]
+    · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
+    · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
+  convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_nat_cast B, ← Real.rpow_mul (by positivity), div_mul_cancel _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
   rw [eq_comm]
   calc
-    _ = (2:ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ * (2:ℝ) ^ finrank ℚ K *
-          ((2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
-          (Nat.factorial (finrank ℚ K)))⁻¹ := by
-      simp_rw [minkowskiBound, convexBodySumFactor, volume_fundamentalDomain_latticeBasis,
-        toReal_mul, toReal_inv, toReal_div, toReal_mul, coe_toReal, toReal_pow, toReal_inv,
-        toReal_ofNat, mixedEmbedding.finrank, toReal_div, toReal_ofNat, coe_toReal, coe_real_pi,
-        toReal_nat]
-    _ = (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K + NrComplexPlaces K : ℤ) *
-          Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
+          (2:ℝ) ^ finrank ℚ K * ((2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
+            (Nat.factorial (finrank ℚ K)))⁻¹ := by
+      simp_rw [minkowskiBound, convexBodySumFactor,
+        volume_fundamentalDomain_fractionalIdealLatticeBasis,
+        volume_fundamentalDomain_latticeBasis, toReal_mul, toReal_pow, toReal_inv, coe_toReal,
+        toReal_ofNat, mixedEmbedding.finrank, mul_assoc]
+      rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
+      rfl
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
+          NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
+            π⁻¹ ^ (NrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_coe_nat, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2:ℝ) ≠ 0)]
       ring
-    _ = (2:ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-          π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
-    _ = (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial * Real.sqrt |discr K| := by
+    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
+          Real.sqrt |discr K| := by
       rw [show ‖discr K‖ = |(discr K : ℝ)| by rfl, zpow_mul, show (2:ℝ) ^ (2:ℤ) = 4 by norm_cast,
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
+
+theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
+    ∃ (a : 𝓞 K), a ≠ 0 ∧
+      |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
+        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
+  obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K 1
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  refine ⟨a, ne_zero_of_map h_nz, ?_⟩
+  simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
+  exact h_nm
 
 variable {K}
 
@@ -186,7 +198,8 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
-theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
+theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
+  have : Algebra (𝓞 K) K := by exact Subalgebra.toAlgebra (𝓞 K)
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
@@ -197,10 +210,220 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
-  norm_num
-  rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]
+  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
+    norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
+    show (72:ℝ) / 9 = 8 by norm_num]
   linarith [h₂]
+
+/-!
+### Hermite Theorem
+This section is devoted to the proof of Hermite theorem.
+
+Let `N` be an integer . We prove that the set `S` of finite extension `K` of `ℚ`
+(in some fixed extension `A` of `ℚ`) such that `|discr K| ≤ N` is finite by proving that there is
+a finite set `T ⊆ A` such that `∀ K ∈ S, ∃ x ∈ T, K = ℚ⟮x⟯` using `finite_of_finite_generating_set`.
+
+To find the set `T`, we construct a finite set `T₀` of polynomials in `ℤ[X]` containing, for each
+`K ∈ S`, the minimal polynomial of a primitive element of `K`. The set `T` is then the union of
+roots in `A` of the polynomials in `T₀`. More explicitly, the set `T₀` is the set of all
+polynomials in `ℤ[X]` of degrees and coefficients bounded by some explicit constants depending
+only on `N`.
+
+Indeed, we prove that, for any field `K` in `S`, its degree is bounded, see
+`rank_le_rankOfDiscrBdd`, and also its Minkowski bound, see `minkowskiBound_lt_boundOfDiscBdd`.
+Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` and
+`exists_primitive_element_lt_of_isReal` that there exists an algebraic integer `x` of `K` such that
+`K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity depending only on `N`.
+Therefore, the minimal polynomial of `x` belongs to some finite set `T₀` of polynomials.
+
+Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
+real place or not, the theorem is proved in two parts:
+-/
+
+namespace hermiteTheorem
+
+open Polynomial
+
+open scoped IntermediateField BigOperators
+
+variable (A : Type*) [Field A] [CharZero A]
+
+theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
+    (S : Set {F : IntermediateField ℚ A // p F}) {T : Set A}
+    (hT : T.Finite) (h : ∀ F ∈ S, ∃ x ∈ T, F = ℚ⟮x⟯) :
+    S.Finite := by
+  rw [← Set.finite_coe_iff] at hT
+  refine Set.finite_coe_iff.mp <| Finite.of_injective
+    (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
+  rw [Subtype.ext_iff_val, Subtype.ext_iff_val]
+  convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
+  all_goals exact (h _ (Subtype.mem _)).choose_spec.2
+
+variable (N : ℕ)
+
+/-- An upper bound on the degree of a number field `K` with `|discr K| ≤ N`;
+see `rank_le_rankOfDiscrBdd`. -/
+noncomputable abbrev rankOfDiscrBdd : ℕ :=
+  max 1 (Nat.floor ((Real.log ((9 / 4 : ℝ) * N) / Real.log (3 * π / 4))))
+
+/-- An upper bound on the Minkowski bound of a number field `K` with `|discr K| ≤ N`;
+see `minkowskiBound_lt_boundOfDiscBdd`. -/
+noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2:ℝ≥0) ^ rankOfDiscrBdd N + 1
+
+variable {N} (hK : |discr K| ≤ N)
+
+/-- If `|discr K| ≤ N` then the degree of `K` is at most `rankOfDiscrBdd`. -/
+theorem rank_le_rankOfDiscrBdd :
+    finrank ℚ K ≤ rankOfDiscrBdd N := by
+  have h_nz : N ≠ 0 := by
+    refine fun h ↦ discr_ne_zero K ?_
+    rwa [h, Nat.cast_zero, abs_nonpos_iff] at hK
+  have h₂ : 1 < 3 * π / 4 := by
+    rw [_root_.lt_div_iff (by positivity), ← _root_.div_lt_iff' (by positivity), one_mul]
+    linarith [Real.pi_gt_three]
+  obtain h | h := lt_or_le 1 (finrank ℚ K)
+  · apply le_max_of_le_right
+    rw [Nat.le_floor_iff]
+    · have h := le_trans (abs_discr_ge h) (Int.cast_le.mpr hK)
+      contrapose! h
+      rw [← Real.rpow_nat_cast]
+      rw [Real.log_div_log] at h
+      refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
+        (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0:ℝ) < 4 / 9))
+      rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
+            ← inv_div, inv_mul_cancel (by norm_num), one_mul, Int.cast_ofNat]
+    · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
+      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
+        ← _root_.div_le_iff (by positivity)]
+      exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
+  · exact le_max_of_le_left h
+
+/-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
+theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K 1 < boundOfDiscBdd N := by
+  have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by norm_num
+  refine lt_of_le_of_lt ?_ (coe_lt_coe.mpr this)
+  rw [minkowskiBound, volume_fundamentalDomain_fractionalIdealLatticeBasis, boundOfDiscBdd,
+    add_tsub_cancel_right, Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one,
+    ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
+    coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1:ℝ≥0∞) * sqrt N by rw [one_mul]]
+  gcongr
+  · exact pow_le_one _ (by positivity) (by norm_num)
+  · rw [sqrt_le_sqrt_iff, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs]
+    exact Int.cast_le.mpr hK
+  · exact one_le_two
+  · exact rank_le_rankOfDiscrBdd hK
+
+theorem natDegree_le_rankOfDiscrBdd {a : K} (ha : a ∈ 𝓞 K) (h : ℚ⟮a⟯ = ⊤) :
+    natDegree (minpoly ℤ (a:K)) ≤ rankOfDiscrBdd N := by
+  rw [Field.primitive_element_iff_minpoly_natDegree_eq,
+    minpoly.isIntegrallyClosed_eq_field_fractions' ℚ ha, (minpoly.monic ha).natDegree_map] at h
+  exact h.symm ▸ rank_le_rankOfDiscrBdd hK
+
+variable (N)
+
+theorem finite_of_discr_bdd_of_isReal :
+    {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
+      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      {w : InfinitePlace K | IsReal w}.Nonempty ∧ |discr K| ≤ N }.Finite := by
+  -- The bound on the degree of the generating polynomials
+  let D := rankOfDiscrBdd N
+  -- The bound on the Minkowski bound
+  let B := boundOfDiscBdd N
+  -- The bound on the coefficients of the generating polynomials
+  let C := Nat.ceil ((max B 1) ^ D *  Nat.choose D (D / 2))
+  refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
+      (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
+  -- We now need to prove that each field is generated by an element of the union of the rootset
+  simp_rw [Set.mem_iUnion]
+  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  obtain ⟨w₀, hw₀⟩ := hK₁
+  suffices minkowskiBound K 1 < (convexBodyLTFactor K) * B by
+    obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
+    refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
+    · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
+    · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
+      refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
+          ((le_iff_le x _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
+      · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
+          Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
+      · refine le_trans ?_ (Nat.le_ceil _)
+        rw [show max ↑(max (B:ℝ≥0) 1) (1:ℝ) = max (B:ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
+          NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_nat_cast]
+        gcongr
+        · exact le_max_right _ 1
+        · exact rank_le_rankOfDiscrBdd hK₂
+        · exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
+            (Nat.choose_le_middle _ _)
+    · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
+      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ x)
+    · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
+      convert hx₁ <;> simp
+  have := one_le_convexBodyLTFactor K
+  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
+    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
+  simp_rw [coe_one, one_mul]
+
+theorem finite_of_discr_bdd_of_isComplex :
+    {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
+      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      {w : InfinitePlace K | IsComplex w}.Nonempty ∧ |discr K| ≤ N }.Finite := by
+  -- The bound on the degree of the generating polynomials
+  let D := rankOfDiscrBdd N
+  -- The bound on the Minkowski bound
+  let B := boundOfDiscBdd N
+  -- The bound on the coefficients of the generating polynomials
+  let C := Nat.ceil ((max (sqrt (1 + B ^ 2)) 1) ^ D * Nat.choose D (D / 2))
+  refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
+      (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
+  -- We now need to prove that each field is generated by an element of the union of the rootset
+  simp_rw [Set.mem_iUnion]
+  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  obtain ⟨w₀, hw₀⟩ := hK₁
+  suffices minkowskiBound K 1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
+    obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
+    refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
+    · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
+    · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
+      refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
+          ((le_iff_le x _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
+      · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
+          Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
+      · refine le_trans ?_ (Nat.le_ceil _)
+        rw [val_eq_coe, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one,
+          Real.coe_sqrt, NNReal.coe_add 1, NNReal.coe_one, NNReal.coe_pow]
+        gcongr
+        · exact le_max_right _ 1
+        · exact rank_le_rankOfDiscrBdd hK₂
+        · rw [NNReal.coe_nat_cast, Nat.cast_le]
+          exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
+            (Nat.choose_le_middle _ _)
+    · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
+      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ x)
+    · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
+      convert hx₁ <;> simp
+  have := one_le_convexBodyLT'Factor K
+  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
+    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
+  simp_rw [coe_one, one_mul]
+
+/-- **Hermite Theorem**. Let `N` be an integer. There are only finitely many number fields
+(in some fixed extension of `ℚ`) of discriminant bounded by `N`. -/
+theorem _root_.NumberField.finite_of_discr_bdd :
+    {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
+      haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
+      |discr K| ≤ N }.Finite := by
+  refine Set.Finite.subset (Set.Finite.union (finite_of_discr_bdd_of_isReal A N)
+    (finite_of_discr_bdd_of_isComplex A N)) ?_
+  rintro ⟨K, hK₀⟩ hK₁
+  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  obtain ⟨w₀⟩ := (inferInstance : Nonempty (InfinitePlace K))
+  by_cases hw₀ : IsReal w₀
+  · apply Set.mem_union_left
+    exact ⟨⟨w₀, hw₀⟩, hK₁⟩
+  · apply Set.mem_union_right
+    exact ⟨⟨w₀, not_isReal_iff_isComplex.mp hw₀⟩, hK₁⟩
+
+end hermiteTheorem
 
 end NumberField
 
