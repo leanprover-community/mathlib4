@@ -530,7 +530,6 @@ theorem separableClosure_le_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
   haveI := separableClosure.isPurelyInseparable F E halg
   letI := (inclusion h).toAlgebra
-  letI : Module (separableClosure F E) L := Algebra.toModule
   letI : SMul (separableClosure F E) L := Algebra.toSMul
   haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact IsPurelyInseparable.tower_top (separableClosure F E) L E
@@ -602,17 +601,14 @@ instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [IsSeparable F (adjoin F S)]
-    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((fun x ↦ x ^ q ^ n) '' S) := by
+    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((· ^ q ^ n) '' S) := by
   set L := adjoin F S
-  set M := adjoin F ((fun x ↦ x ^ q ^ n) '' S)
+  set M := adjoin F ((· ^ q ^ n) '' S)
   have hi : M ≤ L := by
     rw [adjoin_le_iff]
     rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
   letI := (inclusion hi).toAlgebra
-  letI : Module M L := Algebra.toModule
-  letI : SMul M L := Algebra.toSMul
-  haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   haveI : IsSeparable M (extendScalars hi) := isSeparable_tower_top_of_isSeparable F M L
   haveI : IsPurelyInseparable M (extendScalars hi) := by
     haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
@@ -624,7 +620,7 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [IsSeparable
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [IsSeparable F E] (S : Set E)
-    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((fun x ↦ x ^ q ^ n) '' S) :=
+    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((· ^ q ^ n) '' S) :=
   haveI := isSeparable_tower_bot_of_isSeparable F (adjoin F S) E
   adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q n
 
@@ -632,13 +628,13 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [IsSeparable F E] (S : 
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ q)`. -/
 theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable (S : Set E) [IsSeparable F (adjoin F S)]
-    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((fun x ↦ x ^ q) '' S) :=
+    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((· ^ q) '' S) :=
   pow_one q ▸ adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q 1
 
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F(S) = F(S ^ q)` for any subset `S` of `E`. -/
 theorem adjoin_eq_adjoin_pow_expChar_of_isSeparable' [IsSeparable F E] (S : Set E)
-    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((fun x ↦ x ^ q) '' S) :=
+    (q : ℕ) [ExpChar F q] : adjoin F S = adjoin F ((· ^ q) '' S) :=
   pow_one q ▸ adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E S q 1
 
 end IntermediateField
@@ -649,7 +645,7 @@ of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `
 `E` for any natural number `n`. -/
 theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : ExpChar F q] (n : ℕ)
     [IsSeparable F E] {ι : Type*} {v : ι → E} (h : Submodule.span F (Set.range v) = ⊤) :
-    Submodule.span F (Set.range ((fun x ↦ x ^ q ^ n) ∘ v)) = ⊤ := by
+    Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
   cases id hF
   · simpa only [one_pow, pow_one]
   haveI := Fact.mk ‹q.Prime›
@@ -674,10 +670,9 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : Exp
   rw [← h] at hy
   erw [Finsupp.mem_span_range_iff_exists_finsupp] at hy ⊢
   obtain ⟨c, hy⟩ := hy
-  use c.mapRange (fun x ↦ x ^ q ^ n) (zero_pow (expChar_pow_pos F q n))
+  use c.mapRange (· ^ q ^ n) (zero_pow (expChar_pow_pos F q n))
   rw [Finsupp.sum_mapRange_index (fun _ ↦ by exact zero_smul _ _)]
-  simp_rw [← hy, Finsupp.sum, sum_pow_char_pow, Function.comp_apply,
-    Algebra.smul_def, mul_pow, map_pow]
+  simp_rw [← hy, Finsupp.sum, sum_pow_char_pow, Algebra.smul_def, mul_pow, map_pow]
 
 variable {F E} in
 /-- If `E / F` is a finite separable extension of exponential characteristic `q`, if `{ u_i }` is a
@@ -687,7 +682,7 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 and is an intermediate result used to prove it. -/
 theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (q : ℕ) [ExpChar F q]
     (n : ℕ) [FiniteDimensional F E] [IsSeparable F E] {ι : Type*} {v : ι → E}
-    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+    (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   have h' := h.coe_range
   let ι' := h'.extend (Set.subset_univ (Set.range v))
   let b : Basis ι' F E := Basis.extend h'
@@ -697,7 +692,6 @@ theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable (q : ℕ) [ExpCh
     (finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
   convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [Subtype.mk.injEq] using heq)
-  ext i
   simp_rw [Function.comp_apply, Basis.extend_apply_self]
 
 variable {F E} in
@@ -706,7 +700,7 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 `F`-linearly independent for any natural number `n`. -/
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable (q : ℕ) [ExpChar F q]
     (n : ℕ) [IsSeparable F E] {ι : Type*} {v : ι → E}
-    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+    (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   have halg := IsSeparable.isAlgebraic F E
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
   intro s
@@ -724,7 +718,7 @@ family of separable elements of `E` which is `F`-linearly independent, then `{ u
 is also `F`-linearly independent for any natural number `n`. -/
 theorem LinearIndependent.map_pow_expChar_pow_of_separable (q : ℕ) [ExpChar F q]
     (n : ℕ) {ι : Type*} {v : ι → E} (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
-    (h : LinearIndependent F v) : LinearIndependent F ((fun x ↦ x ^ q ^ n) ∘ v) := by
+    (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
   haveI : IsSeparable F E' := (isSeparable_adjoin_iff_separable F _).2 <| by
     rintro _ ⟨y, rfl⟩; exact hsep y
@@ -842,7 +836,6 @@ lemma adjoin_eq_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E] 
   haveI := isSeparable_tower_top_of_isSeparable E L K
   let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
   letI : Algebra S L := i.toAlgebra
-  letI : Module S L := Algebra.toModule
   letI : SMul S L := Algebra.toSMul
   haveI : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   haveI : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K <|
@@ -912,7 +905,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     refine Finset.sum_congr rfl ?_
     intro i hs
     simp_rw [hs, ite_true, Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF,
-      map_pow, Function.comp_apply]
+      map_pow]
   replace hlF (i : ι) : (algebraMap F E) (lF' i) = l i ^ q ^ n := by
     by_cases hs : i ∈ l.support
     · simp only [hs, ite_true, hlF i]
