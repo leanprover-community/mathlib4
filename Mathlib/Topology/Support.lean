@@ -420,4 +420,14 @@ theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 
+theorem LocallyFinite.smul_left [Zero R] [Zero M] [SMulWithZero R M]
+    {s : ι → X → R} (h : LocallyFinite fun i ↦ support <| s i) (f : ι → X → M) :
+    LocallyFinite fun i ↦ support (s i • f i) :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, zero_smul]
+
+theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
+    {f : ι → X → M} (h : LocallyFinite fun i ↦ support <| f i) (s : ι → X → R) :
+    LocallyFinite fun i ↦ support <| s i • f i :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
+
 end LocallyFinite
