@@ -649,6 +649,28 @@ theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnect
   @ContinuousOn.surjOn_of_tendsto α _ _ _ _ δᵒᵈ _ _ _ _ _ _ hs hf hbot htop
 #align continuous_on.surj_on_of_tendsto' ContinuousOn.surjOn_of_tendsto'
 
+/-- Suppose `f : α → δ` is
+continuous and injective. Then `f` is strictly monotone (increasing)
+if `f(⊥) ≤ f(⊤)`.-/
+theorem Continuous.strictMono_of_injective [BoundedOrder α] {f : α → δ} (hf_c : Continuous f)
+    (hf : f ⊥ ≤ f ⊤) (hf_i : Injective f) : StrictMono f := by
+  intro a b hab
+  by_contra! h
+  have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
+  by_cases ha : f a ≤ f ⊥
+  · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
+    have : u = ⊥ := hf_i hu.2
+    aesop
+  · by_cases hb : f ⊥ < f b
+    · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
+      rw [hf_i hu.2] at hu
+      exact (hab.trans hu.1.2).false
+    · push_neg at ha hb
+      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+      obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
+      have : u = ⊥ := hf_i hu.2
+      aesop
+
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing)
 if `f(a) ≤ f(b)`.-/
