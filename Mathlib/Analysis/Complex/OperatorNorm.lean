@@ -63,12 +63,12 @@ theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
 @[simp]
 theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLie.toLinearIsometry.norm_toContinuousLinearMap
-#align complex.conj_cle_norm Complex.conjCle_norm
+#align complex.conj_cle_norm Complex.conjCLE_norm
 
 @[simp]
 theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
-  Subtype.ext conjCle_norm
-#align complex.conj_cle_nnorm Complex.conjCle_nnorm
+  Subtype.ext conjCLE_norm
+#align complex.conj_cle_nnorm Complex.conjCLE_nnorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=

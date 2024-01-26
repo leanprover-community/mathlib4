@@ -97,7 +97,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     rw [coe_restrictScalars', smul_apply, smul_apply, comp_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap, LinearIsometryEquiv.coe_toLinearIsometry,
       LinearIsometryEquiv.trans_apply, rotation_apply, id_apply, smul_eq_mul,
-      ContinuousLinearEquiv.coe_coe, conjCle_apply, conjLie_apply, conj_conj]
+      ContinuousLinearEquiv.coe_coe, conjCLE_apply, conjLie_apply, conj_conj]
 #align is_conformal_map.is_complex_or_conj_linear IsConformalMap.is_complex_or_conj_linear
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
@@ -116,7 +116,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
     · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCLE := by
         ext1
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          conjCle_apply, starRingEnd_self_apply]
+          conjCLE_apply, starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
       refine' isConformalMap_complex_linear_conj _
       contrapose! h₂ with w

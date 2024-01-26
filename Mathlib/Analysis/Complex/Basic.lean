@@ -373,12 +373,12 @@ def conjCLE : ℂ ≃L[ℝ] ℂ :=
 @[simp]
 theorem conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
-#align complex.conj_cle_coe Complex.conjCle_coe
+#align complex.conj_cle_coe Complex.conjCLE_coe
 
 @[simp]
 theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
-#align complex.conj_cle_apply Complex.conjCle_apply
+#align complex.conj_cle_apply Complex.conjCLE_apply
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLi : ℝ →ₗᵢ[ℝ] ℂ :=

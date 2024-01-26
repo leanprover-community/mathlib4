@@ -1084,12 +1084,12 @@ noncomputable def conjCLE : K ≃L[ℝ] K :=
 @[simp, isROrC_simps]
 theorem conjCLE_coe : (@conjCLE K _).toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
-#align is_R_or_C.conj_cle_coe IsROrC.conjCle_coe
+#align is_R_or_C.conj_cle_coe IsROrC.conjCLE_coe
 
 @[simp, isROrC_simps]
 theorem conjCLE_apply : (conjCLE : K → K) = conj :=
   rfl
-#align is_R_or_C.conj_cle_apply IsROrC.conjCle_apply
+#align is_R_or_C.conj_cle_apply IsROrC.conjCLE_apply
 
 instance (priority := 100) : ContinuousStar K :=
   ⟨conjLie.continuous⟩

@@ -77,7 +77,7 @@ theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
 @[simp, isROrC_simps]
 theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
   (@conjLie K _).toLinearIsometry.norm_toContinuousLinearMap
-#align is_R_or_C.conj_cle_norm IsROrC.conjCle_norm
+#align is_R_or_C.conj_cle_norm IsROrC.conjCLE_norm
 
 @[simp, isROrC_simps]
 theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
