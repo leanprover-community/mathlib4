@@ -785,6 +785,7 @@ theorem effectiveEpiFamilyStructCompIso_aux
   rw [← Category.assoc, hg]
   simp
 
+/-- An effective epi family followed by an iso is an effective epi family. -/
 noncomputable
 def effectiveEpiFamilyStructCompIso : EffectiveEpiFamilyStruct X (fun a ↦ π a ≫ i) where
   desc e h := inv i ≫ EffectiveEpiFamily.desc X π e (effectiveEpiFamilyStructCompIso_aux X π i e h)
@@ -812,6 +813,7 @@ theorem effectiveEpiFamilyStructIsoComp_aux {W : C} (e : (a : α) → Y a ⟶ W)
   apply h
   simp [hg]
 
+/-- An effective epi family preceded by a family of isos is an effective epi family. -/
 noncomputable
 def effectiveEpiFamilyStructIsoComp : EffectiveEpiFamilyStruct Y (fun a ↦ i a ≫ π a) where
   desc e h := EffectiveEpiFamily.desc X π (fun a ↦ inv (i a) ≫ e a)
