@@ -166,6 +166,7 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 #align smooth_partition_of_unity.sum_le_one SmoothPartitionOfUnity.sum_le_one
 
 /-- Reinterpret a smooth partition of unity as a continuous partition of unity. -/
+@[simps]
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
   { f with toFun := fun i => f i }
 #align smooth_partition_of_unity.to_partition_of_unity SmoothPartitionOfUnity.toPartitionOfUnity
@@ -216,8 +217,6 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
     (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 #align smooth_partition_of_unity.finsum_smul_mem_convex SmoothPartitionOfUnity.finsum_smul_mem_convex
-
---attribute [simps] SmoothPartitionOfUnity.toPartitionOfUnity
 
 section finsupport
 
