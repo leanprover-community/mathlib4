@@ -477,7 +477,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.nilpotency_class_le Subgroup.nilpotencyClass_le
 
-instance (priority := 100) isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
+instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
   nilpotent_iff_lowerCentralSeries.2 ⟨0, Subsingleton.elim ⊤ ⊥⟩
 #align is_nilpotent_of_subsingleton isNilpotent_of_subsingleton
 
@@ -865,7 +865,7 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
         rw [card_eq_card_quotient_mul_card_subgroup (center G)]
         apply lt_mul_of_one_lt_right
-        exact Fintype.card_pos_iff.mpr One.nonempty
+        exact Fintype.card_pos_iff.mpr One.instNonempty
         exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
       have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
       exact of_quotient_center_nilpotent hnq
