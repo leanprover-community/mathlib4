@@ -273,6 +273,11 @@ abbrev homMk {s t : RightLift f g} (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.
     s ⟶ t :=
   CostructuredArrow.homMk η w
 
+@[reassoc (attr := simp)]
+theorem w {s t : RightLift f g} (h : s ⟶ t) :
+    h.left ▷ f ≫ t.counit = s.counit :=
+  CostructuredArrow.w h
+
 /-- The right lift along the identity. -/
 def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
 
