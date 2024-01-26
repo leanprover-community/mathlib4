@@ -844,6 +844,19 @@ lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
   rw [one_div, ← Real.rpow_neg_one]
   exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
 
+lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
+    1 - (p : ℂ) ^ (-s) ≠ 0 := by
+  refine sub_ne_zero_of_ne fun H ↦ ?_
+  have := norm_prime_cpow_le_one_half ⟨p, hp⟩ hs
+  simp only at this
+  rw [← H, norm_one] at this
+  norm_num at this
+
+lemma norm_ofNat_cpow_le_norm_ofNat_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z : ℂ} (h : w.re ≤ z.re) :
+    ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ := by
+  simp_rw [norm_ofNat_cpow_of_pos hn]
+  exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
+
 end Complex
 
 /-!
