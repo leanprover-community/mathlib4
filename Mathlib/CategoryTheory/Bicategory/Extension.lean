@@ -193,6 +193,27 @@ theorem whisker_unit (t : LeftLift f g) {x : B} (h : x ⟶ c) :
     (t.whisker h).unit = h ◁ t.unit ≫ (α_ h t.lift f).inv :=
   rfl
 
+/-- Whiskering a 1-morphism is a functor. -/
+@[simps]
+def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) where
+  obj t := t.whisker h
+  map η := LeftLift.homMk (h ◁ η.right) <| by
+    dsimp only [whisker_lift, whisker_unit]
+    rw [← LeftLift.w η]
+    simp [- LeftLift.w]
+
+@[simps! right]
+def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
+    s ⟶ t :=
+  LeftLift.homMk ((λ_ _).inv ≫ τ.right ≫ (λ_ _).hom) <| by
+    have := LeftLift.w τ
+    simp only [whisker_lift, comp_whiskerRight, leftUnitor_inv_whiskerRight,
+      leftUnitor_whiskerRight, Category.assoc]
+    simp only [whisker_lift, whisker_unit, id_whiskerLeft, Category.assoc,
+      Iso.cancel_iso_hom_left] at this
+    rw [reassoc_of% this]
+    simp
+
 end LeftLift
 
 /-- Triangle diagrams for (right) extensions.

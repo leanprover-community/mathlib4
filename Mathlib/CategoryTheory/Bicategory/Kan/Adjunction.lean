@@ -9,12 +9,13 @@ import Mathlib.CategoryTheory.Bicategory.Adjunction
 /-!
 # Adjunctions as Kan extensions
 
-We show that adjunctions are realized as Kan extensions. We also show that a left adjoint commutes
-with a left Kan extension.
+We show that adjunctions are realized as Kan extensions or Kan lifts. We also show that a left
+adjoint commutes with a left Kan extension.
 
 ## TODO
 
-Show the similar results for right Kan extensions.
+At the moment, the results are stated for left Kan extensions and left Kan lifts. We can prove the
+similar results for right Kan extensions and right Kan lifts.
 
 -/
 
@@ -150,6 +151,12 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
         _ = _ := by
           rw [← rightZigzag, Hε]; simp [bicategoricalComp]
     right_triangle := Hε }
+
+/-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
+The unit of this Kan lift is given by the unit of the adjunction. -/
+def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : LeftLift.IsAbsKan t) :
+    t.lift ⊣ u :=
+  H.IsKan.adjunction (H u)
 
 end LeftLift
 

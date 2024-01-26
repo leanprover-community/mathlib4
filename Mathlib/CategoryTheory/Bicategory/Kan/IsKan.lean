@@ -151,6 +151,17 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
     h ≫ t.lift ⟶ s.lift :=
   (H h).desc s
 
+variable {x : B} {h : x ⟶ c} {s : LeftLift f (h ≫ g)}
+
+/-- An absolute left Kan lift is a left Kan lift. -/
+def IsKan (H : IsAbsKan t) : IsKan t :=
+  .mk (fun s ↦ LeftLift.whiskerIdCancel <| (H (𝟙 _)).to _) <| by
+    intro s τ
+    ext
+    apply (cancel_epi (λ_ _).hom).mp
+    apply (cancel_mono (λ_ _).inv).mp
+    simpa using (H (𝟙 _)).uniq ((LeftLift.whiskering (𝟙 _)).map τ)
+
 end IsAbsKan
 
 end LeftLift
