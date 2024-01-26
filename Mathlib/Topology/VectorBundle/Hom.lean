@@ -71,6 +71,21 @@ instance Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
   fun _ => inferInstance
 #align bundle.continuous_linear_map.module Bundle.ContinuousLinearMap.module
 
+-- TODO: are these two instances necessary?? try to remove and keep RiemannianMetric building...
+instance Bundle.ContinuousSemilinearMapClass [∀ x, TopologicalSpace (E₁ x)]
+    [∀ x, TopologicalSpace (E₂ x)] [∀ x, TopologicalAddGroup (E₂ x)]
+    [∀ x, ContinuousConstSMul 𝕜₂ (E₂ x)] (x : B) :
+    SemilinearMapClass (Bundle.ContinuousLinearMap σ E₁ E₂ x) σ (E₁ x) (E₂ x) :=
+  ContinuousSemilinearMapClass.toSemilinearMapClass
+
+instance Bundle.ContinuousLinearMap.AddCommGroup (E₁ : B → Type*)
+    [Π (x : B), AddCommGroup (E₁ x)] [Π (x : B), Module 𝕜₁ (E₁ x)]
+    [Π (x : B), TopologicalSpace (E₁ x)]
+    (E₂ : B → Type*) [Π (x : B), AddCommGroup (E₂ x)] [Π (x : B), Module 𝕜₂ (E₂ x)]
+    [Π (x : B), TopologicalSpace (E₂ x)] [∀ (x : B), TopologicalAddGroup (E₂ x)] (x : B) :
+    AddCommGroup (Bundle.ContinuousLinearMap σ E₁ E₂ x) :=
+  addCommGroup
+
 variable {E₁ E₂}
 
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
