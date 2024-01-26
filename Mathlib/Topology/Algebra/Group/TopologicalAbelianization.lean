@@ -14,7 +14,7 @@ This file defines the topological abelianization of a topological group.
 ## Main definitions
 
 * `TopologicalAbelianization`: defines the topological abelianization of a group `G` as the quotient
-  of `G` by the topological closure of its commutator subgroup..
+  of `G` by the topological closure of its commutator subgroup.
 
 ## Main results
 - `instNormalCommutatorClosure` : the topological closure of the commutator of a topological group
