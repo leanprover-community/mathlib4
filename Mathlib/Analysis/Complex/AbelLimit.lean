@@ -84,7 +84,7 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
 theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
-  -- If `1 ≤ M` the Stolz set is empty and the statement is trivial
+  -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
   cases' le_or_lt M 1 with hM hM
   · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
