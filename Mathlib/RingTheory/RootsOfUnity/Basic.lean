@@ -267,7 +267,7 @@ variable (R) [CommRing R] [IsReduced R]
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [ExpChar R p]
     {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, expChar_pos R p⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', PNat.mul_coe, PNat.pow_coe, PNat.mk_coe,
-    CharP.pow_prime_pow_mul_eq_one_iff]
+    ExpChar.pow_prime_pow_mul_eq_one_iff]
 #align mem_roots_of_unity_prime_pow_mul_iff mem_rootsOfUnity_prime_pow_mul_iff
 
 @[simp]
