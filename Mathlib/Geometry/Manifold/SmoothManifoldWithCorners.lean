@@ -620,7 +620,7 @@ theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.eq_on_source _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_contDiffGroupoid n I e.open_target) this
 #align symm_trans_mem_cont_diff_groupoid symm_trans_mem_contDiffGroupoid
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
@@ -650,7 +650,7 @@ instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
     (by
       apply StructureGroupoid.le_iff.mpr
       rintro e ⟨s, hs, hes⟩
-      apply (contDiffGroupoid n I).eq_on_source' _ _ _ hes
+      apply (contDiffGroupoid n I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
 
 end contDiffGroupoid
@@ -780,7 +780,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
     PartialHomeomorph.symm_trans_self _
-  StructureGroupoid.eq_on_source _ (ofSet_mem_analyticGroupoid I e.open_target) this
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
@@ -788,7 +788,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
     (by
       apply StructureGroupoid.le_iff.mpr
       rintro e ⟨s, hs, hes⟩
-      apply (analyticGroupoid I).eq_on_source' _ _ _ hes
+      apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
 
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
@@ -979,6 +979,9 @@ theorem isOpen_extend_source : IsOpen (f.extend I).source := by
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
   simp_rw [extend, PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
+
+theorem extend_target' : (f.extend I).target = I '' f.target := by
+  rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
 
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
