@@ -5,9 +5,6 @@ Authors: Yourong Zang
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 #align_import analysis.calculus.conformal.normed_space from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 

@@ -76,7 +76,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
-  let fr := reClm.comp (f.restrictScalars ℝ)
+  let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
   -- we'll call `g : E →L[ℝ] ℝ`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
@@ -103,8 +103,8 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   · calc
       ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reClm‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
-      _ = ‖f‖ := by rw [reClm_norm, one_mul]
+      _ ≤ ‖reCLM‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
+      _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.op_norm_le_bound g.extendTo𝕜.op_norm_nonneg fun x => h x ▸ g.extendTo𝕜.le_op_norm x
 #align exists_extension_norm_eq exists_extension_norm_eq
 
@@ -134,7 +134,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
-  ⟨g, FunLike.congr_fun hg.symm⟩
+  ⟨g, DFunLike.congr_fun hg.symm⟩
 
 end IsROrC
 

@@ -33,7 +33,7 @@ instance : SMul Mᵈᵐᵃ (α →[N] β) where
 
 instance [SMul M' α] [SMulCommClass M' N α] [SMulCommClass M M' α] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (α →[N] β) :=
-  FunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 theorem smul_mulActionHom_apply (c : Mᵈᵐᵃ) (f : α →[N] β) (a : α) :
     (c • f) a = f (mk.symm c • a) :=
@@ -46,7 +46,7 @@ end SMul
 
 instance [Monoid M] [MulAction M α] [SMul N α] [SMulCommClass M N α] [SMul N β] :
     MulAction Mᵈᵐᵃ (α →[N] β) :=
-  FunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
 end MulActionSemiHom
 
@@ -62,7 +62,7 @@ instance : SMul Mᵈᵐᵃ (A →+[N] B) where
 
 instance [DistribSMul M' A] [SMulCommClass M' N A] [SMulCommClass M M' A] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+[N] B) :=
-  FunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 theorem smul_mulDistribActionHom_apply (c : Mᵈᵐᵃ) (f : A →+[N] B) (a : A) :
     (c • f) a = f (mk.symm c • a) :=
@@ -77,7 +77,7 @@ end SMul
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [Monoid N] [AddMonoid B]
     [DistribMulAction N A] [SMulCommClass M N A] [DistribMulAction N B] :
     MulAction Mᵈᵐᵃ (A →+[N] B) :=
-  FunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
 end DistribMulActionHom
 

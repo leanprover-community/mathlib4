@@ -75,7 +75,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-@[positivity FunLike.coe _ _]
+@[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]

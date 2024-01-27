@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OmegaCompletePartialOrder
@@ -1031,7 +1032,7 @@ theorem eqOn_span {s : Set M} {f g : F} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ 
 /-- If `s` generates the whole module and linear maps `f`, `g` are equal on `s`, then they are
 equal. -/
 theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
-  FunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
+  DFunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
 #align linear_map.ext_on LinearMap.ext_on
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at

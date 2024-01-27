@@ -152,7 +152,7 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable {T : Type*} [Monoid T] [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
--- Porting note: Replaced with FunLike instance
+-- Porting note: Replaced with DFunLike instance
 -- /-- see Note [function coercion] -/
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
@@ -252,7 +252,7 @@ theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
 
 @[norm_cast]

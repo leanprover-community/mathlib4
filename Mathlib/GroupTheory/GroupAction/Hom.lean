@@ -565,7 +565,7 @@ theorem toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] 
 
 theorem toAddMonoidHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →ₑ+[φ] B) : f 0 = 0 :=

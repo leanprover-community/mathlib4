@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Set.Intervals.OrderEmbedding
 import Mathlib.Algebra.Order.Field.Basic
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -98,51 +99,51 @@ theorem cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_ma
 open Set
 
 @[simp]
-theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
-  ext x
-  simp
+theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b :=
+  castOrderEmbedding.preimage_Icc ..
 #align rat.preimage_cast_Icc Rat.preimage_cast_Icc
 
 @[simp]
-theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
-  ext x
-  simp
+theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b :=
+  castOrderEmbedding.preimage_Ico ..
 #align rat.preimage_cast_Ico Rat.preimage_cast_Ico
 
 @[simp]
-theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
-  ext x
-  simp
+theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b :=
+  castOrderEmbedding.preimage_Ioc a b
 #align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
 
 @[simp]
-theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
-  ext x
-  simp
+theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b :=
+  castOrderEmbedding.preimage_Ioo a b
 #align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
 
 @[simp]
-theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
-  ext x
-  simp
+theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a :=
+  castOrderEmbedding.preimage_Ici a
 #align rat.preimage_cast_Ici Rat.preimage_cast_Ici
 
 @[simp]
-theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
-  ext x
-  simp
+theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a :=
+  castOrderEmbedding.preimage_Iic a
 #align rat.preimage_cast_Iic Rat.preimage_cast_Iic
 
 @[simp]
-theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
-  ext x
-  simp
+theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a :=
+  castOrderEmbedding.preimage_Ioi a
 #align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
 
 @[simp]
-theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
-  ext x
-  simp
+theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a :=
+  castOrderEmbedding.preimage_Iio a
 #align rat.preimage_cast_Iio Rat.preimage_cast_Iio
+
+@[simp]
+theorem preimage_cast_uIcc (a b : ℚ) : (↑) ⁻¹' uIcc (a : K) b = uIcc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIcc a b
+
+@[simp]
+theorem preimage_cast_uIoc (a b : ℚ) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIoc a b
 
 end LinearOrderedField

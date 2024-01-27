@@ -54,14 +54,11 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w x
 
-variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
+variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
@@ -115,14 +112,14 @@ instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
   map_one_left f := f.map_one_left
 
 /- porting note: probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (Homotopy f₀ f₁) fun _ => I × X → Y :=
-  FunLike.hasCoeToFun -/
+  DFunLike.hasCoeToFun -/
 
 @[ext]
 theorem ext {F G : Homotopy f₀ f₁} (h : ∀ x, F x = G x) : F = G :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_map.homotopy.ext ContinuousMap.Homotopy.ext
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -431,11 +428,11 @@ instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
   map_one_left F := F.map_one_left
 
 theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X → Y) (⇑) :=
-  FunLike.coe_injective'
+  DFunLike.coe_injective'
 #align continuous_map.homotopy_with.coe_fn_injective ContinuousMap.HomotopyWith.coeFn_injective
 
 @[ext]
-theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := FunLike.ext F G h
+theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := DFunLike.ext F G h
 #align continuous_map.homotopy_with.ext ContinuousMap.HomotopyWith.ext
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
