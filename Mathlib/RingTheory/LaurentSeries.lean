@@ -42,7 +42,7 @@ section Zero
 variable [Zero R]
 
 theorem suppBddBelow_supp_PWO (f : ℤ → R) (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp <| Set.bddBelow_wellFoundedOn_lt <| hf
+    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp <| BddBelow_wellFoundedOn_lt <| hf
 
 theorem forallLTEqZero_supp_BddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
