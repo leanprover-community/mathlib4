@@ -412,7 +412,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
         change _ = _ + _
         dsimp
         simp }
-  inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
+  inv := kernel.lift f (AddSubgroup.subtype (AddMonoidHom.ker f)) <| by
     -- porting note : used to be `tidy`, but `aesop` can't do it
     refine DFunLike.ext _ _ ?_
     rintro ⟨x, (hx : f _ = 0)⟩
@@ -438,20 +438,23 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
 
+open AddMonoidHom in
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
+    (kernelIsoKer f).hom ≫ AddSubgroup.subtype (ker f) = kernel.ι f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGroupCat.kernelIsoKer_hom_comp_subtype
 
+open AddMonoidHom in
 @[simp]
 theorem kernelIsoKer_inv_comp_ι {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype f.ker := by
+    (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype (ker f) := by
   ext
   simp [kernelIsoKer]
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_inv_comp_ι AddCommGroupCat.kernelIsoKer_inv_comp_ι
 
+open AddMonoidHom in
 -- Porting note : explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
@@ -459,7 +462,7 @@ agrees with the `subtype` map.
 -/
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGroupCat.of f.ker) (AddSubgroup.subtype f.ker) :=
+    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGroupCat.of (ker f)) (AddSubgroup.subtype (ker f)) :=
   Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver

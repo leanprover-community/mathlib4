@@ -21,7 +21,7 @@ variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  KernelFork.ofι (Z := of f.ker) f.ker.subtype <| ext fun x => x.casesOn fun _ hx => hx
+  KernelFork.ofι (Z := of (ker f)) f.ker.subtype <| ext fun x => x.casesOn fun _ hx => hx
 
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
@@ -33,7 +33,7 @@ def kernelIsLimit : IsLimit <| kernelCone f :=
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (Z := of <| H ⧸ f.range) (mk' f.range) <| ext fun x =>
+  CokernelCofork.ofπ (Z := of <| H ⧸ range f) (mk' <| range f) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/

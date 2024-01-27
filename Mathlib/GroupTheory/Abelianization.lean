@@ -129,7 +129,8 @@ section lift
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
 variable {A : Type v} [CommGroup A] (f : G →* A)
 
-theorem commutator_subset_ker : commutator G ≤ f.ker := by
+open MonoidHom in
+theorem commutator_subset_ker : commutator G ≤ (ker f) := by
   rw [commutator_eq_closure, Subgroup.closure_le]
   rintro x ⟨p, q, rfl⟩
   simp [MonoidHom.mem_ker, mul_right_comm (f p) (f q), commutatorElement_def]

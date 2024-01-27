@@ -210,7 +210,7 @@ lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[�
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGroup M]
     [AddCommGroup M₂] (f : M →+ M₂) :
-    LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
+    LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule (AddMonoidHom.range f) := rfl
 
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
@@ -392,7 +392,8 @@ theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
 
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
-    (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
+    (f : M →+ M₂) :
+    LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule (AddMonoidHom.ker f) := rfl
 
 section
 
@@ -458,12 +459,12 @@ variable {f : F}
 open Submodule
 
 theorem range_toAddSubgroup [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
-    (range f).toAddSubgroup = f.toAddMonoidHom.range :=
+    (range f).toAddSubgroup = AddMonoidHom.range f.toAddMonoidHom :=
   rfl
 #align linear_map.range_to_add_subgroup LinearMap.range_toAddSubgroup
 
-theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgroup = f.toAddMonoidHom.ker :=
-  rfl
+theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) :
+    (ker f).toAddSubgroup = AddMonoidHom.ker f.toAddMonoidHom := rfl
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
 theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=

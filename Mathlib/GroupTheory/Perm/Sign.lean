@@ -133,9 +133,10 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     exact absurd hy Sum.inr_ne_inl
 #align equiv.perm.perm_maps_to_inl_iff_maps_to_inr Equiv.Perm.perm_mapsTo_inl_iff_mapsTo_inr
 
+open MonoidHom in
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (Sum m n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
-    σ ∈ (sumCongrHom m n).range := by
+    σ ∈ range (sumCongrHom m n) := by
   cases nonempty_fintype m
   cases nonempty_fintype n
   classical

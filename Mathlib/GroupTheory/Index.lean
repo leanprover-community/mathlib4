@@ -36,7 +36,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 namespace Subgroup
 
-open BigOperators Cardinal
+open BigOperators Cardinal MonoidHom
 
 variable {G : Type*} [Group G] (H K L : Subgroup G)
 
@@ -64,7 +64,7 @@ theorem index_comap_of_surjective {G' : Type*} [Group G'] {f : G' →* G}
   letI := QuotientGroup.leftRel (H.comap f)
   have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
-    exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
+    exact fun x y => iff_of_eq (_root_.congr_arg (· ∈ H) (by rw [map_mul, map_inv]))
   refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
   · simp_rw [← Quotient.eq''] at key
     refine' Quotient.ind' fun x => _
@@ -72,15 +72,15 @@ theorem index_comap_of_surjective {G' : Type*} [Group G'] {f : G' →* G}
     exact (key x y).mpr
   · refine' Quotient.ind' fun x => _
     obtain ⟨y, hy⟩ := hf x
-    exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
+    exact ⟨y, (Quotient.map'_mk'' f _ y).trans (_root_.congr_arg Quotient.mk'' hy)⟩
 #align subgroup.index_comap_of_surjective Subgroup.index_comap_of_surjective
 #align add_subgroup.index_comap_of_surjective AddSubgroup.index_comap_of_surjective
 
 @[to_additive]
 theorem index_comap {G' : Type*} [Group G'] (f : G' →* G) :
-    (H.comap f).index = H.relindex f.range :=
-  Eq.trans (congr_arg index (by rfl))
-    ((H.subgroupOf f.range).index_comap_of_surjective f.rangeRestrict_surjective)
+    (H.comap f).index = H.relindex (range f) :=
+  Eq.trans (_root_.congr_arg index (by rfl))
+    ((H.subgroupOf (range f)).index_comap_of_surjective f.rangeRestrict_surjective)
 #align subgroup.index_comap Subgroup.index_comap
 #align add_subgroup.index_comap AddSubgroup.index_comap
 
@@ -96,7 +96,7 @@ variable {H K L}
 @[to_additive relindex_mul_index]
 theorem relindex_mul_index (h : H ≤ K) : H.relindex K * K.index = H.index :=
   ((mul_comm _ _).trans (Cardinal.toNat_mul _ _).symm).trans
-    (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
+    (DFunLike.congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
 #align subgroup.relindex_mul_index Subgroup.relindex_mul_index
 #align add_subgroup.relindex_mul_index AddSubgroup.relindex_mul_index
 
@@ -115,7 +115,8 @@ theorem relindex_dvd_index_of_le (h : H ≤ K) : H.relindex K ∣ H.index :=
 @[to_additive]
 theorem relindex_subgroupOf (hKL : K ≤ L) :
     (H.subgroupOf L).relindex (K.subgroupOf L) = H.relindex K :=
-  ((index_comap (H.subgroupOf L) (inclusion hKL)).trans (congr_arg _ (inclusion_range hKL))).symm
+  ((index_comap (H.subgroupOf L) (inclusion hKL)).trans
+    (_root_.congr_arg _ (inclusion_range hKL))).symm
 #align subgroup.relindex_subgroup_of Subgroup.relindex_subgroupOf
 #align add_subgroup.relindex_add_subgroup_of AddSubgroup.relindex_addSubgroupOf
 
@@ -310,7 +311,7 @@ theorem nat_card_dvd_of_le (hHK : H ≤ K) : Nat.card H ∣ Nat.card K :=
 theorem nat_card_dvd_of_surjective {G H : Type*} [Group G] [Group H] (f : G →* H)
     (hf : Function.Surjective f) : Nat.card H ∣ Nat.card G := by
   rw [← Nat.card_congr (QuotientGroup.quotientKerEquivOfSurjective f hf).toEquiv]
-  exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
+  exact Dvd.intro_left (Nat.card (ker f)) f.ker.card_mul_index
 #align subgroup.nat_card_dvd_of_surjective Subgroup.nat_card_dvd_of_surjective
 #align add_subgroup.nat_card_dvd_of_surjective AddSubgroup.nat_card_dvd_of_surjective
 
@@ -323,7 +324,7 @@ theorem card_dvd_of_surjective {G H : Type*} [Group G] [Group H] [Fintype G] [Fi
 
 @[to_additive]
 theorem index_map {G' : Type*} [Group G'] (f : G →* G') :
-    (H.map f).index = (H ⊔ f.ker).index * f.range.index := by
+    (H.map f).index = (H ⊔ ker f).index * f.range.index := by
   rw [← comap_map_eq, index_comap, relindex_mul_index (H.map_le_range f)]
 #align subgroup.index_map Subgroup.index_map
 #align add_subgroup.index_map AddSubgroup.index_map
@@ -331,13 +332,13 @@ theorem index_map {G' : Type*} [Group G'] (f : G →* G') :
 @[to_additive]
 theorem index_map_dvd {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
-  rw [index_map, f.range_top_of_surjective hf, index_top, mul_one]
+  rw [index_map, range_top_of_surjective f hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 #align subgroup.index_map_dvd Subgroup.index_map_dvd
 #align add_subgroup.index_map_dvd AddSubgroup.index_map_dvd
 
 @[to_additive]
-theorem dvd_index_map {G' : Type*} [Group G'] {f : G →* G'} (hf : f.ker ≤ H) :
+theorem dvd_index_map {G' : Type*} [Group G'] {f : G →* G'} (hf : ker f ≤ H) :
     H.index ∣ (H.map f).index := by
   rw [index_map, sup_of_le_left hf]
   apply dvd_mul_right
@@ -346,7 +347,7 @@ theorem dvd_index_map {G' : Type*} [Group G'] {f : G →* G'} (hf : f.ker ≤ H)
 
 @[to_additive]
 theorem index_map_eq {G' : Type*} [Group G'] {f : G →* G'} (hf1 : Function.Surjective f)
-    (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
+    (hf2 : ker f ≤ H) : (H.map f).index = H.index :=
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
 #align subgroup.index_map_eq Subgroup.index_map_eq
 #align add_subgroup.index_map_eq AddSubgroup.index_map_eq
@@ -486,7 +487,7 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
     QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
-    fun h => (congr_arg index h).trans index_top⟩
+    fun h => (_root_.congr_arg index h).trans index_top⟩
 #align subgroup.index_eq_one Subgroup.index_eq_one
 #align add_subgroup.index_eq_one AddSubgroup.index_eq_one
 
@@ -585,10 +586,10 @@ theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
 variable (H K)
 
 @[to_additive]
-instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range] :
+instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite <| range f] :
     f.ker.FiniteIndex :=
-  @finiteIndex_of_finite_quotient G _ f.ker
-    (Finite.of_equiv f.range (QuotientGroup.quotientKerEquivRange f).symm)
+  @finiteIndex_of_finite_quotient G _ (ker f)
+    (Finite.of_equiv (range f) (QuotientGroup.quotientKerEquivRange f).symm)
 #align subgroup.finite_index_ker Subgroup.finiteIndex_ker
 #align add_subgroup.finite_index_ker AddSubgroup.finiteIndex_ker
 

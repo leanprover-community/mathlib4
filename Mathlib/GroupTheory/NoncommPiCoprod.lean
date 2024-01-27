@@ -197,7 +197,7 @@ namespace MonoidHom
 
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
-theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
+theorem noncommPiCoprod_range : range (noncommPiCoprod ϕ hcomm) = ⨆ i : ι, range (ϕ i) := by
   classical
     apply le_antisymm
     · rintro x ⟨f, rfl⟩
@@ -214,7 +214,7 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
 
 @[to_additive]
 theorem injective_noncommPiCoprod_of_independent
-    (hind : CompleteLattice.Independent fun i => (ϕ i).range)
+    (hind : CompleteLattice.Independent fun i => range (ϕ i))
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
   classical
     apply (MonoidHom.ker_eq_bot_iff _).mp
@@ -234,7 +234,7 @@ variable (hcomm)
 @[to_additive]
 theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
-    CompleteLattice.Independent fun i => (ϕ i).range := by
+    CompleteLattice.Independent fun i => range (ϕ i) := by
   cases nonempty_fintype ι
   classical
     rintro i
@@ -311,8 +311,9 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : H i) :
 #align subgroup.noncomm_pi_coprod_mul_single Subgroup.noncommPiCoprod_mulSingle
 #align add_subgroup.noncomm_pi_coprod_single AddSubgroup.noncommPiCoprod_single
 
+open MonoidHom in
 @[to_additive]
-theorem noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i := by
+theorem noncommPiCoprod_range : range (noncommPiCoprod hcomm) = ⨆ i : ι, H i := by
   simp [noncommPiCoprod, MonoidHom.noncommPiCoprod_range]
 #align subgroup.noncomm_pi_coprod_range Subgroup.noncommPiCoprod_range
 #align add_subgroup.noncomm_pi_coprod_range AddSubgroup.noncommPiCoprod_range

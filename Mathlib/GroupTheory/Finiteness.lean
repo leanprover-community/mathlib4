@@ -359,8 +359,9 @@ theorem Group.fg_of_surjective {G' : Type*} [Group G'] [hG : Group.FG G] {f : G 
 #align group.fg_of_surjective Group.fg_of_surjective
 #align add_group.fg_of_surjective AddGroup.fg_of_surjective
 
+open MonoidHom in
 @[to_additive]
-instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
+instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG (range f) :=
   Group.fg_of_surjective f.rangeRestrict_surjective
 #align group.fg_range Group.fg_range
 #align add_group.fg_range AddGroup.fg_range
@@ -416,8 +417,9 @@ theorem Group.rank_le_of_surjective [Group.FG G] [Group.FG G'] (f : G →* G')
 #align group.rank_le_of_surjective Group.rank_le_of_surjective
 #align add_group.rank_le_of_surjective AddGroup.rank_le_of_surjective
 
+open MonoidHom in
 @[to_additive]
-theorem Group.rank_range_le [Group.FG G] {f : G →* G'} : Group.rank f.range ≤ Group.rank G :=
+theorem Group.rank_range_le [Group.FG G] {f : G →* G'} : Group.rank (range f) ≤ Group.rank G :=
   Group.rank_le_of_surjective f.rangeRestrict f.rangeRestrict_surjective
 #align group.rank_range_le Group.rank_range_le
 #align add_group.rank_range_le AddGroup.rank_range_le
