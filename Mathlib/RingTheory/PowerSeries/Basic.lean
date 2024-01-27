@@ -825,52 +825,35 @@ theorem coeff_prod [DecidableEq σ]
     coeff R d (∏ j in s, f j) =
       ∑ l in piAntidiagonal s d,
         ∏ i in s, coeff R (l i) (f i) := by
-  classical
-  revert d
-  induction s using Finset.induction_on with
+  induction s using Finset.induction_on generalizing d with
   | empty =>
-    intro d
-    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one]
-    classical
-    rw [coeff_one]
-    simp only [piAntidiagonal_empty]
-    split_ifs with hd
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
+    split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
   | @insert a s ha ih =>
-    intro d
-    rw [piAntidiagonal_insert ha]
-    rw [prod_insert ha, coeff_mul, sum_biUnion]
+    rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      · rintro ⟨u, v⟩ huv
-        simp only [mem_antidiagonal] at huv
-        simp only [sum_map, Function.Embedding.coeFn_mk, coe_update]
+      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+        rintro u v rfl
         rw [ih, Finset.mul_sum, ← Finset.sum_attach]
         apply Finset.sum_congr rfl
-        rintro ⟨x, hx⟩ _
-        rw [Finset.prod_insert ha]
-        apply congr_arg₂
-        · apply congr_arg
-          simp only [Function.update_same]
-        · apply Finset.prod_congr rfl
-          intro i hi
-          rw [Function.update_noteq]
-          exact ne_of_mem_of_not_mem hi ha
-    · simp only [Set.PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, mem_antidiagonal]
-      rintro ⟨u, v⟩ huv ⟨u', v'⟩ huv' h
-      rw [Function.onFun_apply, disjoint_left]
-      intro _
-      simp only [mem_map, mem_attach, true_and, Subtype.exists]
-      rintro ⟨k, _, rfl⟩
-      rintro ⟨l, _, hkl⟩
-      simp only [Function.Embedding.coeFn_mk] at hkl
-      rw [FunLike.ext_iff] at hkl
-      specialize hkl a
-      simp only [Finsupp.coe_update, Function.update_same] at hkl
-      simp only [hkl.symm, ← huv', add_right_inj] at huv
-      apply h
-      simp only [Prod.mk.inj_iff]
-      exact ⟨hkl.symm, huv⟩
+        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+          Subtype.forall]
+        rintro x -
+        rw [Finset.prod_congr rfl]
+        intro i hi
+        rw [Function.update_noteq]
+        exact ne_of_mem_of_not_mem hi ha
+    · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
+        disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
+        exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+        Prod.forall, Prod.mk.injEq]
+      rintro u v rfl u' v' huv h k - l - hkl
+      obtain rfl : u' = u := by
+        simpa only [Finsupp.coe_update, Function.update_same] using FunLike.congr_fun hkl a
+      simp only [add_right_inj] at huv
+      exact h rfl huv.symm
 
 end CommSemiring
 
