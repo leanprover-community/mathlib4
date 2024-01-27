@@ -1293,7 +1293,7 @@ lemma Pi.induced_restrict (S : Set ι) :
     Set.restrict]
 
 lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
-    induced ((⋃₀ 𝔖).restrict) (Pi.topologicalSpace (β := fun i : (⋃₀ 𝔖) ↦ π i)) =
+    induced ((⋃₀ 𝔖).restrict) (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ π i)) =
     ⨅ S ∈ 𝔖, induced S.restrict Pi.topologicalSpace := by
   simp_rw [Pi.induced_restrict, iInf_sUnion]
 
