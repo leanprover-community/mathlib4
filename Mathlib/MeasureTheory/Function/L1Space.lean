@@ -107,13 +107,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
-  Iff.rfl
-
-attribute [eqns hasFiniteIntegral_def] HasFiniteIntegral
-
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
   simp only [HasFiniteIntegral, ofReal_norm_eq_coe_nnnorm]
@@ -126,7 +119,7 @@ theorem hasFiniteIntegral_iff_edist (f : α → β) :
 
 theorem hasFiniteIntegral_iff_ofReal {f : α → ℝ} (h : 0 ≤ᵐ[μ] f) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal (f a) ∂μ) < ∞ := by
-  rw [HasFiniteIntegral, lintegral_nnnorm_eq_of_ae_nonneg h]
+  simp only [HasFiniteIntegral, lintegral_nnnorm_eq_of_ae_nonneg h]
 #align measure_theory.has_finite_integral_iff_of_real MeasureTheory.hasFiniteIntegral_iff_ofReal
 
 theorem hasFiniteIntegral_iff_ofNNReal {f : α → ℝ≥0} :
@@ -252,10 +245,7 @@ theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ �
 
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by
-  have eq : (fun a => (nnnorm ‖f a‖ : ℝ≥0∞)) = fun a => (‖f a‖₊ : ℝ≥0∞) := by
-    funext
-    rw [nnnorm_norm]
-  rwa [HasFiniteIntegral, eq]
+  simpa only [HasFiniteIntegral, nnnorm_norm]
 #align measure_theory.has_finite_integral.norm MeasureTheory.HasFiniteIntegral.norm
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
@@ -443,13 +433,6 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
-  Iff.rfl
-
-attribute [eqns integrable_def] Integrable
-
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, HasFiniteIntegral, Memℒp, snorm_one_eq_lintegral_nnnorm]
 #align measure_theory.mem_ℒp_one_iff_integrable MeasureTheory.memℒp_one_iff_integrable
@@ -499,7 +482,7 @@ theorem integrable_congr {f g : α → β} (h : f =ᵐ[μ] g) : Integrable f μ 
 
 theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 0 ∨ μ univ < ∞ := by
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
-  rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
+  simp only [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
 #align measure_theory.integrable_const_iff MeasureTheory.integrable_const_iff
 
 @[simp]
@@ -1215,7 +1198,8 @@ variable {H : Type*} [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Mea
 theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : StronglyMeasurable[m] f) :
     Integrable f (μ'.trim hm) := by
   refine' ⟨hf.aestronglyMeasurable, _⟩
-  rw [HasFiniteIntegral, lintegral_trim hm _]
+  unfold HasFiniteIntegral
+  rw [lintegral_trim hm _]
   · exact hf_int.2
   · exact @StronglyMeasurable.ennnorm _ m _ _ f hf
 #align measure_theory.integrable.trim MeasureTheory.Integrable.trim
@@ -1224,7 +1208,7 @@ theorem integrable_of_integrable_trim (hm : m ≤ m0) (hf_int : Integrable f (μ
     Integrable f μ' := by
   obtain ⟨hf_meas_ae, hf⟩ := hf_int
   refine' ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf_meas_ae, _⟩
-  rw [HasFiniteIntegral] at hf ⊢
+  unfold HasFiniteIntegral at hf ⊢
   rwa [lintegral_trim_ae hm _] at hf
   exact AEStronglyMeasurable.ennnorm hf_meas_ae
 #align measure_theory.integrable_of_integrable_trim MeasureTheory.integrable_of_integrable_trim

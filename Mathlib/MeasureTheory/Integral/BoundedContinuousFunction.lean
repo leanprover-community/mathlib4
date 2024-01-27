@@ -91,7 +91,8 @@ lemma lintegral_nnnorm_le (f : X →ᵇ E) :
 
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
-  refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
+  refine ⟨f.continuous.measurable.aestronglyMeasurable,  ?_⟩
+  unfold HasFiniteIntegral
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ)   := f.lintegral_nnnorm_le μ
     _ < ∞                     := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top μ Set.univ)

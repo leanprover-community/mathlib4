@@ -1284,7 +1284,7 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
     · refine' ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, _⟩
       rw [withDensity_apply _ s_meas] at hs
-      rw [HasFiniteIntegral]
+      unfold HasFiniteIntegral
       convert hs with x
       simp only [NNReal.nnnorm_eq]
   · intro u u' _ u_int u'_int h h'
