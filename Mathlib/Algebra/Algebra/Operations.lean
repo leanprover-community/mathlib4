@@ -405,6 +405,21 @@ lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S
     x * y ∈ x • p ↔ y ∈ p :=
   show Exists _ ↔ _ by simp [mul_cancel_left_mem_nonZeroDivisors hx]
 
+variable (M N) in
+theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) := by
+  ext
+  refine ⟨?_, fun hx ↦ Submodule.mul_induction_on hx ?_ fun _ _ hx hy ↦ Submodule.add_mem _ hx hy⟩
+  · rintro ⟨_, hx, rfl⟩
+    rw [DistribMulAction.toLinearMap_apply]
+    refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
+    · rw [← smul_mul_smul x y m n]
+      exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
+    · rw [smul_add]
+      exact Submodule.add_mem _ hn hm
+  · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
+    erw [smul_mul_smul x y m n]
+    exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
+
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) :=
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
@@ -670,19 +685,12 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
-theorem smul_singleton (a : A) (M : Submodule R A) :
+theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  change span _ _ * span _ _ = _
-  rw [span_mul_span]
-  apply le_antisymm
-  · rw [span_le]
-    rintro _ ⟨b, m, hb, hm, rfl⟩
-    rw [SetLike.mem_coe, mem_map, Set.mem_singleton_iff.mp hb]
-    exact ⟨m, hm, rfl⟩
-  · rintro _ ⟨m, hm, rfl⟩
-    exact subset_span ⟨a, m, Set.mem_singleton a, hm, rfl⟩
-#align submodule.smul_singleton Submodule.smul_singleton
+  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  exact (map (LinearMap.mulLeft R a) M).span_eq
+#align submodule.smul_singleton Submodule.singleton_smul
 
 section Quotient
 

@@ -82,7 +82,7 @@ namespace TotalFunction
 /-- Compose a total function with a regular function on the left -/
 def comp {γ : Type w} (f : β → γ) : TotalFunction α β → TotalFunction α γ
   | TotalFunction.withDefault m y => TotalFunction.withDefault
-    (m.map <| Sigma.map id <| fun _ => f) (f y)
+    (m.map <| Sigma.map id fun _ => f) (f y)
 
 /-- Apply a total function to an argument. -/
 def apply [DecidableEq α] : TotalFunction α β → α → β

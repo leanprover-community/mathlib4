@@ -34,7 +34,7 @@ as an additive `ℤ`-module.
 places `w` of `K`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K`
-can be written uniquely as the product of a root of unity and powers of the units of of the
+can be written uniquely as the product of a root of unity and powers of the units of the
 fundamental system `fundSystem`.
 
 ## Tags
@@ -107,15 +107,14 @@ def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 
 theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
-  rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-  refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
-  · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
-    rw [PNat.mk_coe, ← coe_pow, h_eq, coe_one]
-  · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-    exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
+  rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
+  refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
+    Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
+  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
+  exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.nonempty
+instance : Nonempty (torsion K) := One.instNonempty
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
@@ -493,7 +492,6 @@ theorem unitLattice_rank :
   rw [← Units.finrank_eq_rank]
   exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
 
-set_option synthInstance.maxHeartbeats 27000 in
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
 def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) := by

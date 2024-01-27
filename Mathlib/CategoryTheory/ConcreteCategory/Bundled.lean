@@ -3,7 +3,6 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
-import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
 import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
@@ -15,9 +14,10 @@ import Mathlib.Mathport.Rename
 
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
-We provide `Category` instances for these in `CategoryTheory/UnbundledHom.lean`
+We provide `Category` instances for these in `CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `CategoryTheory/BundledHom.lean` (for categories with bundled homs, e.g. monoids).
+and in `CategoryTheory/ConcreteCategory/BundledHom.lean`
+(for categories with bundled homs, e.g. monoids).
 -/
 
 universe u v

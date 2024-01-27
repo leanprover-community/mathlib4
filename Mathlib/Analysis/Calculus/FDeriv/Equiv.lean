@@ -3,6 +3,7 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 
@@ -404,7 +405,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     simp only [(· ∘ ·), hp, hfg.self_of_nhds]
 #align has_fderiv_at.of_local_left_inverse HasFDerivAt.of_local_left_inverse
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` in the sense of strict differentiability at `f.symm a`, then `f.symm` has
 the derivative `f'⁻¹` at `a`.
 
@@ -416,7 +417,7 @@ theorem PartialHomeomorph.hasStrictFDerivAt_symm (f : PartialHomeomorph E F) {f'
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 #align local_homeomorph.has_strict_fderiv_at_symm PartialHomeomorph.hasStrictFDerivAt_symm
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have

@@ -251,7 +251,7 @@ lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsA
     ∃ a, (s : Set α) = {a} := by
   refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
-  exact SetLike.coe_injective.eq_iff.2 $ (hs.le_iff_eq $ coe_nonempty.1 ht).1 hts
+  exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
 @[simp, norm_cast] lemma Closeds.isAtom_coe [T1Space α] {s : Closeds α} :
     IsAtom (s : Set α) ↔ IsAtom s :=
@@ -315,6 +315,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
+@[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
+
 instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
 instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
@@ -345,6 +347,15 @@ instance : BooleanAlgebra (Clopens α) :=
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
+
+variable [TopologicalSpace β]
+
+instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
+
+@[simp]
+protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
+    x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
 
 end Clopens
 

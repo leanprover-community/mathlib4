@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
 
@@ -285,6 +286,7 @@ theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
 
 variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 
+@[simp]
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
   Quotient.inductionOn s fun l => by
     rw [quot_mk_to_coe, coe_prod]

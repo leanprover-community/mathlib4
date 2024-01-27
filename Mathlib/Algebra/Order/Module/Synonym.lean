@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Ring.OrderSynonym
 
 /-!
@@ -22,11 +21,11 @@ are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
 namespace OrderDual
 variable {α β γ : Type*}
 
-instance instSMulWithZero [Zero α] [AddZeroClass β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
+instance instSMulWithZero [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
   zero_smul := zero_smul α
   smul_zero := smul_zero (M := α)
 
-instance instSMulWithZero' [Zero α] [AddZeroClass β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
+instance instSMulWithZero' [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
   zero_smul := zero_smul _ (M := β)
   smul_zero := smul_zero (A := β)
 

@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Tactic.Positivity
+import Mathlib.Data.Set.Image
 
 #align_import data.fintype.card from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
@@ -261,7 +261,7 @@ theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
 #align finset.card_eq_iff_eq_univ Finset.card_eq_iff_eq_univ
 
 theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
-  card_le_of_subset (subset_univ s)
+  card_le_card (subset_univ s)
 #align finset.card_le_univ Finset.card_le_univ
 
 theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
@@ -397,6 +397,12 @@ theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
   rfl
 #align fintype.card_lex Fintype.card_lex
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
@@ -575,7 +581,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim $ by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
+    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 #align fintype.card_le_one_iff Fintype.card_le_one_iff
 
@@ -1112,7 +1118,7 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rintro m n h
   letI := Classical.decEq α
   wlog hmlen : m ≤ n generalizing m n
-  · exact (this h.symm $ le_of_not_le hmlen).symm
+  · exact (this h.symm <| le_of_not_le hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset
@@ -1274,9 +1280,8 @@ to that instance and use that name.
 @[elab_as_elim]
 theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α], Prop} (α : Type*)
     [Fintype α] (hbase : ∀ (α) [Fintype α] [Subsingleton α], P α)
-    (hstep :
-      ∀ (α) [Fintype α] [Nontrivial α],
-        ∀ _ih : ∀ (β) [Fintype β], ∀ _h : Fintype.card β < Fintype.card α, P β, P α) :
+    (hstep : ∀ (α) [Fintype α] [Nontrivial α],
+      (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α

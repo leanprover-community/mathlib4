@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -155,5 +155,16 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
    fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
 #align cauchy_seq_iff_le_tendsto_0 cauchySeq_iff_le_tendsto_0
+
+lemma Metric.exists_subseq_bounded_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) (b : ℕ → ℝ)
+    (hb : ∀ n, 0 < b n) :
+    ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, ∀ m ≥ f n, dist (u m) (u (f n)) < b n := by
+  rw [cauchySeq_iff] at hu
+  have hu' : ∀ k, ∀ᶠ (n : ℕ) in atTop, ∀ m ≥ n, dist (u m) (u n) < b k := by
+    intro k
+    rw [eventually_atTop]
+    obtain ⟨N, hN⟩ := hu (b k) (hb k)
+    exact ⟨N, fun m hm r hr => hN r (hm.trans hr) m hm⟩
+  exact Filter.extraction_forall_of_eventually hu'
 
 end CauchySeq

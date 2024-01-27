@@ -256,7 +256,7 @@ theorem isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
-  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
+  (forall_measure_preimage_mul_iff _).1 fun x _ hs =>
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
 
 /-- The image of a right invariant measure under a left action is right invariant, assuming that
@@ -267,7 +267,7 @@ theorem isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
     IsMulRightInvariant (map (a • · : G → G) μ) :=
-  (forall_measure_preimage_mul_right_iff _).1 <| fun x _ hs =>
+  (forall_measure_preimage_mul_right_iff _).1 fun x _ hs =>
     (smulInvariantMeasure_map_smul μ a).measure_preimage_smul (MulOpposite.op x) hs
 
 /-- The image of a left invariant measure under right multiplication is left invariant. -/
@@ -580,6 +580,32 @@ theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular :=
 theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
   InnerRegular.map_iff (Homeomorph.inv G)
 
+/-- Continuity of the measure of translates of a compact set: Given a compact set `k` in a
+topological group, for `g` close enough to the origin, `μ (g • k \ k)` is arbitrarily small. -/
+@[to_additive]
+lemma exists_nhds_measure_smul_diff_lt [LocallyCompactSpace G]
+    [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
+    (hk : IsCompact k) (h'k : IsClosed k) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • k \ k) < ε := by
+  obtain ⟨δ, δpos, δε⟩ : ∃ δ, 0 < δ ∧ δ < ε := DenselyOrdered.dense 0 ε hε.bot_lt
+  obtain ⟨U, hUk, hU, hμUk⟩ : ∃ (U : Set G), k ⊆ U ∧ IsOpen U ∧ μ U < μ k + δ :=
+    hk.exists_isOpen_lt_add δpos.ne'
+  obtain ⟨V, hV1, hVkU⟩ : ∃ V ∈ 𝓝 (1 : G), V * k ⊆ U := compact_open_separated_mul_left hk hU hUk
+  refine ⟨V, hV1, fun g hg ↦ ?_⟩
+  calc
+  μ (g • k \ k)
+  _ ≤ μ (U \ k) := by
+    refine measure_mono (diff_subset_diff_left ?_)
+    exact (smul_set_subset_smul hg).trans hVkU
+  _ = μ U - μ k := by
+    rw [measure_diff _ h'k.measurableSet hk.measure_lt_top.ne]
+    calc k = (1 : G) • k := by simp
+      _ ⊆ V • k := smul_set_subset_smul (mem_of_mem_nhds hV1)
+      _ ⊆ U := hVkU
+  _ ≤ (μ k + δ ) - μ k := by gcongr
+  _ = δ := ENNReal.add_sub_cancel_left hk.measure_lt_top.ne
+  _ < ε := δε
+
 variable [IsMulLeftInvariant μ]
 
 /-- If a left-invariant measure gives positive mass to a compact set, then it gives positive mass to
@@ -755,6 +781,16 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k := by
   rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
+
+@[to_additive]
+lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [LocallyCompactSpace G]
+    [h : InnerRegularCompactLTTop μ] :
+    InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
+  intro s ⟨s_meas, μs⟩ r hr
+  rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
+  refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
+  · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp s_meas Ks
+  · rwa [K_comp.measure_closure_eq_of_group]
 
 end TopologicalGroup
 

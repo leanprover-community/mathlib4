@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
@@ -160,9 +161,9 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
         sum_subset (filter_subset _ _) fun f _ hbij =>
           det_mul_aux <| by simpa only [true_and_iff, mem_filter, mem_univ] using hbij)
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
-      (sum_bij (fun p h => Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ => mem_univ _)
-        (fun _ _ => rfl) (fun _ _ _ _ h => by injection h) fun b _ =>
-        ⟨b, mem_filter.2 ⟨mem_univ _, b.bijective⟩, coe_fn_injective rfl⟩)
+      sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
+        (fun _ _ _ _ h ↦ by injection h)
+        (fun b _ ↦ ⟨b, mem_filter.2 ⟨mem_univ _, b.bijective⟩, coe_fn_injective rfl⟩) fun _ _ ↦ rfl
     _ = ∑ σ : Perm n, ∑ τ : Perm n, (∏ i, N (σ i) i) * ε τ * ∏ j, M (τ j) (σ j) := by
       simp only [mul_comm, mul_left_comm, prod_mul_distrib, mul_assoc]
     _ = ∑ σ : Perm n, ∑ τ : Perm n, (∏ i, N (σ i) i) * (ε σ * ε τ) * ∏ i, M (τ i) i :=
@@ -585,19 +586,12 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     Finset.mem_filter.trans ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
   rw [← Finset.sum_subset (Finset.subset_univ preserving_snd) _]
   -- And that these are in bijection with `o → Equiv.Perm m`.
-  rw [(Finset.sum_bij
-        (fun (σ : ∀ k : o, k ∈ Finset.univ → Equiv.Perm n) _ =>
-          prodCongrLeft fun k => σ k (Finset.mem_univ k))
-        _ _ _ _).symm]
+  refine (Finset.sum_bij (fun σ _ => prodCongrLeft fun k ↦ σ k (mem_univ k)) ?_ ?_ ?_ ?_).symm
   · intro σ _
     rw [mem_preserving_snd]
     rintro ⟨-, x⟩
     simp only [prodCongrLeft_apply]
-  · intro σ _
-    rw [Finset.prod_mul_distrib, ← Finset.univ_product_univ, Finset.prod_product_right]
-    simp only [sign_prodCongrLeft, Units.coe_prod, Int.cast_prod, blockDiagonal_apply_eq,
-      prodCongrLeft_apply]
-  · intro σ σ' _ _ eq
+  · intro σ _ σ' _ eq
     ext x hx k
     simp only at eq
     have :
@@ -632,6 +626,10 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     · ext ⟨k, x⟩
       · simp only [coe_fn_mk, prodCongrLeft_apply]
       · simp only [prodCongrLeft_apply, hσ]
+  · intro σ _
+    rw [Finset.prod_mul_distrib, ← Finset.univ_product_univ, Finset.prod_product_right]
+    simp only [sign_prodCongrLeft, Units.coe_prod, Int.cast_prod, blockDiagonal_apply_eq,
+      prodCongrLeft_apply]
   · intro σ _ hσ
     rw [mem_preserving_snd] at hσ
     obtain ⟨⟨k, x⟩, hkx⟩ := not_forall.mp hσ
@@ -650,27 +648,18 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     simp_rw [det_apply']
     convert Eq.symm <|
       sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (Sum m n))).toFinset) ?_
-    rw [sum_mul_sum]
-    simp_rw [univ_product_univ]
-    rw [(sum_bij (fun (σ : Perm m × Perm n) _ => Equiv.sumCongr σ.fst σ.snd) _ _ _ _).symm]
-    · intro σ₁₂ h
+    simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
+    refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
+    · intro σ₁₂ _
       simp only
       erw [Set.mem_toFinset, MonoidHom.mem_range]
       use σ₁₂
       simp only [sumCongrHom_apply]
-    · simp only [forall_prop_of_true, Prod.forall, mem_univ]
-      intro σ₁ σ₂
-      rw [Fintype.prod_sum_type]
-      simp_rw [Equiv.sumCongr_apply, Sum.map_inr, Sum.map_inl, fromBlocks_apply₁₁,
-        fromBlocks_apply₂₂]
-      rw [mul_mul_mul_comm]
-      congr
-      rw [sign_sumCongr, Units.val_mul, Int.cast_mul]
-    · intro σ₁ σ₂ h₁ h₂
+    · intro σ₁ _ σ₂ _
       dsimp only
       intro h
       have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
-        FunLike.congr_fun h
+        DFunLike.congr_fun h
       simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
         Sum.inr.injEq] at h2
       ext x
@@ -682,6 +671,14 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       use σ₁₂
       rw [← hσ₁₂]
       simp
+    · simp only [forall_prop_of_true, Prod.forall, mem_univ]
+      intro σ₁ σ₂
+      rw [Fintype.prod_sum_type]
+      simp_rw [Equiv.sumCongr_apply, Sum.map_inr, Sum.map_inl, fromBlocks_apply₁₁,
+        fromBlocks_apply₂₂]
+      rw [mul_mul_mul_comm]
+      congr
+      rw [sign_sumCongr, Units.val_mul, Int.cast_mul]
     · rintro σ - hσn
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn

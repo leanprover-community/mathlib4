@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Data.List.BigOperators.Defs
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Int.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -230,8 +231,6 @@ theorem prod_set :
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
 
-open MulOpposite
-
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
 Instead, we write the statement in terms of `(L.get? 0).getD 1`.
@@ -291,12 +290,12 @@ of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
 theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by
-  induction h
-  case slnil => rfl
-  case cons l₁ l₂ a _ ih' =>
+  induction h with
+  | slnil => rfl
+  | cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  case cons₂ l₁ l₂ a _ ih' =>
+  | cons₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact mul_le_mul_left' (ih' h₁.2) _
 #align list.sublist.prod_le_prod' List.Sublist.prod_le_prod'

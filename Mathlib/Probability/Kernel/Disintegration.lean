@@ -25,7 +25,7 @@ where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular, `ρ = ρ.
 In order to obtain a disintegration for any standard Borel space, we use that these spaces embed
 measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`. In the real case,
 we define a conditional kernel by taking for each `a : α` the measure associated to the Stieltjes
-function `condCdf ρ a` (the conditional cumulative distribution function).
+function `condCDF ρ a` (the conditional cumulative distribution function).
 
 ## Main definitions
 
@@ -61,22 +61,22 @@ section Real
 /-- Conditional measure on the second space of the product given the value on the first, as a
 kernel. Use the more general `condKernel`. -/
 noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ where
-  val a := (condCdf ρ a).measure
-  property := measurable_measure_condCdf ρ
+  val a := (condCDF ρ a).measure
+  property := measurable_measure_condCDF ρ
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
 instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
   ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
-    condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCdf ρ a x) :=
-  measure_condCdf_Iic ρ a x
+    condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) :=
+  measure_condCDF_Iic ρ a x
 #align probability_theory.cond_kernel_real_Iic ProbabilityTheory.condKernelReal_Iic
 
 theorem set_lintegral_condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, condKernelReal ρ a (Iic x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  simp_rw [condKernelReal_Iic]; exact set_lintegral_condCdf ρ x hs
+  simp_rw [condKernelReal_Iic]; exact set_lintegral_condCDF ρ x hs
 #align probability_theory.set_lintegral_cond_kernel_real_Iic ProbabilityTheory.set_lintegral_condKernelReal_Iic
 
 theorem set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) {s : Set α} (hs : MeasurableSet s) :
@@ -139,9 +139,7 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
   apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
   · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
       zero_mul]
-  · intro t ht
-    rw [mem_image2] at ht
-    obtain ⟨t₁, t₂, ht₁, ht₂, rfl⟩ := ht
+  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
@@ -371,6 +369,44 @@ theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure
     kernel.ext_iff'.mp (kernel.const_unit_eq_compProd ρ) () s hs
 #align probability_theory.kernel.const_eq_comp_prod ProbabilityTheory.kernel.const_eq_compProd
 
+/-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
+lemma condKernel_apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α]
+    {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
+    {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
+    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
+  nth_rewrite 3 [measure_eq_compProd ρ]
+  rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
+  classical
+  have : ∀ a, ρ.condKernel a (Prod.mk a ⁻¹' {x} ×ˢ s)
+      = ({x} : Set α).indicator (fun a ↦ ρ.condKernel a s) a := by
+    intro a
+    by_cases hax : a = x
+    · simp only [hax, Set.singleton_prod, Set.mem_singleton_iff, Set.indicator_of_mem]
+      congr with y
+      simp
+    · simp only [Set.singleton_prod, Set.mem_singleton_iff, hax, not_false_eq_true,
+        Set.indicator_of_not_mem]
+      have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by
+        ext y
+        simp [Ne.symm hax]
+      simp only [this, measure_empty]
+  simp_rw [this]
+  rw [MeasureTheory.lintegral_indicator _ (measurableSet_singleton x)]
+  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
+  rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top ρ.fst _), one_mul]
+
+/-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
+`ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
+lemma condKernel_apply_of_ne_zero [MeasurableSingletonClass α]
+    {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {x : α} (hx : ρ.fst {x} ≠ 0)
+    (s : Set Ω) :
+    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by
+  have : ρ.condKernel x s = ((ρ.fst {x})⁻¹ • ρ).comap (fun (y : Ω) ↦ (x, y)) s := by
+    congr 2 with s hs
+    simp [condKernel_apply_of_ne_zero_of_measurableSet hx hs,
+      (measurableEmbedding_prod_mk_left x).comap_apply]
+  simp [this, (measurableEmbedding_prod_mk_left x).comap_apply, hx]
+
 theorem lintegral_condKernel_mem {s : Set (α × Ω)} (hs : MeasurableSet s) :
     ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s := by
   conv_rhs => rw [measure_eq_compProd ρ]
@@ -495,7 +531,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
     Real.isPiSystem_Iic_rat
   · simp only [OuterMeasure.empty', Filter.eventually_true]
   · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    exact ae_all_iff.2 <| fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
+    exact ae_all_iff.2 fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
   · refine' ae_of_all _ (fun x f hdisj hf heq => _)

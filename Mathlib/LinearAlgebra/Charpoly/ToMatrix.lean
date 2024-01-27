@@ -36,6 +36,11 @@ namespace LinearMap
 
 section Basic
 
+attribute [-instance] instCoeOut
+
+attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
+attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass MulHomClass.toDFunLike
+
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :

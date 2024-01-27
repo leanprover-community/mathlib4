@@ -73,24 +73,21 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  by_cases h : extChartAt I x x ∈ interior (range I)
-  · exact Or.inl h
-  · right -- Otherwise, we have a boundary point.
-    rw [I.isBoundaryPoint_iff, ← closure_diff_interior, I.closed_range.closure_eq]
-    exact ⟨mem_range_self _, h⟩
+  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
+    I.closed_range.closure_eq, mem_diff]
+  exact fun h => ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
-  le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ I.isInteriorPoint_or_isBoundaryPoint x)
+  eq_univ_of_forall fun x => (mem_union _ _ _).mpr (I.isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of a manifold `M` are disjoint. -/
 lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   by_contra h
   -- Choose some x in the intersection of interior and boundary.
-  choose x hx using not_disjoint_iff.mp h
-  rcases hx with ⟨h1, h2⟩
-  show (extChartAt I x) x ∈ (∅ : Set E)
-  rw [← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I))]
+  obtain ⟨x, h1, h2⟩ := not_disjoint_iff.mp h
+  rw [← mem_empty_iff_false (extChartAt I x x),
+    ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
   exact ⟨h1, h2⟩
 
 /-- The boundary is the complement of the interior. -/
@@ -98,30 +95,47 @@ lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
   apply (compl_unique ?_ I.interior_union_boundary_eq_univ).symm
   exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
+variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ nhds (extChartAt I x x) := by
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
-section boundaryless
+/-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
+  which states that the `ModelWithCorners` maps to the whole model vector space. -/
+class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where
+  isInteriorPoint' : ∀ x : M, IsInteriorPoint I x
+
+section Boundaryless
 variable [I.Boundaryless]
 
-/-- If `I` is boundaryless, every point of `M` is an interior point. -/
-lemma isInteriorPoint {x : M} : I.IsInteriorPoint x := by
-  let r := ((chartAt H x).isOpen_extend_target I).interior_eq
-  have : extChartAt I x = (chartAt H x).extend I := rfl
-  rw [← this] at r
-  rw [ModelWithCorners.isInteriorPoint_iff, r]
-  exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
+/-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
+instance : BoundarylessManifold I M where
+  isInteriorPoint' x := by
+    let r := ((chartAt H x).isOpen_extend_target I).interior_eq
+    have : extChartAt I x = (chartAt H x).extend I := rfl
+    rw [← this] at r
+    rw [ModelWithCorners.isInteriorPoint_iff, r]
+    exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
+
+end Boundaryless
+
+section BoundarylessManifold
+variable [BoundarylessManifold I M]
+
+lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} :
+    IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
 
 /-- If `I` is boundaryless, `M` has full interior. -/
-lemma interior_eq_univ : I.interior M = univ := by
-  ext
-  refine ⟨fun _ ↦ trivial, fun _ ↦ I.isInteriorPoint⟩
+lemma interior_eq_univ : I.interior M = univ :=
+  eq_univ_of_forall fun _ => BoundarylessManifold.isInteriorPoint I
 
-/-- If `I` is boundaryless, `M` has empty boundary. -/
+/-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
-end boundaryless
+end BoundarylessManifold
 end ModelWithCorners

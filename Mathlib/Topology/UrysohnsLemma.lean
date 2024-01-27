@@ -6,6 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Algebra.Order.Support
 
 #align_import topology.urysohns_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -301,8 +302,8 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_nmem_U _ hxl, c.left.left.lim_of_nmem_U _ hyl]
       refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
-      refine' (div_le_div_of_le_of_nonneg (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
-        zero_le_two).trans _
+      refine' (div_le_div_of_le zero_le_two
+        (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)).trans _
       rw [dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr

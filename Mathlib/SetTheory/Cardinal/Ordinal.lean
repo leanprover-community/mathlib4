@@ -849,6 +849,63 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   exact Cardinal.eq_of_add_eq_add_left h hb
 #align cardinal.eq_of_add_eq_add_right Cardinal.eq_of_add_eq_add_right
 
+section ciSup
+
+variable {ι : Type u} {ι' : Type w} (f : ι → Cardinal.{v})
+
+section add
+
+variable [Nonempty ι] [Nonempty ι'] (hf : BddAbove (range f))
+
+protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i + c := by
+  have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  refine le_antisymm ?_ (ciSup_le' this)
+  have bdd : BddAbove (range (f · + c)) := ⟨_, forall_range_iff.mpr this⟩
+  obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
+      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+    exact hi ▸ le_ciSup bdd i
+  rw [add_eq_max hs, max_le_iff]
+  exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
+    (self_le_add_left _ _).trans (le_ciSup bdd <| Classical.arbitrary ι)⟩
+
+protected theorem add_ciSup (c : Cardinal.{v}) : c + (⨆ i, f i) = ⨆ i, c + f i := by
+  rw [add_comm, Cardinal.ciSup_add f hf]; simp_rw [add_comm]
+
+protected theorem ciSup_add_ciSup (g : ι' → Cardinal.{v}) (hg : BddAbove (range g)) :
+    (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
+  simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
+
+end add
+
+protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i * c := by
+  cases isEmpty_or_nonempty ι; · simp
+  obtain rfl | h0 := eq_or_ne c 0; · simp
+  by_cases hf : BddAbove (range f); swap
+  · have hfc : ¬ BddAbove (range (f · * c)) := fun bdd ↦ hf
+      ⟨⨆ i, f i * c, forall_range_iff.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
+    simp [iSup, csSup_of_not_bddAbove, hf, hfc]
+  have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_right' (le_ciSup hf i) c
+  refine le_antisymm ?_ (ciSup_le' this)
+  have bdd : BddAbove (range (f · * c)) := ⟨_, forall_range_iff.mpr this⟩
+  obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
+      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+    exact hi ▸ le_ciSup bdd i
+  rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
+  obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
+  exact ⟨ciSup_mono bdd fun i ↦ le_mul_right h0,
+    (le_mul_left (zero_lt_one.trans hi).ne').trans (le_ciSup bdd i)⟩
+
+protected theorem mul_ciSup (c : Cardinal.{v}) : c * (⨆ i, f i) = ⨆ i, c * f i := by
+  rw [mul_comm, Cardinal.ciSup_mul f]; simp_rw [mul_comm]
+
+protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
+    (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
+  simp_rw [Cardinal.ciSup_mul f, Cardinal.mul_ciSup g]
+
+end ciSup
+
 @[simp]
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), max_aleph_eq]
@@ -984,6 +1041,108 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
 
 /-! ### Computing cardinality of various types -/
 
+
+section Function
+
+variable {α β : Type u} {β' : Type v}
+
+theorem mk_equiv_eq_zero_iff_lift_ne : #(α ≃ β') = 0 ↔ lift.{v} #α ≠ lift.{u} #β' := by
+  rw [mk_eq_zero_iff, ← not_nonempty_iff, ← lift_mk_eq']
+
+theorem mk_equiv_eq_zero_iff_ne : #(α ≃ β) = 0 ↔ #α ≠ #β := by
+  rw [mk_equiv_eq_zero_iff_lift_ne, lift_id, lift_id]
+
+/-- This lemma makes lemmas assuming `Infinite α` applicable to the situation where we have
+  `Infinite β` instead. -/
+theorem mk_equiv_comm : #(α ≃ β') = #(β' ≃ α) :=
+  (ofBijective _ symm_bijective).cardinal_eq
+
+theorem mk_embedding_eq_zero_iff_lift_lt : #(α ↪ β') = 0 ↔ lift.{u} #β' < lift.{v} #α := by
+  rw [mk_eq_zero_iff, ← not_nonempty_iff, ← lift_mk_le', not_le]
+
+theorem mk_embedding_eq_zero_iff_lt : #(α ↪ β) = 0 ↔ #β < #α := by
+  rw [mk_embedding_eq_zero_iff_lift_lt, lift_lt]
+
+theorem mk_arrow_eq_zero_iff : #(α → β') = 0 ↔ #α ≠ 0 ∧ #β' = 0 := by
+  simp_rw [mk_eq_zero_iff, mk_ne_zero_iff, isEmpty_fun]
+
+theorem mk_surjective_eq_zero_iff_lift :
+    #{f : α → β' | Surjective f} = 0 ↔ lift.{v} #α < lift.{u} #β' ∨ (#α ≠ 0 ∧ #β' = 0) := by
+  rw [← not_iff_not, not_or, not_lt, lift_mk_le', ← Ne, not_and_or, not_ne_iff, and_comm]
+  simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
+    Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
+
+theorem mk_surjective_eq_zero_iff :
+    #{f : α → β | Surjective f} = 0 ↔ #α < #β ∨ (#α ≠ 0 ∧ #β = 0) := by
+  rw [mk_surjective_eq_zero_iff_lift, lift_lt]
+
+variable (α β')
+
+theorem mk_equiv_le_embedding : #(α ≃ β') ≤ #(α ↪ β') := ⟨⟨_, Equiv.toEmbedding_injective⟩⟩
+
+theorem mk_embedding_le_arrow : #(α ↪ β') ≤ #(α → β') := ⟨⟨_, DFunLike.coe_injective⟩⟩
+
+variable [Infinite α] {α β'}
+
+theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
+  ((mk_equiv_le_embedding α α).trans (mk_embedding_le_arrow α α)).antisymm <| by
+    suffices : Nonempty ((α → Bool) ↪ Equiv.Perm (α × Bool))
+    · obtain ⟨e⟩ : Nonempty (α ≃ α × Bool)
+      · erw [← Cardinal.eq, mk_prod, lift_uzero, mk_bool,
+          lift_natCast, mul_two, add_eq_self (aleph0_le_mk α)]
+      erw [← le_def, mk_arrow, lift_uzero, mk_bool, lift_natCast 2] at this
+      rwa [← power_def, power_self_eq (aleph0_le_mk α), e.permCongr.cardinal_eq]
+    refine ⟨⟨fun f ↦ Involutive.toPerm (fun x ↦ ⟨x.1, xor (f x.1) x.2⟩) fun x ↦ ?_, fun f g h ↦ ?_⟩⟩
+    · simp_rw [← Bool.xor_assoc, Bool.xor_self, Bool.false_xor]
+    · ext a; rw [← (f a).xor_false, ← (g a).xor_false]; exact congr(($h ⟨a, false⟩).2)
+
+theorem mk_perm_eq_two_power : #(Equiv.Perm α) = 2 ^ #α := by
+  rw [mk_perm_eq_self_power, power_self_eq (aleph0_le_mk α)]
+
+variable (leq : lift.{v} #α = lift.{u} #β') (eq : #α = #β)
+
+theorem mk_equiv_eq_arrow_of_lift_eq : #(α ≃ β') = #(α → β') := by
+  obtain ⟨e⟩ := lift_mk_eq'.mp leq
+  have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
+  have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
+  rw [lift_id'.{u,v}] at e₁ e₂
+  rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
+
+theorem mk_equiv_eq_arrow_of_eq : #(α ≃ β) = #(α → β) :=
+  mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
+
+theorem mk_equiv_of_lift_eq : #(α ≃ β') = 2 ^ lift.{v} #α := by
+  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u,v} _),
+    lift_umax.{u,v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
+
+theorem mk_equiv_of_eq : #(α ≃ β) = 2 ^ #α := by rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
+
+variable (lle : lift.{u} #β' ≤ lift.{v} #α) (le : #β ≤ #α)
+
+theorem mk_embedding_eq_arrow_of_lift_le : #(β' ↪ α) = #(β' → α) :=
+  (mk_embedding_le_arrow _ _).antisymm <| by
+    conv_rhs => rw [← (Equiv.embeddingCongr (.refl _)
+      (Cardinal.eq.mp <| mul_eq_self <| aleph0_le_mk α).some).cardinal_eq]
+    obtain ⟨e⟩ := lift_mk_le'.mp lle
+    exact ⟨⟨fun f ↦ ⟨fun b ↦ ⟨e b, f b⟩, fun _ _ h ↦ e.injective congr(Prod.fst $h)⟩,
+      fun f g h ↦ funext fun b ↦ congr(Prod.snd <| $h b)⟩⟩
+
+theorem mk_embedding_eq_arrow_of_le : #(β ↪ α) = #(β → α) :=
+  mk_embedding_eq_arrow_of_lift_le (lift_le.mpr le)
+
+theorem mk_surjective_eq_arrow_of_lift_le : #{f : α → β' | Surjective f} = #(α → β') :=
+  (mk_set_le _).antisymm <|
+    have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
+      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u,v}, eq_comm]
+      exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
+    ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
+      fun f g h ↦ funext fun a ↦ by
+        simpa only [e.apply_symm_apply] using congr_fun (Subtype.ext_iff.mp h) (e.symm <| .inl a)⟩⟩
+
+theorem mk_surjective_eq_arrow_of_le : #{f : α → β | Surjective f} = #(α → β) :=
+  mk_surjective_eq_arrow_of_lift_le (lift_le.mpr le)
+
+end Function
 
 @[simp]
 theorem mk_list_eq_mk (α : Type u) [Infinite α] : #(List α) = #α :=

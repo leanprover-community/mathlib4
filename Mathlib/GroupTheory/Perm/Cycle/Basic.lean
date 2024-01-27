@@ -678,7 +678,7 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => FunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 #align equiv.perm.is_cycle.pow_eq_one_iff' Equiv.Perm.IsCycle.pow_eq_one_iff'
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
@@ -978,7 +978,7 @@ theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f 
   induction' n with n hn
   · rfl
   · rw [pow_succ, mul_apply, cycleOf_apply, hn, if_pos, pow_succ, mul_apply]
-    simpa [SameCycle] using ⟨n,rfl⟩
+    exact ⟨n, rfl⟩
 #align equiv.perm.cycle_of_pow_apply_self Equiv.Perm.cycleOf_pow_apply_self
 
 @[simp]
