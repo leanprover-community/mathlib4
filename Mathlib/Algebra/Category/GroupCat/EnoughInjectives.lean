@@ -44,7 +44,7 @@ instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
         · exact ULift.ext_iff _ _ |>.mp H
         let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
         have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
-        erw [← FunLike.congr_fun (Injective.comp_factorThru f g),
+        erw [← DFunLike.congr_fun (Injective.comp_factorThru f g),
           show Injective.factorThru f g a = 0 from congr_fun h0
             ((ULift.moduleEquiv (R := ℤ)).toLinearMap.toAddMonoidHom.comp
               (Injective.factorThru f g))] }
