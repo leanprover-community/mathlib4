@@ -401,7 +401,7 @@ namespace AddCommGroupCat
 agrees with the usual group-theoretical kernel.
 -/
 def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    kernel f ≅ AddCommGroupCat.of f.ker where
+    kernel f ≅ AddCommGroupCat.of (AddMonoidHom.ker f) where
   hom :=
     { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by

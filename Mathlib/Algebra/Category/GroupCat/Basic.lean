@@ -66,8 +66,8 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (X →* Y) X Y from inferInstance
+instance instMonoidHomClass (X Y : GroupCat) : MonoidHomClass (X ⟶ Y) X Y :=
+  show MonoidHomClass (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]

@@ -123,9 +123,10 @@ theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
 
+open MonoidHom in
 @[to_additive]
-theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
-    g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
+theorem ker_le_range_iff {I : Type*} {F : Type*} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+    ker g ≤ range f ↔ (mk' (range f)).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
     fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
 
@@ -198,11 +199,12 @@ theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
+open MonoidHom in
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
-def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
+def lift (φ : G →* M) (HN : N ≤ ker φ) : Q →* M :=
   (QuotientGroup.con N).lift φ fun x y h => by
     simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
     rw [Con.ker_rel]
@@ -212,21 +214,24 @@ def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
 #align quotient_group.lift QuotientGroup.lift
 #align quotient_add_group.lift QuotientAddGroup.lift
 
+open MonoidHom in
 @[to_additive (attr := simp)]
-theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
+theorem lift_mk {φ : G →* M} (HN : N ≤ ker φ) (g : G) : lift N φ HN (g : Q) = φ g :=
   rfl
 #align quotient_group.lift_mk QuotientGroup.lift_mk
 #align quotient_add_group.lift_mk QuotientAddGroup.lift_mk
 
+open MonoidHom in
 @[to_additive (attr := simp)]
-theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
+theorem lift_mk' {φ : G →* M} (HN : N ≤ ker φ) (g : G) : lift N φ HN (mk g : Q) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
 #align quotient_group.lift_mk' QuotientGroup.lift_mk'
 #align quotient_add_group.lift_mk' QuotientAddGroup.lift_mk'
 
+open MonoidHom in
 @[to_additive (attr := simp)]
-theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
+theorem lift_quot_mk {φ : G →* M} (HN : N ≤ ker φ) (g : G) :
     lift N φ HN (Quot.mk _ g : Q) = φ g :=
   rfl
 #align quotient_group.lift_quot_mk QuotientGroup.lift_quot_mk
@@ -407,7 +412,7 @@ theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
 -- so there is a bit of annoying code duplication here
 /-- The induced map from the quotient by the kernel to the range. -/
 @[to_additive "The induced map from the quotient by the kernel to the range."]
-def rangeKerLift : G ⧸ ker φ →* φ.range :=
+def rangeKerLift : G ⧸ ker φ →* range φ :=
   lift _ φ.rangeRestrict fun g hg => (mem_ker _).mp <| by rwa [ker_rangeRestrict]
 #align quotient_group.range_ker_lift QuotientGroup.rangeKerLift
 #align quotient_add_group.range_ker_lift QuotientAddGroup.rangeKerLift
@@ -533,7 +538,7 @@ variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 @[to_additive "The map of quotients by multiples of an integer induced by an additive group
 homomorphism."]
 def homQuotientZPowOfHom :
-    A ⧸ (zpowGroupHom n : A →* A).range →* B ⧸ (zpowGroupHom n : B →* B).range :=
+    A ⧸ range (zpowGroupHom n : A →* A) →* B ⧸ range (zpowGroupHom n : B →* B) :=
   lift _ ((mk' _).comp f) fun g ⟨h, (hg : h ^ n = g)⟩ =>
     (eq_one_iff _).mpr ⟨f h, by
       simp only [← hg, map_zpow, zpowGroupHom_apply]⟩
@@ -565,7 +570,7 @@ theorem homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f
 @[to_additive "The equivalence of quotients by multiples of an integer induced by an additive group
 isomorphism."]
 def equivQuotientZPowOfEquiv :
-    A ⧸ (zpowGroupHom n : A →* A).range ≃* B ⧸ (zpowGroupHom n : B →* B).range :=
+    A ⧸ range (zpowGroupHom n : A →* A) ≃* B ⧸ range (zpowGroupHom n : B →* B) :=
   MonoidHom.toMulEquiv _ _
     (homQuotientZPowOfHom_comp_of_rightInverse (e.symm : B →* A) (e : A →* B) n e.left_inv)
     (homQuotientZPowOfHom_comp_of_rightInverse (e : A →* B) (e.symm : B →* A) n e.right_inv)
@@ -575,7 +580,7 @@ def equivQuotientZPowOfEquiv :
 
 @[to_additive (attr := simp)]
 theorem equivQuotientZPowOfEquiv_refl :
-    MulEquiv.refl (A ⧸ (zpowGroupHom n : A →* A).range) =
+    MulEquiv.refl (A ⧸ range (zpowGroupHom n : A →* A)) =
       equivQuotientZPowOfEquiv (MulEquiv.refl A) n := by
   ext x
   rw [← Quotient.out_eq' x]
@@ -727,7 +732,7 @@ namespace Group
 
 open Classical
 
-open QuotientGroup Subgroup
+open QuotientGroup Subgroup MonoidHom
 
 variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
 
@@ -735,7 +740,7 @@ variable (f : F →* G) (g : G →* H)
 
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/
 @[to_additive "If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite."]
-noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
+noncomputable def fintypeOfKerLeRange (h : ker g ≤ range f) : Fintype G :=
   @Fintype.ofEquiv _ _
     (@instFintypeProd _ _ (Fintype.ofInjective _ <| kerLift_injective g) <|
       Fintype.ofInjective _ <| inclusion_injective h)
@@ -745,14 +750,14 @@ noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
 
 /-- If `F` and `H` are finite such that `ker(G →* H) = im(F →* G)`, then `G` is finite. -/
 @[to_additive "If `F` and `H` are finite such that `ker(G →+ H) = im(F →+ G)`, then `G` is finite."]
-noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
+noncomputable def fintypeOfKerEqRange (h : ker g = range f) : Fintype G :=
   fintypeOfKerLeRange _ _ h.le
 #align group.fintype_of_ker_eq_range Group.fintypeOfKerEqRange
 #align add_group.fintype_of_ker_eq_range AddGroup.fintypeOfKerEqRange
 
 /-- If `ker(G →* H)` and `H` are finite, then `G` is finite. -/
 @[to_additive "If `ker(G →+ H)` and `H` are finite, then `G` is finite."]
-noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
+noncomputable def fintypeOfKerOfCodom [Fintype (ker g)] : Fintype G :=
   fintypeOfKerLeRange ((topEquiv : _ ≃* G).toMonoidHom.comp <| inclusion le_top) g fun x hx =>
     ⟨⟨x, hx⟩, rfl⟩
 #align group.fintype_of_ker_of_codom Group.fintypeOfKerOfCodom
@@ -760,8 +765,8 @@ noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
 
 /-- If `F` and `coker(F →* G)` are finite, then `G` is finite. -/
 @[to_additive "If `F` and `coker(F →+ G)` are finite, then `G` is finite."]
-noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
-  fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
+noncomputable def fintypeOfDomOfCoker [Normal (range f)] [Fintype <| G ⧸ range f] : Fintype G :=
+  fintypeOfKerLeRange _ (mk' <| range f) fun x => (eq_one_iff x).mp
 #align group.fintype_of_dom_of_coker Group.fintypeOfDomOfCoker
 #align add_group.fintype_of_dom_of_coker AddGroup.fintypeOfDomOfCoker
 

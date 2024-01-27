@@ -797,7 +797,7 @@ variable {H : Type*} [Group H]
 theorem card_dvd_of_injective [Fintype α] [Fintype H] (f : α →* H) (hf : Function.Injective f) :
     card α ∣ card H := by
   classical calc
-      card α = card (f.range : Subgroup H) := card_congr (Equiv.ofInjective f hf)
+      card α = card (MonoidHom.range f : Subgroup H) := card_congr (Equiv.ofInjective f hf)
       _ ∣ card H := card_subgroup_dvd_card _
 #align subgroup.card_dvd_of_injective Subgroup.card_dvd_of_injective
 #align add_subgroup.card_dvd_of_injective AddSubgroup.card_dvd_of_injective
