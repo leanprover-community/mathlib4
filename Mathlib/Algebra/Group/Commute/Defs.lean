@@ -44,6 +44,9 @@ section Mul
 
 variable {S : Type*} [Mul S]
 
+@[to_additive]
+theorem _root_.commute_def {a b : S} : Commute a b ↔ a * b = b * a := .rfl
+
 /-- Equality behind `Commute a b`; useful for rewriting. -/
 @[to_additive "Equality behind `AddCommute a b`; useful for rewriting."]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
