@@ -268,42 +268,42 @@ namespace MonoidalCategory
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by
-  simp [← id_tensorHom, ← tensor_comp]
+  rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]
 
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerRight {X Y : C} (f : X ≅ Y) (Z : C) :
     f.hom ▷ Z ≫ f.inv ▷ Z = 𝟙 (X ⊗ Z) := by
-  simp [← tensorHom_id, ← tensor_comp]
+  rw [← comp_whiskerRight, hom_inv_id, id_whiskerRight]
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_inv_hom (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.inv ≫ X ◁ f.hom = 𝟙 (X ⊗ Z) := by
-  simp [← id_tensorHom, ← tensor_comp]
+  rw [← whiskerLeft_comp, inv_hom_id, whiskerLeft_id]
 
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerRight {X Y : C} (f : X ≅ Y) (Z : C) :
     f.inv ▷ Z ≫ f.hom ▷ Z = 𝟙 (Y ⊗ Z) := by
-  simp [← tensorHom_id, ← tensor_comp]
+  rw [← comp_whiskerRight, inv_hom_id, id_whiskerRight]
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     X ◁ f ≫ X ◁ inv f = 𝟙 (X ⊗ Y) := by
-  simp [← id_tensorHom, ← tensor_comp]
+  rw [← whiskerLeft_comp, IsIso.hom_inv_id, whiskerLeft_id]
 
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerRight' {X Y : C} (f : X ⟶ Y) [IsIso f] (Z : C) :
     f ▷ Z ≫ inv f ▷ Z = 𝟙 (X ⊗ Z) := by
-  simp [← tensorHom_id, ← tensor_comp]
+  rw [← comp_whiskerRight, IsIso.hom_inv_id, id_whiskerRight]
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_inv_hom' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     X ◁ inv f ≫ X ◁ f = 𝟙 (X ⊗ Z) := by
-  simp [← id_tensorHom, ← tensor_comp]
+  rw [← whiskerLeft_comp, IsIso.inv_hom_id, whiskerLeft_id]
 
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerRight' {X Y : C} (f : X ⟶ Y) [IsIso f] (Z : C) :
     inv f ▷ Z ≫ f ▷ Z = 𝟙 (Y ⊗ Z) := by
-  simp [← tensorHom_id, ← tensor_comp]
+  rw [← comp_whiskerRight, IsIso.inv_hom_id, id_whiskerRight]
 
 /-- The left whiskering of an isomorphism is an isomorphism. -/
 @[simps]

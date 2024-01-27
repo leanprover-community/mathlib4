@@ -127,7 +127,7 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
       Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, tensorHom_id, id_tensorHom,
       comp_whiskerRight, whisker_assoc, assoc, fData.whiskerLeft_eq,
-      MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_assoc, hom_inv_whiskerLeft_assoc,
+      MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv_assoc,
       hom_inv_whiskerRight_assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_inv_left]
     slice_lhs 5 6 =>
       rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
