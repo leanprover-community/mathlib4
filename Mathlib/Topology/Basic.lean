@@ -1179,8 +1179,8 @@ theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f �
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
-theorem clusterPt_iff_ultrafilter {x : α} {f : Filter α} : ClusterPt x f ↔
-    ∃ u : Ultrafilter α, u ≤ f ∧ u ≤ 𝓝 x := by
+theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
+    ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
   simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
@@ -1198,8 +1198,8 @@ theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
 
-theorem mapClusterPt_iff_ultrafilter {x : X} {F : Filter α} {φ : α → X} :
-    MapClusterPt x F φ ↔ ∃ u : Ultrafilter ι, u ≤ F ∧ Tendsto φ u (𝓝 x) := by
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
     ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
@@ -1442,7 +1442,7 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
 theorem isClosed_iff_ultrafilter : IsClosed s ↔
-    ∀ x, ∀ u : Ultrafilter α, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
+    ∀ x, ∀ u : Ultrafilter X, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
   simp [isClosed_iff_clusterPt, ClusterPt, ← exists_ultrafilter_iff]
 
 theorem isClosed_iff_nhds :
