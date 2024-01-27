@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Topology.Algebra.Group.InjectiveAction
 
 /-!
 # Locally dense and locally moving group actions
@@ -27,7 +28,7 @@ needs to be locally dense and faithful (primarily given by `LocallyDenseSMul.cen
 (`LocallyMovingSMul.nontrivial_of_nonempty`).
 -/
 
--- open Pointwise
+open Pointwise
 open MulAction
 open Topology
 
@@ -89,7 +90,6 @@ theorem moving_elem_in_fixingSubgroup_compl [T1Space α] {s : Set α} {p : α}
   convert mem_interior_closure_orbit G s_open p_in_s using 1
   rw [orbit_eq_singleton, closure_singleton, interior_singleton]
 
-open Pointwise in
 variable (G α) in
 /--
 If a group action is locally moving and faithful and the topology is Hausdorff,
@@ -120,16 +120,22 @@ end LocallyDenseSMul
 An additive group action `G` on a topological space `α` is said to be locally moving if
 the `fixingAddSubgroup` of `sᶜ` contains a nontrivial element if `s` is open and nonempty.
 -/
-class LocallyMovingVAdd (G α : Type*) [AddGroup G] [TopologicalSpace α] [AddAction G α] :=
-  locally_moving : ∀ ⦃s : Set α⦄, IsOpen s → s.Nonempty → fixingAddSubgroup G sᶜ ≠ ⊥
+class LocallyMovingVAdd (G α : Type*) [AddGroup G] [TopologicalSpace α] [AddAction G α]: Prop :=
+  locally_moving' : ∀ ⦃s : Set α⦄, IsOpen s → s.Nonempty → fixingAddSubgroup G sᶜ ≠ ⊥
 
 /--
 A multiplicative group action `G` on a topological space `α` is said to be locally moving if
 the `fixingSubgroup` of `sᶜ` contains a nontrivial element if `s` is open and nonempty.
 -/
 @[to_additive existing]
-class LocallyMovingSMul (G α : Type*) [Group G] [TopologicalSpace α] [MulAction G α] :=
-  locally_moving : ∀ ⦃s : Set α⦄, IsOpen s → s.Nonempty → G•[sᶜ] ≠ ⊥
+class LocallyMovingSMul (G α : Type*) [Group G] [TopologicalSpace α] [MulAction G α]: Prop :=
+  locally_moving' : ∀ ⦃s : Set α⦄, IsOpen s → s.Nonempty → G•[sᶜ] ≠ ⊥
+
+variable (G) in
+variable [LocallyMovingSMul G α] in
+@[to_additive]
+theorem LocallyMovingSMul.locally_moving {s : Set α} (s_open : IsOpen s) (s_nonempty : s.Nonempty) :
+    G•[sᶜ] ≠ ⊥ := LocallyMovingSMul.locally_moving' (G := G) s_open s_nonempty
 
 @[to_additive]
 instance LocallyMovingSMul.of_locallyDense [LocallyDenseSMul G α] [T1Space α] [NoIsolatedPoints α] :
@@ -157,15 +163,80 @@ theorem LocallyMovingSMul.nontrivial_of_nonempty [LocallyMovingSMul G α] [Nonem
   apply LocallyMovingSMul.locally_moving (G := G) (α := α) isOpen_univ _ (trivial.elim _ _)
   exact Set.univ_nonempty
 
+variable (G) in
+@[to_additive]
+theorem LocallyMovingSMul.nontrivial_elem_of_nonempty [LocallyMovingSMul G α] {s : Set α}
+    (s_open : IsOpen s) (s_nonempty : s.Nonempty) : ∃ g ∈ G•[sᶜ], g ≠ 1 := by
+  have fixing_ne_bot := LocallyMovingSMul.locally_moving (G := G) s_open s_nonempty
+  let ⟨⟨g, g_in_fixing⟩, g_ne_one⟩ := Subgroup.ne_bot_iff_exists_ne_one.mp fixing_ne_bot
+  rw [ne_eq, Subgroup.mk_eq_one_iff] at g_ne_one
+  exact ⟨g, g_in_fixing, g_ne_one⟩
+
 variable (G : Type*) [CommGroup G] [T2Space α] [Nonempty α] [MulAction G α] [FaithfulSMul G α]
   [NoIsolatedPoints α] in
 /--
-A faithful, locally moving group on a Hausdorff space with no isolated points cannot be abelian.
+A faithful, abelian group action on a Hausdorff space with no isolated points
+cannot be locally moving.
 -/
-theorem LocallyDenseSMul.nonabelian_of_t2space_nonempty [LocallyDenseSMul G α] : False := by
+theorem not_locallyDenseSmul_of_comm_of_t2space : ¬LocallyDenseSMul G α := by
+  intro locally_dense
   have ⟨g, h, g_ne_h⟩ := LocallyMovingSMul.nontrivial_of_nonempty G α
-  have center_bot := center_eq_bot G α
+  have center_bot := LocallyDenseSMul.center_eq_bot G α
   rw [CommGroup.center_eq_top, Subgroup.eq_bot_iff_forall] at center_bot
   simp only [Subgroup.mem_top, forall_true_left] at center_bot
   rw [center_bot g, center_bot h] at g_ne_h
   exact g_ne_h rfl
+
+theorem LocallyMovingSMul.exponent_fixingSubgroup_eq_zero [LocallyMovingSMul G α]
+    [ContinuousConstSMul G α] [FaithfulSMul G α] [T2Space α] {s : Set α} (s_open : IsOpen s)
+    (s_nonempty : s.Nonempty) : Monoid.exponent G•[sᶜ] = 0 := by
+  by_contra exp_ne_zero
+  let ⟨⟨g, g_in_fixing⟩, x, x_in_s, period_pos, period_maximal⟩ :=
+    exists_maximal_period_of_exponent_pos exp_ne_zero s_nonempty
+  rw [MulAction.period_subgroup_mk] at period_pos period_maximal
+  let ⟨t, t_open, x_in_t, pw_disj⟩ := t2_separation_of_smul_injOn
+    (MulAction.smul_injOn_pow_lt_period g x)
+    (Set.toFinite ((fun i => g ^ i) '' Set.Iio (period g x)))
+
+  have st_open := s_open.inter t_open
+  have x_in_st : x ∈ s ∩ t := ⟨x_in_s, x_in_t⟩
+  have pw_disj' : { g ^ i | i < period g x }.PairwiseDisjoint (· • (s ∩ t)) :=
+    Set.PairwiseDisjoint.mono_on pw_disj fun h _ =>
+      Set.smul_set_mono (Set.inter_subset_right _ _)
+
+  let ⟨h, h_in_fixing, h_ne_one⟩ := nontrivial_elem_of_nonempty G st_open ⟨x, x_in_st⟩
+  have hg_in_fixing : h * g ∈ G•[sᶜ] := by
+    rw [mem_fixingSubgroup_iff_subset_fixedBy] at *
+    apply subset_trans _ (MulAction.fixedBy_mul α h g)
+    apply Set.subset_inter _ g_in_fixing
+    apply subset_trans _ h_in_fixing
+    simp only [Set.compl_subset_compl, Set.inter_subset_left]
+
+  let ⟨y, y_in_moved⟩ := fixedBy_compl_nonempty_of_ne_one α h_ne_one
+  have y_in_st : y ∈ s ∩ t := by
+    rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at h_in_fixing
+    exact h_in_fixing y_in_moved
+
+  have hg_pow_eq : ∀ i < period g x, (h * g) ^ i • y = g ^ i • y := by
+    intro i i_lt_period
+    induction i with
+    | zero => simp only [Nat.zero_eq, pow_zero, one_smul]
+    | succ i h₁ =>
+      specialize h₁ (Nat.lt_of_succ_lt i_lt_period)
+      rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at h_in_fixing
+      rw [pow_succ, mul_smul, h₁, ← mul_smul, mul_assoc, ← pow_succ, mul_smul, Nat.succ_eq_add_one,
+        ← mem_fixedBy, ← Set.not_mem_compl_iff]
+      refine mt (fun mem => h_in_fixing mem) fun mem_st => ?ff
+      specialize pw_disj' ⟨0, period_pos, rfl⟩ ⟨i + 1, i_lt_period, rfl⟩ (by
+        apply mt (smul_pow_inj_of_le_period period_pos i_lt_period)
+        norm_num
+      )
+      rw [pow_zero, Function.onFun, Set.smul_set_disjoint_inv_of_comm (Commute.one_left _), inv_one,
+        one_smul, Set.disjoint_iff] at pw_disj'
+      rw [← Set.mem_inv_smul_set_iff] at mem_st
+      exact pw_disj' ⟨y_in_st, mem_st⟩
+
+  -- We now need to show that `(h * g) ^ i • y ≠ y` for `i < period g x` (which is quite easy),
+  -- and for `i = period g x` (which reduces to `h * g ^ i • y = h • y ≠ y`).
+  -- From this, we derive a contradiction with `period g x < period (h * g) y ≤ Monoid.exponent _`
+  sorry

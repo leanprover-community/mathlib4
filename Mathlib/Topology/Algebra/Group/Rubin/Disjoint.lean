@@ -10,6 +10,7 @@ import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.GroupAction.FixedPoints
+import Mathlib.Topology.Algebra.Group.InjectiveAction
 
 /-!
 # Group-theoretical condition for the disjointness of `(fixedBy α g)ᶜ` sets
@@ -147,46 +148,6 @@ section Disjoint
 variable [T2Space α] [ContinuousConstSMul G α]
 
 /--
-If the action of `G` on `α` is continuous in `α`, then for all points not fixed by `g : G`,
-there exists an open set `s` such that `x ∈ s` and `g • s` is disjoint from `s`.
--/
-theorem t2_separation_smul {x : α} {g : G}
-    (x_moved : x ∉ fixedBy α g) :
-    ∃ s : Set α, IsOpen s ∧ x ∈ s ∧ Disjoint s (g • s) := by
-  let ⟨s, t, s_open, t_open, gx_in_s, x_in_t, disj_st⟩ := t2_separation x_moved
-  let u := (g⁻¹ • s) ∩ t
-  have u_open : IsOpen u := (s_open.smul g⁻¹).inter t_open
-
-  refine ⟨u, u_open, ⟨?gx_in_gs, x_in_t⟩, ?disj⟩
-  · rwa [Set.mem_inv_smul_set_iff]
-  · simp only [Set.smul_set_inter, smul_inv_smul]
-    exact Set.disjoint_of_subset
-      (Set.inter_subset_right _ _)
-      (Set.inter_subset_left _ _)
-      disj_st.symm
-
-theorem t2_separation_smul_subset {x : α} {g : G} {s : Set α} (s_open : IsOpen s) (x_in_s : x ∈ s)
-    (x_moved : x ∉ fixedBy α g) :
-    ∃ t : Set α, IsOpen t ∧ x ∈ t ∧ t ⊆ s ∧ Disjoint t (g • t) := by
-  let ⟨t, t_open, x_in_t, disj_t_gt⟩ := t2_separation_smul x_moved
-  refine ⟨s ∩ t, s_open.inter t_open, ⟨x_in_s, x_in_t⟩, Set.inter_subset_left _ _, ?disj⟩
-  rw [Set.smul_set_inter]
-  exact Set.disjoint_of_subset (Set.inter_subset_right _ _) (Set.inter_subset_right _ _) disj_t_gt
-
-variable (α) in
-theorem isOpen_movedBy (g : G) : IsOpen (fixedBy α g)ᶜ := by
-  refine isOpen_iff_forall_mem_open.mpr (fun x x_moved => ?ex_subset)
-  let ⟨s, t, s_open, t_open, gx_in_s, x_in_t, disj_st⟩ := t2_separation x_moved
-
-  exact ⟨
-    (g⁻¹ • s) ∩ t,
-    fun y ⟨gy_in_s, y_in_t⟩ =>
-      Disjoint.ne_of_mem disj_st (Set.mem_inv_smul_set_iff.mp gy_in_s) y_in_t,
-    (s_open.smul g⁻¹).inter t_open,
-    ⟨Set.mem_inv_smul_set_iff.mpr gx_in_s, x_in_t⟩
-  ⟩
-
-/--
 If two points have disjoint `(fixedBy α g)ᶜ` sets, then they are algebraically disjoint.
 -/
 theorem IsAlgDisjoint.of_disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G α]
@@ -200,7 +161,7 @@ theorem IsAlgDisjoint.of_disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul 
 
   -- We get from the Hausdorff property that `∃ s ∋ x, s ∩ i • s = ∅`
   have ⟨s, s_open, x_in_s, s_ss_movedBy, disj_s_is⟩ := t2_separation_smul_subset
-    (isOpen_movedBy α f) x_in_movedBy_f x_in_movedBy_i
+    (isClosed_fixedBy α f).isOpen_compl x_in_movedBy_f x_in_movedBy_i
   clear x_in_movedBy_i fi_not_disj
 
   -- Since the action is locally dense, we can extract `f₂` such that `f₂` only moves within `s`
@@ -276,80 +237,6 @@ theorem IsAlgDisjoint.of_disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul 
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
-section T2
-
-variable [TopologicalSpace α] [T2Space α] [ContinuousConstSMul G α]
-variable {s : Set G} {x : α}
-
--- Unfortunately, there does not seem to be an easy way to construct the set for
--- `t2_separation_of_smul_injOn` without a few helper lemmas. These are marked as private so as to
--- not pollute the rest of the module's exports.
-
-private def t2_of_smul_injOn_pair (inj_on : s.InjOn (· • x)) (g h : s) (g_ne_h : g.val ≠ h.val) :
-    Set α :=
-  t2_separation_smul (mem_fixedBy_compl_mul_of_smul_injOn inj_on g.prop h.prop g_ne_h)
-    |>.choose
-
-private theorem t2_of_smul_injOn_pair.isOpen (inj_on : s.InjOn (· • x)) (g h : s)
-    (g_ne_h : g.val ≠ h.val) : IsOpen (t2_of_smul_injOn_pair inj_on g h g_ne_h) :=
-  t2_separation_smul (mem_fixedBy_compl_mul_of_smul_injOn inj_on g.prop h.prop g_ne_h)
-    |>.choose_spec.1
-
-private theorem t2_of_smul_injOn_pair.mem (inj_on : s.InjOn (· • x)) (g h : s)
-    (g_ne_h : g.val ≠ h.val) : x ∈ (t2_of_smul_injOn_pair inj_on g h g_ne_h) :=
-  t2_separation_smul (mem_fixedBy_compl_mul_of_smul_injOn inj_on g.prop h.prop g_ne_h)
-    |>.choose_spec.2.1
-
-private theorem t2_of_smul_injOn_pair.disjoint (inj_on : s.InjOn (· • x)) (g h : s)
-    (g_ne_h : g.val ≠ h.val) :
-    Disjoint (t2_of_smul_injOn_pair inj_on g h g_ne_h)
-      ((h.val⁻¹ * g.val) • t2_of_smul_injOn_pair inj_on g h g_ne_h) :=
-  t2_separation_smul (mem_fixedBy_compl_mul_of_smul_injOn inj_on g.prop h.prop g_ne_h)
-    |>.choose_spec.2.2
-
-/--
-One can construct an open set `t` such that for every pair `g ≠ h` of `s`,
-`g • t` is disjoint from `h • t`.
--/
-theorem t2_separation_of_smul_injOn {s : Set G} {x : α} (inj_on : s.InjOn (· • x))
-    (s_finite : s.Finite) : ∃ t : Set α, IsOpen t ∧ x ∈ t ∧
-      s.Pairwise (fun g h => Disjoint (g • t) (h • t)) := by
-  let pairs := { pair : G × G | pair.1 ∈ s ∧ pair.2 ∈ s ∧ pair.1 ≠ pair.2 }
-  have pairs_finite : Set.Finite pairs := by
-    apply Set.Finite.subset (s_finite.prod s_finite)
-    intro ⟨g, h⟩ ⟨g_in_s, h_in_s, _⟩
-    exact ⟨g_in_s, h_in_s⟩
-
-  let sets : pairs → Set α := fun ⟨pair, ⟨g_in_s, h_in_s, g_ne_h⟩⟩ =>
-    t2_of_smul_injOn_pair inj_on ⟨pair.1, g_in_s⟩ ⟨pair.2, h_in_s⟩ g_ne_h
-
-  refine ⟨⋂ pair, sets pair, ?isOpen, ?x_in_sets, ?pairwise_disjoint⟩
-  case isOpen =>
-    have := pairs_finite.fintype
-    apply isOpen_iInter_of_finite
-    intro ⟨⟨g, h⟩, ⟨g_in_s, h_in_s, g_ne_h⟩⟩
-    apply t2_of_smul_injOn_pair.isOpen
-  case x_in_sets =>
-    apply Set.mem_iInter_of_mem
-    intro ⟨⟨g, h⟩, ⟨g_in_s, h_in_s, g_ne_h⟩⟩
-    apply t2_of_smul_injOn_pair.mem
-  case pairwise_disjoint =>
-    intro g g_in_s h h_in_s g_ne_h
-    let pair : pairs := ⟨⟨g, h⟩, ⟨g_in_s, h_in_s, g_ne_h⟩⟩
-    apply Set.disjoint_of_subset
-    · show g • ⋂ pair, sets pair ⊆ g • sets pair
-      apply Set.smul_set_mono
-      apply Set.iInter_subset _ pair
-    · show h • ⋂ pair, sets pair ⊆ h • sets pair
-      apply Set.smul_set_mono
-      apply Set.iInter_subset _ pair
-    · rw [Set.smul_set_disjoint h⁻¹, inv_smul_smul]
-      apply Disjoint.symm
-      rw [← mul_smul]
-      apply t2_of_smul_injOn_pair.disjoint
-
-end T2
-
 variable [TopologicalSpace α] [T2Space α] [ContinuousConstSMul G α]
 
 lemma dvd_twelve_of_lt_5_of_pos {i : ℕ} (i_pos : 0 < i) (i_lt_5 : i < 5) : i ∣ 12 := by
@@ -363,29 +250,6 @@ lemma dvd_twelve_of_lt_5_of_pos {i : ℕ} (i_pos : 0 < i) (i_lt_5 : i < 5) : i �
     rwa [lt_self_iff_false] at ff
   }
   all_goals (intro; norm_num)
-
-lemma MulAction.smul_pow_inj_of_le_period {g : G} {x : α} {n m : ℕ}
-    (n_lt_period : n < MulAction.period g x) (m_lt_period : m < MulAction.period g x)
-    (pow_eq : g ^ n = g ^ m): n = m := by
-  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
-    ← sub_eq_add_neg] at pow_eq
-  by_contra ne
-  apply lt_iff_not_le.mp (Int.natAbs_coe_sub_coe_lt_of_lt m_lt_period n_lt_period)
-
-  apply MulAction.period_le_natAbs_of_fixed
-  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
-  · rw [pow_eq, one_smul]
-
-lemma MulAction.smul_pow_inj_of_period_eq_zero {g : G} {x : α} {n m : ℕ}
-    (period_eq_zero : MulAction.period g x = 0) (pow_eq : g ^ n = g ^ m) : n = m := by
-  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
-    ← sub_eq_add_neg] at pow_eq
-  by_contra ne
-
-  rw [MulAction.period_eq_zero_iff_forall_zpow] at period_eq_zero
-  apply period_eq_zero (↑n - ↑m)
-  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
-  · rw [pow_eq, one_smul]
 
 variable [LocallyDenseSMul G α] [FaithfulSMul G α] [NoIsolatedPoints α]
 

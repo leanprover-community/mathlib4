@@ -27,6 +27,16 @@ variable {α : Type v}
 variable {G : Type u} [Group G] [MulAction G α]
 variable {M : Type u} [Monoid M] [MulAction M α]
 
+@[to_additive period_zero_eq_one]
+theorem period_one_eq_one (a : α) : period (1 : M) a = 1 := by
+  simp_rw [period, one_smul]
+  exact Function.minimalPeriod_id
+
+@[to_additive (attr := simp)]
+theorem period_subgroup_mk {H : Subgroup G} {g : G} (gh : g ∈ H) (a : α) :
+    period (⟨g, gh⟩ : H) a = period g a := by
+  simp only [period, Submonoid.mk_smul]
+
 theorem period_eq_zero_iff_forall_pow {m : M} {a : α} :
     period m a = 0 ↔ ∀ n > 0, m ^ n • a ≠ a := by
   simp_rw [period, ← smul_iterate, Function.minimalPeriod_eq_zero_iff_nmem_periodicPts,
@@ -161,13 +171,41 @@ theorem period_le_exponent (exp_pos : 0 < Monoid.exponent M) (m : M) (a : α) :
     period m a ≤ Monoid.exponent M :=
   Nat.le_of_dvd exp_pos (period_dvd_exponent m a)
 
-variable (α)
-
+variable (α) in
 @[to_additive]
-theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M) :
+theorem periods_bounded_of_exponent_pos (exp_pos : Monoid.exponent M ≠ 0) :
+    BddAbove { period m a | (m : M) (a : α)} := by
+  use Monoid.exponent M
+  simp only [upperBounds, Set.mem_setOf_eq, forall_exists_index]
+  intro _ m a period_eq
+  rw [← period_eq]
+  exact period_le_exponent exp_pos _ _
+
+variable (α) in
+@[to_additive]
+theorem period_bounded_of_exponent_pos (exp_pos : Monoid.exponent M ≠ 0) (m : M) :
     BddAbove (Set.range (fun a : α => period m a)) := by
   use Monoid.exponent M
   simpa [upperBounds] using period_le_exponent exp_pos _
+
+@[to_additive]
+theorem periods_in_set_bounded_of_exponent_pos (exp_pos : Monoid.exponent M ≠ 0) (s : Set α) :
+    BddAbove { period m a | (m : M) (a ∈ s) } := by
+  apply BddAbove.mono _ (periods_bounded_of_exponent_pos α exp_pos)
+  exact fun _ ⟨m, a, _, eq⟩ => ⟨m, a, eq⟩
+
+@[to_additive]
+theorem exists_maximal_period_of_exponent_pos (exp_pos : Monoid.exponent G ≠ 0)
+    {s : Set α} (s_nonempty : s.Nonempty) : ∃ (g : G) (x : α), x ∈ s ∧ 0 < period g x ∧
+      ∀ h : G, ∀ y ∈ s, period h y ≤ period g x := by
+  have bounded := periods_in_set_bounded_of_exponent_pos exp_pos s
+  have nonempty : Set.Nonempty { period g a | (g : G) (a ∈ s) } := by
+    refine ⟨1, 1, s_nonempty.choose, s_nonempty.choose_spec, ?eq⟩
+    exact period_one_eq_one _
+  let ⟨g, x, x_in_s, period_eq_sSup⟩ := Nat.sSup_mem nonempty bounded
+
+  exact ⟨g, x, x_in_s, period_pos_of_exponent_pos exp_pos g x,
+    fun h y y_in_s => period_eq_sSup ▸ le_csSup bounded ⟨h, y, y_in_s, rfl⟩⟩
 
 end MonoidExponent
 
@@ -205,6 +243,29 @@ theorem smul_injOn_zpow_of_period_eq_zero {g : G} {x : α} (period_eq_zero : per
     Int.ofNat_zero, zero_dvd_iff, sub_eq_zero] at img_eq
   rw [← g₁_eq, ← g₂_eq, img_eq]
 
+-- TODO: use smul_injOn_pow_lt_period and smul_injOn_zpow_of_period_eq_zero
+lemma smul_pow_inj_of_le_period {g : G} {x : α} {n m : ℕ}
+    (n_lt_period : n < MulAction.period g x) (m_lt_period : m < MulAction.period g x)
+    (pow_eq : g ^ n = g ^ m): n = m := by
+  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
+    ← sub_eq_add_neg] at pow_eq
+  by_contra ne
+  apply lt_iff_not_le.mp (Int.natAbs_coe_sub_coe_lt_of_lt m_lt_period n_lt_period)
+
+  apply MulAction.period_le_natAbs_of_fixed
+  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
+  · rw [pow_eq, one_smul]
+
+lemma smul_pow_inj_of_period_eq_zero {g : G} {x : α} {n m : ℕ}
+    (period_eq_zero : MulAction.period g x = 0) (pow_eq : g ^ n = g ^ m) : n = m := by
+  rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,
+    ← sub_eq_add_neg] at pow_eq
+  by_contra ne
+
+  rw [MulAction.period_eq_zero_iff_forall_zpow] at period_eq_zero
+  apply period_eq_zero (↑n - ↑m)
+  · rwa [ne_eq, sub_eq_zero, Nat.cast_inj]
+  · rw [pow_eq, one_smul]
 end InjOn
 
 end MulAction
