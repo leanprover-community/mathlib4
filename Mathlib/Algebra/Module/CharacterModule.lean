@@ -188,7 +188,8 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
 /--
 Linear maps into a character module are exactly characters of tensor product.
 -/
-@[simps!] noncomputable def homEquiv : (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
+@[simps!] noncomputable def homEquiv :
+    (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
   LinearEquiv.ofLinear curry uncurry
     (LinearMap.ext fun c ↦ DFunLike.ext _ _ fun z ↦ by
       refine z.induction_on ?_ ?_ ?_ <;> aesop)
