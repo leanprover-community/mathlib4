@@ -138,7 +138,8 @@ theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
   rw [leval_apply, smeval_def, eval_eq_sum]
   exact rfl
 
-theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) : leval r = smeval.linearMap R r := by
+theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
+    leval r = smeval.linearMap R r := by
   refine LinearMap.ext ?_
   intro
   rw [leval_apply, smeval.linearMap_apply, eval_eq_smeval]
