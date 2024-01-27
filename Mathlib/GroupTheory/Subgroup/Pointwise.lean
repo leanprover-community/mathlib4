@@ -395,8 +395,35 @@ theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T �
 
 @[simp]
 theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
-  simp [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem]
-#align subgroup.smul_inf Subgroup.smul_inf
+  simp only [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem, mem_inf, forall_const]
+
+@[simp]
+theorem smul_iInf {ι : Sort*} {f : ι → Subgroup G} (a : α) :
+    a • ⨅ i, f i = ⨅ i, a • f i := by
+  simp only [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem, mem_iInf, forall_const]
+
+variable (G) in
+@[simp]
+theorem smul_top (a : α) : a • (⊤ : Subgroup G) = ⊤ := by
+  ext g
+  rw [mem_pointwise_smul_iff_inv_smul_mem]
+  exact ⟨fun _ => mem_top _, fun _ => mem_top _⟩
+
+/--
+A `MulDistribMulAction` on a group `G` distributes with `Subgroup.centralizer`.
+-/
+theorem pointwise_smul_centralizer (a : α) (s : Set G) :
+    a • Subgroup.centralizer s = Subgroup.centralizer (a • s) := by
+  ext b
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_centralizer_iff,
+    Set.mem_smul_set_iff_inv_smul_mem]
+  constructor
+  · intro h₁ c ac_in_s
+    specialize h₁ _ ac_in_s
+    rwa [← smul_mul', ← smul_mul', smul_left_cancel_iff] at h₁
+  · intro h₂ c cs
+    specialize h₂ (a • c) (by rwa [inv_smul_smul])
+    rwa [← smul_left_cancel_iff a, smul_mul', smul_mul', smul_inv_smul]
 
 /-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
 @[simps!]
