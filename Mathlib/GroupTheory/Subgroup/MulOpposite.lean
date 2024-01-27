@@ -32,9 +32,9 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]
-theorem mem_op (x : Gᵐᵒᵖ) (S : Subgroup G) : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
+theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
-@[to_additive (attr := simp, nolint simpNF)] lemma op_toSubmonoid (H : Subgroup G) :
+@[to_additive (attr := simp)] lemma op_toSubmonoid (H : Subgroup G) :
     H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
@@ -48,9 +48,9 @@ protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]
-theorem mem_unop (x : G) (S : Subgroup Gᵐᵒᵖ) : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
+theorem mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
 
-@[to_additive (attr := simp, nolint simpNF)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
+@[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
 
@@ -84,9 +84,9 @@ theorem unop_le_unop_iff {S₁ S₂ : Subgroup Gᵐᵒᵖ} : S₁.unop ≤ S₂.
 def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   toFun := Subgroup.op
   invFun := Subgroup.unop
-  left_inv _ := SetLike.coe_injective rfl
-  right_inv _ := SetLike.coe_injective rfl
-  map_rel_iff' := MulOpposite.op_surjective.forall
+  left_inv := unop_op
+  right_inv := op_unop
+  map_rel_iff' := op_le_op_iff
 #align subgroup.opposite Subgroup.opEquiv
 #align add_subgroup.opposite AddSubgroup.opEquiv
 
@@ -119,23 +119,19 @@ theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁
 
 @[to_additive]
 theorem op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
-  (opEquiv.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.image_eq_preimage _
+  opEquiv.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem unop_sSup (S : Set (Subgroup Gᵐᵒᵖ)) : (sSup S).unop = sSup (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem op_sInf (S : Set (Subgroup G)) : (sInf S).op = sInf (.unop ⁻¹' S) :=
-  (opEquiv.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.image_eq_preimage _
+  opEquiv.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem unop_sInf (S : Set (Subgroup Gᵐᵒᵖ)) : (sInf S).unop = sInf (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem op_iSup (S : ι → Subgroup G) : (iSup S).op = ⨆ i, (S i).op := opEquiv.map_iSup _

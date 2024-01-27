@@ -82,8 +82,7 @@ partition of unity in some proofs.
 
 We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
-subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
-compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
+subordinate to `U`. -/
 
 variable (ι M)
 
@@ -480,9 +479,9 @@ variable (I)
 
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
-See also `exists_smooth_zero_iff_one_iff_of_closed`, which ensures additionally that
+See also `exists_msmooth_zero_iff_one_iff_of_isClosed`, which ensures additionally that
 `f` is equal to `0` exactly on `s` and to `1` exactly on `t`. -/
-theorem exists_smooth_zero_one_of_closed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
+theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   have : ∀ x ∈ t, sᶜ ∈ 𝓝 x := fun x hx => hs.isOpen_compl.mem_nhds (disjoint_right.1 hd hx)
@@ -494,7 +493,7 @@ theorem exists_smooth_zero_one_of_closed [T2Space M] [SigmaCompactSpace M] {s t 
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
   refine' fun i => f.toSmoothPartitionOfUnity_zero_of_zero _
   exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
-#align exists_smooth_zero_one_of_closed exists_smooth_zero_one_of_closed
+#align exists_smooth_zero_one_of_closed exists_smooth_zero_one_of_isClosed
 
 namespace SmoothPartitionOfUnity
 
@@ -524,7 +523,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
   · rcases this with ⟨f, hf, hfU⟩
     exact ⟨f.toSmoothPartitionOfUnity hf, hfU.toSmoothPartitionOfUnity hf⟩
   · intro s t hs ht hd
-    rcases exists_smooth_zero_one_of_closed I hs ht hd with ⟨f, hf⟩
+    rcases exists_smooth_zero_one_of_isClosed I hs ht hd with ⟨f, hf⟩
     exact ⟨f, f.smooth, hf⟩
 #align smooth_partition_of_unity.exists_is_subordinate SmoothPartitionOfUnity.exists_isSubordinate
 
@@ -717,8 +716,8 @@ theorem exists_msmooth_support_eq_eq_one_iff
 
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
-exactly on `t`. See also `exists_smooth_zero_one_of_closed` for a slightly weaker version. -/
-theorem exists_msmooth_zero_iff_one_iff_of_closed {s t : Set M}
+exactly on `t`. See also `exists_smooth_zero_one_of_isClosed` for a slightly weaker version. -/
+theorem exists_msmooth_zero_iff_one_iff_of_isClosed {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : M → ℝ, Smooth I 𝓘(ℝ) f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by

@@ -26,18 +26,18 @@ protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
   one_mem' := Submonoid.one_mem' _
 
 @[to_additive (attr := simp)]
-theorem mem_op (x : Mᵐᵒᵖ) (S : Submonoid M) : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
+theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite submonoid back to a submonoid along `MulOpposite.op`-/
 @[to_additive (attr := simps) "Pull an opposite additive submonoid back to a submonoid along
 `AddOpposite.op`"]
-protected def unop {M : Type*} [MulOneClass M] (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
+protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
   one_mem' := Submonoid.one_mem' _
 
 @[to_additive (attr := simp)]
-theorem mem_unop (x : M) (S : Submonoid Mᵐᵒᵖ) : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
+theorem mem_unop {x : M} {S : Submonoid Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
 
 @[to_additive (attr := simp)]
 theorem unop_op (S : Submonoid M) : S.op.unop = S := rfl
@@ -71,7 +71,7 @@ def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   invFun := Submonoid.unop
   left_inv := unop_op
   right_inv := op_unop
-  map_rel_iff' := MulOpposite.op_surjective.forall
+  map_rel_iff' := op_le_op_iff
 
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Submonoid M).op = ⊥ := opEquiv.map_bot
@@ -102,23 +102,19 @@ theorem unop_inf (S₁ S₂ : Submonoid Mᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S�
 
 @[to_additive]
 theorem op_sSup (S : Set (Submonoid M)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
-  (opEquiv.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.image_eq_preimage _
+  opEquiv.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem unop_sSup (S : Set (Submonoid Mᵐᵒᵖ)) : (sSup S).unop = sSup (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sSup _).trans <| sSup_image.symm.trans <|
-    congr_arg sSup <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sSup_eq_sSup_symm_preimage _
 
 @[to_additive]
 theorem op_sInf (S : Set (Submonoid M)) : (sInf S).op = sInf (.unop ⁻¹' S) :=
-  (opEquiv.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.image_eq_preimage _
+  opEquiv.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem unop_sInf (S : Set (Submonoid Mᵐᵒᵖ)) : (sInf S).unop = sInf (.op ⁻¹' S) :=
-  (opEquiv.symm.map_sInf _).trans <| sInf_image.symm.trans <|
-    congr_arg sInf <| opEquiv.symm.image_eq_preimage _
+  opEquiv.symm.map_sInf_eq_sInf_symm_preimage _
 
 @[to_additive]
 theorem op_iSup (S : ι → Submonoid M) : (iSup S).op = ⨆ i, (S i).op := opEquiv.map_iSup _
