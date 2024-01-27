@@ -1393,6 +1393,9 @@ end OpenEmbedding
 /- inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens
 
+/- `Nonempty s` is not a type class argument because `s`, being a subset, rarely comes with a type
+class instance. Then we'd have to manually provide the instance every time we use the following
+lemmas, tediously using `haveI := ...` or `@foobar _ _ _ ...`. -/
 variable (s : Opens α) (hs : Nonempty s)
 
 /-- The inclusion of an open subset `s` of a space `α` into `α` is a partial homeomorphism from the
