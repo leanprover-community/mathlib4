@@ -11,6 +11,35 @@ open TensorProduct
 
 section
 
+variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M]
+variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
+
+lemma lTensor_inj_iff_rTensor_inj (f : N →ₗ[R] P) :
+    Injective (lTensor M f) ↔ Injective (rTensor M f) := by
+  haveI h1 : rTensor M f ∘ₗ TensorProduct.comm R M N =
+    TensorProduct.comm R M P ∘ₗ lTensor M f := ext rfl
+  haveI h2 : ⇑(TensorProduct.comm R M P) ∘ ⇑(lTensor M f) =
+    (TensorProduct.comm R M P) ∘ₗ (lTensor M f) := rfl
+  rw [← EquivLike.injective_comp (TensorProduct.comm R M N),
+    ← EquivLike.comp_injective _ (TensorProduct.comm R M P), h2, ← h1]
+  trivial
+
+variable (R M)
+
+lemma Module.Flat.iff_lTensor_injective :
+    Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (lTensor M I.subtype) := by
+  simp [lTensor_inj_iff_rTensor_inj]
+  exact Module.Flat.iff_rTensor_injective R M
+
+lemma Module.Flat.iff_lTensor_injective' :
+    Module.Flat R M ↔ ∀ (I : Ideal R), Injective (lTensor M I.subtype) := by
+  simp [lTensor_inj_iff_rTensor_inj]
+  exact Module.Flat.iff_rTensor_injective' R M
+
+end
+
+section
+
 variable (R M N : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
   [AddCommMonoid N] [Module R N] (f : M →ₗ[R] N)
 
@@ -53,60 +82,45 @@ section
 variable (R S M N : Type*) [CommRing R] [CommRing S] [Algebra R S]
   [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
-noncomputable def aux1 (I : Ideal R) : M ⊗[R] I →ₗ[S] M := by
-  let i : M ⊗[R] I →ₗ[S] M ⊗[R] R := AlgebraTensorModule.map LinearMap.id (Submodule.subtype I)
-  let e' : M ⊗[R] R →ₗ[S] M := AlgebraTensorModule.rid R S M
-  exact e'.comp i
+private noncomputable abbrev auxRightMul (I : Ideal R) : M ⊗[R] I →ₗ[S] M := by
+  letI i : M ⊗[R] I →ₗ[S] M ⊗[R] R := AlgebraTensorModule.map LinearMap.id I.subtype
+  letI e' : M ⊗[R] R →ₗ[S] M := AlgebraTensorModule.rid R S M
+  exact AlgebraTensorModule.rid R S M ∘ₗ i
 
-lemma test_inj (I : Ideal R) :
-    Injective (aux1 R S M I) ↔ Injective (lift (lsmul R M ∘ₗ Submodule.subtype I)) := by
-  letI e : I ⊗[R] M →ₗ[R] M :=
-    (aux1 R S M I) ∘ₗ (TensorProduct.comm R I M : I ⊗[R] M →ₗ[R] M ⊗[R] I)
-  have eq : e = lift (lsmul R M ∘ₗ Submodule.subtype I) := by
-    apply TensorProduct.ext'
-    intro x s
-    simp [e, aux1]
-  simp only [← eq, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
-    EquivLike.injective_comp]
+private noncomputable abbrev auxJ (I : Ideal R) : Ideal S := LinearMap.range (auxRightMul R S S I)
 
-noncomputable def aux (I : Ideal R) : Ideal S := LinearMap.range (aux1 R S S I)
+private noncomputable abbrev auxIsoJ [Algebra.Flat R S] {I : Ideal R} :
+    S ⊗[R] I ≃ₗ[S] auxJ R S I := by
+  apply LinearEquiv.ofInjective (auxRightMul R S S I)
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
+  exact (Module.Flat.iff_lTensor_injective' R S).mp inferInstance I
 
-lemma aux_FG (I : Ideal R) (h : Ideal.FG I) : Ideal.FG (aux R S I) := by
-  haveI : Module.Finite R I := Module.Finite.iff_fg.mpr h
-  haveI : Module.Finite S (S ⊗[R] I) := Module.Finite.base_change R S I
-  apply FG_of_finite S (S ⊗[R] I) S
-
-noncomputable def aux_iso [Algebra.Flat R S] {I : Ideal R} (h : Ideal.FG I) :
-    S ⊗[R] I ≃ₗ[S] aux R S I := by
-  apply LinearEquiv.ofInjective (aux1 R S S I)
-  rw [test_inj]
-  exact Module.Flat.out h
-
-@[simps!]
-noncomputable def aux2 [Algebra.Flat R S] {I : Ideal R} (h : Ideal.FG I) :
+private noncomputable abbrev aux2 [Algebra.Flat R S] (I : Ideal R) :
     M ⊗[R] I →ₗ[S] M := by
   letI e1 : M ⊗[R] I ≃ₗ[S] M ⊗[S] (S ⊗[R] I) := (baseChangeCancel R S I M).symm
-  letI e2 : M ⊗[S] (S ⊗[R] I) ≃ₗ[S] M ⊗[S] (aux R S I) :=
-    TensorProduct.congr (LinearEquiv.refl S M) (aux_iso R S h)
-  letI e3 : M ⊗[S] (aux R S I) →ₗ[S] M := aux1 S S M (aux R S I)
-  exact e3 ∘ₗ (e1 ≪≫ₗ e2)
+  letI e2 : M ⊗[S] (S ⊗[R] I) ≃ₗ[S] M ⊗[S] (auxJ R S I) :=
+    TensorProduct.congr (LinearEquiv.refl S M) (auxIsoJ R S)
+  letI e3 : M ⊗[S] (auxJ R S I) →ₗ[S] M ⊗[S] S := lTensor M (auxJ R S I).subtype
+  letI e4 : M ⊗[S] S →ₗ[S] M := TensorProduct.rid S M
+  exact e4 ∘ₗ e3 ∘ₗ (e1 ≪≫ₗ e2)
 
-lemma aux2_eq_aux [Algebra.Flat R S] {I : Ideal R} (h : Ideal.FG I) : aux2 R S M h = aux1 R S M I := by
-  apply AlgebraTensorModule.ext
-  intro x m
-  dsimp [aux1, aux2, aux_iso]
-  simp
-  erw [LinearEquiv.ofInjective_apply]
+private lemma aux2_eq [Algebra.Flat R S] {I : Ideal R} :
+    (aux2 R S M I : M ⊗[R] I →ₗ[R] M) = TensorProduct.rid R M ∘ₗ lTensor M (I.subtype) := by
+  apply TensorProduct.ext'
+  intro m x
+  erw [TensorProduct.rid_tmul]
   simp
 
 /-- If `S` is a flat `R`-algebra, then any flat `S`-Module is also `R`-flat. -/
-theorem Module.Flat.comp [Algebra.Flat R S] [Module.Flat S M] : Module.Flat R M where
-  out := by
-    intro I hfg
-    rw [← test_inj R S M, ← aux2_eq_aux R S M hfg]
-    dsimp [aux2]
-    simp [test_inj]
-    exact Module.Flat.out (aux_FG R S I hfg)
+theorem Module.Flat.comp [Algebra.Flat R S] [Module.Flat S M] : Module.Flat R M := by
+  rw [Module.Flat.iff_lTensor_injective']
+  intro I
+  rw [← EquivLike.comp_injective _ (TensorProduct.rid R M)]
+  haveI h : TensorProduct.rid R M ∘ lTensor M (Submodule.subtype I) =
+    TensorProduct.rid R M ∘ₗ lTensor M I.subtype := rfl
+  simp only [h, ← aux2_eq R S M, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
+  exact (Module.Flat.iff_lTensor_injective' S M).mp inferInstance _
 
 end
 
