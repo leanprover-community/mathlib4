@@ -81,11 +81,8 @@ class Inner (𝕜 E : Type*) where
 
 export Inner (inner)
 
-/-- The inner product with values in `ℝ`. -/
-notation "⟪" x ", " y "⟫_ℝ" => @inner ℝ _ _ x y
-
-/-- The inner product with values in `ℂ`. -/
-notation "⟪" x ", " y "⟫_ℂ" => @inner ℂ _ _ x y
+/-- The inner product with values in `𝕜`. -/
+notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
 section Notations
 
@@ -2292,7 +2289,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_apply (T : E →L[𝕜] E) (x : E) 
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=
-  reClm.continuous.comp <| T.continuous.inner continuous_id
+  reCLM.continuous.comp <| T.continuous.inner continuous_id
 #align continuous_linear_map.re_apply_inner_self_continuous ContinuousLinearMap.reApplyInnerSelf_continuous
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :

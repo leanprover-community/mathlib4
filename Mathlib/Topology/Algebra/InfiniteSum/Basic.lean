@@ -1028,10 +1028,8 @@ theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
       rw [sub_eq_iff_eq_add, add_comm, sum_add_tsum_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
     simpa only [h₀, sub_self] using Tendsto.sub h₁ hf.hasSum.tendsto_sum_nat
-  · convert tendsto_const_nhds (α := α) (β := ℕ) (a := 0) (f := atTop)
-    rename_i i
-    rw [← summable_nat_add_iff i] at hf
-    exact tsum_eq_zero_of_not_summable hf
+  · refine tendsto_const_nhds.congr fun n ↦ (tsum_eq_zero_of_not_summable ?_).symm
+    rwa [summable_nat_add_iff n]
 #align tendsto_sum_nat_add tendsto_sum_nat_add
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both convergent then so is the `ℤ`-indexed
@@ -1286,7 +1284,26 @@ theorem sum_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f
   rfl
 #align sum_add_tsum_subtype_compl sum_add_tsum_subtype_compl
 
+lemma HasSum.tsum_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasSum f a) (g : β → γ) :
+    HasSum (fun c : γ ↦ ∑' b : g ⁻¹' {c}, f b) a :=
+  (((Equiv.sigmaFiberEquiv g).hasSum_iff).mpr hf).sigma <|
+    fun _ ↦ ((hf.summable.subtype _).hasSum_iff).mpr rfl
+
 end UniformGroup
+
+section prod_singleton
+
+variable [AddCommMonoid γ] [TopologicalSpace γ] [T2Space γ]
+
+lemma tsum_setProd_singleton_left (a : α) (t : Set β) (f : α × β → γ) :
+    (∑' x : {a} ×ˢ t, f x) = ∑' b : t, f (a, b) :=
+  (Equiv.Set.prod_singleton_left a t |>.symm.tsum_eq <| ({a} ×ˢ t).restrict f).symm
+
+lemma tsum_setProd_singleton_right (s : Set α) (b : β) (f : α × β → γ) :
+    (∑' x : s ×ˢ {b}, f x) = ∑' a : s, f (a, b) :=
+  (Equiv.Set.prod_singleton_right s b |>.symm.tsum_eq <| (s ×ˢ {b}).restrict f).symm
+
+end prod_singleton
 
 section TopologicalGroup
 
@@ -1317,8 +1334,7 @@ theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
     obtain ⟨s, hs⟩ := H.tsum_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · convert tendsto_const_nhds (α := G) (β := Finset α) (f := atTop) (a := 0)
-    apply tsum_eq_zero_of_not_summable
+  · refine tendsto_const_nhds.congr fun _ ↦ (tsum_eq_zero_of_not_summable ?_).symm
     rwa [Finset.summable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 

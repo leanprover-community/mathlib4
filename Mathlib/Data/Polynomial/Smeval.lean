@@ -46,19 +46,11 @@ theorem smeval_zero (R : Type*) [Semiring R] [MulActionWithZero R S] :
     (0 : R[X]).smeval x = 0 := by
   simp only [smeval_eq_sum, smul_pow, sum_zero_index]
 
-@[simp]
 theorem smeval_C {R : Type*} [Semiring R] [MulActionWithZero R S] (r : R) :
     (C r).smeval x = r • x ^ 0 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_C_index]
 
 @[simp]
-theorem smeval_one (R : Type*) [Semiring R] [MulActionWithZero R S] :
-    (1 : R[X]).smeval x = 1 • x ^ 0 := by
-  rw [← C_1, smeval_C]
-  simp only [Nat.cast_one, one_smul]
-
-@[simp]
-theorem smeval_X (R : Type*) [Semiring R] [MulActionWithZero R S] :
     (X : R[X]).smeval x = x ^ 1 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_X_index, one_smul]
 
@@ -80,8 +72,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddCommMonoid S] [Po
   (x : S)
 
 @[simp]
-theorem smeval_add (R : Type*) [Semiring R] [Module R S] (p q : R[X]) :
-    (p + q).smeval x = p.smeval x + q.smeval x := by
+theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
   simp only [smeval_eq_sum, smul_pow]
   refine sum_add_index p q (smul_pow x) ?_ ?_
   intro i

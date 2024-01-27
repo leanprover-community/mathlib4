@@ -1072,8 +1072,8 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
 
 @[simp]
 theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
-    (-p).aroots S = p.aroots S :=
-  by rw [aroots, Polynomial.map_neg, roots_neg]
+    (-p).aroots S = p.aroots S := by
+  rw [aroots, Polynomial.map_neg, roots_neg]
 
 @[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
@@ -1257,7 +1257,7 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
   cases' hp.lt_or_lt with hd hd
-  · rw [degree_eq_bot.mp <| (Nat.WithBot.lt_zero_iff _).mp hd, zero_divByMonic]
+  · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine' leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) _
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
 set_option linter.uppercaseLean3 false in

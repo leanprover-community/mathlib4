@@ -1228,6 +1228,23 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
   this h
 #align set.finite.dinduction_on Set.Finite.dinduction_on
 
+/-- Induction up to a finite set `S`. -/
+theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
+    (S0 : Set α) (hS0 : S0 ⊆ S) (H0 : C S0) (H1 : ∀ s ⊂ S, C s → ∃ a ∈ S \ s, C (insert a s)) :
+    C S := by
+  have : Finite S := Finite.to_subtype h
+  have : Finite {T : Set α // T ⊆ S} := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ le_rfl]
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ hS0] at H0
+  refine Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ ?_) H0
+  obtain ⟨a, ⟨ha1, ha2⟩, ha'⟩ := H1 s (ssubset_of_ne_of_subset hs s.2) hs'
+  exact ⟨⟨insert a s.1, insert_subset ha1 s.2⟩, Set.ssubset_insert ha2, ha'⟩
+
+/-- Induction up to `univ`. -/
+theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
+    (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
+  finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
+
 section
 
 attribute [local instance] Nat.fintypeIio
@@ -1258,8 +1275,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  by simp
+theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+  simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
