@@ -37,7 +37,7 @@ theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : 
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
   have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
   let V : Set Y := {y | (a.1, y) ∈ W}
-  have hV : IsCompact V := (W.2.2.preimage hp).isCompact
+  have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
   exact ⟨⟨U, (ContinuousMap.isClopen_setOf_mapsTo hV W.2).preimage
@@ -50,7 +50,7 @@ is a union of finitely many clopen boxes. -/
 theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
     ∃ (I : Finset (Clopens X × Clopens Y)), W = I.sup fun i ↦ i.1 ×ˢ i.2 := by
   choose! U hxU V hxV hUV using fun x ↦ W.exists_prod_subset (a := x)
-  rcases W.2.2.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
+  rcases W.2.1.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
     (U x ×ˢ V x).2.isOpen.mem_nhds ⟨hxU x hx, hxV x hx⟩) with ⟨I, hIW, hWI⟩
   classical
   use I.image fun x ↦ (U x, V x)

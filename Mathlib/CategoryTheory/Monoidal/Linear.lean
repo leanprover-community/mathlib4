@@ -32,9 +32,9 @@ variable [MonoidalCategory C]
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
-  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , X ◁ (r • f) = r • (X ◁ f) := by
+  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , 𝟙 X ⊗ (r • f) = r • (𝟙 X ⊗ f) := by
     aesop_cat
-  smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ▷ X = r • (f ▷ X) := by
+  smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ⊗ 𝟙 X = r • (f ⊗ 𝟙 X) := by
     aesop_cat
 #align category_theory.monoidal_linear CategoryTheory.MonoidalLinear
 
