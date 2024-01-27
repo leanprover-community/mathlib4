@@ -249,6 +249,14 @@ theorem tensor_β (X Y : Center C) (U : C) :
 #align category_theory.center.tensor_β CategoryTheory.Center.tensor_β
 
 @[simp]
+theorem whiskerLeft_f (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) : (X ◁ f).f = X.1 ◁ f.f :=
+  id_tensorHom X.1 f.f
+
+@[simp]
+theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) : (f ▷ Y).f = f.f ▷ Y.1 :=
+  tensorHom_id f.f Y.1
+
+@[simp]
 theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
   rfl
 #align category_theory.center.tensor_f CategoryTheory.Center.tensor_f
@@ -337,12 +345,7 @@ open BraidedCategory
 /-- Auxiliary construction for `ofBraided`. -/
 @[simps]
 def ofBraidedObj (X : C) : Center C :=
-  ⟨X, {
-      β := fun Y => β_ X Y
-      monoidal := fun U U' => by
-        rw [Iso.eq_inv_comp, ← Category.assoc, ← Category.assoc, Iso.eq_comp_inv, Category.assoc,
-          Category.assoc]
-        exact hexagon_forward X U U' }⟩
+  ⟨X, { β := fun Y => β_ X Y}⟩
 #align category_theory.center.of_braided_obj CategoryTheory.Center.ofBraidedObj
 
 variable (C)
