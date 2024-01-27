@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Tactic.Zify
@@ -449,7 +449,7 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
 theorem repeat_comp_rev {α} (a : Fin n → α) :
     (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) := by
   ext ⟨j, h₁⟩
-  simp [rev, modNat]
+  simp only [comp_apply, rev, repeat_apply, modNat]
   congr
   have h₂ : j % n + 1 ≤ n :=
     Nat.mod_lt j (Nat.pos_of_ne_zero (Nat.ne_zero_of_mul_ne_zero_right (Nat.not_eq_zero_of_lt h₁)))
