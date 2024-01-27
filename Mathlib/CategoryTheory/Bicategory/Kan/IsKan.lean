@@ -67,16 +67,16 @@ abbrev mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
 abbrev desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension :=
   StructuredArrow.IsUniversal.desc H s
 
+@[reassoc (attr := simp)]
+theorem fac (H : IsKan t) (s : LeftExtension f g) :
+    t.unit ≫ f ◁ H.desc s = s.unit :=
+  StructuredArrow.IsUniversal.fac H s
+
 /-- Two 2-morphisms out of a left Kan extension are equal if their compositions with
 each triangle 2-morphism are equal. -/
 theorem hom_ext (H : IsKan t) {k : b ⟶ c} {τ τ' : t.extension ⟶ k}
     (w : t.unit ≫ f ◁ τ = t.unit ≫ f ◁ τ') : τ = τ' :=
   StructuredArrow.IsUniversal.hom_ext H w
-
-@[reassoc (attr := simp)]
-theorem fac (H : IsKan t) (s : LeftExtension f g) :
-    t.unit ≫ f ◁ H.desc s = s.unit :=
-  StructuredArrow.IsUniversal.fac H s
 
 end IsKan
 
@@ -129,16 +129,16 @@ abbrev mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
 abbrev desc (H : IsKan t) (s : LeftLift f g) : t.lift ⟶ s.lift :=
   StructuredArrow.IsUniversal.desc H s
 
+@[reassoc (attr := simp)]
+theorem fac (H : IsKan t) (s : LeftLift f g) :
+    t.unit ≫ H.desc s ▷ f = s.unit :=
+  StructuredArrow.IsUniversal.fac H s
+
 /-- Two 2-morphisms out of a left Kan lift are equal if their compositions with
 each triangle 2-morphism are equal. -/
 theorem hom_ext (H : IsKan t) {k : c ⟶ b} {τ τ' : t.lift ⟶ k}
     (w : t.unit ≫ τ ▷ f = t.unit ≫ τ' ▷ f) : τ = τ' :=
   StructuredArrow.IsUniversal.hom_ext H w
-
-@[reassoc (attr := simp)]
-theorem fac (H : IsKan t) (s : LeftLift f g) :
-    t.unit ≫ H.desc s ▷ f = s.unit :=
-  StructuredArrow.IsUniversal.fac H s
 
 end IsKan
 
