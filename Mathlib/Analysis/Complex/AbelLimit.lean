@@ -71,31 +71,15 @@ theorem preimage_stolzSet_eq_Ioo (hM : 1 < M) :
 
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
-  intro s hs
-  rw [Metric.mem_nhdsWithin_iff] at hs
-  obtain ⟨ε, ⟨εpos, hε⟩⟩ := hs
-  rw [Filter.mem_map', mem_nhdsWithin_Iio_iff_exists_Ioo_subset]
-  use max 0 (1 - ε)
-  constructor
-  · rw [Set.mem_Iio, max_lt_iff, sub_lt_self_iff]
-    constructor <;> positivity
-  intro x hx
-  rw [Set.mem_Ioo, max_lt_iff] at hx
-  obtain ⟨⟨lb, ub₁⟩, ub₂⟩ := hx
-  rw [sub_lt_comm] at ub₁
-  rw [Set.mem_setOf]
-  apply Set.mem_of_mem_of_subset ((Set.mem_inter_iff ..).mpr _) hε
-  constructor
-  · rw [Metric.mem_ball, dist_eq_norm]
-    norm_cast
-    rw [norm_real, Real.norm_eq_abs, abs_sub_lt_iff]
-    exact ⟨(sub_neg.mpr ub₂).trans εpos, ub₁⟩
-  · rw [stolzSet, Set.mem_setOf]
-    norm_cast
-    simp_rw [norm_real, Real.norm_eq_abs, abs_eq_self.mpr lb.le, ub₂, true_and]
-    replace ub₂ := sub_pos.mpr ub₂
-    rw [← one_mul |_|, abs_eq_self.mpr ub₂.le]
-    gcongr
+  rw [← tendsto_id']
+  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) <| ?_
+  simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
+  simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
+  simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
+    abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
+  exact ⟨hx.2, one_mul (1 - x) ▸ mul_lt_mul_of_pos_right hM <| sub_pos.mpr hx.2⟩ 
 
 end StolzSet
 
