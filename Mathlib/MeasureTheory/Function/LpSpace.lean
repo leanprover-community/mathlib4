@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
@@ -1125,7 +1127,7 @@ variable {K : Type*} [IsROrC K]
 
 theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => (f x : K)) p μ :=
-  (@IsROrC.ofRealClm K _).comp_memℒp' hf
+  (@IsROrC.ofRealCLM K _).comp_memℒp' hf
 #align measure_theory.mem_ℒp.of_real MeasureTheory.Memℒp.ofReal
 
 theorem _root_.MeasureTheory.memℒp_re_im_iff {f : α → K} :

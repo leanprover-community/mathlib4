@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 #align_import category_theory.limits.filtered_colimit_commutes_finite_limit from "leanprover-community/mathlib"@"3f409bd9df181d26dd223170da7b6830ece18442"
 
@@ -399,3 +400,8 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
 end
 
 end CategoryTheory.Limits
+
+-- Various pieces of algebra that have previously been spuriously imported here:
+assert_not_exists zero_zpow
+assert_not_exists div_self
+assert_not_exists Field

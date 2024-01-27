@@ -63,13 +63,13 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance instDFunLike {μ : YoungDiagram} : DFunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
+instance instFunLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ (ℕ → ℕ) where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
     cases T'
     congr
-#align ssyt.fun_like Ssyt.instDFunLike
+#align ssyt.fun_like Ssyt.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
 instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
