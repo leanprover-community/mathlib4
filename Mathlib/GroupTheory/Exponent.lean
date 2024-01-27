@@ -220,13 +220,14 @@ theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) 
 #align monoid.exponent_dvd_of_forall_pow_eq_one Monoid.exponent_dvd_of_forall_pow_eq_one
 #align add_monoid.exponent_dvd_of_forall_nsmul_eq_zero AddMonoid.exponent_dvd_of_forall_nsmul_eq_zero
 
+variable {G} in
 @[to_additive]
 theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n := by
   simp_rw [exponent_dvd_iff_forall_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive (attr := deprecated)]
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
-  (exponent_dvd G).mpr h
+  exponent_dvd.mpr h
 
 @[to_additive]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
@@ -322,7 +323,7 @@ theorem exponent_eq_zero_iff_range_orderOf_infinite (h : ∀ g : G, 0 < orderOf 
 theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf = exponent G :=
   Nat.dvd_antisymm
     (lcm_orderOf_dvd_exponent G)
-    ((exponent_dvd G).mpr fun g => Finset.dvd_lcm (Finset.mem_univ g))
+    (exponent_dvd.mpr fun g => Finset.dvd_lcm (Finset.mem_univ g))
 #align monoid.lcm_order_eq_exponent Monoid.lcm_orderOf_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrderOf_eq_exponent
 
@@ -463,10 +464,10 @@ lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   exact (orderOf_pos x).ne' hx
 
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
-  (Monoid.exponent_dvd G).mpr <| fun _ => orderOf_dvd_card
+  Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
 
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
-  (Monoid.exponent_dvd G).mpr orderOf_dvd_natCard
+  Monoid.exponent_dvd.mpr orderOf_dvd_natCard
 
 end Group
 

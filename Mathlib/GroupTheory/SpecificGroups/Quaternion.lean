@@ -268,7 +268,7 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
     simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
   apply Nat.dvd_antisymm
-  · apply Monoid.exponent_dvd_of_forall_pow_eq_one
+  · rw [Monoid.exponent_dvd_iff_forall_pow_eq_one]
     rintro (m | m)
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_a]
       refine' Nat.dvd_trans ⟨gcd (2 * n) m.val, _⟩ (dvd_lcm_left (2 * n) 4)
