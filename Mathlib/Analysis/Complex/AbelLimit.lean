@@ -49,26 +49,6 @@ theorem stolzSet_empty (hM : M ≤ 1) : stolzSet M = ∅ := by
     _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
     _ ≤ _ := norm_sub_norm_le _ _
 
-/-- The intersection of `stolzSet M` with the real axis is `((1 - M) / (1 + M), 1)` for `1 < M`. -/
-theorem preimage_stolzSet_eq_Ioo (hM : 1 < M) :
-    ofReal' ⁻¹' (stolzSet M) = Set.Ioo ((1 - M) / (1 + M)) 1 := by
-  ext x
-  rw [stolzSet, Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_Ioo]
-  norm_cast
-  simp_rw [norm_real, Real.norm_eq_abs]
-  rw [div_lt_iff (by positivity), abs_lt, and_comm, ← and_assoc, and_congr_left_iff]
-  intro u
-  have li : 1 - M < x * (1 + M) → -1 < x := fun q ↦
-    (mul_lt_mul_right (by positivity)).mp ((show -1 * (1 + M) < 1 - M by linarith).trans q)
-  rw [iff_self_and.mpr li, and_congr_left_iff]
-  intro
-  rw [abs_eq_self.mpr (sub_pos.mpr u).le]
-  cases' le_or_lt 0 x with h h
-  · simp_rw [abs_eq_self.mpr h, lt_mul_iff_one_lt_left (sub_pos.mpr u), hM, true_iff]
-    exact (show 1 - M < 0 by linarith only [hM]).trans_le (by positivity)
-  · simp_rw [abs_eq_neg_self.mpr h.le, sub_neg_eq_add, sub_lt_iff_lt_add',
-      show x + M * (1 + x) = M + x * (1 + M) by ring]
-
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
@@ -79,7 +59,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
-  exact ⟨hx.2, one_mul (1 - x) ▸ mul_lt_mul_of_pos_right hM <| sub_pos.mpr hx.2⟩ 
+  exact ⟨hx.2, one_mul (1 - x) ▸ mul_lt_mul_of_pos_right hM <| sub_pos.mpr hx.2⟩
 
 end StolzSet
 
@@ -222,7 +202,7 @@ is continuous at 1 when approaching 1 from the left. -/
 theorem tendsto_tsum_power_nhdsWithin_lt : Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
   replace h := (tendsto_map (f := ofReal')).comp h
   have m := ofRealCLM.continuous.tendsto l
-  rw [show ⇑ofRealCLM = ofReal' by rfl, tendsto_iff_comap, ← map_le_iff_le_comap] at m
+  rw [show ofRealCLM = ofReal' by rfl, tendsto_iff_comap, ← map_le_iff_le_comap] at m
   replace h := h.mono_right m
   rw [Function.comp_def] at h
   push_cast at h
