@@ -1041,11 +1041,6 @@ theorem isOrtho_polarBilin {x y : M} : Q.polarBilin.IsOrtho x y ↔ IsOrtho Q x 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
   isOrtho_polarBilin.mpr h
 
--- TODO: move to `GroupTheory/GroupAction/Group`
-theorem invOf_smul_eq_iff (r : R) [Invertible r] {a b : M} :
-    ⅟r • a = b ↔ a = r • b :=
-  inv_smul_eq_iff (a := unitOfInvertible r)
-
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
     Q.associated.IsOrtho x y ↔ Q.IsOrtho x y := by
