@@ -67,14 +67,14 @@ instance : Module R (CharacterModule A) where
     { toFun := fun x => l (r • x)
       map_add' := fun x y => by dsimp; rw [smul_add, map_add]
       map_zero' := by dsimp; rw [smul_zero, l.map_zero] }
-  one_smul l := FunLike.ext _ _ fun x => show l _ = _ by rw [one_smul]
-  mul_smul r₁ r₂ l := FunLike.ext _ _ fun x => show l _ = l _ by rw [mul_smul, smul_comm]
+  one_smul l := DFunLike.ext _ _ fun x => show l _ = _ by rw [one_smul]
+  mul_smul r₁ r₂ l := DFunLike.ext _ _ fun x => show l _ = l _ by rw [mul_smul, smul_comm]
   smul_zero r := rfl
-  smul_add r l₁ l₂ := FunLike.ext _ _ fun x => show (l₁ + _) _ = _ by
+  smul_add r l₁ l₂ := DFunLike.ext _ _ fun x => show (l₁ + _) _ = _ by
     rw [AddMonoidHom.add_apply, AddMonoidHom.add_apply]; rfl
-  add_smul r₁ r₂ l := FunLike.ext _ _ fun x => show l _ = l _ + l _ by
+  add_smul r₁ r₂ l := DFunLike.ext _ _ fun x => show l _ = l _ + l _ by
     rw [add_smul, map_add]
-  zero_smul l := FunLike.ext _ _ fun x => show l _ = 0 by rw [zero_smul, map_zero]
+  zero_smul l := DFunLike.ext _ _ fun x => show l _ = 0 by rw [zero_smul, map_zero]
 
 variable {R A B}
 
@@ -87,7 +87,7 @@ between `B⋆` and `A⋆`
 @[simps] def dual (f : A →ₗ[R] B) : CharacterModule B →ₗ[R] CharacterModule A where
   toFun L := L.comp f.toAddMonoidHom
   map_add' := by aesop
-  map_smul' r c := FunLike.ext _ _ fun x ↦ by
+  map_smul' r c := DFunLike.ext _ _ fun x ↦ by
     simp only [RingHom.id_apply, smul_apply]
     rw [AddMonoidHom.comp_apply, AddMonoidHom.comp_apply, smul_apply]
     erw [smul_apply, f.map_smul]
@@ -114,7 +114,7 @@ lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective 
   let L := Injective.factorThru g' f'
   refine ⟨(ULift.moduleEquiv (R := ℤ)).toAddMonoidHom.comp L |>.comp
     (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom, AddMonoidHom.ext fun _ ↦
-      (ULift.ext_iff _ _).mp <| FunLike.congr_fun (Injective.comp_factorThru g' f') _⟩
+      (ULift.ext_iff _ _).mp <| DFunLike.congr_fun (Injective.comp_factorThru g' f') _⟩
 
 /--
 Two isomorphic modules have isomorphic character modules.
@@ -122,11 +122,11 @@ Two isomorphic modules have isomorphic character modules.
 def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
   LinearEquiv.ofLinear
     (dual e.symm) (dual e)
-    (LinearMap.ext fun c ↦ FunLike.ext _ _ fun a ↦ by
+    (LinearMap.ext fun c ↦ DFunLike.ext _ _ fun a ↦ by
       simp only [LinearMap.coe_comp, Function.comp_apply, dual_apply, LinearMap.id_coe, id_eq]
       rw [AddMonoidHom.comp_apply, AddMonoidHom.comp_apply]
       erw [e.apply_symm_apply])
-    (LinearMap.ext fun c ↦ FunLike.ext _ _ fun a ↦ by
+    (LinearMap.ext fun c ↦ DFunLike.ext _ _ fun a ↦ by
       simp only [LinearMap.coe_comp, Function.comp_apply, dual_apply, LinearMap.id_coe, id_eq]
       rw [AddMonoidHom.comp_apply, AddMonoidHom.comp_apply]
       erw [e.symm_apply_apply])
@@ -141,14 +141,14 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ by
     show c (r • a) b = c a (r • b)
     rw [c.map_smul, smul_apply]
-  map_add' c c' := FunLike.ext _ _ fun x ↦ by
+  map_add' c c' := DFunLike.ext _ _ fun x ↦ by
     induction x using TensorProduct.induction_on
     · simp
     · dsimp
       rw [liftAddHom_tmul, AddMonoidHom.add_apply, liftAddHom_tmul, liftAddHom_tmul]
       rfl
     · aesop
-  map_smul' r c := FunLike.ext _ _ fun x ↦ by
+  map_smul' r c := DFunLike.ext _ _ fun x ↦ by
     induction' x using TensorProduct.induction_on
     · simp
     · dsimp
@@ -165,21 +165,21 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
   { toFun := fun a ↦ c.comp ((TensorProduct.mk R A B) a).toAddMonoidHom
-    map_add' := fun a a' ↦ FunLike.ext _ _ fun b ↦ by
+    map_add' := fun a a' ↦ DFunLike.ext _ _ fun b ↦ by
       rw [AddMonoidHom.add_apply]
       repeat rw [AddMonoidHom.comp_apply]
       simp
-    map_smul' := fun r a ↦ FunLike.ext _ _ fun b ↦ by
+    map_smul' := fun r a ↦ DFunLike.ext _ _ fun b ↦ by
       simp only [map_smul, RingHom.id_apply, smul_apply]
       repeat rw [AddMonoidHom.comp_apply]
       simp }
-  map_add' c c' := FunLike.ext _ _ fun a ↦ FunLike.ext _ _ fun b ↦ by
+  map_add' c c' := DFunLike.ext _ _ fun a ↦ DFunLike.ext _ _ fun b ↦ by
     dsimp
     repeat rw [AddMonoidHom.add_apply]
     repeat rw [AddMonoidHom.comp_apply]
     simp only [LinearMap.toAddMonoidHom_coe, mk_apply]
     rfl
-  map_smul' r c := FunLike.ext _ _ fun a ↦ FunLike.ext _ _ fun b ↦ by
+  map_smul' r c := DFunLike.ext _ _ fun a ↦ DFunLike.ext _ _ fun b ↦ by
     dsimp
     repeat rw [AddMonoidHom.comp_apply]
     simp only [LinearMap.toAddMonoidHom_coe, mk_apply, map_smul]
@@ -190,9 +190,9 @@ Linear maps into a character module are exactly characters of tensor product.
 -/
 @[simps!] noncomputable def homEquiv : (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
   LinearEquiv.ofLinear curry uncurry
-    (LinearMap.ext fun c ↦ FunLike.ext _ _ fun z ↦ by
+    (LinearMap.ext fun c ↦ DFunLike.ext _ _ fun z ↦ by
       refine z.induction_on ?_ ?_ ?_ <;> aesop)
-    (LinearMap.ext fun l ↦ FunLike.ext _ _ fun _ ↦ by aesop)
+    (LinearMap.ext fun l ↦ DFunLike.ext _ _ fun _ ↦ by aesop)
 
 end module
 /--
@@ -272,7 +272,7 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
   refine ⟨(ULift.moduleEquiv (R := ℤ)).toLinearMap.toAddMonoidHom.comp <|
     Injective.factorThru L ι, ?_⟩
   intro rid
-  erw [AddMonoidHom.comp_apply, FunLike.congr_fun (Injective.comp_factorThru L ι)
+  erw [AddMonoidHom.comp_apply, DFunLike.congr_fun (Injective.comp_factorThru L ι)
     ⟨a, Submodule.mem_span_singleton_self _⟩] at rid
   exact ne_zero <| eq_zero_of_ofSpanSingleton_apply_self a rid
 

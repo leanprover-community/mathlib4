@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -469,33 +468,5 @@ lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
 
 end
-
-section Functor
-
-universe v'
-variable (R : Type u) [CommRing R]
-
-/-- By fixing the second argument, `Hom(M, ·)` is an endofunctor of category of `R`-modules.
-
-Here `left` means the composition of linear maps is on the left hand-side.
--/
-@[simps]
-def leftHomFunctor (M : ModuleCat.{v, u} R) :
-    (ModuleCat.{v', u} R) ⥤ ModuleCat.{max v v', u} R where
-  obj N := ModuleCat.of R <| M →ₗ[R] N
-  map := LinearMap.llcomp R _ _ _
-
-/-- By fixing the second argument, `Hom(·, N)` is a contravariant endofunctor of category of
-`R`-modules.
-
-Here `right` means the composition of linear maps is on the right hand-side.
--/
-@[simps]
-def rightHomFunctor (N : ModuleCat.{v, u} R) :
-    (ModuleCat.{v', u} R)ᵒᵖ ⥤ ModuleCat.{max v v', u} R where
-  obj M := ModuleCat.of R <| M.unop →ₗ[R] N
-  map L := LinearMap.lrcomp R _ _ N L.unop
-
-end Functor
 
 end ModuleCat

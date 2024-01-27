@@ -1307,11 +1307,6 @@ def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ
   arrowCongr (LinearEquiv.refl R M) f
 #align linear_equiv.congr_right LinearEquiv.congrRight
 
-/-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M₂` into `M`
-and `M₃` into `M` are linearly isomorphic. -/
-def congrLeft (f : M₂ ≃ₗ[R] M₃) : (M₂ →ₗ[R] M) ≃ₗ[R] (M₃ →ₗ[R] M) :=
-  arrowCongr f (LinearEquiv.refl R M)
-
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic. -/
 def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
