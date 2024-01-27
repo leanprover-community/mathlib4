@@ -51,7 +51,7 @@ instance {σ : M →* M} [isId σ] : CompTriple.isId σ := {
 
 instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ := {
-  comp_eq := by rw [← MonoidHom.coe_comp, FunLike.coe_fn_eq, κ.comp_eq] }
+  comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq] }
 
 lemma comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
@@ -60,22 +60,18 @@ lemma comp {φ : M →* N} {ψ : N →* P} :
 lemma comp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [isId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ := {
-  comp_eq := by
-    simp only [← FunLike.coe_fn_eq, coe_comp, isId.eq_id,
-      Function.comp.right_id, coe_mk, OneHom.coe_mk, Function.comp.right_id] }
+  comp_eq := by simp only [isId.eq_id, MonoidHom.comp_id] }
 
 lemma id_comp {M N : Type*} [Monoid M] [Monoid N]
     {φ : M →* N} {ψ : N →* N} [isId ψ] :
     CompTriple φ ψ φ := {
-  comp_eq := by
-    simp only [← FunLike.coe_fn_eq, coe_comp, isId.eq_id,
-      Function.comp.left_id, coe_mk, OneHom.coe_mk, Function.comp.left_id]}
+  comp_eq := by simp only [isId.eq_id, MonoidHom.id_comp] }
 
 lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     {χ : M →* M} [isId χ] :
     CompTriple φ ψ χ := {
   comp_eq := by
-    simp only [isId.eq_id, ← FunLike.coe_fn_eq, coe_comp, h.id, coe_mk, OneHom.coe_mk] }
+    simp only [isId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id, coe_mk, OneHom.coe_mk] }
 
 lemma apply
     {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
