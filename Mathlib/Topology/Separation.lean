@@ -1380,6 +1380,13 @@ theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
 
+lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
+  constructor <;> intro H
+  · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
+  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
+
 /-- If `V : ι → Set X` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `X` is
@@ -1404,31 +1411,6 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
 #align image_closure_of_is_compact image_closure_of_isCompact
-
--- TODO fix variables
-lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (∀ i, π i)} :
-    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
-  constructor <;> intro H
-  · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
-  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
-
-lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (∀ i, π i)} :
-    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
-  simp_rw [← exists_compact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
-
-/-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
-theorem IsCompact.binary_compact_cover [T2Space X] {K U V : Set X} (hK : IsCompact K)
-    (hU : IsOpen U) (hV : IsOpen V) (h2K : K ⊆ U ∪ V) :
-    ∃ K₁ K₂ : Set X, IsCompact K₁ ∧ IsCompact K₂ ∧ K₁ ⊆ U ∧ K₂ ⊆ V ∧ K = K₁ ∪ K₂ := by
-  obtain ⟨O₁, O₂, h1O₁, h1O₂, h2O₁, h2O₂, hO⟩ :=
-    isCompact_isCompact_separated (hK.diff hU) (hK.diff hV)
-      (by rwa [disjoint_iff_inter_eq_empty, diff_inter_diff, diff_eq_empty])
-  exact
-    ⟨_, _, hK.diff h1O₁, hK.diff h1O₂, by rwa [diff_subset_comm], by rwa [diff_subset_comm], by
-      rw [← diff_inter, hO.inter_eq, diff_empty]⟩
-#align is_compact.binary_compact_cover IsCompact.binary_compact_cover
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}
@@ -1792,6 +1774,11 @@ theorem exists_compact_superset_iff [T2OrLocallyCompactRegularSpace X] {s : Set 
   ⟨fun ⟨_K, hK, hsK⟩ => isCompact_closure_of_subset_compact hK hsK, fun h =>
     ⟨closure s, h, subset_closure⟩⟩
 #align exists_compact_superset_iff exists_compact_superset_iff
+
+lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (∀ i, π i)} :
+    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
+  simp_rw [← exists_compact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
 /-- In a weakly locally compact space which is either T₂ or locally compact regular,
 every compact set has an open neighborhood with compact closure. -/
