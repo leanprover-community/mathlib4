@@ -159,7 +159,7 @@ variable {T : Type*} [Monoid T] [NonUnitalNonAssocSemiring C] [DistribMulAction 
 
 variable {φ}
 
-instance  : FunLike (A →ₛₙₐ[φ] B) A fun _ => B where
+instance  : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
