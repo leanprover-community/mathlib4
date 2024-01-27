@@ -29,8 +29,8 @@ assuming additionally that `s` has finite measure.
   in a topological group with a left-invariant measure. This is a nontrivial statement, used
   crucially in the study of the uniqueness of Haar measures.
 * `innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top`: for a Haar measure, any
-  finite measure compact set can be approximated from inside by level sets of continuous
-  compactly supported functions. This property is known as completion-regularity of Haar
+  finite measure set can be approximated from inside by level sets of continuous
+  compactly supported functions. This property is also known as completion-regularity of Haar
   measures.
 -/
 
@@ -272,8 +272,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
 /-- **Halmos' theorem: Haar measure is completion regular.** More precisely, any finite measure
 set can be approximated from inside by a level set of a continuous function with compact support. -/
 @[to_additive innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_addGroup]
-theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group
-    [h : InnerRegularCompactLTTop μ] [LocallyCompactSpace G] :
+theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     InnerRegularWRT μ (fun s ↦ ∃ (f : G → ℝ), Continuous f ∧ HasCompactSupport f ∧ s = f ⁻¹' {1})
     (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
   /- First, approximate a measurable set from inside by a compact closed set `K`. Then notice that
