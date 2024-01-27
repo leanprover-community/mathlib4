@@ -247,7 +247,7 @@ theorem inv_hom_whiskerRight {X Y : C} (f : X ≅ Y) (Z : C) :
   simp [← tensorHom_id, ← tensor_comp]
 
 @[reassoc (attr := simp)]
-theorem hom_inv_whiskerLeft' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
+theorem whiskerLeft_hom_inv' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     X ◁ f ≫ X ◁ inv f = 𝟙 (X ⊗ Y) := by
   simp [← id_tensorHom, ← tensor_comp]
 
@@ -257,7 +257,7 @@ theorem hom_inv_whiskerRight' {X Y : C} (f : X ⟶ Y) [IsIso f] (Z : C) :
   simp [← tensorHom_id, ← tensor_comp]
 
 @[reassoc (attr := simp)]
-theorem inv_hom_whiskerLeft' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
+theorem whiskerLeft_inv_hom' (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     X ◁ inv f ≫ X ◁ f = 𝟙 (X ⊗ Z) := by
   simp [← id_tensorHom, ← tensor_comp]
 
