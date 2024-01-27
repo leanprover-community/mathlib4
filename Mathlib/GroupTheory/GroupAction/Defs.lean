@@ -738,6 +738,9 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
     (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
 
+lemma smul_eq_zero_of_right {a : M} {b : A} (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
+lemma right_ne_zero_of_smul {a : M} {b : A} : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right
+
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
 @[reducible]

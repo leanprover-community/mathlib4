@@ -512,13 +512,15 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
-theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    x.order ≤ (r • x).order := by
+theorem smul_order_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    ¬ (r • x).order < x.order := by
   by_cases hx : x = 0
-  · rw [hx, smul_zero r] at h
-    exact (h rfl).elim
+  · exact ((right_ne_zero_of_smul h) hx).elim
   simp_all only [order, dite_false]
-  exact (Set.IsWF.min_le_min_of_subset (Function.support_smul_subset_right r x.coeff))
+  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right r x.coeff)
+
+theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    x.order ≤ (r • x).order := le_of_not_lt (smul_order_not_lt r x h)
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
