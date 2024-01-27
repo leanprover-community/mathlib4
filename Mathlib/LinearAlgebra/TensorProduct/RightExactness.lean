@@ -166,13 +166,13 @@ noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
   TensorProduct.lift <| LinearMap.flip <| {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
-    map_add' := fun p p' => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr <| by
+    map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (p + p')) - (q ⊗ₜ[R] (h p) + q ⊗ₜ[R] (h p')) ∈ range (lTensor Q f)
       rw [← TensorProduct.tmul_add, ← TensorProduct.tmul_sub]
       apply le_comap_range_lTensor f
       rw [exact_iff] at hfg
       simp only [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
-    map_smul' := fun r p => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr <| by
+    map_smul' := fun r p => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (r • p)) - r • q ⊗ₜ[R] (h p) ∈ range (lTensor Q f)
       rw [← TensorProduct.tmul_smul, ← TensorProduct.tmul_sub]
       apply le_comap_range_lTensor f
@@ -271,13 +271,13 @@ noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
   TensorProduct.lift  {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
-    map_add' := fun p p' => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr <| by
+    map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
       rw [← TensorProduct.add_tmul, ← TensorProduct.sub_tmul]
       apply le_comap_range_rTensor f
       rw [exact_iff] at hfg
       simp only [← hfg, mem_ker, map_sub, map_add, hgh _, sub_self]
-    map_smul' := fun r p => LinearMap.ext <| fun q => (Submodule.Quotient.eq _).mpr <| by
+    map_smul' := fun r p => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (r • p) ⊗ₜ[R] q - r • h p ⊗ₜ[R] q ∈ range (rTensor Q f)
       rw [TensorProduct.smul_tmul', ← TensorProduct.sub_tmul]
       apply le_comap_range_rTensor f

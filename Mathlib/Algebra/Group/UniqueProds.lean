@@ -375,8 +375,8 @@ open MulOpposite in
   uniqueMul_of_nonempty {A B} hA hB := by
     classical
     obtain ⟨g1, h1, g2, h2, hu⟩ := h (hB.mul hA)
-    obtain ⟨b1, a1, hb1, ha1, rfl⟩ := mem_mul.mp h1
-    obtain ⟨b2, a2, hb2, ha2, rfl⟩ := mem_mul.mp h2
+    obtain ⟨b1, hb1, a1, ha1, rfl⟩ := mem_mul.mp h1
+    obtain ⟨b2, hb2, a2, ha2, rfl⟩ := mem_mul.mp h2
     refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => ?_⟩
     specialize hu (mul_mem_mul hb1 ha) (mul_mem_mul hb ha2) _
     · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
@@ -414,26 +414,26 @@ open MulOpposite in
     · obtain ⟨e, he, f, hf, hu⟩ := this
       clear_value C D
       simp only [UniqueMul, mem_mul, mem_image] at he hf hu
-      obtain ⟨_, c1, ⟨d1, hd1, rfl⟩, hc1, rfl⟩ := he
-      obtain ⟨d2, _, hd2, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
+      obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
+      obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
       by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
       · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
-        specialize hu ⟨_, _, ⟨_, hd1, rfl⟩, hc3, rfl⟩ ⟨_, _, hd3, ⟨_, hc2, rfl⟩, rfl⟩
+        specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩
         rw [mul_left_cancel_iff, mul_right_cancel_iff,
             mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
       push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
       by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
       · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
-        specialize hu ⟨_, _, ⟨_, hd4, rfl⟩, hC, rfl⟩ ⟨_, _, hD, ⟨_, hc4, rfl⟩, rfl⟩
+        specialize hu ⟨_, ⟨_, hd4, rfl⟩, _, hC, rfl⟩ ⟨_, hD, _, ⟨_, hc4, rfl⟩, rfl⟩
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
       · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
         refine (hc1 ?_).elim
-        simpa using hu ⟨_, _, ⟨_, hD, rfl⟩, hc, rfl⟩ ⟨_, _, hD, ⟨_, hc, rfl⟩, rfl⟩
+        simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
       · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
         refine (hd1 ?_).elim
-        simpa using hu ⟨_, _, ⟨_, hd, rfl⟩, hC, rfl⟩ ⟨_, _, hd, ⟨_, hC, rfl⟩, rfl⟩
+        simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
 
 open UniqueMul in
@@ -472,11 +472,11 @@ end UniqueProds
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
     UniqueSums (Π₀ i, G i) :=
   UniqueSums.addHom_image_of_injective
-    DFinsupp.coeFnAddMonoidHom.toAddHom FunLike.coe_injective inferInstance
+    DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
   UniqueSums.addHom_image_of_injective
-    Finsupp.coeFnAddHom.toAddHom FunLike.coe_injective inferInstance
+    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 namespace TwoUniqueProds
 
@@ -571,8 +571,8 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
     rw [card_pos] at hA hB
     rw [← card_product] at hc
-    obtain ⟨a0, b0, ha0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
-    obtain ⟨a1, b1, ha1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
+    obtain ⟨a0, ha0, b0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
+    obtain ⟨a1, ha1, b1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
     have : UniqueMul A B a0 b0
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
@@ -611,11 +611,11 @@ end TwoUniqueProds
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
   TwoUniqueSums.addHom_image_of_injective
-    DFinsupp.coeFnAddMonoidHom.toAddHom FunLike.coe_injective inferInstance
+    DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.addHom_image_of_injective
-    Finsupp.coeFnAddHom.toAddHom FunLike.coe_injective inferInstance
+    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 /-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has

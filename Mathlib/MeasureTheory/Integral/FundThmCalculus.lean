@@ -1187,7 +1187,7 @@ theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
 theorem integral_eq_sub_of_hasDeriv_right (hcont : ContinuousOn f (uIcc a b))
     (hderiv : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a := by
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab] at hcont hderiv hint
     apply integral_eq_sub_of_hasDeriv_right_of_le hab hcont hderiv hint
   · simp only [uIcc_of_ge, min_eq_right, max_eq_left, hab] at hcont hderiv
@@ -1322,7 +1322,7 @@ interval version. -/
 theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
     (hderiv : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt g (g' x) x)
     (hpos : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ g' x) : IntervalIntegrable g' volume a b := by
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab, IntervalIntegrable, hab,
       Ioc_eq_empty_of_le, integrableOn_empty, and_true_iff] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos

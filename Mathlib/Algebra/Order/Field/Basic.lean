@@ -3,11 +3,10 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Order.Bounds.OrderIso
 
 #align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
 
@@ -315,7 +314,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 #align inv_lt_one_iff_of_pos inv_lt_one_iff_of_pos
 
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
-  cases' le_or_lt a 0 with ha ha
+  rcases le_or_lt a 0 with ha | ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
   · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
 #align inv_lt_one_iff inv_lt_one_iff
@@ -351,6 +350,7 @@ theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b 
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
 #align div_le_div_of_le_left div_le_div_of_le_left
 
+@[deprecated div_le_div_of_le]
 theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c :=
   div_le_div_of_le hc hab
 #align div_le_div_of_le_of_nonneg div_le_div_of_le_of_nonneg

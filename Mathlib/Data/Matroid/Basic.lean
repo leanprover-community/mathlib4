@@ -293,7 +293,7 @@ section aesop
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { terminal := true })
+  aesop $c* (config := { terminal := true })
   (rule_sets [$(Lean.mkIdent `Matroid):ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
@@ -561,7 +561,7 @@ theorem Base.dep_of_insert (hB : M.Base B) (heB : e ∉ B) (he : e ∈ M.E := by
     M.Dep (insert e B) := hB.dep_of_ssubset (ssubset_insert heB) (insert_subset he hB.subset_ground)
 
 theorem Base.mem_of_insert_indep (hB : M.Base B) (heB : M.Indep (insert e B)) : e ∈ B :=
-  by_contra <| fun he ↦ (hB.dep_of_insert he (heB.subset_ground (mem_insert _ _))).not_indep heB
+  by_contra fun he ↦ (hB.dep_of_insert he (heB.subset_ground (mem_insert _ _))).not_indep heB
 
 /-- If the difference of two Bases is a singleton, then they differ by an insertion/removal -/
 theorem Base.eq_exchange_of_diff_eq_singleton (hB : M.Base B) (hB' : M.Base B') (h : B \ B' = {e}) :
@@ -660,7 +660,7 @@ instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
   obtain ⟨B, hB⟩ := M.exists_base
   obtain ⟨I₀, hI₀I, hI₀fin, hI₀card⟩ := h.exists_subset_ncard_eq (B.ncard + 1)
   obtain ⟨B', hB', hI₀B'⟩ := hI _ hI₀I hI₀fin
-  have hle := ncard_le_of_subset hI₀B' hB'.finite
+  have hle := ncard_le_ncard hI₀B' hB'.finite
   rw [hI₀card, hB'.ncard_eq_ncard_of_base hB, Nat.add_one_le_iff] at hle
   exact hle.ne rfl ⟩
 

@@ -34,6 +34,13 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
+## TODO
+
+- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
+  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+
+  Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
+
 -/
 
 
@@ -97,7 +104,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -184,6 +191,15 @@ theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [I
 
 end IsAlgClosed
 
+/-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is algebraic, then `L` is equal to `k`. A corollary of
+`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
+theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
+    [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) (hf : Algebra.IsAlgebraic k L) :
+    L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isAlgebraic hf ⟨x, hx⟩
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
@@ -209,8 +225,19 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
 
 namespace IsAlgClosed
 
-variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
+variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
+  [Algebra K M] [IsAlgClosed M]
+
+/-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
+  closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
+  Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
+theorem surjective_comp_algebraMap_of_isAlgebraic {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] (hE : Algebra.IsAlgebraic L E) :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits'
+    (E := E) f fun s ↦ ⟨(hE s).isIntegral, IsAlgClosed.splits_codomain _⟩
+
+variable (hL : Algebra.IsAlgebraic K L) (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
@@ -255,6 +282,10 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
     [IsAlgClosed k] : PerfectRing k p :=
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
+
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' k
+  exacts [.ofCharZero k, PerfectRing.toPerfectField k p]
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by

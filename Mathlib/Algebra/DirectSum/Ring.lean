@@ -67,7 +67,7 @@ instances for:
 
 If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## tags
 
@@ -226,7 +226,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
 private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
-  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [mulHom_of_of]
@@ -235,7 +235,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
 
 -- Porting note: `suffices` is very slow here.
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
-  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
+  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [flip_apply, mulHom_of_of]
@@ -248,7 +248,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices (mulHom A).compHom.comp (mulHom A) =
       (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      have sol := FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
+      have sol := DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
       have aux : ∀ a b, (mulHom A) a b = a * b := fun _ _ ↦ rfl
       simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
         AddMonoidHom.flipHom_apply] at sol

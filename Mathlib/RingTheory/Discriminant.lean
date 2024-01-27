@@ -215,7 +215,7 @@ theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
     exact card_congr (Equiv.symm e)
-  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := even_iff_two_dvd.1 (Nat.even_mul_self_pred _)
+  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, FiniteDimensional.finrank_pos_iff]
@@ -257,35 +257,20 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
         (IsAlgClosed.splits_codomain _) (hroots σ),
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
-  refine'
-    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp)
-      (fun i j hi hj hij => _) fun σ hσ => _
-  · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma]
-    rw [Multiset.mem_erase_of_ne fun h => ?_]
-    · exact hroots _
--- Porting note: `@mem_compl` was not necessary.
-    · simp only [true_and_iff, mem_univ, Ne.def, mem_sigma, @mem_compl _ _ _ (_),
-        mem_singleton] at hi
-      rw [← PowerBasis.liftEquiv_apply_coe, ← PowerBasis.liftEquiv_apply_coe] at h
-      exact hi (e.injective <| pb.liftEquiv.injective <| Subtype.eq h.symm)
-  · simp only [Sigma.mk.inj_iff, EmbeddingLike.apply_eq_iff_eq, heq_eq_eq] at hij
-    have h := hij.2
-    rw [← PowerBasis.liftEquiv_apply_coe, ← PowerBasis.liftEquiv_apply_coe] at h
-    refine' Sigma.eq (Equiv.injective e (Equiv.injective _ (Subtype.eq h))) (by simp [hij.1])
-  · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma] at hσ ⊢
-    simp only [Sigma.exists, exists_prop, mem_compl, mem_singleton, Ne.def]
-    refine' ⟨e.symm (PowerBasis.lift pb σ.2 _), e.symm σ.1, ⟨_, Sigma.eq _ _⟩⟩
-    · rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.def, ← mem_roots]
-      · exact Multiset.erase_subset _ _ hσ
-      · simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
--- Porting note: the `simp only` was not needed.
-    · simp only [@mem_compl _ _ _ (_), mem_singleton]
-      intro h
-      replace h := AlgHom.congr_fun (Equiv.injective _ h) pb.gen
-      rw [PowerBasis.lift_gen] at h
-      rw [← h] at hσ
-      exact hnodup.not_mem_erase hσ
-    all_goals simp
+  refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
+    (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
+  -- Porting note: `@mem_compl` was not necessary.
+    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def, mem_roots',
+      minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true, mem_singleton, true_and,
+      @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply, PowerBasis.lift_gen, and_imp,
+      implies_true, forall_const, Equiv.symm_apply_apply, Sigma.ext_iff, Equiv.symm_apply_eq,
+      heq_eq_eq, and_true] at *
+  · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
+  · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
+  · rintro a b hba ha
+    rw [ha, PowerBasis.lift_gen] at hba
+    exact hba.1 rfl
+  · exact fun a b _ ↦ pb.algHom_ext <| pb.lift_gen _ _
 #align algebra.discr_power_basis_eq_norm Algebra.discr_powerBasis_eq_norm
 
 section Integral

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
-import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Data.Rat.NNRat
 
 #align_import algebra.order.archimedean from "leanprover-community/mathlib"@"6f413f3f7330b94c92a5a27488fdc74e6d483a78"
 
@@ -51,7 +51,8 @@ instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archi
 theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
     [CovariantClass M M (· + ·) (· < ·)] {a : M} (ha : 0 < a) (b : M) :
     ∃ n : ℕ, b < n • a :=
-  let ⟨k, hk⟩ := Archimedean.arch b ha; ⟨k + 1, hk.trans_lt $ nsmul_lt_nsmul_left ha k.lt_succ_self⟩
+  let ⟨k, hk⟩ := Archimedean.arch b ha
+  ⟨k + 1, hk.trans_lt <| nsmul_lt_nsmul_left ha k.lt_succ_self⟩
 
 section LinearOrderedAddCommGroup
 
@@ -408,6 +409,15 @@ instance : Archimedean ℤ :=
 
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
+
+instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
+    Archimedean { x : α // 0 ≤ x } :=
+  ⟨fun x y hy =>
+    let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
+    ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
+#align nonneg.archimedean Nonneg.archimedean
+
+instance : Archimedean NNRat := Nonneg.archimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/

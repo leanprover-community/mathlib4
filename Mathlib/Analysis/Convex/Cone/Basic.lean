@@ -443,19 +443,19 @@ theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_ze
 
 instance instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
-    { carrier := { z | ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z }
+    { carrier := { z | ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = z }
       smul_mem' := by
-        rintro c hc _ ⟨x, y, hx, hy, rfl⟩
+        rintro c hc _ ⟨x, hx, y, hy, rfl⟩
         rw [smul_add]
-        use c • x, c • y, K₁.smul_mem hc hx, K₂.smul_mem hc hy
+        use c • x, K₁.smul_mem hc hx, c • y, K₂.smul_mem hc hy
       add_mem' := by
-        rintro _ ⟨x₁, x₂, hx₁, hx₂, rfl⟩ y ⟨y₁, y₂, hy₁, hy₂, rfl⟩
-        use x₁ + y₁, x₂ + y₂, K₁.add_mem hx₁ hy₁, K₂.add_mem hx₂ hy₂
+        rintro _ ⟨x₁, hx₁, x₂, hx₂, rfl⟩ y ⟨y₁, hy₁, y₂, hy₂, rfl⟩
+        use x₁ + y₁, K₁.add_mem hx₁ hy₁, x₂ + y₂, K₂.add_mem hx₂ hy₂
         abel }⟩
 
 @[simp]
 theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
-    a ∈ K₁ + K₂ ↔ ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = a :=
+    a ∈ K₁ + K₂ ↔ ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = a :=
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
@@ -465,8 +465,8 @@ instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
-  add_assoc _ _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_assoc _ _ _
-  add_comm _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_comm _ _
+  add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
+  add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
 end Module
 

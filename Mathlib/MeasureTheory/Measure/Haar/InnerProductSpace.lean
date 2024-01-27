@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 #align_import measure_theory.measure.haar.inner_product_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -119,5 +117,13 @@ theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι →
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+
+lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
+    (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
+  ext s hs
+  simp only [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).measure_preimage hs,
+    volume_pi_eq_dirac 0, MeasurableEquiv.measurableSet_preimage, hs, dirac_apply', indicator,
+    mem_preimage, Pi.one_apply]
+  rfl
 
 end PiLp

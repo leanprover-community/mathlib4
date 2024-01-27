@@ -7,7 +7,6 @@ import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Logic.Lemmas
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
@@ -188,7 +187,7 @@ theorem le_map_comap : m ≤ (m.comap g).map g :=
 end Functors
 
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
-  eq_top_iff.2 $ λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
+  eq_top_iff.2 <| λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
 #align measurable_space.map_const MeasurableSpace.map_const
 
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
@@ -799,7 +798,7 @@ theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t)
 
 theorem measurableSet_prod {s : Set α} {t : Set β} :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.mp h]
   · simp [← not_nonempty_iff_eq_empty, prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
 #align measurable_set_prod measurableSet_prod
@@ -1001,7 +1000,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : 
 
 theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable) :
     MeasurableSet (pi s t) ↔ (∀ i ∈ s, MeasurableSet (t i)) ∨ pi s t = ∅ := by
-  cases' (pi s t).eq_empty_or_nonempty with h h
+  rcases (pi s t).eq_empty_or_nonempty with h | h
   · simp [h]
   · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
 #align measurable_set_pi measurableSet_pi
@@ -1215,15 +1214,15 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp $ measurable_set_mem a
+  (measurable_discrete Not).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
-  measurableSet_setOf.2 $ measurable_set_mem _
+  measurableSet_setOf.2 <| measurable_set_mem _
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
 lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
-  measurableSet_setOf.2 $ measurable_set_not_mem _
+  measurableSet_setOf.2 <| measurable_set_not_mem _
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
@@ -1368,7 +1367,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.toEquiv.left_inv
   right_inv e := e.toEquiv.right_inv
-  coe_injective' _ _ he _ := toEquiv_injective <| FunLike.ext' he
+  coe_injective' _ _ he _ := toEquiv_injective <| DFunLike.ext' he
 
 @[simp]
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
@@ -1429,7 +1428,7 @@ def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
-@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
+@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := DFunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
 
 @[simp]

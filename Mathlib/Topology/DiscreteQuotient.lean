@@ -139,11 +139,11 @@ theorem isClopen_preimage (A : Set S) : IsClopen (S.proj ⁻¹' A) :=
 #align discrete_quotient.is_clopen_preimage DiscreteQuotient.isClopen_preimage
 
 theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).1
+  (S.isClopen_preimage A).2
 #align discrete_quotient.is_open_preimage DiscreteQuotient.isOpen_preimage
 
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).2
+  (S.isClopen_preimage A).1
 #align discrete_quotient.is_closed_preimage DiscreteQuotient.isClosed_preimage
 
 theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by

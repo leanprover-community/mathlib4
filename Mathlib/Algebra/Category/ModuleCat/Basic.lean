@@ -124,7 +124,7 @@ instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
 -- porting note: added to ease automation
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=

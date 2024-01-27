@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -177,22 +176,22 @@ attribute [simp] pow_comp
 /-! ### `inv` and `neg` -/
 
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
+instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
+theorem coe_inv [Inv β] [ContinuousInv β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
 
 @[to_additive (attr := simp)]
-theorem inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
+theorem inv_apply [Inv β] [ContinuousInv β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align continuous_map.inv_apply ContinuousMap.inv_apply
 #align continuous_map.neg_apply ContinuousMap.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
+theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
 #align continuous_map.inv_comp ContinuousMap.inv_comp
@@ -336,9 +335,9 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
-      continuous_eval'.comp (continuous_fst.prod_map continuous_id)
+      continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
@@ -561,9 +560,8 @@ attribute [local ext] Subtype.eq
 
 section ModuleStructure
 
--- Porting note: Is "Semiodule" a typo of "Semimodule" or "Submodule"?
 /-!
-### Semiodule structure
+### Module structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.
@@ -603,7 +601,7 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
 @[to_additive]
 instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
     ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval'.const_smul γ)⟩
+  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
@@ -611,7 +609,7 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval'.comp (continuous_snd.prod_map continuous_id)
+      continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -856,7 +854,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
-    · haveI : Subsingleton C(α, R) := FunLike.coe_injective.subsingleton
+    · haveI : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
       exact Subsingleton.elim _ _
     · inhabit α
       ext f
@@ -921,15 +919,24 @@ variable {β : Type*} [TopologicalSpace β]
 
 @[to_additive]
 instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (· * ·) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+    [CovariantClass β β (· * ·) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
 instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+
+variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+#align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
 

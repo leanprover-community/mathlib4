@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Lattice
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
@@ -82,12 +80,11 @@ theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpa
   le_antisymm
     (generateFrom_le fun u (hu : t.IsOpen u) => by
       rw [hs] at hu
-      induction hu
-      case basic u hu => exact GenerateMeasurable.basic u hu
-      case univ => exact @MeasurableSet.univ α (generateFrom s)
-      case inter s₁ s₂ _ _ hs₁ hs₂ => exact @MeasurableSet.inter α (generateFrom s) _ _ hs₁ hs₂
-      case
-        sUnion f hf ih =>
+      induction hu with
+      | basic u hu => exact GenerateMeasurable.basic u hu
+      | univ => exact @MeasurableSet.univ α (generateFrom s)
+      | inter s₁ s₂ _ _ hs₁ hs₂ => exact @MeasurableSet.inter α (generateFrom s) _ _ hs₁ hs₂
+      | sUnion f hf ih =>
         rcases isOpen_sUnion_countable f (by rwa [hs]) with ⟨v, hv, vf, vu⟩
         rw [← vu]
         exact @MeasurableSet.sUnion α (generateFrom s) _ hv fun x xv => ih _ (vf xv))
@@ -244,11 +241,11 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
     liftMetaTactic fun m => return [← subst m i]
   catch _ =>
     let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
-    throwError
-      (m!"`‹TopologicalSpace {e}› := {et}" ++ MessageData.ofFormat Format.line ++
-        m!"depends on" ++ MessageData.ofFormat Format.line ++
-        m!"{Expr.fvar i} : MeasurableSpace {e}`" ++ MessageData.ofFormat Format.line ++
-        "so `borelize` isn't avaliable")
+    throwError m!"\
+      `‹TopologicalSpace {e}› := {et}\n\
+      depends on\n\
+      {Expr.fvar i} : MeasurableSpace {e}`\n\
+      so `borelize` isn't avaliable"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te
@@ -385,7 +382,7 @@ theorem measurable_of_isClosed {f : δ → γ} (hf : ∀ s, IsClosed s → Measu
 theorem measurable_of_isClosed' {f : δ → γ}
     (hf : ∀ s, IsClosed s → s.Nonempty → s ≠ univ → MeasurableSet (f ⁻¹' s)) : Measurable f := by
   apply measurable_of_isClosed; intro s hs
-  cases' eq_empty_or_nonempty s with h1 h1
+  rcases eq_empty_or_nonempty s with h1 | h1
   · simp [h1]
   by_cases h2 : s = univ
   · simp [h2]
@@ -1964,7 +1961,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
   finite n := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
-      ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs_self x).trans_lt (Nat.lt_floor_add_one _)),
+      ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
         (le_abs_self x).trans_lt (Nat.lt_floor_add_one _)⟩
 #align real.finite_spanning_sets_in_Ioo_rat Real.finiteSpanningSetsInIooRat
 

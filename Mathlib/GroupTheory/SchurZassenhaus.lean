@@ -59,14 +59,9 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_self]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
-  refine'
-    Eq.trans
-      (Finset.prod_bij' (fun q _ => g⁻¹ • q) (fun q _ => Finset.mem_univ _)
-        (fun q _ => Subtype.ext _) (fun q _ => g • q) (fun q _ => Finset.mem_univ _)
-        (fun q _ => smul_inv_smul g q) fun q _ => inv_smul_smul g q)
-      (map_prod ϕ _ _).symm
-  simp only [MonoidHom.id_apply, MonoidHom.coe_mk, OneHom.coe_mk,
-    smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc]
+  refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
+  simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc,
+    MonoidHom.id_apply, toPerm_symm_apply, MonoidHom.coe_mk, OneHom.coe_mk]
 #align subgroup.smul_diff_smul' Subgroup.smul_diff_smul'
 
 variable {H} [Normal H]
@@ -91,8 +86,8 @@ theorem smul_diff' (h : H) :
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ← Subtype.ext_iff,
-    Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
+    ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
@@ -146,10 +141,9 @@ The proof is by contradiction. We assume that `G` is a minimal counterexample to
 
 variable {G : Type u} [Group G] [Fintype G] {N : Subgroup G} [Normal N]
   (h1 : Nat.Coprime (Fintype.card N) N.index)
-  (h2 :
-    ∀ (G' : Type u) [Group G'] [Fintype G'],
-      ∀ (_ : Fintype.card G' < Fintype.card G) {N' : Subgroup G'} [N'.Normal]
-        (_ : Nat.Coprime (Fintype.card N') N'.index), ∃ H' : Subgroup G', IsComplement' N' H')
+  (h2 : ∀ (G' : Type u) [Group G'] [Fintype G'],
+    Fintype.card G' < Fintype.card G → ∀ {N' : Subgroup G'} [N'.Normal],
+      Nat.Coprime (Fintype.card N') N'.index → ∃ H' : Subgroup G', IsComplement' N' H')
   (h3 : ∀ H : Subgroup G, ¬IsComplement' N H)
 
 /-! We will arrive at a contradiction via the following steps:

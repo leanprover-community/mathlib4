@@ -121,7 +121,7 @@ for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -
 @[simp, norm_cast]
 theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
-  cases' le_total m n with h h
+  rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
     exact mono_cast h
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩

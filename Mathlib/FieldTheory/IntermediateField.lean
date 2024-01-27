@@ -374,7 +374,14 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
-instance algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L] [IsScalarTower K' K L] :
+/- More general form of `IntermediateField.algebra`.
+
+This instance should have low priority since it is slow to fail:
+before failing, it will cause a search through all `SMul K' K` instances,
+which can quickly get expensive.
+-/
+instance (priority := 500) algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
+    [IsScalarTower K' K L] :
     Algebra K' S :=
   S.toSubalgebra.algebra'
 #align intermediate_field.algebra' IntermediateField.algebra'
@@ -386,6 +393,10 @@ instance algebra : Algebra K S :=
 instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
   S.toSubalgebra.toAlgebra
 #align intermediate_field.to_algebra IntermediateField.toAlgebra
+
+@[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
+
+@[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
@@ -400,6 +411,14 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
+
+section shortcut_instances
+variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+instance : Algebra S T := T.algebra
+instance : Module S T := Algebra.toModule
+instance : SMul S T := Algebra.toSMul
+instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
   such that `f x ∈ S ↔ x ∈ S.comap f`. -/
@@ -448,7 +467,7 @@ theorem gc_map_comap (f :L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
-field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence
+field `E` of `L/K`, `intermediateFieldMap e E` is the induced equivalence
 between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra

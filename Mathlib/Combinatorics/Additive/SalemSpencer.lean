@@ -118,7 +118,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
 
 @[to_additive]
-theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s β 2] (f : F)
+theorem MulSalemSpencer.of_image [FunLike F α β] [FreimanHomClass F s β 2] (f : F)
     (hf : s.InjOn f) (h : MulSalemSpencer (f '' s)) : MulSalemSpencer s :=
   fun _ _ _ ha hb hc habc => hf ha hb <|
     h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
@@ -324,7 +324,7 @@ def mulRothNumber : Finset α →o ℕ :=
     Nat.findGreatest (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α))
       s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_of_subset htu)
+    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber
@@ -349,7 +349,7 @@ variable {s t} {n : ℕ}
 @[to_additive]
 theorem MulSalemSpencer.le_mulRothNumber (hs : MulSalemSpencer (s : Set α)) (h : s ⊆ t) :
     s.card ≤ mulRothNumber t :=
-  le_findGreatest (card_le_of_subset h) ⟨s, h, rfl, hs⟩
+  le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 #align mul_salem_spencer.le_mul_roth_number MulSalemSpencer.le_mulRothNumber
 #align add_salem_spencer.le_add_roth_number AddSalemSpencer.le_addRothNumber
 

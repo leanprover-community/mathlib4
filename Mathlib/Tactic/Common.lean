@@ -8,6 +8,9 @@ Authors: Scott Morrison
 import Aesop
 import Qq
 
+-- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
+import ImportGraph.Imports
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -84,7 +87,6 @@ import Mathlib.Tactic.Simps.Basic
 -- `Gen` / `Testable` / `Sampleable` instances for types should be out in the library,
 -- rather than the theory for those types being imported into `SlimCheck`.
 -- import Mathlib.Tactic.SlimCheck
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
@@ -109,7 +111,6 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
-import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
 
 /-!
