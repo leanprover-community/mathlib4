@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 #align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
@@ -978,6 +979,9 @@ theorem isOpen_extend_source : IsOpen (f.extend I).source := by
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
   simp_rw [extend, PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
+
+theorem extend_target' : (f.extend I).target = I '' f.target := by
+  rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
 
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]

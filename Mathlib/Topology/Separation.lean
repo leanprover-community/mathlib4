@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
 
@@ -2109,7 +2108,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
   -- that one of these closed sets must contain our whole thing.
   -- To reduce to the case where the cover is disjoint on all of `X` we need that `s` is closed
   have hs : @IsClosed X _ (⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s) :=
-    isClosed_iInter fun s => s.2.1.2
+    isClosed_iInter fun s => s.2.1.1
   rw [isPreconnected_iff_subset_of_fully_disjoint_closed hs]
   intro a b ha hb hab ab_disj
   -- Since our space is normal, we get two larger disjoint open sets containing the disjoint
@@ -2122,7 +2121,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
   `X` disjoint to it, but a finite intersection of clopen sets is clopen so we let this be our
   `s`. -/
   · have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
-      (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.2
+      (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.1
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
     cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
       with si H2
@@ -2179,7 +2178,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
   rw [connectedComponent_eq_iInter_isClopen, mem_iInter]
   rintro ⟨w : Set X, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
-  exact hyp wᶜ w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
+  exact hyp wᶜ w hw.1.isOpen_compl hw.2 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
     disjoint_compl_left
 #align compact_t2_tot_disc_iff_tot_sep compact_t2_tot_disc_iff_tot_sep
 
@@ -2200,7 +2199,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       suffices : ∃ s : N, s.val ⊆ U
       · rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
-      have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.2
+      have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
       have hdir : Directed Superset fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left s t, inter_subset_right s t⟩
@@ -2208,13 +2207,13 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
         erw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
       exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhd
-    · rintro ⟨V, ⟨hxV, V_op, -⟩, hUV : V ⊆ U⟩
+    · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
       rw [mem_nhds_iff]
       exact ⟨V, hUV, V_op, hxV⟩⟩
 #align nhds_basis_clopen nhds_basis_clopen
 
 theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.1
+  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
   intro x U hxU U_op
   have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
   rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
@@ -2238,7 +2237,7 @@ variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
-  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.1) fun x U memU hU => ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
@@ -2246,7 +2245,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
-    refine' ⟨_, comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.2⟩
+    refine' ⟨comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.1, _⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
@@ -2257,7 +2256,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
           apply Set.inter_eq_self_of_subset_left interior_subset
         rw [this]
         apply isOpen_interior
-    have f2 : IsOpen v := VisClopen.1.preimage continuous_subtype_val
+    have f2 : IsOpen v := VisClopen.2.preimage continuous_subtype_val
     have f3 : ((↑) : s → H) '' V = ((↑) : u → H) '' v := by
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_left V_sub]
     rw [f3]
@@ -2293,7 +2292,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
-        _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.2) h
+        _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set X := ⋂ (i : { s // IsClopen s ∧ b ∈ s }) (_ : i ∈ fin_a), i

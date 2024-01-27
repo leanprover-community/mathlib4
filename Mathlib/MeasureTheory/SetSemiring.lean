@@ -3,9 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -41,8 +39,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 -/
 
 open Finset Set
-
-open scoped ENNReal BigOperators
 
 namespace MeasureTheory
 

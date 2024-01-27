@@ -5,6 +5,7 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Support
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
@@ -25,9 +26,6 @@ We also prove that the image of a closed interval under a continuous map is a cl
 
 compact, extreme value theorem
 -/
-
-set_option autoImplicit true
-
 
 open Filter OrderDual TopologicalSpace Function Set
 
@@ -54,6 +52,8 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
 #align compact_Icc_space CompactIccSpace
 
 export CompactIccSpace (isCompact_Icc)
+
+variable {α : Type*}
 
 -- porting note: new lemma; TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]

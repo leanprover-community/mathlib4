@@ -216,7 +216,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts
   have p_odd : Odd p := p_prime.odd_of_ne_two p_gt_two.ne.symm
-  have AB_not_prime : ¬Nat.Prime (A * B) := Nat.not_prime_mul hi_A hi_B
+  have AB_not_prime : ¬Nat.Prime (A * B) := Nat.not_prime_mul hi_A.ne' hi_B.ne'
   have AB_id : A * B = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := AB_id_helper _ _ b_ge_two p_odd
   have hd : b ^ 2 - 1 ∣ b ^ (2 * p) - 1 := by
     simpa only [one_pow, pow_mul] using nat_sub_dvd_pow_sub_pow _ 1 p
