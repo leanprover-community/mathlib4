@@ -186,9 +186,13 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents (fun X ↦ β_ _ _) (by simp [whisker_exchange])
+  braiding F G := NatIso.ofComponents (fun X ↦ β_ _ _) (by simp [- tensorHom_def])
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
+  braiding_naturality_left := by
+    intros; ext; simp [- tensorHom_def, - id_tensorHom, - tensorHom_id]
+  braiding_naturality_right := by
+    intros; ext; simp [- tensorHom_def, - id_tensorHom, - tensorHom_id]
 #align category_theory.monoidal.functor_category_braided CategoryTheory.Monoidal.functorCategoryBraided
 
 example : BraidedCategory (C ⥤ D) :=

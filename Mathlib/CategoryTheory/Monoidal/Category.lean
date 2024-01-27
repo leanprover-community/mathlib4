@@ -618,6 +618,20 @@ theorem associator_inv_conjugation {X X' Y Y' Z Z' : C} (f : X ⟶ X') (g : Y �
   rw [associator_naturality, inv_hom_id_assoc]
 #align category_theory.monoidal_category.associator_inv_conjugation CategoryTheory.MonoidalCategory.associator_inv_conjugation
 
+-- TODO these next two lemmas aren't so fundamental, and perhaps could be removed
+-- (replacing their usages by their proofs).
+@[reassoc]
+theorem id_tensor_associator_naturality {X Y Z Z' : C} (h : Z ⟶ Z') :
+    (𝟙 (X ⊗ Y) ⊗ h) ≫ (α_ X Y Z').hom = (α_ X Y Z).hom ≫ (𝟙 X ⊗ 𝟙 Y ⊗ h) := by
+  rw [← tensor_id, associator_naturality]
+#align category_theory.monoidal_category.id_tensor_associator_naturality CategoryTheory.MonoidalCategory.id_tensor_associator_naturality
+
+@[reassoc]
+theorem id_tensor_associator_inv_naturality {X Y Z X' : C} (f : X ⟶ X') :
+    (f ⊗ 𝟙 (Y ⊗ Z)) ≫ (α_ X' Y Z).inv = (α_ X Y Z).inv ≫ ((f ⊗ 𝟙 Y) ⊗ 𝟙 Z) := by
+  rw [← tensor_id, associator_inv_naturality]
+#align category_theory.monoidal_category.id_tensor_associator_inv_naturality CategoryTheory.MonoidalCategory.id_tensor_associator_inv_naturality
+
 @[reassoc (attr := simp)]
 theorem hom_inv_id_tensor {V W X Y Z : C} (f : V ≅ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
     (f.hom ⊗ g) ≫ (f.inv ⊗ h) = (V ◁ g) ≫ (V ◁ h) := by

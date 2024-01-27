@@ -99,6 +99,14 @@ variable (A)
 def regular : Mod_ A where
   X := A.X
   act := A.mul
+  -- The proofs will be automated after merging #6307.
+  one_act := by
+    simp only [← id_tensorHom, ← tensorHom_id]
+    simp [- id_tensorHom, - tensorHom_id]
+  assoc := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    simp [- id_tensorHom, - tensorHom_id]
 set_option linter.uppercaseLean3 false in
 #align Mod_.regular Mod_.regular
 

@@ -180,7 +180,20 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
       ε := A.one
       μ := fun _ _ => A.mul
       map_id := fun _ => rfl
-      map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm }
+      map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm
+      -- The proofs will be automated after merging #6307.
+      associativity := by
+        intros
+        simp only [← id_tensorHom, ← tensorHom_id]
+        simp [- id_tensorHom, - tensorHom_id]
+      left_unitality := by
+        intros
+        simp only [← id_tensorHom, ← tensorHom_id]
+        simp [- id_tensorHom, - tensorHom_id]
+      right_unitality := by
+        intros
+        simp only [← id_tensorHom, ← tensorHom_id]
+        simp [- id_tensorHom, - tensorHom_id] }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]

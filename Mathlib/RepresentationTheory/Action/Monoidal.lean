@@ -176,8 +176,6 @@ section
 
 variable [Preadditive V] [MonoidalPreadditive V]
 
-attribute [local simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
-
 instance : MonoidalPreadditive (Action V G) where
 
 variable {R : Type*} [Semiring R] [Linear R V] [MonoidalLinear R V]

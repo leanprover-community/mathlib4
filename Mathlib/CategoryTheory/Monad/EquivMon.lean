@@ -66,14 +66,14 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   μ' := M.mul
   left_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
+    erw [← NatTrans.id_hcomp_app M.one, ← NatTrans.comp_app, M.mul_one]
     rfl
   right_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
+    erw [← NatTrans.hcomp_id_app M.one, ← NatTrans.comp_app, M.one_mul]
     rfl
   assoc' := fun X => by
-    rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
+    rw [← NatTrans.hcomp_id_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
     simp
