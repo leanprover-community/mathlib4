@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
@@ -51,14 +52,6 @@ open scoped NNReal ENNReal MeasureTheory Topology
 section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
-
--- todo: move to data/set/lattice next to prod_sUnion or prod_sInter
-theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
-    (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
-  ext x
-  simp only [mem_prod, mem_iInter]
-  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
-#align prod_Inter prod_iInter
 
 theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
   ext1 x
