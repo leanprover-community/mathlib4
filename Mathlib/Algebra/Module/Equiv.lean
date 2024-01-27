@@ -185,9 +185,9 @@ example {R S M N : Type*} [Semiring R] [Semiring S]
     {φ : R →+* S} {ψ : S →+* R}
     [RingHomInvPair ψ φ] [RingHomInvPair φ ψ]
     [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] :
-    FunLike (M ≃ₛₗ[φ] N) M (fun _ => N) :=
+    DFunLike (M ≃ₛₗ[φ] N) M (fun _ => N) :=
   -- MulActionSemiHomClass.toFunLike
-  AddHomClass.toFunLike
+  AddHomClass.toDFunLike
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
