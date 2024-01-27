@@ -9,6 +9,16 @@ import Mathlib.Analysis.SpecificLimits.Normed
 /-!
 # Abel's limit theorem
 
+If a real or complex power series for a function has radius of convergence 1 and the series is only
+known to converge conditionally at 1, Abel's limit theorem gives the value at 1 as the limit of the
+function at 1 from the left. "Left" for complex numbers means "within a Stolz set", a subset of the
+open unit disc with 1 on its boundary.
+
+## Main theorems
+
+* `Complex.tendsto_tsum_power_nhdsWithin_stolzSet`: Abel's limit theorem for complex power series.
+* `Real.tendsto_tsum_power_nhdsWithin_lt`: Abel's limit theorem for real power series.
+
 ## References
 
 * https://planetmath.org/proofofabelslimittheorem
@@ -16,7 +26,7 @@ import Mathlib.Analysis.SpecificLimits.Normed
 -/
 
 
-open Finset Filter
+open Filter Finset
 
 open scoped BigOperators Topology
 
@@ -28,14 +38,44 @@ section StolzSet
 open unit disc as `M` tends to infinity. -/
 def stolzSet (M : ℝ) : Set ℂ := {z | ‖z‖ < 1 ∧ ‖1 - z‖ < M * (1 - ‖z‖)}
 
-theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
+variable {M : ℝ}
+
+theorem stolzSet_empty (hM : M ≤ 1) : stolzSet M = ∅ := by
   ext z
-  rw [stolzSet, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
+  rw [stolzSet, Set.mem_setOf, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
   intro zn
   calc
     _ ≤ 1 * (1 - ‖z‖) := mul_le_mul_of_nonneg_right hM zn.le
     _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
     _ ≤ _ := norm_sub_norm_le _ _
+
+theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
+    (𝓝[<] 1).map ((↑) : ℝ → ℂ) ≤ 𝓝[stolzSet M] 1 := by
+  intro s hs
+  rw [Metric.mem_nhdsWithin_iff] at hs
+  obtain ⟨ε, ⟨εpos, hε⟩⟩ := hs
+  rw [Filter.mem_map', mem_nhdsWithin_Iio_iff_exists_Ioo_subset]
+  use max 0 (1 - ε)
+  constructor
+  · rw [Set.mem_Iio, max_lt_iff, sub_lt_self_iff]
+    constructor <;> positivity
+  intro x hx
+  rw [Set.mem_Ioo, max_lt_iff] at hx
+  obtain ⟨⟨lb, ub₁⟩, ub₂⟩ := hx
+  rw [sub_lt_comm] at ub₁
+  rw [Set.mem_setOf]
+  apply Set.mem_of_mem_of_subset ((Set.mem_inter_iff ..).mpr _) hε
+  constructor
+  · rw [Metric.mem_ball, dist_eq_norm]
+    norm_cast
+    rw [norm_real, Real.norm_eq_abs, abs_sub_lt_iff]
+    exact ⟨(sub_neg.mpr ub₂).trans εpos, ub₁⟩
+  · rw [stolzSet, Set.mem_setOf]
+    norm_cast
+    simp_rw [norm_real, Real.norm_eq_abs, abs_eq_self.mpr lb.le, ub₂, true_and]
+    replace ub₂ := sub_pos.mpr ub₂
+    rw [← one_mul |_|, abs_eq_self.mpr ub₂.le]
+    gcongr
 
 end StolzSet
 
@@ -160,4 +200,44 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} :
   convert add_lt_add S₁ S₂ using 1
   linarith only
 
+theorem tendsto_tsum_power_nhdsWithin_lt :
+    Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ((↑) : ℝ → ℂ)) (𝓝 l) :=
+  (tendsto_tsum_power_nhdsWithin_stolzSet (M := 2) h).mono_left
+    (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
+
 end Complex
+
+namespace Real
+
+variable {f : ℕ → ℝ} {l : ℝ} (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l))
+
+/-- **Abel's limit theorem**. Given a real power series converging at 1, the corresponding function
+is continuous at 1 when approaching 1 from the left. -/
+theorem tendsto_tsum_power_nhdsWithin_lt :
+    Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
+  have h' := (tendsto_map (f := ((↑) : ℝ → ℂ))).comp h
+  have m : (𝓝 l).map ((↑) : ℝ → ℂ) ≤ (𝓝 ↑l) := by
+    intro s hs
+    rw [Filter.mem_map']
+    rw [Metric.mem_nhds_iff] at hs ⊢
+    obtain ⟨ε, ⟨εpos, hε⟩⟩ := hs
+    use ε, εpos
+    intro x hx
+    rw [Set.subset_def] at hε
+    replace hε := hε x
+    rw [Metric.mem_ball, dist_eq_norm] at hε hx
+    norm_cast at hε
+    rw [Complex.norm_real] at hε
+    simp [hε hx]
+  replace h' := h'.mono_right m
+  rw [Function.comp_def] at h'
+  push_cast at h'
+  replace h' := Complex.tendsto_tsum_power_nhdsWithin_lt h'
+  rw [tendsto_map'_iff] at h'
+  rw [Metric.tendsto_nhdsWithin_nhds] at h' ⊢
+  convert h'
+  simp_rw [Function.comp_apply, dist_eq_norm]
+  norm_cast
+  rw [Complex.norm_real]
+
+end Real
