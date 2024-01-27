@@ -92,7 +92,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h
 variable {x : B} {h : c ⟶ x} {s : LeftExtension f (g ≫ h)}
 
 /-- An absolute left Kan extension is a left Kan extension. -/
-def IsKan (H : IsAbsKan t) : IsKan t :=
+def isKan (H : IsAbsKan t) : IsKan t :=
   .mk (fun s ↦ LeftExtension.whiskerIdCancel <| (H (𝟙 _)).to _) <| by
     intro s τ
     ext
@@ -154,7 +154,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
 variable {x : B} {h : x ⟶ c} {s : LeftLift f (h ≫ g)}
 
 /-- An absolute left Kan lift is a left Kan lift. -/
-def IsKan (H : IsAbsKan t) : IsKan t :=
+def isKan (H : IsAbsKan t) : IsKan t :=
   .mk (fun s ↦ LeftLift.whiskerIdCancel <| (H (𝟙 _)).to _) <| by
     intro s τ
     ext

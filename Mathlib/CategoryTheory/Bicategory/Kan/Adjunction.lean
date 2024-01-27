@@ -91,7 +91,7 @@ The unit of this Kan extension is given by the unit of the adjunction. -/
 def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a))
     (H : LeftExtension.IsAbsKan t) :
       f ⊣ t.extension :=
-  H.IsKan.adjunction (H f)
+  H.isKan.adjunction (H f)
 
 end LeftExtension
 
@@ -156,7 +156,7 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : LeftLift.IsAbsKan t) :
     t.lift ⊣ u :=
-  H.IsKan.adjunction (H u)
+  H.isKan.adjunction (H u)
 
 end LeftLift
 
