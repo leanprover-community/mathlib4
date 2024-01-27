@@ -87,7 +87,7 @@ abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActi
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type _) {M N : outParam (Type _)}
     (φ : outParam (M → N)) (X Y : outParam (Type _)) [SMul M X] [SMul N Y]
-    extends FunLike F X fun _ => Y where
+    extends DFunLike F X fun _ => Y where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -132,7 +132,7 @@ see also Algebra.Hom.Group -/
 @[coe]
 def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
     X →ₑ[φ] Y where
-  toFun := FunLike.coe f
+  toFun := DFunLike.coe f
   map_smul' := map_smulₛₗ f
 
 /-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
@@ -155,18 +155,18 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 @[ext]
 theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
 theorem ext_iff [MulActionSemiHomClass F φ X Y] {f g : F} :
     f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
 protected theorem congr_fun [MulActionSemiHomClass F φ X Y] {f g : F}
     (h : f = g) (x : X) :
     f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 /-- Two equal maps on scalars give rise to an equivariant map for identity -/
@@ -546,15 +546,15 @@ theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
 
 @[ext]
 theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
 theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
 protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
 theorem toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
@@ -870,11 +870,11 @@ theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
 
 @[ext]
 theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
 theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
 protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
