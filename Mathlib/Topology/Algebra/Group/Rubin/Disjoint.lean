@@ -31,6 +31,8 @@ open MulAction
 variable {G : Type*} [Group G] {g h : G}
 variable {α : Type*} [TopologicalSpace α] [MulAction G α]
 
+section Witness
+
 /--
 A bundled pair `(fst, snd)` such that `fst`, `snd` and `⁅fst, ⁅snd, h⁆⁆` are elements
 of the centralizer of `g` and `⁅fst, ⁅snd, h⁆⁆` is nontrivial.
@@ -114,6 +116,8 @@ theorem AlgDisjointWitness.comm_elem_subset_iUnion (elem : AlgDisjointWitness g 
   · apply Set.iInter_subset_of_subset ⟨1, 1⟩
     simp only [Fin.val_one, pow_one, subset_refl]
 
+end Witness
+
 /--
 `f` is said to be algebraically disjoint with `g` if for all element `h` that doesn't commute with
 `f`, one can construct a witness `AlgDisjointWitness g h`.
@@ -138,15 +142,7 @@ theorem IsAlgDisjoint.conj {f g : G} (disj : IsAlgDisjoint f g) (h : G) :
   group at res
   rwa [zpow_neg_one] at res
 
-/--
-The algebraic centralizer of `g` contains all the elements `h` that commute with `f^12`,
-such that `f` is some group element that is algebraically disjoint with `g`.
-
-If the group action is locally moving and faithful on a topological space,
-then `algCentralizer g = fixingSubgroup (interior (closure (fixedBy α g)))`.
--/
-def algCentralizer (g : G) : Subgroup G :=
-  Subgroup.centralizer { f^12 | (f : G) (_: IsAlgDisjoint f g) }
+section Disjoint
 
 variable [T2Space α] [ContinuousConstSMul G α]
 
@@ -560,5 +556,124 @@ theorem IsAlgDisjoint.disjoint_movedBy {f g : G}
     exfalso
     exact (period_pos_of_orderOf_pos (Nat.pos_of_ne_zero h_order) x).ne' period_eq_zero
 
+end Disjoint
+
+section AlgSupport
+
+-- Speeds up type class inference when writing `MulAut.conj g`:
+private instance : CoeFun (G →* MulAut G) fun _ => G → MulAut G := inferInstance
+
+/--
+The algebraic support of an element `g` is the centralizer of all `f ^ 12`
+for which `f` is algebraically disjoint from `g`.
+
+It has a close relationship with the `(fixedBy α g)ᶜ` set,
+and an order-preserving isomorphism between the two using `fixingSubgroup` can be constructed.
+-/
+def AlgSupport (g : G) : Subgroup G :=
+  Subgroup.centralizer ((fun f' => f' ^ 12) '' { f : G | IsAlgDisjoint f g })
+
+theorem AlgSupport.conj (g h : G) : MulAut.conj h • AlgSupport g = AlgSupport (h * g * h⁻¹) := by
+  unfold AlgSupport
+  simp_rw [Subgroup.pointwise_smul_centralizer, Set.smulSet, ← Set.image_smul, Set.image_image,
+    MulAut.smul_def, MulAut.conj_apply, ← conj_pow,
+    ← Set.image_image (g := fun f => f ^ 12) (f := fun f => h * f * h⁻¹)]
+
+  apply congr_arg (fun s => Subgroup.centralizer ((fun f => f ^ 12) '' s))
+  change (MulAut.conj h).toEquiv '' _ = _
+  ext i
+  rw [Equiv.image_eq_preimage, ← Equiv.invFun_as_coe, MulEquiv.invFun_eq_symm, Set.mem_preimage,
+    MulAut.conj_symm_apply, Set.mem_setOf_eq, Set.mem_setOf_eq]
+  constructor
+  · intro disj
+    convert disj.conj h using 1
+    repeat rw [← mul_assoc]
+    simp only [mul_right_inv, one_mul, mul_inv_cancel_right]
+  · intro disj
+    convert disj.conj h⁻¹ using 1
+    · rw [inv_inv]
+    · repeat rw [← mul_assoc]
+      simp only [mul_left_inv, one_mul, inv_inv, inv_mul_cancel_right]
+
+/--
+The algebraic support basis is made up of all the subgroups of `G` that can be obtained by taking
+finite intersections of `AlgSupport`.
+
+TODO: link to paper
+
+Unlike the original paper, the bottom subgroup is allowed to be in this bases, which makes proofs
+around ultrafilters easier.
+-/
+def AlgSupportBasis (G : Type*) [Group G] :=
+  {H : Subgroup G // ∃ s : Set G, s.Finite ∧ H = ⨅ g ∈ s, AlgSupport g}
+
+variable (G)
+
+instance AlgSupportBasis.setLike : SetLike (AlgSupportBasis G) G where
+  coe := fun H₁ => H₁.val.carrier
+  coe_injective' := fun a b eq => by
+    rw [← Subtype.coe_inj]
+    ext g
+    dsimp at eq
+    rw [← Subgroup.mem_carrier, eq, Subgroup.mem_carrier]
+
+instance AlgSupportBasis.semiLatticeInf : SemilatticeInf (AlgSupportBasis G) where
+  inf := fun H₁ H₂ => ⟨
+    H₁.val ⊓ H₂.val,
+    by
+      let ⟨s₁, s₁_finite, H₁_eq⟩ := H₁.prop
+      let ⟨s₂, s₂_finite, H₂_eq⟩ := H₂.prop
+      refine ⟨s₁ ∪ s₂, s₁_finite.union s₂_finite, ?iInf_eq⟩
+      rw [iInf_union, H₁_eq, H₂_eq]
+  ⟩
+  inf_le_left := fun H₁ H₂ => inf_le_left (a := H₁.val) (b := H₂.val)
+  inf_le_right := fun H₁ H₂ => inf_le_right (a := H₁.val) (b := H₂.val)
+  le_inf := fun H₁ H₂ H₃ h₁₂ h₂₃ => (le_inf h₁₂ h₂₃ : H₁.val ≤ H₂.val ⊓ H₃.val)
+
+instance AlgSupportBasis.orderTop : OrderTop (AlgSupportBasis G) where
+  top := ⟨
+    ⊤,
+    by
+      use ∅
+      simp only [Set.finite_empty, Set.mem_empty_iff_false, not_false_eq_true, iInf_neg, iInf_top,
+        and_self]
+  ⟩
+  le_top := fun H => (le_top : H.val ≤ ⊤)
+
+/--
+`G` acts on elements of the algebraic support basis by conjugation.
+-/
+instance AlgSupportBasis.mulAction : MulAction G (AlgSupportBasis G) where
+  smul := fun h H => ⟨
+    MulAut.conj h • H.val,
+    by
+      let ⟨s, s_finite, H_eq⟩ := H.prop
+      refine ⟨MulAut.conj h • s, Set.Finite.smul_set s_finite, ?iInf_eq⟩
+      simp_rw [H_eq, Subgroup.smul_iInf]
+      refine Equiv.iInf_congr (MulAut.conj h) fun g =>
+        iInf_congr_Prop Set.smul_mem_smul_set_iff (fun g_in_s => ?conj)
+      rw [AlgSupport.conj]
+      rfl
+  ⟩
+  one_smul := fun H => by
+    apply Subtype.eq
+    change MulAut.conj _ • _ = _
+    simp only [map_one, one_smul]
+  mul_smul := fun g h H => by
+    apply Subtype.eq
+    change MulAut.conj _ • _ = MulAut.conj _ • MulAut.conj _ • _
+    rw [← mul_smul, map_mul]
+
+variable {G} in
+/--
+The action on `AlgSupportBasis` is order-preserving.
+-/
+theorem AlgSupportBasis.smul_le_smul (H₁ H₂ : AlgSupportBasis G) (g : G) :
+    g • H₁ ≤ g • H₂ ↔ H₁ ≤ H₂ := by
+  change MulAut.conj g • H₁.val ≤ MulAut.conj g • H₂.val ↔ _
+  rw [Subgroup.pointwise_smul_le_pointwise_smul_iff]
+  rfl
+
+end AlgSupport
 
 end Rubin

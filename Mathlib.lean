@@ -3643,7 +3643,7 @@ import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.Algebra.Group.Disjointness
+import Mathlib.Topology.Algebra.Group.Rubin.Disjoint
 import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.Topology.Algebra.Group.OpenMapping
 import Mathlib.Topology.Algebra.Group.Rubin
