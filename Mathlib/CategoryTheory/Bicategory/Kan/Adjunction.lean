@@ -49,9 +49,7 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     /- We need to specify the type of `τ` to use the notation `⊗≫`. -/
     let τ : u ≫ h ⟶ s.extension := τ₀.right
     have hτ : adj.unit ▷ h ⊗≫ f ◁ τ = s.unit := by
-      calc adj.unit ▷ h ⊗≫ f ◁ τ
-        _ = (adj.unit ▷ h ≫ (α_ f u h).hom) ≫ f ◁ τ := by simp [bicategoricalComp]
-        _ = s.unit := StructuredArrow.w τ₀
+      simpa [bicategoricalComp] using LeftExtension.w τ₀
     calc τ
       _ = 𝟙 _ ⊗≫ rightZigzag adj.unit adj.counit ▷ h ⊗≫ τ ⊗≫ 𝟙 _ := by
         rw [adj.right_triangle]; simp [bicategoricalComp]
@@ -114,10 +112,7 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
       ext
       /- We need to specify the type of `τ` to use the notation `⊗≫`. -/
       let τ : h ≫ f ⟶ s.lift := τ₀.right
-      have hτ : h ◁ adj.unit ⊗≫ τ ▷ u = s.unit := by
-        calc _
-          _ = (h ◁ adj.unit ≫ (α_ h f u).inv) ≫ τ ▷ u := by coherence
-          _ = s.unit := LeftLift.w τ₀
+      have hτ : h ◁ adj.unit ⊗≫ τ ▷ u = s.unit := by simpa [bicategoricalComp] using LeftLift.w τ₀
       calc τ
         _ = 𝟙 _ ⊗≫ h ◁ leftZigzag adj.unit adj.counit ⊗≫ τ ⊗≫ 𝟙 _ := by
           rw [adj.left_triangle]; simp [bicategoricalComp]
