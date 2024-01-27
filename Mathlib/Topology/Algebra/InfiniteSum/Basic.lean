@@ -1284,7 +1284,26 @@ theorem sum_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f
   rfl
 #align sum_add_tsum_subtype_compl sum_add_tsum_subtype_compl
 
+lemma HasSum.tsum_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasSum f a) (g : β → γ) :
+    HasSum (fun c : γ ↦ ∑' b : g ⁻¹' {c}, f b) a :=
+  (((Equiv.sigmaFiberEquiv g).hasSum_iff).mpr hf).sigma <|
+    fun _ ↦ ((hf.summable.subtype _).hasSum_iff).mpr rfl
+
 end UniformGroup
+
+section prod_singleton
+
+variable [AddCommMonoid γ] [TopologicalSpace γ] [T2Space γ]
+
+lemma tsum_setProd_singleton_left (a : α) (t : Set β) (f : α × β → γ) :
+    (∑' x : {a} ×ˢ t, f x) = ∑' b : t, f (a, b) :=
+  (Equiv.Set.prod_singleton_left a t |>.symm.tsum_eq <| ({a} ×ˢ t).restrict f).symm
+
+lemma tsum_setProd_singleton_right (s : Set α) (b : β) (f : α × β → γ) :
+    (∑' x : s ×ˢ {b}, f x) = ∑' a : s, f (a, b) :=
+  (Equiv.Set.prod_singleton_right s b |>.symm.tsum_eq <| (s ×ˢ {b}).restrict f).symm
+
+end prod_singleton
 
 section TopologicalGroup
 
