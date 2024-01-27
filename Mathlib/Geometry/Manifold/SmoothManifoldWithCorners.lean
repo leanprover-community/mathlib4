@@ -1380,7 +1380,8 @@ theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x)
   extend_target_mem_nhdsWithin _ _ <| by rwa [← extChartAt_source I]
 #align ext_chart_at_target_mem_nhds_within' extChartAt_target_mem_nhdsWithin'
 
-theorem extChartAt_target_mem_nhdsWithin (x : M) : (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
+theorem extChartAt_target_mem_nhdsWithin (x : M) :
+    (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
   extChartAt_target_mem_nhdsWithin' I (mem_extChartAt_source I x)
 #align ext_chart_at_target_mem_nhds_within extChartAt_target_mem_nhdsWithin
 
@@ -1408,11 +1409,13 @@ theorem continuousAt_extChartAt_symm' {x x' : M} (h : x' ∈ (extChartAt I x).so
   continuousAt_extChartAt_symm'' I _ <| (extChartAt I x).map_source h
 #align continuous_at_ext_chart_at_symm' continuousAt_extChartAt_symm'
 
-theorem continuousAt_extChartAt_symm (x : M) : ContinuousAt (extChartAt I x).symm ((extChartAt I x) x) :=
+theorem continuousAt_extChartAt_symm (x : M) :
+    ContinuousAt (extChartAt I x).symm ((extChartAt I x) x) :=
   continuousAt_extChartAt_symm' I (mem_extChartAt_source I x)
 #align continuous_at_ext_chart_at_symm continuousAt_extChartAt_symm
 
-theorem continuousOn_extChartAt_symm (x : M) : ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
+theorem continuousOn_extChartAt_symm (x : M) :
+    ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
   fun _y hy => (continuousAt_extChartAt_symm'' _ _ hy).continuousWithinAt
 #align continuous_on_ext_chart_at_symm continuousOn_extChartAt_symm
 
@@ -1486,8 +1489,8 @@ theorem extChartAt_preimage_mem_nhdsWithin (x : M) (ht : t ∈ 𝓝[s] x) :
   extChartAt_preimage_mem_nhdsWithin' I (mem_extChartAt_source I x) ht
 #align ext_chart_at_preimage_mem_nhds_within extChartAt_preimage_mem_nhdsWithin
 
-theorem extChartAt_preimage_mem_nhds' {x x' : M} (h : x' ∈ (extChartAt I x).source) (ht : t ∈ 𝓝 x') :
-    (extChartAt I x).symm ⁻¹' t ∈ 𝓝 (extChartAt I x x') :=
+theorem extChartAt_preimage_mem_nhds' {x x' : M} (h : x' ∈ (extChartAt I x).source)
+    (ht : t ∈ 𝓝 x') : (extChartAt I x).symm ⁻¹' t ∈ 𝓝 (extChartAt I x x') :=
   extend_preimage_mem_nhds _ _ (by rwa [← extChartAt_source I]) ht
 #align ext_chart_at_preimage_mem_nhds' extChartAt_preimage_mem_nhds'
 
