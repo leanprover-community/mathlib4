@@ -103,6 +103,10 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
 
+theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZeroClass M α]
+    (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport g :=
+  closure_mono <| support_smul_subset_right f g
+
 @[to_additive]
 theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
@@ -423,5 +427,15 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
 theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
+
+theorem LocallyFinite.smul_left [Zero R] [Zero M] [SMulWithZero R M]
+    {s : ι → X → R} (h : LocallyFinite fun i ↦ support <| s i) (f : ι → X → M) :
+    LocallyFinite fun i ↦ support <| s i • f i :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, zero_smul]
+
+theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
+    {f : ι → X → M} (h : LocallyFinite fun i ↦ support <| f i) (s : ι → X → R) :
+    LocallyFinite fun i ↦ support <| s i • f i :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
 
 end LocallyFinite

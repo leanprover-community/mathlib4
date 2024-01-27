@@ -216,7 +216,7 @@ variable (f)
 theorem tendsto_integral_exp_inner_smul_cocompact :
     Tendsto (fun w : V => ∫ v, e[-⟪v, w⟫] • f v) (cocompact V) (𝓝 0) := by
   by_cases hfi : Integrable f; swap
-  · convert tendsto_const_nhds (a := (0 : E)) with w
+  · convert tendsto_const_nhds (x := (0 : E)) with w
     apply integral_undef
     rwa [← fourier_integrand_integrable w]
   refine' Metric.tendsto_nhds.mpr fun ε hε => _

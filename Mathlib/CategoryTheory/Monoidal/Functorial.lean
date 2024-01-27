@@ -55,11 +55,14 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
   ε : 𝟙_ D ⟶ F (𝟙_ C)
   /-- tensorator -/
   μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
-  /-- naturality -/
-  μ_natural :
-    ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
-      (map F f ⊗ map F g) ≫ μ Y Y' = μ X X' ≫ map F (f ⊗ g) := by
-   aesop_cat
+  μ_natural_left :
+    ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
+      (map F f ⊗ 𝟙 (F X')) ≫ μ Y X' = μ X X' ≫ map F (f ⊗ 𝟙 X') := by
+    aesop_cat
+  μ_natural_right :
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+      (𝟙 (F X') ⊗ map F f) ≫ μ X' Y = μ X' X ≫ map F (𝟙 X' ⊗ f) := by
+    aesop_cat
   /-- associativity of the tensorator -/
   associativity :
     ∀ X Y Z : C,
@@ -74,9 +77,39 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
     aesop_cat
 #align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
 
-attribute [simp] LaxMonoidal.μ_natural
+/-- An unbundled description of lax monoidal functors. -/
+abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F]
+    /- unit morphism -/
+    (ε : 𝟙_ D ⟶ F (𝟙_ C))
+    /- tensorator -/
+    (μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y))
+    /- naturality -/
+    (μ_natural :
+      ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
+        (map F f ⊗ map F g) ≫ μ Y Y' = μ X X' ≫ map F (f ⊗ g) := by
+    aesop_cat)
+    /- associativity of the tensorator -/
+    (associativity :
+      ∀ X Y Z : C,
+        (μ X Y ⊗ 𝟙 (F Z)) ≫ μ (X ⊗ Y) Z ≫ map F (α_ X Y Z).hom =
+          (α_ (F X) (F Y) (F Z)).hom ≫ (𝟙 (F X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
+      aesop_cat)
+    /- left unitality -/
+    (left_unitality : ∀ X : C, (λ_ (F X)).hom = (ε ⊗ 𝟙 (F X)) ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom := by
+      aesop_cat)
+    /- right unitality -/
+    (right_unitality : ∀ X : C, (ρ_ (F X)).hom = (𝟙 (F X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
+      aesop_cat) :
+      LaxMonoidal.{v₁, v₂} F where
+  ε := ε
+  μ := μ
+  μ_natural_left f X := by intros; simpa using μ_natural f (𝟙 X)
+  μ_natural_right X f := by intros; simpa using μ_natural (𝟙 X) f
+  associativity X Y Z := by intros; simpa using associativity X Y Z
+  left_unitality X := by intros; simpa using left_unitality X
+  right_unitality X := by intros; simpa using right_unitality X
 
-attribute [simp] LaxMonoidal.μ_natural
+attribute [simp, nolint simpNF] LaxMonoidal.μ_natural_left LaxMonoidal.μ_natural_right
 
 -- The unitality axioms cannot be used as simp lemmas because they require
 -- higher-order matching to figure out the `F` and `X` from `F X`.
