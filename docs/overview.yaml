@@ -46,7 +46,7 @@ General algebra:
     cyclic group: 'IsCyclic'
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
-    structure of fintely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
+    structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
 
   Rings:
     ring: 'Ring'
