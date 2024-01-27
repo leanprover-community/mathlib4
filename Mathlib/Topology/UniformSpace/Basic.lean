@@ -1810,12 +1810,12 @@ theorem isOpen_of_uniformity_sum_aux {s : Set (Sum α β)}
       { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈ (@UniformSpace.Core.sum α β _ _).uniformity) :
     IsOpen s := by
   constructor
-  · refine' (@isOpen_iff_mem_nhds α _ _).2 fun a ha => mem_nhds_uniformity_iff_right.2 _
+  · refine (isOpen_iff_mem_nhds (X := α)).2 fun a ha ↦ mem_nhds_uniformity_iff_right.2 ?_
     rcases mem_map_iff_exists_image.1 (hs _ ha).1 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl
     exact st ⟨_, pt, rfl⟩ rfl
-  · refine' (@isOpen_iff_mem_nhds β _ _).2 fun b hb => mem_nhds_uniformity_iff_right.2 _
+  · refine (@isOpen_iff_mem_nhds (X := β)).2 fun b hb ↦ mem_nhds_uniformity_iff_right.2 ?_
     rcases mem_map_iff_exists_image.1 (hs _ hb).2 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl
