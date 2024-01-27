@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.JordanHolder
+import Mathlib.Order.CompleteLatticeIntervals
 
 #align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
@@ -29,7 +30,7 @@ import Mathlib.Order.JordanHolder
 -/
 
 
-variable (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
+variable {ι : Type*} (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
 abbrev IsSimpleModule :=
@@ -118,6 +119,18 @@ theorem is_semisimple_iff_top_eq_sSup_simples :
     intro
     exact IsSemisimpleModule.sSup_simples_eq_top⟩
 #align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
+
+lemma isSemisimpleModule_of_IsSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+    (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
+    IsSemisimpleModule R M := by
+  refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
+  let e : Submodule R (p i) ≃o Set.Iic (p i) := Submodule.MapSubtype.relIso (p i)
+  simpa only [← e.complementedLattice_iff] using hp i hi
+
+lemma isSemisimpleModule_of_IsSemisimpleModule_submodule' {p : ι → Submodule R M}
+    (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
+    IsSemisimpleModule R M :=
+  isSemisimpleModule_of_IsSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
 namespace LinearMap
 
