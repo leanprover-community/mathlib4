@@ -553,8 +553,9 @@ theorem int_cast_mod (a : ℤ) (b : ℕ) : ((a % b : ℤ) : ZMod b) = (a : ZMod 
   apply Int.mod_modEq
 #align zmod.int_cast_mod ZMod.int_cast_mod
 
+open AddMonoidHom in
 theorem ker_int_castAddHom (n : ℕ) :
-    (Int.castAddHom (ZMod n)).ker = AddSubgroup.zmultiples (n : ℤ) := by
+    ker (Int.castAddHom (ZMod n)) = AddSubgroup.zmultiples (n : ℤ) := by
   ext
   rw [Int.mem_zmultiples_iff, AddMonoidHom.mem_ker, Int.coe_castAddHom,
     int_cast_zmod_eq_zero_iff_dvd]
@@ -1264,7 +1265,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         rw [ker_int_castAddHom]
         constructor
         · rintro hf _ ⟨x, rfl⟩
-          simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
+          simp only [f.map_zsmul, zsmul_zero, AddMonoidHom.mem_ker, hf]
         · intro h
           refine' h (AddSubgroup.mem_zmultiples _)).trans <|
     (Int.castAddHom (ZMod n)).liftOfRightInverse cast int_cast_zmod_cast

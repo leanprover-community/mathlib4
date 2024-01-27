@@ -266,7 +266,7 @@ variable {N : Type*} [Group N] [TopologicalSpace N]
 @[to_additive "The preimage of an `OpenAddSubgroup` along a continuous `AddMonoid` homomorphism
 is an `OpenAddSubgroup`."]
 def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup G :=
-  ⟨.comap f H, H.isOpen.preimage hf⟩
+  ⟨.comap f H, by exact H.isOpen.preimage hf⟩
 #align open_subgroup.comap OpenSubgroup.comap
 #align open_add_subgroup.comap OpenAddSubgroup.comap
 

@@ -18,7 +18,7 @@ taking values in the tensor product of the codomains of the original maps.
 
 suppress_compilation
 
-open BigOperators TensorProduct
+open BigOperators TensorProduct MonoidHom
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
 
@@ -29,7 +29,7 @@ namespace Equiv.Perm
 
 /-- Elements which are considered equivalent if they differ only by swaps within α or β  -/
 abbrev ModSumCongr (α β : Type*) :=
-  _ ⧸ (Equiv.Perm.sumCongrHom α β).range
+  _ ⧸ range (Equiv.Perm.sumCongrHom α β)
 #align equiv.perm.mod_sum_congr Equiv.Perm.ModSumCongr
 
 #align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.swap_smul_involutive
@@ -234,7 +234,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
       a.alternatization.domCoprod (MultilinearMap.alternatization b) := by
   apply coe_multilinearMap_injective
   rw [domCoprod_coe, MultilinearMap.alternatization_coe,
-    Finset.sum_partition (QuotientGroup.leftRel (Perm.sumCongrHom ιa ιb).range)]
+    Finset.sum_partition (QuotientGroup.leftRel <| MonoidHom.range (Perm.sumCongrHom ιa ιb))]
   congr 1
   ext1 σ
   refine Quotient.inductionOn' σ fun σ => ?_
