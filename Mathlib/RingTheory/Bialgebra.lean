@@ -32,7 +32,7 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   counit_mul : ∀ a₁ a₂ : A, counit (a₁ * a₂) = counit a₁ * counit a₂
   counit_unit : counit 1 = 1
   /-- The comultiplication is an algebra morphism -/
-  comul_mul : ∀ a₁ a₂ : A, comul (a₁ * a₂) = Algebra.TensorProduct.mul (comul a₁) (comul a₂)
+  comul_mul : ∀ a₁ a₂ : A, comul (a₁ * a₂) = comul a₁ * comul a₂
   comul_unit : comul 1 = 1
 
 namespace Bialgebra
@@ -49,7 +49,7 @@ theorem counit_unit_apply : B.counit 1 = 1 :=
 
 @[simp]
 theorem comul_mul_apply (a₁ a₂ : A) :
-    B.comul (a₁ * a₂) = Algebra.TensorProduct.mul (B.comul a₁) (B.comul a₂) :=
+    B.comul (a₁ * a₂) = B.comul a₁ * B.comul a₂ :=
   comul_mul a₁ a₂
 
 @[simp]
