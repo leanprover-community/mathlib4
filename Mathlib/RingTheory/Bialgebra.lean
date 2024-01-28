@@ -46,7 +46,7 @@ variable [CommSemiring R] [Semiring A] [B : Bialgebra R A]
 attribute [simp] counit_one counit_mul comul_one comul_mul
 
 /-- The counit of a bialgebra, as an R-algebra map. -/
-def counit.toAlgHom : A →ₐ[R] R where
+def counitAlgHom : A →ₐ[R] R where
   toFun := B.counit
   map_one' := B.counit_one
   map_mul' := B.counit_mul
@@ -55,7 +55,7 @@ def counit.toAlgHom : A →ₐ[R] R where
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
 
 /-- The comultiplication of a bialgebra, as an R-algebra map. -/
-def comul.toAlgHom : A →ₐ[R] A ⊗[R] A where
+def comulAlgHom : A →ₐ[R] A ⊗[R] A where
   toFun := B.comul
   map_one' := B.comul_one
   map_mul' := B.comul_mul
