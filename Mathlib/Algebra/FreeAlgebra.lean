@@ -471,12 +471,15 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
       simp)
 #align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
+/-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.surjective.nontrivial
 
+/-- `FreeAlgebra R X` has no zero-divisors when `R` has no zero-divisors. -/
 instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 
+/-- `FreeAlgebra R X` is a domain when `R` is an integral domain. -/
 instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
   NoZeroDivisors.to_isDomain _
 
