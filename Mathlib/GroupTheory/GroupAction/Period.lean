@@ -244,7 +244,7 @@ theorem smul_injOn_zpow_of_period_eq_zero {g : G} {x : α} (period_eq_zero : per
   rw [← g₁_eq, ← g₂_eq, img_eq]
 
 -- TODO: use smul_injOn_pow_lt_period and smul_injOn_zpow_of_period_eq_zero
-lemma smul_pow_inj_of_le_period {g : G} {x : α} {n m : ℕ}
+lemma smul_pow_inj_of_lt_period {g : G} {x : α} {n m : ℕ}
     (n_lt_period : n < MulAction.period g x) (m_lt_period : m < MulAction.period g x)
     (pow_eq : g ^ n = g ^ m): n = m := by
   rw [← mul_inv_eq_one, ← zpow_ofNat, ← zpow_ofNat, ← zpow_neg, ← zpow_add,

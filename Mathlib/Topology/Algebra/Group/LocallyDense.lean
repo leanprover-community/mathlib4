@@ -187,24 +187,31 @@ theorem not_locallyDenseSmul_of_comm_of_t2space : ¬LocallyDenseSMul G α := by
   rw [center_bot g, center_bot h] at g_ne_h
   exact g_ne_h rfl
 
+variable (G) in
+/--
+If the action of `G` on `α` is locally moving, continuous and faithful, then the moving subgroup
+of an open set does not have an exponent.
+
+This corresponds to lemma 2.2 of [A Short Proof of Rubin's theorem].
+-/
 theorem LocallyMovingSMul.exponent_fixingSubgroup_eq_zero [LocallyMovingSMul G α]
     [ContinuousConstSMul G α] [FaithfulSMul G α] [T2Space α] {s : Set α} (s_open : IsOpen s)
     (s_nonempty : s.Nonempty) : Monoid.exponent G•[sᶜ] = 0 := by
   by_contra exp_ne_zero
   let ⟨⟨g, g_in_fixing⟩, x, x_in_s, period_pos, period_maximal⟩ :=
     exists_maximal_period_of_exponent_pos exp_ne_zero s_nonempty
-  rw [MulAction.period_subgroup_mk] at period_pos period_maximal
+  simp only [Subtype.forall, period_subgroup_mk] at period_pos period_maximal
+
   let ⟨t, t_open, x_in_t, pw_disj⟩ := t2_separation_of_smul_injOn
     (MulAction.smul_injOn_pow_lt_period g x)
     (Set.toFinite ((fun i => g ^ i) '' Set.Iio (period g x)))
 
-  have st_open := s_open.inter t_open
-  have x_in_st : x ∈ s ∩ t := ⟨x_in_s, x_in_t⟩
-  have pw_disj' : { g ^ i | i < period g x }.PairwiseDisjoint (· • (s ∩ t)) :=
+  replace pw_disj : { g ^ i | i < period g x }.PairwiseDisjoint (· • (s ∩ t)) :=
     Set.PairwiseDisjoint.mono_on pw_disj fun h _ =>
       Set.smul_set_mono (Set.inter_subset_right _ _)
 
-  let ⟨h, h_in_fixing, h_ne_one⟩ := nontrivial_elem_of_nonempty G st_open ⟨x, x_in_st⟩
+  let ⟨h, h_in_fixing, h_ne_one⟩ := nontrivial_elem_of_nonempty G (s_open.inter t_open)
+    ⟨x, ⟨x_in_s, x_in_t⟩⟩
   have hg_in_fixing : h * g ∈ G•[sᶜ] := by
     rw [mem_fixingSubgroup_iff_subset_fixedBy] at *
     apply subset_trans _ (MulAction.fixedBy_mul α h g)
@@ -227,16 +234,66 @@ theorem LocallyMovingSMul.exponent_fixingSubgroup_eq_zero [LocallyMovingSMul G �
       rw [pow_succ, mul_smul, h₁, ← mul_smul, mul_assoc, ← pow_succ, mul_smul, Nat.succ_eq_add_one,
         ← mem_fixedBy, ← Set.not_mem_compl_iff]
       refine mt (fun mem => h_in_fixing mem) fun mem_st => ?ff
-      specialize pw_disj' ⟨0, period_pos, rfl⟩ ⟨i + 1, i_lt_period, rfl⟩ (by
-        apply mt (smul_pow_inj_of_le_period period_pos i_lt_period)
+      specialize pw_disj ⟨0, period_pos, rfl⟩ ⟨i + 1, i_lt_period, rfl⟩ (by
+        apply mt (smul_pow_inj_of_lt_period period_pos i_lt_period)
         norm_num
       )
       rw [pow_zero, Function.onFun, Set.smul_set_disjoint_inv_of_comm (Commute.one_left _), inv_one,
-        one_smul, Set.disjoint_iff] at pw_disj'
+        one_smul, Set.disjoint_iff] at pw_disj
       rw [← Set.mem_inv_smul_set_iff] at mem_st
-      exact pw_disj' ⟨y_in_st, mem_st⟩
+      exact pw_disj ⟨y_in_st, mem_st⟩
 
   -- We now need to show that `(h * g) ^ i • y ≠ y` for `i < period g x` (which is quite easy),
   -- and for `i = period g x` (which reduces to `h * g ^ i • y = h • y ≠ y`).
   -- From this, we derive a contradiction with `period g x < period (h * g) y ≤ Monoid.exponent _`
-  sorry
+
+  have periods_pos : ∀ i ∈ G•[sᶜ], 0 < period i y := by
+    intro i i_in_fixing
+    show 0 < period ({ val := i, property := i_in_fixing } : G•[sᶜ]).val y
+    rw [← period_subgroup_mk (H := G•[sᶜ]) i_in_fixing]
+    apply period_pos_of_exponent_pos exp_ne_zero
+
+  have period_y_eq_x : period g x = period g y := by
+    apply le_antisymm _ (period_maximal _ g_in_fixing _ y_in_st.left)
+    apply le_period_of_moved (periods_pos g g_in_fixing)
+    intro i pos lt_period
+    nth_rw 2 [← one_smul G y]
+    rw [← pow_zero g]
+    apply Set.disjoint_iff_forall_ne.mp (pw_disj ⟨i, lt_period, rfl⟩ ⟨0, period_pos, rfl⟩ ?inj)
+    · exact Set.smul_mem_smul_set_iff.mpr y_in_st
+    · exact Set.smul_mem_smul_set_iff.mpr y_in_st
+    · exact mt (smul_pow_inj_of_lt_period lt_period period_pos) pos.ne'
+
+  apply Nat.not_lt.mpr (period_maximal _ hg_in_fixing y y_in_st.left)
+  rw [Nat.lt_iff_add_one_le]
+  apply le_period_of_moved (periods_pos _ hg_in_fixing)
+  intro k pos lt
+  by_cases k = period g x
+  case pos eq =>
+    rw [← Nat.succ_pred pos.ne', pow_succ, mul_smul, hg_pow_eq _ ?pred_lt, ← mul_smul, mul_assoc,
+      ← pow_succ, ← Nat.succ_eq_add_one, Nat.succ_pred pos.ne', mul_smul, eq, period_y_eq_x,
+      smul_pow_period_fixed]
+    exact y_in_moved
+
+    case pred_lt =>
+      rw [Nat.lt_iff_add_one_le, ← Nat.succ_eq_add_one, Nat.succ_pred pos.ne']
+      rwa [Nat.lt_iff_add_one_le, add_le_add_iff_right] at lt
+
+  case neg ne =>
+    replace lt: k < period g x := by
+      rw [Nat.lt_iff_add_one_le, add_le_add_iff_right] at lt
+      rw [Nat.lt_iff_le_and_ne]
+      exact ⟨lt, ne⟩
+
+    rw [hg_pow_eq k lt]
+    exact moved_of_lt_period pos (period_y_eq_x ▸ lt)
+
+variable (G α) in
+/--
+A corollary of `LocallyMovingSMul.exponent_fixingSubgroup_eq_zero` is that the group `G`
+does not have an exponent.
+-/
+theorem LocallyMovingSMul.exponent_eq_zero [LocallyMovingSMul G α] [ContinuousConstSMul G α]
+    [FaithfulSMul G α] [T2Space α] [Nonempty α]: Monoid.exponent G = 0 := by
+  have exp_top_eq_zero := exponent_fixingSubgroup_eq_zero G (isOpen_univ (α := α)) Set.univ_nonempty
+  rwa [Set.compl_univ, fixingSubgroup_empty, Subgroup.exponent_top] at exp_top_eq_zero

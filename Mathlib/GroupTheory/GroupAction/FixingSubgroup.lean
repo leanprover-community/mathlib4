@@ -152,6 +152,14 @@ theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoin
   (fixingSubgroup_fixedPoints_gc M α).monotone_u.dual_left
 #align fixed_points_subgroup_antitone fixedPoints_subgroup_antitone
 
+@[simp]
+theorem fixingSubgroup_empty : G•[(∅ : Set α)] = ⊤ := by
+  ext g
+  simp_rw [mem_fixingSubgroup_iff, Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true,
+    Subgroup.mem_top]
+
+variable {α}
+
 /-- Fixing subgroup of union is intersection -/
 theorem fixingSubgroup_union {s t : Set α} :
     fixingSubgroup M (s ∪ t) = fixingSubgroup M s ⊓ fixingSubgroup M t :=
@@ -183,6 +191,145 @@ theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ 
   let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
   rw [Submonoid.mk_smul] at g_eq
   rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
+<<<<<<< HEAD
   rwa [← g_eq, smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]
+||||||| parent of 4c67043ad2 (feat(Topology/Algebra/Group/LocallyDense): finish proving lemma 2.2)
+  rwa [← g_eq, ← smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]
+
+/--
+The fixing subgroup of a set `s` is disjoint from the fixing subgroup of `sᶜ`
+if the action is faithful.
+-/
+theorem fixingSubgroup_compl_disjoint [FaithfulSMul G α] (s : Set α) :
+    Disjoint (fixingSubgroup G s) (fixingSubgroup G sᶜ) := by
+  rw [Subgroup.disjoint_def]
+  intro x x_in_fs x_in_fsc
+  rw [mem_fixingSubgroup_iff_subset_fixedBy] at x_in_fs
+  rw [mem_fixingSubgroup_iff_subset_fixedBy] at x_in_fsc
+  rw [← fixedBy_eq_univ_iff_eq_one (α := α), eq_comm]
+  apply subset_antisymm _ (Set.subset_univ _)
+  rw [← Set.union_compl_self s]
+  apply Set.union_subset <;> assumption
+
+theorem fixingSubgroup_smul (s : Set α) (g : G) : G•[g • s] = MulAut.conj g • G•[s] := by
+  ext h
+  rw [mem_fixingSubgroup_iff_subset_fixedBy, Set.set_smul_subset_iff, smul_fixedBy, inv_inv,
+    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_fixingSubgroup_iff_subset_fixedBy,
+    MulAut.smul_def, MulAut.conj_inv_apply]
+
+section Faithful
+
+variable [FaithfulSMul G α]
+
+@[simp]
+theorem fixingSubgroup_univ : G•[(Set.univ : Set α)] = ⊥ := by
+  ext x
+  rw [Subgroup.mem_bot, mem_fixingSubgroup_iff_subset_fixedBy, Set.univ_subset_iff,
+    fixedBy_eq_univ_iff_eq_one]
+
+theorem not_mem_fixingSubgroup_compl_of_mem_fixingSubgroup (s : Set α) {g : G} (g_ne_one : g ≠ 1)
+    (g_in_subgroup : g ∈ G•[s]) : g ∉ G•[sᶜ] := by
+  intro h₁
+  apply g_ne_one
+  apply Subgroup.disjoint_def.mp (fixingSubgroup_compl_disjoint G s) <;> assumption
+
+theorem commute_of_fixingSubgroup_compl_of_disjoint {g h : G} {s : Set α}
+    (g_in_subgroup : g ∈ G•[sᶜ]) (disjoint_movedBy : Disjoint s (fixedBy α h)ᶜ) :
+    Commute g h := by
+  rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_in_subgroup
+  have s_subset_fixedBy : s ⊆ fixedBy α h := by
+    rwa [← Set.disjoint_compl_right_iff_subset]
+  have movedBy_subset_sc : (fixedBy α h)ᶜ ⊆ sᶜ := by
+    rwa [← Set.disjoint_compl_left_iff_subset, compl_compl]
+
+  refine eq_of_smul_eq_smul fun x: α => ?comm_eq
+
+  by_cases x ∈ s
+  case pos x_in_s =>
+    rw [mul_smul, mul_smul, s_subset_fixedBy x_in_s]
+    rw [smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_in_subgroup)] at x_in_s
+    rw [s_subset_fixedBy x_in_s]
+  case neg x_notin_s =>
+    rw [Set.compl_subset_comm] at g_in_subgroup
+    rw [mul_smul, mul_smul, g_in_subgroup x_notin_s]
+
+    by_cases x ∈ fixedBy α h
+    case pos x_fixed =>
+      rw [x_fixed, g_in_subgroup x_notin_s]
+    case neg x_moved =>
+      rw [← smul_mem_fixedBy_iff_mem_fixedBy] at x_moved
+      rw [g_in_subgroup (movedBy_subset_sc x_moved)]
+
+end Faithful
+=======
+  rwa [← g_eq, ← smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]
+
+/--
+The fixing subgroup of a set `s` is disjoint from the fixing subgroup of `sᶜ`
+if the action is faithful.
+-/
+theorem fixingSubgroup_compl_disjoint [FaithfulSMul G α] (s : Set α) :
+    Disjoint (fixingSubgroup G s) (fixingSubgroup G sᶜ) := by
+  rw [Subgroup.disjoint_def]
+  intro x x_in_fs x_in_fsc
+  rw [mem_fixingSubgroup_iff_subset_fixedBy] at x_in_fs
+  rw [mem_fixingSubgroup_iff_subset_fixedBy] at x_in_fsc
+  rw [← fixedBy_eq_univ_iff_eq_one (α := α), eq_comm]
+  apply subset_antisymm _ (Set.subset_univ _)
+  rw [← Set.union_compl_self s]
+  apply Set.union_subset <;> assumption
+
+theorem fixingSubgroup_smul (s : Set α) (g : G) : G•[g • s] = MulAut.conj g • G•[s] := by
+  ext h
+  rw [mem_fixingSubgroup_iff_subset_fixedBy, Set.set_smul_subset_iff, smul_fixedBy, inv_inv,
+    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_fixingSubgroup_iff_subset_fixedBy,
+    MulAut.smul_def, MulAut.conj_inv_apply]
+
+section Faithful
+
+variable [FaithfulSMul G α]
+
+@[simp]
+theorem fixingSubgroup_univ : G•[(Set.univ : Set α)] = ⊥ := by
+  ext g
+  rw [Subgroup.mem_bot, mem_fixingSubgroup_iff_subset_fixedBy, Set.univ_subset_iff,
+    fixedBy_eq_univ_iff_eq_one]
+
+
+theorem not_mem_fixingSubgroup_compl_of_mem_fixingSubgroup (s : Set α) {g : G} (g_ne_one : g ≠ 1)
+    (g_in_subgroup : g ∈ G•[s]) : g ∉ G•[sᶜ] := by
+  intro h₁
+  apply g_ne_one
+  apply Subgroup.disjoint_def.mp (fixingSubgroup_compl_disjoint G s) <;> assumption
+
+theorem commute_of_fixingSubgroup_compl_of_disjoint {g h : G} {s : Set α}
+    (g_in_subgroup : g ∈ G•[sᶜ]) (disjoint_movedBy : Disjoint s (fixedBy α h)ᶜ) :
+    Commute g h := by
+  rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_in_subgroup
+  have s_subset_fixedBy : s ⊆ fixedBy α h := by
+    rwa [← Set.disjoint_compl_right_iff_subset]
+  have movedBy_subset_sc : (fixedBy α h)ᶜ ⊆ sᶜ := by
+    rwa [← Set.disjoint_compl_left_iff_subset, compl_compl]
+
+  refine eq_of_smul_eq_smul fun x: α => ?comm_eq
+
+  by_cases x ∈ s
+  case pos x_in_s =>
+    rw [mul_smul, mul_smul, s_subset_fixedBy x_in_s]
+    rw [smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_in_subgroup)] at x_in_s
+    rw [s_subset_fixedBy x_in_s]
+  case neg x_notin_s =>
+    rw [Set.compl_subset_comm] at g_in_subgroup
+    rw [mul_smul, mul_smul, g_in_subgroup x_notin_s]
+
+    by_cases x ∈ fixedBy α h
+    case pos x_fixed =>
+      rw [x_fixed, g_in_subgroup x_notin_s]
+    case neg x_moved =>
+      rw [← smul_mem_fixedBy_iff_mem_fixedBy] at x_moved
+      rw [g_in_subgroup (movedBy_subset_sc x_moved)]
+
+end Faithful
+>>>>>>> 4c67043ad2 (feat(Topology/Algebra/Group/LocallyDense): finish proving lemma 2.2)
 
 end Group
