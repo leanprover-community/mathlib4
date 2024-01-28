@@ -3142,6 +3142,7 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Cotangent
