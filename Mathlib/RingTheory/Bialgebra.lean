@@ -28,12 +28,16 @@ open scoped TensorProduct
 that the counit and comultiplication are algebra morphisms. -/
 class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
     Algebra R A, Coalgebra R A where
-  /-- The counit is an algebra morphism -/
-  counit_mul : ∀ a₁ a₂ : A, counit (a₁ * a₂) = counit a₁ * counit a₂
+  -- The counit is an algebra morphism
+  /-- The counit on a bialgebra preserves 1. -/
   counit_one : counit 1 = 1
-  /-- The comultiplication is an algebra morphism -/
-  comul_mul : ∀ a₁ a₂ : A, comul (a₁ * a₂) = comul a₁ * comul a₂
+  /-- The counit on a bialgebra preserves multiplication. -/
+  counit_mul : ∀ a₁ a₂ : A, counit (a₁ * a₂) = counit a₁ * counit a₂
+  -- The comultiplication is an algebra morphism
+  /-- The comultiplication on a bialgebra preserves `1`. -/
   comul_one : comul 1 = 1
+  /-- The comultiplication on a bialgebra preserves multiplication. -/
+  comul_mul : ∀ a₁ a₂ : A, comul (a₁ * a₂) = comul a₁ * comul a₂
 
 namespace Bialgebra
 variable {R : Type u} {A : Type v}
