@@ -1329,9 +1329,9 @@ theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm
 #align mem_closure_iff_cluster_pt mem_closure_iff_clusterPt
 
-theorem mem_closure_iff_nhds_neBot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
+theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
   mem_closure_iff_clusterPt.trans neBot_iff
-#align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_neBot
+#align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_ne_bot
 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
@@ -1471,14 +1471,8 @@ theorem Dense.open_subset_closure_inter (hs : Dense s) (ht : IsOpen t) :
 
 theorem mem_closure_of_mem_closure_union (h : x ∈ closure (s₁ ∪ s₂))
     (h₁ : s₁ᶜ ∈ 𝓝 x) : x ∈ closure s₂ := by
-  rw [mem_closure_iff_nhds_neBot] at *
-  rwa [←
-    calc
-      𝓝 x ⊓ principal (s₁ ∪ s₂) = 𝓝 x ⊓ (principal s₁ ⊔ principal s₂) := by rw [sup_principal]
-      _ = 𝓝 x ⊓ principal s₁ ⊔ 𝓝 x ⊓ principal s₂ := inf_sup_left
-      _ = ⊥ ⊔ 𝓝 x ⊓ principal s₂ := by rw [inf_principal_eq_bot.mpr h₁]
-      _ = 𝓝 x ⊓ principal s₂ := bot_sup_eq
-      ]
+  rw [mem_closure_iff_nhds_ne_bot] at *
+  rwa [← sup_principal, inf_sup_left, inf_principal_eq_bot.mpr h₁, bot_sup_eq] at h
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/

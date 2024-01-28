@@ -161,9 +161,9 @@ most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_e
 It is satisfied in two cases:
 
 - if `X` is a locally compact topological space, for obvious reasons;
-- if `X` is a weakly locally compact topological space and `Y` is a Hausdorff space;
+- if `X` is a weakly locally compact topological space and `Y` is a preregular space;
   this fact is a simple generalization of the theorem
-  saying that a weakly locally compact Hausdorff topological space is locally compact.
+  saying that a weakly locally compact preregular topological space is locally compact.
 -/
 class LocallyCompactPair (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] : Prop where
   /-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces

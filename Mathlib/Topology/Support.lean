@@ -189,9 +189,9 @@ theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α}
     (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
-  isCompact_closure_of_subset_compact hK h
+  hK.closure_of_subset h
 
 @[to_additive]
 theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
