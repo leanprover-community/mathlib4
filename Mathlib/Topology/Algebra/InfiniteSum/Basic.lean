@@ -1372,8 +1372,7 @@ theorem tsum_const [T2Space G] : ∑' _ : β, (a : G) = Nat.card β • a := by
   rcases finite_or_infinite β with hβ|hβ
   · letI : Fintype β := Fintype.ofFinite β
     rw [tsum_eq_sum (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
-    simp only [sum_const, Nat.card_eq_fintype_card]
-    rfl
+    simp only [sum_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, zero_smul]
     rcases eq_or_ne a 0 with rfl|ha
     · simp
@@ -1421,16 +1420,9 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
 lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
-  by_cases hf : Summable f
-  · exact tsum_const_smul g hf
-  rw [tsum_eq_zero_of_not_summable hf]
-  simp only [smul_zero]
-  by_cases hg : g = 0
-  · simp [hg]
-  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv₀ α g hg
-  apply tsum_eq_zero_of_not_summable
-  change ¬ Summable (mul_g ∘ f)
-  rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
+  rcases eq_or_ne g 0 with rfl | hg
+  · simp
+  · exact tsum_const_smul' (Units.mk0 g hg)
 
 end ConstSMul
 
