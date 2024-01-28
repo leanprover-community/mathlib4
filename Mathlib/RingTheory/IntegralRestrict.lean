@@ -51,7 +51,7 @@ def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
     simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
       RingHom.coe_coe, AlgHom.commutes]
-  { IsLocalization.lift (S := L) H with commutes' := FunLike.congr_fun H_eq }
+  { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/

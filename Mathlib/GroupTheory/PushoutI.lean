@@ -104,7 +104,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
     apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
-    simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
+    simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
 @[simp]
@@ -151,9 +151,9 @@ def homEquiv :
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
     invFun := fun f => lift f.1.1 f.1.2 f.2,
-    left_inv := fun _ => hom_ext (by simp [FunLike.ext_iff])
-      (by simp [FunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [FunLike.ext_iff, Function.funext_iff] }
+    left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
+      (by simp [DFunLike.ext_iff])
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -442,7 +442,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
       (fun i => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
-    simp only [MulAction.toEndHom, FunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
+    simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
       OneHom.coe_mk, comp_apply]
     intro h
     funext w
