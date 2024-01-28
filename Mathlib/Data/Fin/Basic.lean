@@ -445,8 +445,6 @@ theorem bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) :=
   rfl
 #align fin.bot_eq_zero Fin.bot_eq_zero
 
-theorem bot_eq_top_of_fin_one : (⊥ : Fin 1) = (⊤ : Fin 1) := rfl
-
 section
 
 variable {α : Type*} [Preorder α]
@@ -531,12 +529,6 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 -- porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
 #align fin.nontrivial_iff_two_le Fin.nontrivial_iff_two_le
-
-theorem bot_ne_top : (⊥ : Fin (n + 2)) ≠ ⊤ := _root_.bot_ne_top
-
-theorem bot_ne_top_iff_two_le [NeZero n] : (⊥ : Fin n) ≠ ⊤ ↔ 2 ≤ n := by
-  rw [← nontrivial_iff_two_le]
-  exact ⟨fun h => ⟨⊥, ⊤, h⟩ , fun h => haveI := h; _root_.bot_ne_top⟩
 
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
 
