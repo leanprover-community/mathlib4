@@ -464,9 +464,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteDimension
     {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
     (hU : U ≠ univ) (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
-  have hne : U.Nonempty := by
-    rw [← closure_nonempty_iff, nonempty_def]
-    exact ⟨z, hz⟩
+  have hne : U.Nonempty := closure_nonempty_iff.mp ⟨z, hz⟩
   obtain ⟨y, ⟨hy₁, hy₂⟩⟩ := exists_mem_frontier_isMaxOn_norm_of_zero_at_infty htendsto hU hne hd
   rw [isMaxOn_iff] at hy₂
   calc ‖f z‖ ≤ ‖f y‖ := hy₂ z hz
