@@ -574,7 +574,7 @@ section NormedDivisionRing
 variable [NormedDivisionRing α] [CompleteSpace α] {f : ℕ → α}
 
 /-- If a power series converges at `w`, it converges absolutely at all `z` of smaller norm. -/
-theorem summable_power_of_norm_lt {w z : α}
+theorem summable_powerSeries_of_norm_lt {w z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i * w ^ i) (hz : ‖z‖ < ‖w‖) :
     Summable fun n ↦ f n * z ^ n := by
   have hw : 0 < ‖w‖ := (norm_nonneg z).trans_lt hz
@@ -587,10 +587,10 @@ theorem summable_power_of_norm_lt {w z : α}
   exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
 
 /-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/
-theorem summable_power_of_norm_lt_one {z : α}
+theorem summable_powerSeries_of_norm_lt_one {z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i) (hz : ‖z‖ < 1) :
     Summable fun n ↦ f n * z ^ n :=
-  summable_power_of_norm_lt (w := 1) (by simp [h]) (by simp [hz])
+  summable_powerSeries_of_norm_lt (w := 1) (by simp [h]) (by simp [hz])
 
 end NormedDivisionRing
 
