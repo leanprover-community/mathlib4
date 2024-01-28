@@ -8,6 +8,7 @@ import Mathlib.RingTheory.TensorProduct
 
 /-!
 # Bialgebras
+
 In this file we define `Bialgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toBialgebra`
