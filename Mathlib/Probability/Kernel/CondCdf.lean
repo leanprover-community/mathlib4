@@ -108,21 +108,6 @@ theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
   @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
 #align tendsto_of_antitone tendsto_of_antitone
 
--- todo: move to data/real/ennreal
-theorem ENNReal.ofReal_cinfi (f : α → ℝ) [Nonempty α] :
-    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
-  by_cases hf : BddBelow (range f)
-  · exact
-      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
-        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
-  · symm
-    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
-    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
-    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
-    refine' fun x hx => ⟨i, _⟩
-    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
-#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
-
 -- todo: move to measure_theory/measurable_space
 /-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
 theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
