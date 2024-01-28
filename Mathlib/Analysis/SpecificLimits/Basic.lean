@@ -34,7 +34,8 @@ theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)
 #align tendsto_inverse_at_top_nhds_0_nat tendsto_inverse_atTop_nhds_zero_nat
 @[deprecated] alias tendsto_inverse_atTop_nhds_0_nat := tendsto_inverse_atTop_nhds_zero_nat
 
-theorem tendsto_const_div_atTop_nhds_zero_nat (C : ℝ) : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
+theorem tendsto_const_div_atTop_nhds_zero_nat (C : ℝ) :
+    Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
   simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_zero_nat
 #align tendsto_const_div_at_top_nhds_0_nat tendsto_const_div_atTop_nhds_zero_nat
 @[deprecated]  alias tendsto_const_div_atTop_nhds_0_nat := tendsto_const_div_atTop_nhds_zero_nat
