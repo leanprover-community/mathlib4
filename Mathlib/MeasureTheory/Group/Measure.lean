@@ -762,9 +762,8 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
 /-- If a compact set is included in a measurable set, then so is its closure. -/
 @[to_additive]
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
-    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s := by
-  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_closure_one_eq]
-  exact mul_subset_mul_right h
+    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
+  hk.closure_subset_measurableSet hs h
 
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
