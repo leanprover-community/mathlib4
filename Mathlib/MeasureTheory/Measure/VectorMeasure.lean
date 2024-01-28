@@ -521,6 +521,17 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
 #align measure_theory.vector_measure.ennreal_to_measure_apply MeasureTheory.VectorMeasure.ennrealToMeasure_apply
 
+@[simp]
+theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
+    (μ : VectorMeasure α ℝ≥0∞) :
+    toENNRealVectorMeasure (ennrealToMeasure μ) = μ := ext fun s hs => by
+  rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
+
+@[simp]
+theorem ennrealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
+    ennrealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
+  rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
 `MeasureTheory.VectorMeasure.ennrealToMeasure` and
 `MeasureTheory.Measure.toENNRealVectorMeasure`. -/
@@ -528,10 +539,8 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
   invFun := toENNRealVectorMeasure
-  left_inv _ := ext fun s hs => by
-    rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
-  right_inv _ := Measure.ext fun s hs => by
-    rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+  left_inv := toENNRealVectorMeasure_ennrealToMeasure
+  right_inv := ennrealToMeasure_toENNRealVectorMeasure
 #align measure_theory.vector_measure.equiv_measure MeasureTheory.VectorMeasure.equivMeasure
 
 end
@@ -1147,7 +1156,7 @@ to use. This is equivalent to the definition which requires measurability. To pr
 `MutuallySingular` with the measurability condition, use
 `MeasureTheory.VectorMeasure.MutuallySingular.mk`. -/
 def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
-  ∃ s : Set α, MeasurableSet s ∧ (∀ (t) (_ : t ⊆ s), v t = 0) ∧ ∀ (t) (_ : t ⊆ sᶜ), w t = 0
+  ∃ s : Set α, MeasurableSet s ∧ (∀ t ⊆ s, v t = 0) ∧ ∀ t ⊆ sᶜ, w t = 0
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
 
 @[inherit_doc VectorMeasure.MutuallySingular]
@@ -1157,8 +1166,8 @@ namespace MutuallySingular
 
 variable {v v₁ v₂ : VectorMeasure α M} {w w₁ w₂ : VectorMeasure α N}
 
-theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ (t) (_ : t ⊆ s), MeasurableSet t → v t = 0)
-    (h₂ : ∀ (t) (_ : t ⊆ sᶜ), MeasurableSet t → w t = 0) : v ⟂ᵥ w := by
+theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ t ⊆ s, MeasurableSet t → v t = 0)
+    (h₂ : ∀ t ⊆ sᶜ, MeasurableSet t → w t = 0) : v ⟂ᵥ w := by
   refine' ⟨s, hs, fun t hst => _, fun t hst => _⟩ <;> by_cases ht : MeasurableSet t
   · exact h₁ t hst ht
   · exact not_measurable v ht

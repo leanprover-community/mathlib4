@@ -454,8 +454,8 @@ theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D �
       nonempty_isEquivalence := Nonempty.intro (IsEquivalence.ofIso e' inferInstance) }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
 
-lemma of_equivalence (L : C ⥤ D) (W : MorphismProperty C)
-  (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
+lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
+    (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
     L.IsLocalization W := by
   haveI : (𝟭 C).IsLocalization W := for_id W hW
   exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
@@ -525,5 +525,42 @@ def of_localization_comparison
 end IsEquivalence
 
 end Functor
+
+section
+
+variable {X Y : C} (f g : X ⟶ Y)
+
+/-- The property that two morphisms become equal in the localized category. -/
+def AreEqualizedByLocalization : Prop := W.Q.map f = W.Q.map g
+
+lemma areEqualizedByLocalization_iff [L.IsLocalization W]:
+    AreEqualizedByLocalization W f g ↔ L.map f = L.map g := by
+  dsimp [AreEqualizedByLocalization]
+  constructor
+  · intro h
+    let e := Localization.compUniqFunctor W.Q L W
+    rw [← NatIso.naturality_1 e f, ← NatIso.naturality_1 e g]
+    dsimp
+    rw [h]
+  · intro h
+    let e := Localization.compUniqFunctor L W.Q W
+    rw [← NatIso.naturality_1 e f, ← NatIso.naturality_1 e g]
+    dsimp
+    rw [h]
+
+namespace AreEqualizedByLocalization
+
+lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
+    AreEqualizedByLocalization W f g :=
+  (areEqualizedByLocalization_iff L W f g).2 h
+
+variable {W f g} (h : AreEqualizedByLocalization W f g)
+
+lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
+  (areEqualizedByLocalization_iff L W f g).1 h
+
+end AreEqualizedByLocalization
+
+end
 
 end CategoryTheory

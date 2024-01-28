@@ -97,10 +97,13 @@ instance : IsIso ((hE 2).π 0 (2, 0) rfl) := by
   apply (hE 2).isIso_π_of_isZero
   aesop
 
-instance : IsIso ((hE 1).filtrationι 1) := by
+  instance : IsIso ((hE 1).filtrationι 1) := by
   apply (hE 1).isIso_filtrationι_of_isZero
   intro j hj
-  fin_cases j <;> aesop
+  fin_cases j
+  · replace hj := WithBot.coe_lt_coe.1 hj
+    simp at hj
+  · aesop
 
 instance : (hE 1).CollapsesAsSESAt 0 1 :=
   (hE 1).collapsesAsSESAt_of_succ 0 1 rfl ⟨1, 0⟩ rfl inferInstance inferInstance

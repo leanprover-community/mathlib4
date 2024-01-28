@@ -80,7 +80,6 @@ instance quotient_additive : (quotient V c).Additive where
 
 open ZeroObject
 
--- TODO upgrade this to `HasZeroObject`, presumably for any `quotient`.
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
 
@@ -171,6 +170,13 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
     homotopyOfEq _ _
       (by rw [quotient_map_out_comp_out, i.inv_hom_id, (quotient V c).map_id])
 #align homotopy_category.homotopy_equiv_of_iso HomotopyCategory.homotopyEquivOfIso
+
+variable (V c) in
+lemma quotient_inverts_homotopyEquivalences :
+    (HomologicalComplex.homotopyEquivalences V c).IsInvertedBy (quotient V c) := by
+  rintro K L _ ⟨e, rfl⟩
+  change IsIso (isoOfHomotopyEquiv e).hom
+  infer_instance
 
 lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
     IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by

@@ -218,9 +218,9 @@ lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (by simp) (by simp) (by simp)
   exact (inferInstance : IsIso e.hom)
 
-instance Triangle.instIsIso_of_isIso {A B : Triangle C} (f : A ⟶ B)
+/-instance Triangle.instIsIso_of_isIso {A B : Triangle C} (f : A ⟶ B)
     [IsIso f.hom₁] [IsIso f.hom₂] [IsIso f.hom₃] : IsIso f :=
-  Triangle.isIso_of_isIsos f inferInstance inferInstance inferInstance
+  Triangle.isIso_of_isIsos f inferInstance inferInstance inferInstance-/
 
 @[reassoc (attr := simp)]
 lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₁ {A B : Triangle C} (e : A ≅ B) :

@@ -224,6 +224,15 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
 
 end SumProd
 
+section CommMonoidWithZero
+variable [Zero α] [CommMonoidWithZero β] [Nontrivial β] [NoZeroDivisors β]
+  {f : ι →₀ α} (a : α) {g : ι → α → β}
+
+@[simp]
+lemma prod_eq_zero_iff : f.prod g = 0 ↔ ∃ i ∈ f.support, g i (f i) = 0 := Finset.prod_eq_zero_iff
+lemma prod_ne_zero_iff : f.prod g ≠ 0 ↔ ∀ i ∈ f.support, g i (f i) ≠ 0 := Finset.prod_ne_zero_iff
+
+end CommMonoidWithZero
 end Finsupp
 
 @[to_additive]
@@ -471,7 +480,7 @@ theorem liftAddHom_singleAddHom [AddCommMonoid M] :
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  FunLike.congr_fun liftAddHom_singleAddHom f
+  DFunLike.congr_fun liftAddHom_singleAddHom f
 #align finsupp.sum_single Finsupp.sum_single
 
 /-- The `Finsupp` version of `Finset.univ_sum_single` -/
@@ -479,7 +488,7 @@ theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
 theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
   classical
-  refine FunLike.coe_injective ?_
+  refine DFunLike.coe_injective ?_
   simp_rw [coe_finset_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]
@@ -636,7 +645,7 @@ lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ 
 
 lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : α → M) :
     indicator s (fun x _ ↦ f x) = ∑ x in s, single x (f x) :=
-  (indicator_eq_sum_attach_single _).trans <| sum_attach (f := fun x ↦ single x (f x))
+  (indicator_eq_sum_attach_single _).trans <| sum_attach _ fun x ↦ single x (f x)
 
 @[to_additive (attr := simp)]
 lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
@@ -652,7 +661,7 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
 lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s (fun x _ ↦ f x)).prod h = ∏ x in s, h x (f x) :=
-  (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach (f := fun x ↦ h x (f x))
+  (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach _ fun x ↦ h x (f x)
 
 lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
     (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by

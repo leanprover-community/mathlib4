@@ -3,10 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Scott Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Data.Sum.Basic
 
 #align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -20,7 +19,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-universe w₀ w₁ w₂ v₁ v₂ v₄ u₁ u₂ u₃ u₄
+universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
@@ -206,7 +205,7 @@ namespace Functor
 
 variable {C}
 
-variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₂} [Category.{v₂} A]
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [Category.{v₃} A]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
@@ -223,6 +222,12 @@ def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
   obj a i := (f i).obj a
   map h i := (f i).map h
 #align category_theory.functor.pi' CategoryTheory.Functor.pi'
+
+/-- The projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
+@[simps!]
+def pi'CompEval {A : Type*} [Category A] (F : ∀ i, A ⥤ C i) (i : I) :
+    pi' F ⋙ Pi.eval C i ≅ F i :=
+  Iso.refl _
 
 section EqToHom
 
@@ -280,15 +285,40 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
   app f i := (α i).app (f i)
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 
+/-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
+-/
 @[simps]
-def pi' {E : Type _} [Category E] {F G : E ⥤ ∀ i, C i}
-  (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G :=
-{ app := fun X i => (τ i).app X
-  naturality := fun _ _ f => by
+def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+    (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G where
+  app := fun X i => (τ i).app X
+  naturality _ _ f := by
     ext i
-    exact (τ i).naturality f }
+    exact (τ i).naturality f
 
 end NatTrans
+
+namespace NatIso
+
+variable {C}
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+variable {F G : ∀ i, C i ⥤ D i}
+
+/-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
+-/
+@[simps]
+def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
+  hom := NatTrans.pi (fun i => (e i).hom)
+  inv := NatTrans.pi (fun i => (e i).inv)
+
+/-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
+-/
+@[simps]
+def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+    (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G where
+  hom := NatTrans.pi' (fun i => (e i).hom)
+  inv := NatTrans.pi' (fun i => (e i).inv)
+
+end NatIso
 
 variable {C}
 
@@ -300,120 +330,78 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro
     exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 
-namespace NatIso
+variable (C)
 
-variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
-variable {F G : ∀ i, C i ⥤ D i}
+/-- For a family of categories `C i` indexed by `I`, an equality `i = j` in `I` induces
+an equivalence `C i ≌ C j`. -/
+def Pi.eqToEquivalence {i j : I} (h : i = j) : C i ≌ C j := by subst h; rfl
 
-/-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
--/
+/-- When `i = j`, projections `Pi.eval C i` and `Pi.eval C j` are related by the equivalence
+`Pi.eqToEquivalence C h : C i ≌ C j`. -/
+@[simps!]
+def Pi.evalCompEqToEquivalenceFunctor {i j : I} (h : i = j) :
+    Pi.eval C i ⋙ (Pi.eqToEquivalence C h).functor ≅
+      Pi.eval C j :=
+  eqToIso (by subst h; rfl)
+
+/-- The equivalences given by `Pi.eqToEquivalence` are compatible with reindexing. -/
+@[simps!]
+def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
+    (Pi.eqToEquivalence C (congr_arg f h)).functor ≅
+      (Pi.eqToEquivalence (fun i' => C (f i')) h).functor :=
+  eqToIso (by subst h; rfl)
+
+attribute [local simp] eqToHom_map
+
+/-- Reindexing a family of categories gives equivalent `Pi` categories. -/
 @[simps]
-def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G :=
-{ hom := NatTrans.pi (fun i => (e i).hom)
-  inv := NatTrans.pi (fun i => (e i).inv) }
+noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
+    (∀ j, C (e j)) ≌ (∀ i, C i) where
+  functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+    (Pi.eqToEquivalence C (by simp)).functor)
+  inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
+  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+    (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
+    isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
+    (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫
+    (Functor.associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (Functor.pi'CompEval _ _) _ ≪≫
+    Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
+    (Functor.leftUnitor _).symm)
 
+/-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]
-def pi' {E : Type _} [Category E] {F G : E ⥤ ∀ i, C i}
-  (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G :=
-{ hom := NatTrans.pi' (fun i => (e i).hom)
-  inv := NatTrans.pi' (fun i => (e i).inv) }
-
-end NatIso
+def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
+    (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) where
+  functor := Functor.prod' (Pi.eval C' none)
+    (Functor.pi' (fun i => (Pi.eval _ (some i))))
+  inverse := Functor.pi' (fun i => match i with
+    | none => Prod.fst _ _
+    | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
+  unitIso := NatIso.pi' (fun i => match i with
+    | none => Iso.refl _
+    | some i => Iso.refl _)
+  counitIso := by exact Iso.refl _
 
 namespace Equivalence
 
+variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-/-- Assemble an `I`-indexed family of equivalences of categories isomorphisms
+/-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]
-def pi (E : ∀ i, C i ≌ D i) :
-  (∀ i, C i) ≌ (∀ i, D i) :=
-{ functor := Functor.pi (fun i => (E i).functor)
+def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
+  functor := Functor.pi (fun i => (E i).functor)
   inverse := Functor.pi (fun i => (E i).inverse)
   unitIso := NatIso.pi (fun i => (E i).unitIso)
-  counitIso := NatIso.pi (fun i => (E i).counitIso) }
+  counitIso := NatIso.pi (fun i => (E i).counitIso)
 
 instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
     IsEquivalence (Functor.pi F) :=
   IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
 
 end Equivalence
-
-section pi_option
-
-variable (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)]
-  (D' : Option J → Type u₂) [∀ i, Category.{v₂} (D' i)]
-
-@[simps]
-def pi_option_equivalence :
-    (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) :=
-{ functor := Functor.prod' (Pi.eval C' none)
-    (Functor.pi' (fun i => (Pi.eval _ (some i))))
-  inverse := Functor.pi' (by
-    rintro (_|i)
-    · exact Prod.fst _ _
-    · exact Prod.snd _ _ ⋙ (Pi.eval _ i))
-  unitIso := by
-    apply NatIso.pi'
-    rintro (_|i) <;> apply Iso.refl
-  counitIso := by exact Iso.refl _ }
-
-end pi_option
-
-/-- for a family of categories `C i` indexed by `I`, an equality `i = j` in `I` induces
-an equivalence `C i ≌ C j`. -/
-def Pi.equivalence_of_eq {I : Type u₂} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
-    C i ≌ C j := by
-  subst h
-  rfl
-
-/-- when `i = j`, projections `Pi.eval C i` and `Pi.eval C j` are related by the equivalence
-`Pi.equivalence_of_eq C h : C i ≌ C j`. -/
-@[simp]
-def Pi.eval_comp_equivalence_of_eq_functor {I : Type u₂} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] {i j : I} (h : i = j) :
-  Pi.eval C i ⋙ (Pi.equivalence_of_eq C h).functor ≅
-    Pi.eval C j := eqToIso (by subst h; rfl)
-
-/-- the equivalences given by `Pi.equivalence_of_eq` are compatible with reindexing -/
-@[simp]
-def Pi.equivalence_of_eq_functor_iso {I : Type u₂} {I' : Type u₃}
-  (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] {i' j' : I'}
-  (f : I' → I) (h : i' = j') :
-    (Pi.equivalence_of_eq C (show f i' = f j' by rw [h])).functor ≅
-      (Pi.equivalence_of_eq (fun i' => C (f i')) h).functor := eqToIso (by subst h; rfl)
-
-/-- the projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
-@[simp]
-def Functor.pi'_eval_iso {I : Type u₂} {C : I → Type u₁}
-  [∀ i, Category.{v₁} (C i)] {A : Type u₄} [Category.{v₄} A]
-  (F : ∀ i, A ⥤ C i) (i : I) : pi' F ⋙ Pi.eval C i ≅ F i :=
-  eqToIso (Functor.pi'_eval _ _)
-
--- should be moved to Pi.Basic
-/-- Reindexing a family of categories give two equivalent `Pi` categories -/
-@[simps]
-noncomputable def pi_equivalence_of_equiv {I : Type u₂} {I' : Type u₃} (C : I → Type u₁)
-  [∀ i, Category.{v₁} (C i)] (e : I' ≃ I) :
-  (∀ j, C (e j)) ≌ (∀ i, C i) :=
-{ functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
-    (Pi.equivalence_of_eq C (by simp)).functor)
-  inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
-    (Pi.eval_comp_equivalence_of_eq_functor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
-      isoWhiskerLeft _ ((Pi.equivalence_of_eq_functor_iso C e (e.symm_apply_apply i')).symm) ≪≫
-      (Functor.pi'_eval_iso _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'_eval_iso _ _).symm ≪≫
-      (Functor.associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (Functor.pi'_eval_iso _ _) _ ≪≫
-    Pi.eval_comp_equivalence_of_eq_functor C (e.apply_symm_apply i) ≪≫
-    (Functor.leftUnitor _).symm)
-  functor_unitIso_comp := by
-    intro
-    ext
-    dsimp
-    simp [eqToHom_map] }
 
 end CategoryTheory

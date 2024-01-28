@@ -11,7 +11,7 @@ namespace CochainComplex
 
 variable (S : ShortComplex (CochainComplex C ℤ)) (hS : S.ShortExact)
 
-namespace MappingCone
+namespace mappingCone
 
 noncomputable def fromOfShortComplex :
   mappingCone S.f ⟶ S.X₃ := desc S.f 0 S.g (by simp)
@@ -28,7 +28,7 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
   · rw [mono_homologyMap_iff_up_to_refinements _ (n-1) n (n+1) (by simp) (by simp)]
     intro A₀ a ha b hb
     obtain ⟨a₁, a₂, ha₁₂⟩ := to_break _ a _ rfl
-    simp [ha₁₂, to_ext_iff _ _ _ (n+2) (show n + 1 + 1 = n + 2 by linarith),
+    simp [ha₁₂, ext_to_iff _ _ (n+2) (show n + 1 + 1 = n + 2 by linarith),
       inl_v_d_assoc _ (n + 1) n (n + 2) (by linarith) (by linarith)] at ha
     obtain ⟨A₁, π₁, hπ₁, c, hc⟩ := surjective_up_to_refinements_of_epi (S.g.f (n-1)) b
     obtain ⟨A₂, π₂, hπ₂, e, he⟩ := (hS' n).exact.exact_up_to_refinements
@@ -41,7 +41,7 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
     simp only [comp_sub] at he
     refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, e ≫ (inl S.f).v n (n - 1) (by linarith) +
       π₂ ≫ c ≫ (inr S.f).f (n - 1), _⟩
-    simp only [to_ext_iff _ _ _ (n + 1) rfl, ha₁₂, comp_add, assoc, sub_add_cancel,
+    simp only [ext_to_iff _ _ (n + 1) rfl, ha₁₂, comp_add, assoc, sub_add_cancel,
       add_comp, inr_f_d, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero,
       d_fst_v', comp_neg, inl_v_fst_v_assoc, inl_v_snd_v, inr_f_snd_v, zero_add,
       d_snd_v', inl_v_snd_v_assoc, zero_comp]
@@ -60,7 +60,7 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
     refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _ , -c ≫ (inl S.f).v (n+1) n (by linarith) +
         π₂ ≫ b ≫ (inr S.f).f n, _, 0, _ ⟩
     · dsimp
-      simp [to_ext_iff _ _ _ (n + 2) (show n + 1 + 1 = n + 2 by linarith),
+      simp [ext_to_iff _ _ (n + 2) (show n + 1 + 1 = n + 2 by linarith),
         d_fst_v _ n (n+1) (n+2) (by linarith) (by linarith)]
       constructor
       · simp only [← cancel_mono (S.f.f (n+2)), assoc, zero_comp, ← S.f.comm,
@@ -73,6 +73,6 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
         comp_zero, neg_zero, inr_f_desc_f, zero_add, ComplexShape.up_Rel,
         sub_add_cancel, not_true, zero_comp, add_zero]
 
-end MappingCone
+end mappingCone
 
 end CochainComplex

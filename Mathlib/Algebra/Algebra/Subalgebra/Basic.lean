@@ -338,7 +338,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           carrier := S
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
-      inj' := fun _ _ h ↦ ext <| fun x ↦ SetLike.ext_iff.mp h x }
+      inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 #align subalgebra.to_submodule Subalgebra.toSubmodule
 
@@ -360,7 +360,8 @@ section
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
@@ -370,7 +371,14 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
-instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
+/- More general form of `Subalgebra.algebra`.
+
+This instance should have low priority since it is slow to fail:
+before failing, it will cause a search through all `SMul R' R` instances,
+which can quickly get expensive.
+-/
+instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+    [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
@@ -499,7 +507,7 @@ theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S
 #align subalgebra.mem_map Subalgebra.mem_map
 
 theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
-    (toSubmodule $ S.map f) = S.toSubmodule.map f.toLinearMap :=
+    (toSubmodule <| S.map f) = S.toSubmodule.map f.toLinearMap :=
   SetLike.coe_injective rfl
 #align subalgebra.map_to_submodule Subalgebra.map_toSubmodule
 
@@ -744,7 +752,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
-`subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
+`subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
@@ -1098,6 +1106,25 @@ theorem equivOfEq_rfl (S : Subalgebra R A) : equivOfEq S S rfl = AlgEquiv.refl :
 theorem equivOfEq_trans (S T U : Subalgebra R A) (hST : S = T) (hTU : T = U) :
     (equivOfEq S T hST).trans (equivOfEq T U hTU) = equivOfEq S U (hST.trans hTU) := rfl
 #align subalgebra.equiv_of_eq_trans Subalgebra.equivOfEq_trans
+
+section equivMapOfInjective
+
+variable (f : A →ₐ[R] B)
+
+theorem range_comp_val : (f.comp S.val).range = S.map f := by
+  rw [AlgHom.range_comp, range_val]
+
+variable (hf : Function.Injective f)
+
+/-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
+noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
+  (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
+    (equivOfEq _ _ (range_comp_val S f))
+
+@[simp]
+theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x) = f x := rfl
+
+end equivMapOfInjective
 
 section Prod
 

@@ -32,6 +32,42 @@ variable (X : SpectralObject C ι)
 
 section
 
+variable (n₀ : ℤ) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
+  (fg : i ⟶ k) (h : f ≫ g = fg)
+
+@[simp]
+noncomputable def iso₂ :
+    mk₂ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h)) ≅
+        (mk₂ ((X.H n₀).map ((mapFunctorArrows ι 0 1 0 2 2).app (mk₂ f g)))
+      ((X.H n₀).map ((mapFunctorArrows ι 0 2 1 2 2).app (mk₂ f g)))) :=
+  isoMk₂ (Iso.refl _) ((X.H n₀).mapIso
+    (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm))) (Iso.refl _) (by
+      dsimp
+      simp only [← Functor.map_comp, id_comp]
+      congr 1
+      ext <;> simp; rfl) (by
+      dsimp
+      simp only [← Functor.map_comp, comp_id]
+      congr 1
+      ext <;> simp; rfl)
+
+@[reassoc (attr := simp)]
+lemma zero₂ (fg : i ⟶ k) (h : f ≫ g = fg) :
+    (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫
+      (X.H n₀).map (twoδ₁Toδ₀ f g fg h) = 0 :=
+  (exact_of_iso (X.iso₂ n₀ f g fg h).symm (X.exact₂' n₀ (mk₂ f g))).zero 0
+
+@[simps]
+def sc₂ : ShortComplex C :=
+  ShortComplex.mk _ _ (X.zero₂ n₀ f g fg h)
+
+lemma exact₂ : (X.sc₂ n₀ f g fg h).Exact :=
+  (exact_of_iso (X.iso₂ n₀ f g fg h).symm (X.exact₂' n₀ (mk₂ f g))).exact 0
+
+end
+
+section
+
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
 def δ : (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
@@ -80,35 +116,6 @@ def sc₁ : ShortComplex C :=
 
 lemma exact₁ : (X.sc₁ n₀ n₁ hn₁ f g fg h).Exact :=
   (exact_of_iso (X.iso₁ n₀ n₁ hn₁ f g fg h).symm (X.exact₁' n₀ n₁ hn₁ (mk₂ f g))).exact 0
-
-@[simp]
-noncomputable def iso₂ :
-    mk₂ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h)) ≅
-        (mk₂ ((X.H n₀).map ((mapFunctorArrows ι 0 1 0 2 2).app (mk₂ f g)))
-      ((X.H n₀).map ((mapFunctorArrows ι 0 2 1 2 2).app (mk₂ f g)))) :=
-  isoMk₂ (Iso.refl _) ((X.H n₀).mapIso
-    (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm))) (Iso.refl _) (by
-      dsimp
-      simp only [← Functor.map_comp, id_comp]
-      congr 1
-      ext <;> simp; rfl) (by
-      dsimp
-      simp only [← Functor.map_comp, comp_id]
-      congr 1
-      ext <;> simp; rfl)
-
-@[reassoc (attr := simp)]
-lemma zero₂ :
-    (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫
-      (X.H n₀).map (twoδ₁Toδ₀ f g fg h) = 0 :=
-  (exact_of_iso (X.iso₂ n₀ f g fg h).symm (X.exact₂' n₀ (mk₂ f g))).zero 0
-
-@[simps]
-def sc₂ : ShortComplex C :=
-  ShortComplex.mk _ _ (X.zero₂ n₀ f g fg h)
-
-lemma exact₂ : (X.sc₂ n₀ f g fg h).Exact :=
-  (exact_of_iso (X.iso₂ n₀ f g fg h).symm (X.exact₂' n₀ (mk₂ f g))).exact 0
 
 @[simp]
 noncomputable def iso₃ :

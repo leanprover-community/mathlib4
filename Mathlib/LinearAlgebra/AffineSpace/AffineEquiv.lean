@@ -93,11 +93,11 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   inv f := f.invFun
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective' _ _ h _ := toAffineMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
 #align affine_equiv.equiv_like AffineEquiv.equivLike
 
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
@@ -132,15 +132,15 @@ theorem coe_linear (e : P₁ ≃ᵃ[k] P₂) : (e : P₁ →ᵃ[k] P₂).linear 
 
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align affine_equiv.ext AffineEquiv.ext
 
 theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align affine_equiv.coe_fn_injective AffineEquiv.coeFn_injective
 
 @[norm_cast]
--- Porting note: removed `simp`: proof is `simp only [FunLike.coe_fn_eq]`
+-- Porting note: removed `simp`: proof is `simp only [DFunLike.coe_fn_eq]`
 theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' :=
   coeFn_injective.eq_iff
 #align affine_equiv.coe_fn_inj AffineEquiv.coeFn_inj
@@ -455,7 +455,7 @@ def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
-theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 #align affine_equiv.coe_const_vsub AffineEquiv.coe_constVSub
 

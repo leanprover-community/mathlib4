@@ -94,6 +94,7 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
+  rw [show (Scheme.Spec.obj <| op R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
@@ -214,7 +215,7 @@ instance [h : IsIntegral X] : IsDomain (X.presheaf.obj (op ⊤)) :=
 instance (priority := 900) isReducedOfIsIntegral [IsIntegral X] : IsReduced X := by
   constructor
   intro U
-  cases' U.1.eq_empty_or_nonempty with h h
+  rcases U.1.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
     haveI := CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     change _root_.IsReduced (X.sheaf.val.obj (op U))

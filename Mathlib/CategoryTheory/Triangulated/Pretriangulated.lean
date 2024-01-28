@@ -676,28 +676,20 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
     exact ⟨_, this⟩
 
-lemma complete_distinguished_triangle_morphism' (T₁ T₂ : Triangle C)
-    (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
-    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
-      ∃ (φ : T₁ ⟶ T₂), φ.hom₁ = a ∧ φ.hom₂ = b := by
-  obtain ⟨c, ⟨hc₁, hc₂⟩⟩ := complete_distinguished_triangle_morphism _ _ hT₁ hT₂ a b comm
-  exact ⟨{  hom₁ := a
-            hom₂ := b
-            hom₃ := c
-            comm₁ := comm
-            comm₂ := hc₁
-            comm₃ := hc₂ }, rfl, rfl⟩
-
 lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
     ∃ (e' : T₁ ≅ T₂), e'.hom.hom₁ = e.hom.left ∧ e'.hom.hom₂ = e.hom.right := by
-  obtain ⟨φ, ⟨hφ₁, hφ₂⟩⟩ :=
-    complete_distinguished_triangle_morphism' T₁ T₂ hT₁ hT₂ e.hom.left e.hom.right e.hom.w.symm
-  have : IsIso φ.hom₁ := by rw [hφ₁] ; infer_instance
-  have : IsIso φ.hom₂ := by rw [hφ₂] ; infer_instance
+  let φ := completeDistinguishedTriangleMorphism T₁ T₂ hT₁ hT₂ e.hom.left e.hom.right e.hom.w.symm
+  have : IsIso φ.hom₁ := by dsimp; infer_instance
+  have : IsIso φ.hom₂ := by dsimp; infer_instance
   have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
-  exact ⟨asIso φ, hφ₁, hφ₂⟩
+  have : IsIso φ := by
+    apply Triangle.isIso_of_isIsos
+    all_goals infer_instance
+  exact ⟨asIso φ, by simp, by simp⟩
 
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
 @[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
 def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)

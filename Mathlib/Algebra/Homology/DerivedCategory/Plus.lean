@@ -21,7 +21,7 @@ abbrev subcategoryAcyclic :
 lemma qis_eq_subcategoryAcyclic_W :
     HomotopyCategory.Plus.qis C = (subcategoryAcyclic C).W := by
   ext K L f
-  obtain ⟨M, g, h, mem⟩ := Pretriangulated.distinguished_cocone_triangle f
+  obtain ⟨M, g, h, mem⟩ := CategoryTheory.Pretriangulated.distinguished_cocone_triangle f
   have mem' := (HomotopyCategory.Plus.ι C).map_distinguished _ mem
   erw [(subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem,
     ← (HomotopyCategory.subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem',

@@ -74,7 +74,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
-      cases' eq_or_ne a b with hab hab
+      rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
         let i := wf.min _ hab

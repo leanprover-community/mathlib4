@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
 
 #align_import data.polynomial.degree.definitions from "leanprover-community/mathlib"@"808ea4ebfabeb599f21ec4ae87d6dc969597887f"
 
@@ -486,12 +487,12 @@ theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X 
 
 theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : card (support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
-  apply card_le_of_subset (support_C_mul_X_pow' n c)
+  apply card_le_card (support_C_mul_X_pow' n c)
 #align polynomial.card_support_C_mul_X_pow_le_one Polynomial.card_support_C_mul_X_pow_le_one
 
 theorem card_supp_le_succ_natDegree (p : R[X]) : p.support.card ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
-  exact Finset.card_le_of_subset supp_subset_range_natDegree_succ
+  exact Finset.card_le_card supp_subset_range_natDegree_succ
 #align polynomial.card_supp_le_succ_nat_degree Polynomial.card_supp_le_succ_natDegree
 
 theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → ↑a ≤ degree p :=
@@ -563,12 +564,19 @@ end Ring
 
 section Semiring
 
-variable [Semiring R]
+variable [Semiring R] {p : R[X]}
 
 /-- The second-highest coefficient, or 0 for constants -/
 def nextCoeff (p : R[X]) : R :=
   if p.natDegree = 0 then 0 else p.coeff (p.natDegree - 1)
 #align polynomial.next_coeff Polynomial.nextCoeff
+
+lemma nextCoeff_eq_zero :
+    p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
+  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
+
+lemma nextCoeff_ne_zero : p.nextCoeff ≠ 0 ↔ p.natDegree ≠ 0 ∧ p.coeff (p.natDegree - 1) ≠ 0 := by
+  simp [nextCoeff]
 
 @[simp]
 theorem nextCoeff_C_eq_zero (c : R) : nextCoeff (C c) = 0 := by
@@ -576,12 +584,12 @@ theorem nextCoeff_C_eq_zero (c : R) : nextCoeff (C c) = 0 := by
   simp
 #align polynomial.next_coeff_C_eq_zero Polynomial.nextCoeff_C_eq_zero
 
-theorem nextCoeff_of_pos_natDegree (p : R[X]) (hp : 0 < p.natDegree) :
+theorem nextCoeff_of_natDegree_pos (hp : 0 < p.natDegree) :
     nextCoeff p = p.coeff (p.natDegree - 1) := by
   rw [nextCoeff, if_neg]
   contrapose! hp
   simpa
-#align polynomial.next_coeff_of_pos_nat_degree Polynomial.nextCoeff_of_pos_natDegree
+#align polynomial.next_coeff_of_pos_nat_degree Polynomial.nextCoeff_of_natDegree_pos
 
 variable {p q : R[X]} {ι : Type*}
 
@@ -680,6 +688,13 @@ theorem leadingCoeff_ne_zero : leadingCoeff p ≠ 0 ↔ p ≠ 0 := by rw [Ne.def
 theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = ⊥ := by
   rw [leadingCoeff_eq_zero, degree_eq_bot]
 #align polynomial.leading_coeff_eq_zero_iff_deg_eq_bot Polynomial.leadingCoeff_eq_zero_iff_deg_eq_bot
+
+lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDegree ≤ n - 1 := by
+  obtain _ | n := n
+  · exact hf
+  · refine (Nat.le_succ_iff_eq_or_le.1 hf).resolve_left fun h ↦ ?_
+    rw [← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
+    aesop
 
 theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by
   rw [mem_support_iff]
@@ -1180,6 +1195,9 @@ theorem eq_C_of_natDegree_eq_zero (h : natDegree p = 0) : p = C (coeff p 0) :=
   eq_C_of_natDegree_le_zero h.le
 #align polynomial.eq_C_of_nat_degree_eq_zero Polynomial.eq_C_of_natDegree_eq_zero
 
+lemma natDegree_eq_zero {p : R[X]} : p.natDegree = 0 ↔ ∃ x, C x = p :=
+  ⟨fun h ↦ ⟨_, (eq_C_of_natDegree_eq_zero h).symm⟩, by aesop⟩
+
 theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegree = 0 :=
   ⟨fun h ↦ by rw [h, natDegree_C], eq_C_of_natDegree_eq_zero⟩
 
@@ -1478,7 +1496,7 @@ theorem natDegree_X_add_C (x : R) : (X + C x).natDegree = 1 :=
 @[simp]
 theorem nextCoeff_X_add_C [Semiring S] (c : S) : nextCoeff (X + C c) = c := by
   nontriviality S
-  simp [nextCoeff_of_pos_natDegree]
+  simp [nextCoeff_of_natDegree_pos]
 #align polynomial.next_coeff_X_add_C Polynomial.nextCoeff_X_add_C
 
 theorem degree_X_pow_add_C {n : ℕ} (hn : 0 < n) (a : R) : degree ((X : R[X]) ^ n + C a) = n := by

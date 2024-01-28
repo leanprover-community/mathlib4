@@ -170,8 +170,7 @@ the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g`. -/
 noncomputable def moduleCatHomologyIso :
-    S.homology ≅
-      S.moduleCatHomology :=
+    S.homology ≅ S.moduleCatHomology :=
   S.moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp, elementwise)]

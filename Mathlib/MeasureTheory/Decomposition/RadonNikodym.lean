@@ -317,6 +317,8 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
 
+section integral
+
 lemma set_lintegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s :=
   (withDensity_apply_le _ _).trans (Measure.le_iff'.1 (withDensity_rnDeriv_le μ ν) s)
@@ -384,6 +386,17 @@ lemma set_integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
   rw [← integral_univ, set_integral_toReal_rnDeriv hμν Set.univ]
+
+end integral
+
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+    (hμν : μ ≪ ν) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
+  refine (rnDeriv_withDensity_left ?_ ?_ ?_).symm.trans ?_
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+  · exact rnDeriv_ne_top _ _
+  · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
 
 end Measure
 

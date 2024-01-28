@@ -76,7 +76,7 @@ theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
   · rintro ⟨g, hfg, hgf⟩
-    simp at hfg hgf
+    simp? at hfg hgf says simp only [prod_Hom, prod_comp, prod_id, Prod.mk.injEq] at hfg hgf
     rcases hfg with ⟨hfg₁, hfg₂⟩
     rcases hgf with ⟨hgf₁, hgf₂⟩
     exact ⟨⟨⟨g.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.2, hfg₂, hgf₂⟩⟩⟩

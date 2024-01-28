@@ -88,7 +88,7 @@ notation:25 (name := «FreimanHomLocal≺») A " →*[" n:25 "] " β:0 => Freima
 /-- `AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
 You should extend this class when you extend `AddFreimanHom`. -/
 class AddFreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*)
-  [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
+  [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [FunLike F α β] : Prop where
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
   map_sum_eq_map_sum' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
@@ -102,7 +102,7 @@ You should extend this class when you extend `FreimanHom`. -/
       "`AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary
       sums-preserving morphisms. You should extend this class when you extend `AddFreimanHom`."]
 class FreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*) [CommMonoid α]
-  [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
+  [CommMonoid β] (n : ℕ) [FunLike F α β] : Prop where
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
     (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A) (hs : Multiset.card s = n) (ht : Multiset.card t = n)
@@ -110,7 +110,7 @@ class FreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Typ
     (s.map f).prod = (t.map f).prod
 #align freiman_hom_class FreimanHomClass
 
-variable [FunLike F α fun _ => β]
+variable [FunLike F α β]
 
 section CommMonoid
 
@@ -125,7 +125,7 @@ see also Algebra.Hom.Group for similar -/
     " Turn an element of a type `F` satisfying `AddFreimanHomClass F A β n` into an actual
     `AddFreimanHom`. This is declared as the default coercion from `F` to `AddFreimanHom A β n`."]
 def _root_.FreimanHomClass.toFreimanHom [FreimanHomClass F A β n] (f : F) : A →*[n] β where
-  toFun := FunLike.coe f
+  toFun := DFunLike.coe f
   map_prod_eq_map_prod' := FreimanHomClass.map_prod_eq_map_prod' f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
@@ -154,11 +154,11 @@ theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a �
 namespace FreimanHom
 
 @[to_additive]
-instance funLike : FunLike (A →*[n] β) α fun _ => β where
+instance instFunLike : FunLike (A →*[n] β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align freiman_hom.fun_like FreimanHom.funLike
-#align add_freiman_hom.fun_like AddFreimanHom.funLike
+#align freiman_hom.fun_like FreimanHom.instFunLike
+#align add_freiman_hom.fun_like AddFreimanHom.instFunLike
 
 @[to_additive addFreimanHomClass]
 instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
@@ -167,7 +167,7 @@ instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
 #align add_freiman_hom.freiman_hom_class AddFreimanHom.addFreimanHomClass
 
 -- porting note: not helpful in lean4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- @[to_additive
 --       "Helper instance for when there's too many metavariables to apply
@@ -186,7 +186,7 @@ theorem toFun_eq_coe (f : A →*[n] β) : f.toFun = f :=
 
 @[to_additive (attr := ext)]
 theorem ext ⦃f g : A →*[n] β⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align freiman_hom.ext FreimanHom.ext
 #align add_freiman_hom.ext AddFreimanHom.ext
 
@@ -254,7 +254,7 @@ theorem comp_assoc (f : A →*[n] β) (g : B →*[n] γ) (h : C →*[n] δ) {hf 
 @[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Function.Surjective f) {hg₁ hg₂} :
     g₁.comp f hg₁ = g₂.comp f hg₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => h ▸ rfl⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => h ▸ rfl⟩
 #align freiman_hom.cancel_right FreimanHom.cancel_right
 #align add_freiman_hom.cancel_right AddFreimanHom.cancel_right
 
@@ -477,7 +477,7 @@ theorem MonoidHom.toFreimanHom_coe (f : α →* β) : (f.toFreimanHom A n : α �
 @[to_additive AddMonoidHom.toAddFreimanHom_injective]
 theorem MonoidHom.toFreimanHom_injective :
     Function.Injective (MonoidHom.toFreimanHom A n : (α →* β) → A →*[n] β) := fun f g h =>
-   by rwa [toFreimanHom, toFreimanHom, FreimanHom.mk.injEq, FunLike.coe_fn_eq] at h
+   by rwa [toFreimanHom, toFreimanHom, FreimanHom.mk.injEq, DFunLike.coe_fn_eq] at h
 #align monoid_hom.to_freiman_hom_injective MonoidHom.toFreimanHom_injective
 #align add_monoid_hom.to_freiman_hom_injective AddMonoidHom.toAddFreimanHom_injective
 
@@ -495,7 +495,8 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
   obtain rfl | hm := m.eq_zero_or_pos
   · rw [card_eq_zero] at hs ht
     rw [hs, ht]
-  simp [← hs, card_pos_iff_exists_mem] at hm
+  simp? [← hs, card_pos_iff_exists_mem] at hm says
+    simp only [← hs, gt_iff_lt, card_pos_iff_exists_mem] at hm
   obtain ⟨a, ha⟩ := hm
   suffices
     ((s + Multiset.replicate (n - m) a).map f).prod =
@@ -552,7 +553,7 @@ theorem FreimanHom.toFreimanHom_coe (h : m ≤ n) (f : A →*[n] β) :
 @[to_additive AddFreimanHom.toAddFreimanHom_injective]
 theorem FreimanHom.toFreimanHom_injective (h : m ≤ n) :
     Function.Injective (FreimanHom.toFreimanHom h : (A →*[n] β) → A →*[m] β) := fun f g hfg =>
-  FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg using 0
+  FreimanHom.ext <| by convert DFunLike.ext_iff.1 hfg using 0
 #align freiman_hom.to_freiman_hom_injective FreimanHom.toFreimanHom_injective
 #align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.toAddFreimanHom_injective
 

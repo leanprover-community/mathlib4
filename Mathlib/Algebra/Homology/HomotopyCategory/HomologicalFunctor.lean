@@ -10,7 +10,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
-namespace MappingCone
+namespace mappingCone
 
 attribute [simp] comp_liftCycles_assoc
 
@@ -18,9 +18,10 @@ attribute [simp] comp_liftCycles_assoc
 lemma homology_triangle_exact {K L : CochainComplex C ℤ}
     (φ : K ⟶ L) (n : ℤ) :
     (ShortComplex.mk ((homologyFunctor _ _ n).map φ)
-      ((homologyFunctor _ _ n).map (inr φ))
-        (by dsimp ; rw [← homologyMap_comp, (homotopySelfCompInr φ).homologyMap_eq,
-          homologyMap_zero])).Exact := by
+      ((homologyFunctor _ _ n).map (inr φ)) (by
+          dsimp
+          rw [← homologyMap_comp, (inrCompHomotopy φ).homologyMap_eq,
+            homologyMap_zero])).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   dsimp
   intro A x hx
@@ -34,14 +35,14 @@ lemma homology_triangle_exact {K L : CochainComplex C ℤ}
   obtain ⟨A₂, π₂, hπ₂, y, hy⟩ := hz''
   obtain ⟨y₁, y₂, hy₁₂⟩ := to_break _ y n (by rw [sub_add_cancel])
   cases hy₁₂
-  simp [to_ext_iff _ _ _ (n+1) rfl] at hy
+  simp [ext_to_iff _ _ (n+1) rfl] at hy
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _,
     K.liftCycles' y₁ (n+1) (by simp) hy.1 ≫ K.homologyπ n, _⟩
   simp [hz', hy.2]
   rw [liftCycles_comp_homologyπ_eq_iff_up_to_refinements _ _ _ _ _ _ _ (n-1) (by simp)]
   exact ⟨_, 𝟙 _, inferInstance, y₂, by simp⟩
 
-end MappingCone
+end mappingCone
 
 end CochainComplex
 
@@ -52,7 +53,7 @@ instance (n : ℤ) : (homologyFunctor C (ComplexShape.up ℤ) n).IsHomological :
     rintro T ⟨K, L, φ, ⟨e⟩⟩
     refine' ⟨_, e, _⟩
     refine' (ShortComplex.exact_iff_of_iso _).1
-      (CochainComplex.MappingCone.homology_triangle_exact φ n)
+      (CochainComplex.mappingCone.homology_triangle_exact φ n)
     refine' ShortComplex.isoMk
       ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm
       ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app _).symm

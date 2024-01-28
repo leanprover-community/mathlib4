@@ -30,7 +30,7 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
     let T₁ := T.rotate.rotate
     have hT₁ : T₁ ∈ distTriang _ := rot_of_distTriang _ (rot_of_distTriang _ hT)
     let T₂ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
-      (CochainComplex.MappingCone.triangle f)
+      (CochainComplex.mappingCone.triangle f)
     have hT₂ : T₂ ∈ distTriang _ := by exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
     have e := isoTriangleOfIso₁₂ T₁ T₂ hT₁ hT₂ (Iso.refl _)
       (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app T.obj₁.as)
@@ -41,7 +41,7 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
       have := min_le_left n₁ n₃
       have := min_le_right n₁ n₃
       have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := ⟨fun i hi => by
-        simp only [CochainComplex.MappingCone.isZero_mappingCone_X_iff]
+        simp only [CochainComplex.mappingCone.isZero_X_iff]
         constructor
         · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1)
             (by dsimp at hi; linarith)

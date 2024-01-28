@@ -418,17 +418,17 @@ variable {C : Type*} [Category C] [Abelian C] {K L : CochainComplex C ℤ} (f : 
 
 noncomputable def mappingCocone := (mappingCone f)⟦(-1 : ℤ)⟧
 
-namespace MappingCocone
+namespace mappingCocone
 
 -- not sure what are the best signs here
 noncomputable def inl : Cochain K (mappingCocone f) 0 :=
-  (MappingCone.inl f).rightShift (-1) 0 (zero_add _)
+  (mappingCone.inl f).rightShift (-1) 0 (zero_add _)
 noncomputable def inr : Cocycle L (mappingCocone f) 1 :=
-    (Cocycle.ofHom (MappingCone.inr _)).rightShift (-1) 1 (add_neg_self 1)
+    (Cocycle.ofHom (mappingCone.inr _)).rightShift (-1) 1 (add_neg_self 1)
 noncomputable def fst : (mappingCocone f) ⟶ K :=
-  -((MappingCone.fst _).leftShift (-1) 0 (add_neg_self 1)).homOf
+  -((mappingCone.fst _).leftShift (-1) 0 (add_neg_self 1)).homOf
 noncomputable def snd : Cochain (mappingCocone f) L (-1) :=
-  (MappingCone.snd _).leftShift (-1) (-1) (zero_add _)
+  (mappingCone.snd _).leftShift (-1) (-1) (zero_add _)
 
 @[reassoc (attr := simp)]
 lemma inr_fst (p q : ℤ) (hpq : p + 1 = q) : (inr f).1.v p q hpq ≫ (fst f).f q = 0 := by
@@ -478,22 +478,22 @@ lemma id (p q : ℤ) (hpq : p + (-1) = q) : (fst f).f p ≫ (inl f).v p p (add_z
       · congr
         · rw [← assoc]
         · rw [← assoc]
-    rw [← add_comp, ← MappingCone.id_X]
+    rw [← add_comp, mappingCone.id_X f q p (by linarith)]
     simp
 
 noncomputable def triangleδ : L ⟶ (mappingCocone f)⟦(1 : ℤ)⟧ :=
-  MappingCone.inr f ≫ (shiftEquiv (CochainComplex C ℤ) (1 : ℤ)).counitIso.inv.app _
+  mappingCone.inr f ≫ (shiftEquiv (CochainComplex C ℤ) (1 : ℤ)).counitIso.inv.app _
 
 @[simps!]
 noncomputable def triangle : Pretriangulated.Triangle (CochainComplex C ℤ) :=
   Pretriangulated.Triangle.mk (fst f) f (triangleδ f)
 
-noncomputable def triangleIso : triangle f ≅ (MappingCone.triangle f).invRotate := by
+noncomputable def triangleIso : triangle f ≅ (mappingCone.triangle f).invRotate := by
   refine' Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
   · dsimp
     ext n
     have : ((1 : ℤ) + 1) / 2 = 1 := rfl
-    dsimp [MappingCone.triangleδ]
+    dsimp [mappingCone.triangle]
     simp only [comp_id, neg_smul, one_smul, Cochain.rightShift_neg, Cochain.neg_v,
       neg_comp, neg_neg, id_comp, neg_inj]
     rw [Cochain.leftShift_v _ (-1) 0 _ n n _ (n-1) (by linarith),
@@ -509,13 +509,14 @@ noncomputable def triangleIso : triangle f ≅ (MappingCone.triangle f).invRotat
     simp only [triangle, triangleδ, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
       Pretriangulated.Triangle.mk_obj₁, Pretriangulated.Triangle.mk_mor₃, CategoryTheory.Functor.map_id, comp_id,
       id_comp]
+    rfl
 
 variable [HasDerivedCategory C]
 
 lemma Q_map_triangle_distinguished : DerivedCategory.Q.mapTriangle.obj (triangle f) ∈ distTriang _ := by
   refine' Pretriangulated.isomorphic_distinguished _ _ _
     ((DerivedCategory.Q.mapTriangle.mapIso (triangleIso f)) ≪≫
-      (DerivedCategory.Q.mapTriangleInvRotateIso.app (MappingCone.triangle f)).symm)
+      (DerivedCategory.Q.mapTriangleInvRotateIso.app (mappingCone.triangle f)).symm)
   refine' Pretriangulated.inv_rot_of_distTriang _ _
   rw [DerivedCategory.mem_distTriang_iff]
   exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
@@ -552,7 +553,7 @@ lemma homology_exact₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     (ShortComplex.mk (homologyMap f n₀) (homology_δ f n₀ n₁ hn₁) (by simp)).Exact :=
   homology_exact₃_of_distinguished _ (Q_map_triangle_distinguished f) n₀ n₁ hn₁
 
-end MappingCocone
+end mappingCocone
 
 end CochainComplex
 
@@ -878,16 +879,16 @@ instance mono_homologyShortComplex'_f : Mono (homologyShortComplex' f n).f := by
 noncomputable def L' := (mappingCone (α f n))⟦(-1 : ℤ)⟧
 
 noncomputable def i' : Cocycle K (mappingCone (α f n)) (-1) :=
-  MappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_self 1) (by aesop_cat)
+  mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_self 1) (by aesop_cat)
 
 noncomputable def i : K ⟶ L' f n :=
   Cocycle.homOf ((i' f n).rightShift (-1) 0 (zero_add _))
 
-noncomputable def p : L' f n ⟶ L := MappingCocone.fst _
+noncomputable def p : L' f n ⟶ L := mappingCocone.fst _
 
 lemma fac : i f n ≫ p f n = f := by
   ext q
-  dsimp [i, p, MappingCocone.fst]
+  dsimp [i, p, mappingCocone.fst]
   have : ((1 : ℤ) + 1) / 2 = 1 := rfl
   rw [Cochain.rightShift_v _ (-1) 0 _ q q _ (q-1) (by linarith),
     Cochain.leftShift_v _ (-1) 0 _ q q _ (q-1) (by linarith)]
@@ -898,13 +899,13 @@ lemma fac : i f n ≫ p f n = f := by
 instance : Mono (i f n) := mono_of_mono_fac (fac f n)
 
 lemma isIso_p_f (q : ℤ) (hq : q ≤ n) : IsIso ((p f n).f q) := by
-  refine' ⟨(MappingCocone.inl _).v q q (add_zero _), _, by simp [p]⟩
-  have : (MappingCocone.snd (α f n)).v q (q-1) (by linarith) = 0 := by
+  refine' ⟨(mappingCocone.inl _).v q q (add_zero _), _, by simp [p]⟩
+  have : (mappingCocone.snd (α f n)).v q (q-1) (by linarith) = 0 := by
     apply IsZero.eq_of_tgt
     dsimp [I, single]
     rw [if_neg (by linarith)]
     exact Limits.isZero_zero C
-  erw [← MappingCocone.id _ q (q - 1) (by linarith), self_eq_add_right, this, zero_comp]
+  erw [← mappingCocone.id _ q (q - 1) (by linarith), self_eq_add_right, this, zero_comp]
 
 @[simps]
 noncomputable def cofFibFactorization : CofFibFactorization f where
@@ -916,11 +917,11 @@ noncomputable def cofFibFactorization : CofFibFactorization f where
       hp := fun q => by
         dsimp
         rw [epiWithInjectiveKernel_iff]
-        refine' ⟨_, _, (MappingCocone.inr _).1.v (q-1) q (by linarith),
-          (MappingCocone.inl _).v q q (add_zero _), (MappingCocone.snd _).v q (q-1) (by linarith),
+        refine' ⟨_, _, (mappingCocone.inr _).1.v (q-1) q (by linarith),
+          (mappingCocone.inl _).v q q (add_zero _), (mappingCocone.snd _).v q (q-1) (by linarith),
           by simp [p], by simp, by simp, by simp [p], _⟩
         · infer_instance
-        · rw [add_comm, p, MappingCocone.id]
+        · rw [add_comm, p, mappingCocone.id]
           rfl }
 
 variable (hf : ∀ (i : ℤ) (_ : i ≤ n - 1), QuasiIsoAt f i)
@@ -946,13 +947,13 @@ lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).truncGEπ n) := by
 variable [HasDerivedCategory C]
 
 lemma mono_homologyMap_p (q : ℤ) (hq : q ≤ n) : Mono (homologyMap (p f n) q) :=
-  (MappingCocone.homology_exact₁ (α f n) (q-1) q (by linarith)).mono_g (by
+  (mappingCocone.homology_exact₁ (α f n) (q-1) q (by linarith)).mono_g (by
     apply IsZero.eq_of_src
     apply isZero_homology_I
     linarith)
 
 lemma epi_homologyMap_p (q : ℤ) (hq : q < n) : Epi (homologyMap (p f n) q) :=
-  (MappingCocone.homology_exact₂ (α f n) q).epi_f (by
+  (mappingCocone.homology_exact₂ (α f n) q).epi_f (by
     apply IsZero.eq_of_tgt
     dsimp
     apply isZero_homology_I
@@ -973,13 +974,13 @@ lemma isIso_homologyMap_i' (q : ℤ) (hq : q < n) : IsIso (homologyMap (i f n) q
 @[simps]
 noncomputable def homologyShortComplex'' : ShortComplex C :=
   ShortComplex.mk (homologyMap (p f n) n) (homologyMap (α f n) n)
-    (MappingCocone.homologyMap_fst_comp _ _)
+    (mappingCocone.homologyMap_fst_comp _ _)
 
 instance : Mono (homologyShortComplex'' f n).f :=
   mono_homologyMap_p f n n (by rfl)
 
 lemma homologyShortComplex''_exact : (homologyShortComplex'' f n).Exact :=
-  MappingCocone.homology_exact₂ (α f n) n
+  mappingCocone.homology_exact₂ (α f n) n
 
 lemma isIso_homologyMap_i : IsIso (homologyMap (i f n) n) := by
   have h₁ := (homologyShortComplex'_exact f n).fIsKernel

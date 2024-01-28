@@ -34,24 +34,42 @@ Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
 class MonoidalPreadditive : Prop where
-  /-- tensoring on the right with a zero morphism gives zero -/
-  tensor_zero : ∀ {W X Y Z : C} (f : W ⟶ X), f ⊗ (0 : Y ⟶ Z) = 0 := by aesop_cat
-  /-- tensoring on the left with a zero morphism gives zero -/
-  zero_tensor : ∀ {W X Y Z : C} (f : Y ⟶ Z), (0 : W ⟶ X) ⊗ f = 0 := by aesop_cat
-  /-- left tensoring with a morphism is compatible with addition -/
-  tensor_add : ∀ {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z), f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
-    aesop_cat
-  /-- right tensoring with a morphism is compatible with addition -/
-  add_tensor : ∀ {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z), (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
-    aesop_cat
+  -- Note: `𝟙 X ⊗ f` will be replaced by `X ◁ f` (and similarly for `f ⊗ 𝟙 X`) in #6307.
+  whiskerLeft_zero : ∀ {X Y Z : C}, 𝟙 X ⊗ (0 : Y ⟶ Z) = 0 := by aesop_cat
+  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ⊗ 𝟙 X = 0 := by aesop_cat
+  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), 𝟙 X ⊗ (f + g) = 𝟙 X ⊗ f + 𝟙 X ⊗ g := by aesop_cat
+  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ⊗ 𝟙 X = f ⊗ 𝟙 X + g ⊗ 𝟙 X := by aesop_cat
 #align category_theory.monoidal_preadditive CategoryTheory.MonoidalPreadditive
 
-attribute [simp] MonoidalPreadditive.tensor_zero MonoidalPreadditive.zero_tensor
+attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
+attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
 
 variable {C}
 variable [MonoidalPreadditive C]
 
-attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_tensor
+namespace MonoidalPreadditive
+
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+@[simp (low)]
+theorem tensor_zero {W X Y Z : C} (f : W ⟶ X) : f ⊗ (0 : Y ⟶ Z) = 0 := by
+  rw [← tensor_id_comp_id_tensor]
+  simp
+
+-- The priority setting will not be needed when we replace `f ⊗ 𝟙 X` by `f ▷ X`.
+@[simp (low)]
+theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ f = 0 := by
+  rw [← tensor_id_comp_id_tensor]
+  simp
+
+theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
+  rw [← tensor_id_comp_id_tensor]
+  simp
+
+theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
+  rw [← tensor_id_comp_id_tensor]
+  simp
+
+end MonoidalPreadditive
 
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
 #align category_theory.tensor_left_additive CategoryTheory.tensorLeft_additive
@@ -70,24 +88,24 @@ ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
     (F : MonoidalFunctor D C) [Faithful F.toFunctor] [F.toFunctor.Additive] :
     MonoidalPreadditive D :=
-  { tensor_zero := by
+  { whiskerLeft_zero := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_tensor]
-    zero_tensor := by
+      simp [F.map_whiskerLeft]
+    zero_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_tensor]
-    tensor_add := by
+      simp [F.map_whiskerRight]
+    whiskerLeft_add := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_tensor, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.tensor_add]
-    add_tensor := by
+      simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+        MonoidalPreadditive.whiskerLeft_add]
+    add_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_tensor, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.add_tensor] }
+      simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+        MonoidalPreadditive.add_whiskerRight] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
 open BigOperators
@@ -283,9 +301,8 @@ theorem leftDistributor_ext_left {J : Type} [Fintype J] {X Y : C} {f : J → C} 
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
   simp? [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, ne_eq, biproduct.ι_π_assoc,
-      dite_comp, zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp,
-      ite_true]
+    simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
+      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp, ite_true]
   apply w
 
 @[ext]
@@ -295,7 +312,7 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] {X Y : C} {f : J → C}
   ext
   simp? [leftDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
     comp_dite] says
-    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, ne_eq, biproduct.ι_π,
+    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
       comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
       ite_true]
   apply w
@@ -327,7 +344,7 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J]
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
   simp? [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, ne_eq, biproduct.ι_π_assoc,
+    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc,
       dite_comp, zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp,
       ite_true]
   apply w
@@ -340,7 +357,7 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
   ext
   simp? [rightDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
     comp_dite] says
-    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, ne_eq, biproduct.ι_π,
+    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
       comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
       ite_true]
   apply w

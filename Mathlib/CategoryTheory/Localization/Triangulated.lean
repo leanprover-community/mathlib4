@@ -144,8 +144,6 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨Y₃, g, h, hT₃⟩ := Pretriangulated.distinguished_cocone_triangle (β.f ≫ γ.s ≫ σ)
   let T₃ := Triangle.mk (β.f ≫ γ.s ≫ σ) g h
   change T₃ ∈ distTriang C at hT₃
-  obtain ⟨φ, hφ₁, hφ₂⟩ := Pretriangulated.complete_distinguished_triangle_morphism' T₁ T₃ hT₁ hT₃ α.f
-    (γ.f ≫ σ) fac.symm
   have hβγσ : W (β.s ≫ γ.s ≫ σ) := W.comp_mem _ _ β.hs (W.comp_mem _ _ γ.hs hσ)
   obtain ⟨ψ₃, hψ₃, hψ₁, hψ₂⟩ := MorphismProperty.IsCompatibleWithTriangulation.condition
     T₂ T₃ hT₂ hT₃ α.s (β.s ≫ γ.s ≫ σ) α.hs hβγσ (by dsimp; rw [reassoc_of% hβ])
@@ -153,13 +151,13 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   have : IsIso (L.mapTriangle.map ψ) := Triangle.isIso_of_isIsos _
     (Localization.inverts L W α.s α.hs) (Localization.inverts L W _ hβγσ)
     (Localization.inverts L W ψ₃ hψ₃)
-  refine' ⟨L.mapTriangle.map φ ≫ inv (L.mapTriangle.map ψ), _, _⟩
+  refine' ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), _, _⟩
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
     dsimp
-    rw [hφ₁, hα, MorphismProperty.LeftFraction.map_comp_map_s]
+    rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₂, ← comp_hom₂, assoc, IsIso.inv_hom_id, comp_id]
     dsimp
-    simp only [hφ₂, Functor.map_comp, reassoc_of% hγ,
+    simp only [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
 def pretriangulated : Pretriangulated D where

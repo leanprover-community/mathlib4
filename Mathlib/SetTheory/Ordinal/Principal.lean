@@ -128,7 +128,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
-  · cases' eq_or_ne a 0 with ha ha
+  · rcases eq_or_ne a 0 with ha | ha
     · rw [ha, succ_zero]
       exact ho₁
     · refine' lt_of_le_of_lt _ (ho hao hao)
@@ -373,7 +373,7 @@ theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
 theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
     Principal (· * ·) o ↔ o ≤ 2 ∨ ∃ a : Ordinal, o = (omega^omega^a) := by
   refine' ⟨fun ho => _, _⟩
-  · cases' le_or_lt o 2 with ho₂ ho₂
+  · rcases le_or_lt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
     rcases principal_add_iff_zero_or_omega_opow.1 (principal_add_of_principal_mul ho ho₂.ne') with
       (rfl | ⟨a, rfl⟩)
@@ -397,9 +397,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
     (hb₂ : 2 < b) : a * b = (b^succ (log b a)) := by
   apply le_antisymm
   · have hbl := principal_mul_isLimit hb₂ hb
-    have := IsNormal.bsup_eq.{u, u} (mul_isNormal (Ordinal.pos_iff_ne_zero.2 ha)) hbl
-    dsimp at this
-    rw [← this, bsup_le_iff]
+    rw [← IsNormal.bsup_eq.{u, u} (mul_isNormal (Ordinal.pos_iff_ne_zero.2 ha)) hbl, bsup_le_iff]
     intro c hcb
     have hb₁ : 1 < b := (lt_succ 1).trans (by simpa using hb₂)
     have hbo₀ : (b^b.log a) ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))

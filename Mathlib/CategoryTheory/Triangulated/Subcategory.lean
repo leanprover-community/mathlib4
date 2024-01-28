@@ -670,7 +670,7 @@ noncomputable instance [HasShift D ℤ] [F.CommShift ℤ] :
   NatTrans.CommShift (S.liftCompInclusion F hF).hom ℤ :=
     Functor.CommShift.ofComp_compatibility _ _
 
-instance [HasShift D ℤ] [Preadditive D] [F.CommShift ℤ] [HasZeroObject D]
+instance isTriangulated_lift [HasShift D ℤ] [Preadditive D] [F.CommShift ℤ] [HasZeroObject D]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] [F.IsTriangulated]:
     (S.lift F hF).IsTriangulated := by
   rw [Functor.isTriangulated_iff_comp_right (S.liftCompInclusion F hF)]

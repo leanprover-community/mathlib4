@@ -41,9 +41,9 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
-open Classical
-
 noncomputable section
+
+open Classical
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -216,5 +216,27 @@ theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk
+
+end ComplexShape
+
+end
+
+namespace ComplexShape
+
+variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
+
+instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
+  fun _ _ => by dsimp; infer_instance
+
+instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
+  fun _ _ => by dsimp; infer_instance
+
+variable [One α]
+
+instance : DecidableRel (ComplexShape.up α).Rel := by
+  dsimp [ComplexShape.up]; infer_instance
+
+instance : DecidableRel (ComplexShape.down α).Rel := by
+  dsimp [ComplexShape.down]; infer_instance
 
 end ComplexShape

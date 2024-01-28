@@ -78,8 +78,8 @@ def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
 variable (p : SeminormFamily 𝕜 E ι)
 
 theorem basisSets_iff {U : Set E} :
-    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : _) (_ : 0 < r), U = ball (i.sup p) 0 r := by
-  simp only [basisSets, mem_iUnion, mem_singleton_iff]
+    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
+  simp only [basisSets, mem_iUnion, exists_prop, mem_singleton_iff]
 #align seminorm_family.basis_sets_iff SeminormFamily.basisSets_iff
 
 theorem basisSets_mem (i : Finset ι) {r : ℝ} (hr : 0 < r) : (i.sup p).ball 0 r ∈ p.basisSets :=
@@ -313,7 +313,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
-  convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
+  convert hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
   -- Porting note: extra type ascriptions needed on `0`
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=
@@ -511,12 +511,12 @@ variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p x < r := by
-  rw [hp.hasBasis.isVonNBounded_basis_iff]
+  rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
     simp only [id.def] at h
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
-    rcases h with ⟨r, hr, h⟩
+    rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha
     specialize h a (le_of_lt ha)
     rw [Seminorm.smul_ball_zero (norm_pos_iff.1 <| hr.trans ha), mul_one] at h
@@ -802,7 +802,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 lemma map_eq_zero_of_norm_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
-    ((specializes_iff_mem_closure.mpr $ mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
+    ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -813,7 +813,7 @@ controlled image by `q`. The control of `q` at the original element follows by r
 lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     (hq : Continuous q) : ∃ C, 0 < C ∧ (∀ x : F, q x ≤ C * ‖x‖) := by
   have hq' : Tendsto q (𝓝 0) (𝓝 0) := map_zero q ▸ hq.tendsto 0
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' $ Iio_mem_nhds one_pos)
+  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
     with ⟨ε, ε_pos, hε⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < ‖c‖ / ε := by positivity

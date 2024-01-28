@@ -377,7 +377,6 @@ lemma assoc_iff (oper : ObjOperation₂ X) :
       Types.functorPr₃₃_app, Prod.mk.eta, FunctorToTypes.comp,
       ObjOperation₃.yonedaEquiv, ObjOperation₃.yonedaEquiv', yonedaEquiv, yonedaEquiv']
     dsimp
-    dsimp only [FunLike.coe, EquivLike.coe]
     congr
     aesop_cat
 

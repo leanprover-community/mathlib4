@@ -26,8 +26,7 @@ The following meta-properties are defined
 
 -/
 
-
-universe v u v₃ v₂ v₁ u₃ u₂ u₁
+universe v v₁ v₂ u u₁ u₂ u₃
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -56,7 +55,8 @@ variable {C}
 namespace MorphismProperty
 
 @[ext]
-lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) : W = W' := by
+lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) :
+    W = W' := by
   funext X Y f
   rw [h]
 
@@ -909,7 +909,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 
