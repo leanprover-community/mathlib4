@@ -52,10 +52,10 @@ theorem stolzSet_empty (hM : M ≤ 1) : stolzSet M = ∅ := by
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
-  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
-    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) <| ?_
+  refine' tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) _
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
-  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
+  refine' ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ _⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
@@ -90,13 +90,13 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
       rw [← add_mul, sub_add_sub_cancel]
     rwa [mul_zero, zero_add] at this
   rw [← zero_mul (-1 / (z - 1))]
-  refine Tendsto.mul ?_ ?_
+  apply Tendsto.mul
   · simpa only [neg_zero, neg_sub] using (tendsto_sub_nhds_zero_iff.mpr h).neg
   · conv =>
-      enter [1,n]
+      enter [1, n]
       rw [geom_sum_eq (by contrapose! hz; simp [hz]), sub_div, sub_eq_add_neg, ← neg_div]
     rw [← zero_add (-1 / (z - 1)), ← zero_div (z - 1)]
-    refine Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hz) (z - 1)) ?_
+    apply Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hz) (z - 1))
     simp only [zero_div, zero_add, tendsto_const_nhds_iff]
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
