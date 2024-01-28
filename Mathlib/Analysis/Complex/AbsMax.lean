@@ -449,8 +449,8 @@ theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ
       refine hd.continuousOn.norm.exists_isMaxOn' isClosed_closure hx₀ ?_
       refine htendsto.eventually (p := fun z => ‖z‖ ≤ (norm ∘ f) x₀) ?_
       exact tendsto_norm_zero.eventually (eventually_le_nhds (norm_pos_iff.mpr hx₀_ne_zero))
-  rw [closure_eq_interior_union_frontier, mem_union] at hwU
-  cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
+  rw [closure_eq_interior_union_frontier, mem_union, or_comm] at hwU
+  rcases hwU with (hwU | hwU); · exact ⟨w, hwU, hle⟩
   have hU' : interior U ≠ univ := by
     intro h
     have h₁ : interior U ⊆ U := interior_subset
