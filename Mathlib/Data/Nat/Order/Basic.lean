@@ -181,12 +181,8 @@ theorem add_eq_three_iff :
     ← add_assoc, succ_inj', add_eq_two_iff]
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
-theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 :=
-  ⟨fun h =>
-    match Nat.eq_or_lt_of_le h with
-    | Or.inl h => Or.inr h
-    | Or.inr h => Or.inl <| Nat.le_of_succ_le_succ h,
-    Or.rec (fun h => le_trans h <| Nat.le_add_right _ _) le_of_eq⟩
+theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
+  rw [le_iff_lt_or_eq, lt_add_one_iff]
 #align nat.le_add_one_iff Nat.le_add_one_iff
 
 theorem le_and_le_add_one_iff : n ≤ m ∧ m ≤ n + 1 ↔ m = n ∨ m = n + 1 := by
@@ -275,18 +271,10 @@ theorem le_mul_self : ∀ n : ℕ, n ≤ n * n
   | n + 1 => by simp
 #align nat.le_mul_self Nat.le_mul_self
 
-theorem le_mul_of_pos_left (h : 0 < n) : m ≤ n * m := by
-  conv =>
-    lhs
-    rw [← one_mul m]
-  exact mul_le_mul_of_nonneg_right h.nat_succ_le (zero_le _)
+-- Moved to Std
 #align nat.le_mul_of_pos_left Nat.le_mul_of_pos_left
 
-theorem le_mul_of_pos_right (h : 0 < n) : m ≤ m * n := by
-  conv =>
-    lhs
-    rw [← mul_one m]
-  exact mul_le_mul_of_nonneg_left h.nat_succ_le (zero_le _)
+-- Moved to Std
 #align nat.le_mul_of_pos_right Nat.le_mul_of_pos_right
 
 theorem mul_self_inj : m * m = n * n ↔ m = n :=
@@ -463,7 +451,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
   rintro ⟨k, rfl⟩
   rcases Nat.eq_zero_or_pos k with (rfl | hk)
   · exact lt_irrefl 0 h1
-  · exact not_lt.2 (le_mul_of_pos_right hk) h2
+  · exact not_lt.2 (Nat.le_mul_of_pos_right _ hk) h2
 #align nat.not_dvd_of_pos_of_lt Nat.not_dvd_of_pos_of_lt
 
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/

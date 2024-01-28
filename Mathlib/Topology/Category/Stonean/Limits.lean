@@ -182,14 +182,14 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i))
     · constructor
-      · exact IsOpen.preimage f.continuous hi.open_range
       · refine' IsClosed.preimage f.continuous _
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
-    have hU' : IsOpen (Subtype.val '' U) := h.1.openEmbedding_subtype_val.isOpenMap U hU
+      · exact IsOpen.preimage f.continuous hi.open_range
+    have hU' : IsOpen (Subtype.val '' U) := h.2.openEmbedding_subtype_val.isOpenMap U hU
     have := ExtremallyDisconnected.open_closure _ hU'
-    rw [h.2.closedEmbedding_subtype_val.closure_image_eq U] at this
+    rw [h.1.closedEmbedding_subtype_val.closure_image_eq U] at this
     suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U))
     · rw [hhU]
       exact isOpen_induced this
@@ -218,7 +218,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
     use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
+    exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact a.continuous
@@ -248,7 +248,7 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
   congr
   ext z
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
+  have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
   suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
   · exact this.symm
