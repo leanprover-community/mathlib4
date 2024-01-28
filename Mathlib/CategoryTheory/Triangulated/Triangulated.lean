@@ -111,6 +111,7 @@ def triangleMorphism₂ : Triangle.mk u₁₃ v₁₃ w₁₃ ⟶ Triangle.mk u�
 
 variable (u₁₂ u₁₃ u₂₃ comm h₁₂ h₁₃ h₂₃)
 
+/-- When two diagrams are isomorphic, an octahedron for one gives an octahedron for the other. -/
 def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃')
     (e₁ : X₁ ≅ X₁') (e₂ : X₂ ≅ X₂')(e₃ : X₃ ≅ X₃')
     (comm₁₂ : u₁₂ ≫ e₂.hom = e₁.hom ≫ u₁₂') (comm₂₃ : u₂₃ ≫ e₃.hom = e₂.hom ≫ u₂₃')
@@ -124,7 +125,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   let iso₁₂ := isoTriangleOfIso₁₂ _ _ h₁₂ h₁₂' e₁ e₂ comm₁₂
   let iso₂₃ := isoTriangleOfIso₁₂ _ _ h₂₃ h₂₃' e₂ e₃ comm₂₃
   let iso₁₃ := isoTriangleOfIso₁₂ _ _ h₁₃ h₁₃' e₁ e₃ (by
-    dsimp ; rw [← comm, assoc, ← reassoc_of% comm₁₂, comm₂₃])
+    dsimp; rw [← comm, assoc, ← reassoc_of% comm₁₂, comm₂₃])
   have eq₁₂ := iso₁₂.hom.comm₂
   have eq₁₂' := iso₁₂.hom.comm₃
   have eq₁₃ := iso₁₃.hom.comm₂
@@ -216,6 +217,8 @@ end Triangulated
 
 variable {C}
 
+/-- Constructor for `IsTriangulated C` which shows that it suffices to obtain an octahedron
+for a suitable isomorphic diagram instead of the given diagram. -/
 lemma IsTriangulated.mk' (h : ∀ ⦃X₁' X₂' X₃' : C⦄ (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃'),
     ∃ (X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C) (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃) (e₁ : X₁' ≅ X₁) (e₂ : X₂' ≅ X₂)
     (e₃ : X₃' ≅ X₃) (_ : u₁₂' ≫ e₂.hom = e₁.hom ≫ u₁₂)
@@ -224,12 +227,13 @@ lemma IsTriangulated.mk' (h : ∀ ⦃X₁' X₂' X₃' : C⦄ (u₁₂' : X₁' 
     (v₂₃ : X₃ ⟶ Z₂₃) (w₂₃ : Z₂₃ ⟶ X₂⟦1⟧) (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
     (v₁₃ : X₃ ⟶ Z₁₃) (w₁₃ : Z₁₃ ⟶ X₁⟦1⟧)
       (h₁₃ : Triangle.mk (u₁₂ ≫ u₂₃) v₁₃ w₁₃ ∈ distTriang C),
-        Nonempty (Octahedron rfl h₁₂ h₂₃ h₁₃)) : IsTriangulated C := ⟨by
-  intro X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' u₁₂' u₂₃' u₁₃' comm' v₁₂' w₁₂' h₁₂' v₂₃' w₂₃'
-    h₂₃' v₁₃' w₁₃' h₁₃'
-  obtain ⟨X₁, X₂, X₃, Z₁₂, Z₂₃, Z₁₃, u₁₂, u₂₃, e₁, e₂, e₃, comm₁₂, comm₂₃,
-    v₁₂, w₁₂, h₁₂, v₂₃, w₂₃, h₂₃, v₁₃, w₁₃, h₁₃, H⟩ := h u₁₂' u₂₃'
-  exact ⟨Octahedron.ofIso _ _ _ _ _ _ _ u₁₂ u₂₃ e₁ e₂ e₃ comm₁₂ comm₂₃ v₁₂ w₁₂ h₁₂
-    v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃ H.some⟩ ⟩
+        Nonempty (Octahedron rfl h₁₂ h₂₃ h₁₃)) :
+    IsTriangulated C where
+  octahedron_axiom {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' u₁₂' u₂₃' u₁₃'} comm'
+    {v₁₂' w₁₂'} h₁₂' {v₂₃' w₂₃'} h₂₃' {v₁₃' w₁₃'} h₁₃' := by
+    obtain ⟨X₁, X₂, X₃, Z₁₂, Z₂₃, Z₁₃, u₁₂, u₂₃, e₁, e₂, e₃, comm₁₂, comm₂₃,
+      v₁₂, w₁₂, h₁₂, v₂₃, w₂₃, h₂₃, v₁₃, w₁₃, h₁₃, H⟩ := h u₁₂' u₂₃'
+    exact ⟨Octahedron.ofIso u₁₂' u₂₃' u₁₃' comm' h₁₂' h₂₃' h₁₃'
+      u₁₂ u₂₃ e₁ e₂ e₃ comm₁₂ comm₂₃ v₁₂ w₁₂ h₁₂ v₂₃ w₂₃ h₂₃ v₁₃ w₁₃ h₁₃ H.some⟩
 
 end CategoryTheory

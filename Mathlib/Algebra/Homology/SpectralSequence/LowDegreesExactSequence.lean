@@ -97,7 +97,7 @@ instance : IsIso ((hE 2).π 0 (2, 0) rfl) := by
   apply (hE 2).isIso_π_of_isZero
   aesop
 
-instance : IsIso ((hE 1).filtrationι 1) := by
+  instance : IsIso ((hE 1).filtrationι 1) := by
   apply (hE 1).isIso_filtrationι_of_isZero
   intro j hj
   fin_cases j
