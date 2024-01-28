@@ -97,7 +97,7 @@ def isLimitEmptyCone : IsLimit L.emptyCone where
   fac _ := fun ⟨j⟩ => j.elim
   uniq _ _ _ := L.toNil_unique _ _
 
--- :-(
+-- :-)
 instance (L : LawvereTheory.{v} S) : MonoidalCategory L :=
   monoidalOfChosenFiniteProducts
     ⟨L.emptyCone, L.isLimitEmptyCone⟩ fun {_ _} =>
