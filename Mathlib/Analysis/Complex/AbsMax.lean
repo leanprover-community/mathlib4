@@ -446,7 +446,7 @@ theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ
     case neg =>
       push_neg at h_triv
       obtain ⟨x₀, hx₀, hx₀_ne_zero⟩ := h_triv
-      refine ContinuousOn.exists_isMaxOn'  hd.continuousOn.norm isClosed_closure hx₀ ?_
+      refine hd.continuousOn.norm.exists_isMaxOn' isClosed_closure hx₀ ?_
       refine htendsto.eventually (p := fun z => ‖z‖ ≤ (norm ∘ f) x₀) ?_
       exact tendsto_norm_zero.eventually (eventually_le_nhds (norm_pos_iff.mpr hx₀_ne_zero))
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
