@@ -231,14 +231,17 @@ theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
     f ⊗ 𝟙 Y = f ▷ Y := by
   simp [tensorHom_def]
 
+@[reassoc, simp]
 theorem whiskerLeft_comp (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     W ◁ (f ≫ g) = W ◁ f ≫ W ◁ g := by
   intros; simp only [← id_tensorHom, ← tensor_comp, comp_id]
 
+@[reassoc, simp]
 theorem id_whiskerLeft {X Y : C} (f : X ⟶ Y) :
     𝟙_ C ◁ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
   intros; rw [← assoc, ← leftUnitor_naturality]; simp [id_tensorHom]
 
+@[reassoc, simp]
 theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
     (X ⊗ Y) ◁ f = (α_ X Y Z).hom ≫ X ◁ Y ◁ f ≫ (α_ X Y Z').inv := by
   intros
@@ -246,14 +249,17 @@ theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
   rw [← assoc, ← associator_naturality]
   simp
 
+@[reassoc, simp]
 theorem comp_whiskerRight {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C) :
     (f ≫ g) ▷ Z = f ▷ Z ≫ g ▷ Z := by
   intros; simp only [← tensorHom_id, ← tensor_comp, id_comp]
 
+@[reassoc, simp]
 theorem whiskerRight_id {X Y : C} (f : X ⟶ Y) :
     f ▷ 𝟙_ C = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
    intros; rw [← assoc, ← rightUnitor_naturality]; simp [tensorHom_id]
 
+@[reassoc, simp]
 theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
     f ▷ (Y ⊗ Z) = (α_ X Y Z).inv ≫ f ▷ Y ▷ Z ≫ (α_ X' Y Z).hom := by
   intros
@@ -261,6 +267,7 @@ theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
   rw [associator_naturality]
   simp [tensor_id]
 
+@[reassoc, simp]
 theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
     (X ◁ f) ▷ Z = (α_ X Y Z).hom ≫ X ◁ f ▷ Z ≫ (α_ X Y' Z).inv := by
   intros
@@ -268,18 +275,10 @@ theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
   rw [← assoc, ← associator_naturality]
   simp
 
+@[reassoc]
 theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
     W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
-
-attribute [reassoc]
-  whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight whiskerRight_id
-  whiskerRight_tensor whisker_assoc whisker_exchange
-
-attribute [simp]
-  whiskerLeft_id whiskerRight_id
-  whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight id_whiskerRight
-  whiskerRight_tensor whisker_assoc
 
 @[reassoc]
 theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
