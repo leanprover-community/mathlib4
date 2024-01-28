@@ -421,7 +421,7 @@ set_option linter.uppercaseLean3 false in
 
 lemma summable_exp_nat_mul_iff {a : ℝ} :
     Summable (fun n : ℕ ↦ exp (n * a)) ↔ a < 0 := by
-  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_1, norm_of_nonneg (exp_nonneg _),
+  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
     exp_lt_one_iff]
 
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by

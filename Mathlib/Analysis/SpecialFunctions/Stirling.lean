@@ -108,7 +108,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   have h_nonneg : (0 : ℝ) ≤ ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
   have g : HasSum (fun k : ℕ => (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
-    have := (hasSum_geometric_of_lt_1 h_nonneg ?_).mul_left (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
+    have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
     · simp_rw [← _root_.pow_succ] at this
       exact this
     rw [one_div, inv_pow]
