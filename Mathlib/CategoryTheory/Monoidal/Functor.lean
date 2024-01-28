@@ -122,6 +122,34 @@ theorem LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : 
   simp only [assoc, μ_natural_right, μ_natural_left_assoc]
   rw [← F.map_comp, tensor_id_comp_id_tensor]
 
+@[reassoc]
+theorem  LaxMonoidalFunctor.associativity' (F : LaxMonoidalFunctor C D) (X Y Z : C) :
+    (F.μ X Y ▷ F.obj Z) ≫ F.μ (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ ((F.obj X) ◁ F.μ Y Z) ≫ F.μ X (Y ⊗ Z) := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc]
+theorem  LaxMonoidalFunctor.left_unitality' (F : LaxMonoidalFunctor C D) (X : C) :
+    (λ_ (F.obj X)).hom = (F.ε ▷ F.obj X) ≫ F.μ (𝟙_ C) X ≫ F.map (λ_ X).hom := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc]
+theorem  LaxMonoidalFunctor.right_unitality' (F : LaxMonoidalFunctor C D) (X : C) :
+    (ρ_ (F.obj X)).hom = (F.obj X ◁ F.ε) ≫ F.μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc (attr := simp)]
+theorem LaxMonoidalFunctor.μ_natural_left' (F : LaxMonoidalFunctor C D)
+    {X Y : C} (f : X ⟶ Y) (X' : C) :
+      F.map f ▷ F.obj X' ≫ F.μ Y X' = F.μ X X' ≫ F.map (f ▷ X') := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc (attr := simp)]
+theorem LaxMonoidalFunctor.μ_natural_right' (F : LaxMonoidalFunctor C D)
+    {X Y : C} (X' : C) (f : X ⟶ Y) :
+      F.obj X' ◁ F.map f ≫ F.μ X' Y = F.μ X' X ≫ F.map (X' ◁ f) := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
 `whiskerLeft` and `whiskerRight`.
@@ -191,6 +219,22 @@ theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z
   rw [Iso.eq_inv_comp, ← F.associativity_assoc, ← F.toFunctor.map_comp, Iso.hom_inv_id,
     F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.associativity_inv CategoryTheory.LaxMonoidalFunctor.associativity_inv
+
+@[reassoc (attr := simp)]
+theorem LaxMonoidalFunctor.left_unitality_inv' (F : LaxMonoidalFunctor C D) (X : C) :
+    (λ_ (F.obj X)).inv ≫ (F.ε ▷ F.obj X) ≫ F.μ (𝟙_ C) X = F.map (λ_ X).inv := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc (attr := simp)]
+theorem LaxMonoidalFunctor.right_unitality_inv' (F : LaxMonoidalFunctor C D) (X : C) :
+    (ρ_ (F.obj X)).inv ≫ (F.obj X ◁ F.ε) ≫ F.μ X (𝟙_ C) = F.map (ρ_ X).inv := by
+  simp [← id_tensorHom, ← tensorHom_id]
+
+@[reassoc (attr := simp)]
+theorem LaxMonoidalFunctor.associativity_inv' (F : LaxMonoidalFunctor C D) (X Y Z : C) :
+    (F.obj X ◁ F.μ Y Z) ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
+      (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ (F.μ X Y ▷ F.obj Z) ≫ F.μ (X ⊗ Y) Z := by
+  simp [← id_tensorHom, ← tensorHom_id]
 
 end
 
