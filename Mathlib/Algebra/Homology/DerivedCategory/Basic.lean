@@ -4,6 +4,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Cylinder
+import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -217,7 +218,7 @@ lemma Qh_commShiftIso_inv_app (X : CochainComplex C ℤ) (n : ℤ) :
 
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
-      Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.MappingCone.triangle f)) := by
+      Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
   constructor
   · rintro ⟨T', e, ⟨X, Y, f, ⟨e'⟩⟩⟩
     refine' ⟨_, _, f, ⟨_⟩⟩
@@ -340,7 +341,7 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
 
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
-  apply HomologicalComplexUpToQis.isIso_Q_map_iff
+  apply HomologicalComplexUpToQis.isIso_Q_map_iff_mem_qis
 
 lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔
@@ -397,29 +398,29 @@ section
 variable {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
 
 lemma isIso_Q_map_fromOfShortComplex :
-    IsIso (Q.map (CochainComplex.MappingCone.fromOfShortComplex S)) := by
+    IsIso (Q.map (CochainComplex.mappingCone.fromOfShortComplex S)) := by
   rw [isIso_Q_map_iff]
-  exact CochainComplex.MappingCone.isIso_homologyMap_fromOfShortComplex hS
+  exact CochainComplex.mappingCone.isIso_homologyMap_fromOfShortComplex hS
 
 noncomputable def triangleOfSESδ :
   Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
     have := isIso_Q_map_fromOfShortComplex hS
-    inv (Q.map (CochainComplex.MappingCone.fromOfShortComplex S)) ≫
-      Q.map (CochainComplex.MappingCone.triangleδ S.f) ≫
+    inv (Q.map (CochainComplex.mappingCone.fromOfShortComplex S)) ≫
+      Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
       (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
 noncomputable def triangleOfSESIso :
-    Q.mapTriangle.obj (CochainComplex.MappingCone.triangle S.f) ≅ triangleOfSES hS := by
+    Q.mapTriangle.obj (CochainComplex.mappingCone.triangle S.f) ≅ triangleOfSES hS := by
   have := isIso_Q_map_fromOfShortComplex hS
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    (asIso (Q.map (CochainComplex.MappingCone.fromOfShortComplex S))) _ _ _
+    (asIso (Q.map (CochainComplex.mappingCone.fromOfShortComplex S))) _ _ _
   · dsimp [triangleOfSES]
     simp only [comp_id, id_comp]
-  · dsimp [triangleOfSES, CochainComplex.MappingCone.fromOfShortComplex, asIso]
-    rw [id_comp, ← Q.map_comp, CochainComplex.MappingCone.inr_desc]
+  · dsimp [triangleOfSES, CochainComplex.mappingCone.fromOfShortComplex, asIso]
+    rw [id_comp, ← Q.map_comp, CochainComplex.mappingCone.inr_desc]
   · dsimp [triangleOfSES, triangleOfSESδ]
     rw [CategoryTheory.Functor.map_id, comp_id, IsIso.hom_inv_id_assoc]
 
