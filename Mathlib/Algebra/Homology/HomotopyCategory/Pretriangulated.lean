@@ -328,10 +328,10 @@ noncomputable def shiftTriangleIso (n : ℤ) :
   · ext p
     dsimp
     simp? [shiftIso, Units.smul_def, ext_to_iff _ _ (p + 1) rfl, Cochain.shift_v'] says
-      simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X',
-        shiftFunctor_map_f', shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl, assoc,
-        lift_f_fst_v, Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v',
-        Linear.comp_smul, inr_f_fst_v, smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
+      simp only [Units.smul_def, shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl,
+        shiftFunctor_obj_X', assoc, lift_f_fst_v, Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v,
+        Cochain.shift_v', Linear.comp_smul, inr_f_fst_v, smul_zero, lift_f_snd_v, inr_f_snd_v,
+        and_true]
     rw [smul_zero]
   · ext p
     dsimp
@@ -339,13 +339,12 @@ noncomputable def shiftTriangleIso (n : ℤ) :
       (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
       (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n)
         (add_zero (p + n)) (p + 1 + n) (by linarith)] says
-      simp only [triangle, Triangle.mk_mor₃, Units.smul_def, HomologicalComplex.zsmul_f_apply,
-        shiftFunctor_obj_X', HomologicalComplex.comp_f, shiftFunctor_map_f', Cocycle.homOf_f,
-        Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v,
+      simp only [triangle, Triangle.mk_mor₃, Cocycle.homOf_f, Cocycle.rightShift_coe, Cocycle.coe_neg,
+        Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
         (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
           (by linarith),
         shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
-        assoc, Iso.inv_hom_id, comp_id, smul_neg, shiftIso,
+        assoc, Iso.inv_hom_id, comp_id, smul_neg, Units.smul_def, shiftIso,
         (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
         HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.comp_neg, lift_f_fst_v,
         Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v']
