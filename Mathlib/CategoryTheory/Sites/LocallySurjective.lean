@@ -157,7 +157,8 @@ instance locallyInjective_comp [LocallyInjective J φ] [LocallyInjective J ψ] :
     LocallyInjective J (φ ≫ ψ) where
   locally_injective {X} x y h := by
     let S := sieveOfLocallyInjective J ψ (φ.app _ x) (φ.app _ y) (by simpa using h)
-    have hS : S ∈ J X.unop := sieveOfLocallyInjective_mem J ψ (φ.app _ x) (φ.app _ y) (by simpa using h)
+    have hS : S ∈ J X.unop :=
+      sieveOfLocallyInjective_mem J ψ (φ.app _ x) (φ.app _ y) (by simpa using h)
     have hS' : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f),
       φ.app _ (F₁.map f.op x) = φ.app _ (F₁.map f.op y) := fun Y f hf => by
         simpa using map_apply_eq_of_locallyInjective J ψ (φ.app _ x) (φ.app _ y) _ f hf
