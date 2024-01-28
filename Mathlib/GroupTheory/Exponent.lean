@@ -540,6 +540,12 @@ theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.expo
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
     g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
 
+@[to_additive (attr := simp)]
+theorem Subgroup.exponent_top [Group G] : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G := by
+  unfold Monoid.exponent Monoid.ExponentExists
+  simp only [top_toSubmonoid, Subtype.forall, mem_top, SubmonoidClass.mk_pow, mk_eq_one_iff,
+    forall_true_left]
+
 end Group
 
 section CommGroup
