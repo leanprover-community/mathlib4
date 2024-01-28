@@ -643,7 +643,7 @@ theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
 
-theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : MeasureTheory.Measure (α × α)} :
+theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
     NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
   measurableSet_lt'.nullMeasurableSet
 
