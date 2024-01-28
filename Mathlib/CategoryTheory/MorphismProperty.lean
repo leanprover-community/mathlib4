@@ -55,7 +55,8 @@ variable {C}
 namespace MorphismProperty
 
 @[ext]
-lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) : W = W' := by
+lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) :
+    W = W' := by
   funext X Y f
   rw [h]
 
