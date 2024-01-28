@@ -1066,6 +1066,43 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 #align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
+theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y where
+  specializes_or_disjoint_nhds _ _ := by
+    simpa only [← hf.specializes_iff, hf.nhds_eq_comap, or_iff_not_imp_left,
+      ← disjoint_nhds_nhds_iff_not_specializes] using Filter.disjoint_comap
+
+protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
+  @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
+
+instance (p : X → Prop) : R1Space (Subtype p) := .induced _
+
+protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
+    (hT : ∀ t ∈ T, @R1Space X t) : @R1Space X (sInf T) := by
+  let _ := sInf T
+  refine ⟨fun x y ↦ ?_⟩
+  simp only [Specializes, nhds_sInf]
+  rcases em (∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)) with ⟨t, htT, htd⟩ | hTd
+  · exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
+  · push_neg at hTd
+    exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
+
+protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
+    (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
+  .sInf <| forall_range_iff.2 ht
+
+protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
+    (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
+  rw [inf_eq_iInf]
+  apply R1Space.iInf
+  simp [*]
+
+instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
+  .inf (.induced _) (.induced _)
+
+instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R1Space (X i)] :
+    R1Space (∀ i, X i) :=
+  .iInf fun _ ↦ .induced _
+
 theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
     {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [R1Space Y] {f : X → Y} {x : X}
     {K : Set X} {s : Set Y} (hf : Continuous f) (hs : s ∈ 𝓝 (f x)) (hKc : IsCompact K)
@@ -1207,6 +1244,10 @@ theorem SeparationQuotient.t2Space_iff : T2Space (SeparationQuotient X) ↔ R1Sp
 
 instance SeparationQuotient.t2Space [R1Space X] : T2Space (SeparationQuotient X) :=
   t2Space_iff.2 ‹_›
+
+instance (priority := 80) [R1Space X] [T0Space X] : T2Space X :=
+  t2Space_iff_disjoint_nhds.2 fun _x _y hne ↦ disjoint_nhds_nhds_iff_not_inseparable.2 fun hxy ↦
+    hne hxy.eq
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
@@ -1457,13 +1498,10 @@ theorem separated_by_openEmbedding [TopologicalSpace Y] [T2Space X]
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
 #align separated_by_open_embedding separated_by_openEmbedding
 
-instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) :=
-  ⟨fun _ _ h => separated_by_continuous continuous_subtype_val (mt Subtype.eq h)⟩
+instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
 instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
-  ⟨fun _ _ h => Or.elim (not_and_or.mp (mt Prod.ext_iff.mpr h))
-    (fun h₁ => separated_by_continuous continuous_fst h₁) fun h₂ =>
-    separated_by_continuous continuous_snd h₂⟩
+  inferInstance
 
 /-- If the codomain of an injective continuous function is a Hausdorff space, then so is its
 domain. -/
@@ -1492,9 +1530,7 @@ instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
 
 instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
-  ⟨fun _ _ h =>
-    let ⟨i, hi⟩ := not_forall.mp (mt funext h)
-    separated_by_continuous (continuous_apply i) hi⟩
+  inferInstance
 #align Pi.t2_space Pi.t2Space
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
@@ -1824,7 +1860,7 @@ protected theorem Inducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf :
 
 theorem regularSpace_induced (f : Y → X) : @RegularSpace Y (induced f ‹_›) :=
   letI := induced f ‹_›
-  Inducing.regularSpace ⟨rfl⟩
+  (inducing_induced f).regularSpace
 #align regular_space_induced regularSpace_induced
 
 theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @RegularSpace X t) :
