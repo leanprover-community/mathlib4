@@ -87,8 +87,9 @@ theorem smul_diff' (h : H) :
   refine' Finset.prod_congr rfl fun q _ => _
   simp only [MonoidHom.id_apply, id_eq, Subtype.ext_iff, Submonoid.coe_mul,
     coe_toSubmonoid, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op,
-    mul_left_inj, ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop]
+  simp only [MulOpposite.unop_op, mul_left_inj]
+  rw [← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
