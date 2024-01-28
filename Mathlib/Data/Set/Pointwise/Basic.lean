@@ -1301,7 +1301,7 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 
 @[to_additive]
 lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a * b, map_mul _ _ _⟩
@@ -1334,7 +1334,7 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div _ _ _⟩

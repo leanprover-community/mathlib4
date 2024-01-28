@@ -46,11 +46,37 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 #align exp_char ExpChar
 #align exp_char.prime ExpChar.prime
 
+variable {R} in
+/-- The exponential characteristic is unique. -/
+theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
+  cases' hp with hp _ hp' hp
+  · cases' hq with hq _ hq' hq
+    exacts [rfl, False.elim (Nat.not_prime_zero (CharP.eq R hq (CharP.ofCharZero R) ▸ hq'))]
+  · cases' hq with hq _ hq' hq
+    exacts [False.elim (Nat.not_prime_zero (CharP.eq R hp (CharP.ofCharZero R) ▸ hp')),
+      CharP.eq R hp hq]
+
+theorem ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
+
+/-- Noncomputable function that outputs the unique exponential characteristic of a semiring. -/
+noncomputable def ringExpChar (R : Type*) [NonAssocSemiring R] : ℕ := max (ringChar R) 1
+
+theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
+  cases' h with _ _ h _
+  · haveI := CharP.ofCharZero R
+    rw [ringExpChar, ringChar.eq R 0]; rfl
+  rw [ringExpChar, ringChar.eq R q]
+  exact Nat.max_eq_left h.one_lt.le
+
+@[simp]
+theorem ringExpChar.eq_one (R : Type*) [NonAssocSemiring R] [CharZero R] : ringExpChar R = 1 := by
+  rw [ringExpChar, ringChar.eq_zero, max_eq_right zero_le_one]
+
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
   cases' hq with q hq_one hq_prime hq_hchar
   · rfl
-  · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).pos)
+  · exact False.elim <| hq_prime.ne_zero <| hq_hchar.eq R hp
 #align exp_char_one_of_char_zero expChar_one_of_char_zero
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
@@ -100,7 +126,8 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
   · contradiction
 #align char_prime_of_ne_zero char_prime_of_ne_zero
 
-/-- The exponential characteristic is a prime number or one. -/
+/-- The exponential characteristic is a prime number or one.
+See also `CharP.char_is_prime_or_zero`. -/
 theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
   cases hq with
   | zero => exact .inr rfl
@@ -123,10 +150,24 @@ end Nontrivial
 end Semiring
 
 theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
-  obtain ⟨p, h⟩ := CharP.exists R
-  by_cases hp : p = 0
-  · exact ⟨1, by rw [hp] at h; haveI := CharP.charP_to_charZero R; exact .zero⟩
-  exact ⟨p, haveI := NeZero.mk hp; .prime (CharP.char_is_prime_of_pos R p).out⟩
+  obtain _ | ⟨p, ⟨hp⟩, _⟩ := CharP.exists' R
+  exacts [⟨1, .zero⟩, ⟨p, .prime hp⟩]
+
+theorem ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
+  let ⟨q, H⟩ := ExpChar.exists R
+  ⟨q, H, fun _ H2 ↦ ExpChar.eq H2 H⟩
+
+instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := by
+  obtain ⟨q, _⟩ := ExpChar.exists R
+  rwa [ringExpChar.eq R q]
+
+variable {R} in
+theorem ringExpChar.of_eq [Ring R] [IsDomain R] {q : ℕ} (h : ringExpChar R = q) : ExpChar R q :=
+  h ▸ ringExpChar.expChar R
+
+variable {R} in
+theorem ringExpChar.eq_iff [Ring R] [IsDomain R] {q : ℕ} : ringExpChar R = q ↔ ExpChar R q :=
+  ⟨ringExpChar.of_eq, fun _ ↦ ringExpChar.eq R q⟩
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
@@ -202,3 +243,47 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
   cases' hR with _ _ hprime _
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
+
+section BigOperators
+
+open BigOperators
+
+variable {R}
+
+variable [CommSemiring R] (q : ℕ) [hR : ExpChar R q] (n : ℕ)
+
+theorem list_sum_pow_expChar (l : List R) : l.sum ^ q = (l.map (· ^ q : R → R)).sum := by
+  cases hR with
+  | zero => simp_rw [pow_one, List.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact list_sum_pow_char q l
+
+theorem multiset_sum_pow_expChar (s : Multiset R) : s.sum ^ q = (s.map (· ^ q : R → R)).sum := by
+  cases hR with
+  | zero => simp_rw [pow_one, Multiset.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact multiset_sum_pow_char q s
+
+theorem sum_pow_expChar {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i in s, f i) ^ q = ∑ i in s, f i ^ q := by
+  cases hR with
+  | zero => simp_rw [pow_one]
+  | prime hprime => haveI := Fact.mk hprime; exact sum_pow_char q s f
+
+theorem list_sum_pow_expChar_pow (l : List R) :
+    l.sum ^ q ^ n = (l.map (· ^ q ^ n : R → R)).sum := by
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one, List.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact list_sum_pow_char_pow q n l
+
+theorem multiset_sum_pow_expChar_pow (s : Multiset R) :
+    s.sum ^ q ^ n = (s.map (· ^ q ^ n : R → R)).sum := by
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one, Multiset.map_id']
+  | prime hprime => haveI := Fact.mk hprime; exact multiset_sum_pow_char_pow q n s
+
+theorem sum_pow_expChar_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
+    (∑ i in s, f i) ^ q ^ n = ∑ i in s, f i ^ q ^ n := by
+  cases hR with
+  | zero => simp_rw [one_pow, pow_one]
+  | prime hprime => haveI := Fact.mk hprime; exact sum_pow_char_pow q n s f
+
+end BigOperators
