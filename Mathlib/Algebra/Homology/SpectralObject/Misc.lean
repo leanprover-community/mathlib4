@@ -213,7 +213,12 @@ def natTransδ {n : ℕ} (i j : Fin (n + 2)) (hij : i.1 ≤ j.1) :
     intro x
     dsimp [SimplexCategory.δ, Fin.succAbove, Fin.succ,
       Fin.castSucc, Fin.castAdd, Fin.castLE]
-    split_ifs <;> simp only [Fin.le_iff_val_le_val] <;> linarith))
+    obtain ⟨i, hi⟩ := i
+    obtain ⟨j, hj⟩ := j
+    obtain ⟨x, hx⟩ := x
+    simp only at hij
+    simp only [Fin.mk_lt_mk]
+    split_ifs with h₁ h₂ <;> simp only [Fin.mk_le_mk] <;> linarith))
 
 variable {C}
 
