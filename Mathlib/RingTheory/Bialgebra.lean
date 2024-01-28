@@ -43,16 +43,7 @@ namespace Bialgebra
 variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [Semiring A] [B : Bialgebra R A]
 
-@[simp]
-theorem counit_mul_apply (a₁ a₂ : A) : B.counit (a₁ * a₂) = B.counit a₁ * B.counit a₂ :=
-  counit_mul a₁ a₂
-
-@[simp]
-theorem comul_mul_apply (a₁ a₂ : A) :
-    B.comul (a₁ * a₂) = B.comul a₁ * B.comul a₂ :=
-  comul_mul a₁ a₂
-
-attribute [simp] counit_one comul_one
+attribute [simp] counit_one counit_mul comul_one comul_mul
 
 /-- The counit of a bialgebra, as an R-algebra map. -/
 def counit.toAlgHom : A →ₐ[R] R where
@@ -71,7 +62,6 @@ def comul.toAlgHom : A →ₐ[R] A ⊗[R] A where
   map_zero' := B.comul.map_zero
   map_add' := B.comul.map_add
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
-
 
 end Bialgebra
 
