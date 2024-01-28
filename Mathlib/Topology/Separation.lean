@@ -24,6 +24,8 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
   but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
+* `R1Space`: An R₁/preregular space is a space where any two topologically distinguishable points
+  have disjoint neighbourhoods;
 * `T2Space`: A T₂/Hausdorff space is a space where, for every two points `x ≠ y`,
   there is two disjoint open sets, one containing `x`, and the other `y`.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
@@ -1152,7 +1154,7 @@ theorem isCompact_isClosed_basis_nhds (x : X) :
   let ⟨_L, hLc, hLx⟩ := exists_compact_mem_nhds x
   hLc.isCompact_isClosed_basis_nhds hLx
 
-/-- In a (weakly) locally compact R₁ space, each point admints a compact closed neighborhood. -/
+/-- In a (weakly) locally compact R₁ space, each point admits a compact closed neighborhood. -/
 theorem exists_mem_nhds_isCompact_isClosed (x : X) : ∃ K ∈ 𝓝 x, IsCompact K ∧ IsClosed K :=
   (isCompact_isClosed_basis_nhds x).ex_mem
 

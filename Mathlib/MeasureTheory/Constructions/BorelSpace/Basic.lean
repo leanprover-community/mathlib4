@@ -362,11 +362,15 @@ theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s
   h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
 
+/-- If two points are topologically inseparable,
+then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
   hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
     fun _ _ _ h ↦ by simp [h]
 
+/-- If `K` is a compact set is a preregular space and `s ⊇ K` is a Borel measurable superset,
+then `s` includes the closure of `K` as well. -/
 theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK : IsCompact K)
     (hs : MeasurableSet s) (hKs : K ⊆ s) : closure K ⊆ s := by
   rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
