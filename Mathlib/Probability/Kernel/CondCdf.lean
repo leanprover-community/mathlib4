@@ -3,6 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
@@ -51,29 +53,6 @@ section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
 
-namespace Directed
-
--- todo after the port: move this to logic.encodable.basic near sequence_mono
-variable [Encodable α] [Inhabited α] [Preorder β] {f : α → β} (hf : Directed (· ≥ ·) f)
-
-theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
-  antitone_nat_of_succ_le <| hf.sequence_mono_nat
-#align directed.sequence_anti Directed.sequence_anti
-
-theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
-  hf.rel_sequence a
-#align directed.sequence_le Directed.sequence_le
-
-end Directed
-
--- todo: move to data/set/lattice next to prod_sUnion or prod_sInter
-theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
-    (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
-  ext x
-  simp only [mem_prod, mem_iInter]
-  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
-#align prod_Inter prod_iInter
-
 theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
   ext1 x
   simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
@@ -107,21 +86,6 @@ theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [O
     [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
-
--- todo: move to data/real/ennreal
-theorem ENNReal.ofReal_cinfi (f : α → ℝ) [Nonempty α] :
-    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
-  by_cases hf : BddBelow (range f)
-  · exact
-      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
-        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
-  · symm
-    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
-    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
-    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
-    refine' fun x hx => ⟨i, _⟩
-    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
-#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
 
 -- todo: move to measure_theory/measurable_space
 /-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
