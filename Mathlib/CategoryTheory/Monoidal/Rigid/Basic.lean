@@ -468,7 +468,7 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor {Y Y' Z : C} [ExactP
   slice_lhs 2 3 => rw [associator_inv_naturality]
   slice_lhs 3 4 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
   slice_lhs 1 3 => rw [coevaluation_evaluation]
-  simp
+  simp [id_tensorHom]
 #align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor
 
 @[simp]
@@ -495,7 +495,7 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_tensor_id {Y Y' Z : C} [Exact
   slice_lhs 2 3 => rw [associator_naturality]
   slice_lhs 3 4 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_lhs 1 3 => rw [evaluation_coevaluation]
-  simp
+  simp [tensorHom_id]
 #align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_tensor_id
 
 @[simp]
@@ -506,7 +506,7 @@ theorem tensorLeftHomEquiv_id_tensor_comp_evaluation {Y Z : C} [HasLeftDual Z] (
   slice_lhs 3 4 => rw [← associator_naturality]
   slice_lhs 2 3 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_lhs 3 5 => rw [evaluation_coevaluation]
-  simp
+  simp [id_tensorHom]
 #align category_theory.tensor_left_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorLeftHomEquiv_id_tensor_comp_evaluation
 
 @[simp]
@@ -531,7 +531,7 @@ theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X]
   slice_lhs 3 4 => rw [← associator_inv_naturality]
   slice_lhs 2 3 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
   slice_lhs 3 5 => rw [coevaluation_evaluation]
-  simp
+  simp [tensorHom_id]
 #align category_theory.tensor_right_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorRightHomEquiv_tensor_id_comp_evaluation
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
