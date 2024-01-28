@@ -122,7 +122,7 @@ theorem LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : 
   simp only [assoc, μ_natural_right, μ_natural_left_assoc]
   rw [← F.map_comp, tensor_id_comp_id_tensor]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem  LaxMonoidalFunctor.associativity' (F : LaxMonoidalFunctor C D) (X Y Z : C) :
     (F.μ X Y ▷ F.obj Z) ≫ F.μ (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
         (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ ((F.obj X) ◁ F.μ Y Z) ≫ F.μ X (Y ⊗ Z) := by
