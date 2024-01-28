@@ -59,7 +59,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
-  exact ⟨hx.2, one_mul (1 - x) ▸ mul_lt_mul_of_pos_right hM <| sub_pos.mpr hx.2⟩
+  exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
 end StolzSet
 
@@ -89,20 +89,15 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
       enter [2, 2, i]
       rw [← add_mul, sub_add_sub_cancel]
     rwa [mul_zero, zero_add] at this
-  refine' squeeze_zero_norm (a := fun n ↦ ‖l - s n‖ * 2 / ‖1 - z‖) (fun n ↦ _) _
-  · dsimp only
-    rw [geom_sum_eq (by contrapose! hz; simp [hz]), ← mul_div_assoc, norm_div, norm_mul,
-      norm_sub_rev _ 1, norm_sub_rev _ 1]
-    gcongr
-    calc
-      ‖1 - z ^ n‖ ≤ ‖1‖ + ‖z ^ n‖ := norm_sub_le _ _
-      _ ≤ 1 + 1 := by
-        rw [norm_one, norm_pow, add_le_add_iff_left]
-        exact pow_le_one _ (norm_nonneg _) hz.le
-      _ = 2 := by norm_num
-  · simp_rw [mul_div_assoc]
-    convert (h.const_sub _).norm.mul_const _
-    simp
+  rw [← zero_mul (-1 / (z - 1))]
+  refine Tendsto.mul ?_ ?_
+  · simpa only [neg_zero, neg_sub] using (tendsto_sub_nhds_zero_iff.mpr h).neg
+  · conv =>
+      enter [1,n]
+      rw [geom_sum_eq (by contrapose! hz; simp [hz]), sub_div, sub_eq_add_neg, ← neg_div]
+    rw [← zero_add (-1 / (z - 1)), ← zero_div (z - 1)]
+    refine Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hz) (z - 1)) ?_
+    simp only [zero_div, zero_add, tendsto_const_nhds_iff]
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
