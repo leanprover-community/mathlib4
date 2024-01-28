@@ -1286,15 +1286,15 @@ end UniformGroup
 
 section prod_singleton
 
-variable [AddCommMonoid γ] [TopologicalSpace γ] [T2Space γ]
+variable [AddCommMonoid γ] [TopologicalSpace γ]
 
 lemma tsum_setProd_singleton_left (a : α) (t : Set β) (f : α × β → γ) :
-    (∑' x : {a} ×ˢ t, f x) = ∑' b : t, f (a, b) :=
-  (Equiv.Set.prod_singleton_left a t |>.symm.tsum_eq <| ({a} ×ˢ t).restrict f).symm
+    (∑' x : {a} ×ˢ t, f x) = ∑' b : t, f (a, b) := by
+  rw [tsum_congr_set_coe _ Set.singleton_prod, tsum_image _ ((Prod.mk.inj_left a).injOn _)]
 
 lemma tsum_setProd_singleton_right (s : Set α) (b : β) (f : α × β → γ) :
-    (∑' x : s ×ˢ {b}, f x) = ∑' a : s, f (a, b) :=
-  (Equiv.Set.prod_singleton_right s b |>.symm.tsum_eq <| (s ×ˢ {b}).restrict f).symm
+    (∑' x : s ×ˢ {b}, f x) = ∑' a : s, f (a, b) := by
+  rw [tsum_congr_set_coe _ Set.prod_singleton, tsum_image _ ((Prod.mk.inj_right b).injOn _)]
 
 end prod_singleton
 
