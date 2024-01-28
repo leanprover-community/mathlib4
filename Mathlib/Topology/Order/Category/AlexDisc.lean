@@ -50,8 +50,8 @@ def of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : AlexDisc := 
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
   hom := (e : ContinuousMap α β)
   inv := (e.symm : ContinuousMap β α)
-  hom_inv_id := FunLike.ext _ _ e.symm_apply_apply
-  inv_hom_id := FunLike.ext _ _ e.apply_symm_apply
+  hom_inv_id := DFunLike.ext _ _ e.symm_apply_apply
+  inv_hom_id := DFunLike.ext _ _ e.apply_symm_apply
 
 end AlexDisc
 

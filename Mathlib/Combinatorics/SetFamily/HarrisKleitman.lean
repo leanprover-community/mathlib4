@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 
 #align_import combinatorics.set_family.harris_kleitman from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
@@ -28,8 +28,6 @@ correlate in the uniform measure.
 
 
 open Finset
-
-open BigOperators
 
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 

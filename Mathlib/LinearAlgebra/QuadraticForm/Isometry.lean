@@ -42,17 +42,17 @@ variable {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
 
 instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.coe_injective h
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
   map_add f := f.toLinearMap.map_add
   map_smulₛₗ f := f.toLinearMap.map_smul
 
 theorem toLinearMap_injective :
     Function.Injective (Isometry.toLinearMap : (Q₁ →qᵢ Q₂) → M₁ →ₗ[R] M₂) := fun _f _g h =>
-  FunLike.coe_injective (congr_arg FunLike.coe h : _)
+  DFunLike.coe_injective (congr_arg DFunLike.coe h : _)
 
 @[ext]
 theorem ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 /-- See Note [custom simps projection]. -/
 protected def Simps.apply (f : Q₁ →qᵢ Q₂) : M₁ → M₂ := f

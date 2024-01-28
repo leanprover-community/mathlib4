@@ -54,8 +54,6 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Bundle Set Classical
@@ -680,7 +678,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
 
 -- porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
-theorem localTriv_apply (p : Z.TotalSpace) :
+theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 #align vector_bundle_core.local_triv_apply VectorBundleCore.localTriv_apply
