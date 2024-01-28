@@ -90,7 +90,7 @@ attribute [local instance] endofunctorMonoidalCategory
 -- porting note: used `dsimp [endofunctorMonoidalCategory]` when necessary instead
 -- attribute [local reducible] endofunctorMonoidalCategory
 
-attribute [local simp] id_tensorHom tensorHom_id
+attribute [local simp] id_tensorHom tensorHom_id in
 
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
@@ -317,7 +317,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) : F.ob
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]
 noncomputable def equivOfTensorIsoUnit (m n : M) (h₁ : m ⊗ n ≅ 𝟙_ M) (h₂ : n ⊗ m ≅ 𝟙_ M)
-    (H : (h₁.hom ▷ m) ≫ (λ_ m).hom = (α_ m n m).hom ≫ (m ◁ h₂.hom) ≫ (ρ_ m).hom) : C ≌ C
+    (H : (h₁.hom ⊗ 𝟙 m) ≫ (λ_ m).hom = (α_ m n m).hom ≫ (𝟙 m ⊗ h₂.hom) ≫ (ρ_ m).hom) : C ≌ C
     where
   functor := F.obj m
   inverse := F.obj n
