@@ -78,12 +78,12 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
--- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- porting note: added this instance so that we can use `DFunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
-    simp only [FunLike.coe_fn_eq] at h
+    simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
   map_continuous := fun γ => by continuity
 
@@ -172,11 +172,14 @@ def symm (γ : Path x y) : Path y x where
 #align path.symm Path.symm
 
 @[simp]
-theorem symm_symm {γ : Path x y} : γ.symm.symm = γ := by
+theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
   show γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 #align path.symm_symm Path.symm_symm
+
+theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
@@ -187,7 +190,7 @@ theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
 @[simp]
 theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
-  simp only [mem_range, Path.symm, FunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
+  simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
   constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine' ⟨1 - y, mem_iff_one_sub_mem.mp hy, _⟩ <;>
     convert hxy
@@ -199,7 +202,7 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 open ContinuousMap
 
-/- porting note: because of the new `FunLike` instance, we already have a coercion to `C(I, X)`
+/- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
 so we avoid adding another.
 --instance : Coe (Path x y) C(I, X) :=
   --⟨fun γ => γ.1⟩
@@ -212,7 +215,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
-  continuous_eval'.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+  continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
 @[continuity]
@@ -643,7 +646,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   rw [← γ.extend_range]
   simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
   intro x _hx
-  simp only [FunLike.coe, Path.truncate, mem_range_self]
+  simp only [DFunLike.coe, Path.truncate, mem_range_self]
 #align path.truncate_range Path.truncate_range
 
 /-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
@@ -668,7 +671,7 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
   rw [cast_coe]
-  simp only [truncate, FunLike.coe, refl, min_def, max_def]
+  simp only [truncate, DFunLike.coe, refl, min_def, max_def]
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
@@ -875,13 +878,8 @@ theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn 
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
-  · simp only [const, continuous_def, piecewise_preimage]
-    intro U hU
-    by_cases hy' : y ∈ U
-    · simp [hy', h.mem_open hU hy']
-    · by_cases hx' : x ∈ U
-      · simpa [hx', hy'] using isOpen_univ.sdiff isClosed_singleton
-      · simp [hx', hy']
+  · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
+      fun _ ↦ h
   · simp only [Path.coe_mk_mk, piecewise]
     split_ifs <;> assumption
 
@@ -962,13 +960,13 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
 #align is_path_connected_iff_eq isPathConnected_iff_eq
 
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
-    ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
+    ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
   let ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 #align is_path_connected.joined_in IsPathConnected.joinedIn
 
 theorem isPathConnected_iff :
-    IsPathConnected F ↔ F.Nonempty ∧ ∀ (x) (_ : x ∈ F) (y) (_ : y ∈ F), JoinedIn F x y :=
+    IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
@@ -988,12 +986,12 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y}
     (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
 
-/-- If `f : X → Y` is a `Inducing`, `F(f)` is path-connected iff `F` is. -/
+/-- If `f : X → Y` is a `Inducing`, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
   simp? [isPathConnected_iff] at hF ⊢ says
-    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+    simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
   refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩
@@ -1123,9 +1121,9 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
 joined by a continuous path. -/
 class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- A path-connected space must be nonempty. -/
-  Nonempty : Nonempty X
+  nonempty : Nonempty X
   /-- Any two points in a path-connected space must be joined by a continuous path. -/
-  Joined : ∀ x y : X, Joined x y
+  joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
@@ -1135,7 +1133,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   · intro h
     refine' ⟨(nonempty_quotient_iff _).mpr h.1, ⟨_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
-    exact Quotient.sound (PathConnectedSpace.Joined x y)
+    exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
     skip
@@ -1148,7 +1146,7 @@ variable [PathConnectedSpace X]
 
 /-- Use path-connectedness to build a path between two points. -/
 def somePath (x y : X) : Path x y :=
-  Nonempty.some (Joined x y)
+  Nonempty.some (joined x y)
 #align path_connected_space.some_path PathConnectedSpace.somePath
 
 end PathConnectedSpace
@@ -1170,11 +1168,11 @@ theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConne
 theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
   constructor
   · intro h
-    haveI := @PathConnectedSpace.Nonempty X _ _
+    haveI := @PathConnectedSpace.nonempty X _ _
     inhabit X
     refine' ⟨default, mem_univ _, _⟩
     intros y _hy
-    simpa using PathConnectedSpace.Joined default y
+    simpa using PathConnectedSpace.joined default y
   · intro h
     have h' := h.joinedIn
     cases' h with x h
@@ -1201,8 +1199,8 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  Nonempty := inferInstance
-  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  nonempty := inferInstance
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
@@ -1278,17 +1276,17 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     rw [pathConnectedSpace_iff_eq]
     use Classical.arbitrary X
     refine' IsClopen.eq_univ ⟨_, _⟩ (by simp)
+    · rw [isClosed_iff_nhds]
+      intro y H
+      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
+      rcases H U U_in with ⟨z, hz, hz'⟩
+      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
     · rw [isOpen_iff_mem_nhds]
       intro y y_in
       rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
       apply mem_of_superset U_in
       rw [← pathComponent_congr y_in]
       exact hU.subset_pathComponent (mem_of_mem_nhds U_in)
-    · rw [isClosed_iff_nhds]
-      intro y H
-      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
-      rcases H U U_in with ⟨z, hz, hz'⟩
-      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace
 
 theorem pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)

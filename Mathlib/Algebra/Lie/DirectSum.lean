@@ -126,6 +126,28 @@ theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i�
   zipWith_apply _ _ x y i
 #align direct_sum.bracket_apply DirectSum.bracket_apply
 
+theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
+    ⁅of L i x, of L i y⁆ = of L i ⁅x, y⁆ :=
+  DFinsupp.zipWith_single_single _ _ _ _
+#align direct_sum.lie_of_of_eq DirectSum.lie_of_same
+
+theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
+    ⁅of L i x, of L j y⁆ = 0 := by
+  refine DFinsupp.ext fun k => ?_
+  rw [bracket_apply]
+  obtain rfl | hik := Decidable.eq_or_ne i k
+  · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
+  · rw [of_eq_of_ne _ _ _ _ hik, zero_lie, zero_apply]
+#align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
+
+@[simp]
+theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
+    ⁅of L i x, of L j y⁆ = if hij : i = j then of L i ⁅x, hij.symm.recOn y⁆ else 0 := by
+  obtain rfl | hij := Decidable.eq_or_ne i j
+  · simp only [lie_of_same L x y, dif_pos]
+  · simp only [lie_of_of_ne L hij x y, hij, dif_neg, dite_false]
+#align direct_sum.lie_of DirectSum.lie_of
+
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
@@ -148,7 +170,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp [h]
+        simp? [h] says simp only [h, dite_eq_ite, ite_true, single_apply]
         intros
         erw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
@@ -174,37 +196,6 @@ theorem lieAlgebra_ext {x y : ⨁ i, L i}
   DFinsupp.ext h
 #align direct_sum.lie_algebra_ext DirectSum.lieAlgebra_ext
 
-theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : L j) :
-    ⁅of L i x, of L j y⁆ = 0 := by
-  apply lieAlgebra_ext R ι L; intro k
-  rw [LieHom.map_lie]
-  simp only [of, singleAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, lieAlgebraComponent_apply,
-    component, lapply, LinearMap.coe_mk, AddHom.coe_mk, single_apply, LieHom.map_zero]
-  -- The next four lines were not needed before leanprover/lean4#2644
-  erw [AddMonoidHom.coe_mk, AddHom.coe_mk, ZeroHom.coe_mk]
-  rotate_left
-  intros; erw [single_add]
-  erw [single_apply, single_apply]
-  by_cases hik : i = k
-  · simp only [dif_neg, not_false_iff, lie_zero, hik.symm, hij]
-  · simp only [dif_neg, not_false_iff, zero_lie, hik]
-#align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
-
-theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L j) :
-    ⁅of L i x, of L j y⁆ = of L i ⁅x, hij.recOn y⁆ := by
-  have : of L j y = of L i (hij.recOn y) := Eq.rec (Eq.refl _) hij
-  rw [this, ← lieAlgebraOf_apply R ι L i ⁅x, hij.recOn y⁆, LieHom.map_lie, lieAlgebraOf_apply,
-    lieAlgebraOf_apply]
-#align direct_sum.lie_of_of_eq DirectSum.lie_of_of_eq
-
-@[simp]
-theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
-    ⁅of L i x, of L j y⁆ = if hij : j = i then lieAlgebraOf R ι L i ⁅x, hij.recOn y⁆ else 0 := by
-  by_cases hij : j = i
-  · simp only [lie_of_of_eq R ι L hij x y, hij, dif_pos, not_false_iff, lieAlgebraOf_apply]
-  · simp only [lie_of_of_ne R ι L hij x y, hij, dif_neg, not_false_iff]
-#align direct_sum.lie_of DirectSum.lie_of
-
 variable {R L ι}
 
 /-- Given a family of Lie algebras `L i`, together with a family of morphisms of Lie algebras
@@ -213,7 +204,7 @@ variable {R L ι}
 then this map is a morphism of Lie algebras. -/
 @[simps]
 def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
-    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : ∀ i j : ι, i ≠ j → ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
+    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
   { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
     toFun := toModule R ι L' fun i => (f i : L i →ₗ[R] L')
@@ -236,16 +227,14 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
         simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
-      -- Tidy up and use `lie_of`.
       intro i j y x
-      simp only [lie_of R, lieAlgebraOf_apply, LieHom.coe_toLinearMap, toAddMonoid_of,
-        coe_toModule_eq_coe_toAddMonoid, LinearMap.toAddMonoidHom_coe]
+      simp only [coe_toModule_eq_coe_toAddMonoid, toAddMonoid_of]
       -- And finish with trivial case analysis.
-      rcases eq_or_ne i j with (h | h)
-      · have h' : f j (h.recOn y) = f i y := Eq.rec (Eq.refl _) h
-        simp only [h, h', LieHom.coe_toLinearMap, dif_pos, LieHom.map_lie, toAddMonoid_of,
-          LinearMap.toAddMonoidHom_coe]
-      · simp only [h, hf j i h.symm x y, dif_neg, not_false_iff, AddMonoidHom.map_zero] }
+      obtain rfl | hij := Decidable.eq_or_ne i j
+      · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,
+          LieHom.map_lie]
+      · simp_rw [lie_of_of_ne _ hij.symm, map_zero,  LinearMap.toAddMonoidHom_coe,
+          LieHom.coe_toLinearMap, hf hij.symm x y] }
 #align direct_sum.to_lie_algebra DirectSum.toLieAlgebra
 
 end Algebras

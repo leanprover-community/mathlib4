@@ -188,7 +188,7 @@ variable {H : ι → Type*} [∀ i, Group (H i)]
 
 variable (ϕ : ∀ i : ι, H i →* G)
 
-variable {hcomm : ∀ i j : ι, i ≠ j → ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
+variable {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
 
 -- We use `f` and `g` to denote elements of `Π (i : ι), H i`
 variable (f g : ∀ i : ι, H i)
@@ -201,7 +201,7 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
   classical
     apply le_antisymm
     · rintro x ⟨f, rfl⟩
-      refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm _ _ h _ _) ?_
+      refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) ?_
       intro i _hi
       apply Subgroup.mem_sSup_of_mem
       · use i
@@ -221,7 +221,7 @@ theorem injective_noncommPiCoprod_of_independent
     apply eq_bot_iff.mpr
     intro f heq1
     have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
-      Subgroup.eq_one_of_noncommProd_eq_one_of_independent _ _ (fun _ _ _ _ h => hcomm _ _ h _ _)
+      Subgroup.eq_one_of_noncommProd_eq_one_of_independent _ _ (fun _ _ _ _ h => hcomm h _ _)
         _ hind (by simp) heq1
     ext i
     apply hinj
@@ -233,7 +233,7 @@ variable (hcomm)
 
 @[to_additive]
 theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
-    (hcoprime : ∀ i j, i ≠ j → Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
+    (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent fun i => (ϕ i).range := by
   cases nonempty_fintype ι
   classical
@@ -250,10 +250,10 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     cases' hxi with g' hg'f
     have hxi : orderOf f ∣ Fintype.card (H i) := by
       rw [← hg'f]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
+      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
     have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
       rw [← hgf, ← Fintype.card_pi]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
+      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
     change f = 1
     rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
     -- porting note: ouch, had to replace an ugly `convert`
@@ -261,11 +261,9 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     use c
     rw [← hc]
     symm
-    rw [← Nat.coprime_iff_gcd_eq_one]
-    apply Nat.coprime_prod_left
-    intro j _
-    apply hcoprime
-    exact j.2
+    rw [← Nat.coprime_iff_gcd_eq_one, Nat.coprime_fintype_prod_left_iff, Subtype.forall]
+    intro j h
+    exact hcoprime h
 #align monoid_hom.independent_range_of_coprime_order MonoidHom.independent_range_of_coprime_order
 #align add_monoid_hom.independent_range_of_coprime_order AddMonoidHom.independent_range_of_coprime_order
 
@@ -286,15 +284,15 @@ variable (f g : ∀ i : ι, H i)
 section CommutingSubgroups
 
 -- We assume that the elements of different subgroups commute
-variable (hcomm : ∀ i j : ι, i ≠ j → ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y)
+variable (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y)
 
 @[to_additive]
 theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
     ∀ (x : H i) (y : H j), Commute ((H i).subtype x) ((H j).subtype y) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩
-  exact hcomm i j hne x y hx hy
+  exact hcomm hne x y hx hy
 #align subgroup.commute_subtype_of_commute Subgroup.commute_subtype_of_commute
-#align add_subgroup.commute_subtype_of_commute AddSubgroup.commute_subtype_of_commute
+#align add_subgroup.commute_subtype_of_commute AddSubgroup.addCommute_subtype_of_addCommute
 
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/
@@ -333,7 +331,7 @@ variable (hcomm)
 
 @[to_additive]
 theorem independent_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
-    (hcoprime : ∀ i j, i ≠ j → Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
+    (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent H := by
   simpa using
     MonoidHom.independent_range_of_coprime_order (fun i => (H i).subtype)

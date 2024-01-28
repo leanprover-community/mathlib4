@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.Cases
 import Mathlib.Algebra.NeZero
+import Mathlib.Logic.Function.Basic
 
 #align_import algebra.char_zero.defs from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -130,6 +130,11 @@ namespace NeZero
 instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) :=
   ⟨Nat.cast_ne_zero.mpr out⟩
 #align ne_zero.char_zero NeZero.charZero
+
+instance charZero_one {M} [AddMonoidWithOne M] [CharZero M] : NeZero (1 : M) where
+  out := by
+    rw [← Nat.cast_one, Nat.cast_ne_zero]
+    trivial
 
 instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZero M] :
     NeZero (OfNat.ofNat n : M) :=

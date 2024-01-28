@@ -232,8 +232,8 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
       · exact ⟨Or.inr hi, _, hj⟩
       · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
     -- Porting note: two goals remain at this point in Lean 4
-    · simp_all only [or_true, dvd_mul_right]
-    · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right]
+    · simp_all only [or_true, dvd_mul_right, and_self]
+    · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right, or_false, and_self]
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
     · refine' ⟨monomial (j - i) d, _⟩
@@ -252,7 +252,7 @@ theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
-    and_true_iff]
+    ne_eq, not_false_eq_true, and_true]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_X MvPolynomial.X_dvd_X
 

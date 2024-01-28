@@ -18,12 +18,11 @@ This file contains some theorems about cofiltered limits of profinite sets.
 
 ## Main Results
 
-- `exists_clopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
+- `exists_isClopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
   sets is the pullback of a clopen set from one of the factors in the limit.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
-
 
 namespace Profinite
 
@@ -33,9 +32,14 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe u
+universe u v
 
-variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u}} (C : Cone F)
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
+
+noncomputable
+instance preserves_smaller_limits_toTopCat :
+    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
+  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
 
 -- include hC
 -- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
@@ -43,24 +47,25 @@ variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
-theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
-    ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
+theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
+    ∃ (j : J) (V : Set (F.obj j)), IsClopen V ∧ U = C.π.app j ⁻¹' V := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
-  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
+  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, v} (F ⋙ Profinite.toTopCat)
       (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
       (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
   rotate_left
   · intro i
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
-    apply isTopologicalBasis_clopen
+    apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
     exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).continuous,
       hV.2.preimage ((F ⋙ toTopCat).map f).continuous⟩
     -- Porting note: `<;> continuity` fails
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
-  obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.1
+  obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
   clear hB
   let j : S → J := fun s => (hS s.2).choose
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
@@ -71,7 +76,7 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i)
   · intro s
-    exact (hV s).1.1.preimage (C.π.app (j s)).continuous
+    exact (hV s).1.2.preimage (C.π.app (j s)).continuous
   have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i
   · dsimp only
     rw [h]
@@ -79,7 +84,7 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
     refine' ⟨_, ⟨⟨T, hT⟩, rfl⟩, _⟩
     dsimp only [forget_map_eq_coe]
     rwa [← (hV ⟨T, hT⟩).2]
-  have := hU.2.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
+  have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
@@ -88,8 +93,7 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
   -- Pulling back all of the sets from the previous step to `F.obj j0` and taking a union,
   -- we obtain a clopen set in `F.obj j0` which works.
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists (G.image j)
-  let f : ∀ (s : S) (_ : s ∈ G), j0 ⟶ j s := fun s hs =>
-    (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
+  let f : ∀ s ∈ G, j0 ⟶ j s := fun s hs => (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
   let W : S → Set (F.obj j0) := fun s => if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
   -- Conclude, using the `j0` and the clopen set of `F.obj j0` obtained above.
   refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩
@@ -113,20 +117,20 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
       rw [(hV s).2]
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w] at hx
 set_option linter.uppercaseLean3 false in
-#align Profinite.exists_clopen_of_cofiltered Profinite.exists_clopen_of_cofiltered
+#align Profinite.exists_clopen_of_cofiltered Profinite.exists_isClopen_of_cofiltered
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
-  obtain ⟨j, V, hV, h⟩ := exists_clopen_of_cofiltered C hC hU
-  use j, LocallyConstant.ofClopen hV
+  obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
+  use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   conv_rhs => rw [Set.preimage_comp]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
+  erw [LocallyConstant.ofIsClopen_fiber_zero hV, ← h]
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
@@ -214,6 +218,7 @@ set_option linter.uppercaseLean3 false in
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S
@@ -238,7 +243,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
     have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
-    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{u, u} _)).inv
+    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv
     exact cond.map CD
   · let f' : LocallyConstant C.pt S := ⟨S.proj, S.proj_isLocallyConstant⟩
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'

@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+import Mathlib.MeasureTheory.Function.L2Space
 
 #align_import measure_theory.function.conditional_expectation.condexp_L2 from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
@@ -358,7 +359,8 @@ theorem lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : Measurable
   · rw [lpMeas_coe]
     exact (Lp.aestronglyMeasurable _).ennnorm
   refine' (set_lintegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans _
-  exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+  gcongr
+  apply Set.inter_subset_left
 #align measure_theory.lintegral_nnnorm_condexp_L2_indicator_le MeasureTheory.lintegral_nnnorm_condexpL2_indicator_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
@@ -371,7 +373,8 @@ theorem integrable_condexpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)
   · rw [lpMeas_coe]; exact Lp.aestronglyMeasurable _
   · refine' fun t ht hμt =>
       (set_lintegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans _
-    exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+    gcongr
+    apply Set.inter_subset_left
 #align measure_theory.integrable_condexp_L2_indicator MeasureTheory.integrable_condexpL2_indicator
 
 end CondexpL2Indicator
@@ -443,7 +446,8 @@ theorem lintegral_nnnorm_condexpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s
   refine' lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) _ fun t ht hμt => _
   · exact (Lp.aestronglyMeasurable _).ennnorm
   refine' (set_lintegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans _
-  exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+  gcongr
+  apply Set.inter_subset_left
 #align measure_theory.lintegral_nnnorm_condexp_ind_smul_le MeasureTheory.lintegral_nnnorm_condexpIndSMul_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
@@ -455,7 +459,8 @@ theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
       _
   · exact Lp.aestronglyMeasurable _
   · refine' fun t ht hμt => (set_lintegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans _
-    exact mul_le_mul_right' (measure_mono (Set.inter_subset_left _ _)) _
+    gcongr
+    apply Set.inter_subset_left
 #align measure_theory.integrable_condexp_ind_smul MeasureTheory.integrable_condexpIndSMul
 
 theorem condexpIndSMul_empty {x : G} : condexpIndSMul hm MeasurableSet.empty

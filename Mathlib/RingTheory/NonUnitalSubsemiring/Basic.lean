@@ -467,28 +467,58 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align non_unital_subsemiring.eq_top_iff' NonUnitalSubsemiring.eq_top_iff'
 
-section Center
+section NonUnitalNonAssocSemiring
 
-/-- The center of a semiring `R` is the set of elements that commute with everything in `R` -/
-def center (R) [NonUnitalSemiring R] : NonUnitalSubsemiring R :=
+variable (R) [NonUnitalNonAssocSemiring R]
+
+/-- The center of a semiring `R` is the set of elements that commute and associate with everything
+in `R` -/
+def center : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
-    carrier := Set.center R
     zero_mem' := Set.zero_mem_center R
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
-theorem coe_center (R) [NonUnitalSemiring R] : ↑(center R) = Set.center R :=
+theorem coe_center : ↑(center R) = Set.center R :=
   rfl
 #align non_unital_subsemiring.coe_center NonUnitalSubsemiring.coe_center
 
 @[simp]
-theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
+theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
-theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
+  { Subsemigroup.center.commSemigroup,
+    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+
+/-- A point-free means of proving membership in the center, for a non-associative ring.
+
+This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
+lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
+    a ∈ Set.center R ↔
+      AddMonoidHom.mulLeft a = .mulRight a ∧
+      AddMonoidHom.compr₂ .mul (.mulLeft a) = .comp .mul (.mulLeft a) ∧
+      AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
+      AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
+  rw [Set.mem_center_iff, isMulCentral_iff]
+  simp [DFunLike.ext_iff]
+
+end NonUnitalNonAssocSemiring
+
+section NonUnitalSemiring
+
+-- no instance diamond, unlike the unital version
+example {R} [NonUnitalSemiring R] :
+    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
+  rfl
+
+theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
+  rw [← Semigroup.mem_center_iff]
+  exact Iff.rfl
 #align non_unital_subsemiring.mem_center_iff NonUnitalSubsemiring.mem_center_iff
 
 instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R] :
@@ -500,13 +530,7 @@ theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
-    NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
-
-end Center
+end NonUnitalSemiring
 
 section Centralizer
 
@@ -825,20 +849,19 @@ def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.prod
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
     (hS : Directed (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : NonUnitalSubsemiring R :=
-    NonUnitalSubsemiring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubsemigroup)
-      (Subsemigroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-      (⨆ i, (S i).toAddSubmonoid)
-      (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
+    NonUnitalSubsemiring.mk' (⋃ i, (S i : Set R))
+      (⨆ i, (S i).toSubsemigroup) (Subsemigroup.coe_iSup_of_directed hS)
+      (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
   -- Porting note `@this` doesn't work
   suffices H : ⨆ i, S i ≤ U; simpa using @H x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align non_unital_subsemiring.mem_supr_of_directed NonUnitalSubsemiring.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
-    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align non_unital_subsemiring.coe_supr_of_directed NonUnitalSubsemiring.coe_iSup_of_directed
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
@@ -917,7 +940,7 @@ theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R �
 
 theorem eq_of_eqOn_stop {f g : F}
     (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
-  FunLike.ext _ _ fun _ => h trivial
+  DFunLike.ext _ _ fun _ => h trivial
 #align non_unital_ring_hom.eq_of_eq_on_stop NonUnitalRingHom.eq_of_eqOn_stop
 
 theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}

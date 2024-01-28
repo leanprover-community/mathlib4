@@ -31,7 +31,7 @@ def Pi.empty (β : α → Sort*) (a : α) (h : a ∈ (∅ : Finset α)) : β a :
 #align finset.pi.empty Finset.Pi.empty
 
 universe u v
-variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α]
+variable {β : α → Type u} {δ : α → Sort v} [DecidableEq α] {s : Finset α} {t : ∀ a, Finset (β a)}
 
 /-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
@@ -87,6 +87,9 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
 theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
   rfl
 #align finset.pi_empty Finset.pi_empty
+
+@[simp] lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty  := by
+  simp [Finset.Nonempty, Classical.skolem]
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}

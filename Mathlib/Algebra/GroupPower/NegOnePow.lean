@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
 import Mathlib.Data.Int.Parity
+import Mathlib.Data.ZMod.IntUnitsPower
 
 /-!
 # Integer powers of (-1)
 
-This file defines the map `negOnePow : ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`.
+This file defines the map `negOnePow : ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`.
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
@@ -17,16 +18,15 @@ Johan Commelin to the Liquid Tensor Experiment.
 
 namespace Int
 
-/-- The map `ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
+/-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
 @[pp_dot]
-def negOnePow (n : ℤ) : ℤ := (-1 : ℤˣ) ^ n
+def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
-    (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
-  dsimp [negOnePow]
-  rw [zpow_add, Units.val_mul]
+    (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow :=
+  zpow_add _ _ _
 
 @[simp]
 lemma negOnePow_zero : negOnePow 0 = 1 := rfl
@@ -39,8 +39,7 @@ lemma negOnePow_succ (n : ℤ) : (n + 1).negOnePow = - n.negOnePow := by
 
 lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 := by
   obtain ⟨k, rfl⟩ := hn
-  dsimp [negOnePow]
-  rw [zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow, Units.val_one]
+  rw [negOnePow_add, units_mul_self]
 
 @[simp]
 lemma negOnePow_two_mul (n : ℤ) : (2 * n).negOnePow = 1 :=
@@ -56,6 +55,7 @@ lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
     rw [Int.even_iff_not_odd]
     intro h'
     simp only [negOnePow_odd _ h'] at h
+    contradiction
   · exact negOnePow_even n
 
 lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
@@ -64,7 +64,7 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
     rw [Int.odd_iff_not_even]
     intro h'
     rw [negOnePow_even _ h'] at h
-    simp only at h
+    contradiction
   · exact negOnePow_odd n
 
 @[simp]
@@ -87,7 +87,7 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
     tauto
 
 @[simp]
-lemma negOnePow_mul_self (n : ℤ) : n.negOnePow * n.negOnePow = 1 := by
-  simpa only [← negOnePow_add] using negOnePow_even _ (even_add_self n)
+lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
+  simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
 
 end Int

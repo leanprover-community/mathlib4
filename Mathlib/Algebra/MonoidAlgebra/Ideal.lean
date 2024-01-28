@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.monoid_algebra.ideal from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
@@ -44,7 +44,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
   change _ ↔ x ∈ RHS
   constructor
   · revert x
-    rw [←SetLike.le_def] -- porting note: refine needs this even though it's defeq?
+    rw [← SetLike.le_def] -- porting note: refine needs this even though it's defeq?
     refine Ideal.span_le.2 ?_
     rintro _ ⟨i, hi, rfl⟩ m hm
     refine' ⟨_, hi, 1, _⟩

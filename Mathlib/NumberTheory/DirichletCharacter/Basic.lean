@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Algebra.Periodic
-import Mathlib.Data.ZMod.Algebra
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Units
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 /-!
 # Dirichlet Characters
@@ -25,7 +23,6 @@ Main definitions:
 
 ## TODO
 
-- reduction, even, odd
 - add
   `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
   and then
@@ -45,10 +42,10 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
-abbrev DirichletCharacter (R : Type) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
+abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
-variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
 
 namespace DirichletCharacter
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
@@ -64,7 +61,7 @@ lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
   of its original level. -/
-noncomputable def changeLevel {R : Type} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
+noncomputable def changeLevel {R : Type*} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
     DirichletCharacter R n →* DirichletCharacter R m :=
   { toFun := fun ψ ↦ MulChar.ofUnitHom (ψ.toUnitHom.comp (ZMod.unitsMap hm)),
     map_one' := by ext; simp,
@@ -89,7 +86,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
-    (changeLevel hm χ) a = χ a := by
+    (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 
@@ -182,6 +179,15 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   rintro rfl
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
+lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet χ) :
+    χ.conductor ≤ (Classical.choose hd.2).conductor := by
+  refine Nat.sInf_le <| (mem_conductorSet_iff χ).mpr <|
+    ⟨dvd_trans (conductor_dvd_level _) hd.1,
+     (factorsThrough_conductor (Classical.choose hd.2)).2.choose, ?_⟩
+  rw [changeLevel_trans _ (conductor_dvd_level _) (FactorsThrough.dvd _ hd),
+      ← (factorsThrough_conductor (Classical.choose hd.2)).2.choose_spec]
+  exact FactorsThrough.eq_changeLevel χ hd
+
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
@@ -198,5 +204,75 @@ lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
   apply one_dvd _
+
+/-- The primitive character associated to a Dirichlet character. -/
+noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
+  Classical.choose (factorsThrough_conductor χ).choose_spec
+
+lemma primitiveCharacter_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
+  by_cases h : χ.conductor = 0
+  · rw [isPrimitive_def]
+    convert conductor_eq_zero_iff_level_eq_zero.mpr h
+  · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
+      conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
+
+lemma primitiveCharacter_one (hn : n ≠ 0) :
+    (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
+  rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
+      (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
+      conductor_one hn]
+
+/-- Dirichlet character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
+    DirichletCharacter R
+      (Nat.lcm n m) :=
+  changeLevel (Nat.dvd_lcm_left n m) χ₁ * changeLevel (Nat.dvd_lcm_right n m) χ₂
+
+/-- Primitive character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def primitive_mul {m : ℕ} (χ₁ : DirichletCharacter R n)
+    (χ₂ : DirichletCharacter R m) : DirichletCharacter R (mul χ₁ χ₂).conductor :=
+  primitiveCharacter (mul χ₁ χ₂)
+
+lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
+    χ.primitive_mul ψ = primitiveCharacter _ :=
+  rfl
+
+namespace isPrimitive
+lemma primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) : (primitive_mul χ ψ).isPrimitive :=
+  primitiveCharacter_isPrimitive _
+end isPrimitive
+
+variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+
+/-- A Dirichlet character is odd if its value at -1 is -1. -/
+def Odd : Prop := ψ (-1) = -1
+
+/-- A Dirichlet character is even if its value at -1 is 1. -/
+def Even : Prop := ψ (-1) = 1
+
+lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
+  suffices : ψ (-1) ^ 2 = 1
+  · convert sq_eq_one_iff.mp this
+  · rw [← map_pow _, neg_one_sq, map_one]
+
+lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+  rw [Odd] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
+
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+  rw [Even] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
 
 end DirichletCharacter

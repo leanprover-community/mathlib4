@@ -3,12 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.ContDiff
-import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -58,8 +59,6 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 Schwartz space, tempered distributions
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped BigOperators Nat
@@ -92,14 +91,14 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instFunLike : FunLike 𝓢(E, F) E fun _ => F where
+instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align schwartz_map.fun_like SchwartzMap.instFunLike
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align schwartz_map.has_coe_to_fun SchwartzMap.instCoeFun
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
@@ -132,7 +131,7 @@ protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt �
 
 @[ext]
 theorem ext {f g : 𝓢(E, F)} (h : ∀ x, (f : E → F) x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align schwartz_map.ext SchwartzMap.ext
 
 section IsBigO
@@ -163,7 +162,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
+  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
     Int.cast_ofNat]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
@@ -210,7 +209,8 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _), norm_smul]
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+    norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 #align schwartz_map.decay_smul_aux SchwartzMap.decay_smul_aux
 
 end Aux
@@ -241,7 +241,7 @@ end SeminormAux
 
 /-! ### Algebraic properties -/
 
-section Smul
+section SMul
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
   [SMulCommClass ℝ 𝕜' F]
@@ -309,7 +309,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
         exact ((c : ℝ) • f).decay' }⟩
 #align schwartz_map.has_zsmul SchwartzMap.instZSMul
 
-end Smul
+end SMul
 
 section Zero
 
@@ -323,7 +323,7 @@ instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 #align schwartz_map.inhabited SchwartzMap.instInhabited
 
-theorem coe_zero : FunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
+theorem coe_zero : DFunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
   rfl
 #align schwartz_map.coe_zero SchwartzMap.coe_zero
 
@@ -403,7 +403,7 @@ end Sub
 section AddCommGroup
 
 instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
-  FunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align schwartz_map.add_comm_group SchwartzMap.instAddCommGroup
 
@@ -418,13 +418,13 @@ def coeHom : 𝓢(E, F) →+ E → F where
 
 variable {E F}
 
-theorem coe_coeHom : (coeHom E F : 𝓢(E, F) → E → F) = FunLike.coe :=
+theorem coe_coeHom : (coeHom E F : 𝓢(E, F) → E → F) = DFunLike.coe :=
   rfl
 #align schwartz_map.coe_coe_hom SchwartzMap.coe_coeHom
 
 theorem coeHom_injective : Function.Injective (coeHom E F) := by
   rw [coe_coeHom]
-  exact FunLike.coe_injective
+  exact DFunLike.coe_injective
 #align schwartz_map.coe_hom_injective SchwartzMap.coeHom_injective
 
 end AddCommGroup
@@ -543,7 +543,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   refine' Finset.sum_le_sum fun i hi => _
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · exact_mod_cast Nat.choose_le_choose i hk
+  · exact mod_cast Nat.choose_le_choose i hk
   · trans
     · exact le_seminorm 𝕜 i n f x
     · apply Seminorm.le_def.1
@@ -597,7 +597,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 #align schwartz_map.locally_convex_space SchwartzMap.instLocallyConvexSpace
 
-instance instFirstCountableTopology : TopologicalSpace.FirstCountableTopology 𝓢(E, F) :=
+instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).first_countable
 #align schwartz_map.topological_space.first_countable_topology SchwartzMap.instFirstCountableTopology
 
@@ -616,8 +616,7 @@ def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
 
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
-    ∃ (k : ℕ) (C : ℝ) (_ : 0 ≤ C), ∀ (N : ℕ) (_ : N ≤ n) (x : E),
-      ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
+    ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
@@ -629,7 +628,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp only [Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
-  refine' pow_le_pow (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
+  refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
 
@@ -777,7 +776,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       refine' mul_le_mul_of_nonneg_right _ (norm_nonneg _)
       rw [pow_add]
       refine' mul_le_mul_of_nonneg_left _ (by positivity)
-      refine' pow_le_pow_of_le_left (norm_nonneg _) _ _
+      refine' pow_le_pow_left (norm_nonneg _) _ _
       simp only [zero_le_one, le_add_iff_nonneg_left])
 #align schwartz_map.bilin_left_clm SchwartzMap.bilinLeftCLM
 
@@ -819,7 +818,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       let seminorm_f := ((Finset.Iic (k', n)).sup (schwartzSeminormFamily 𝕜 _ _)) f
       have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' := by
         rw [pow_mul, ← mul_pow]
-        refine' pow_le_pow_of_le_left (by positivity) _ _
+        refine' pow_le_pow_left (by positivity) _ _
         rw [add_mul]
         refine' add_le_add _ (hg_upper' x)
         nth_rw 1 [← one_mul (1 : ℝ)]
@@ -844,7 +843,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
       have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-        pow_le_pow_of_le_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
+        pow_le_pow_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
       refine' le_trans (mul_le_mul hxk this (by positivity) (by positivity)) _
       have rearrange :
         (1 + ‖x‖) ^ k *
@@ -1030,7 +1029,7 @@ variable {E}
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
-  (BoundedContinuousFunction.evalClm 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
 #align schwartz_map.delta SchwartzMap.delta
 
 @[simp]

@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import ring_theory.eisenstein_criterion from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -65,9 +65,7 @@ set_option linter.uppercaseLean3 false in
 theorem eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hn0 : 0 < n) : eval 0 q ∈ P := by
   rw [← coeff_zero_eq_eval_zero, ← eq_zero_iff_mem, ← coeff_map, hq,
-  --Porting note: why is this lemma required twice?
-    coeff_zero_eq_eval_zero, coeff_zero_eq_eval_zero,
-    eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
+    coeff_zero_eq_eval_zero, eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.eval_zero_mem_ideal_of_eq_mul_X_pow Polynomial.EisensteinCriterionAux.eval_zero_mem_ideal_of_eq_mul_X_pow
 

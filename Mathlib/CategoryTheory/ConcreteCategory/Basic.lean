@@ -98,10 +98,10 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 #noalign category_theory.forget_obj_eq_coe
 
 @[reducible]
-def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
+def ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
 @[ext low] -- Porting note: lowered priority
@@ -211,6 +211,15 @@ def forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} 
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : C ⥤ D :=
   HasForget₂.forget₂
 #align category_theory.forget₂ CategoryTheory.forget₂
+
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+
+lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCategory.{w} C]
+    [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (x : (forget₂ C D).obj X) :
+    ((forget₂ C D).map (f ≫ g) x) =
+      (forget₂ C D).map g ((forget₂ C D).map f x) := by
+  rw [Functor.map_comp, comp_apply]
 
 instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : Faithful (forget₂ C D) :=

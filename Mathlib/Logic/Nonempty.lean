@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.ZeroOne
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.nonempty from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -25,10 +25,10 @@ set_option autoImplicit true
 
 variable {γ : α → Type*}
 
-instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
+instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
   ⟨0⟩
 
-instance (priority := 20) One.nonempty [One α] : Nonempty α :=
+instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
   ⟨1⟩
 
 theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
@@ -155,15 +155,15 @@ theorem Nonempty.elim_to_inhabited {α : Sort*} [h : Nonempty α] {p : Prop} (f 
   h.elim <| f ∘ Inhabited.mk
 #align nonempty.elim_to_inhabited Nonempty.elim_to_inhabited
 
-protected instance Prod.Nonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
+protected instance Prod.instNonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
   h.elim fun g ↦ h2.elim fun g2 ↦ ⟨⟨g, g2⟩⟩
 
-protected instance Pi.Nonempty {ι : Sort*} {α : ι → Sort*} [∀ i, Nonempty (α i)] :
+protected instance Pi.instNonempty {ι : Sort*} {α : ι → Sort*} [∀ i, Nonempty (α i)] :
     Nonempty (∀ i, α i) :=
   ⟨fun _ ↦ Classical.arbitrary _⟩
 
 theorem Classical.nonempty_pi {ι} {α : ι → Sort*} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
-  ⟨fun ⟨f⟩ a ↦ ⟨f a⟩, @Pi.Nonempty _ _⟩
+  ⟨fun ⟨f⟩ a ↦ ⟨f a⟩, @Pi.instNonempty _ _⟩
 #align classical.nonempty_pi Classical.nonempty_pi
 
 theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingleton α :=

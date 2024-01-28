@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Lean.Meta.Tactic.Simp
+import Lean.Meta.Tactic.Simp.SimpTheorems
 import Std.Tactic.LabelAttr
 
 /-!
@@ -40,11 +40,15 @@ register_simp_attr parity_simps
 /-- "Simp attribute for lemmas about `IsROrC`" -/
 register_simp_attr isROrC_simps
 
-/-- The simpset `qify_simps` is used by the tactic `qify` to moved expression from `ℕ` or `ℤ` to `ℚ`
+/-- The simpset `rify_simps` is used by the tactic `rify` to move expressions from `ℕ`, `ℤ`, or
+`ℚ` to `ℝ`. -/
+register_simp_attr rify_simps
+
+/-- The simpset `qify_simps` is used by the tactic `qify` to move expressions from `ℕ` or `ℤ` to `ℚ`
 which gives a well-behaved division. -/
 register_simp_attr qify_simps
 
-/-- The simpset `zify_simps` is used by the tactic `zify` to moved expression from `ℕ` to `ℤ`
+/-- The simpset `zify_simps` is used by the tactic `zify` to move expressions from `ℕ` to `ℤ`
 which gives a well-behaved subtraction. -/
 register_simp_attr zify_simps
 

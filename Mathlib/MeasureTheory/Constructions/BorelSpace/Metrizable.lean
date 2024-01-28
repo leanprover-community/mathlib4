@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.IndicatorConstPointwise
 
 #align_import measure_theory.constructions.borel_space.metrizable from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
-
 
 open Filter MeasureTheory TopologicalSpace
 
@@ -67,7 +67,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
-  apply measurable_of_is_closed'
+  apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
@@ -146,8 +146,7 @@ theorem measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f
 theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
-    ∃ (f_lim : α → β) (hf_lim_meas : Measurable f_lim),
-      ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
+    ∃ f_lim : α → β, Measurable f_lim ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
   rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩
@@ -182,19 +181,20 @@ variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set 
 /-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
 a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/
 lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     MeasurableSet A := by
   simp_rw [← measurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
-  exact measurable_of_tendsto_ennreal' L As_mble h_lim
+  exact measurable_of_tendsto_ennreal' L As_mble
+    ((tendsto_indicator_const_iff_forall_eventually L (1 : ℝ≥0∞)).mpr h_lim)
 
 /-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
 lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, NullMeasurableSet (As i) μ)
-    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
-      L (𝓝 (A.indicator 1 x))) :
+    (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     NullMeasurableSet A μ := by
   simp_rw [← aemeasurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
-  exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
+  apply aemeasurable_of_tendsto_metrizable_ae L As_mble
+  simpa [tendsto_indicator_const_apply_iff_eventually] using h_lim
 
 end TendstoIndicator

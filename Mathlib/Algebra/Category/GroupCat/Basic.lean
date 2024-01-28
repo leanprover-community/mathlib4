@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
@@ -65,8 +66,8 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -145,7 +146,7 @@ set_option linter.uppercaseLean3 false in
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
@@ -153,9 +154,6 @@ set_option linter.uppercaseLean3 false in
 #align Group.of_hom_apply GroupCat.ofHom_apply
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply
 
 @[to_additive]
 instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
@@ -217,8 +215,8 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]

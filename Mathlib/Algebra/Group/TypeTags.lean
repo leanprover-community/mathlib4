@@ -3,10 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Group.Defs
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Data.Finite.Defs
+import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
@@ -116,11 +115,17 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
+instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
+
 instance [Inhabited α] : Inhabited (Additive α) :=
   ⟨ofMul default⟩
 
 instance [Inhabited α] : Inhabited (Multiplicative α) :=
   ⟨ofAdd default⟩
+
+instance [Unique α] : Unique (Additive α) := toMul.unique
+instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)
@@ -128,17 +133,21 @@ instance [Finite α] : Finite (Additive α) :=
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
 
-instance [h: Infinite α] : Infinite (Additive α) := h
+instance [h : Infinite α] : Infinite (Additive α) := h
 
-instance [h: Infinite α] : Infinite (Multiplicative α) := h
+instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
-instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
+instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
+
+instance [h : DecidableEq α] : DecidableEq (Additive α) := h
+
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
-#align additive.nontrivial instNontrivialAdditive
+#align additive.nontrivial Additive.instNontrivial
 
-instance instNontrivialMultiplicative [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
-#align multiplicative.nontrivial instNontrivialMultiplicative
+#align multiplicative.nontrivial Multiplicative.instNontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)

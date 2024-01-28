@@ -174,12 +174,14 @@ theorem default_nim_one_rightMoves_eq :
 
 @[simp]
 theorem toLeftMovesNim_one_symm (i) :
-    (@toLeftMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
+    (@toLeftMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
+  simp [eq_iff_true_of_subsingleton]
 #align pgame.to_left_moves_nim_one_symm SetTheory.PGame.toLeftMovesNim_one_symm
 
 @[simp]
 theorem toRightMovesNim_one_symm (i) :
-    (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
+    (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
+  simp [eq_iff_true_of_subsingleton]
 #align pgame.to_right_moves_nim_one_symm SetTheory.PGame.toRightMovesNim_one_symm
 
 theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
@@ -256,7 +258,7 @@ theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : (nim o₁ ≈ nim o₂) ↔ o�
 
 /-- The Grundy value of an impartial game, the ordinal which corresponds to the game of nim that the
  game is equivalent to -/
-noncomputable def grundyValue : ∀ _ : PGame.{u}, Ordinal.{u}
+noncomputable def grundyValue : PGame.{u} → Ordinal.{u}
   | G => Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
 termination_by grundyValue G => G
 decreasing_by pgame_wf_tac

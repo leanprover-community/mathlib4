@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
@@ -21,7 +22,10 @@ groups and that the category of abelian groups has enough injective objects.
 ## Main results
 
 - `AddCommGroupCat.injective_of_divisible` : a divisible group is also an injective object.
-- `AddCommGroupCat.enoughInjectives` : the category of abelian groups has enough injectives.
+- `AddCommGroupCat.enoughInjectives` : the category of abelian groups (written additively) has
+  enough injectives.
+- `CommGroupCat.enoughInjectives` : the category of abelian group (written multiplicatively) has
+  enough injectives.
 
 ## Implementation notes
 
@@ -156,7 +160,7 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
         AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, fun _ _ ↦ rfl⟩ toRatCircle.toAddMonoidHom
       let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
       have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
-      (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
+      (DFunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
 /-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : InjectivePresentation A_ where
@@ -167,7 +171,14 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
 
 end enough_injectives_aux_proofs
 
-instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
+instance enoughInjectives : EnoughInjectives AddCommGroupCat.{u} where
   presentation A_ := ⟨enough_injectives_aux_proofs.presentation A_⟩
 
 end AddCommGroupCat
+
+namespace CommGroupCat
+
+instance enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
+  EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
+
+end CommGroupCat

@@ -59,14 +59,9 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_self]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
-  refine'
-    Eq.trans
-      (Finset.prod_bij' (fun q _ => g⁻¹ • q) (fun q _ => Finset.mem_univ _)
-        (fun q _ => Subtype.ext _) (fun q _ => g • q) (fun q _ => Finset.mem_univ _)
-        (fun q _ => smul_inv_smul g q) fun q _ => inv_smul_smul g q)
-      (map_prod ϕ _ _).symm
-  simp only [MonoidHom.id_apply, MonoidHom.coe_mk, OneHom.coe_mk,
-    smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc]
+  refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
+  simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc,
+    MonoidHom.id_apply, toPerm_symm_apply, MonoidHom.coe_mk, OneHom.coe_mk]
 #align subgroup.smul_diff_smul' Subgroup.smul_diff_smul'
 
 variable {H} [Normal H]
@@ -88,11 +83,11 @@ noncomputable instance : MulAction G H.QuotientDiff where
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
-  rw [diff, diff, index_eq_card, ←Finset.card_univ, ←Finset.prod_const, ←Finset.prod_mul_distrib]
+  rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ←Subtype.ext_iff,
-    Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
+    ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
@@ -146,10 +141,9 @@ The proof is by contradiction. We assume that `G` is a minimal counterexample to
 
 variable {G : Type u} [Group G] [Fintype G] {N : Subgroup G} [Normal N]
   (h1 : Nat.Coprime (Fintype.card N) N.index)
-  (h2 :
-    ∀ (G' : Type u) [Group G'] [Fintype G'],
-      ∀ (_ : Fintype.card G' < Fintype.card G) {N' : Subgroup G'} [N'.Normal]
-        (_ : Nat.Coprime (Fintype.card N') N'.index), ∃ H' : Subgroup G', IsComplement' N' H')
+  (h2 : ∀ (G' : Type u) [Group G'] [Fintype G'],
+    Fintype.card G' < Fintype.card G → ∀ {N' : Subgroup G'} [N'.Normal],
+      Nat.Coprime (Fintype.card N') N'.index → ∃ H' : Subgroup G', IsComplement' N' H')
   (h3 : ∀ H : Subgroup G, ¬IsComplement' N H)
 
 /-! We will arrive at a contradiction via the following steps:
@@ -183,9 +177,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Fintype.card (H.map K.subtype) = N.index := by
-    rw [←relindex_bot_left_eq_card, ←relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ←IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      subtype_range, ←relindex_sup_right, hK, relindex_top_right]
+    rw [← relindex_bot_left_eq_card, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      subtype_range, ← relindex_sup_right, hK, relindex_top_right]
   have h7 : Fintype.card N * Fintype.card (H.map K.subtype) = Fintype.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Fintype.card N).Coprime (Fintype.card (H.map K.subtype)) := by
@@ -256,9 +250,8 @@ theorem step7 : IsCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact
-    ⟨⟨fun g h =>
-        eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left (step6 h1 h2 h3).bot_lt_center.ne')
-          (mem_top h) g⟩⟩
+    ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
+      (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
 #align subgroup.schur_zassenhaus_induction.step7 Subgroup.SchurZassenhausInduction.step7
 
 end SchurZassenhausInduction
@@ -305,7 +298,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
   haveI := (Cardinal.lt_aleph0_iff_fintype.mp
     (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   apply exists_right_complement'_of_coprime_of_fintype
-  rwa [←Nat.card_eq_fintype_card]
+  rwa [← Nat.card_eq_fintype_card]
 #align subgroup.exists_right_complement'_of_coprime Subgroup.exists_right_complement'_of_coprime
 
 /-- **Schur-Zassenhaus** for normal subgroups:

@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.GCongr
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
@@ -50,7 +51,7 @@ open BigOperators
 
 open Finset
 
-open Finset.Nat.antidiagonal (fst_le snd_le)
+open Finset.antidiagonal (fst_le snd_le)
 
 /-- The recursive definition of the sequence of Catalan numbers:
 `catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i)` -/
@@ -70,7 +71,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 #align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
-    catalan (n + 1) = ∑ ij in Nat.antidiagonal n, catalan ij.1 * catalan ij.2 := by
+    catalan (n + 1) = ∑ ij in antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
 #align catalan_succ' catalan_succ'
@@ -91,14 +92,15 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
   have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
-  have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
-    exact_mod_cast Nat.succ_mul_centralBinom_succ i
+  have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
+    mod_cast Nat.succ_mul_centralBinom_succ i
   have h₄ :
     ((n : ℚ) - i + 1) * (n - i + 1).centralBinom = 2 * (2 * (n - i) + 1) * (n - i).centralBinom :=
-    by exact_mod_cast Nat.succ_mul_centralBinom_succ (n - i)
+      mod_cast Nat.succ_mul_centralBinom_succ (n - i)
   simp only [gosperCatalan]
   push_cast
-  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ←(Nat.add_sub_assoc h 1), add_comm]]
+  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
+    add_comm]]
   rw [h₁, h₂, h₃, h₄]
   field_simp
   ring
@@ -115,7 +117,7 @@ private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatala
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
-    exact_mod_cast this
+    exact mod_cast this
   induction' n using Nat.case_strong_induction_on with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
@@ -163,7 +165,7 @@ def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
-    (Finset.Nat.antidiagonal n).attach.biUnion fun ijh =>
+    (antidiagonal n).attach.biUnion fun ijh =>
       -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
       -- have := Nat.lt_succ_of_le (fst_le ijh.2)
       -- have := Nat.lt_succ_of_le (snd_le ijh.2)
@@ -171,8 +173,9 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   -- Porting note: Add this to satisfy the linter.
   decreasing_by
       simp_wf
-      try exact Nat.lt_succ_of_le (fst_le ijh.2)
-      try exact Nat.lt_succ_of_le (snd_le ijh.2)
+      have := fst_le ijh.2
+      have := snd_le ijh.2
+      omega
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
@@ -181,7 +184,7 @@ theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNu
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
-      (Nat.antidiagonal n).biUnion fun ij =>
+      (antidiagonal n).biUnion fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext

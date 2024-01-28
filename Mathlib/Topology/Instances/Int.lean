@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Archimedean
 
 #align_import topology.instances.int from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -85,4 +87,3 @@ theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
 #align int.cofinite_eq Int.cofinite_eq
 
 end Int
-

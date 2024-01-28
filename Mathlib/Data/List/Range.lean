@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Join
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Zip
+import Mathlib.Data.List.Pairwise
 
 #align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -76,14 +76,15 @@ theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
 #align list.range_eq_nil List.range_eq_nil
 
 theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
-  simp only [range_eq_range', pairwise_lt_range']
+  simp (config := {decide := true}) only [range_eq_range', pairwise_lt_range']
 #align list.pairwise_lt_range List.pairwise_lt_range
 
 theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
-theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
+theorem nodup_range (n : ℕ) : Nodup (range n) := by
+  simp (config := {decide := true}) only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
 #align list.range_sublist List.range_sublist
 #align list.range_subset List.range_subset
@@ -242,7 +243,7 @@ section Ranges
 * Example: `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
 def ranges : List ℕ → List (List ℕ)
   | [] => nil
-  | a::l => range a::(ranges l).map (map (Nat.add a))
+  | a::l => range a::(ranges l).map (map (a + ·))
 
 /-- The members of `l.ranges` are pairwise disjoint -/
 theorem ranges_disjoint (l : List ℕ) :
@@ -286,7 +287,6 @@ theorem ranges_join (l : List ℕ) :
     simp only [sum_cons, join]
     rw [← map_join, hl]
     rw [range_add]
-    rfl
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
 theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :

@@ -101,7 +101,7 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
     ∃ K : Set M₂, IsCompact K ∧ f '' S ⊆ K :=
   let ⟨K, hK, hKf⟩ := hf
-  let ⟨r, hr, hrS⟩ := hS hKf
+  let ⟨r, hr, hrS⟩ := (hS hKf).exists_pos
   let ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
   let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
@@ -346,7 +346,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   rcases hf with ⟨K, hK, hKf⟩
   -- But any compact set is totally bounded, hence Von-Neumann bounded. Thus, `K` absorbs `U`.
   -- This gives `r > 0` such that `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
-  rcases hK.totallyBounded.isVonNBounded 𝕜₂ hU with ⟨r, hr, hrU⟩
+  rcases (hK.totallyBounded.isVonNBounded 𝕜₂ hU).exists_pos with ⟨r, hr, hrU⟩
   -- Choose `c : 𝕜₂` with `r < ‖c‖`.
   rcases NormedField.exists_lt_norm 𝕜₁ r with ⟨c, hc⟩
   have hcnz : c ≠ 0 := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
@@ -434,8 +434,7 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
 theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
     [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [SeminormedAddCommGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [UniformAddGroup M₂]
-    [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂]
-    [ContinuousSMul 𝕜₂ (M₁ →SL[σ₁₂] M₂)] :
+    [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     (compactOperator σ₁₂ M₁ M₂).topologicalClosure = compactOperator σ₁₂ M₁ M₂ :=
   SetLike.ext' isClosed_setOf_isCompactOperator.closure_eq
 #align compact_operator_topological_closure compactOperator_topologicalClosure

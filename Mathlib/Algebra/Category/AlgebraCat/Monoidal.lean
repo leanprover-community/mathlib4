@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
@@ -76,13 +75,13 @@ set_option maxHeartbeats 800000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
-    { μIsoSymm := fun X Y => Iso.refl _
-      εIsoSymm := Iso.refl _
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_module_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
+        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
       rightUnitor_eq := fun X => by
         dsimp
         erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]

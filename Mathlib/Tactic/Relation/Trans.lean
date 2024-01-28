@@ -21,11 +21,14 @@ open Lean Meta Elab
 
 initialize registerTraceClass `Tactic.trans
 
+/-- Discrimation tree settings for the `trans` extension. -/
+def transExt.config : WhnfCoreConfig := {}
+
 /-- Environment extension storing transitivity lemmas -/
 initialize transExt :
-    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
+    SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
+    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n transExt.config
     initial := {}
   }
 
@@ -43,7 +46,7 @@ initialize registerBuiltinAttribute {
     let some xyHyp := xs.pop.back? | fail
     let .app (.app _ _) _ ← inferType yzHyp | fail
     let .app (.app _ _) _ ← inferType xyHyp | fail
-    let key ← withReducible <| DiscrTree.mkPath rel
+    let key ← withReducible <| DiscrTree.mkPath rel transExt.config
     transExt.add (decl, key) kind
 }
 
@@ -129,7 +132,9 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
     let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
     let s ← saveState
     trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
+    let lemmas :=
+      (← (transExt.getState (← getEnv)).getUnify rel transExt.config).push ``Trans.simple
+    for lem in lemmas do
       trace[Tactic.trans]"trying lemma {lem}"
       try
         liftMetaTactic fun g ↦ do
@@ -147,7 +152,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   trace[Tactic.trans]"trying heterogeneous case"
   let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
+  for lem in (← (transExt.getState (← getEnv)).getUnify rel transExt.config).push
       ``HEq.trans |>.push ``HEq.trans do
     try
       liftMetaTactic fun g ↦ do

@@ -6,11 +6,12 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.List.Lemmas
 
-#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
+#align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Basic properties of lists
@@ -247,12 +248,13 @@ theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
 #align list.singleton_eq List.singleton_eq
 
-theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) : Insert.insert x l = x :: l :=
-  if_neg h
+theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) :
+    Insert.insert x l = x :: l :=
+  insert_of_not_mem h
 #align list.insert_neg List.insert_neg
 
 theorem insert_pos [DecidableEq α] {x : α} {l : List α} (h : x ∈ l) : Insert.insert x l = l :=
-  if_pos h
+  insert_of_mem h
 #align list.insert_pos List.insert_pos
 
 theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List α) = [x, y] := by
@@ -391,22 +393,20 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 
 #align list.append_inj_left' List.append_inj_left'ₓ -- implicits order
 
-theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) : t₁ = t₂ :=
-  (append_right_inj _).1 h
-#align list.append_left_cancel List.append_left_cancel
+@[deprecated] alias append_left_cancel := append_cancel_left -- deprecated since 2024-01-18
+#align list.append_left_cancel List.append_cancel_left
 
-theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
-  (append_left_inj _).1 h
-#align list.append_right_cancel List.append_right_cancel
+@[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
+#align list.append_right_cancel List.append_cancel_right
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
-  fun _ _ ↦ append_left_cancel
+  fun _ _ ↦ append_cancel_left
 #align list.append_right_injective List.append_right_injective
 
 #align list.append_right_inj List.append_right_inj
 
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
-  fun _ _ ↦ append_right_cancel
+  fun _ _ ↦ append_cancel_right
 #align list.append_left_injective List.append_left_injective
 
 #align list.append_left_inj List.append_left_inj
@@ -523,13 +523,13 @@ theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
 theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact append_right_cancel h
+  exact append_cancel_right h
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 
 theorem last_eq_of_concat_eq {a b : α} {l : List α} : concat l a = concat l b → a = b := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact head_eq_of_cons_eq (append_left_cancel h)
+  exact head_eq_of_cons_eq (append_cancel_left h)
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 
 theorem concat_ne_nil (a : α) (l : List α) : concat l a ≠ [] := by simp
@@ -600,10 +600,7 @@ theorem reverse_eq_iff {l l' : List α} : l.reverse = l' ↔ l = l'.reverse :=
   reverse_involutive.eq_iff
 #align list.reverse_eq_iff List.reverse_eq_iff
 
-@[simp]
-theorem reverse_eq_nil {l : List α} : reverse l = [] ↔ l = [] :=
-  @reverse_inj _ l []
-#align list.reverse_eq_nil List.reverse_eq_nil
+#align list.reverse_eq_nil List.reverse_eq_nil_iff
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
@@ -642,13 +639,6 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 
 /-! ### dropLast -/
 
-@[simp]
-theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
-  | [] | [_] => rfl
-  | a::b::l => by
-    rw [dropLast, length_cons, length_cons, length_dropLast (b::l), succ_sub_one, length_cons,
-      succ_sub_one]
-    simp
 #align list.length_init List.length_dropLast
 
 /-! ### getLast -/
@@ -704,13 +694,6 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
     getLast l₁ h₁ = getLast l₂ h₂ := by subst l₁; rfl
 #align list.last_congr List.getLast_congr
 
-theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
-  | [], h => absurd rfl h
-  | [a], _ => by simp only [getLast, mem_singleton]
-  | a :: b :: l, h =>
-    List.mem_cons.2 <| Or.inr <| by
-        rw [getLast_cons_cons]
-        exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
@@ -720,11 +703,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 #align list.last_replicate_succ List.getLast_replicate_succ
 
 /-! ### getLast? -/
-
--- Porting note: New lemma, since definition of getLast? is slightly different.
-@[simp]
-theorem getLast?_singleton (a : α) :
-    getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp]
@@ -870,7 +848,7 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp at h
+    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
     simp [h]
 #align list.cons_head'_tail List.cons_head?_tail
 
@@ -1044,6 +1022,9 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
 alias sublist_nil_iff_eq_nil := sublist_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
+@[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
+  constructor <;> rintro (_ | _) <;> aesop
+
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
 
 theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
@@ -1083,10 +1064,6 @@ section IndexOf
 
 variable [DecidableEq α]
 
--- Porting note: simp can prove this
--- @[simp]
-theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
-  rfl
 #align list.index_of_nil List.indexOf_nil
 
 /-
@@ -1107,28 +1084,26 @@ theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
 #align list.index_of_cons_self List.indexOf_cons_self
 
 -- fun e => if_pos e
-theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) = 0
-  | e => by rw [e]; exact indexOf_cons_self b l
+theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
+  | e => by rw [← e]; exact indexOf_cons_self b l
 #align list.index_of_cons_eq List.indexOf_cons_eq
 
 -- fun n => if_neg n
 @[simp]
-theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
+theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
--- rfl
-theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
-  simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons]; split_ifs with h
-  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
-  · simp only [h, false_or_iff]
+  simp only [length, mem_cons, indexOf_cons, eq_comm]
+  rw [cond_eq_if]
+  split_ifs with h <;> simp at h
+  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+  · simp only [Ne.symm h, false_or_iff]
     rw [← ih]
     exact succ_inj'
 #align list.index_of_eq_length List.indexOf_eq_length
@@ -1140,8 +1115,8 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
-  simp only [length, indexOf_cons]
-  by_cases h : a = b
+  simp only [length, indexOf_cons, cond_eq_if, beq_iff_eq]
+  by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 #align list.index_of_le_length List.indexOf_le_length
@@ -1156,16 +1131,16 @@ theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l�
   · exfalso
     exact not_mem_nil a h
   rw [List.cons_append]
-  by_cases hh : a = d₁
+  by_cases hh : d₁ = a
   · iterate 2 rw [indexOf_cons_eq _ hh]
-  rw [indexOf_cons_ne _ hh, indexOf_cons_ne _ hh, ih (mem_of_ne_of_mem hh h)]
+  rw [indexOf_cons_ne _ hh, indexOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
 #align list.index_of_append_of_mem List.indexOf_append_of_mem
 
 theorem indexOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
     indexOf a (l₁ ++ l₂) = l₁.length + indexOf a l₂ := by
   induction' l₁ with d₁ t₁ ih
   · rw [List.nil_append, List.length, zero_add]
-  rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h), List.length,
+  rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
     ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 #align list.index_of_append_of_not_mem List.indexOf_append_of_not_mem
 
@@ -1319,7 +1294,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp [lt_succ_iff] at h
+      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h
@@ -1345,8 +1320,8 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 @[simp]
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
   | b :: l, h => by
-    by_cases h' : a = b <;>
-      simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l]
+    by_cases h' : b = a <;>
+    simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
 
 @[simp, deprecated indexOf_get]
 theorem indexOf_nthLe [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a :=
@@ -1621,7 +1596,7 @@ theorem insertNth_length_self (l : List α) (x : α) : insertNth l.length x l = 
 
 theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
     l.length ≤ (insertNth n x l).length := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
     exact (Nat.lt_succ_self _).le
   · rw [insertNth_of_length_lt _ _ _ hn]
@@ -1629,7 +1604,7 @@ theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
 
 theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     (insertNth n x l).length ≤ l.length + 1 := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
   · rw [insertNth_of_length_lt _ _ _ hn]
     exact (Nat.lt_succ_self _).le
@@ -1732,14 +1707,11 @@ theorem map_concat (f : α → β) (a : α) (l : List α) :
   induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
-@[simp]
-theorem map_id'' (l : List α) : map (fun x => x) l = l :=
-  map_id _
-#align list.map_id'' List.map_id''
+#align list.map_id'' List.map_id'
 
-theorem map_id' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
+theorem map_id'' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
   simp [show f = id from funext h]
-#align list.map_id' List.map_id'
+#align list.map_id' List.map_id''
 
 theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
   eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
@@ -1752,7 +1724,9 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
   unfold List.bind
-  induction l <;> simp [map, join, List.ret, cons_append, nil_append, *] at *
+  induction l <;>
+    simp (config := { unfoldPartialApp := true })
+      [map, join, List.ret, cons_append, nil_append, *] at *
   assumption
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
@@ -1770,20 +1744,6 @@ theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 #align list.map_tail List.map_tail
 
-@[simp]
-theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
-  constructor <;> intro h x y hxy
-  · suffices [x] = [y] by simpa using this
-    apply h
-    simp [hxy]
-  · induction' y with yh yt y_ih generalizing x
-    · simpa using hxy
-    cases x
-    · simp at hxy
-    · simp only [map, cons.injEq] at hxy
-      simp [y_ih hxy.2, h hxy.1]
-#align list.map_injective_iff List.map_injective_iff
-
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
 This is the reverse direction of `List.map_map`.
@@ -1799,6 +1759,68 @@ a single `List.map` of composed functions.
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
   ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
+
+section map_bijectivity
+
+theorem _root_.Function.LeftInverse.list_map {f : α → β} {g : β → α} (h : LeftInverse f g) :
+    LeftInverse (map f) (map g)
+  | [] => by simp_rw [map_nil]
+  | x :: xs => by simp_rw [map_cons, h x, h.list_map xs]
+
+nonrec theorem _root_.Function.RightInverse.list_map {f : α → β} {g : β → α}
+    (h : RightInverse f g) : RightInverse (map f) (map g) :=
+  h.list_map
+
+nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
+    (h : Involutive f) : Involutive (map f) :=
+  Function.LeftInverse.list_map h
+
+@[simp]
+theorem map_leftInverse_iff {f : α → β} {g : β → α} :
+    LeftInverse (map f) (map g) ↔ LeftInverse f g :=
+  ⟨fun h x => by injection h [x], (·.list_map)⟩
+
+@[simp]
+theorem map_rightInverse_iff {f : α → β} {g : β → α} :
+    RightInverse (map f) (map g) ↔ RightInverse f g := map_leftInverse_iff
+
+@[simp]
+theorem map_involutive_iff {f : α → α} :
+    Involutive (map f) ↔ Involutive f := map_leftInverse_iff
+
+theorem _root_.Function.Injective.list_map {f : α → β} (h : Injective f) :
+    Injective (map f)
+  | [], [], _ => rfl
+  | x :: xs, y :: ys, hxy => by
+    injection hxy with hxy hxys
+    rw [h hxy, h.list_map hxys]
+
+@[simp]
+theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
+  refine ⟨fun h x y hxy => ?_, (·.list_map)⟩
+  suffices [x] = [y] by simpa using this
+  apply h
+  simp [hxy]
+#align list.map_injective_iff List.map_injective_iff
+
+theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
+    Surjective (map f) :=
+  let ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
+
+@[simp]
+theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
+  refine ⟨fun h x => ?_, (·.list_map)⟩
+  let ⟨[y], hxy⟩ := h [x]
+  exact ⟨_, List.singleton_injective hxy⟩
+
+theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
+  ⟨h.1.list_map, h.2.list_map⟩
+
+@[simp]
+theorem map_bijective_iff {f : α → β} : Bijective (map f) ↔ Bijective f := by
+  simp_rw [Function.Bijective, map_injective_iff, map_surjective_iff]
+
+end map_bijectivity
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
     map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
@@ -1888,13 +1910,13 @@ theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) 
   | 0, m, l => by rw [zero_min, take_zero, take_zero]
   | succ n, succ m, nil => by simp only [take_nil]
   | succ n, succ m, a :: l => by
-    simp only [take, min_succ_succ, take_take n m l]
+    simp only [take, succ_min_succ, take_take n m l]
 #align list.take_take List.take_take
 
 theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replicate (min n m) a
   | n, 0 => by simp
   | 0, m => by simp
-  | succ n, succ m => by simp [min_succ_succ, take_replicate]
+  | succ n, succ m => by simp [succ_min_succ, take_replicate]
 #align list.take_replicate List.take_replicate
 
 theorem map_take {α β : Type*} (f : α → β) :
@@ -1986,7 +2008,7 @@ theorem take_eq_take :
   | _ :: xs, 0, 0 => by simp
   | x :: xs, m + 1, 0 => by simp
   | x :: xs, 0, n + 1 => by simp [@eq_comm ℕ 0]
-  | x :: xs, m + 1, n + 1 => by simp [Nat.min_succ_succ, take_eq_take]
+  | x :: xs, m + 1, n + 1 => by simp [Nat.succ_min_succ, take_eq_take]
 #align list.take_eq_take List.take_eq_take
 
 theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.drop m).take n := by
@@ -2071,31 +2093,10 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
 
 #align list.drop_nil List.drop_nil
-
-@[simp]
-theorem drop_one : ∀ l : List α, drop 1 l = tail l
-  | [] | _ :: _ => rfl
 #align list.drop_one List.drop_one
-
-theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
-  | _, 0, _ => rfl
-  | _, _ + 1, [] => drop_nil.symm
-  | m, n + 1, _ :: _ => drop_add m n _
 #align list.drop_add List.drop_add
-
-@[simp]
-theorem drop_left : ∀ l₁ l₂ : List α, drop (length l₁) (l₁ ++ l₂) = l₂
-  | [], _ => rfl
-  | _ :: l₁, l₂ => drop_left l₁ l₂
 #align list.drop_left List.drop_left
-
-theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l₁ ++ l₂) = l₂ := by
-  rw [← h]; apply drop_left
 #align list.drop_left' List.drop_left'
-
-theorem drop_eq_get_cons : ∀ {n} {l : List α} (h), drop n l = get l ⟨n, h⟩ :: drop (n + 1) l
-  | 0, _ :: _, _ => rfl
-  | n + 1, _ :: _, _ => @drop_eq_get_cons n _ _
 #align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
 
 #align list.drop_length List.drop_length
@@ -2439,9 +2440,12 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     apply hl _ (List.mem_cons_self _ _)
 #align list.injective_foldl_comp List.injective_foldl_comp
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
+/-- Induction principle for values produced by a `foldr`: if a property holds
+for the seed element `b : β` and for all incremental `op : α → β → β`
+performed on the elements `(a : α) ∈ l`. The principle is given for
+a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2449,46 +2453,17 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     refine' IH _
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
--/
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
-  cases l with
-  | nil => exact hb
-  | cons hd tl =>
-    have IH : ((b : β) → C b → (a : α) → a ∈ tl → C (op a b)) → C (foldr op b tl) :=
-      foldrRecOn _ _ _ hb
-    refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine' IH _ _ _
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
--/
 /-- Induction principle for values produced by a `foldl`: if a property holds
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
-  cases l with
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op b a)) : C (foldl op b l) := by
+  induction l generalizing b with
   | nil => exact hb
-  | cons hd tl =>
-    have IH : (b : β) → C b → ((b : β) → C b → (a : α) → a ∈ tl → C (op b a)) → C (foldl op b tl) :=
-      foldlRecOn _ _
+  | cons hd tl IH =>
     refine' IH _ _ _
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
@@ -2503,7 +2478,7 @@ theorem foldrRecOn_nil {C : β → Sort*} (op : α → β → β) (b) (hb : C b)
 
 @[simp]
 theorem foldrRecOn_cons {C : β → Sort*} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ x :: l), C (op a b)) :
+    (hl : ∀ b, C b → ∀ a ∈ x :: l, C (op a b)) :
     foldrRecOn (x :: l) op b hb hl =
       hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
         (mem_cons_self _ _) :=
@@ -2523,7 +2498,7 @@ variable {f : β → α → β} {b : β} {a : α} {l : List α}
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
   | a, [] => rfl
   | a, x :: l => by
-    rw [scanl, length_cons, length_cons, ←succ_eq_add_one, congr_arg succ]
+    rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
     exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
@@ -2576,7 +2551,7 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_add, scanl_nil] at h
+    · simp only [length, zero_eq, lt_self_iff_false] at h
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
@@ -2735,7 +2710,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
-  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
+  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
 -- Porting note: now in std
@@ -2794,8 +2769,8 @@ where
         | nil => contradiction
         | cons hd tl =>
           rw [length, succ_eq_add_one] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
-            ←Array.toList_eq]
+          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
+            ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
@@ -2925,7 +2900,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     specialize ih _ _
     · intro l hl
       apply hx l
-      simp at hl ⊢
+      simp only [mem_cons] at hl ⊢
       exact Or.inr hl
     · exact List.noConfusion
     have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
@@ -2977,7 +2952,7 @@ theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []
     cases tl with
     | nil => exact modifyLast_append_one _ hd _
     | cons hd' tl' =>
-      rw [append_cons, ←nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
+      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
         modifyLast_append _ (l₁ ++ [hd]) (hd' :: tl') _, modifyLast_append _ [hd] (hd' :: tl') _,
         append_assoc]
       all_goals { exact cons_ne_nil _ _ }
@@ -2988,6 +2963,9 @@ end ModifyLast
 
 #align list.pmap List.pmap
 #align list.attach List.attach
+
+@[simp] lemma attach_nil : ([] : List α).attach = [] := rfl
+#align list.attach_nil List.attach_nil
 
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
@@ -3331,7 +3309,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
-  ·cases hd <;>
+  · cases hd <;>
       simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
         reduceOption_cons_of_some] using hl
 #align list.reduce_option_map List.reduceOption_map
@@ -3343,7 +3321,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   induction' l with hd tl hl
-  · simp only [reduceOption_nil, length]
+  · simp [reduceOption_nil, length]
   · cases hd
     · exact Nat.le_succ_of_le hl
     · simpa only [length, add_le_add_iff_right, reduceOption_cons_of_some] using hl
@@ -3480,7 +3458,34 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 #align list.map_filter List.map_filter
 
+lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
+    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+  simp [(· ∘ ·), map_filter, hf.eq_iff]
+#align list.map_filter' List.map_filter'
+
+lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
+    l.attach.filter p =
+      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
+  classical
+  refine' map_injective_iff.2 Subtype.coe_injective _
+  simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
+#align list.filter_attach' List.filter_attach'
+
+-- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
+lemma filter_attach (l : List α) (p : α → Bool) :
+    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
+      (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
+  map_injective_iff.2 Subtype.coe_injective <| by
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+      ← map_filter, attach_map_val]
+#align list.filter_attach List.filter_attach
+
 #align list.filter_filter List.filter_filter
+
+lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
+  simp [and_comm]
+#align list.filter_comm List.filter_comm
 
 @[simp]
 theorem filter_true (l : List α) :
@@ -3722,14 +3727,8 @@ end Diff
 
 /-! ### enum -/
 
-theorem length_enumFrom : ∀ (n) (l : List α), length (enumFrom n l) = length l
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg Nat.succ (length_enumFrom _ _)
-#align list.length_enum_from List.length_enumFrom
-
-theorem length_enum : ∀ l : List α, length (enum l) = length l :=
-  length_enumFrom _
-#align list.length_enum List.length_enum
+#align list.length_enum_from List.enumFrom_length
+#align list.length_enum List.enum_length
 
 @[simp]
 theorem enumFrom_get? :
@@ -3846,7 +3845,7 @@ theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Pr
 #align list.enum_map List.enum_map
 
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
-    (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
+    (hi : i.1 < l.length := (by simpa using i.2)) :
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
@@ -3854,13 +3853,13 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
 set_option linter.deprecated false in
 @[deprecated get_enumFrom]
 theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa [length_enumFrom] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
   get_enumFrom ..
 #align list.nth_le_enum_from List.nthLe_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using i.2)) :
+    (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (zero_add _).symm
@@ -3868,9 +3867,16 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
 set_option linter.deprecated false in
 @[deprecated get_enum]
 theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
 #align list.nth_le_enum List.nthLe_enum
+
+@[simp]
+theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
+  cases l <;> simp
+
+@[simp]
+theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
 
 section Choose
 
@@ -4025,7 +4031,7 @@ theorem map₂Left_eq_zipWith :
   | a :: as, [], h => by
     simp at h
   | a :: as, b :: bs, h => by
-    simp [Nat.succ_le_succ_iff] at h
+    simp only [length_cons, succ_le_succ_iff] at h
     simp [h, map₂Left_eq_zipWith]
 #align list.map₂_left_eq_map₂ List.map₂Left_eq_zipWith
 
@@ -4179,7 +4185,7 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4191,15 +4197,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall
-
-/-! ### Retroattributes
-
-The list definitions happen earlier than `to_additive`, so here we tag the few multiplicative
-definitions that couldn't be tagged earlier.
--/
-
-attribute [to_additive existing] List.prod -- `List.sum`
-attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 
@@ -4213,6 +4210,8 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
   | a, [] => by simp [ilast']
   | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
@@ -4262,7 +4261,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
           cases n
           · simp
           · simp [drop]
-            rw [←Nat.zero_add (sizeOf (drop _ xs_tl))]
+            rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
     · simp
@@ -4348,7 +4347,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++l').length with
+  cases lt_or_le n (l ++ l').length with
   | inl h' =>
     rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
@@ -4426,7 +4425,7 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint maps under a map are disjoint -/
+/-- The images of disjoint lists under an injective map are disjoint -/
 theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
     (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
   simp only [Disjoint]
