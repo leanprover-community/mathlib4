@@ -1630,7 +1630,9 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 #align subgroup.comap_top Subgroup.comap_top
 #align add_subgroup.comap_top AddSubgroup.comap_top
 
-/-- For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`. -/
+/-- For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`.
+
+It is the subgroup version of `Subset.setRestrict`.-/
 @[to_additive "For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`."]
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
