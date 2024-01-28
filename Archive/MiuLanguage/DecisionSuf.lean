@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.DecisionNec
+import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Linarith
 
 #align_import miu_language.decision_suf from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"

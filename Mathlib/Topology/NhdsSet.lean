@@ -177,3 +177,45 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 y) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+/- This inequality cannot be improved to an equality. For instance,
+if `X` has two elements and the coarse topology and `s` and `t` are distinct singletons then
+`𝓝ˢ (s ∩ t) = ⊥` while `𝓝ˢ s ⊓ 𝓝ˢ t = ⊤` and those are different. -/
+theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
+  (monotone_nhdsSet (X := X)).map_inf_le s t
+
+variable (s) in
+theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=
+  calc
+    𝓝ˢ s = 𝓝ˢ (s ∩ t ∪ s ∩ tᶜ) := by rw [Set.inter_union_compl s t]
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (s ∩ tᶜ) := by rw [nhdsSet_union]
+    _ ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (tᶜ) := (sup_le_sup_left (monotone_nhdsSet (s.inter_subset_right (tᶜ))) _)
+    _ = 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) := by rw [h.isOpen_compl.nhdsSet_eq]
+
+variable (s) in
+theorem IsClosed.nhdsSet_le_sup' (h : IsClosed t) :
+    𝓝ˢ s ≤ 𝓝ˢ (t ∩ s) ⊔ 𝓟 (tᶜ) := by rw [Set.inter_comm]; exact h.nhdsSet_le_sup s
+
+theorem Filter.Eventually.eventually_nhdsSet {p : X → Prop} (h : ∀ᶠ y in 𝓝ˢ s, p y) :
+    ∀ᶠ y in 𝓝ˢ s, ∀ᶠ x in 𝓝 y, p x :=
+  eventually_nhdsSet_iff_forall.mpr fun x x_in ↦
+    (eventually_nhdsSet_iff_forall.mp h x x_in).eventually_nhds
+
+theorem Filter.Eventually.union_nhdsSet {p : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (s ∪ t), p x) ↔ (∀ᶠ x in 𝓝ˢ s, p x) ∧ ∀ᶠ x in 𝓝ˢ t, p x := by
+  rw [nhdsSet_union, eventually_sup]
+
+theorem Filter.Eventually.union {p : X → Prop} (hs : ∀ᶠ x in 𝓝ˢ s, p x) (ht : ∀ᶠ x in 𝓝ˢ t, p x) :
+    ∀ᶠ x in 𝓝ˢ (s ∪ t), p x :=
+  Filter.Eventually.union_nhdsSet.mpr ⟨hs, ht⟩
+
+theorem nhdsSet_iUnion {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋃ i, s i) = ⨆ i, 𝓝ˢ (s i) := by
+  simp only [nhdsSet, image_iUnion, sSup_iUnion (β := Filter X)]
+
+theorem eventually_nhdsSet_iUnion₂ {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {P : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (⋃ (i) (_ : p i), s i), P x) ↔ ∀ i, p i → ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]
+
+theorem eventually_nhdsSet_iUnion {ι : Sort*} {s : ι → Set X} {P : X → Prop} :
+    (∀ᶠ x in 𝓝ˢ (⋃ i, s i), P x) ↔ ∀ i, ∀ᶠ x in 𝓝ˢ (s i), P x := by
+  simp only [nhdsSet_iUnion, eventually_iSup]

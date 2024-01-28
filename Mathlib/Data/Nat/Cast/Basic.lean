@@ -96,7 +96,7 @@ section AddMonoidHomClass
 variable {A B F : Type*} [AddMonoidWithOne B]
 
 theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
-  FunLike.ext f g <| by
+  DFunLike.ext f g <| by
     intro n
     induction n with
     | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
@@ -141,7 +141,7 @@ variable {A F : Type*} [MulZeroOneClass A]
 /-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
 theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
-  apply FunLike.ext
+  apply DFunLike.ext
   rintro (_ | n)
   · simp [map_zero f, map_zero g]
   · exact h_pos n.succ_pos

@@ -19,6 +19,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
   * `Matrix.normedSpace`
+  * `Matrix.boundedSMul`
 
 * The Frobenius norm:
 
@@ -27,12 +28,14 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusNormedSpace`
   * `Matrix.frobeniusNormedRing`
   * `Matrix.frobeniusNormedAlgebra`
+  * `Matrix.frobeniusBoundedSMul`
 
 * The $L^\infty$ operator norm:
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
   * `Matrix.linftyOpNormedSpace`
+  * `Matrix.linftyOpBoundedSMul`
   * `Matrix.linftyOpNonUnitalSemiNormedRing`
   * `Matrix.linftyOpSemiNormedRing`
   * `Matrix.linftyOpNonUnitalNormedRing`
@@ -196,6 +199,11 @@ section NormedSpace
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
+/-- This applies to the sup norm of sup norm. -/
+protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
+  Pi.instBoundedSMul
+
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
@@ -237,6 +245,13 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n => α))
 #align matrix.linfty_op_normed_add_comm_group Matrix.linftyOpNormedAddCommGroup
+
+/-- This applies to the sup norm of L1 norm. -/
+@[local instance]
+protected theorem linftyOpBoundedSMul
+    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
+    BoundedSMul R (Matrix m n α) :=
+  (by infer_instance : BoundedSMul R (m → PiLp 1 fun j : n => α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -484,6 +499,13 @@ matrix. -/
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 #align matrix.frobenius_normed_add_comm_group Matrix.frobeniusNormedAddCommGroup
+
+/-- This applies to the frobenius norm. -/
+@[local instance]
+theorem frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [BoundedSMul R α] :
+    BoundedSMul R (Matrix m n α) :=
+  (by infer_instance : BoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
 /-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
