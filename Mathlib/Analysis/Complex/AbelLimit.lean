@@ -195,10 +195,8 @@ variable {f : ℕ → ℝ} {l : ℝ} (h : Tendsto (fun n ↦ ∑ i in range n, f
 /-- **Abel's limit theorem**. Given a real power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 from the left. -/
 theorem tendsto_tsum_power_nhdsWithin_lt : Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
-  replace h := (tendsto_map (f := ofReal')).comp h
-  have m := ofRealCLM.continuous.tendsto l
-  rw [show ofRealCLM = ofReal' by rfl, tendsto_iff_comap, ← map_le_iff_le_comap] at m
-  replace h := h.mono_right m
+  have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
+  replace h := (tendsto_map.comp h).mono_right m
   rw [Function.comp_def] at h
   push_cast at h
   replace h := Complex.tendsto_tsum_power_nhdsWithin_lt h
