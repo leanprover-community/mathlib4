@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
@@ -51,21 +52,6 @@ open scoped NNReal ENNReal MeasureTheory Topology
 section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
-
-namespace Directed
-
--- todo after the port: move this to logic.encodable.basic near sequence_mono
-variable [Encodable α] [Inhabited α] [Preorder β] {f : α → β} (hf : Directed (· ≥ ·) f)
-
-theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
-  antitone_nat_of_succ_le <| hf.sequence_mono_nat
-#align directed.sequence_anti Directed.sequence_anti
-
-theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
-  hf.rel_sequence a
-#align directed.sequence_le Directed.sequence_le
-
-end Directed
 
 theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
   ext1 x
