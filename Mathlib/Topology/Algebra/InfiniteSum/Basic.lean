@@ -488,7 +488,7 @@ theorem tsum_eq_sum' {s : Finset β} (hf : support f ⊆ s) :
 
 theorem tsum_eq_sum {s : Finset β} (hf : ∀ b ∉ s, f b = 0) :
     ∑' b, f b = ∑ b in s, f b :=
-  tsum_eq_sum' fun _ ↦ not_imp_comm.2 (hf _)
+  tsum_eq_sum' <| support_subset_iff'.2 hf
 #align tsum_eq_sum tsum_eq_sum
 
 @[simp]
