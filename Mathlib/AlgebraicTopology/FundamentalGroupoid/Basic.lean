@@ -403,18 +403,21 @@ def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁
 
 end FundamentalGroupoid
 
-def ContinuousMap.interval_restrict (f : C(I, X)) {a b : I} (hab : a ≤ b) : Path (f a) (f b) where
+/- def ContinuousMap.interval_restrict (f : C(I, X)) {a b : I} (hab : a ≤ b) : Path (f a) (f b) where
   toFun := Set.IccExtend zero_le_one f ∘ fun t ↦ (b - a) * t + a
   continuous_toFun := by continuity
   source' := by simp
   target' := by simp
 
-open FundamentalGroupoid
+open FundamentalGroupoid -/
 
-def ContinuousMap.unitInterval_functor {X : TopCat} (f : C(I, X)) : I ⥤ FundamentalGroupoid X where
+/- No need of using interval_restrict (should be intervalRestrict by naming convention),
+  just compose I ⥤ FundamentalGroupoid I with FundamentalGroupoid I ⥤ FundamentalGroupoid X.
+  The first functor is defined because I is simply connected so all Hom-types are singletons. -/
+/- def ContinuousMap.unitInterval_functor {X : TopCat} (f : C(I, X)) : I ⥤ FundamentalGroupoid X where
   obj t := fromTop (f t)
   map hab := ⟦f.interval_restrict <| by
-    dsimp [Quiver.Hom] at hab ⟧
+    dsimp [Quiver.Hom] at hab ⟧ -/
 
 
 /-
