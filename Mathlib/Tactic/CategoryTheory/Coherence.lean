@@ -90,11 +90,11 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
 
 instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
-  lift := LiftObj.lift X ◁ LiftHom.lift f
+  lift := 𝟙 (LiftObj.lift X) ⊗ LiftHom.lift f
 
 instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
-  lift := LiftHom.lift f ▷ LiftObj.lift Z
+  lift := LiftHom.lift f ⊗ 𝟙 (LiftObj.lift Z)
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
@@ -129,12 +129,12 @@ instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalC
 @[simps]
 instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (X ◁  MonoidalCoherence.hom)⟩
+  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  MonoidalCoherence.hom)⟩
 
 @[simps]
 instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(X ◁ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
+  ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
 
 @[simps]
 instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
@@ -179,6 +179,10 @@ example (X1 X2 X3 X4 X5 X6 X7 X8 X9 : C) :
     (𝟙_ C ⊗ (X1 ⊗ X2 ⊗ ((X3 ⊗ X4) ⊗ X5)) ⊗ X6 ⊗ (X7 ⊗ X8 ⊗ X9)) ≅
     (X1 ⊗ (X2 ⊗ X3) ⊗ X4 ⊗ (X5 ⊗ (𝟙_ C ⊗ X6) ⊗ X7) ⊗ X8 ⊗ X9) :=
   monoidalIso _ _
+
+/-- Notation for identities up to unitors and associators. -/
+scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
+  Mathlib.Tactic.Coherence.MonoidalCoherence.hom -- type as \ot 𝟙
 
 /-- Compose two morphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
@@ -362,6 +366,27 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
       -- and whose second terms can be identified by recursively called `coherence`.
       coherence_loop maxSteps'
 
+open Lean.Parser.Tactic
+
+/--
+Simp lemmas for rewriting a hom in monoical categories into a normal form.
+-/
+syntax (name := monoidal_simps) "monoidal_simps" (config)? : tactic
+
+@[inherit_doc monoidal_simps]
+elab_rules : tactic
+| `(tactic| monoidal_simps $[$cfg]?) => do
+  evalTactic (← `(tactic|
+    simp $[$cfg]? only [
+      Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
+      MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
+      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
+      MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
+      MonoidalCategory.whisker_assoc];
+    -- I'm not sure if `tensorHom` should be expanded.
+    try simp only [MonoidalCategory.tensorHom_def]
+    ))
+
 /--
 Use the coherence theorem for monoidal categories to solve equations in a monoidal equation,
 where the two sides only differ by replacing strings of monoidal structural morphisms
@@ -386,6 +411,10 @@ elab_rules : tactic
       Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
       Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
       monoidalComp]);
-    whisker_simps (config := {failIfUnchanged := false})
+    whisker_simps (config := {failIfUnchanged := false});
+    monoidal_simps (config := {failIfUnchanged := false});
+    -- Workaround until we define the whiskerings as the primitives in free monoidal categories.
+    simp (config := {failIfUnchanged := false}) only
+      [← MonoidalCategory.id_tensorHom, ← MonoidalCategory.tensorHom_id]
     ))
   coherence_loop
