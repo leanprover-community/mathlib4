@@ -479,12 +479,9 @@ theorem eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E]
     (hfg : EqOn f g (frontier U)) : EqOn f g (closure U) := by
   suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
   have htendsto : Tendsto (f - g) (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0) := by
-    have : (0 : F) = 0 - 0 := by simp
-    rw [this]
-    exact Tendsto.sub hf_tendsto hg_tendsto
-  refine' fun z hz => norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty htendsto hU
-    (hf.sub hg) (fun w hw => _) hz
-  simp [hfg hw]
+    simpa using hf_tendsto.sub hg_tendsto
+  exact fun z => norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty htendsto hU
+    (hf.sub hg) fun w hw => by simp [hfg hw]
 
 /-- If two complex differentiable functions `f g : E → F` that vanish at infinity
 are equal on the boundary of a set `U`, then they are equal on `U`. -/
