@@ -202,7 +202,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
     | symm _ _ _ r_ih => exact r_ih.symm
     | trans _ _ _ _ _ r_ih_h r_ih_k => exact Eq.trans r_ih_h r_ih_k
     | map j j' f x => simpa only [descFunLift, Functor.const_obj_obj] using
-      FunLike.congr_fun (s.ι.naturality f) x
+      DFunLike.congr_fun (s.ι.naturality f) x
     | zero => simp
     | neg => simp
     | add => simp
@@ -227,10 +227,10 @@ def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
   desc s := descMorphism F s
-  uniq s m w := FunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
+  uniq s m w := DFunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
     change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
     induction x using Prequotient.recOn with
-    | of j x => exact FunLike.congr_fun (w j) x
+    | of j x => exact DFunLike.congr_fun (w j) x
     | zero =>
       dsimp only [quot_zero]
       rw [map_zero, map_zero]

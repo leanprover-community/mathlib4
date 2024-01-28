@@ -260,7 +260,7 @@ theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
     ← Function.comp.assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
     ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp.right_id, preimage_comp, φ.injective.preimage_image]
+    Function.comp_id, preimage_comp, φ.injective.preimage_image]
 #align affine_isometry.image_intrinsic_interior AffineIsometry.image_intrinsicInterior
 
 @[simp]
@@ -274,7 +274,7 @@ theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   rw [intrinsicFrontier, intrinsicFrontier, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
     ← Function.comp.assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
     ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp.right_id, preimage_comp, φ.injective.preimage_image]
+    Function.comp_id, preimage_comp, φ.injective.preimage_image]
 #align affine_isometry.image_intrinsic_frontier AffineIsometry.image_intrinsicFrontier
 
 @[simp]
@@ -288,7 +288,7 @@ theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   rw [intrinsicClosure, intrinsicClosure, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
     ← Function.comp.assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
     ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp.right_id, preimage_comp, φ.injective.preimage_image]
+    Function.comp_id, preimage_comp, φ.injective.preimage_image]
 #align affine_isometry.image_intrinsic_closure AffineIsometry.image_intrinsicClosure
 
 end AffineIsometry
