@@ -709,11 +709,8 @@ def _root_.LinearMap.toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticF
 variable {B : BilinForm R M}
 
 /-- A bilinear form gives a quadratic form by applying the argument twice. -/
-def toQuadraticForm (B : BilinForm R M) : QuadraticForm R M where
-  toFun x := B x x
-  toFun_smul a x := by simp only [mul_assoc, smul_right, smul_left]
-  exists_companion' := ⟨BilinForm.toLin (B + BilinForm.flipHom ℕ B),
-    fun x y => by simp [add_add_add_comm, add_comm]⟩
+def toQuadraticForm (B : BilinForm R M) : QuadraticForm R M :=
+  LinearMap.toQuadraticForm (BilinForm.toLin B)
 #align bilin_form.to_quadratic_form BilinForm.toQuadraticForm
 
 @[simp]
