@@ -451,12 +451,7 @@ theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ
       exact tendsto_norm_zero.eventually (eventually_le_nhds (norm_pos_iff.mpr hx₀_ne_zero))
   rw [closure_eq_interior_union_frontier, mem_union, or_comm] at hwU
   rcases hwU with (hwU | hwU); · exact ⟨w, hwU, hle⟩
-  have hU' : interior U ≠ univ := by
-    intro h
-    have h₁ : interior U ⊆ U := interior_subset
-    have h₂ : U = univ := by rw [← Set.univ_subset_iff]; rwa [h] at h₁
-    exact False.elim <| hU h₂
-  rcases exists_mem_frontier_infDist_compl_eq_dist hwU hU' with ⟨z, hzU, hzw⟩
+  rcases exists_mem_frontier_infDist_compl_eq_dist hwU (by aesop) with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
   refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
   rw [dist_comm, ← hzw]
