@@ -212,7 +212,7 @@ theorem tendsto_self_div_two_mul_self_add_one :
     · skip
     · skip
     rw [one_div, ← add_zero (2 : ℝ)]
-  refine' (((tendsto_const_div_atTop_nhds_0_nat 1).const_add (2 : ℝ)).inv₀
+  refine' (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
     ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => _⟩)
   rw [add_div' (1 : ℝ) 2 n (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)), inv_div]
 #align stirling.tendsto_self_div_two_mul_self_add_one Stirling.tendsto_self_div_two_mul_self_add_one

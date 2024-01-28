@@ -276,7 +276,7 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
       simpa
     simp only [pow_succ]
     refine' (tendsto_const_nhds.mul _).div_const _
-    exact tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg _) h
+    exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
   · refine' .of_norm_bounded _ (summable_geometric_of_lt_1 (abs_nonneg _) h) fun i => _
     calc
