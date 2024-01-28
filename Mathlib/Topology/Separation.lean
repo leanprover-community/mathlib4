@@ -1057,60 +1057,80 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 #align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
+theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [R1Space Y] {f : X → Y} {x : X}
+    {K : Set X} {s : Set Y} (hf : Continuous f) (hs : s ∈ 𝓝 (f x)) (hKc : IsCompact K)
+    (hKx : K ∈ 𝓝 x) : ∃ K ∈ 𝓝 x, IsCompact K ∧ MapsTo f K s := by
+  have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
+  obtain ⟨U, V, Uo, Vo, hxU, hV, hd⟩ : SeparatedNhds {f x} (f '' K \ interior s) := by
+    simp_rw [separatedNhds_iff_disjoint, nhdsSet_singleton, hc.disjoint_nhdsSet_right,
+      disjoint_nhds_nhds_iff_not_inseparable]
+    rintro y ⟨-, hys⟩ hxy
+    refine hys <| (hxy.mem_open_iff isOpen_interior).1 ?_
+    rwa [mem_interior_iff_mem_nhds]
+  refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
+  · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
+      using Set.disjoint_left.1 hd hx
+  · by_contra hys
+    exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
+
 instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
-     [TopologicalSpace Y] [R1Space Y] :
-    LocallyCompactPair X Y where
-  exists_mem_nhds_isCompact_mapsTo := by
-    intro f x s hf hs
-    rcases exists_compact_mem_nhds x with ⟨K, hKc, hKx⟩
-    have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
-    obtain ⟨U, V, Uo, Vo, hxU, hV, hd⟩ : SeparatedNhds {f x} (f '' K \ interior s) := by
-      simp_rw [separatedNhds_iff_disjoint, nhdsSet_singleton, hc.disjoint_nhdsSet_right,
-        disjoint_nhds_nhds_iff_not_inseparable]
-      rintro y ⟨-, hys⟩ hxy
-      refine hys <| (hxy.mem_open_iff isOpen_interior).1 ?_
-      rwa [mem_interior_iff_mem_nhds]
-    refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
-    · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
-        using Set.disjoint_left.1 hd hx
-    · by_contra hys
-      exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
+    [TopologicalSpace Y] [R1Space Y] : LocallyCompactPair X Y where
+  exists_mem_nhds_isCompact_mapsTo hf hs :=
+    let ⟨_K, hKc, hKx⟩ := exists_compact_mem_nhds _
+    exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds hf hs hKc hKx
+
+/-- If a point in a preregular space has a compact neighborhood,
+then it has a basis of compact closed neighborhoods. -/
+theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCompact L)
+    (hxL : L ∈ 𝓝 x) : (𝓝 x).HasBasis (fun K ↦ K ∈ 𝓝 x ∧ IsCompact K ∧ IsClosed K) (·) :=
+  hasBasis_self.2 fun _U hU ↦
+    let ⟨K, hKx, hKc, hKU⟩ := exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
+      continuous_id (interior_mem_nhds.2 hU) hLc hxL
+    ⟨closure K, mem_of_superset hKx subset_closure, ⟨hKc.closure, isClosed_closure⟩,
+      (hKc.closure_subset_of_isOpen isOpen_interior hKU).trans interior_subset⟩
+
+/-!
+### Lemmas about a weakly locally compact preregular space
+
+In fact, a space with these properties is locally compact and regular.
+Some lemmas are formulated in that assumptions below.
+-/
 
 variable [WeaklyLocallyCompactSpace X]
 
--- see Note [lower instance priority]
-/-- A weakly locally compact preregular space is locally compact. -/
-instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace :
-    LocallyCompactSpace X where
-  local_compact_nhds _x _s hs :=
-    let ⟨K, hKx, hKc, hKs⟩ := exists_mem_nhds_isCompact_mapsTo continuous_id hs
-    ⟨K, hKx, hKs, hKc⟩
-#align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
-
-/-- In a locally compact R₁ space, compact closed neighborhoods of a point `x`
+/-- In a (weakly) locally compact R₁ space, compact closed neighborhoods of a point `x`
 form a basis of neighborhoods of `x`. -/
 theorem isCompact_isClosed_basis_nhds (x : X) :
-    (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x ∧ IsCompact s ∧ IsClosed s) (·) :=
-  hasBasis_self.2 fun _U hU ↦
-    let ⟨K, hxK, hKU, hKc⟩ := local_compact_nhds <| interior_mem_nhds.2 hU
-    ⟨closure K, mem_of_superset hxK subset_closure, ⟨hKc.closure, isClosed_closure⟩,
-      (hKc.closure_subset_of_isOpen isOpen_interior hKU).trans interior_subset⟩
+    (𝓝 x).HasBasis (fun K => K ∈ 𝓝 x ∧ IsCompact K ∧ IsClosed K) (·) :=
+  let ⟨_L, hLc, hLx⟩ := exists_compact_mem_nhds x
+  hLc.isCompact_isClosed_basis_nhds hLx
+
+/-- In a (weakly) locally compact R₁ space, each point admints a compact closed neighborhood. -/
+theorem exists_mem_nhds_isCompact_isClosed (x : X) : ∃ K ∈ 𝓝 x, IsCompact K ∧ IsClosed K :=
+  (isCompact_isClosed_basis_nhds x).ex_mem
+
+-- see Note [lower instance priority]
+/-- A weakly locally compact preregular space is locally compact. -/
+instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : LocallyCompactSpace X :=
+  .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h
+#align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
 /-- In a weakly locally compact space which is either T₂ or locally compact regular,
 every compact set has an open neighborhood with compact closure. -/
-theorem exists_open_superset_and_isCompact_closure {K : Set X} (hK : IsCompact K) :
+theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact K) :
     ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
   rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
   exact ⟨interior K', isOpen_interior, hKK', hK'.closure_of_subset interior_subset⟩
-#align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
+#align exists_open_superset_and_is_compact_closure exists_isOpen_superset_and_isCompact_closure
 
 /-- In a weakly locally compact which is either T₂ or locally compact regular,
 every point has an open neighborhood with compact closure. -/
-theorem exists_open_with_compact_closure (x : X) :
+theorem exists_isOpen_mem_isCompact_closure (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
   simpa only [singleton_subset_iff]
-    using exists_open_superset_and_isCompact_closure isCompact_singleton
-#align exists_open_with_compact_closure exists_open_with_compact_closure
+    using exists_isOpen_superset_and_isCompact_closure isCompact_singleton
+#align exists_open_with_compact_closure exists_isOpen_mem_isCompact_closure
 
 end R1Space
 
@@ -1820,7 +1840,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
-lemma separatedNhds_of_isCompact_isClosed [RegularSpace X] {s t : Set X}
+lemma SeparatedNhds.of_isCompact_isClosed [RegularSpace X] {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
