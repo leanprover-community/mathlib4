@@ -164,11 +164,9 @@ lemma abs_le_sSupAbsIm (f : ℂ → ℂ) (z : ℂ) (hD : z ∈ (closedStrip 0 1)
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) : abs (f z) ≤ sSupAbsIm f (z.re) := by
   refine le_csSup ?_ ?_
   · apply BddAbove.mono (image_subset (abs ∘ f) _) hB
-    apply preimage_mono
-    simp only [singleton_subset_iff]
-    exact hD
+    exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (abs ∘ f)
-    simp only [mem_preimage, mem_singleton]
+    simp only [mem_image_of_mem (abs ∘ f), mem_preimage, mem_singleton]
 
 lemma cocompact_strip.basis : HasBasis (cocompactStrip 0 1) (fun _ : ℝ × ℝ ↦ True )
     (fun T ↦ (im ⁻¹' (Iic (T.1) ∪ Ici (T.2)) ∩ re ⁻¹' Icc 0 1)) := by
@@ -462,10 +460,294 @@ lemma tendsto_F'_atTop_F_abs (f : ℂ → ℂ) (z : ℂ) :
 and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' {x}))` we have that
 `∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds.
 -/
-theorem abs_le_interp_on_closedStrip (f : ℂ → ℂ) (hd : DiffContOnCl ℂ f (strip 0 1))
+theorem abs_mul_invInterpStrip_le_one_on_closedStrip (f : ℂ → ℂ) (hd : DiffContOnCl ℂ f (strip 0 1))
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz : z ∈ closedStrip 0 1) :
     (abs (f z • invInterpStrip f z)) ≤ 1 := by
   apply le_of_tendsto (tendsto_F'_atTop_F_abs f z) _
   rw [eventually_iff_exists_mem]
   use {n : ℕ | 1 ≤ n}
   exact ⟨mem_atTop _ , abs_le_interp_on_closed_strip_sequence f z hd hB hz⟩
+
+-----
+
+
+lemma _root_.abs_sub_abs_le_abs_add (a b : R) [Ring R]
+    [OrderedCommRing S] (abv : AbsoluteValue R S) [NoZeroDivisors S] :
+    abv a - abv b ≤ abv (a+b) := by
+  rw [tsub_le_iff_right, add_comm, add_comm a]
+  simpa only [neg_add_cancel_left, AbsoluteValue.map_neg]
+    using AbsoluteValue.add_le abv (-b) (b + a)
+
+variable (f : ℂ → ℂ) (z : ℂ)
+
+noncomputable def interpStrip : ℂ :=
+  if (sSupAbsIm f (0 : ℝ)) = (0 : ℝ) ∨ (sSupAbsIm f (1 : ℝ)) = (0 : ℝ)
+    then 0
+    else (sSupAbsIm f 0)^(1-z) * (sSupAbsIm f 1)^(z)
+
+/-- Rewrite for `InterpStrip` when `0 < sSupAbsIm f 0` and `0 < sSupAbsIm f 1`. -/
+lemma interpStrip_eq_of_pos (h0 : 0 < sSupAbsIm f 0) (h1 : 0 < sSupAbsIm f 1) :
+    interpStrip f z = (sSupAbsIm f 0)^(1-z) * (sSupAbsIm f 1)^(z) := by
+  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, if_false, or_false]
+
+/-- Rewrite for `InterpStrip` when `0 = sSupAbsIm f 0` or `0 = sSupAbsIm f 1`. -/
+lemma interpStrip_eq_of_zero (h : (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0) :
+    interpStrip f z = 0 :=
+  if_pos h
+
+/-- Main theorem when `0 < sSupAbsIm f 0` and  `0 < sSupAbsIm f 1`. -/
+lemma abs_le_interp_on_closedStrip_pos (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
+    (hd : DiffContOnCl ℂ f (strip 0 1))  (hz : z ∈ closedStrip 0 1) (h0 : 0 < sSupAbsIm f 0)
+    (h1 : 0 < sSupAbsIm f 1) : abs (f z) ≤ abs (interpStrip f z) := by
+  rw [interpStrip_eq_of_pos f z h0 h1]
+  have h : (abs (f z • invInterpStrip f z)) ≤ 1 := by
+    exact abs_mul_invInterpStrip_le_one_on_closedStrip f hd hB z hz
+  rw [invInterpStrip_eq_of_pos z f h0 h1] at h
+  simp at h;
+  simp only [map_mul, ge_iff_le]
+  rw [← mul_inv_le_iff, ← one_mul (abs (↑(sSupAbsIm f 1) ^ z)), ← mul_inv_le_iff',
+  ← Real.rpow_neg_one, ← Real.rpow_neg_one,← Complex.abs_cpow_real, ← Complex.abs_cpow_real]
+  · simp only [ofReal_neg, ofReal_one, Complex.cpow_neg_one, Complex.cpow_neg_one,
+      ← Complex.cpow_neg, ← Complex.cpow_neg, neg_sub, mul_assoc, h]
+  · simp only [Complex.abs_cpow_eq_rpow_re_of_pos h1,  Real.rpow_pos_of_pos h1 z.re]
+  · simp only [Complex.abs_cpow_eq_rpow_re_of_pos h0, Real.rpow_pos_of_pos h0 (1-z).re]
+
+section transl
+
+/-
+  This section introduces the translation function `tansl (ε : ℂ) := fun z ↦ f z + ε`,
+  which allows us to take simple limits. The goal is to obtain the general case
+  from `abs_le_interp_on_closedStrip_pos` by using `tendsto_le_of_eventuallyLE`.
+
+  This lst lemma requires that the function are continuous. Since the function `interpStrip`
+  constains supremums, it is not trivial to show continuity. We then establish first some lemmas 
+  `sSupAbsIm_of_transl_le_transl_of_sSupAbsIm`, `sSupAbsIm_le_transl_of_sSupAbsIm_of_transl` 
+  and `transl_sub_sSupAbsIm_le_transl_of_sSupAbsIm` that will be used to prove continuity.
+
+  Next, as we take the limit, we need that the sequence retains the property that
+  `0 < sSupAbsIm f 0` and `0 < sSupAbsIm f 1` as they approach `0`. This is the purpose of
+  the lemma `sSupAbsIm_transl_nhds_zero_pos`, which garantees it in an open set around 0.
+
+  Finally, this only holds on the open strip, so we use a continuity argument once again
+  to get the whole strip.
+ -/
+
+variable (ε : ℂ)
+def transl := fun z ↦ f z + ε
+
+lemma transl_def : (transl f ε) = fun z ↦ f z + ε := by
+  rfl
+
+lemma transl_DiffCont (hd : DiffContOnCl ℂ f (strip 0 1)) : DiffContOnCl ℂ (transl f ε) (strip 0 1) := by
+  rw [transl_def]
+  exact DiffContOnCl.add_const hd ε
+
+variable (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
+
+lemma transl_BddAbove :
+    BddAbove ((abs ∘ (transl f ε)) '' (closedStrip 0 1)) := by
+  rw [transl_def, bddAbove_def] at *
+  obtain ⟨B, hB⟩ := hB
+  use B + abs ε
+  simp only [comp_apply, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at *
+  exact fun y hy ↦ (le_trans (AbsoluteValue.add_le abs _ _)
+    ((add_le_add_iff_right _).mpr (hB y hy)))
+
+lemma sSupAbsIm_of_transl_le_transl_of_sSupAbsIm (w : ℝ) (hset: w ∈ Icc 0 1) :
+    sSupAbsIm (transl f ε) w ≤ sSupAbsIm f w + abs ε := by
+  apply csSup_le _ _
+  · simp only [nonempty_image_iff, Nonempty.preimage (singleton_nonempty _) re_surjective];
+  intros b hset;
+  obtain ⟨x, hxset, hb⟩ := hset
+  rw [← hb]
+  apply le_trans (AbsoluteValue.add_le abs (f x) ε)
+  simp only [add_le_add_iff_right]
+  apply le_csSup
+    (BddAbove.mono (image_subset _ (preimage_mono (singleton_subset_iff.mpr hset))) hB) _
+  simpa using mem_image_of_mem (abs ∘ f) hxset
+
+lemma sSupAbsIm_le_transl_of_sSupAbsIm_of_transl (w : ℝ) (hset: w ∈ Icc 0 1) :
+    sSupAbsIm f w  ≤ sSupAbsIm (transl f ε) w + abs ε := by
+  simpa only [add_neg_cancel_right, AbsoluteValue.map_neg, transl]
+    using sSupAbsIm_of_transl_le_transl_of_sSupAbsIm (fun x ↦ f x + ε) (-ε) 
+      (transl_BddAbove f ε hB) w hset
+
+lemma transl_sub_sSupAbsIm_le_transl_of_sSupAbsIm (w : ℝ) (hset: w ∈ Icc 0 1) :
+    abs ε - sSupAbsIm f w  ≤ sSupAbsIm (transl f ε) w := by
+  have : abs (f w + ε) ∈ (fun a ↦ abs (f a + ε)) '' (re ⁻¹' {w}) := by
+    use w; simp only [mem_preimage, ofReal_re, mem_singleton_iff, and_self]
+  apply le_trans _ (le_csSup (BddAbove.mono (image_subset _ (preimage_mono
+    (singleton_subset_iff.mpr hset))) (transl_BddAbove f  ε hB)) this)
+  rw [add_comm]
+  apply le_trans _ (abs_sub_abs_le_abs_add ε (f w) abs)
+  rw [sub_le_sub_iff_left]
+  apply le_csSup
+    (BddAbove.mono (image_subset _ (preimage_mono (singleton_subset_iff.mpr hset))) hB) _
+  use w; simp only [mem_preimage, ofReal_re, mem_singleton_iff, and_self]
+  simp only [comp_apply, and_self]
+
+lemma Continuous_sSupAbsIm_transl_zero (w : ℝ) (hset: w ∈ Icc 0 1) :
+    Tendsto (fun ε => sSupAbsIm (transl f ε) w) (nhds 0) (nhds (sSupAbsIm f w)) := by
+  simp_rw [sSupAbsIm, transl, comp_apply, Metric.tendsto_nhds_nhds, dist_eq,
+    Real.dist_eq]
+  simp only [gt_iff_lt, sub_zero]
+  intros ε hε
+  use ε
+  refine ⟨hε, ?_⟩
+  intro x hx
+  by_cases (sSup ((fun a => abs (f a + x)) '' (re ⁻¹' {w}))
+              - sSup ((fun a => abs (f a)) '' (re ⁻¹' {w}))) > 0
+  · rw [abs_of_pos h, sub_lt_iff_lt_add']
+    apply lt_of_le_of_lt (sSupAbsIm_of_transl_le_transl_of_sSupAbsIm f x hB w hset) 
+      ((add_lt_add_iff_left _).mpr hx)
+  · simp only [gt_iff_lt, not_lt] at h;
+    rw [abs_of_nonpos h, neg_sub, sub_lt_iff_lt_add'];
+    apply lt_of_le_of_lt (sSupAbsIm_le_transl_of_sSupAbsIm_of_transl f x hB w hset) 
+      ((add_lt_add_iff_left _).mpr hx)
+
+lemma sSupAbsIm_transl_nhds_zero_pos :
+    ∃ T > 0, ∀ ε ∈ {0}ᶜ ∩ Metric.ball 0 (T),
+    ((sSupAbsIm (transl f ε) 0) > 0) ∧ ((sSupAbsIm (transl f ε) 1) > 0) := by
+  -- The proofs of the two possible cases
+  have hc_pos (r : ℝ) (ε : ℂ) (hε_r: abs ε < sSupAbsIm f r) (hset : r ∈ Icc 0 1) :
+      0 < sSupAbsIm (transl f ε) r := by
+    exact lt_of_lt_of_le (sub_pos.mpr hε_r) (tsub_le_iff_right.mpr 
+      (sSupAbsIm_le_transl_of_sSupAbsIm_of_transl f ε hB r (hset)))
+  have hc_zero (r : ℝ) (ε : ℂ) (hε_r: 0 = sSupAbsIm f r) (hset : r ∈ Icc 0 1) (hε_ne_zero: ¬ε = 0) :
+      0 < sSupAbsIm (transl f ε) r := by
+    apply lt_of_lt_of_le _ (transl_sub_sSupAbsIm_le_transl_of_sSupAbsIm f ε hB r (hset))
+    simp_rw [sSupAbsIm, comp_apply] at hε_r;
+    simpa [← hε_r, sSupAbsIm]
+  -- Using the proofs in the cases
+  cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 0) with h0pos h0zero
+  · cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 1) with h1pos h1zero
+    · use min (sSupAbsIm f 0) (sSupAbsIm f 1)
+      simp [h0pos, h1pos]
+      exact fun ε _ hε_0 hε_1 ↦ ⟨hc_pos 0 ε hε_0 (Set.left_mem_Icc.mpr zero_le_one),
+        hc_pos 1 ε hε_1 (Set.right_mem_Icc.mpr zero_le_one) ⟩
+    use sSupAbsIm f 0
+    simp [h0pos]
+    exact fun ε hε_ne_zero hε_0 ↦ ⟨hc_pos 0 ε hε_0 (Set.left_mem_Icc.mpr zero_le_one),
+        hc_zero 1 ε h1zero (Set.right_mem_Icc.mpr zero_le_one) hε_ne_zero⟩
+  cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 1) with h1pos h1zero
+  · use sSupAbsIm f 1
+    simp [h1pos]
+    exact fun ε hε_ne_zero hε_1 ↦ ⟨hc_zero 0 ε h0zero (Set.left_mem_Icc.mpr zero_le_one) hε_ne_zero,
+      hc_pos 1 ε hε_1 (Set.right_mem_Icc.mpr zero_le_one)⟩
+  use 1
+  simp
+  exact fun ε hε_ne_zero _ ↦ ⟨hc_zero 0 ε h0zero (Set.left_mem_Icc.mpr zero_le_one) hε_ne_zero,
+      hc_zero 1 ε h1zero (Set.right_mem_Icc.mpr zero_le_one) hε_ne_zero⟩
+
+lemma interpStrip_nhds_zero_pos :
+    ∃ T > 0, ∀ ε ∈ {0}ᶜ ∩ Metric.ball 0 (T), abs ((sSupAbsIm (transl f ε) 0)^(1-z) *
+      (sSupAbsIm (transl f ε) 1)^(z)) = abs (interpStrip (transl f ε) z ) := by
+  obtain ⟨T, hTpos, hT⟩ := sSupAbsIm_transl_nhds_zero_pos f hB
+  use T
+  refine ⟨hTpos, ?_⟩
+  intro ε hε
+  simp only [(eq_comm.mp (interpStrip_eq_of_pos _ _ (hT ε hε).1 (hT ε hε).2))]
+
+lemma eventuallyle (hd : DiffContOnCl ℂ f (strip 0 1)) (hz : z ∈ strip 0 1) :
+    (fun ε ↦ abs ((transl f ε) z)) ≤ᶠ[nhdsWithin 0 {0}ᶜ] (fun ε ↦ abs (interpStrip (transl f ε) z)) := by
+  obtain ⟨T, hTpos, hT⟩ := sSupAbsIm_transl_nhds_zero_pos f hB
+  rw [EventuallyLE, eventually_nhdsWithin_iff, eventually_nhds_iff]
+  use Metric.ball 0 T
+  refine ⟨ ?_, ⟨Metric.isOpen_ball, Metric.mem_ball_self hTpos⟩⟩
+  · intro x hx hnezero
+    exact abs_le_interp_on_closedStrip_pos _ _ (transl_BddAbove f x hB) (transl_DiffCont f x hd) 
+      (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
+       (hT x ⟨hnezero, hx⟩).1 (hT x ⟨hnezero, hx⟩).2
+
+lemma tendsto_interpStrip_pos (hz: z ∈ strip 0 1) : ContinuousAt (fun ε => 
+    abs (↑(sSupAbsIm (transl f ε) 0) ^ (1 - z) * ↑(sSupAbsIm (transl f ε) 1) ^ z)) 0 := by
+  simp only [map_mul]
+  simp_rw [abs_cpow_eq_rpow_re_of_nonneg (sSupAbsIm_nonneg _ _) (ne_comm.mp (ne_of_lt hz.1))]
+  simp_rw [abs_cpow_eq_rpow_re_of_nonneg (sSupAbsIm_nonneg _ _)
+    (show (1-z).re ≠ 0 by exact ne_comm.mp (ne_of_lt (sub_pos.mpr hz.2)))]
+  apply ContinuousAt.mul
+  · apply ContinuousAt.rpow_const _ _
+    · apply continuousAt_of_tendsto_nhds
+      exact Continuous_sSupAbsIm_transl_zero _ hB 0 (left_mem_Icc.mpr zero_le_one) 
+    simp only [or_true, sub_re, one_re, sub_nonneg, le_of_lt, hz.2]
+  · apply ContinuousAt.rpow_const _ _
+    · apply continuousAt_of_tendsto_nhds
+      exact Continuous_sSupAbsIm_transl_zero _ hB 1 (right_mem_Icc.mpr zero_le_one) 
+    simp only [or_true, le_of_lt, hz.1]
+
+lemma Tendsto_interpStrip (hz: z ∈ strip 0 1) (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) :
+    Tendsto (fun ε => abs (interpStrip (transl f ε) z)) (nhdsWithin 0 {0}ᶜ)
+    (nhds (abs (interpStrip f z))) := by
+  obtain ⟨T, hTpos, hT⟩ := interpStrip_nhds_zero_pos f z hB
+  rw [nhdsWithin_restrict' _ (Metric.ball_mem_nhds _ hTpos)]
+  have : (interpStrip f z) = (↑(sSupAbsIm (transl f 0) 0) ^ (1 - z) * ↑(sSupAbsIm (transl f 0) 1) ^ z) := by
+    rw [strip, mem_preimage, mem_Ioo] at hz
+    simp [- ne_eq, interpStrip_eq_of_zero f _ h]
+    rw [transl_def]; simp
+    cases' h with h1 h2
+    left
+    refine ⟨h1, ?_ ⟩
+    rw [sub_eq_zero, eq_comm]
+    simp only [ne_eq, ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and, not_false_eq_true]
+    right
+    refine ⟨h2, ?_ ⟩
+    rw [eq_comm]
+    simp only [ne_eq, ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and, not_false_eq_true]
+  rw [this]
+  apply tendsto_nhdsWithin_congr hT (tendsto_nhdsWithin_of_tendsto_nhds
+    (ContinuousAt.tendsto (tendsto_interpStrip_pos _ _ hB hz)))
+
+end transl
+
+variable (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (hd : DiffContOnCl ℂ f (strip 0 1))
+
+lemma abs_le_interp_on_strip_zero (hz : z ∈ strip 0 1)
+    (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) : abs (f z) ≤ abs (interpStrip f z) := by
+  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
+  · apply Filter.tendsto_inf_left
+    apply Continuous.tendsto'
+      (Continuous.comp continuous_abs (Continuous.add continuous_const continuous_id))
+    simp only [id_eq, comp_apply, add_zero]
+  · apply Tendsto_interpStrip f z hB hz h 
+
+lemma abs_eq_zero_on_strip (hz : z ∈ strip 0 1)
+    (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) : f z = 0 := by
+  rw [← map_eq_zero abs]
+  apply le_antisymm _ (map_nonneg _ _)
+  simpa [interpStrip_eq_of_zero f z h, map_zero] using
+    abs_le_interp_on_strip_zero f z hB hd hz h
+
+lemma abs_eq_zero_on_closedStrip (hz : z ∈ closedStrip 0 1)
+    (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) : abs (f z) = 0 := by
+  have : f '' strip 0 1 = {0} := by
+    ext; constructor
+    · intro ⟨a, ⟨ha1, ha2⟩⟩
+      rw [← ha2]
+      exact abs_eq_zero_on_strip f a hB hd ha1 h
+    · intro hx; rw [hx]; use (1/2 : ℚ);
+      have : ((1/2: ℚ): ℂ) ∈ strip 0 1 := by rw [strip, mem_preimage, rat_cast_re]; norm_num;
+      exact ⟨this, abs_eq_zero_on_strip f ((1/2: ℚ): ℂ) hB hd this h⟩
+  have : closure (f '' strip 0 1) = {0} := by simp only [this, closure_singleton]
+  simp only [map_eq_zero]
+  apply eq_of_mem_singleton
+  rw [closedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
+  rw [←this]
+  apply ContinuousWithinAt.mem_closure_image
+    (ContinuousWithinAt.mono (ContinuousOn.continuousWithinAt hd.2 hz) subset_closure) hz
+
+theorem abs_le_interp_on_closedStrip (hz : z ∈ closedStrip 0 1) : 
+  abs (f z) ≤ abs (interpStrip f z) := by
+  by_cases (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0
+  · rw [interpStrip_eq_of_zero f z h]
+    simp only [map_zero];
+    exact le_of_eq (abs_eq_zero_on_closedStrip f z hB hd hz h)
+  · push_neg at h
+    replace h : (0 < sSupAbsIm f 0) ∧ (0 < sSupAbsIm f 1)
+    cases' h with h1 h2
+    · rw [ne_comm] at h1; rw [ne_comm] at h2
+      exact ⟨ (lt_of_le_of_ne (sSupAbsIm_nonneg f 0) (h1)),
+      (lt_of_le_of_ne (sSupAbsIm_nonneg f 1) (h2)) ⟩
+    exact abs_le_interp_on_closedStrip_pos _ _ hB hd hz h.1 h.2
+
+end HadamardThreeLines
+end Complex
