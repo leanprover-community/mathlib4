@@ -1393,8 +1393,8 @@ theorem coe_comap (K : Subgroup N) (f : F) : (K.comap f : Set G) = f ⁻¹' K :=
 
 @[simp]
 theorem toAddSubgroup_comap {G₂ F' : Type*} [Group G₂] [MonoidHomClass F' G G₂] (f : G →* G₂)
-  (s : Subgroup G₂) : s.toAddSubgroup.comap (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup
-  (s.comap f) := rfl
+    (s : Subgroup G₂) : s.toAddSubgroup.comap (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup
+    (s.comap f) := rfl
 
 @[simp]
 theorem _root_.AddSubgroup.toSubgroup_comap {A A₂ : Type*} [AddGroup A] [AddGroup A₂]
