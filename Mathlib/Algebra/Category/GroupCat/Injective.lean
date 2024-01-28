@@ -160,7 +160,7 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
         AddMonoidHom.comp ⟨⟨ULift.up, rfl⟩, fun _ _ ↦ rfl⟩ toRatCircle.toAddMonoidHom
       let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
       have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
-      (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
+      (DFunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans (congr_fun h0 _)
 
 /-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : InjectivePresentation A_ where

@@ -109,7 +109,7 @@ theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
 
 theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
-      Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      Subsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
@@ -156,7 +156,7 @@ theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
-    AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
+      AddSubsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
       Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
