@@ -442,11 +442,7 @@ theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ
     by_cases h_triv : ∀ x ∈ closure U, f x = 0
     case pos =>
       obtain ⟨x₀, hx₀⟩ := hne
-      refine ⟨x₀, ⟨Set.mem_of_subset_of_mem subset_closure hx₀, ?_⟩⟩
-      rw [isMaxOn_iff]
-      intro x hx
-      calc ‖f x‖ = 0 := by rw [h_triv x hx, norm_zero]
-        _ ≤ ‖f x₀‖  := norm_nonneg (f x₀)
+      exact ⟨x₀, ⟨Set.mem_of_subset_of_mem subset_closure hx₀, isMaxOn_iff.mpr <| by aesop⟩⟩
     case neg =>
       push_neg at h_triv
       obtain ⟨x₀, hx₀, hx₀_ne_zero⟩ := h_triv
