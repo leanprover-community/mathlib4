@@ -769,7 +769,7 @@ instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ]
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [InnerRegularCompactLTTop μ]
     [IsFiniteMeasure μ] : WeaklyRegular μ :=
-  InnerRegular.innerRegularWRT_isClosed_isOpen.weaklyRegular_of_finite _ 
+  InnerRegular.innerRegularWRT_isClosed_isOpen.weaklyRegular_of_finite _
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [h : InnerRegularCompactLTTop μ]
     [IsFiniteMeasure μ] : Regular μ where
@@ -797,6 +797,9 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
     exact (restrict_apply_le _ _).trans_lt hr
   refine ⟨U ∩ interior L, subset_inter KU KL, U_open.inter isOpen_interior, ?_⟩
   rwa [restrict_apply U_open.measurableSet] at hU
+
+@[deprecated] -- Since 28 Jan 2024
+alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
 protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTop μ]
     [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
