@@ -436,8 +436,8 @@ infinity on a nonempty set `U ≠ univ` and is continuous on its closure, then t
 `z ∈ frontier U` such that `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
 theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ E]
     {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
-    (hU : U ≠ univ) (hne : U.Nonempty)
-    (hd : DiffContOnCl ℂ f U) : ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
+    (hU : U ≠ univ) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
+    ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w := by
     by_cases h_triv : ∀ x ∈ closure U, f x = 0
     case pos =>
