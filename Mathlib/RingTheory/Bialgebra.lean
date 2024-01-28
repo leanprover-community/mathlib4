@@ -17,6 +17,8 @@ In this file we define `Bialgebra`, and provide instances for:
 * <https://en.wikipedia.org/wiki/Bialgebra>
 -/
 
+suppress_compilation
+
 universe u v
 
 open scoped TensorProduct
