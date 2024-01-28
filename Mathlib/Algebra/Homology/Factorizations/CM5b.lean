@@ -41,7 +41,7 @@ instance (n : ℤ) [K.IsStrictlyGE (n+1)] [L.IsStrictlyGE n] :
   isZero i hi := by
     refine' IsZero.of_iso _ ((HomologicalComplex.eval C (ComplexShape.up ℤ) i).mapBiprod _ _)
     dsimp
-    simp only [biprod.is_zero_iff, MappingCone.isZero_mappingCone_X_iff, I_X]
+    simp only [biprod.is_zero_iff, mappingCone.isZero_X_iff, I_X]
     refine' ⟨⟨_, _⟩, L.isZero_of_isStrictlyGE n i hi⟩
     all_goals
       apply (I K).isZero_of_isStrictlyGE (n + 1)
@@ -52,7 +52,7 @@ noncomputable def p : mappingCone (𝟙 (I K)) ⊞ L ⟶ L := biprod.snd
 variable {K L}
 
 noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
-  biprod.lift (MappingCone.lift _
+  biprod.lift (mappingCone.lift _
     (HomComplex.Cocycle.mk (HomComplex.Cochain.mk (fun p q _ => K.d p q ≫ Injective.ι _)) 2
       (by linarith) (by
         ext p q hpq
@@ -63,10 +63,10 @@ noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
 
 lemma i_f_comp (n : ℤ) : (i f).f n ≫
     (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _).f n ≫
-      (MappingCone.snd (𝟙 (I K))).v n n (add_zero n) = Injective.ι (K.X n) := by
+      (mappingCone.snd (𝟙 (I K))).v n n (add_zero n) = Injective.ι (K.X n) := by
   dsimp [i]
   rw [← HomologicalComplex.comp_f_assoc, biprod.lift_fst,
-    MappingCone.lift_f_snd_v, HomComplex.Cochain.ofHoms_v]
+    mappingCone.lift_f_snd_v, HomComplex.Cochain.ofHoms_v]
 
 instance (n : ℤ) : Mono ((i f).f n) :=  mono_of_mono_fac (i_f_comp f n)
 
@@ -78,7 +78,7 @@ lemma fac : i f ≫ p K L = f := by simp [i, p]
 variable (K L)
 
 instance (n : ℤ) : Injective ((mappingCone (𝟙 (I K))).X n) :=
-  Injective.of_iso (MappingCone.XIso (𝟙 (I K)) n (n+1) rfl).symm inferInstance
+  Injective.of_iso (HomologicalComplex.homotopyCofiber.XIsoBiprod (𝟙 (I K)) n (n + 1) rfl).symm inferInstance
 
 lemma degreewiseEpiWithInjectiveKernel_p :
     degreewiseEpiWithInjectiveKernel (p K L) := fun n => by
@@ -99,7 +99,7 @@ lemma degreewiseEpiWithInjectiveKernel_p :
       HomologicalComplex.comp_f, HomologicalComplex.comp_f]
 
 noncomputable def mappingConeHomotopyZero (M : CochainComplex C ℤ): Homotopy (𝟙 (mappingCone (𝟙 M))) 0 :=
-  MappingCone.liftHomotopy _ _ _ (MappingCone.snd (𝟙 M)) 0 (by simp) (by simp)
+  mappingCone.liftHomotopy _ _ _ (mappingCone.snd (𝟙 M)) 0 (by simp) (by simp)
 
 noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L) L where
   hom := p K L
