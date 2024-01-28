@@ -742,31 +742,13 @@ variable [Encodable γ]
   taking a supremum. This is useful for outer measures. -/
 theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     ∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b) = ∑' b : γ, m (s b) := by
-  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome := by
-    intro n h
-    generalize decode₂ γ n = foo at *
-    cases' foo with b
-    · refine' (h <| by simp [m0]).elim
-    · exact rfl
-  symm
-  refine' tsum_eq_tsum_of_ne_zero_bij (fun a => Option.get _ (H a.1 a.2)) _ _ _
-  · dsimp only []
-    rintro ⟨m, hm⟩ ⟨n, hn⟩ e
-    have := mem_decode₂.1 (Option.get_mem (H n hn))
-    rwa [← e, mem_decode₂.1 (Option.get_mem (H m hm))] at this
-  · intro b h
-    refine' ⟨⟨encode b, _⟩, _⟩
-    · simp only [mem_support, encodek₂] at h ⊢
-      convert h
-      simp [Set.ext_iff, encodek₂]
-    · exact Option.get_of_mem _ (encodek₂ _)
-  · rintro ⟨n, h⟩
-    dsimp only [Subtype.coe_mk]
-    trans
-    swap
-    rw [show decode₂ γ n = _ from Option.get_mem (H n h)]
-    congr
-    simp [ext_iff, -Option.some_get]
+  rw [← tsum_extend_zero (@encode_injective γ _)]
+  refine tsum_congr fun n ↦ ?_
+  rcases em (n ∈ Set.range (encode : γ → ℕ)) with ⟨a, rfl⟩ | hn
+  · simp [encode_injective.extend_apply]
+  · rw [extend_apply' _ _ _ hn]
+    rw [← decode₂_ne_none_iff, ne_eq, not_not] at hn
+    simp [hn, m0]
 #align tsum_supr_decode₂ tsum_iSup_decode₂
 
 /-- `tsum_iSup_decode₂` specialized to the complete lattice of sets. -/
