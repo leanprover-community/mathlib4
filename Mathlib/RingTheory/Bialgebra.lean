@@ -54,6 +54,25 @@ theorem comul_mul_apply (a₁ a₂ : A) :
 
 attribute [simp] counit_one comul_one
 
+/-- The counit of a bialgebra, as an R-algebra map. -/
+def counit.toAlgHom : A →ₐ[R] R where
+  toFun := B.counit
+  map_one' := B.counit_one
+  map_mul' := B.counit_mul
+  map_zero' := B.counit.map_zero
+  map_add' := B.counit.map_add
+  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+
+/-- The comultiplication of a bialgebra, as an R-algebra map. -/
+def comul.toAlgHom : A →ₐ[R] A ⊗[R] A where
+  toFun := B.comul
+  map_one' := B.comul_one
+  map_mul' := B.comul_mul
+  map_zero' := B.comul.map_zero
+  map_add' := B.comul.map_add
+  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+
+
 end Bialgebra
 
 section CommSemiring
