@@ -26,8 +26,7 @@ The following meta-properties are defined
 
 -/
 
-
-universe v u v₃ v₂ v₁ u₃ u₂ u₁
+universe v v₁ v₂ u u₁ u₂ u₃
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -909,7 +908,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 

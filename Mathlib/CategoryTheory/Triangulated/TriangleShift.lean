@@ -143,6 +143,8 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
           isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
+namespace Triangle
+
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C
@@ -155,8 +157,6 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
           rw [← shiftFunctorAdd'_assoc_hom_app a b c _ _ _ rfl rfl (add_assoc a b c)]
           dsimp only [CategoryTheory.shiftFunctorAdd']
           simp }
-
-namespace Triangle
 
 @[simp]
 lemma shiftFunctor_eq (n : ℤ) :

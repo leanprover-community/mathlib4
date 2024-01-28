@@ -141,10 +141,10 @@ theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
   simp (config := { unfoldPartialApp := true }) only [IsEquivalent, const, isLittleO_const_iff h]
   constructor <;> intro h
-  · have := h.sub (tendsto_const_nhds (a := -c))
+  · have := h.sub (tendsto_const_nhds (x := -c))
     simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
     exact this
-  · have := h.sub (tendsto_const_nhds (a := c))
+  · have := h.sub (tendsto_const_nhds (x := c))
     rwa [sub_self] at this
 #align asymptotics.is_equivalent_const_iff_tendsto Asymptotics.isEquivalent_const_iff_tendsto
 
@@ -242,7 +242,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
 
 end NormedField
 
-section Smul
+section SMul
 
 theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
@@ -281,7 +281,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     _ = c * ‖v x‖ := by ring
 #align asymptotics.is_equivalent.smul Asymptotics.IsEquivalent.smul
 
-end Smul
+end SMul
 
 section mul_inv
 

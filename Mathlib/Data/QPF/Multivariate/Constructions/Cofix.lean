@@ -266,10 +266,10 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
     left
     rfl
   · intro x y r'xy
-    cases r'xy
-    case inl h =>
+    cases r'xy with
+    | inl h =>
       rw [h]
-    case inr r'xy =>
+    | inr r'xy =>
       have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
       rw [← Quot.factor_mk_eq _ _ this]
       dsimp
@@ -403,9 +403,9 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     dsimp
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, id_comp,
+      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
         dropFun_toSubtype]
-      erw [toSubtype_of_subtype_assoc, id_comp]
+      erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
       clear liftR_map_last q mvf lawful F x R f g hh h b c
       ext (i x) : 2
       induction i with
@@ -413,7 +413,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
       | fs _ ih =>
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
-      lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
+      lastFun_subtypeVal, Function.id_comp, lastFun_comp, lastFun_prod]
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh

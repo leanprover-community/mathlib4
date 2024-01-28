@@ -1,30 +1,48 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+/-!
+# Triangulated functors
+
+In this file, when `C` and `D` are categories equipped with a shift by `ℤ` and
+`F : C ⥤ D` is a functor which commutes with the shift, we define the induced
+functor `F.mapTriangle : Triangle C ⥤ Triangle D` on the categories of
+triangles. When `C` and `D` are pretriangulated, a triangulated functor
+is such a functor `F` which also sends distinguished triangles to
+distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
+
+-/
+
 namespace CategoryTheory
 
-open Category Limits Pretriangulated Preadditive ZeroObject
+open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
-variable {C D E : Type _} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
-  [Preadditive C] [Preadditive D] [Preadditive E]
-  (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
+  (F : C ⥤ D) (G : D ⥤ E) [F.CommShift ℤ] [G.CommShift ℤ]
 
+/-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
+which commutes with shift by `ℤ`. -/
 @[simps]
-def mapTriangle : Pretriangulated.Triangle C ⥤ Pretriangulated.Triangle D where
-  obj T := Pretriangulated.Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
+def mapTriangle : Triangle C ⥤ Triangle D where
+  obj T := Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
     (F.map T.mor₃ ≫ (F.commShiftIso (1 : ℤ)).hom.app T.obj₁)
   map f :=
     { hom₁ := F.map f.hom₁
       hom₂ := F.map f.hom₂
       hom₃ := F.map f.hom₃
-      comm₁ := by dsimp ; simp only [← F.map_comp, f.comm₁]
-      comm₂ := by dsimp ; simp only [← F.map_comp, f.comm₂]
+      comm₁ := by dsimp; simp only [← F.map_comp, f.comm₁]
+      comm₂ := by dsimp; simp only [← F.map_comp, f.comm₂]
       comm₃ := by
         dsimp [Functor.comp]
         simp only [Category.assoc, ← NatTrans.naturality,
@@ -56,27 +74,26 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
           image_preimage, Triangle.mk_mor₃] using f.comm₃) }
 
+section Additive
+
+variable [Preadditive C] [Preadditive D] [F.Additive]
+
+/-- The functor `F.mapTriangle` commutes with the shift. -/
 @[simps!]
-noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
+noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
     ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
-    (by aesop_cat)
-    (by aesop_cat)
-    (by
+    (by aesop_cat) (by aesop_cat) (by
       dsimp
-      simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc, Linear.comp_units_smul,
-        smul_left_cancel_iff, ← F.commShiftIso_hom_naturality_assoc]
-      congr 1
-      rw [F.map_shiftFunctorComm T.obj₁ 1 n]
-      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc, NatIso.cancel_natIso_hom_left]
-      rw [← Functor.map_comp, Iso.inv_hom_id_app]
-      dsimp
-      simp only [map_id, comp_id]))
-    (by aesop_cat)
+      simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
+        Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
+      rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
+      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
+        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
 
 set_option maxHeartbeats 400000 in
-noncomputable instance [F.Additive] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
 
@@ -84,37 +101,44 @@ noncomputable instance [F.Additive] [∀ (n : ℤ), (shiftFunctor C n).Additive]
 def mapTriangleRotateIso [F.Additive] :
     F.mapTriangle ⋙ Pretriangulated.rotate D ≅
       Pretriangulated.rotate C ⋙ F.mapTriangle :=
-    NatIso.ofComponents
-      (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) ((F.commShiftIso (1 : ℤ)).symm.app _)
-        (by aesop_cat) (by aesop_cat) (by aesop_cat))
-      (by aesop_cat)
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) ((F.commShiftIso (1 : ℤ)).symm.app _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat))
+    (by aesop_cat)
 
 @[simps!]
 noncomputable def mapTriangleInvRotateIso [F.Additive] :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
-    NatIso.ofComponents
-      (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
-        (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+end Additive
+
 variable [HasZeroObject C] [HasZeroObject D] [HasZeroObject E]
+  [Preadditive C] [Preadditive D] [Preadditive E]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [∀ (n : ℤ), (shiftFunctor E n).Additive]
   [Pretriangulated C] [Pretriangulated D] [Pretriangulated E]
 
+/-- A functor which commutes with the shift by `ℤ` is triangulated if
+it sends distinguished triangles to distinguished triangles. -/
 class IsTriangulated : Prop where
-  map_distinguished : ∀ (T : Triangle C), (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
+  map_distinguished (T : Triangle C) : (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
 
 lemma map_distinguished [F.IsTriangulated] (T : Triangle C) (hT : T ∈ distTriang C) :
     F.mapTriangle.obj T ∈ distTriang D :=
   IsTriangulated.map_distinguished _ hT
 
 namespace IsTriangulated
+
+open ZeroObject
 
 variable [F.IsTriangulated]
 

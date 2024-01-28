@@ -131,13 +131,13 @@ theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
   induction' n with n ih
   · have H : (IntFractPair.of v).fr = Int.fract v := rfl
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
-  · cases' eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone hsome
+  · rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
     · rw [hnone] at ih
       rw [succ_nth_stream_eq_none_iff.mpr (Or.inl hnone),
         succ_nth_stream_eq_none_iff.mpr (Or.inl ih)]
     · obtain ⟨p, hp⟩ := Option.ne_none_iff_exists'.mp hsome
       rw [hp] at ih
-      cases' eq_or_ne p.fr 0 with hz hnz
+      rcases eq_or_ne p.fr 0 with hz | hnz
       · rw [stream_eq_none_of_fr_eq_zero hp hz, stream_eq_none_of_fr_eq_zero ih hz]
       · rw [stream_succ_of_some hp hnz, stream_succ_of_some ih hnz]
 #align generalized_continued_fraction.int_fract_pair.stream_succ GeneralizedContinuedFraction.IntFractPair.stream_succ
@@ -298,11 +298,11 @@ variable {K} (v)
 that of the inverse of the fractional part of `v`.
 -/
 theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get? n := by
-  cases' eq_or_ne (fract v) 0 with h h
+  rcases eq_or_ne (fract v) 0 with h | h
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
     rw [fract_intCast, inv_zero, of_s_of_int, ← cast_zero, of_s_of_int,
       Stream'.Seq.get?_nil, Stream'.Seq.get?_nil]
-  cases' eq_or_ne ((of (fract v)⁻¹).s.get? n) none with h₁ h₁
+  rcases eq_or_ne ((of (fract v)⁻¹).s.get? n) none with h₁ | h₁
   · rwa [h₁, ← terminatedAt_iff_s_none,
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, stream_succ h, ←
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, terminatedAt_iff_s_none]
@@ -340,12 +340,12 @@ of an element `v` of `K` in terms of the convergents of the inverse of its fract
 -/
 theorem convergents'_succ :
     (of v).convergents' (n + 1) = ⌊v⌋ + 1 / (of (fract v)⁻¹).convergents' n := by
-  cases' eq_or_ne (fract v) 0 with h h
+  rcases eq_or_ne (fract v) 0 with h | h
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
     rw [convergents'_of_int, fract_intCast, inv_zero, ← cast_zero, convergents'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
   · rw [convergents', of_h_eq_floor, add_right_inj, convergents'Aux_succ_some (of_s_head h)]
-    exact congr_arg ((· / ·) 1) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
+    exact congr_arg (1 / ·) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
 #align generalized_continued_fraction.convergents'_succ GeneralizedContinuedFraction.convergents'_succ
 
 end Values

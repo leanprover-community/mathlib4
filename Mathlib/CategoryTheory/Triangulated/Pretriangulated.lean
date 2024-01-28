@@ -696,6 +696,7 @@ lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTri
   have : IsIso φ.hom₁ := by rw [hφ₁] ; infer_instance
   have : IsIso φ.hom₂ := by rw [hφ₂] ; infer_instance
   have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
+  have := Triangle.isIso_of_isIsos φ inferInstance inferInstance inferInstance
   exact ⟨asIso φ, hφ₁, hφ₂⟩
 
 @[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]

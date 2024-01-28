@@ -1,33 +1,51 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+/-! Sequences of functors from a category equigpped with a shift
+
+Let `F : C ⥤ A` be a functor from a category `C` that is equipped with a
+shift by an additive monoid `M`. In this file, we define a typeclass
+`F.ShiftSequence M` which includes the data of a sequence of functors
+`F.shift a : C ⥤ A` for all `a : A`. For each `a : A`, we have
+an isomorphism `F.isoShift a : shiftFunctor C a ⋙ F ≅ F.shift a` which
+satisfies some coherence relations. This allows to state results
+(e.g. the long exact sequence of an homology functor (TODO)) using
+functors `F.shift a` rather than `shiftFunctor C a ⋙ F`. The reason
+for this design is that we can often choose functors `F.shift a` that
+have better definitional properties than `shiftFunctor C a ⋙ F`.
+For example, if `C` is the derived category (TODO) of an abelian
+category `A` and `F` is the homology functor in degree `0`, then
+for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
+in degree `n`.
+
+-/
+
 open CategoryTheory Category ZeroObject Limits
 
-variable {C D A : Type _} [Category C] [Category D] [Category A]
-  (F : C ⥤ A) {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
-  (M G : Type _) [AddMonoid M] [AddGroup G] [HasShift C M] [HasShift C G]
-  [HasShift D M]
+variable {C D A : Type*} [Category C] [Category D] [Category A] (F : C ⥤ A)
+  {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
+  (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
+  (G : Type*) [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory
 
 namespace Functor
 
--- the idea of `ShiftSequence` is to attach to the functor `H^0`
--- (on cochain complexes, the homotopy category, or the derived category)
--- the whole sequence of functor `H^n` for all `n : ℤ`, so that the
--- homology sequence associated to a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧`
--- will be like `H^n X ⟶ H^n Y ⟶ H^n Z ⟶ H^(n+1) X` rather than
--- `H^0 (X⟦n⟧) ⟶ H^0 (Y⟦n⟧]) ⟶ H^0 (Z⟦n⟧]) ⟶ H^0 (X⟦n+1⟧]))`.
---
--- similarly, when `RF : C ⥤ DerivedCategory A` is a
--- triangulated functor, `RF ⋙ H^0` shall come together
--- with the sequence of $R^n F$ which are the `RF ⋙ H^n`,
--- see `ShiftSequence.leftComp`.
---
-
+/-- A shift sequence for a functor `F : C ⥤ A` when `C` is equipped with a shift
+by a monoid `M` involves a sequence of functor `sequence n : C ⥤ A` for all `n : M`
+which behave like `shiftFunctor C n ⋙ F`. -/
 class ShiftSequence where
+  /-- a sequence of functors -/
   sequence : M → C ⥤ A
+  /-- `sequence 0` identifies to the given functor -/
   isoZero : sequence 0 ≅ F
+  /-- compatibility isomorphism with the shift -/
   shiftIso (n a a' : M) (ha' : n + a = a') : shiftFunctor C n ⋙ sequence a ≅ sequence a'
   shiftIso_zero (a : M) : shiftIso 0 a a (zero_add a) =
     isoWhiskerRight (shiftFunctorZero C M) _ ≪≫ leftUnitor _
@@ -36,6 +54,7 @@ class ShiftSequence where
       isoWhiskerRight (shiftFunctorAdd C m n) _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (shiftIso n a a' ha') ≪≫ shiftIso m a' a'' ha''
 
+/-- The tautological shift sequence on a functor. -/
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   sequence n := shiftFunctor C n ⋙ F
   isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.rightUnitor
@@ -60,9 +79,12 @@ section
 variable {M}
 variable [F.ShiftSequence M]
 
+/-- The shifted functors given by the shift sequence. -/
 def shift (n : M) : C ⥤ A := ShiftSequence.sequence F n
 
-def shiftIso (n a a' : M) (ha' : n + a = a') : shiftFunctor C n ⋙ F.shift a ≅ F.shift a' :=
+/-- Compatibility isomorphism `shiftFunctor C n ⋙ F.shift a ≅ F.shift a'` when `n + a = a'`. -/
+def shiftIso (n a a' : M) (ha' : n + a = a') :
+    shiftFunctor C n ⋙ F.shift a ≅ F.shift a' :=
   ShiftSequence.shiftIso n a a' ha'
 
 @[reassoc (attr := simp 1100)]
@@ -79,29 +101,33 @@ lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
 
 variable (M)
 
+/-- The canonical isomorphism `F.shift 0 ≅ F`. -/
 def isoShiftZero : F.shift (0 : M) ≅ F := ShiftSequence.isoZero
 
 variable {M}
 
+/-- The canonical isomorphism `shiftFunctor C n ⋙ F ≅ F.shift n`. -/
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=
   isoWhiskerLeft _ (F.isoShiftZero M).symm ≪≫ F.shiftIso _ _ _ (add_zero n)
 
 @[reassoc]
 lemma isoShift_hom_naturality (n : M) {X Y : C} (f : X ⟶ Y) :
-  F.map (f⟦n⟧') ≫ (F.isoShift n).hom.app Y =
-    (F.isoShift n).hom.app X ≫ (F.shift n).map f :=
+    F.map (f⟦n⟧') ≫ (F.isoShift n).hom.app Y =
+      (F.isoShift n).hom.app X ≫ (F.shift n).map f :=
   (F.isoShift n).hom.naturality f
 
 attribute [simp] isoShift_hom_naturality
 
 @[reassoc]
 lemma isoShift_inv_naturality (n : M) {X Y : C} (f : X ⟶ Y) :
-  (F.shift n).map f ≫ (F.isoShift n).inv.app Y =
-    (F.isoShift n).inv.app X ≫ F.map (f⟦n⟧') :=
+    (F.shift n).map f ≫ (F.isoShift n).inv.app Y =
+      (F.isoShift n).inv.app X ≫ F.map (f⟦n⟧') :=
   (F.isoShift n).inv.naturality f
 
-lemma shiftIso_zero (a : M) : F.shiftIso 0 a a (zero_add a) =
-    isoWhiskerRight (shiftFunctorZero C M) _ ≪≫ leftUnitor _ :=  ShiftSequence.shiftIso_zero a
+lemma shiftIso_zero (a : M) :
+    F.shiftIso 0 a a (zero_add a) =
+      isoWhiskerRight (shiftFunctorZero C M) _ ≪≫ leftUnitor _ :=
+  ShiftSequence.shiftIso_zero a
 
 @[simp]
 lemma shiftIso_zero_hom_app (a : M) (X : C) :
@@ -123,20 +149,20 @@ lemma shiftIso_add (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') :
 
 lemma shiftIso_add_hom_app (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).hom.app X =
-    (shift F a).map ((shiftFunctorAdd C m n).hom.app X) ≫
-      (shiftIso F n a a' ha').hom.app ((shiftFunctor C m).obj X) ≫
-      (shiftIso F m a' a'' ha'').hom.app X := by
+      (shift F a).map ((shiftFunctorAdd C m n).hom.app X) ≫
+        (shiftIso F n a a' ha').hom.app ((shiftFunctor C m).obj X) ≫
+          (shiftIso F m a' a'' ha'').hom.app X := by
   simp [F.shiftIso_add n m a a' a'' ha' ha'']
 
 lemma shiftIso_add_inv_app (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).inv.app X =
       (shiftIso F m a' a'' ha'').inv.app X ≫
-      (shiftIso F n a a' ha').inv.app ((shiftFunctor C m).obj X) ≫
-    (shift F a).map ((shiftFunctorAdd C m n).inv.app X) := by
+        (shiftIso F n a a' ha').inv.app ((shiftFunctor C m).obj X) ≫
+          (shift F a).map ((shiftFunctorAdd C m n).inv.app X) := by
   simp [F.shiftIso_add n m a a' a'' ha' ha'']
 
 lemma shiftIso_add' (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
-  (ha' : n + a = a') (ha'' : m + a' = a'') :
+    (ha' : n + a = a') (ha'' : m + a' = a'') :
     F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc]) =
       isoWhiskerRight (shiftFunctorAdd' C m n _ hnm) _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (F.shiftIso n a a' ha') ≪≫ F.shiftIso m a' a'' ha'' := by
@@ -146,17 +172,17 @@ lemma shiftIso_add' (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
 lemma shiftIso_add'_hom_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X =
-    (shift F a).map ((shiftFunctorAdd' C m n mn hnm).hom.app X) ≫
-      (shiftIso F n a a' ha').hom.app ((shiftFunctor C m).obj X) ≫
-      (shiftIso F m a' a'' ha'').hom.app X := by
+      (shift F a).map ((shiftFunctorAdd' C m n mn hnm).hom.app X) ≫
+        (shiftIso F n a a' ha').hom.app ((shiftFunctor C m).obj X) ≫
+          (shiftIso F m a' a'' ha'').hom.app X := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
 lemma shiftIso_add'_inv_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
       (shiftIso F m a' a'' ha'').inv.app X ≫
-      (shiftIso F n a a' ha').inv.app ((shiftFunctor C m).obj X) ≫
-    (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) := by
+        (shiftIso F n a a' ha').inv.app ((shiftFunctor C m).obj X) ≫
+        (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
 @[reassoc]
@@ -271,7 +297,6 @@ instance [π.CommShift M] [H.ShiftSequence M] : (π ⋙ H).ShiftSequence M :=
   leftComp (Iso.refl _) _
 
 end ShiftSequence
-
 
 end Functor
 

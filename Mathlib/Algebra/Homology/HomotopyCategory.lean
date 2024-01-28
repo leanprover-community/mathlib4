@@ -80,7 +80,6 @@ instance quotient_additive : (quotient V c).Additive where
 
 open ZeroObject
 
--- TODO upgrade this to `HasZeroObject`, presumably for any `quotient`.
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
 

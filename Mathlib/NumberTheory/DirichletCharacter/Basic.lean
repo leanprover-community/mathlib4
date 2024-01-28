@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Algebra.Periodic
-import Mathlib.Data.ZMod.Algebra
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Units
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 /-!
 # Dirichlet Characters
@@ -88,7 +86,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
-    (changeLevel hm χ) a = χ a := by
+    (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 

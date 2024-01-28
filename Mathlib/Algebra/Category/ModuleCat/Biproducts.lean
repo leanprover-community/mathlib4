@@ -161,6 +161,7 @@ variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
 open ModuleCat
 
+
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules.-/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)

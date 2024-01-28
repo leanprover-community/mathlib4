@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.GiryMonad
 
 #align_import probability.kernel.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -64,9 +64,9 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
   add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
--- Porting note: using `FunLike` instead of `CoeFun` to use `FunLike.coe`
+-- Porting note: using `FunLike` instead of `CoeFun` to use `DFunLike.coe`
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    FunLike (kernel α β) α fun _ => Measure β where
+    FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
@@ -177,10 +177,10 @@ instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
 namespace kernel
 
 @[ext]
-theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := FunLike.ext _ _ h
+theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 #align probability_theory.kernel.ext ProbabilityTheory.kernel.ext
 
-theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := FunLike.ext_iff
+theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 #align probability_theory.kernel.ext_iff ProbabilityTheory.kernel.ext_iff
 
 theorem ext_iff' {η : kernel α β} :
@@ -215,7 +215,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     Integrable (fun x => (κ x s).toReal) μ := by
   refine' Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
     ((kernel.measurable_coe κ hs).ennreal_toReal.aestronglyMeasurable)
-    (ae_of_all μ <| fun x => _)
+    (ae_of_all μ fun x => _)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]
   exact kernel.measure_le_bound _ _ _
@@ -454,10 +454,20 @@ theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
 lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
   ext x s _; simp [kernel.const_apply]
 
+lemma sum_const [Countable ι] (μ : ι → Measure β) :
+    kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
+  ext x s hs
+  rw [const_apply, Measure.sum_apply _ hs, kernel.sum_apply' _ _ hs]
+  simp only [const_apply]
+
 instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
   ⟨⟨μβ Set.univ, measure_lt_top _ _, fun _ => le_rfl⟩⟩
 #align probability_theory.kernel.is_finite_kernel_const ProbabilityTheory.kernel.isFiniteKernel_const
+
+instance isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
+    IsSFiniteKernel (const α μβ) :=
+  ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
 
 instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=

@@ -42,8 +42,9 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
 namespace Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
-  (F : C ⥤ D) (G : D ⥤ E) (A : Type*) [AddMonoid A]
+  (F : C ⥤ D) (G : D ⥤ E) (A B : Type*) [AddMonoid A] [AddCommMonoid B]
   [HasShift C A] [HasShift D A] [HasShift E A]
+  [HasShift C B] [HasShift D B]
 
 namespace CommShift
 
@@ -497,6 +498,29 @@ lemma ofIso_compatibility :
   rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
 
 end CommShift
+
+variable {C D : Type*} [Category C] [Category D]
+  (F : C ⥤ D)
+  {B : Type*} [AddCommMonoid B] [HasShift C B] [HasShift D B]
+
+lemma map_shiftFunctorComm_hom_app (F : C ⥤ D) [F.CommShift B] (X : C) (a b : B) :
+    F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
+      ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
+      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
+  have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
+  simp only [comp_obj, CommShift.isoAdd_hom_app,
+    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)), Category.assoc,
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp, F.map_comp] at eq
+  simp only [shiftFunctorComm_eq D a b _ rfl]
+  dsimp
+  simp only [Functor.map_comp, shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
+    ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
+  dsimp
+  rw [Functor.map_comp]
+  simp only [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
+    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
+    Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
 
 end Functor
 

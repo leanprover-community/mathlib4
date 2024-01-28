@@ -11,10 +11,17 @@ import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
 The homology of short complexes in concrete categories was studied in
 `Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory`. In this file,
+<<<<<<< HEAD
 we introduce specific defininitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a concrete computation of the connecting homomorphism of
 the homology sequence.
+=======
+we introduce specific definitions and lemmas for the homology
+of homological complexes in concrete categories. In particular,
+we give a computation of the connecting homomorphism of
+the homology sequence in terms of (co)cycles.
+>>>>>>> origin
 
 -/
 

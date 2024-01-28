@@ -108,11 +108,11 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
-@[simp] lemma indiscretePartition_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
+@[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
-  eq_zero_of_forall_not_mem <| fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+  eq_zero_of_forall_not_mem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
 instance UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext _ _ <| by simp

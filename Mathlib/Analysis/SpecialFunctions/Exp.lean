@@ -225,7 +225,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
   calc
-    x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_of_le_left hx₀.le (Nat.le_ceil _) _
+    x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
     _ ≤ exp (x + 1) / (exp 1 * C) :=
       (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
@@ -415,6 +415,14 @@ theorem isTheta_exp_comp_one {f : α → ℝ} :
   simp only [← exp_zero, isTheta_exp_comp_exp_comp, sub_zero]
 set_option linter.uppercaseLean3 false in
 #align real.is_Theta_exp_comp_one Real.isTheta_exp_comp_one
+
+lemma summable_exp_nat_mul_iff {a : ℝ} :
+    Summable (fun n : ℕ ↦ exp (n * a)) ↔ a < 0 := by
+  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_1, norm_of_nonneg (exp_nonneg _),
+    exp_lt_one_iff]
+
+lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
+  simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
 
 end Real
 

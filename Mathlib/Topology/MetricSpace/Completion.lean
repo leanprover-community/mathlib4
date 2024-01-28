@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.Instances.Real
 
 #align_import topology.metric_space.completion from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -131,7 +132,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
       have I := ht this
-      simp [Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I
+      simp? [Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
+        simp only [Real.dist_eq, preimage_setOf_eq, mem_setOf_eq, Completion.dist_self,
+          Completion.dist_comm, zero_sub, abs_neg] at I
       exact lt_of_le_of_lt (le_abs_self _) I
     show t1 ⊆ s
     · rintro ⟨a, b⟩ hp

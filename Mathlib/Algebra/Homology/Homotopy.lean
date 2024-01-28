@@ -57,6 +57,11 @@ theorem dNext_eq (f : ∀ i j, C.X i ⟶ D.X j) {i i' : ι} (w : c.Rel i i') :
   rfl
 #align d_next_eq dNext_eq
 
+lemma dNext_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel i (c.next i)) :
+    dNext i f = 0 := by
+  dsimp [dNext]
+  rw [shape _ _ _ hi, zero_comp]
+
 @[simp 1100]
 theorem dNext_comp_left (f : C ⟶ D) (g : ∀ i j, D.X i ⟶ E.X j) (i : ι) :
     (dNext i fun i j => f.f i ≫ g i j) = f.f i ≫ dNext i g :=
@@ -74,6 +79,11 @@ def prevD (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.X j) :=
   AddMonoidHom.mk' (fun f => f j (c.prev j) ≫ D.d (c.prev j) j) fun _ _ =>
     Preadditive.add_comp _ _ _ _ _ _
 #align prev_d prevD
+
+lemma prevD_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel (c.prev i) i) :
+    prevD i f = 0 := by
+  dsimp [prevD]
+  rw [shape _ _ _ hi, comp_zero]
 
 /-- `f j (c.prev j)`. -/
 def toPrev (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.xPrev j) :=

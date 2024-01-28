@@ -3,11 +3,11 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.RelClasses
-import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Improvable lower bounds.
@@ -179,7 +179,7 @@ instance (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb]
     have s₁ := Estimator.improve_spec (a := a) e.1
     have s₂ := Estimator.improve_spec (a := b) e.2
     revert s₁ s₂
-    cases h₁ : improve a e.fst <;> cases h₂ : improve b e.snd <;> intro s₁ s₂ <;> simp_all only
+    cases improve a e.fst <;> cases improve b e.snd <;> intro s₁ s₂ <;> simp_all only
     · apply Nat.add_lt_add_left s₂
     · apply Nat.add_lt_add_right s₁
     · apply Nat.add_lt_add_right s₁

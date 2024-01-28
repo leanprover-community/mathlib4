@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 [`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
 import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.Multiset.Sym
 
@@ -44,7 +43,7 @@ protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2�
 section
 variable {s t : Finset α} {a b : α}
 
-theorem mk_mem_sym2_iff : ⟦(a, b)⟧ ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
+theorem mk_mem_sym2_iff : s(a, b) ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 #align finset.mk_mem_sym2_iff Finset.mk_mem_sym2_iff
 
@@ -78,7 +77,7 @@ theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => s
 theorem injective_sym2 : Function.Injective (Finset.sym2 : Finset α → _) := by
   intro s t h
   ext x
-  simpa using congr(⟦(x, x)⟧ ∈ $h)
+  simpa using congr(s(x, x) ∈ $h)
 
 theorem strictMono_sym2 : StrictMono (Finset.sym2 : Finset α → _) :=
   monotone_sym2.strictMono_of_injective injective_sym2
@@ -120,7 +119,7 @@ end
 
 variable [DecidableEq α] {s t : Finset α} {a b : α}
 
-theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image (Quotient.mk _) := by
+theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
   refine z.ind fun x y ↦ ?_
   rw [mk_mem_sym2_iff, mem_image]
@@ -133,11 +132,12 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image (Quotient.mk _) := by
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
       <;> simp [h]
 
-theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
+theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
 #align finset.is_diag_mk_of_mem_diag Finset.isDiag_mk_of_mem_diag
 
-theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) : ¬Sym2.IsDiag ⟦a⟧ := by
+theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
+    ¬ (Sym2.mk a).IsDiag := by
   rw [Sym2.isDiag_iff_proj_eq]
   exact (mem_offDiag.1 h).2.2
 #align finset.not_is_diag_mk_of_mem_off_diag Finset.not_isDiag_mk_of_mem_offDiag
@@ -157,7 +157,7 @@ theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_
 #align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
 
 theorem image_diag_union_image_offDiag :
-    s.diag.image (Quotient.mk _) ∪ s.offDiag.image (Quotient.mk _) = s.sym2 := by
+    s.diag.image Sym2.mk ∪ s.offDiag.image Sym2.mk = s.sym2 := by
   rw [← image_union, diag_union_offDiag, sym2_eq_image]
 #align finset.image_diag_union_image_off_diag Finset.image_diag_union_image_offDiag
 

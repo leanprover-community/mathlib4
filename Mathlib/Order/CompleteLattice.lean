@@ -5,9 +5,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Set
 import Mathlib.Mathport.Notation
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
@@ -123,7 +124,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -151,7 +152,7 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -205,8 +206,10 @@ theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   ⟨fun _ ↦ le_sSup, fun _ ↦ sSup_le⟩
 #align is_lub_Sup isLUB_sSup
 
-theorem IsLUB.sSup_eq (h : IsLUB s a) : sSup s = a :=
-  (isLUB_sSup s).unique h
+lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
+  ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
+
+alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
 #align is_lub.Sup_eq IsLUB.sSup_eq
 
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
@@ -274,8 +277,10 @@ theorem isGLB_sInf (s : Set α) : IsGLB s (sInf s) :=
   ⟨fun _ => sInf_le, fun _ => le_sInf⟩
 #align is_glb_Inf isGLB_sInf
 
-theorem IsGLB.sInf_eq (h : IsGLB s a) : sInf s = a :=
-  (isGLB_sInf s).unique h
+lemma isGLB_iff_sInf_eq : IsGLB s a ↔ sInf s = a :=
+  ⟨(isGLB_sInf s).unique, by rintro rfl; exact isGLB_sInf _⟩
+
+alias ⟨IsGLB.sInf_eq, _⟩ := isGLB_iff_sInf_eq
 #align is_glb.Inf_eq IsGLB.sInf_eq
 
 theorem sInf_le_of_le (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
@@ -301,12 +306,7 @@ theorem iInf_le_iff {s : ι → α} : iInf s ≤ a ↔ ∀ b, (∀ i, b ≤ s i)
 #align infi_le_iff iInf_le_iff
 
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_of_forall_le
-    (by
-      simp only [le_sInf_iff]
-      introv h₀ h₁
-      rcases h _ h₁ with ⟨y, hy, hy'⟩
-      solve_by_elim [le_trans _ hy'])
+  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 #align Inf_le_Inf_of_forall_exists_le sInf_le_sInf_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
@@ -695,7 +695,7 @@ theorem iSup_congr (h : ∀ i, f i = g i) : ⨆ i, f i = ⨆ i, g i :=
 
 theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
-  iSup_congr <| fun i ↦ iSup_congr (h i)
+  iSup_congr fun i ↦ iSup_congr (h i)
 
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
@@ -1463,6 +1463,14 @@ theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f
   @sSup_image αᵒᵈ _ _ _ _
 #align Inf_image sInf_image
 
+theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sSup s) = sSup (f.symm ⁻¹' s) := by
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+
+theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sInf s) = sInf (f.symm ⁻¹' s) := by
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+
 /-
 ### iSup and iInf under set constructions
 -/
@@ -1988,12 +1996,12 @@ end Prod
 
 lemma sInf_prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
     sInf (s ×ˢ t) = (sInf s, sInf t) :=
-congr_arg₂ Prod.mk (congr_arg sInf $ fst_image_prod _ ht) (congr_arg sInf $ snd_image_prod hs _)
+congr_arg₂ Prod.mk (congr_arg sInf <| fst_image_prod _ ht) (congr_arg sInf <| snd_image_prod hs _)
 #align Inf_prod sInf_prod
 
 lemma sSup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
     sSup (s ×ˢ t) = (sSup s, sSup t) :=
-congr_arg₂ Prod.mk (congr_arg sSup $ fst_image_prod _ ht) (congr_arg sSup $ snd_image_prod hs _)
+congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| snd_image_prod hs _)
 #align Sup_prod sSup_prod
 
 section CompleteLattice
