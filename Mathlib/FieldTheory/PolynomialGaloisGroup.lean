@@ -509,12 +509,12 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots]
     · exact IsAlgClosed.splits_codomain p
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
-  have h2 : Fintype.card p.Gal = Fintype.card (galActionHom p ℂ).range :=
+  have h2 : Fintype.card p.Gal = Fintype.card (MonoidHom.range <| galActionHom p ℂ) :=
     Fintype.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv
   let conj := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine'
     ⟨galActionHom_injective p ℂ, fun x =>
-      (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from _)).mpr
+      (congr_arg (Membership.mem x) (show (MonoidHom.range <| galActionHom p ℂ) = ⊤ from _)).mpr
         (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]

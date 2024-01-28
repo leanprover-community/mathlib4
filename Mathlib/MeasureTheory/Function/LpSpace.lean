@@ -1723,7 +1723,8 @@ variable (E p μ)
 bounded continuous representative. -/
 def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
   AddSubgroup.addSubgroupOf
-    ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E)).range (Lp E p μ)
+    (AddMonoidHom.range ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E)))
+      (Lp E p μ)
 #align measure_theory.Lp.bounded_continuous_function MeasureTheory.Lp.boundedContinuousFunction
 
 variable {E p μ}

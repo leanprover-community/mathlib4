@@ -647,7 +647,8 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
   classical
     simp_rw [det_apply']
     convert Eq.symm <|
-      sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (Sum m n))).toFinset) ?_
+      sum_subset (β := R) (subset_univ
+        (MonoidHom.range (sumCongrHom m n) : Set (Perm (Sum m n))).toFinset) ?_
     simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
     refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
     · intro σ₁₂ _

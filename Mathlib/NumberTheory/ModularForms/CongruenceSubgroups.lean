@@ -45,7 +45,7 @@ theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
 modulo `N`.-/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
-  SLMOD(N).ker
+  MonoidHom.ker SLMOD(N)
 #align Gamma Gamma
 
 theorem Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
@@ -137,7 +137,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
 row is congruent to `(0,1)` modulo `N`.-/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
-  (Gamma0Map N).ker
+  MonoidHom.ker (Gamma0Map N)
 #align Gamma1' Gamma1'
 
 @[simp, nolint simpNF] -- Porting note: linter failed to synth `CommMonoid { x // x ∈ Gamma0 N }`

@@ -674,7 +674,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
 /-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
 occurences of `t`.  -/
 theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
-    (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
+    (hw : w.prod φ ∈ (MonoidHom.range of : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by
   rcases hw with ⟨g, hg⟩
   let w' : ReducedWord G A B := { ReducedWord.empty G A B with head := g }

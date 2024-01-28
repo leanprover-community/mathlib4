@@ -58,6 +58,7 @@ structure Sylow extends Subgroup G where
 variable {p} {G}
 
 namespace Sylow
+open MonoidHom
 
 attribute [coe] Sylow.toSubgroup
 
@@ -76,7 +77,7 @@ theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; 
 #align sylow.ext Sylow.ext
 
 theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg _, ext⟩
+  ⟨_root_.congr_arg _, ext⟩
 #align sylow.ext_iff Sylow.ext_iff
 
 instance : SetLike (Sylow p G) G where
@@ -98,7 +99,7 @@ instance mulActionLeft {α : Type*} [MulAction G α] : MulAction P α :=
 variable {K : Type*} [Group K] (ϕ : K →* G) {N : Subgroup G}
 
 /-- The preimage of a Sylow subgroup under a p-group-kernel homomorphism is a Sylow subgroup. -/
-def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) : Sylow p K :=
+def comapOfKerIsPGroup (hϕ : IsPGroup p (ker ϕ)) (h : ↑P ≤ (range ϕ)) : Sylow p K :=
   { P.1.comap ϕ with
     isPGroup' := P.2.comap_of_ker_isPGroup ϕ hϕ
     is_maximal' := fun {Q} hQ hle => by
@@ -108,18 +109,18 @@ def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) : Sylow
 #align sylow.comap_of_ker_is_p_group Sylow.comapOfKerIsPGroup
 
 @[simp]
-theorem coe_comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) :
+theorem coe_comapOfKerIsPGroup (hϕ : IsPGroup p (ker ϕ)) (h : ↑P ≤ (range ϕ)) :
     (P.comapOfKerIsPGroup ϕ hϕ h : Subgroup K) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_ker_is_p_group Sylow.coe_comapOfKerIsPGroup
 
 /-- The preimage of a Sylow subgroup under an injective homomorphism is a Sylow subgroup. -/
-def comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) : Sylow p K :=
+def comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ range ϕ) : Sylow p K :=
   P.comapOfKerIsPGroup ϕ (IsPGroup.ker_isPGroup_of_injective hϕ) h
 #align sylow.comap_of_injective Sylow.comapOfInjective
 
 @[simp]
-theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) :
+theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ range ϕ) :
     ↑(P.comapOfInjective ϕ hϕ h) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_injective Sylow.coe_comapOfInjective
@@ -169,8 +170,9 @@ noncomputable instance Sylow.inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty Sylow.nonempty
 #align sylow.inhabited Sylow.inhabited
 
+open MonoidHom in
 theorem Sylow.exists_comap_eq_of_ker_isPGroup {H : Type*} [Group H] (P : Sylow p H) {f : H →* G}
-    (hf : IsPGroup p f.ker) : ∃ Q : Sylow p G, (Q : Subgroup G).comap f = P :=
+    (hf : IsPGroup p (ker f)) : ∃ Q : Sylow p G, (Q : Subgroup G).comap f = P :=
   Exists.imp (fun Q hQ => P.3 (Q.2.comap_of_ker_isPGroup f hf) (map_le_iff_le_comap.mp hQ))
     (P.2.map f).exists_le_sylow
 #align sylow.exists_comap_eq_of_ker_is_p_group Sylow.exists_comap_eq_of_ker_isPGroup
@@ -185,10 +187,11 @@ theorem Sylow.exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
   P.exists_comap_eq_of_injective Subtype.coe_injective
 #align sylow.exists_comap_subtype_eq Sylow.exists_comap_subtype_eq
 
+open MonoidHom in
 /-- If the kernel of `f : H →* G` is a `p`-group,
   then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
 noncomputable def Sylow.fintypeOfKerIsPGroup {H : Type*} [Group H] {f : H →* G}
-    (hf : IsPGroup p f.ker) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
+    (hf : IsPGroup p (ker f)) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
   let g : Sylow p H → Sylow p G := fun P => Classical.choose (h_exists P)
   have hg : ∀ P : Sylow p H, (g P).1.comap f = P := fun P => Classical.choose_spec (h_exists P)
@@ -263,7 +266,11 @@ theorem Sylow.smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
   exact
     forall_congr' fun h =>
       iff_congr Iff.rfl
-        ⟨fun ⟨a, b, c⟩ => c ▸ by simpa [mul_assoc] using b,
+        ⟨fun ⟨a, b, c⟩ => c ▸ by
+              rw [MulDistribMulAction.toMonoidEnd_apply, MulDistribMulAction.toMonoidHom_apply,
+                  MulAut.smul_def, MulAut.conj_apply]
+              group
+              simpa using b,
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 #align sylow.smul_eq_iff_mem_normalizer Sylow.smul_eq_iff_mem_normalizer
 

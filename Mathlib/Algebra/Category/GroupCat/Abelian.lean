@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.Limits.ConcreteCategory
 # The category of abelian groups is abelian
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Limits AddMonoidHom
 
 universe u
 
@@ -48,11 +48,11 @@ instance : Abelian AddCommGroupCat.{u} where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker := by
+theorem exact_iff : Exact f g ↔ range f = ker g := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
     ⟨fun h => ((AddMonoidHom.range_le_ker_iff _ _).mpr h.left).antisymm
-        ((QuotientAddGroup.ker_le_range_iff _ _).mpr h.right),
+        ((QuotientAddGroup.ker_le_range_iff f g).mpr h.right),
       fun h => ⟨(AddMonoidHom.range_le_ker_iff _ _).mp h.le,
           (QuotientAddGroup.ker_le_range_iff _ _).mp h.symm.le⟩⟩
 
@@ -67,13 +67,14 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]
   · intro x (hx : _ = _)
     rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
-    erw [← comp_apply, colimit.ι_map, comp_apply,
+    erw [← CategoryTheory.comp_apply, colimit.ι_map, CategoryTheory.comp_apply,
       ← map_zero (by exact colimit.ι H j : H.obj j →+ ↑(colimit H))] at hx
     rcases Concrete.colimit_exists_of_rep_eq H _ _ hx with ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
-    rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
+    rw [map_zero, ← CategoryTheory.comp_apply,
+      ← NatTrans.naturality, CategoryTheory.comp_apply] at hk
     rcases ((exact_iff _ _).mp <| h k).ge hk with ⟨t, ht⟩
     use colimit.ι F k t
-    erw [← comp_apply, colimit.ι_map, comp_apply, ht]
+    erw [← CategoryTheory.comp_apply, colimit.ι_map, CategoryTheory.comp_apply, ht]
     exact colimit.w_apply G e₁ y
 
 end AddCommGroupCat

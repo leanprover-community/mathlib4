@@ -732,17 +732,18 @@ theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
 
 
 section Kernels
+open AddMonoidHom
 
 variable (f : NormedAddGroupHom V₁ V₂) (g : NormedAddGroupHom V₂ V₃)
 
 /-- The kernel of a bounded group homomorphism. Naturally endowed with a
 `SeminormedAddCommGroup` instance. -/
 def ker : AddSubgroup V₁ :=
-  f.toAddMonoidHom.ker
+  AddMonoidHom.ker f.toAddMonoidHom
 #align normed_add_group_hom.ker NormedAddGroupHom.ker
 
 theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
-  erw [f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
+  erw [AddMonoidHom.mem_ker f.toAddMonoidHom, coe_toAddMonoidHom]
 #align normed_add_group_hom.mem_ker NormedAddGroupHom.mem_ker
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
@@ -787,7 +788,7 @@ variable (f : NormedAddGroupHom V₁ V₂) (g : NormedAddGroupHom V₂ V₃)
 /-- The image of a bounded group homomorphism. Naturally endowed with a
 `SeminormedAddCommGroup` instance. -/
 def range : AddSubgroup V₂ :=
-  f.toAddMonoidHom.range
+  AddMonoidHom.range f.toAddMonoidHom
 #align normed_add_group_hom.range NormedAddGroupHom.range
 
 theorem mem_range (v : V₂) : v ∈ f.range ↔ ∃ w, f w = v := Iff.rfl

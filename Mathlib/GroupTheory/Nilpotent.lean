@@ -511,9 +511,10 @@ theorem lowerCentralSeries_succ_eq_bot {n : ℕ} (h : lowerCentralSeries G n ≤
   exact mem_center_iff.mp (h hy1) z
 #align lower_central_series_succ_eq_bot lowerCentralSeries_succ_eq_bot
 
+open MonoidHom in
 /-- The preimage of a nilpotent group is nilpotent if the kernel of the homomorphism is contained
 in the center -/
-theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 : f.ker ≤ center G)
+theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 : ker f ≤ center G)
     (hH : IsNilpotent H) : IsNilpotent G := by
   rw [nilpotent_iff_lowerCentralSeries] at *
   rcases hH with ⟨n, hn⟩
@@ -522,8 +523,9 @@ theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 :
   exact eq_bot_iff.mpr (hn ▸ lowerCentralSeries.map f n)
 #align is_nilpotent_of_ker_le_center isNilpotent_of_ker_le_center
 
+open MonoidHom in
 theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
-    (hf1 : f.ker ≤ center G) (hH : IsNilpotent H) :
+    (hf1 : ker f ≤ center G) (hH : IsNilpotent H) :
     @Group.nilpotencyClass G _ (isNilpotent_of_ker_le_center f hf1 hH) ≤
       Group.nilpotencyClass H + 1 := by
   haveI : IsNilpotent G := isNilpotent_of_ker_le_center f hf1 hH
@@ -536,6 +538,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
   simp only [lowerCentralSeries_nilpotencyClass, le_bot_iff]
 #align nilpotency_class_le_of_ker_le_center nilpotencyClass_le_of_ker_le_center
 
+open MonoidHom in
 /-- The range of a surjective homomorphism from a nilpotent group is nilpotent -/
 theorem nilpotent_of_surjective {G' : Type*} [Group G'] [h : IsNilpotent G] (f : G →* G')
     (hf : Function.Surjective f) : IsNilpotent G' := by
@@ -543,13 +546,13 @@ theorem nilpotent_of_surjective {G' : Type*} [Group G'] [h : IsNilpotent G] (f :
   use n
   apply eq_top_iff.mpr
   calc
-    ⊤ = f.range := symm (f.range_top_of_surjective hf)
+    ⊤ = range f := symm (range_top_of_surjective f hf)
     _ = Subgroup.map f ⊤ := (MonoidHom.range_eq_map _)
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
-
 #align nilpotent_of_surjective nilpotent_of_surjective
 
+open MonoidHom in
 /-- The nilpotency class of the range of a surjective homomorphism from a
 nilpotent group is less or equal the nilpotency class of the domain -/
 theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
@@ -560,7 +563,7 @@ theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
   intro n hn
   apply eq_top_iff.mpr
   calc
-    ⊤ = f.range := symm (f.range_top_of_surjective hf)
+    ⊤ = range f := symm (range_top_of_surjective f hf)
     _ = Subgroup.map f ⊤ := (MonoidHom.range_eq_map _)
     _ = Subgroup.map f (upperCentralSeries G n) := by rw [hn]
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
@@ -625,7 +628,7 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
   · suffices Group.nilpotencyClass (G ⧸ center G) = n by simpa
     apply le_antisymm
     · apply upperCentralSeries_eq_top_iff_nilpotencyClass_le.mp
-      apply @comap_injective G _ _ _ (mk' (center G)) (surjective_quot_mk _)
+      apply comap_injective (N := G ⧸ center G) (f := mk' (center G)) (surjective_quot_mk _)
       rw [comap_upperCentralSeries_quotient_center, comap_top, ← hn]
       exact upperCentralSeries_nilpotencyClass
     · apply le_of_add_le_add_right
@@ -833,7 +836,7 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
     exact @Subsingleton.elim _ Unique.instSubsingleton _ _
   · intro G _ _ ih H hH
     have hch : center G ≤ H := Subgroup.center_le_normalizer.trans (le_of_eq hH)
-    have hkh : (mk' (center G)).ker ≤ H := by simpa using hch
+    have hkh : MonoidHom.ker (mk' (center G)) ≤ H := by simpa using hch
     have hsur : Function.Surjective (mk' (center G)) := surjective_quot_mk _
     let H' := H.map (mk' (center G))
     have hH' : H'.normalizer = H' := by

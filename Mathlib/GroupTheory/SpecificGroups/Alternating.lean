@@ -41,26 +41,25 @@ alternating group permutation
 -/
 
 
-open Equiv Equiv.Perm Subgroup Fintype
+open Equiv Equiv.Perm Subgroup Fintype MonoidHom
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
-def alternatingGroup : Subgroup (Perm α) :=
-  sign.ker
+def alternatingGroup : Subgroup (Perm α) := ker sign
 #align alternating_group alternatingGroup
 
 -- Porting note: manually added instance
 instance fta : Fintype (alternatingGroup α) :=
-  @Subtype.fintype _ _ sign.decidableMemKer _
+  @Subtype.fintype _ _ (decidableMemKer sign) _
 
 instance [Subsingleton α] : Unique (alternatingGroup α) :=
   ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.eq (Subsingleton.elim p _)⟩
 
 variable {α}
 
-theorem alternatingGroup_eq_sign_ker : alternatingGroup α = sign.ker :=
+theorem alternatingGroup_eq_sign_ker : alternatingGroup α = ker sign :=
   rfl
 #align alternating_group_eq_sign_ker alternatingGroup_eq_sign_ker
 
@@ -68,7 +67,7 @@ namespace Equiv.Perm
 
 @[simp]
 theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
-  sign.mem_ker
+  mem_ker sign
 #align equiv.perm.mem_alternating_group Equiv.Perm.mem_alternatingGroup
 
 theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
@@ -115,19 +114,19 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   cases' Int.units_eq_one_or (Perm.sign π) with h h
   · rw [isConj_iff]
     refine' ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective _⟩
-    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
+    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, MonoidHom.coe_mk] using hπ
   · have h2 : 2 ≤ σ.supportᶜ.card := by
       rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
     refine' isConj_iff.2 ⟨⟨π * swap a b, _⟩, Subtype.val_injective _⟩
     · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
-    · simp only [← hπ, coe_mk, Subgroup.coe_mul, Subtype.val]
+    · simp only [← hπ, MonoidHom.coe_mk, Subgroup.coe_mul, Subtype.val]
       have hd : Disjoint (swap a b) σ := by
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
           Finset.disjoint_singleton_left]
         exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
-      rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, coe_mk]
+      rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, Subgroup.coe_mk]
       simp [mul_assoc]
 #align alternating_group.is_conj_of alternatingGroup.isConj_of
 

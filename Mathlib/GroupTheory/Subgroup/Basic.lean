@@ -2944,6 +2944,10 @@ theorem ker_eq_bot_iff (f : F₂) : ker f = ⊥ ↔ Function.Injective f :=
 #align monoid_hom.ker_eq_bot_iff MonoidHom.ker_eq_bot_iff
 #align add_monoid_hom.ker_eq_bot_iff AddMonoidHom.ker_eq_bot_iff
 
+@[to_additive]
+theorem ker_eq_bot_iff' (f : G →* M) : ker f = ⊥ ↔ Function.Injective f :=
+  ker_eq_bot_iff f
+
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.ker_subtype (H : Subgroup G) : ker H.subtype = ⊥ :=
   H.subtype.ker_eq_bot_iff.mpr Subtype.coe_injective

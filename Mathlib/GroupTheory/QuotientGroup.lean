@@ -125,7 +125,7 @@ theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 
 
 open MonoidHom in
 @[to_additive]
-theorem ker_le_range_iff {I : Type*} {F : Type*} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+theorem ker_le_range_iff {I : Type*} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     ker g ≤ range f ↔ (mk' (range f)).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
     fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
