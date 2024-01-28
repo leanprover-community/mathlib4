@@ -333,7 +333,7 @@ def polarBilin : BilinForm R M where
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 
 @[simps]
-def polarLinear₂ : M →ₗ[R] M →ₗ[R] R where
+def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R where
   toFun m := {
     toFun := polar Q m
     map_add' := polar_add_right Q m
@@ -386,9 +386,10 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
 #align quadratic_form.of_polar QuadraticForm.ofPolar
 
 /-- In a ring the companion bilinear form is unique and equal to `QuadraticForm.polar`. -/
-theorem choose_exists_companion : Q.exists_companion.choose = polarLinear₂ Q :=
+theorem choose_exists_companion : Q.exists_companion.choose = polarLinearMap₂ Q :=
   LinearMap.ext₂ fun x y => by
-    rw [polarLinear₂_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub, add_sub_cancel']
+    rw [polarLinearMap₂_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
+      add_sub_cancel']
 #align quadratic_form.some_exists_companion QuadraticForm.choose_exists_companion
 
 end CommRing
@@ -697,6 +698,13 @@ open QuadraticForm
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+def _root_.LinearMap.toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+  toFun x := B x x
+  toFun_smul a x := by
+    simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
+  exists_companion' := ⟨B + B.flip,
+    fun x y => by simp only [map_add, LinearMap.add_apply, LinearMap.flip_apply]; abel⟩
 
 variable {B : BilinForm R M}
 

@@ -34,8 +34,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /-- The symmetric bilinear form on `Module.Dual R M × M` defined as
 `B (f, x) (g, y) = f y + g x`. -/
 @[simps!]
-def dualProd : BilinForm R (Module.Dual R M × M) :=
-  LinearMap.toBilin <|
+def dualProd :=
     (LinearMap.applyₗ.comp (LinearMap.snd R (Module.Dual R M) M)).compl₂
         (LinearMap.fst R (Module.Dual R M) M) +
       ((LinearMap.applyₗ.comp (LinearMap.snd R (Module.Dual R M) M)).compl₂
@@ -52,14 +51,14 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem nondenerate_dualProd :
-    (dualProd R M).Nondegenerate ↔ Function.Injective (Module.Dual.eval R M) := by
+    (LinearMap.toBilin (dualProd R M)).Nondegenerate ↔ Function.Injective (Module.Dual.eval R M) := by
   classical
   rw [nondegenerate_iff_ker_eq_bot]
   rw [LinearMap.ker_eq_bot]
   let e := LinearEquiv.prodComm R _ _ ≪≫ₗ Module.dualProdDualEquivDual R (Module.Dual R M) M
-  let h_d := e.symm.toLinearMap.comp (BilinForm.toLin <| dualProd R M)
+  let h_d := e.symm.toLinearMap.comp (dualProd R M)
   refine' (Function.Injective.of_comp_iff e.symm.injective
-    (BilinForm.toLin <| dualProd R M)).symm.trans _
+    (dualProd R M)).symm.trans _
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   change Function.Injective h_d ↔ _
   have : h_d = LinearMap.prodMap LinearMap.id (Module.Dual.eval R M) := by
@@ -96,7 +95,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
   exists_companion' :=
     ⟨BilinForm.dualProd R M, fun p q => by
       dsimp only  -- porting note: added
-      rw [BilinForm.dualProd_apply, Prod.fst_add, Prod.snd_add, LinearMap.add_apply, map_add,
+      rw [BilinForm.dualProd_apply_apply, Prod.fst_add, Prod.snd_add, LinearMap.add_apply, map_add,
         map_add, add_right_comm _ (q.1 q.2), add_comm (q.1 p.2) (p.1 q.2), ← add_assoc, ←
         add_assoc]⟩
 #align quadratic_form.dual_prod QuadraticForm.dualProd
