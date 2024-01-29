@@ -12,7 +12,7 @@ import Mathlib.Analysis.BoundedVariation
 # Constant speed
 
 This file defines the notion of constant (and unit) speed for a function `f : ℝ → E` with
-pseudo-emetric structure on `E` with respect to a set `s : Set ℝ` and "speed" `l : ℝ≥0`, and shows
+pseudo-metric structure on `E` with respect to a set `s : Set ℝ` and "speed" `l : ℝ≥0`, and shows
 that if `f` has locally bounded variation on `s`, it can be obtained (up to distance zero, on `s`),
 as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and `a ∈ s`.
 
