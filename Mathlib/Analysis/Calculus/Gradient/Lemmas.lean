@@ -15,15 +15,13 @@ import Mathlib.Analysis.Calculus.Gradient.Basic
 
 This file contains the following parts of gradient.
 * the chain rule for the `g : 𝕜 → 𝕜` composed with `f : F → 𝕜`.
-* the gradient for the product of a constant and a function.
 * the gradient for the sum of two functions.
 * the gradient for finite sum of functions.
-* the gradient for the negative of functions.
 * the gradient for the sum of a constant and a function.
 * the gradient for the difference of two functions.
 * the gradient for the difference of a constant and a function.
 * the gradient for the product of two functions.
-
+* the gradient for the product of a constant and a function.
 -/
 
 noncomputable section
@@ -49,7 +47,9 @@ variable {L' : Filter 𝕜} {t : Set 𝕜}
 theorem HasGradientAtFilter.comp
     (hg : HasGradientAtFilter g g' (f x) L') (hf : HasGradientAtFilter f f' x L)
     (hL : Tendsto f L L') : HasGradientAtFilter (g ∘ f) (g' • f') x L := by
-  rw [HasGradientAtFilter, map_smulₛₗ]
+  have eq : (starRingEnd 𝕜) g' • (toDual 𝕜 F) f' =
+    (toDual 𝕜 F) (g' • f') := by rw [map_smulₛₗ]
+  rw [HasGradientAtFilter, ← eq]
   exact hg.hasDerivAtFilter.comp_hasFDerivAtFilter x hf hL
 
 theorem HasGradientWithinAt.comp
@@ -84,16 +84,18 @@ open Set Filter
 
 theorem HasGradientAtFilter.const_smul (h : HasGradientAtFilter f f' x L) (c : 𝕜) :
     HasGradientAtFilter (fun x => c • f x) ((starRingEnd 𝕜) c • f') x L := by
-  rw [HasGradientAtFilter, map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
-  exact HasFDerivAtFilter.const_smul h c
+  have : c • (toDual 𝕜 F) f' = (toDual 𝕜 F) ((starRingEnd 𝕜) c • f') := by
+    rw [map_smulₛₗ, RingHomCompTriple.comp_apply, RingHom.id_apply]
+  rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
+  exact h.const_smul c
 
 theorem HasGradientWithinAt.const_smul (h : HasGradientWithinAt f f' s x) (c : 𝕜) :
     HasGradientWithinAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') s x := by
   exact HasGradientAtFilter.const_smul h c
 
-nonrec theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
+theorem HasGradientAt.const_smul (h : HasGradientAt f f' x) (c : 𝕜) :
     HasGradientAt (fun x => c • f x) ((starRingEnd 𝕜) c • f') x := by
-  exact  h.const_smul c
+  exact HasGradientAtFilter.const_smul h c
 
 theorem gradient_const_smul (h : DifferentiableAt 𝕜 f x) (c : 𝕜) :
     ∇ (fun y => c • f y) x = (starRingEnd 𝕜) c • ∇ f x :=
@@ -104,11 +106,13 @@ variable [InnerProductSpace ℝ F] {f : F → ℝ} (c : ℝ)
 theorem HasGradientAtFilter.const_smul' (h : HasGradientAtFilter f f' x L) :
     HasGradientAtFilter (fun x => c • f x) (c • f') x L := h.const_smul c
 
-nonrec theorem HasGradientWithinAt.const_smul' (h : HasGradientWithinAt f f' s x) :
-    HasGradientWithinAt (fun x => c • f x) (c • f') s x := h.const_smul c
+theorem HasGradientWithinAt.const_smul' (h : HasGradientWithinAt f f' s x) :
+    HasGradientWithinAt (fun x => c • f x) (c • f') s x := by
+  exact HasGradientWithinAt.const_smul h c
 
-nonrec theorem HasGradientAt.const_smul' (h : HasGradientAt f f' x) :
-    HasGradientAt (fun x => c • f x) (c • f') x := h.const_smul c
+theorem HasGradientAt.const_smul' (h : HasGradientAt f f' x) :
+    HasGradientAt (fun x => c • f x) (c • f') x := by
+  exact HasGradientAt.const_smul h c
 
 end ConstSmul
 
@@ -120,18 +124,20 @@ variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
 theorem HasGradientAtFilter.add (hf : HasGradientAtFilter f f' x L)
     (hg : HasGradientAtFilter g g' x L) :
     HasGradientAtFilter (fun y => f y + g y) (f' + g') x L := by
-  rw [HasGradientAtFilter, map_add]
-  exact HasFDerivAtFilter.add hf hg
+  rw [HasGradientAtFilter]; rw [HasGradientAtFilter] at hf hg
+  have : (toDual 𝕜 F) (f' + g') = (toDual 𝕜 F) f' + (toDual 𝕜 F) g' := by simp
+  rw [this]; exact hf.add hg
 
-nonrec theorem HasGradientWithinAt.add (hf : HasGradientWithinAt f f' s x)
-    (hg : HasGradientWithinAt g g' s x) : HasGradientWithinAt (fun y => f y + g y) (f' + g') s x :=
-  hf.add hg
+theorem HasGradientWithinAt.add (hf : HasGradientWithinAt f f' s x)
+    (hg : HasGradientWithinAt g g' s x) :
+    HasGradientWithinAt (fun y => f y + g y) (f' + g') s x := by
+  exact HasGradientAtFilter.add hf hg
 
-nonrec theorem HasGradientAt.add (hf : HasGradientAt f f' x) (hg : HasGradientAt g g' x) :
-    HasGradientAt (fun x => f x + g x) (f' + g') x :=
-  hf.add hg
+theorem HasGradientAt.add (hf : HasGradientAt f f' x) (hg : HasGradientAt g g' x) :
+    HasGradientAt (fun x => f x + g x) (f' + g') x := by
+  exact HasGradientAtFilter.add hf hg
 
-theorem Gradient_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
+theorem gradient_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     ∇ (fun y => f y + g y) x = ∇ f x + ∇ g x :=
   (hf.hasGradientAt.add hg.hasGradientAt).gradient
 
@@ -139,15 +145,15 @@ theorem HasGradientAtFilter.add_const (hf : HasGradientAtFilter f f' x L) (c : �
     HasGradientAtFilter (fun y => f y + c) f' x L :=
   add_zero f' ▸ hf.add (hasGradientAtFilter_const _ _ _)
 
-nonrec theorem HasGradientWithinAt.add_const (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
-    HasGradientWithinAt (fun y => f y + c) f' s x :=
-  hf.add_const c
+theorem HasGradientWithinAt.add_const (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
+    HasGradientWithinAt (fun y => f y + c) f' s x := by
+  exact HasGradientAtFilter.add_const hf c
 
-nonrec theorem HasGradientAt.add_const (hf : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => f x + c) f' x :=
-  hf.add_const c
+theorem HasGradientAt.add_const (hf : HasGradientAt f f' x) (c : 𝕜) :
+    HasGradientAt (fun x => f x + c) f' x := by
+  exact HasGradientAtFilter.add_const hf c
 
-theorem Gradient_add_const (c : 𝕜) : ∇ (fun y => f y + c) x = ∇ f x := by
+theorem gradient_add_const (c : 𝕜) : ∇ (fun y => f y + c) x = ∇ f x := by
   unfold gradient
   simp only [EmbeddingLike.apply_eq_iff_eq]
   exact fderiv_add_const c
@@ -156,22 +162,22 @@ theorem HasGradientAtFilter.const_add (hf : HasGradientAtFilter f f' x L) (c : �
     HasGradientAtFilter (fun y => c + f y) f' x L :=
   zero_add f' ▸ (hasGradientAtFilter_const _ _ _).add hf
 
-nonrec theorem HasGradientWithinAt.const_add (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
-    HasGradientWithinAt (fun y => c + f y) f' s x :=
-  hf.const_add c
+theorem HasGradientWithinAt.const_add (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
+    HasGradientWithinAt (fun y => c + f y) f' s x := by
+  exact HasGradientAtFilter.const_add hf c
 
-nonrec theorem HasGradientAt.const_add (hf : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => c + f x) f' x :=
-  hf.const_add c
+theorem HasGradientAt.const_add (hf : HasGradientAt f f' x) (c : 𝕜) :
+    HasGradientAt (fun x => c + f x) f' x := by
+  exact HasGradientAtFilter.const_add hf c
 
 theorem Gradient_const_add (c : 𝕜) : ∇ (fun y => c + f y) x = ∇ f x := by
-  simp only [add_comm c, Gradient_add_const]
+  simp only [add_comm c, gradient_add_const]
 
 end Add
 
 section Sum
 
-/-! ### Gradient of a finite sum of functions -/
+/-! ### Derivative of a finite sum of functions -/
 
 
 open BigOperators Asymptotics
@@ -180,7 +186,9 @@ variable {ι : Type*} {u : Finset ι} {A : ι → F → 𝕜} {A' : ι → F}
 
 theorem HasGradientAtFilter.sum (h : ∀ i ∈ u, HasGradientAtFilter (A i) (A' i) x L) :
     HasGradientAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
-  rw [HasGradientAtFilter, map_sum]
+  have : ∑ i in u, (toDual 𝕜 F) (A' i) = (toDual 𝕜 F) (∑ i in u, A' i) := by
+    rw [map_sum]
+  rw [HasGradientAtFilter, ← this]; unfold HasGradientAtFilter at h
   exact HasFDerivAtFilter.sum h
 
 theorem HasGradientWithinAt.sum (h : ∀ i ∈ u, HasGradientWithinAt (A i) (A' i) s x) :
@@ -191,7 +199,7 @@ theorem HasGradientAt.sum (h : ∀ i ∈ u, HasGradientAt (A i) (A' i) x) :
     HasGradientAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
   exact HasGradientAtFilter.sum h
 
-theorem Gradient_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
+theorem gradient_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
     ∇ (fun y => ∑ i in u, A i y) x = ∑ i in u, ∇ (A i) x :=
   (HasGradientAt.sum fun i hi => (h i hi).hasGradientAt).gradient
 
@@ -203,16 +211,19 @@ section Neg
 
 theorem HasGradientAtFilter.neg (h : HasGradientAtFilter f f' x L) :
     HasGradientAtFilter (fun x => -f x) (-f') x L := by
-  rw [HasGradientAtFilter, map_neg]
-  exact HasFDerivAtFilter.neg h
+  have : -(toDual 𝕜 F) f' = (toDual 𝕜 F) (-f') := by simp
+  rw [HasGradientAtFilter, ← this]; rw [HasGradientAtFilter] at h
+  exact h.neg
 
-nonrec theorem HasGradientWithinAt.neg (h : HasGradientWithinAt f f' s x) :
-  HasGradientWithinAt (fun x => -f x) (-f') s x := by exact h.neg
+theorem HasGradientWithinAt.neg (h : HasGradientWithinAt f f' s x) :
+    HasGradientWithinAt (fun x => -f x) (-f') s x := by
+  exact HasGradientAtFilter.neg h
 
-nonrec theorem HasGradientAt.neg (h : HasGradientAt f f' x) :
-  HasGradientAt (fun x => -f x) (-f') x := by exact h.neg
+theorem HasGradientAt.neg (h : HasGradientAt f f' x) :
+    HasGradientAt (fun x => -f x) (-f') x := by
+  exact HasGradientAtFilter.neg h
 
-theorem Gradient_neg : ∇ (fun y => - f y) x = - ∇ f x := by
+theorem gradient_neg : ∇ (fun y => - f y) x = - ∇ f x := by
   unfold gradient
   simp only [fderiv_neg, map_neg]
 
@@ -220,7 +231,7 @@ end Neg
 
 section Sub
 
-/-! ### Gradient of the difference of two functions -/
+/-! ### Derivative of the difference of two functions -/
 
 variable {f' : F} {g : F → 𝕜} {x : F} {g' : F}
 variable {L : Filter F} {f : F → 𝕜} {L' : Filter 𝕜} {t : Set 𝕜}
@@ -230,15 +241,16 @@ theorem HasGradientAtFilter.sub (hf : HasGradientAtFilter f f' x L)
     HasGradientAtFilter (fun x => f x - g x) (f' - g') x L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-nonrec theorem HasGradientWithinAt.sub (hf : HasGradientWithinAt f f' s x)
-    (hg : HasGradientWithinAt g g' s x) : HasGradientWithinAt (fun x => f x - g x) (f' - g') s x :=
-  hf.sub hg
+theorem HasGradientWithinAt.sub (hf : HasGradientWithinAt f f' s x)
+    (hg : HasGradientWithinAt g g' s x) :
+    HasGradientWithinAt (fun x => f x - g x) (f' - g') s x := by
+  exact HasGradientAtFilter.sub hf hg
 
-nonrec theorem HasGradientAt.sub (hf : HasGradientAt f f' x) (hg : HasGradientAt g g' x) :
-    HasGradientAt (fun x => f x - g x) (f' - g') x :=
-  hf.sub hg
+theorem HasGradientAt.sub (hf : HasGradientAt f f' x) (hg : HasGradientAt g g' x) :
+    HasGradientAt (fun x => f x - g x) (f' - g') x := by
+  exact HasGradientAtFilter.sub hf hg
 
-theorem Gradient_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
+theorem gradient_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     ∇ (fun y => f y - g y) x = ∇ f x - ∇ g x :=
   (hf.hasGradientAt.sub hg.hasGradientAt).gradient
 
@@ -246,33 +258,33 @@ theorem HasGradientAtFilter.sub_const (hf : HasGradientAtFilter f f' x L) (c : �
     HasGradientAtFilter (fun x => f x - c) f' x L := by
   simpa only [sub_eq_add_neg] using hf.add_const (-c)
 
-nonrec theorem HasGradientWithinAt.sub_const (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
-    HasGradientWithinAt (fun x => f x - c) f' s x :=
-  hf.sub_const c
+theorem HasGradientWithinAt.sub_const (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
+    HasGradientWithinAt (fun x => f x - c) f' s x := by
+  exact HasGradientAtFilter.sub_const hf c
 
-nonrec theorem HasGradientAt.sub_const (hf : HasGradientAt f f' x) (c : 𝕜) :
+theorem HasGradientAt.sub_const (hf : HasGradientAt f f' x) (c : 𝕜) :
     HasGradientAt (fun x => f x - c) f' x := by
-  exact hf.sub_const c
+  exact HasGradientAtFilter.sub_const hf c
 
 theorem Gradient_sub_const (c : 𝕜) : ∇ (fun y => f y - c) x = ∇ f x := by
-  simp only [sub_eq_add_neg, Gradient_add_const]
+  simp only [sub_eq_add_neg, gradient_add_const]
 
 theorem HasGradientAtFilter.const_sub (hf : HasGradientAtFilter f f' x L) (c : 𝕜) :
     HasGradientAtFilter (fun x => c - f x) (-f') x L := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
 
-nonrec theorem HasGradientWithinAt.const_sub (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
-    HasGradientWithinAt (fun x => c - f x) (-f') s x :=
-  hf.const_sub c
+theorem HasGradientWithinAt.const_sub (hf : HasGradientWithinAt f f' s x) (c : 𝕜) :
+    HasGradientWithinAt (fun x => c - f x) (-f') s x := by
+  exact HasGradientAtFilter.const_sub hf c
 
-nonrec theorem HasGradientAt.const_sub (hf : HasGradientAt f f' x) (c : 𝕜) :
-    HasGradientAt (fun x => c - f x) (-f') x :=
-  hf.const_sub c
+theorem HasGradientAt.const_sub (hf : HasGradientAt f f' x) (c : 𝕜) :
+    HasGradientAt (fun x => c - f x) (-f') x := by
+  exact HasGradientAtFilter.const_sub hf c
 
-theorem Gradient_const_sub (c : 𝕜) : ∇ (fun y => c - f y) x = - ∇ f x := by
+theorem gradient_const_sub (c : 𝕜) : ∇ (fun y => c - f y) x = - ∇ f x := by
   calc
     ∇ (fun y => c - f y) x = ∇ (fun y => - f y + c) x := by  congr; ext x; rw [sub_eq_neg_add]
-    _ = - ∇ f x := by rw [Gradient_add_const c, Gradient_neg]
+    _ = - ∇ f x := by rw [gradient_add_const c, gradient_neg]
 
 end Sub
 
@@ -301,7 +313,7 @@ theorem HasGradientWithinAt.mul (hc : HasGradientWithinAt c c' s x)
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt] at hc hd
   exact hc.mul hd
 
-theorem Gradient_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
+theorem gradient_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     ∇ (fun y => c y * d y) x = (starRingEnd 𝕜) (c x) • ∇ d x
       + (starRingEnd 𝕜) (d x) • ∇ c x :=
   (hc.hasGradientAt.mul hd.hasGradientAt).gradient
@@ -317,9 +329,9 @@ theorem HasGradientWithinAt.mul' (hc : HasGradientWithinAt c c' s x)
     HasGradientWithinAt (fun y => c y * d y) ((c x) • d' + (d x) • c') s x :=
   hc.mul hd
 
-theorem Gradient_mul' (hc : DifferentiableAt ℝ c x) (hd : DifferentiableAt ℝ d x) :
+theorem gradient_mul' (hc : DifferentiableAt ℝ c x) (hd : DifferentiableAt ℝ d x) :
     ∇ (fun y => c y * d y) x = (c x) • ∇ d x + (d x) • ∇ c x :=
-  Gradient_mul hc hd
+  gradient_mul hc hd
 
 end Mul
 
@@ -342,7 +354,7 @@ theorem HasGradientAt.mul_const (hc : HasGradientAt c c' x) :
   rw [hasGradientAt_iff_hasFDerivAt] at hc
   exact hc.mul_const d
 
-theorem Gradient_mul_const (hc : DifferentiableAt 𝕜 c x) :
+theorem gradient_mul_const (hc : DifferentiableAt 𝕜 c x) :
     ∇ (fun y => c y * d) x = (starRingEnd 𝕜) d • ∇ c x :=
   (hc.hasGradientAt.mul_const d).gradient
 
@@ -361,7 +373,7 @@ theorem HasGradientAt.const_mul (ha : HasGradientAt a a' x) :
   rw [hasGradientAt_iff_hasFDerivAt] at ha
   exact ha.const_mul b
 
-theorem Gradient_const_mul (ha : DifferentiableAt 𝕜 a x) :
+theorem gradient_const_mul (ha : DifferentiableAt 𝕜 a x) :
     ∇ (fun y => b * a y) x = (starRingEnd 𝕜) b • ∇ a x :=
   (ha.hasGradientAt.const_mul b).gradient
 
@@ -375,9 +387,9 @@ theorem HasGradientAt.mul_const' (hc : HasGradientAt c c' x) :
     HasGradientAt (fun y => c y * d) (d • c') x :=
   HasGradientAt.mul_const d hc
 
-theorem Gradient_mul_const' (hc : DifferentiableAt ℝ c x) :
+theorem gradient_mul_const' (hc : DifferentiableAt ℝ c x) :
     ∇ (fun y => c y * d) x = d • ∇ c x :=
-  Gradient_mul_const d hc
+  gradient_mul_const d hc
 
 theorem HasGradientWithinAt.const_mul' (ha : HasGradientWithinAt a a' s x) :
     HasGradientWithinAt (fun y => b * a y) (b • a') s x :=
@@ -387,8 +399,8 @@ theorem HasGradientAt.const_mul' (ha : HasGradientAt a a' x) :
     HasGradientAt (fun y => b * a y) (b • a') x :=
   HasGradientAt.const_mul b ha
 
-theorem Gradient_const_mul' (ha : DifferentiableAt ℝ a x) :
+theorem gradient_const_mul' (ha : DifferentiableAt ℝ a x) :
     ∇ (fun y => b * a y) x = b • ∇ a x :=
-  Gradient_const_mul b ha
+  gradient_const_mul b ha
 
 end Mul_const
