@@ -19,6 +19,9 @@ variable {α β γ δ ι : Type _} {E : α → Type _}
 
 instance [Add α] : Add (ι → α) := ⟨fun f g i => f i + g i⟩
 
+axiom silentSorry {α} : α
+set_option linter.unusedVariables false
+
 -- define function propositions --
 ----------------------------------
 
@@ -37,25 +40,25 @@ instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
 
 variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
-@[fprop] theorem Con_id : Con (fun x : α => x) := sorry
-@[fprop] theorem Con_const (y : β) : Con (fun x : α => y) := sorry
-@[fprop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := sorry
-@[fprop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := sorry
-@[fprop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := sorry
-@[fprop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := sorry
+@[fprop] theorem Con_id : Con (fun x : α => x) := silentSorry
+@[fprop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
+@[fprop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
+@[fprop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
+@[fprop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
+@[fprop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
-@[fprop] theorem Lin_id : Lin (fun x : α => x) := sorry
-@[fprop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := sorry
-@[fprop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := sorry
-@[fprop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (fun x => f (g x)) := sorry
-@[fprop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := sorry
+@[fprop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
+@[fprop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
+@[fprop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
+@[fprop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (fun x => f (g x)) := silentSorry
+@[fprop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
 
 
 -- transition theorem --
 ------------------------
-@[fprop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := sorry
+@[fprop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := silentSorry
 
 
 
@@ -64,18 +67,18 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 @[fprop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
-  : Con fun x => (fst x, snd x) := sorry
+  : Con fun x => (fst x, snd x) := silentSorry
 @[fprop]
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd)
-  : Lin fun x => (fst x, snd x) := sorry
+  : Lin fun x => (fst x, snd x) := silentSorry
 
 
 variable [Add α] [Add β]
 
 -- "simple form" of theorems
-@[fprop] theorem fst_Con : Con fun x : α×β => x.1 := sorry
-@[fprop] theorem snd_Con : Con fun x : α×β => x.2 := sorry
-@[fprop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := sorry
+@[fprop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
+@[fprop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
+@[fprop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
 
 
 -- "compositional form" of theorems
@@ -102,11 +105,11 @@ infixr:25 " -o " => LinHom
 
 instance : FunLike (α ->> β) α β where
   coe := fun f => f.toFun
-  coe_injective' := sorry
+  coe_injective' := silentSorry
 
 instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
-  coe_injective' := sorry
+  coe_injective' := silentSorry
 
 
 instance : HasUncurry (α ->> β) α β :=
@@ -128,10 +131,10 @@ instance : Obj (α -o β) := ⟨⟩
 ---------------------------------------------------------
 
 -- this is some form of cartesion closedness with homs `α ->> β`
-@[fprop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := sorry
+@[fprop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 -- analogous theorem with `α -o β` does no hold
-@[fprop] theorem linHom_lin (f : α -o β) : Lin f := sorry
+@[fprop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
 
 set_option pp.coercions false in
 set_option pp.notation false in
@@ -270,7 +273,3 @@ example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (h
 
 -- is working up to here
 
-#exit
--- todo: unfold fvars if can't progress
-set_option trace.Meta.Tactic.fprop true in
-example : let f := fun x : α => x; Con (fun x => f x) := by fprop
