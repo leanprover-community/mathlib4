@@ -41,9 +41,9 @@ For `μ : Content G`, we define
 * `μ.outerMeasure` : the outer measure associated to `μ`.
 * `μ.measure`      : the Borel measure associated to `μ`.
 
-These definitions are given for spaces which are either T2, or locally compact and regular (which
-covers possibly non-Hausdorff locally compact groups). The resulting measure `μ.measure` is always
-outer regular by design. When the space is locally compact, `μ.measure` is also regular.
+These definitions are given for spaces which are R₁.
+The resulting measure `μ.measure` is always outer regular by design.
+When the space is locally compact, `μ.measure` is also regular.
 
 ## References
 

@@ -1175,7 +1175,7 @@ theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact
 @[deprecated] -- Since 28 Jan 2024
 alias exists_open_superset_and_isCompact_closure := exists_isOpen_superset_and_isCompact_closure
 
-/-- In a weakly locally compact which is either T₂ or locally compact regular,
+/-- In a weakly locally compact R₁ space,
 every point has an open neighborhood with compact closure. -/
 theorem exists_isOpen_mem_isCompact_closure (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
