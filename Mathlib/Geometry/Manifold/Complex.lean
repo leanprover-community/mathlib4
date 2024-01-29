@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 
 #align_import geometry.manifold.complex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

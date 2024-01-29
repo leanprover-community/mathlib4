@@ -61,7 +61,7 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
     AlgHomClass F R A B :=
   { h with
     coe := (⇑)
-    coe_injective' := FunLike.coe_injective
+    coe_injective' := DFunLike.coe_injective
     map_zero := map_zero
     map_one := map_one }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
@@ -130,7 +130,7 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
 
--- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
+-- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `DFunLike.coe`
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
@@ -149,23 +149,23 @@ protected theorem coe_coe {F : Type*} [AlgEquivClass F R A₁ A₂] (f : F) :
 
 @[ext]
 theorem ext {f g : A₁ ≃ₐ[R] A₂} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align alg_equiv.ext AlgEquiv.ext
 
 protected theorem congr_arg {f : A₁ ≃ₐ[R] A₂} {x x' : A₁} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align alg_equiv.congr_arg AlgEquiv.congr_arg
 
 protected theorem congr_fun {f g : A₁ ≃ₐ[R] A₂} (h : f = g) (x : A₁) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align alg_equiv.congr_fun AlgEquiv.congr_fun
 
 protected theorem ext_iff {f g : A₁ ≃ₐ[R] A₂} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align alg_equiv.ext_iff AlgEquiv.ext_iff
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align alg_equiv.coe_fun_injective AlgEquiv.coe_fun_injective
 
 -- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
@@ -270,7 +270,7 @@ theorem toAlgHom_eq_coe : e.toAlgHom = e :=
 #align alg_equiv.to_alg_hom_eq_coe AlgEquiv.toAlgHom_eq_coe
 
 @[simp, norm_cast]
-theorem coe_algHom : FunLike.coe (e.toAlgHom) = FunLike.coe e :=
+theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
   rfl
 #align alg_equiv.coe_alg_hom AlgEquiv.coe_algHom
 
