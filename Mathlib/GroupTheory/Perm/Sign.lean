@@ -301,7 +301,7 @@ theorem closure_of_isSwap_of_isPretransitive [Finite α] (S : Set (Perm α)) (hS
     -- the action is transitive, so we can find `σ ∈ closure S` with `σ a = b`
     obtain ⟨⟨σ, hσ⟩, rfl⟩ := MulAction.exists_smul_eq (Subgroup.closure S) a b
     exact fun h ↦ hb (h hσ ▸ Set.smul_mem_smul_set ha)
-  -- we can find `swap a b ∈ closure S` with `a ∈ T` and `b ∉ T`
+  -- we can find `swap a b ∈ S` with `a ∈ T` and `b ∉ T`
   have key : ∃ a b, swap a b ∈ S ∧ a ∈ T ∧ b ∉ T
   · rw [Subgroup.closure_le, Set.not_subset] at key0
     -- we can find `τ = swap x y ∈ S` with `τ ∉ MulAction.stabilizer (Perm α) T`
