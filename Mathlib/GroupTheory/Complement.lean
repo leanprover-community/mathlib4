@@ -767,7 +767,7 @@ noncomputable def quotientEquivSigmaZMod :
 
 theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (period g q.out')) :
-    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (k : ℤ) • q.out' :=
+    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out' :=
   rfl
 #align subgroup.quotient_equiv_sigma_zmod_symm_apply Subgroup.quotientEquivSigmaZMod_symm_apply
 
@@ -818,38 +818,17 @@ theorem transferTransversal_apply (q : G ⧸ H) :
 #align subgroup.transfer_transversal_apply Subgroup.transferTransversal_apply
 
 theorem transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-<<<<<<< HEAD
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      g ^ (cast k : ℤ) * q.out'.out' := by
-||||||| parent of d3b10564ae (chore(GroupTheory/Complement): replace minimalPeriod with period)
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) = g ^ (k : ℤ) * q.out'.out' := by
-=======
     (k : ZMod (period g q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) = g ^ (k : ℤ) * q.out'.out' := by
->>>>>>> d3b10564ae (chore(GroupTheory/Complement): replace minimalPeriod with period)
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) = g ^ (cast k : ℤ) * q.out'.out' := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 #align subgroup.transfer_transversal_apply' Subgroup.transferTransversal_apply'
 
 theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-<<<<<<< HEAD
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      if k = 0 then g ^ minimalPeriod (g • ·) q.out' * q.out'.out'
-      else g ^ (cast k : ℤ) * q.out'.out' := by
-||||||| parent of d3b10564ae (chore(GroupTheory/Complement): replace minimalPeriod with period)
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) =
-      if k = 0 then g ^ minimalPeriod (g • ·) q.out' * q.out'.out'
-      else g ^ (k : ℤ) * q.out'.out' := by
-=======
     (k : ZMod (period g q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) =
+    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
       if k = 0 then g ^ period g q.out' * q.out'.out'
-      else g ^ (k : ℤ) * q.out'.out' := by
->>>>>>> d3b10564ae (chore(GroupTheory/Complement): replace minimalPeriod with period)
+      else g ^ (cast k : ℤ) * q.out'.out' := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
     mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id.def, ←
