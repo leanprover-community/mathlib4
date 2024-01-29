@@ -11,10 +11,10 @@ import Mathlib.CategoryTheory.Monoidal.Opposite
 /-!
 # The category of comonoids in a monoidal category.
 
-We define comonoids in a monoidal category `C`.
+We define comonoids in a monoidal category `C`,
+and show that they are equivalently monoid objects in the opposite category.
 
 ## TODO
-* `Comon_ C ≌ Mon_ (Cᵒᵖ)`
 * An oplax monoidal functor takes comonoid objects to comonoid objects.
   That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ Comon_ D`.
 * Comonoid objects in `C` are "just"
@@ -167,5 +167,79 @@ open CategoryTheory.Limits
 
 instance : HasTerminal (Comon_ C) :=
   hasTerminal_of_unique (trivial C)
+
+open Opposite
+
+variable (C)
+
+/--
+Turn a comonoid object into a monoid object in the opposite category.
+-/
+@[simps] def Comon_to_Mon_op_op_obj (A : Comon_ C) : Mon_ (Cᵒᵖ) where
+  X := op A.X
+  one := A.counit.op
+  mul := A.comul.op
+  one_mul := by
+    rw [op_leftUnitor]
+    dsimp
+    rw [← A.counit_comul, op_comp, op_tensorHom]
+    rfl
+  mul_one := by
+    rw [op_rightUnitor]
+    dsimp
+    rw [← A.comul_counit, op_comp, op_tensorHom]
+    rfl
+  mul_assoc := by
+    rw [op_associator]
+    dsimp
+    rw [← op_id, op_tensor_op, op_tensor_op, ← op_comp, ← op_comp, ← op_comp]
+    rw [Category.assoc, ← A.comul_assoc]
+
+/--
+The contravariant functor turning comonoid objects into monoid objects in the opposite category.
+-/
+def Comon_to_Mon_op_op : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
+  obj A := op (Comon_to_Mon_op_op_obj C A)
+  map := fun f => op <|
+    { hom := f.hom.op
+      one_hom := by apply Quiver.Hom.unop_inj; simp
+      mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] }
+
+/--
+Turn a monoid object in the opposite category into a comonoid object.
+-/
+@[simps] def Mon_op_op_to_Comon_obj (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
+  X := unop A.X
+  counit := A.one.unop
+  comul := A.mul.unop
+  counit_comul := by
+    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.one_mul]
+    rfl
+  comul_counit := by
+    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.mul_one]
+    rfl
+  comul_assoc := by
+    rw [← unop_id, unop_tensor_unop, unop_tensor_unop, ← unop_comp, A.mul_assoc,
+      op_associator]
+    simp
+
+/--
+The contravariant functor turning monoid objects in the opposite category into comonoid objects.
+-/
+def Mon_op_op_to_Comon : (Mon_ (Cᵒᵖ))ᵒᵖ ⥤ Comon_ C where
+  obj A := Mon_op_op_to_Comon_obj C (unop A)
+  map := fun f =>
+    { hom := f.unop.hom.unop
+      hom_counit := by apply Quiver.Hom.op_inj; simp
+      hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
+
+/--
+Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
+-/
+def Comon_equiv_Mon_op_op : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
+  { functor := Comon_to_Mon_op_op C
+    inverse := Mon_op_op_to_Comon C
+    unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+    counitIso := NatIso.ofComponents (fun _ => Iso.refl _) }
 
 end Comon_
