@@ -1772,7 +1772,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
     refine' disjoint_of_disjoint_of_mem disjoint_compl_left _ hU
     rwa [← subset_interior_iff_mem_nhdsSet, hUc.isOpen_compl.interior_eq, subset_compl_comm]
   tfae_have 2 → 3
-  · refine' fun H a s => ⟨fun hd has => mem_closure_iff_nhds_neBot.mp has _, H s a⟩
+  · refine' fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has _, H s a⟩
     exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
   tfae_have 3 → 1
   · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
