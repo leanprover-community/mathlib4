@@ -588,22 +588,12 @@ section CommRing
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-
 /-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
-def _root_.LinearMap.linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R where
-  toFun x := {
-    toFun := fun y => f x * g y
-    map_add' := fun y z => by simp only [map_add,mul_add]
-    map_smul' := fun r x => by
-      simp only [SMulHomClass.map_smul, smul_eq_mul, RingHom.id_apply, mul_left_comm]
-  }
-  map_add' x y := by
-    ext
-    simp only [map_add, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, add_mul]
-  map_smul' r x := by
-    ext
-    simp only [SMulHomClass.map_smul, smul_eq_mul, LinearMap.coe_mk, AddHom.coe_mk,
-      RingHom.id_apply, LinearMap.smul_apply, mul_assoc]
+def _root_.LinearMap.linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R :=
+  LinearMap.mk₂ R (fun x y => f x * g y) (fun x y z => by simp only [map_add, add_mul])
+  (fun r x => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
+  (fun x y z => by simp only [map_add, mul_add])
+  (fun r x => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
 
 /-- The product of linear forms is a quadratic form. -/
 def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
@@ -613,9 +603,9 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     ring
   exists_companion' :=
     ⟨LinearMap.linMulLin f g + LinearMap.linMulLin g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply, LinearMap.coe_mk,
-        AddHom.coe_mk]
-      ring⟩
+      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply,
+        LinearMap.mk₂_apply]
+      ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
 @[simp]
