@@ -2,6 +2,10 @@
 Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
+-/
+
+/-!
+## The combined state and list monad transformer.
 
 The combined state and list monad transformer.
 `StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
@@ -55,7 +59,8 @@ private def append : (xs ys : StateList σ α) → StateList σ α
 instance : Append (StateList σ α) := ⟨StateList.append⟩
 
 @[specialize]
-private def foldrM {m : Type u → Type v} [Monad m] : (f : α → σ → β → m β) → (init : β) → StateList σ α → m β
+private def foldrM {m : Type u → Type v} [Monad m] :
+    (f : α → σ → β → m β) → (init : β) → StateList σ α → m β
   | _, b, .nil     => pure b
   | f, b, .cons a s l => do
     f a s (← l.foldrM f b)

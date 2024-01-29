@@ -7,6 +7,11 @@ import Std.Data.Array.Merge
 import Std.Data.List.Basic
 import Std.Classes.SetNotation
 
+/-!
+## `ArraySet` is a set implemented by sorted arrays
+-/
+
+
 namespace Mathlib
 
 namespace Meta.FProp

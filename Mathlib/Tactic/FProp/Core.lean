@@ -56,7 +56,7 @@ def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
       return .some (← mkLambdaFVars xs b')
     return none
 
-/-- Synthesize instance of type `type` and 
+/-- Synthesize instance of type `type` and
   1. assign it to `x` if `x` is meta veriable
   2. check it is equal to `x` -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
@@ -193,7 +193,7 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .id)
-    | trace[Meta.Tactic.fprop] 
+    | trace[Meta.Tactic.fprop]
         "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .id id_X := thm.thmArgs | return none
@@ -215,8 +215,8 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const) 
-    | trace[Meta.Tactic.fprop] 
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const)
+    | trace[Meta.Tactic.fprop]
         "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .const id_X id_y := thm.thmArgs | return none
@@ -269,7 +269,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   let Y := Expr.lam n X Y default
 
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep)
-    | trace[Meta.Tactic.fprop] 
+    | trace[Meta.Tactic.fprop]
         "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .projDep id_x id_Y := thm.thmArgs | return none
@@ -292,8 +292,8 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp) 
-    | trace[Meta.Tactic.fprop] 
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp)
+    | trace[Meta.Tactic.fprop]
         "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .comp id_f id_g := thm.thmArgs | return none
@@ -317,8 +317,8 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi) 
-    | trace[Meta.Tactic.fprop] 
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi)
+    | trace[Meta.Tactic.fprop]
         "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .pi id_f := thm.thmArgs | return none
@@ -413,14 +413,14 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) :
 
 
 /-- Prove function property of free variable by using local hypothesis. -/
-def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) 
+def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) :
     FPropM (Option Result) := do
 
   let .fvar fvarId := fData.fn | return none
   let args := fData.mainArgs
   let numAppArgs := fData.args.size
-    
+
   let lctx ← getLCtx
   for var in lctx do
     let type ← instantiateMVars var.type
@@ -563,7 +563,7 @@ def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
   match compare nargs 6 with
   | .lt => applyPiRule fpropDecl e (← fData.toExpr) fprop
   | .gt => removeArgRule fpropDecl e (← fData.toExpr) fprop
-  | .eq => 
+  | .eq =>
     let ext := morTheoremsExt.getState (← getEnv)
     let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
     let candidates := candidates.map (·.1) |>.flatten
@@ -608,7 +608,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
   if let .some f' ← unfoldFunHeadRec? f then
     return ← fprop (e.setArg fpropDecl.funArgId f')
 
-  let .some functionName ← fData.getFnConstName? 
+  let .some functionName ← fData.getFnConstName?
     | return none
 
   let thms ← getTheoremsForFunction functionName fpropDecl.fpropName
@@ -652,8 +652,8 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
   if let .some (f', g') ← fData.nontrivialDecomposition then
     applyCompRule fpropDecl e f' g' fprop
   else
-    -- try transition rules as the last resolt 
-    return ← applyTransitionRules fpropDecl e fData fprop 
+    -- try transition rules as the last resolt
+    return ← applyTransitionRules fpropDecl e fData fprop
 
 /-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
@@ -715,7 +715,7 @@ mutual
     withTraceNode `Meta.Tactic.fprop
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
-    -- if function starts with let bindings move them the top of `e` and try 
+    -- if function starts with let bindings move them the top of `e` and try
     -- again
     if f.isLet then
       return ← letTelescope f fun xs b => do
@@ -726,11 +726,11 @@ mutual
     -- make sure `f` is lambda with at least one bound variable
     let f ← etaExpand1 f
     -- reset `f` to the new form in `e`
-    -- todo: remove this as it should not be necessary but some parts of the 
+    -- todo: remove this as it should not be necessary but some parts of the
     --       code still relies on this
     let e := e.setArg fpropDecl.funArgId f
 
-    let .lam _xName xType xBody _xBi := f 
+    let .lam _xName xType xBody _xBi := f
       | throwError "fprop bug: function {← ppExpr f} is in invalid form"
 
     match xBody.consumeMData.headBeta.consumeMData with

@@ -6,6 +6,10 @@ Authors: Tomas Skrivan
 import Lean
 import Mathlib.Tactic.FProp.Core
 
+/-!
+## `fprop` tactic syntax
+-/
+
 namespace Mathlib
 open Lean Meta Elab Tactic
 
@@ -15,19 +19,23 @@ open Lean.Parser.Tactic
 
 syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
 
+private def emptyDischarge : Expr → MetaM (Option Expr) :=
+  fun e =>
+    withTraceNode `Meta.Tactic.fprop
+      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      pure none
+
 @[tactic fpropTacStx]
 def fpropTac : Tactic
 | `(tactic| fprop $[$d]?) => do
 
-  -- this is ugly - is there a better way of writing this?
-  -- todo: more the tracing node somewhere else and unify it with function property specific discharger
   let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
     match d with
-    | none => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
+    | none => pure emptyDischarge
     | some d =>
       match d with
       | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-      | _ => pure <| fun e => withTraceNode `Meta.Tactic.fprop (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do pure none
+      | _ => pure emptyDischarge
 
   let goal ← getMainGoal
   goal.withContext do

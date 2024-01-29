@@ -7,9 +7,10 @@ import Mathlib.Tactic.FProp.StateList
 import Std.Data.List.Basic
 import Lean.Meta
 
-set_option autoImplicit true
-
 /-!
+
+## `RefinedDiscrTree` discrimination tree with refined indexing
+
 We define discrimination trees for the purpose of unifying local expressions with library results.
 
 This implementation is based on the `DiscrTree` in Lean.
@@ -54,6 +55,8 @@ I document here what is not in the original.
   `[⟨Continuous, 1⟩, ⟨Hadd.hadd, 5⟩, *0, *0, *0, *1, *2]`.
 
 -/
+
+set_option autoImplicit true
 
 open Lean Meta
 
@@ -188,9 +191,9 @@ def Trie.values! : Trie α → Array α
 /-- Return the children of a `Trie α`, assuming that it is not a leaf.
 The result is sorted by the `Key`'s -/
 def Trie.children! : Trie α → Array (Key × Trie α)
-| .node cs => cs
-| .path ks c => #[(ks[0]!, mkPath ks[1:] c)]
-| .values _ => panic! "did not expect .values constructor"
+  | .node cs => cs
+  | .path ks c => #[(ks[0]!, mkPath ks[1:] c)]
+  | .values _ => panic! "did not expect .values constructor"
 
 private partial def Trie.format [ToFormat α] : Trie α → Format
   | .node cs => Format.group $ Format.paren $
@@ -633,16 +636,16 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
     return .path ks (insertInTrie keys v (i + ks.size) c)
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`. -/
-def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α)
-  : RefinedDiscrTree α :=
+def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) : 
+    RefinedDiscrTree α :=
   let k := keys[0]!
   match d.root.find? k with
-  | none =>
-    let c := .singleton keys v 1
-    { root := d.root.insert k c }
-  | some c =>
-    let c := insertInTrie keys v 1 c
-    { root := d.root.insert k c }
+    | none =>
+      let c := .singleton keys v 1
+      { root := d.root.insert k c }
+    | some c =>
+      let c := insertInTrie keys v 1 c
+      { root := d.root.insert k c }
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`. -/
 def insertDTExpr [BEq α] (d : RefinedDiscrTree α) (e : DTExpr) (v : α) : RefinedDiscrTree α :=
@@ -689,8 +692,8 @@ private structure State where
 private abbrev M := ReaderT Context $ StateListM State
 
 /-- Return all values from `x` in an array, together with their scores. -/
-private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α))
-  : Array (Array α × Nat) :=
+private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) : 
+    Array (Array α × Nat) :=
   ((x.run { unify, config }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
 
 /-- Increment the score by `n`. -/
@@ -753,8 +756,8 @@ mutual
 
   /-- If the head of `e` is not a metavariable,
   return the possible `Trie α` that exactly match with `e`. -/
-  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α))
-    : M (M (Trie α) ⊕ Option MVarId) := do
+  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α)) : 
+      M (M (Trie α) ⊕ Option MVarId) := do
 
     let findKey (k : Key) (x : Trie α → M (Trie α) := pure) (score := 1) :=
       pure $ .inl $ match find? k with
@@ -778,7 +781,7 @@ mutual
     | .forall d b       => findKey .forall (matchExpr d >=> matchExpr b)
     | .proj n i a args  => findKey (.proj n i args.size) (matchExpr a >=> matchArgs args)
 
-end 
+end
 
 end GetUnify
 
