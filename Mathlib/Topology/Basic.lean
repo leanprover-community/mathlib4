@@ -1627,7 +1627,10 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
 
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
-theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+-- The curly braces are intentional, so this definitions works well with simp
+-- when topologies are not those provided by instances.
+theorem continuous_def  {_ : TopologicalSpace X} {_ : TopologicalSpace Y} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 

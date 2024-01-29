@@ -428,7 +428,7 @@ theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set 
 variable {t t₁ t₂ : TopologicalSpace α} {t' : TopologicalSpace β} {f : α → β} {g : β → α}
 
 theorem Continuous.coinduced_le (h : Continuous[t, t'] f) : t.coinduced f ≤ t' :=
-  (@continuous_def α β t t').1 h
+  (@continuous_def α β f t t').1 h
 #align continuous.coinduced_le Continuous.coinduced_le
 
 theorem coinduced_le_iff_le_induced {f : α → β} {tα : TopologicalSpace α}
@@ -841,7 +841,7 @@ theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
 #align continuous_top continuous_top
 
 theorem continuous_id_iff_le {t t' : TopologicalSpace α} : Continuous[t, t'] id ↔ t ≤ t' :=
-  @continuous_def _ _ t t' id
+  @continuous_def _ _ id t t'
 #align continuous_id_iff_le continuous_id_iff_le
 
 theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Continuous[t, t'] id :=
