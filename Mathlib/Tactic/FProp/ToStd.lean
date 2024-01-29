@@ -8,7 +8,6 @@ import Lean
 import Std.Data.Nat.Lemmas
 import Std.Lean.Expr
 
-import Mathlib.Tactic.FProp.ArraySet
 
 /-!
 ## `fprop` missing function from standard library
@@ -22,6 +21,22 @@ namespace Meta.FProp
 
 set_option autoImplicit true
 
+/-- Check if `a` can be obtained by removing elemnts from `b`. -/
+def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool := Id.run do
+  if a.size > b.size then
+    return false
+  let mut i := 0
+  for j in [0:b.size] do
+    if i = a.size then
+      break
+
+    if a[i]! = b[j]! then
+      i := i+1
+
+  if i = a.size then
+    return true
+  else
+    return false
 
 def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=

@@ -139,7 +139,7 @@ end Mor
 Split morphism function into composition by specifying over which auguments in the lambda body this
 split should be done.
  -/
-def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
+def splitMorToCompOverArgs (e : Expr) (argIds : Array Nat) : MetaM (Option (Expr × Expr)) := do
   let e ←
     if e.isLambda
     then pure e
@@ -164,7 +164,7 @@ def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (E
       let xIds := xs.map fun x => x.fvarId!
       let xIds' := xIds[1:].toArray
 
-      for argId in argIds.toArray do
+      for argId in argIds do
         let yVal := args[argId]!
 
         -- abstract over trailing arguments
@@ -208,8 +208,7 @@ def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
         let argIds := xs
           |>.mapIdx (fun i x => if x.expr.containsFVar xId then .some i.1 else none)
           |>.filterMap id
-          |>.toArraySet
         splitMorToCompOverArgs e argIds
 
   | _ =>
-   splitMorToCompOverArgs e #[Mor.getAppNumArgs e].toArraySet
+   splitMorToCompOverArgs e #[Mor.getAppNumArgs e]

@@ -377,7 +377,7 @@ This function is assuming:
  - the function `f` in `e` can't be expressed as composition of two non-trivial functions
    this means that `f == (← splitLambdaToComp f).1` is true -/
 def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) :
-    MetaM (Option (FVarId × ArraySet Nat × Nat)) := do
+    MetaM (Option (FVarId × Array Nat × Nat)) := do
 
   forallTelescope e fun _ e => do
 
@@ -388,7 +388,7 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) :
     let .fvar fvarId := f
       | return none
     let n ← Mor.getArity f
-    return .some (fvarId, Array.range n |>.toArraySet, n)
+    return .some (fvarId, Array.range n, n)
 
   let f := (← unfoldFunHeadRec? f).getD f
 
@@ -402,13 +402,12 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) :
       let ids := args
         |>.mapIdx (fun i arg => if arg.expr.hasLooseBVars then some i.1 else none)
         |>.filterMap id
-        |>.toArraySet
       return (fvarId, ids, args.size)
     | _ => return none
   | f =>
     let n := Mor.getAppNumArgs f
     match Mor.getAppFn f with
-    | .fvar fvarId =>  return (fvarId, #[n].toArraySet, n+1)
+    | .fvar fvarId =>  return (fvarId, #[n], n+1)
     | _ => return none
 
 
@@ -452,7 +451,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fData : 
         trace[Meta.Tactic.fprop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
         return .some r
 
-      if args ⊆ args' then
+      if args.isOrderedSubsetOf args' then
 
         match compare numAppArgs numAppArgs' with
         | .lt =>
@@ -612,7 +611,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     | return none
 
   let thms ← getTheoremsForFunction functionName fpropDecl.fpropName
-  let thms := thms.filter (fun thm => fData.mainArgs ⊆ thm.mainArgs)
+  let thms := thms.filter (fun thm => fData.mainArgs.isOrderedSubsetOf thm.mainArgs)
   trace[Meta.Tactic.fprop]
     "applicable theorems for {functionName}: {thms.map fun thm => toString thm.thmName}"
 

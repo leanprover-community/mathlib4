@@ -166,7 +166,7 @@ structure FunctionTheorem where
   fpropName : Name
   thmName   : Name
   funName   : Name
-  mainArgs  : ArraySet Nat
+  mainArgs  : Array Nat
   appliedArgs : Nat
   priority    : Nat  := eval_prio default
   form : TheoremForm

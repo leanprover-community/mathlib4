@@ -5,7 +5,6 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Mathlib.Tactic.FProp.ArraySet
 import Mathlib.Tactic.FProp.Mor
 
 /-!
@@ -56,7 +55,7 @@ structure FunctionData where
   /-- main variable -/
   mainVar : Expr
   /-- indices of `args` that contain `mainVars` -/
-  mainArgs : ArraySet Nat
+  mainArgs : Array Nat
 
 /-- Turn function data back to expression. -/
 def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
@@ -102,7 +101,6 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
       let mainArgs := args
         |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
         |>.filterMap id
-        |>.toArraySet
 
       return {
         lctx := ← getLCtx
@@ -148,7 +146,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
 
-    for argId in fData.mainArgs.toArray do
+    for argId in fData.mainArgs do
       let yVal := args[argId]!
 
       let yVal' := yVal.expr

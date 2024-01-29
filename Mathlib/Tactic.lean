@@ -49,7 +49,6 @@ import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FProp
-import Mathlib.Tactic.FProp.ArraySet
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp.Core
 import Mathlib.Tactic.FProp.Decl
