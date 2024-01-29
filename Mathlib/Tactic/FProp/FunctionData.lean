@@ -128,3 +128,49 @@ def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
         return .some (i' + 6)
 
     return none
+
+def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
+
+    let mut lctx := fData.lctx
+    let insts := fData.insts
+
+    let x := fData.mainVar
+    let xId := x.fvarId!
+    let xName ← withLCtx lctx insts xId.getUserName
+
+    let fn := fData.fn
+    let mut args := fData.args
+
+    -- todo: support case when `fn` contains `x`
+    --       but can we have non trivial decomposition when `fn` contains `x`?
+    if fn.containsFVar xId then
+      return none
+
+    let mut yVals : Array Expr := #[]
+    let mut yVars : Array Expr := #[]
+
+    for argId in fData.mainArgs.toArray do
+      let yVal := args[argId]!
+
+      let yVal' := yVal.expr
+      let yId ← withLCtx lctx insts mkFreshFVarId
+      let yType ← withLCtx lctx insts (inferType yVal')
+      lctx := lctx.mkLocalDecl yId (xName.appendAfter (toString argId)) yType
+      let yVar := Expr.fvar yId
+      yVars := yVars.push yVar
+      yVals := yVals.push yVal'
+      args := args.set! argId ⟨yVar, yVal.coe⟩
+
+    let g  ← withLCtx lctx insts do
+      mkLambdaFVars #[x] (← mkProdElem yVals)
+    let f ← withLCtx lctx insts do
+      (mkLambdaFVars yVars (Mor.mkAppN fn args))
+      >>=
+      mkUncurryFun yVars.size
+
+    -- check if is non-triviality
+    let f' ← fData.toExpr
+    if (← isDefEq f' f) || (← isDefEq f' g) then
+      return none
+
+    return (f, g)

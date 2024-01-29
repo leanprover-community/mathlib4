@@ -8,27 +8,15 @@ import Lean
 import Mathlib.Tactic.FProp.Decl
 import Mathlib.Tactic.FProp.Theorems
 
+/-!
+## `fprop` attribute
+-/
+
+
 namespace Mathlib
 open Lean Meta
 
 namespace Meta.FProp
-
-/-- -/
-def isLambdaRule (f : Expr) : MetaM Bool :=
-  match f with
-  | .lam _ _ xBody _ =>
-    let fn := xBody.getAppFn
-    if fn.isConst then
-      return false
-    else
-      return true
-  | .fvar .. => do
-    if (← inferType f).forallArity ≥ 2 then
-      return true
-    else
-      return false
-  | _ => return false
-
 
 -- TODO: add support for specifying priority and discharger
 -- open Lean.Parser.Tactic

@@ -10,35 +10,16 @@ import Std.Tactic.Exact
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp.ToStd
 
+
+/-!
+## `fprop` core tactic algorithm
+-/
+
+
 namespace Mathlib
 open Lean Meta Qq
 
 namespace Meta.FProp
-
-/-- Unfold function body head recursors and matches -/
-def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
-  lambdaLetTelescope e fun xs b => do
-    if let .some b' ← reduceRecMatcher? b then
-      -- preform some kind of reduction
-      let b' := Mor.headBeta b'
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
-      return .some (← mkLambdaFVars xs b')
-    return none
-
-/-- -/
-def unfoldFunHead? (e : Expr) : MetaM (Option Expr) := do
-  lambdaLetTelescope e fun xs b => do
-    if let .some b' ← withTransparency .instances <| unfoldDefinition? b then
-      let b' := Mor.headBeta b'
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
-      return .some (← mkLambdaFVars xs b')
-    else if let .some b' ← reduceRecMatcher? b then
-      let b' := Mor.headBeta b'
-      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
-      return .some (← mkLambdaFVars xs b')
-
-    return none
-
 
 -- todo clean this up and keep on unfolding
 def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
@@ -67,7 +48,19 @@ def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
     else
       return none
 
-/-- -/
+/-- Unfold function body head recursors and matches -/
+def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
+  lambdaLetTelescope e fun xs b => do
+    if let .some b' ← reduceRecMatcher? b then
+      -- preform some kind of reduction
+      let b' := Mor.headBeta b'
+      trace[Meta.Tactic.fprop.step] s!"unfolding\n{← ppExpr b}\n==>\n{← ppExpr b'}"
+      return .some (← mkLambdaFVars xs b')
+    return none
+
+/-- Synthesize instance of type `type` and 
+  1. assign it to `x` if `x` is meta veriable
+  2. check it is equal to `x` -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | LOption.some val =>
@@ -84,9 +77,7 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     return false
 
 
-/-- Synthesize arguments `xs` either with typeclass synthesis, with fprop or with discharger.
-If succesfull it returns list of subgoals that should be presented to the user.
-If fails it returns `none`. -/
+/-- Synthesize arguments `xs` either with typeclass synthesis, with fprop or with discharger. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
     FPropM Bool := do
@@ -156,7 +147,7 @@ private def ppOrigin' (origin : Origin) : MetaM String := do
   | .fvar id => return s!"{← ppExpr (.fvar id)} : {← ppExpr (← inferType (.fvar id))}"
   | _ => pure (toString origin.key)
 
-/-- -/
+/-- Try to apply theorem - core function -/
 def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (discharge? : Expr → MetaM (Option Expr))
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
@@ -176,7 +167,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
     return none
 
 
-/-- -/
+/-- Try to apply declared theorem -/
 def tryTheorem? (e : Expr) (thmName : Name)
     (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
     FPropM (Option Result) := do
@@ -187,7 +178,7 @@ def tryTheorem? (e : Expr) (thmName : Name)
     let (xs, bis, type) ← forallMetaTelescope type
     tryTheoremCore xs bis thmProof type e (.decl thmName) discharge? fprop
 
-/-- -/
+/-- Try to apply local theorem -/
 def tryLocalTheorem? (e : Expr) (fvarId : FVarId)
     (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
     FPropM (Option Result) := do
@@ -198,7 +189,7 @@ def tryLocalTheorem? (e : Expr) (fvarId : FVarId)
   let (xs, bis, type) ← forallMetaTelescope type
   tryTheoremCore xs bis thmProof type e (.fvar fvarId) discharge? fprop
 
-/-- -/
+/-- Apply lambda calculus rule P fun x => x` -/
 def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -221,7 +212,7 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
-/-- -/
+/-- Apply lambda calculus rule P fun x => y` -/
 def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -247,7 +238,7 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
-/-- -/
+/-- Apply lambda calculus rule P fun f => f i` -/
 def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -298,7 +289,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
-/-- -/
+/-- Apply lambda calculus rule `P f → P g → P fun x => f (g x)` -/
 def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -323,7 +314,7 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
 
   tryTheoremCore xs bis proof type e (.decl thm.thmName) fpropDecl.discharger fprop
 
-/-- -/
+/-- Apply lambda calculus rule `∀ y, P (f · y) → P fun x y => f x y` -/
 def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -423,10 +414,15 @@ def isFVarFProp (fpropDecl : FPropDecl) (e : Expr) :
     | _ => return none
 
 
-def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId : FVarId)
-    (args : ArraySet Nat) (numAppArgs : Nat) (fprop : Expr → FPropM (Option Result)) :
+/-- Prove function property of free variable by using local hypothesis. -/
+def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData) 
+    (fprop : Expr → FPropM (Option Result)) :
     FPropM (Option Result) := do
 
+  let .fvar fvarId := fData.fn | return none
+  let args := fData.mainArgs
+  let numAppArgs := fData.args.size
+    
   let lctx ← getLCtx
   for var in lctx do
     let type ← instantiateMVars var.type
@@ -479,7 +475,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fvarId :
   return none
 
 
-/-- -/
+/-- Prove function property of using local hypothesis. -/
 def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -502,7 +498,7 @@ def tryLocalTheorems (fpropDecl : FPropDecl) (e : Expr)
   trace[Meta.Tactic.fprop.discharge] "no local hypothesis {e}"
   return none
 
-/-- -/
+/-- Prove function property of `fun x => let y := g x; f x y`. -/
 def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPropM (Option Result)) :
     FPropM (Option Result) := do
   match f with
@@ -544,7 +540,8 @@ def letCase (fpropDecl : FPropDecl) (e : Expr) (f : Expr) (fprop : Expr → FPro
   | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
   -- return none
 
-/-- -/
+
+/-- Prove function property of `fun f => f x₁ ... xₙ`. -/
 def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
@@ -558,13 +555,12 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : FunctionData)
   | _ => removeArgRule fpropDecl e (← f.toExpr) fprop
 
 
+/-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
 def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let .some nargs := fData.getCoeAppNumArgs?
-    | throwError 
-      "fprop bug: applying morphism rules when the function body is not application of DFunLike.coe
-{←ppExpr e}"
+    | return none
 
   match compare nargs 6 with
   | .lt => applyPiRule fpropDecl e (← fData.toExpr) fprop
@@ -584,8 +580,8 @@ def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     trace[Meta.Tactic.fprop.step] "no theorem matched"
     return none
 
-
-def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
+/-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
+def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (_fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := transitionTheoremsExt.getState (← getEnv)
@@ -604,99 +600,79 @@ def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionDat
 
 
 
-/-- -/
+/-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is declared function. -/
 def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let f ← fData.toExpr
 
+  -- todo: do unfolding when constructing FunctionData
   if let .some f' ← unfoldFunHeadRec? f then
     return ← fprop (e.setArg fpropDecl.funArgId f')
 
-  trace[Meta.Tactic.fprop.step] "case `P (fun x => f x)` where `f` is declared function\n{e}"
-
-  let .some functionName ← fData.getFnConstName?
-    | throwError "fprop bug, invalid use of `constAppCase` on {← ppExpr e}"
+  let .some functionName ← fData.getFnConstName? 
+    | return none
 
   let thms ← getTheoremsForFunction functionName fpropDecl.fpropName
   let thms := thms.filter (fun thm => fData.mainArgs ⊆ thm.mainArgs)
   trace[Meta.Tactic.fprop]
     "applicable theorems for {functionName}: {thms.map fun thm => toString thm.thmName}"
 
-  -- todo find the best match
+  -- todo: sort theorems based on relevance
 
   for thm in thms.reverse do
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
-      let .some prf ← removeArgRule fpropDecl e f fprop | continue
-      return prf
+      if let .some prf ← removeArgRule fpropDecl e f fprop then
+        return prf
     | .gt =>
-      let .some prf ← applyPiRule fpropDecl e f fprop | continue
-      return prf
+      if let .some prf ← applyPiRule fpropDecl e f fprop then
+        return prf
     | .eq =>
       match thm.form with
       | .uncurried =>
-        let .some (f',g') ← splitMorToCompOverArgs f thm.mainArgs
-          | continue
-        if ((← isDefEq f' f) || (← isDefEq g' f)) then
-          let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop | continue
-          return r
+        if let .some (f',g') ← fData.nontrivialDecomposition then
+          if let .some r ← applyCompRule fpropDecl e f' g' fprop then
+            return r
         else
-          let .some r ← applyCompRule fpropDecl e f' g' fprop | continue
-          return r
+          if let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop then
+            return r
       | .comp =>
-        let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop | continue
-        return r
+        if let .some r ← tryTheorem? e thm.thmName fpropDecl.discharger fprop then
+          return r
 
-  -- if functionName == ``DFunLike.coe && fData.args.size = 5 then
-  --   return ← applyPiRule fpropDecl e f fprop
+  -- try morphism theorems
+  if let .some r ← applyMorRules fpropDecl e fData fprop then
+    return r
 
+  -- todo: do unfolding when constructing FunctionData
   if let .some f' ← fData.unfold? then
     let e := e.setArg fpropDecl.funArgId f'
     if let .some r ← fprop e then
       return r
 
-  let .some (f',g') ← splitMorToComp f
-    | throwError "fprop bug: unexpected failure in constAppCase"
-
-  if ¬((← isDefEq f' f) || (← isDefEq g' f)) then
+  if let .some (f', g') ← fData.nontrivialDecomposition then
     applyCompRule fpropDecl e f' g' fprop
   else
-    -- this should be done only `f` can't be decomposed and can't be unfolded
-    if let .some r ← applyTransitionRules fpropDecl e fData fprop then
-      return r
+    -- try transition rules as the last resolt 
+    return ← applyTransitionRules fpropDecl e fData fprop 
 
-    -- nothing got applied
-    let .some f' ← unfoldFunHead? f | return none
-
-    let e' := e.setArg fpropDecl.funArgId f'
-    return (← fprop e')
-
-/-- -/
+/-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
-  let f ← fData.toExpr
+  -- try morphism theorems
+  if let .some r ← applyMorRules fpropDecl e fData fprop then
+    return r
 
-  let .some (f', g') ← splitMorToComp f
-    | throwError "fprop bug: failed to decompose {f}"
-
-  -- trivial case, this prevents an infinite loop
-  if ((← isDefEq f' f) || (← isDefEq g' f)) then
-    trace[Meta.Tactic.fprop.step] "fvar app case: trivial"
-    let .some (fvarId, args, n) ← isFVarFProp fpropDecl e
-      | trace[Meta.Tactic.fprop.step] "fvar app case: unexpected goal {e}"
-        return none
-
-    if let .some prf ← proveFVarFPropFromLocalTheorems fpropDecl e fvarId args n fprop then
+  if let .some (f,g) ← fData.nontrivialDecomposition then
+    applyCompRule fpropDecl e f g fprop
+  else
+    if let .some prf ← proveFVarFPropFromLocalTheorems fpropDecl e fData fprop then
       return prf
     else
-      -- we might talk about boundled morphism
-      -- so try this
+      -- try transition rules as last resort
       return ← applyTransitionRules fpropDecl e fData fprop
-  else
-    trace[Meta.Tactic.fprop.step] "decomposed into `({f'}) ∘ ({g'})`"
-    applyCompRule fpropDecl e f' g' fprop
 
 
 /-- Cache result if it does not have any subgoals. -/
@@ -781,15 +757,6 @@ mutual
         applyConstRule fpropDecl e xType xBody fprop
       else
         let fData ← getFunctionData f
-
-        try 
-          let .some r ← applyMorRules fpropDecl e fData fprop 
-            | pure ()
-          return r
-        catch _ => 
-          pure ()
-        -- if let .some r ← applyMorRules fpropDecl e fData fprop then
-        --   return r
 
         match fData.fn with
         | .fvar id =>

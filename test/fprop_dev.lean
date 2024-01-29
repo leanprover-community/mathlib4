@@ -167,12 +167,12 @@ example : Con (fun (f : α → β → γ) x y => f x y) := by fprop
 example : Con (fun (f : α → β → γ) y x => f x y) := by fprop
 example : Con (fun (f : α → α → α → α → α) y x => f x y x y) := by fprop
 
--- set_option pp.notation false 
+-- set_option pp.notation false
 
 
--- local hypothesis are assumed to be always in fully applied form 
--- so `(hf : Con f)` is not considered valid 
--- is this valid assumption? 
+-- local hypothesis are assumed to be always in fully applied form
+-- so `(hf : Con f)` is not considered valid
+-- is this valid assumption?
 example (f : α → β → γ) (hf : Con f) : Con f := by fprop
 example (f : α → β → γ) (hf : Con f) : Con (fun x => f x) := by fprop
 example (f : α → β → γ) (hf : Con f) : Con (fun x y => f x y) := by fprop
@@ -255,7 +255,10 @@ example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (
 example (f : α ->> (β → γ)) (y) : Con (fun x => f x y) := by fprop
 
 
--- sometimes unfold constants 
+example (g : α → β) (hg : Con g) : Con fun (fx : (β ->> γ)×α) => fx.1 (g fx.2) := by fprop
+
+
+-- sometimes unfold constants
 example (f : α → β) (hf : Con f) : Con (fun x => id f x) := by fprop
 example (f : α → β) (hf : Con f) : Con (fun x => (id id) f x) := by fprop
 example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x => id (id f x) x) := by fprop
@@ -271,4 +274,3 @@ example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (h
 -- todo: unfold fvars if can't progress
 set_option trace.Meta.Tactic.fprop true in
 example : let f := fun x : α => x; Con (fun x => f x) := by fprop
-

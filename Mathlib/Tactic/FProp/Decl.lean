@@ -6,6 +6,10 @@ Authors: Tomas Skrivan
 import Qq
 import Mathlib.Tactic.FProp.Types
 
+/-!
+## `fprop` environment extension that stores all registered function properties
+-/
+
 
 namespace Mathlib
 open Lean Meta
