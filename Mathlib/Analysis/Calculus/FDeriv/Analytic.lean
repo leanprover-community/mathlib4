@@ -358,9 +358,9 @@ theorem factorial_smul (n : ℕ) :
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
-    HasSum (fun n ↦ (1 / n ! : 𝕜) • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
+    HasSum (fun n ↦ (n ! : 𝕜)⁻¹ • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
   convert h.hasSum hy with n
   rw [← h.factorial_smul y n, smul_comm, ← smul_assoc, nsmul_eq_mul,
-    mul_one_div_cancel <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
+    mul_inv_cancel <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
 
 end HasFPowerSeriesOnBall

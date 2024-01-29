@@ -34,7 +34,7 @@ variable ⦃z : ℂ⦄ (hz : z ∈ Metric.ball c r)
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma hasSum_taylorSeries_on_ball :
-    HasSum (fun n : ℕ ↦ (1 / n ! : ℂ) • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
   obtain ⟨r', hr', hr'₀, hzr'⟩ : ∃ r' < r, 0 < r' ∧ z ∈ Metric.ball c r'
   · obtain ⟨r', h₁, h₂⟩ := exists_between (Metric.mem_ball'.mp hz)
     lift r' to NNReal using dist_nonneg.trans h₁.le
@@ -53,13 +53,13 @@ lemma hasSum_taylorSeries_on_ball :
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
 is given by evaluating its Taylor series at `c` on theis open ball. -/
 lemma taylorSeries_eq_on_ball :
-    ∑' n : ℕ, (1 / n ! : ℂ) • (z - c) ^ n • iteratedDeriv n f c = f z :=
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_on_ball hf hz).tsum_eq
 
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma taylorSeries_eq_on_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (Metric.ball c r)) :
-    ∑' n : ℕ, (1 / n ! : ℂ) * iteratedDeriv n f c * (z - c) ^ n = f z := by
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
   convert taylorSeries_eq_on_ball hf hz using 3 with n
   rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
 
@@ -72,7 +72,7 @@ variable ⦃f : ℂ → E⦄ (hf : Differentiable ℂ f) (c z : ℂ)
 /-- A function that is complex differentiable on the complex plane is given by evaluating
 its Taylor series at any point `c`. -/
 lemma hasSum_taylorSeries_of_entire :
-    HasSum (fun n : ℕ ↦ (1 / n ! : ℂ) • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
   have hf' : DifferentiableOn ℂ f
       (Metric.ball c (⟨1 + ‖z - c‖, add_nonneg zero_le_one <| norm_nonneg _⟩ : NNReal)) :=
     hf.differentiableOn
@@ -83,13 +83,13 @@ lemma hasSum_taylorSeries_of_entire :
 /-- A function that is complex differentiable on the complex plane is given by evaluating
 its Taylor series at any point `c`. -/
 lemma taylorSeries_eq_of_entire :
-    ∑' n : ℕ, (1 / n ! : ℂ) • (z - c) ^ n • iteratedDeriv n f c = f z :=
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_of_entire hf c z).tsum_eq
 
 /-- A function that is complex differentiable on the complex plane is given by evaluating
 its Taylor series at any point `c`. -/
 lemma taylorSeries_eq_of_entire' {f : ℂ → ℂ} (hf : Differentiable ℂ f) :
-    ∑' n : ℕ, (1 / n ! : ℂ) * iteratedDeriv n f c * (z - c) ^ n = f z := by
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
   convert taylorSeries_eq_of_entire hf c z using 3 with n
   rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
 
