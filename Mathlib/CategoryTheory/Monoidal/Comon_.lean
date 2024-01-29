@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Transport
 
-#align_import category_theory.monoidal.Mon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
-
 /-!
 # The category of comonoids in a monoidal category.
 
