@@ -86,35 +86,35 @@ instance : Inhabited SSet :=
 
 section Product
 
-/-- `Prod X Y` is the explicit binary product of simplicial sets `X` and `Y`. -/
-def Prod (X Y : SSet) : SSet where
+/-- `prod X Y` is the explicit binary product of simplicial sets `X` and `Y`. -/
+def prod (X Y : SSet) : SSet where
   obj n := X.obj n × Y.obj n
   map f a := (X.map f a.1, Y.map f a.2)
 
-/-- The first projection of `Prod X Y`, onto X. -/
+/-- The first projection of `prod X Y`, onto X. -/
 @[simps]
-def Prod.fst {X Y : SSet} : (Prod X Y) ⟶ X where
+def prod.fst {X Y : SSet} : (prod X Y) ⟶ X where
   app _ a := a.1
 
-/-- The second projection of `Prod X Y`, onto Y. -/
+/-- The second projection of `prod X Y`, onto Y. -/
 @[simps]
-def Prod.snd {X Y : SSet} : (Prod X Y) ⟶ Y where
+def prod.snd {X Y : SSet} : (prod X Y) ⟶ Y where
   app _ a := a.2
 
-/-- The binary fan whose point is `Prod X Y`. -/
+/-- The binary fan whose point is `prod X Y`. -/
 @[simps!]
 def binaryProductCone (X Y : SSet.{0}) : BinaryFan X Y :=
-  BinaryFan.mk (Prod.fst) (Prod.snd)
+  BinaryFan.mk (prod.fst) (prod.snd)
 
-/-- The morphism from the point of any binary fan to `Prod X Y`. -/
+/-- The morphism from the point of any binary fan to `prod X Y`. -/
 @[simps]
-def binaryProductLift {X Y : SSet.{0}} (s : BinaryFan X Y) : s.pt ⟶ Prod X Y where
+def binaryProductLift {X Y : SSet.{0}} (s : BinaryFan X Y) : s.pt ⟶ prod X Y where
   app n x := ((s.fst).app n x, (s.snd).app n x)
   naturality _ _ _ := by
     ext
-    simp [FunctorToTypes.naturality, Prod]
+    simp [FunctorToTypes.naturality, prod]
 
-/-- `Prod X Y` is a limit cone. -/
+/-- `prod X Y` is a limit cone. -/
 @[simps]
 def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
   lift (s : BinaryFan X Y) := binaryProductLift s
@@ -123,31 +123,50 @@ def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
     simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩, binaryProductLift]
     congr
 
-/-- `Prod X Y` is a binary product for `X` and `Y`. -/
+/-- `prod X Y` is a binary product for `X` and `Y`. -/
 def binaryProductLimitCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
-/-- The categorical binary product of simplicial sets is `Prod X Y`. -/
-noncomputable def binaryProductIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
+/-- The categorical binary product of simplicial sets is `prod X Y`. -/
+noncomputable def binaryProductIso (X Y : SSet) : X ⨯ Y ≅ prod X Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
 @[simp]
 lemma binaryProductIso_hom_comp_fst (X Y : SSet) :
-    (binaryProductIso X Y).hom ≫ Prod.fst = Limits.prod.fst := by aesop
+    (binaryProductIso X Y).hom ≫ prod.fst = Limits.prod.fst := by aesop
 
 @[simp]
 lemma binaryProductIso_hom_comp_snd (X Y : SSet) :
-    (binaryProductIso X Y).hom ≫ Prod.snd = Limits.prod.snd := by aesop
+    (binaryProductIso X Y).hom ≫ prod.snd = Limits.prod.snd := by aesop
 
 @[simp]
 lemma binaryProductIso_inv_comp_fst (X Y : SSet) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.fst = Prod.fst := by
+    (binaryProductIso X Y).inv ≫ Limits.prod.fst = prod.fst := by
   simp [binaryProductIso, binaryProductLimitCone]
 
 @[simp]
 lemma binaryProductIso_inv_comp_snd (X Y : SSet) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.snd = Prod.snd := by
+    (binaryProductIso X Y).inv ≫ Limits.prod.snd = prod.snd := by
   simp [binaryProductIso, binaryProductLimitCone]
+
+/-- Constructing an n-simplex in X ⨯ Y from an n-simplex in X and an n-simplex in Y. -/
+@[simp]
+noncomputable
+def prodMk {X Y : SSet} {n : SimplexCategoryᵒᵖ} (x : X.obj n) (y : Y.obj n) :
+    (X ⨯ Y).obj n := ((binaryProductIso X Y).inv).app n ⟨x, y⟩
+
+/-- The n-simplices of `X ⨯ Y` are in bijection with the
+product of the n-simplices of `X` and the n-simplices of `Y`.-/
+@[simps]
+noncomputable
+def binaryProductEquiv (X Y : SSet) (n : SimplexCategoryᵒᵖ) :
+    (X ⨯ Y).obj n ≃ (X.obj n) × (Y.obj n) where
+  toFun z := ⟨(((binaryProductIso _ _).hom).app n z).1, (((binaryProductIso _ _).hom).app n z).2⟩
+  invFun z := prodMk z.1 z.2
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+/- TODO, ext lemma, more simp lemmas? -/
 
 end Product
 
