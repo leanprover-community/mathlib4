@@ -350,7 +350,7 @@ theorem Periodic.lift_coe [AddGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.lift_coe Function.Periodic.lift_coe
 
 /-- A periodic function `f : R → X` on any semiring of non-zero period is not injective. -/
-lemma Periodic.not_injective {R X : Type*} [Semiring R] {f : R → X} {c : R}
+lemma Periodic.not_injective {R X : Type*} [AddZeroClass R] {f : R → X} {c : R}
     (hf : Periodic f c) (hc : c ≠ 0) : ¬ Injective f := by
   rw [Injective]
   push_neg
