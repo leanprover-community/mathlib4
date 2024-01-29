@@ -588,6 +588,7 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig := {})
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
   withReducible do (MkDTExpr.mkDTExprsAux true e |>.run {config, fvarInContext}).run' {}
 
+/--  Make discr tree path for expression `e`. -/
 def mkPath (e : Expr) (config : WhnfCoreConfig := {}) : MetaM (Array Key) := do
   return (← mkDTExpr e config).flatten
 

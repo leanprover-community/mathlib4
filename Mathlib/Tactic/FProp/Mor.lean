@@ -34,8 +34,10 @@ namespace Mor
 
 /-- Argument of morphism aplication that stores corresponding coercion if necessary -/
 structure Arg where
-  expr : Expr -- argument of type `α`
-  coe : Option Expr -- coercion `F → α → β`
+  /-- argument of type `α` -/
+  expr : Expr
+  /-- coercion `F → α → β` -/
+  coe : Option Expr
   deriving Inhabited
 
 /-- Morphism application -/
@@ -49,6 +51,7 @@ morphism. -/
 partial def getAppNumArgs (e : Expr) :=
   go e 0
 where
+  /-- -/
   go : Expr → Nat → Nat
     | .mdata _ b, n => go b n
     | .app f _  , n =>
@@ -63,6 +66,7 @@ def withApp {α} (e : Expr) (k : Expr → Array Arg → α) : α :=
   let nargs := getAppNumArgs e
   go e (mkArray nargs default) (nargs - 1)
 where
+  /-- -/
   go : Expr → Array Arg → Nat → α
     | .mdata _ b, as, i => go b as i
     | .app (.app c f) a  , as, i =>

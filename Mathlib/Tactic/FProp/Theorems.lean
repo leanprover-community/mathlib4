@@ -109,13 +109,17 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
 
 structure LambdaTheorem where
+  /-- Name of function property -/
   fpropName : Name
+  /-- Name of lambda theorem -/
   thmName : Name
+  /-- Type and important argument of the theorem. -/
   thmArgs : LambdaTheoremArgs
   deriving Inhabited, BEq
 
 /-- -/
 structure LambdaTheorems where
+  /-- map: function property name × theorem type → lambda theorem -/
   theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
   deriving Inhabited
 
@@ -163,20 +167,28 @@ inductive TheoremForm where
 
 /-- theorem about specific function (eiter declared constant or free variable) -/
 structure FunctionTheorem where
+  /-- function property name -/
   fpropName : Name
+  /-- theorem name -/
   thmName   : Name
+  /-- function name -/
   funName   : Name
+  /-- array of argument indices about which this theorem is about -/
   mainArgs  : Array Nat
+  /-- total number of arguments applied to the function  -/
   appliedArgs : Nat
+  /-- priority  -/
   priority    : Nat  := eval_prio default
+  /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm
   deriving Inhabited, BEq
 
 
-local instance : Ord Name := ⟨Name.quickCmp⟩
+local private instance : Ord Name := ⟨Name.quickCmp⟩
 
 /-- -/
 structure FunctionTheorems where
+  /-- map: function name → function property → function theorem -/
   theorems : Std.RBMap Name (Std.RBMap Name (Array FunctionTheorem) compare) compare := {}
   deriving Inhabited
 
@@ -211,15 +223,20 @@ def getTheoremsForFunction (funName : Name) (fpropName : Name) : CoreM (Array Fu
 
 --------------------------------------------------------------------------------
 
-/-- general theorem about function property
+/-- General theorem about function property
   used for transition and morphism theorems -/
 structure GeneralTheorem where
+  /-- function property name -/
   fpropName   : Name
+  /-- theorem name -/
   thmName     : Name
+  /-- discreminatory tree keys used to index this theorem -/
   keys        : List RefinedDiscrTree.DTExpr
+  /-- priority -/
   priority    : Nat  := eval_prio default
   deriving Inhabited, BEq
 
+/-- Get proof of a theorem. -/
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 

@@ -22,9 +22,10 @@ namespace Meta.FProp
 -- open Lean.Parser.Tactic
 -- syntax (name:=Attr.fprop) "fprop" (prio)? (discharger)? : attr
 
-def fpropHelpString : String :=
+private def fpropHelpString : String :=
 "`fprop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap` ..."
 
+/-- Initialization of `fprop` attribute -/
 initialize fpropAttr : Unit ←
   registerBuiltinAttribute {
     name  := `fprop

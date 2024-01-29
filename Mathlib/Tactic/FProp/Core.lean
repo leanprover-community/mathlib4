@@ -19,7 +19,7 @@ open Lean Meta Qq
 
 namespace Meta.FProp
 
--- todo clean this up and keep on unfolding
+/-- unfold function head -/
 def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
   withLCtx fData.lctx fData.insts do
     let .some name ← fData.getFnConstName?

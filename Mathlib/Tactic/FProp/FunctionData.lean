@@ -48,9 +48,13 @@ def fpropNormalizeFun (f : Expr) : MetaM Expr := do
 
 /-- Structure storing parts of a function in fprop-normal form. -/
 structure FunctionData where
+  /-- local context where `mainVar` exists -/
   lctx : LocalContext
+  /-- local instances -/
   insts : LocalInstances
+  /-- main function -/
   fn : Expr
+  /-- applied function arguments -/
   args : Array Mor.Arg
   /-- main variable -/
   mainVar : Expr
@@ -126,6 +130,9 @@ def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
 
     return none
 
+/-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
+
+Returns none if the decomposition would produce identity function. -/
 def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
 
     let mut lctx := fData.lctx

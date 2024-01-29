@@ -17,6 +17,7 @@ namespace Meta.FProp
 
 open Lean.Parser.Tactic
 
+/-- Tactic to prove function properties -/
 syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
@@ -25,6 +26,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
       pure none
 
+/-- Tactic to prove function properties -/
 @[tactic fpropTacStx]
 def fpropTac : Tactic
   | `(tactic| fprop $[$d]?) => do

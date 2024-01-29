@@ -1,4 +1,5 @@
 /-
+
 Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
@@ -35,6 +36,7 @@ structure FPropDecl where
 
 /-- -/
 structure FPropDecls where
+  /-- discriminatory tree for function properties -/
   decls : DiscrTree FPropDecl := {}
   deriving Inhabited
 
