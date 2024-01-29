@@ -144,6 +144,7 @@ theorem measurePreserving : MeasurePreserving f := by
     Basis.map_addHaar _ f.toContinuousLinearEquiv]
   congr
 
+/-- Every linear isometry equivalence is a measurable equivalence. -/
 def toMeasureEquiv : E ≃ᵐ F where
   toEquiv := f
   measurable_toFun := f.continuous.measurable
