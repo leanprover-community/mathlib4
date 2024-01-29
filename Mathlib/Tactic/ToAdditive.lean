@@ -804,6 +804,8 @@ partial def transformDeclAux
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
+  if env.getModuleIdxFor? tgt |>.isSome then
+    panic! "Adding declaration ranges!"
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange cfg.ref }
@@ -1257,7 +1259,10 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
-    addDocString tgt doc
+    if alreadyExists then
+      throwError "Documentation should only be added when definition does not exist."
+    else
+      addDocString tgt doc
   return nestedNames.push tgt
 
 end
