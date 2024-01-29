@@ -22,7 +22,8 @@ namespace Meta.FProp
 set_option autoImplicit true
 
 /-- Check if `a` can be obtained by removing elemnts from `b`. -/
-def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool := Id.run do
+def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool :=
+  Id.run do
   if a.size > b.size then
     return false
   let mut i := 0
