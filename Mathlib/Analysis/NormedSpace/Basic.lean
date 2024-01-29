@@ -86,6 +86,17 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
 
+theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
+    dist (r • x + (1 - r) • y) x ≤ dist y x :=
+  calc
+    dist (r • x + (1 - r) • y) x = ‖1 - r‖ * ‖x - y‖ := by
+      simp_rw [dist_eq_norm', ← norm_smul, sub_smul, one_smul, smul_sub, ← sub_sub, ← sub_add,
+        sub_right_comm]
+    _ = (1 - r) * dist y x := by
+      rw [Real.norm_eq_abs, abs_eq_self.mpr (sub_nonneg.mpr h.2), dist_eq_norm']
+    _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
+    _ = dist y x := by rw [sub_zero, one_mul]
+
 theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=

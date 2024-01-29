@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.NormNum
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.Order.LeftRight
 
@@ -1905,6 +1906,11 @@ theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered
     mem_nhdsWithin_Ici_iff_exists_Icc_subset
   _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
 #align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
+
+/-- The filter of left neighborhoods has a basis of closed intervals. -/
+theorem nhdsWithin_Iic_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≤] a).HasBasis (· < a) (Icc · a) :=
+  ⟨fun _ ↦ mem_nhdsWithin_Iic_iff_exists_Icc_subset⟩
 
 end OrderTopology
 

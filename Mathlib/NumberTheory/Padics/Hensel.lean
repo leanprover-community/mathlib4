@@ -351,15 +351,8 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^
         (Nat.tendsto_pow_atTop_atTop_of_one_lt (by norm_num)))
 
 private theorem bound :
-    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := by
-  have := bound' hnorm
-  simp? [Tendsto, nhds] at this says
-    simp only [Tendsto, nhds_def, Set.mem_setOf_eq, le_iInf_iff, le_principal_iff, mem_map,
-      mem_atTop_sets, ge_iff_le, Set.mem_preimage, and_imp] at this
-  intro ε hε
-  cases' this (ball 0 ε) (mem_ball_self hε) isOpen_ball with N hN
-  exists N; intro n hn
-  simpa [abs_of_nonneg T_nonneg] using hN _ hn
+    ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
+  eventually_atTop.1 <| (bound' hnorm).eventually <| gt_mem_nhds hε
 
 private theorem bound'_sq :
     Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by
@@ -370,15 +363,8 @@ private theorem bound'_sq :
   · apply bound'
     assumption
 
-private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := by
-  intro ε hε
-  cases' bound hnorm hε with N hN
-  exists N
-  intro j hj
-  apply lt_of_le_of_lt
-  · apply newton_seq_dist hnorm hj
-  · apply hN
-    exact le_rfl
+private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := fun _ε hε ↦
+  (bound hnorm hε).imp fun _N hN _j hj ↦ (newton_seq_dist hnorm hj).trans_lt <| hN le_rfl
 
 private def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
 
@@ -412,11 +398,7 @@ private theorem soln_dist_to_a : ‖soln - a‖ = ‖F.eval a‖ / ‖F.derivati
   tendsto_nhds_unique (newton_seq_dist_tendsto' hnorm) (newton_seq_dist_tendsto hnorm hnsol)
 
 private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.eval a‖ := by
-  rw [soln_dist_to_a, div_lt_iff]
-  · rwa [sq] at hnorm
-  · apply deriv_norm_pos
-    assumption
-  · exact hnsol
+  rw [soln_dist_to_a, div_lt_iff (deriv_norm_pos _), ← sq] <;> assumption
 
 private theorem eval_soln : F.eval soln = 0 :=
   limit_zero_of_norm_tendsto_zero (newton_seq_norm_tendsto_zero hnorm)

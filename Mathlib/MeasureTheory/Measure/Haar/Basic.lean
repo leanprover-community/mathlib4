@@ -702,6 +702,8 @@ but `E / E` does not contain a neighborhood of zero. On the other hand, it is al
 inner regular Haar measures (and in particular for any Haar measure on a second countable group).
 -/
 
+open Pointwise
+
 /-- **Steinhaus Theorem** In any locally compact group `G` with an inner regular Haar measure `μ`,
 for any measurable set `E` of positive measure, the set `E / E` is a neighbourhood of `1`. -/
 @[to_additive
@@ -711,42 +713,29 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     [InnerRegular μ] (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) :
     E / E ∈ 𝓝 (1 : G) := by
   /- For any inner regular measure `μ` and set `E` of positive measure, we can find a compact
-       set `K` of positive measure inside `E`. Further, there exists an open
-       set `U` containing `K` with measure arbitrarily close to `K` (here `μ U < 2 * μ K` suffices).
-       Then, we can pick an open neighborhood of `1`, say `V` such that such that `V * K` is
-       contained in `U`. Now note that for any `v` in `V`, the sets `K` and `{v} * K` can not be
-       disjoint because they are both of measure `μ K` (since `μ` is left invariant) and also
-       contained in `U`, yet we have that `μ U < 2 * μ K`. This show that `K / K` contains the
-       neighborhood `V` of `1`, and therefore that it is itself such a neighborhood. -/
+    set `K` of positive measure inside `E`. Further, there exists a neighborhood `V` of the
+    identity such that `v • K \ K` has small measure for all `v ∈ V`, say `< μ K`.
+    Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
+    This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
+    itself such a neighborhood. -/
   obtain ⟨K, hKE, hK, K_closed, hKpos⟩ :
       ∃ (K : Set G), K ⊆ E ∧ IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
     rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
     · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp hE KE
     · rwa [K_comp.measure_closure_eq_of_group]
-  obtain ⟨U, hUK, hU, hμUK⟩ : ∃ (U : Set G), K ⊆ U ∧ IsOpen U ∧ μ U < μ K + μ K :=
-    hK.exists_isOpen_lt_add hKpos.ne'
-  obtain ⟨V, hV1, hVKU⟩ : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U :=
-    compact_open_separated_mul_left hK hU hUK
-  have hv : ∀ v : G, v ∈ V → ¬Disjoint ({v} * K) K := by
+  obtain ⟨V, hV1, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • K \ K) < μ K :=
+    exists_nhds_measure_smul_diff_lt hK K_closed hKpos.ne'
+  have hv : ∀ v : G, v ∈ V → ¬Disjoint (v • K) K := by
     intro v hv hKv
-    have hKvsub : {v} * K ∪ K ⊆ U := by
-      apply Set.union_subset _ hUK
-      apply _root_.subset_trans _ hVKU
-      apply Set.mul_subset_mul _ (Set.Subset.refl K)
-      simp only [Set.singleton_subset_iff, hv]
-    replace hKvsub := @measure_mono _ _ μ _ _ hKvsub
-    have hcontr := lt_of_le_of_lt hKvsub hμUK
-    rw [measure_union hKv K_closed.measurableSet] at hcontr
-    have hKtranslate : μ ({v} * K) = μ K := by
-      simp only [singleton_mul, image_mul_left, measure_preimage_mul]
-    rw [hKtranslate, lt_self_iff_false] at hcontr
-    assumption
+    have Z := hV v hv
+    rw [hKv.symm.sdiff_eq_right, measure_smul] at Z
+    exact lt_irrefl _ Z
   suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
   intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
+  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ v • K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
   refine ⟨x, hKE hxvK, v⁻¹ * x, hKE ?_, ?_⟩
-  · simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
+  · simpa [mem_smul_set_iff_inv_smul_mem] using hxK
   · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
