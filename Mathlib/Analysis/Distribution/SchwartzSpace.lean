@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -1058,18 +1058,10 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
   { instContinuousMapClass with
     zero_at_infty := by
       intro f
-      rw [tendsto_zero_iff_norm_tendsto_zero]
-      intro s hs
-      simp only [Filter.mem_map, Filter.mem_cocompact]
-      rw [Metric.mem_nhds_iff] at hs
-      rcases hs with ⟨ε, hε, hs⟩
-      use Metric.closedBall 0 ((SchwartzMap.seminorm ℝ 1 0) f / ε)
-      refine ⟨isCompact_closedBall _ _, ?_⟩
+      apply zero_at_infty_of_norm_le
+      intro ε hε
+      use (SchwartzMap.seminorm ℝ 1 0) f / ε
       intro x hx
-      simp only [Set.mem_compl_iff, Metric.mem_closedBall, dist_zero_right, not_le,
-        Set.mem_preimage] at hx ⊢
-      apply hs
-      simp only [Metric.mem_ball, dist_zero_right, norm_norm]
       rw [div_lt_iff hε] at hx
       have hxpos : 0 < ‖x‖ := by
         rw [norm_pos_iff']
@@ -1091,8 +1083,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
 
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
     f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction := by
-  ext
-  rfl
+  ext; rfl
 
 variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
