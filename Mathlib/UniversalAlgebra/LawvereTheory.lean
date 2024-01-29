@@ -194,4 +194,13 @@ def mapProdIso {S : Type u} {S' : Type u'} {f : S → S'}
     · rw [L'.id_comp, L'.assoc, L'.lift_fst, F.lift_fst]
     · rw [L'.id_comp, L'.assoc, L'.lift_snd, F.lift_snd]
 
+structure cat {S : Type u} (L : LawvereTheory.{v} S) : Type u where
+  as : ProdWord S
+
+open CategoryTheory
+instance {S : Type u} (L : LawvereTheory.{v} S) : Category.{v} L.cat where
+  Hom X Y := L.hom X.as Y.as
+  id X := L.id X.as
+  comp := L.comp
+
 end LawvereTheory
