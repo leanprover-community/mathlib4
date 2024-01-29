@@ -8,66 +8,12 @@ import Qq
 import Std.Tactic.Exact
 
 import Mathlib.Tactic.FProp.Attr
-import Mathlib.Tactic.FProp.Meta
-import Mathlib.Tactic.FProp.ArraySet
+import Mathlib.Tactic.FProp.ToStd
 
 namespace Mathlib
 open Lean Meta Qq
 
 namespace Meta.FProp
-
-variable {α} (a : α)
-
-private def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
-    MetaM α :=
-  lambdaLetTelescope e λ xs b => do
-    if let .some i ← xs.findIdxM? (λ x => do pure ¬(← x.fvarId!.isLetVar)) then
-      k xs[0:i] (← mkLambdaFVars xs[i:] b)
-    else
-      k xs b
-
-private def _root_.Lean.Meta.letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
-    (k : Array Expr → Expr → n α) : n α :=
-  map2MetaM (fun k => letTelescopeImpl e k) k
-
--- TODO: fix the implementation in STD
-private def _root_.Lean.Expr.modArgRev (modifier : Expr → Expr) (i : Nat) (e : Expr) : Expr :=
-  match i, e with
-  |      0, .app f x => .app f (modifier x)
-  | (i'+1), .app f x => .app (modArgRev modifier i' f) x
-  | _, _ => e
-
--- TODO: fix the implementation in STD
-private def _root_.Lean.Expr.modArg (modifier : Expr → Expr) (i : Nat) (e : Expr)
-    (n := e.getAppNumArgs) : Expr :=
-  Expr.modArgRev modifier (n - i - 1) e
-
--- TODO: fix the implementation in STD
-private def _root_.Lean.Expr.setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
-  e.modArg (fun _ => x) i n
-
-/--
-  Swaps bvars indices `i` and `j`
-
-  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
-  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
-
-  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-  indices work
--/
-def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
-
-  let swapBVarArray : Array Expr := Id.run do
-    let mut a : Array Expr := .mkEmpty e.looseBVarRange
-    for k in [0:e.looseBVarRange] do
-      a := a.push (.bvar (if k = i then j else if k = j then i else k))
-    a
-
-  e.instantiate swapBVarArray
-
-
-
-----------------------------------------------------------------------------------------------------
 
 /-- Unfold function body head recursors and matches -/
 def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do

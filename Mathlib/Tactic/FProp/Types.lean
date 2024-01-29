@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean.Meta.Tactic.Simp.Types
-import Std.Data.RBMap.Alter
-import Std.Lean.Meta.DiscrTree
-import Mathlib.Tactic.FProp.Meta
+
+import Std.Lean.HashSet
+
+import Mathlib.Logic.Function.Basic
 
 /-!
 ## `fprop`

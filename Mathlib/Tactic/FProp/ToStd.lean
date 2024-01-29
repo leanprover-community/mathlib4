@@ -8,9 +8,7 @@ import Lean
 import Std.Data.Nat.Lemmas
 import Std.Lean.Expr
 
-import Mathlib.Logic.Equiv.Basic
 import Mathlib.Tactic.FProp.ArraySet
-import Mathlib.Tactic.FProp.Mor
 
 import Qq
 
@@ -21,6 +19,55 @@ namespace Meta.FProp
 
 
 set_option autoImplicit true
+
+
+def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
+    MetaM α :=
+  lambdaLetTelescope e λ xs b => do
+    if let .some i ← xs.findIdxM? (λ x => do pure ¬(← x.fvarId!.isLetVar)) then
+      k xs[0:i] (← mkLambdaFVars xs[i:] b)
+    else
+      k xs b
+
+def _root_.Lean.Meta.letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
+    (k : Array Expr → Expr → n α) : n α :=
+  map2MetaM (fun k => letTelescopeImpl e k) k
+
+-- TODO: fix the implementation in STD
+def _root_.Lean.Expr.modArgRev (modifier : Expr → Expr) (i : Nat) (e : Expr) : Expr :=
+  match i, e with
+  |      0, .app f x => .app f (modifier x)
+  | (i'+1), .app f x => .app (modArgRev modifier i' f) x
+  | _, _ => e
+
+-- TODO: fix the implementation in STD
+def _root_.Lean.Expr.modArg (modifier : Expr → Expr) (i : Nat) (e : Expr)
+    (n := e.getAppNumArgs) : Expr :=
+  Expr.modArgRev modifier (n - i - 1) e
+
+-- TODO: fix the implementation in STD
+def _root_.Lean.Expr.setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
+  e.modArg (fun _ => x) i n
+
+/--
+  Swaps bvars indices `i` and `j`
+
+  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
+  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
+
+  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
+  indices work
+-/
+def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
+
+  let swapBVarArray : Array Expr := Id.run do
+    let mut a : Array Expr := .mkEmpty e.looseBVarRange
+    for k in [0:e.looseBVarRange] do
+      a := a.push (.bvar (if k = i then j else if k = j then i else k))
+    a
+
+  e.instantiate swapBVarArray
+
 
 /-- -/
 def joinlM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
@@ -236,114 +283,3 @@ def splitLambdaToComp (e : Expr) : MetaM (Expr × Expr) := do
     let X := XY.bindingDomain!
     return (e, .lam default X (.bvar 0) default)
 
-
-structure FunTelescopeConfig where
-  /-- telescope through coercions via  -/
-  funCoe := false
-
-partial
-def funTelescopeImpl {α} (f : Expr) (config : FunTelescopeConfig)
-    (k : Array Expr → Expr → MetaM α) : MetaM α := do
-  let F ← inferType f
-  forallTelescope F fun xs B => do
-
-    let b := (mkAppN f xs).headBeta
-
-    if config.funCoe = false then
-      k xs b
-    else
-      try
-        let b' ← mkAppM `DFunLike.coe #[b]
-        funTelescopeImpl b' config fun xs' b'' => k (xs ++ xs') b''
-      catch _ =>
-        k xs b
-
-variable [MonadControlT MetaM n] [Monad n]
-
-def funTelescope (e : Expr) (config : FunTelescopeConfig) (k : Array Expr → Expr → n α) : n α :=
-  map2MetaM (fun k => funTelescopeImpl e config k) k
-
-
-def constArity (decl : Name) : CoreM Nat := do
-  let info ← getConstInfo decl
-  return info.type.forallArity
-
-
-/--
-Split morphism function into composition by specifying over which auguments in the lambda body this
-split should be done.
- -/
-def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
-  let e ←
-    if e.isLambda
-    then pure e
-    else do
-      let X := (← inferType e).bindingDomain!
-      pure (.lam `x X (.app e (.bvar 0)) default)
-
-  match e with
-  | .lam name _ _ _ =>
-    lambdaTelescope e λ xs b => do
-      let x := xs[0]!
-
-      let fn := Mor.getAppFn b
-      let mut args := Mor.getAppArgs b
-
-      let mut lctx ← getLCtx
-      let instances ← getLocalInstances
-
-      let mut yVals : Array Expr := #[]
-      let mut yVars : Array Expr := #[]
-
-      let xIds := xs.map fun x => x.fvarId!
-      let xIds' := xIds[1:].toArray
-
-      for argId in argIds.toArray do
-        let yVal := args[argId]!
-
-        -- abstract over trailing arguments
-        let xs'' := xIds'.filterMap
-          (fun xId => if yVal.expr.containsFVar xId then .some (Expr.fvar xId) else .none)
-        let yVal' ← mkLambdaFVars xs'' yVal.expr
-        let yId ← withLCtx lctx instances mkFreshFVarId
-        lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
-        let yVar := Expr.fvar yId
-        yVars := yVars.push yVar
-        yVals := yVals.push yVal'
-        args := args.set! argId ⟨Lean.mkAppN yVar xs'', yVal.coe⟩
-
-      let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
-      let f ← withLCtx lctx instances do
-        (mkLambdaFVars (yVars ++ xs[1:]) (Mor.mkAppN fn args))
-        >>=
-        mkUncurryFun yVars.size
-
-      -- `f` should not contain `x`
-      -- if they do then the split is unsuccessful
-      if f.containsFVar xIds[0]! then
-        return none
-
-      return (f, g)
-
-  | _ => return none
-
-
-/--
-Split morphism function into composition by specifying over which auguments in the lambda body this
-split should be done.
- -/
-def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
-  match e with
-  | .lam .. =>
-    lambdaTelescope e λ xs b => do
-      let xId := xs[0]!.fvarId!
-
-      Mor.withApp b fun _ xs =>
-        let argIds := xs
-          |>.mapIdx (fun i x => if x.expr.containsFVar xId then .some i.1 else none)
-          |>.filterMap id
-          |>.toArraySet
-        splitMorToCompOverArgs e argIds
-
-  | _ =>
-   splitMorToCompOverArgs e #[Mor.getAppNumArgs e].toArraySet

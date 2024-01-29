@@ -6,6 +6,8 @@ Authors: Tomas Skrivan
 import Lean
 import Mathlib.Data.FunLike.Basic
 
+import Mathlib.Tactic.FProp.ToStd
+
 
 /-!
 ## `fprop` meta programming function like in Lean.Expr.* but for working with bundled morphisms
@@ -130,3 +132,84 @@ def headBeta (e : Expr) : Expr :=
       | .some c => (c.app e).app x.expr
 
 end Mor
+
+
+
+/--
+Split morphism function into composition by specifying over which auguments in the lambda body this
+split should be done.
+ -/
+def splitMorToCompOverArgs (e : Expr) (argIds : ArraySet Nat) : MetaM (Option (Expr × Expr)) := do
+  let e ←
+    if e.isLambda
+    then pure e
+    else do
+      let X := (← inferType e).bindingDomain!
+      pure (.lam `x X (.app e (.bvar 0)) default)
+
+  match e with
+  | .lam name _ _ _ =>
+    lambdaTelescope e λ xs b => do
+      let x := xs[0]!
+
+      let fn := Mor.getAppFn b
+      let mut args := Mor.getAppArgs b
+
+      let mut lctx ← getLCtx
+      let instances ← getLocalInstances
+
+      let mut yVals : Array Expr := #[]
+      let mut yVars : Array Expr := #[]
+
+      let xIds := xs.map fun x => x.fvarId!
+      let xIds' := xIds[1:].toArray
+
+      for argId in argIds.toArray do
+        let yVal := args[argId]!
+
+        -- abstract over trailing arguments
+        let xs'' := xIds'.filterMap
+          (fun xId => if yVal.expr.containsFVar xId then .some (Expr.fvar xId) else .none)
+        let yVal' ← mkLambdaFVars xs'' yVal.expr
+        let yId ← withLCtx lctx instances mkFreshFVarId
+        lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
+        let yVar := Expr.fvar yId
+        yVars := yVars.push yVar
+        yVals := yVals.push yVal'
+        args := args.set! argId ⟨Lean.mkAppN yVar xs'', yVal.coe⟩
+
+      let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
+      let f ← withLCtx lctx instances do
+        (mkLambdaFVars (yVars ++ xs[1:]) (Mor.mkAppN fn args))
+        >>=
+        mkUncurryFun yVars.size
+
+      -- `f` should not contain `x`
+      -- if they do then the split is unsuccessful
+      if f.containsFVar xIds[0]! then
+        return none
+
+      return (f, g)
+
+  | _ => return none
+
+
+/--
+Split morphism function into composition by specifying over which auguments in the lambda body this
+split should be done.
+ -/
+def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
+  match e with
+  | .lam .. =>
+    lambdaTelescope e λ xs b => do
+      let xId := xs[0]!.fvarId!
+
+      Mor.withApp b fun _ xs =>
+        let argIds := xs
+          |>.mapIdx (fun i x => if x.expr.containsFVar xId then .some i.1 else none)
+          |>.filterMap id
+          |>.toArraySet
+        splitMorToCompOverArgs e argIds
+
+  | _ =>
+   splitMorToCompOverArgs e #[Mor.getAppNumArgs e].toArraySet
