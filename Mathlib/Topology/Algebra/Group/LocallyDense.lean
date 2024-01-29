@@ -7,6 +7,7 @@ Authors: Emilie Burgun
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.Topology.Basic
+import Mathlib.Topology.RegularOpen
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.InjectiveAction
 
@@ -236,7 +237,7 @@ theorem LocallyMovingSMul.exponent_fixingSubgroup_eq_zero [LocallyMovingSMul G �
       refine mt (fun mem => h_in_fixing mem) fun mem_st => ?ff
       specialize pw_disj ⟨0, period_pos, rfl⟩ ⟨i + 1, i_lt_period, rfl⟩ (by
         apply mt (smul_pow_inj_of_lt_period period_pos i_lt_period)
-        norm_num
+        tauto
       )
       rw [pow_zero, Function.onFun, Set.smul_set_disjoint_inv_of_comm (Commute.one_left _), inv_one,
         one_smul, Set.disjoint_iff] at pw_disj
@@ -297,3 +298,25 @@ theorem LocallyMovingSMul.exponent_eq_zero [LocallyMovingSMul G α] [ContinuousC
     [FaithfulSMul G α] [T2Space α] [Nonempty α]: Monoid.exponent G = 0 := by
   have exp_top_eq_zero := exponent_fixingSubgroup_eq_zero G (isOpen_univ (α := α)) Set.univ_nonempty
   rwa [Set.compl_univ, fixingSubgroup_empty, Subgroup.exponent_top] at exp_top_eq_zero
+
+section FixingSubgroup
+
+
+section FixingSubgroup
+
+open TopologicalSpace (RegularOpens)
+
+variable [LocallyMovingSMul G α] [T2Space α]
+
+/-
+theorem fixingSubgroup_compl_le_iff_le_of_regularOpen (s t : RegularOpens α) :
+    G•[(↑s : Set α)ᶜ] ≤ G•[(↑t : Set α)ᶜ] ↔ s ≤ t := by
+  refine ⟨fun fixing_le => ?le, fun le => (fixingSubgroup_antitone G α).comp
+    (compl_antitone (Set α)) le⟩
+
+  sorry
+-/
+
+end FixingSubgroup
+
+end FixingSubgroup

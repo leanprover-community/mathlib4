@@ -10,11 +10,24 @@ import Mathlib.Topology.Algebra.ConstMulAction
 /-!
 # Boolean algebra of regular open sets
 
-This module defines regular open sets in a topological space, which are the sets `s` for which
+This module defines *regular open* sets in a topological space, which are the sets `s` for which
 `interior (closure s) = s`.
+The type `RegularOpens` is a bundled set that is regular open.
 
+A boolean algebra can be constructed for the regular open sets, with `↑(a ⊓ b) = ↑a ∩ ↑b` and
+`↑(aᶜ) = (closure ↑a)ᶜ`.
 
+## TODO
 
+It should be possible to show that the above choice for `⊓` and `ᶜ` leads to a Heyting algebra on
+`Opens`, and `RegularOpens` can then be constructed using `HeytingAlgebra.Regular`.
+
+## References
+
+* [S. Givant, P. Halmos, *Introduction to Boolean Algebras*][halmos2009introduction], Chapter 10
+* [S. H. Kim, T. Koberda,
+*Structure and Regularity of Group Actions on One-Manifolds*][kim2021structure],
+  Chapter 3.6
 -/
 
 namespace TopologicalSpace
@@ -284,11 +297,8 @@ theorem disjoint_fromSet {s t : Set α} (s_open : IsOpen s) (t_open : IsOpen t):
     coe_fromSet, ← Set.disjoint_iff_inter_eq_empty,
     IsOpen.interior_closure_disjoint_iff s_open t_open]
 
-theorem mem_fromSet_of_mem_isOpen {s : Set α} (s_open : IsOpen s) {x : α} (x_in_s : x ∈ s) :
-    x ∈ fromSet s := by
-  show x ∈ (fromSet s : Set α)
-  rw [coe_fromSet]
-  exact s_open.subset_interior_closure x_in_s
+theorem subset_fromSet_of_isOpen {s : Set α} (s_open : IsOpen s) : s ⊆ fromSet s :=
+  s_open.subset_interior_closure
 
 theorem t2_separation_regularOpen [T2Space α] {x y : α} (x_ne_y : x ≠ y) :
     ∃ (r s : RegularOpens α), Disjoint r s ∧ x ∈ r ∧ y ∈ s := by
@@ -297,8 +307,8 @@ theorem t2_separation_regularOpen [T2Space α] {x y : α} (x_ne_y : x ≠ y) :
     fromSet s,
     fromSet t,
     (disjoint_fromSet s_open t_open).mp disj_st,
-    mem_fromSet_of_mem_isOpen s_open x_in_s,
-    mem_fromSet_of_mem_isOpen t_open y_in_t
+    subset_fromSet_of_isOpen s_open x_in_s,
+    subset_fromSet_of_isOpen t_open y_in_t
   ⟩
 
 end RegularOpens
@@ -385,7 +395,6 @@ instance RegularOpens.pointwiseMulAction_faithful_of_t2space [FaithfulSMul G α]
   rw [img_eq v, ← disjoint_coe, Set.disjoint_iff_forall_ne] at disj_img
 
   exact disj_img x_in_gu x_in_hv rfl
-
 
 end ContinuousConstSMul
 
