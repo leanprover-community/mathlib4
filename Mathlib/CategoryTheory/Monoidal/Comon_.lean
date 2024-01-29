@@ -37,8 +37,11 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 When the monoidal category is preadditive, this is also sometimes called a "coalgebra object".
 -/
 structure Comon_ where
+  /-- The underlying object of a comonoid object. -/
   X : C
+  /-- The counit of a comonoid object. -/
   counit : X ⟶ 𝟙_ C
+  /-- The comultiplication morphism of a comonoid object. -/
   comul : X ⟶ X ⊗ X
   counit_comul : comul ≫ (counit ⊗ 𝟙 X) = (λ_ X).inv := by aesop_cat
   comul_counit : comul ≫ (𝟙 X ⊗ counit) = (ρ_ X).inv := by aesop_cat
@@ -82,6 +85,7 @@ theorem assoc_flip :
 /-- A morphism of comonoid objects. -/
 @[ext]
 structure Hom (M N : Comon_ C) where
+  /-- The underlying morphism of a morphism of comonoid objects. -/
   hom : M.X ⟶ N.X
   hom_counit : hom ≫ N.counit = M.counit := by aesop_cat
   hom_comul : hom ≫ N.comul = M.comul ≫ (hom ⊗ hom) := by aesop_cat
