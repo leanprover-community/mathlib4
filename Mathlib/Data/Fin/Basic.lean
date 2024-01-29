@@ -106,14 +106,10 @@ theorem val_injective : Function.Injective (@Fin.val n) :=
 #align fin.val_injective Fin.val_injective
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
-lemma size_positive : Fin n → 0 < n
-  | ⟨x, h⟩ =>
-    match Nat.eq_or_lt_of_le (Nat.zero_le x) with
-    | Or.inl h_eq => h_eq ▸ h
-    | Or.inr h_lt => Nat.lt_trans h_lt h
+lemma size_positive : Fin n → 0 < n := Fin.pos
 
 lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
-  ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
+  ‹Nonempty (Fin n)›.elim Fin.pos
 
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
@@ -1294,6 +1290,19 @@ def modNat (i : Fin (m * n)) : Fin n :=
 theorem coe_modNat (i : Fin (m * n)) : (i.modNat : ℕ) = i % n :=
   rfl
 #align fin.coe_mod_nat Fin.coe_modNat
+
+theorem modNat_rev (i : Fin (m * n)) : i.rev.modNat = i.modNat.rev := by
+  ext
+  have H₁ : i % n + 1 ≤ n := i.modNat.is_lt
+  have H₂ : i / n < m := i.divNat.is_lt
+  simp only [coe_modNat, val_rev]
+  calc
+    (m * n - (i + 1)) % n = (m * n - ((i / n) * n + i % n + 1)) % n := by rw [Nat.div_add_mod']
+    _ = ((m - i / n - 1) * n + (n - (i % n + 1))) % n := by
+      rw [tsub_mul, one_mul, tsub_add_tsub_cancel _ H₁, tsub_mul, tsub_tsub, add_assoc]
+      exact le_mul_of_one_le_left' <| le_tsub_of_add_le_left H₂
+    _ = n - (i % n + 1) := by
+      rw [mul_comm, Nat.mul_add_mod, Nat.mod_eq_of_lt]; exact i.modNat.rev.is_lt
 
 end DivMod
 
