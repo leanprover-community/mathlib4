@@ -22,6 +22,15 @@ open Set Filter Uniformity Topology TopologicalSpace Function UniformConvergence
 variable {ι X Y α β : Type*} [TopologicalSpace X] [u : UniformSpace α] [UniformSpace β]
 variable {F : ι → X → α} {G : ι → β → α}
 
+/-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
+equicontinuous family. Then, the uniform structures of uniform convergence and pointwise
+convergence induce the same uniform structure on `ι`.
+
+In other words, pointwise convergence and uniform convergence coincide on an equicontinuous
+subset of `X → α`.
+
+Consider using `Equicontinuous.uniformInducing_uniformFun_iff_pi` and
+`Equicontinuous.inducing_uniformFun_iff_pi` instead, to avoid rewriting instances. -/
 theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous F) :
     (UniformFun.uniformSpace X α).comap F =
     (Pi.uniformSpace _).comap F := by
@@ -65,12 +74,30 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (hF : Equicontinuous
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
 
+/-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
+equicontinuous family. Then, the uniform structures of uniform convergence and pointwise
+convergence induce the same uniform structure on `ι`.
+
+In other words, pointwise convergence and uniform convergence coincide on an equicontinuous
+subset of `X → α`.
+
+This is a version of `Equicontinuous.comap_uniformFun_eq` stated in terms of `UniformInducing`
+for convenuence. -/
 lemma Equicontinuous.uniformInducing_uniformFun_iff_pi [UniformSpace ι] [CompactSpace X]
     (hF : Equicontinuous F) :
     UniformInducing (UniformFun.ofFun ∘ F) ↔ UniformInducing F := by
   rw [uniformInducing_iff_uniformSpace, uniformInducing_iff_uniformSpace, ← hF.comap_uniformFun_eq]
   rfl
 
+/-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
+equicontinuous family. Then, the topologies of uniform convergence and pointwise convergence induce
+the same topology on `ι`.
+
+In other words, pointwise convergence and uniform convergence coincide on an equicontinuous
+subset of `X → α`.
+
+This is a consequence of `Equicontinuous.comap_uniformFun_eq`, stated in terms of `Inducing`
+for convenuence. -/
 lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSpace X]
     (hF : Equicontinuous F) :
     Inducing (UniformFun.ofFun ∘ F) ↔ Inducing F := by
@@ -79,6 +106,9 @@ lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSp
          (_ = (Pi.uniformSpace _ |>.comap F |>.toTopologicalSpace))
   rw [hF.comap_uniformFun_eq]
 
+/-- Let `X` be a compact topological space, `α` a uniform space, `F : ι → (X → α)` an
+equicontinuous family, and `ℱ` a filter on `ι`. Then, `F` tends *uniformly* to `f : X → α` along
+`ℱ` iff it tends to `f` *pointwise* along `ℱ`. -/
 theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
     (hF : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
     Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
@@ -99,6 +129,17 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
       rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
     rwa [ind.tendsto_nhds_iff, comp_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
 
+/-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
+and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
+structures of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same
+uniform structure on `ι`.
+
+In particular, pointwise convergence and compact convergence coincide on an equicontinuous
+subset of `X → α`.
+
+Consider using `EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi'` and
+`EquicontinuousOn.inducing_uniformOnFun_iff_pi'` instead to avoid rewriting instances,
+as well as their unprimed versions in case `𝔖` covers `X`. -/
 theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
     (UniformOnFun.uniformSpace X α 𝔖).comap F =
@@ -127,6 +168,16 @@ theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀
   -- Combining these three facts completes the proof.
   simp_rw [H1, H2, iInf_congr fun K ↦ iInf_congr fun hK ↦ H3 K hK]
 
+/-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
+and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
+structures of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same
+uniform structure on `ι`.
+
+In particular, pointwise convergence and compact convergence coincide on an equicontinuous
+subset of `X → α`.
+
+This is a version of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `UniformInducing`
+for convenuence. -/
 lemma EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -136,6 +187,13 @@ lemma EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
       ← EquicontinuousOn.comap_uniformOnFun_eq h𝔖 hF]
   rfl
 
+/-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
+and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
+structures of uniform convergence on `𝔖` and pointwise convergence induce the same
+uniform structure on `ι`.
+
+This is a specialization of `EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi'` to
+the case where `𝔖` covers `X`. -/
 lemma EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -148,6 +206,15 @@ lemma EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.uniformInducing.comp H, fun H ↦ φ.symm.uniformInducing.comp H⟩
 
+/-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
+and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
+of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same topology on  `ι`.
+
+In particular, pointwise convergence and compact convergence coincide on an equicontinuous
+subset of `X → α`.
+
+This is a consequence of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `Inducing`
+for convenuence. -/
 lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -158,6 +225,12 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F)).toTopologicalSpace)
   rw [← EquicontinuousOn.comap_uniformOnFun_eq h𝔖 hF]
 
+/-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
+and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
+of uniform convergence on `𝔖` and pointwise convergence induce the same topology on `ι`.
+
+This is a specialization of `EquicontinuousOn.inducing_uniformOnFun_iff_pi'` to
+the case where `𝔖` covers `X`. -/
 lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_covers : ⋃₀ 𝔖 = univ) (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -172,6 +245,10 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
 
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`
+/-- Let `X` be a compact topological space, `𝔖` a family of compact subsets of `X`,
+`α` a uniform space, `F : ι → (X → α)` a family equicontinuous on each `K ∈ 𝔖`, and `ℱ` a filter
+on `ι`. Then, `F` tends to `f : X → α` along `ℱ` *uniformly on each `K ∈ 𝔖`* iff it tends to `f`
+*pointwise on `⋃₀ 𝔖`* along `ℱ`. -/
 theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
@@ -185,6 +262,13 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| hF K hK).tendsto_uniformFun_iff_pi]
   rfl
 
+/-- Let `X` be a compact topological space, `𝔖` a covering of `X` by compact subsets,
+`α` a uniform space, `F : ι → (X → α)` a family equicontinuous on each `K ∈ 𝔖`, and `ℱ` a filter
+on `ι`. Then, `F` tends to `f : X → α` along `ℱ` *uniformly on each `K ∈ 𝔖`* iff it tends to `f`
+*pointwise* along `ℱ`.
+
+This is a specialization of `EquicontinuousOn.tendsto_uniformOnFun_iff_pi'` to the case
+where `𝔖` covers `X`. -/
 theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
