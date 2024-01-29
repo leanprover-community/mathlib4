@@ -296,10 +296,10 @@ lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
   specialize h _
   · exact ↑x
   · simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta, hx,
-    Subtype.coe_prop, exists_const]
-  simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
-    Subtype.coe_prop, exists_const] at h
-  exact h
+      Subtype.coe_prop, exists_const]
+  · simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
+      Subtype.coe_prop, exists_const] at h
+    exact h
 
 /-!
 Relations between restriction and coercion.
