@@ -658,7 +658,7 @@ instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Re
 
 @[to_additive]
 theorem haarMeasure_closure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ (closure K₀) = 1 := by
-  rw [IsCompact.measure_closure_eq_of_group K₀.isCompact, haarMeasure_self]
+  rw [K₀.isCompact.measure_closure, haarMeasure_self]
 
 /-- The Haar measure is sigma-finite in a second countable group. -/
 @[to_additive "The additive Haar measure is sigma-finite in a second countable group."]
@@ -717,7 +717,7 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
       ∃ (K : Set G), K ⊆ E ∧ IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
     rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
-    · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp hE KE
+    · exact K_comp.closure_subset_measurableSet hE KE
     · rwa [K_comp.measure_closure_eq_of_group]
   obtain ⟨V, hV1, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • K \ K) < μ K :=
     exists_nhds_measure_smul_diff_lt hK K_closed hKpos.ne'
@@ -766,8 +766,7 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
     K₀.interior_nonempty.mono (interior_mono subset_closure)
   have := measure_eq_div_smul μ (haarMeasure K₀) (isClosed_closure (s := K₀)).measurableSet
     (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_lt_top.ne
-  rwa [haarMeasure_closure_self, div_one, IsCompact.measure_closure_eq_of_group K₀.isCompact]
-    at this
+  rwa [haarMeasure_closure_self, div_one, K₀.isCompact.measure_closure] at this
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
 
