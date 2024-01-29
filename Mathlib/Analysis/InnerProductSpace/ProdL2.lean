@@ -51,6 +51,7 @@ namespace OrthonormalBasis
 
 variable [Fintype ι₁] [Fintype ι₂]
 
+/-- The product of two orthonormal bases is a basis for the L2-product. -/
 def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     OrthonormalBasis (ι₁ ⊕ ι₂) 𝕜 (WithLp 2 (E × F)) :=
   ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
