@@ -33,12 +33,9 @@ theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < �
   use r
   intro x hr'
   rw [← Set.compl_subset_compl] at hr
-  have : x ∈ (fun x ↦ ‖f x‖) ⁻¹' Metric.ball 0 ε := by
-    apply hs
-    apply hr
-    simp [hr']
-  simp only [Set.mem_preimage, Metric.mem_ball, dist_zero_right, norm_norm] at this
-  exact this
+  suffices x ∈ (fun x ↦ ‖f x‖) ⁻¹' Metric.ball 0 ε by aesop
+  apply hr.trans hs
+  simp [hr']
 
 variable [ProperSpace E]
 
@@ -47,14 +44,10 @@ theorem zero_at_infty_of_norm_le (f : E → F)
     Tendsto f (cocompact E) (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
   intro s hs
-  simp only [mem_map, mem_cocompact]
+  rw [mem_map, mem_cocompact]
   rw [Metric.mem_nhds_iff] at hs
   rcases hs with ⟨ε, hε, hs⟩
   rcases h ε hε with ⟨r, hr⟩
-  use Metric.closedBall 0 r
-  refine ⟨isCompact_closedBall _ _, ?_⟩
-  intro x hx
-  simp only [Set.mem_compl_iff, Metric.mem_closedBall, dist_zero_right, not_le,
-    Set.mem_preimage] at hx ⊢
-  apply hs
-  simp only [Metric.mem_ball, dist_zero_right, norm_norm, hr x hx]
+  use Metric.closedBall 0 r, isCompact_closedBall _ _
+  intro
+  aesop
