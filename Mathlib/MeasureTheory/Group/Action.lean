@@ -3,11 +3,11 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Dynamics.Minimal
-import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.MeasureTheory.Group.MeasurableEquiv
+import Mathlib.MeasureTheory.Measure.Regular
 
 #align_import measure_theory.group.action from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -121,7 +121,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
     _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [←preimage_preimage]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [← preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = map f μ S := (map_apply hf hS).symm
 
@@ -260,7 +260,7 @@ theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempt
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
-    ⟨(· • ·) g ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
+    ⟨(g • ·) ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
 #align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.isLocallyFiniteMeasure_of_smulInvariant
 #align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.isLocallyFiniteMeasure_of_vaddInvariant
@@ -318,7 +318,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
       measurable_smul_const := fun a =>
         @measurable_vadd_const (Multiplicative G) α (inferInstanceAs (VAdd G α)) _ _
           (inferInstanceAs (MeasurableVAdd G α)) a }
-  exact @smul_ae_eq_self_of_mem_zpowers (Multiplicative G) α _ _ _ _ _ _ _ _ _ _ hs hy
+  exact smul_ae_eq_self_of_mem_zpowers (G := Multiplicative G) hs hy
 #align measure_theory.vadd_ae_eq_self_of_mem_zmultiples MeasureTheory.vadd_ae_eq_self_of_mem_zmultiples
 
 attribute [to_additive existing vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers

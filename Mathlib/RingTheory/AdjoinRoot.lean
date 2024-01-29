@@ -538,7 +538,7 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
-  isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
+  (isAlgebraic_root hf).isIntegral
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
@@ -655,7 +655,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -818,7 +818,6 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
       (p.map (Ideal.Quotient.mk I)) := rfl
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_mk_of AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of
 
-set_option maxHeartbeats 300000 in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
@@ -896,7 +895,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
-                    Quotient.mk_algebraMap]; rfl)).trans (AdjoinRoot.quotEquivQuotMap _ _)
+                    Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 -- This lemma should have the simp tag but this causes a lint issue.
@@ -924,3 +923,14 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
+
+/-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
+polynomial over `L` divides some monic irreducible polynomial over `K`. -/
+theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
+  haveI := Fact.mk hf
+  have h := hf.ne_zero
+  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
+  have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
+  exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩

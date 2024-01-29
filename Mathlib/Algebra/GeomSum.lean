@@ -145,9 +145,9 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i in Finset.range n, x ^ i * x ^ (n - 1 - i) =
         ∑ i in Finset.range n, x ^ (i + (n - 1 - i)) :=
       by simp_rw [← pow_add]
-    _ = ∑ i in Finset.range n, x ^ (n - 1) :=
+    _ = ∑ _i in Finset.range n, x ^ (n - 1) :=
       Finset.sum_congr rfl fun i hi =>
-        congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
+        congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
 #align geom_sum₂_self geom_sum₂_self
@@ -191,7 +191,7 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
 
 theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
     x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro _ $ h.mul_geom_sum₂ _
+  Dvd.intro _ <| h.mul_geom_sum₂ _
 
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
@@ -208,10 +208,10 @@ theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
-  cases' le_or_lt y x with h h
-  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_of_le_left h _
-    exact_mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
-  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_of_le_left h.le _
+  rcases le_or_lt y x with h | h
+  · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
+    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
+  · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 #align nat_sub_dvd_pow_sub_pow nat_sub_dvd_pow_sub_pow
 
@@ -222,8 +222,8 @@ theorem Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
   exact Dvd.intro_left _ h₁
 #align odd.add_dvd_pow_add_pow Odd.add_dvd_pow_add_pow
 
-theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
-  exact_mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
+theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
+  mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 #align odd.nat_add_dvd_pow_add_pow Odd.nat_add_dvd_pow_add_pow
 
 theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : (∑ i in range n, x ^ i) * (x - 1) = x ^ n - 1 := by
@@ -309,7 +309,7 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
   suffices n - 1 - i + 1 = n - i by rw [this]
   cases' n with n
   · exact absurd (List.mem_range.mp hi) i.not_lt_zero
-  · rw [tsub_add_eq_add_tsub (Nat.le_pred_of_lt (List.mem_range.mp hi)),
+  · rw [tsub_add_eq_add_tsub (Nat.le_sub_one_of_lt (List.mem_range.mp hi)),
       tsub_add_cancel_of_le (Nat.succ_le_iff.mpr n.succ_pos)]
 #align commute.geom_sum₂_succ_eq Commute.geom_sum₂_succ_eq
 
@@ -418,8 +418,8 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) ≤ a * b - a / b ^ n :=
   calc
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) =
-        (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-      by rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
+    (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
+      rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
       refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _
@@ -483,7 +483,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
     if Even n then (∑ i in range n, x ^ i) ≤ 0 else 1 ≤ ∑ i in range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction' n with n ih
-  · simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true]
+  · simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true, even_zero]
   simp only [Nat.even_add_one, geom_sum_succ]
   split_ifs at ih with h
   · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
@@ -497,7 +497,7 @@ theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 
     if Even n then (∑ i in range n, x ^ i) < 0 else 1 < ∑ i in range n, x ^ i := by
   have hx0 : x < 0 := ((le_add_iff_nonneg_right _).2 zero_le_one).trans_lt hx
   refine' Nat.le_induction _ _ n (show 2 ≤ n from hn)
-  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx]
+  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]
@@ -571,7 +571,7 @@ theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
   have hx := eq_or_ne x (-1)
   cases' hx with hx hx
   · rw [hx, neg_one_geom_sum]
-    simp only [h hx, ne_eq, ite_eq_left_iff, one_ne_zero, not_forall, exists_prop, and_true]
+    simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
   · exact geom_sum_ne_zero hx hn
 #align geom_sum_eq_zero_iff_neg_one geom_sum_eq_zero_iff_neg_one
 
@@ -584,3 +584,22 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 #align geom_sum_neg_iff geom_sum_neg_iff
 
 end Order
+
+variable {m n : ℕ} {s : Finset ℕ}
+
+/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
+`m ≥ 2` is less than `m ^ n`. -/
+lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
+    ∑ k in range n, m ^ k = (m ^ n - 1) / (m - 1) := by
+  refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
+  simpa only [tsub_add_cancel_of_le (one_le_two.trans hm), eq_comm] using geom_sum_mul_add (m - 1) n
+
+/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
+`m ≥ 2` is less than `m ^ n`. -/
+lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k in s, m ^ k < m ^ n :=
+  calc
+    ∑ k in s, m ^ k ≤ ∑ k in range n, m ^ k := sum_le_sum_of_subset fun k hk ↦
+      mem_range.2 <| hs _ hk
+    _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
+    _ ≤ m ^ n - 1 := Nat.div_le_self _ _
+    _ < m ^ n := tsub_lt_self (by positivity) zero_lt_one

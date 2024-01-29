@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Common
 
@@ -931,7 +930,7 @@ instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoi
 
 instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
   default := normalizationMonoidOfUniqueUnits
-  uniq := fun ⟨u, _, _, _⟩ => by congr; simp
+  uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 #align unique_normalization_monoid_of_unique_units uniqueNormalizationMonoidOfUniqueUnits
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=

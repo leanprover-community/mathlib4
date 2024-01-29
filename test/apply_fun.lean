@@ -55,7 +55,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
   case foo => exact 1
   assumption
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
@@ -258,3 +258,15 @@ example : 1 = 1 := by
   · exact test_sorry
   apply_fun f using (g f)
   rfl
+
+
+def funFamily (_i : ℕ) : Bool → Bool := id
+
+-- `apply_fun` should not silence errors in `assumption`
+set_option linter.unreachableTactic false in
+/--
+error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+-/
+#guard_msgs (error) in
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+  apply_fun funFamily 0

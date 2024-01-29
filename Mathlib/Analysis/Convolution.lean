@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
@@ -27,7 +27,7 @@ For many applications we can take `L = ContinuousLinearMap.lsmul ℝ ℝ` or
 
 We also define `ConvolutionExists` and `ConvolutionExistsAt` to state that the convolution is
 well-defined (everywhere or at a single point). These conditions are needed for pointwise
-computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not stong enough for any
+computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not strong enough for any
 local (or global) properties of the convolution. For this we need stronger assumptions on `f`
 and/or `g`, and generally if we impose stronger conditions on one of the functions, we can impose
 weaker conditions on the other.
@@ -124,7 +124,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
   · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
-      refine' ⟨_, _, Set.neg_mem_neg.mpr (subset_closure hxt), hx, _⟩
+      refine' ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, _⟩
       simp only [neg_sub, sub_add_cancel]
     simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 #align convolution_integrand_bound_right_of_le_of_subset convolution_integrand_bound_right_of_le_of_subset
@@ -339,7 +339,7 @@ theorem HasCompactSupport.convolutionExistsAt {x₀ : G}
     exact (isClosed_tsupport _).measurableSet
   convert ((v.continuous.measurable.measurePreserving
       (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
-    v.toMeasurableEquiv.measurableEmbedding).1 A
+    v.measurableEmbedding).1 A
   ext x
   simp only [Homeomorph.neg, sub_eq_add_neg, coe_toAddUnits, Homeomorph.trans_apply,
     Equiv.neg_apply, Equiv.toFun_as_coe, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
@@ -433,7 +433,7 @@ end CommGroup
 
 end ConvolutionExists
 
-variable [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ F]
 
 /-- The convolution of two functions `f` and `g` with respect to a continuous bilinear map `L` and
 measure `μ`. It is defined to be `(f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`. -/
@@ -443,13 +443,16 @@ noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[�
 #align convolution convolution
 
 -- mathport name: convolution
+/-- The convolution of two functions with respect to a bilinear operation `L` and a measure `μ`. -/
 scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convolution f g L μ
 
 -- mathport name: convolution.volume
+/-- The convolution of two functions with respect to a bilinear operation `L` and the volume. -/
 scoped[Convolution]
   notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureTheory.MeasureSpace.volume
 
 -- mathport name: convolution.lsmul
+/-- The convolution of two real-valued functions with respect to volume. -/
 scoped[Convolution]
   notation:67 f " ⋆ " g:66 =>
     convolution f g (ContinuousLinearMap.lsmul ℝ ℝ) MeasureTheory.MeasureSpace.volume
@@ -557,7 +560,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx
+  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, nmem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -590,136 +593,73 @@ protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSup
       (hcg.isCompact.add hcf).isClosed
 #align has_compact_support.convolution HasCompactSupport.convolution
 
-variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCountableTopology P]
-
-/-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
-compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
-a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
-not assuming `T2Space G`. -/
-theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set P} {k : Set G}
-    (hk : IsCompact k) (h'k : IsClosed k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
-    (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
-    ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
-  intro q₀ hq₀
-  replace hq₀ : q₀.1 ∈ s; · simpa only [mem_prod, mem_univ, and_true] using hq₀
-  have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
-    refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
-  have B : ∀ p ∈ s, tsupport (g p) ⊆ k := fun p hp =>
-    closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) h'k
-  /- We find a small neighborhood of `{q₀.1} × k` on which the function is uniformly bounded.
-      This follows from the continuity at all points of the compact set `k`. -/
-  obtain ⟨w, C, w_open, q₀w, hw⟩ :
-    ∃ w C, IsOpen w ∧ q₀.1 ∈ w ∧ ∀ p x, p ∈ w ∩ s → ‖g p x‖ ≤ C := by
-    have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
-    obtain ⟨t, kt, t_open, ht⟩ :
-        ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ IsBounded (↿g '' (t ∩ s ×ˢ univ)) := by
-      apply exists_isOpen_isBounded_image_inter_of_isCompact_of_continuousOn A _ hg
-      simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
-        true_or_iff]
-    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ ↿g '' (t ∩ s ×ˢ univ) ⊆ closedBall (0 : E') C :=
-      ht.subset_closedBall_lt 0 0
-    obtain ⟨w, w_open, q₀w, hw⟩ : ∃ w, IsOpen w ∧ q₀.1 ∈ w ∧ w ×ˢ k ⊆ t
-    · obtain ⟨w, v, w_open, -, hw, hv, hvw⟩ :
-        ∃ (w : Set P) (v : Set G), IsOpen w ∧ IsOpen v ∧ {q₀.fst} ⊆ w ∧ k ⊆ v ∧ w ×ˢ v ⊆ t
-      exact generalized_tube_lemma isCompact_singleton hk t_open kt
-      exact ⟨w, w_open, singleton_subset_iff.1 hw, Subset.trans (Set.prod_mono Subset.rfl hv) hvw⟩
-    refine' ⟨w, C, w_open, q₀w, _⟩
-    rintro p x ⟨hp, hps⟩
-    by_cases hx : x ∈ k
-    · have H : (p, x) ∈ t := by
-        apply hw
-        simp only [prod_mk_mem_set_prod_eq, hp, hx, and_true_iff]
-      have H' : (p, x) ∈ (s ×ˢ univ : Set (P × G)) := by
-        simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hps
-      have : g p x ∈ closedBall (0 : E') C := hC (mem_image_of_mem _ (mem_inter H H'))
-      rwa [mem_closedBall_zero_iff] at this
-    · have : g p x = 0 := hgs _ _ hps hx
-      rw [this]
-      simpa only [norm_zero] using Cpos.le
-  have I1 :
-    ∀ᶠ q : P × G in 𝓝[s ×ˢ univ] q₀,
-      AEStronglyMeasurable (fun a : G => L (f a) (g q.1 (q.2 - a))) μ := by
-    filter_upwards [self_mem_nhdsWithin]
-    rintro ⟨p, x⟩ ⟨hp, -⟩
-    refine' (HasCompactSupport.convolutionExists_right L _ hf (A _ hp) _).1
-    exact hk.of_isClosed_subset (isClosed_tsupport _) (B p hp)
-  let K' := -k + {q₀.2}
-  have hK' : IsCompact K' := hk.neg.add isCompact_singleton
-  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
-    hf.integrableOn_nhds_isCompact hK'
-  let bound : G → ℝ := indicator U fun a => ‖L‖ * ‖f a‖ * C
-  have I2 : ∀ᶠ q : P × G in 𝓝[s ×ˢ univ] q₀, ∀ᵐ a ∂μ, ‖L (f a) (g q.1 (q.2 - a))‖ ≤ bound a := by
-    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U :=
-      compact_open_separated_add_right hK' U_open K'U
-    have : ((w ∩ s) ×ˢ ({q₀.2} + V) : Set (P × G)) ∈ 𝓝[s ×ˢ univ] q₀ := by
-      conv_rhs => rw [nhdsWithin_prod_eq, nhdsWithin_univ]
-      refine' Filter.prod_mem_prod _ (singleton_add_mem_nhds_of_nhds_zero q₀.2 V_mem)
-      exact mem_nhdsWithin_iff_exists_mem_nhds_inter.2 ⟨w, w_open.mem_nhds q₀w, Subset.rfl⟩
-    filter_upwards [this]
-    rintro ⟨p, x⟩ hpx
-    simp only [prod_mk_mem_set_prod_eq] at hpx
-    refine eventually_of_forall fun a => ?_
-    apply convolution_integrand_bound_right_of_le_of_subset _ _ hpx.2 _
-    · intro x
-      exact hw _ _ hpx.1
-    · rw [← add_assoc]
-      apply Subset.trans (add_subset_add_right (add_subset_add_right _)) hV
-      rw [neg_subset_neg]
-      exact B p hpx.1.2
-  have I3 : Integrable bound μ := by
-    rw [integrable_indicator_iff U_open.measurableSet]
-    exact (hU.norm.const_mul _).mul_const _
-  have I4 : ∀ᵐ a : G ∂μ,
-      ContinuousWithinAt (fun q : P × G => L (f a) (g q.1 (q.2 - a))) (s ×ˢ univ) q₀ := by
-    refine eventually_of_forall fun a => ?_
-    suffices H : ContinuousWithinAt (fun q : P × G => (f a, g q.1 (q.2 - a))) (s ×ˢ univ) q₀
-    exact L.continuous₂.continuousAt.comp_continuousWithinAt H
-    apply continuousWithinAt_const.prod
-    change ContinuousWithinAt (fun q : P × G => (↿g) (q.1, q.2 - a)) (s ×ˢ univ) q₀
-    have : ContinuousAt (fun q : P × G => (q.1, q.2 - a)) (q₀.1, q₀.2) :=
-      (continuous_fst.prod_mk (continuous_snd.sub continuous_const)).continuousAt
-    have h'q₀ : (q₀.1, q₀.2 - a) ∈ (s ×ˢ univ : Set (P × G)) := ⟨hq₀, mem_univ _⟩
-    refine' ContinuousWithinAt.comp (hg _ h'q₀) this.continuousWithinAt _
-    rintro ⟨q, x⟩ ⟨hq, -⟩
-    exact ⟨hq, mem_univ _⟩
-  exact continuousWithinAt_of_dominated I1 I2 I3 I4
-#align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param'
+variable [BorelSpace G] [TopologicalSpace P]
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`). -/
-theorem continuousOn_convolution_right_with_param [T2Space G] {g : P → G → E'} {s : Set P}
-    {k : Set G} (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
+theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set P} {k : Set G}
+    (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
     (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
-    ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) :=
-  continuousOn_convolution_right_with_param' L hk hk.isClosed hgs hf hg
+    ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
+  /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
+  and the conclusion is trivial. -/
+  by_cases H : ∀ p ∈ s, ∀ x, g p x = 0
+  · apply (continuousOn_const (c := 0)).congr
+    rintro ⟨p, x⟩ ⟨hp, -⟩
+    apply integral_eq_zero_of_ae (eventually_of_forall (fun y ↦ ?_))
+    simp [H p hp _]
+  have : LocallyCompactSpace G := by
+    push_neg at H
+    rcases H with ⟨p, hp, x, hx⟩
+    have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
+    have B : Continuous (g p) := by
+      refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+      simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+    rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
+    · simp [H] at hx
+    · exact H
+  /- Since `G` is locally compact, one may thicken `k` a little bit into a larger compact set
+  `(-k) + t`, outside of which all functions that appear in the convolution vanish. Then we can
+  apply a continuity statement for integrals depending on a parameter, with respect to
+  locally integrable functions and compactly supported continuous functions. -/
+  rintro ⟨q₀, x₀⟩ ⟨hq₀, -⟩
+  obtain ⟨t, t_comp, ht⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x₀ := exists_compact_mem_nhds x₀
+  let k' : Set G := (-k) +ᵥ t
+  have k'_comp : IsCompact k' := IsCompact.vadd_set hk.neg t_comp
+  let g' : (P × G) → G → E' := fun p x ↦ g p.1 (p.2 - x)
+  let s' : Set (P × G) := s ×ˢ t
+  have A : ContinuousOn g'.uncurry (s' ×ˢ univ) := by
+    have : g'.uncurry = g.uncurry ∘ (fun w ↦ (w.1.1, w.1.2 - w.2)) := by ext y; rfl
+    rw [this]
+    refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
+      continuous_snd)).continuousOn ?_
+    simp (config := {contextual := true}) [MapsTo]
+  have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
+    apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
+      (hf.integrableOn_isCompact k'_comp)
+    rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
+    apply hgs p _ hp
+    contrapose! hy
+    exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
+  apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
+  exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
+#align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param
 #align continuous_on_convolution_right_with_param continuousOn_convolution_right_with_param
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in an open subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
-given in terms of compositions with an additional continuous map.
-Version not assuming `T2Space G`. -/
-theorem continuousOn_convolution_right_with_param_comp' {s : Set P} {v : P → G}
-    (hv : ContinuousOn v s) {g : P → G → E'} {k : Set G} (hk : IsCompact k) (h'k : IsClosed k)
+given in terms of compositions with an additional continuous map. -/
+theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
+    (hv : ContinuousOn v s) {g : P → G → E'} {k : Set G} (hk : IsCompact k)
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContinuousOn (↿g) (s ×ˢ univ)) : ContinuousOn (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply
-    (continuousOn_convolution_right_with_param' L hk h'k hgs hf hg).comp (continuousOn_id.prod hv)
+    (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prod hv)
   intro x hx
   simp only [hx, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, id.def]
-#align continuous_on_convolution_right_with_param_comp' continuousOn_convolution_right_with_param_comp'
-
-/-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
-compactly supported. Version where `g` depends on an additional parameter in an open subset `s` of
-a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
-given in terms of compositions with an additional continuous map. -/
-theorem continuousOn_convolution_right_with_param_comp [T2Space G] {s : Set P} {v : P → G}
-    (hv : ContinuousOn v s) {g : P → G → E'} {k : Set G} (hk : IsCompact k)
-    (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
-    (hg : ContinuousOn (↿g) (s ×ˢ univ)) : ContinuousOn (fun x => (f ⋆[L, μ] g x) (v x)) s :=
-  continuousOn_convolution_right_with_param_comp' L hv hk hk.isClosed hgs hf hg
+#align continuous_on_convolution_right_with_param_comp' continuousOn_convolution_right_with_param_comp
 #align continuous_on_convolution_right_with_param_comp continuousOn_convolution_right_with_param_comp
 
 /-- The convolution is continuous if one function is locally integrable and the other has compact
@@ -729,14 +669,15 @@ theorem HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport 
   rw [continuous_iff_continuousOn_univ]
   let g' : G → G → E' := fun _ q => g q
   have : ContinuousOn (↿g') (univ ×ˢ univ) := (hg.comp continuous_snd).continuousOn
-  exact continuousOn_convolution_right_with_param_comp' L
-    (continuous_iff_continuousOn_univ.1 continuous_id) hcg (isClosed_tsupport _)
+  exact continuousOn_convolution_right_with_param_comp L
+    (continuous_iff_continuousOn_univ.1 continuous_id) hcg
     (fun p x _ hx => image_eq_zero_of_nmem_tsupport hx) hf this
 #align has_compact_support.continuous_convolution_right HasCompactSupport.continuous_convolution_right
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and
 continuous. -/
-theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopologyEither G E']
+theorem BddAbove.continuous_convolution_right_of_integrable
+    [FirstCountableTopology G] [SecondCountableTopologyEither G E']
     (hbg : BddAbove (range fun x => ‖g x‖)) (hf : Integrable f μ) (hg : Continuous g) :
     Continuous (f ⋆[L, μ] g) := by
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
@@ -815,7 +756,7 @@ variable [TopologicalAddGroup G]
 
 variable [BorelSpace G]
 
-theorem HasCompactSupport.continuous_convolution_left [FirstCountableTopology G]
+theorem HasCompactSupport.continuous_convolution_left
     (hcf : HasCompactSupport f) (hf : Continuous f) (hg : LocallyIntegrable g μ) :
     Continuous (f ⋆[L, μ] g) := by
   rw [← convolution_flip]
@@ -1072,7 +1013,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prod_mk measurable_snd)
     ext ⟨x, y⟩
-    simp_rw [uncurry, Function.comp_apply, sub_sub_sub_cancel_right]
+    simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
+      sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine' ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
     (L₃ (f t)).integrable_comp <| ht.ofNorm L₄ hg hk, _⟩
@@ -1196,8 +1138,6 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace �
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : MeasureTheory.Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
--- porting note: the lemma is slow, added `set_option maxHeartbeats 250000 in`
-set_option maxHeartbeats 250000 in
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
 and `g` is `C^1` and compactly supported. Version where `g` depends on an additional parameter in an
 open subset `s` of a parameter space `P` (and the compact support `k` is independent of the
@@ -1232,7 +1172,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ IsBounded (g' '' t) := by
       have B : ContinuousOn g' (s ×ˢ univ) :=
-        hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+        hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
       apply exists_isOpen_isBounded_image_of_isCompact_of_continuousOn A (hs.prod isOpen_univ) _ B
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
         true_or_iff]
@@ -1280,7 +1220,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
-      hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+      hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
@@ -1370,7 +1310,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
       hasFDerivAt_convolution_right_with_param L hs hk hgs hf hg.one_of_succ
-    rw [contDiffOn_succ_iff_fderiv_of_open (hs.prod (@isOpen_univ G _))] at hg ⊢
+    rw [contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt

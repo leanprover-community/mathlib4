@@ -43,7 +43,7 @@ section Field
 
 open Polynomial
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 variable [Invertible (2 : K)] [Invertible (3 : K)]
 
@@ -105,8 +105,8 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
-  have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) :=
-    by field_simp; ring
+  have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d
+    = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) := by field_simp; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
@@ -136,8 +136,8 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
   have h₂ :=
     calc
       a * x ^ 3 + b * x ^ 2 + c * x + d =
-          a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) :=
-        by field_simp; ring
+      a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
+        field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
         simp only [hb2, hb3]; field_simp; ring
       _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring

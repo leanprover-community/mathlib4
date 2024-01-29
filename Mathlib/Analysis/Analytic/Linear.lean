@@ -11,7 +11,7 @@ import Mathlib.Analysis.Analytic.Basic
 # Linear functions are analytic
 
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
-the formal power series `f x = f a + f (x - a)`.
+the formal power series `f x = f a + f (x - a)`. We also prove similar results for multilinear maps.
 -/
 
 
@@ -26,30 +26,6 @@ open Set Filter Asymptotics
 noncomputable section
 
 namespace ContinuousLinearMap
-
-/-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
-`f y = f x + f (y - x)`. -/
-def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
-  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
-  | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
-  | _ => 0
-#align continuous_linear_map.fpower_series ContinuousLinearMap.fpowerSeries
-
-theorem fpower_series_apply_zero (f : E →L[𝕜] F) (x : E) :
-    f.fpowerSeries x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x) :=
-  rfl
-
-theorem fpower_series_apply_one (f : E →L[𝕜] F) (x : E) :
-    f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
-  rfl
-
-theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
-  rfl
-#align continuous_linear_map.fpower_series_apply_add_two ContinuousLinearMap.fpowerSeries_apply_add_two
-
-attribute
-  [eqns fpower_series_apply_zero fpower_series_apply_one fpowerSeries_apply_add_two] fpowerSeries
-attribute [simp] fpowerSeries
 
 @[simp]
 theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
@@ -149,3 +125,28 @@ protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E �
 #align continuous_linear_map.analytic_at_bilinear ContinuousLinearMap.analyticAt_bilinear
 
 end ContinuousLinearMap
+
+variable (𝕜)
+
+lemma analyticAt_id (z : E) : AnalyticAt 𝕜 (id : E → E) z :=
+  (ContinuousLinearMap.id 𝕜 E).analyticAt z
+
+/-- `id` is entire -/
+theorem analyticOn_id {s : Set E} : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
+  fun _ _ ↦ analyticAt_id _ _
+
+/-- `fst` is analytic -/
+theorem analyticAt_fst {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+  (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
+
+/-- `snd` is analytic -/
+theorem analyticAt_snd {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.snd) p :=
+  (ContinuousLinearMap.snd 𝕜 E F).analyticAt p
+
+/-- `fst` is entire -/
+theorem analyticOn_fst {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) s :=
+  fun _ _ ↦ analyticAt_fst _
+
+/-- `snd` is entire -/
+theorem analyticOn_snd {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) s :=
+  fun _ _ ↦ analyticAt_snd _

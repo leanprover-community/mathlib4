@@ -3,7 +3,7 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-
+import Lean.Elab.Tactic.Calc
 import Std.CodeAction
 
 import Mathlib.Data.String.Defs
@@ -21,7 +21,7 @@ open Lean Server RequestM
 
 /-- Code action to create a `calc` tactic from the current goal. -/
 @[tactic_code_action calcTactic]
-def createCalc : TacticCodeAction := fun params _snap ctx _stack node => do
+def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   let .node (.ofTacticInfo info) _ := node | return #[]
   if info.goalsBefore.isEmpty then return #[]
   let eager := {
@@ -37,7 +37,7 @@ def createCalc : TacticCodeAction := fun params _snap ctx _stack node => do
       let goal := info.goalsBefore[0]!
       let goalFmt ← ctx.runMetaM {} <| goal.withContext do Meta.ppExpr (← goal.getType)
       return { eager with
-        edit? := some <|.ofTextEdit params.textDocument.uri
+        edit? := some <|.ofTextEdit doc.versionedIdentifier
           { range := ⟨tacPos, endPos⟩, newText := s!"calc {goalFmt} := by sorry" }
       }
   }]
@@ -86,12 +86,13 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let insertedCode := match isSelectedLeft, isSelectedRight with
   | true, true =>
     if params.isFirst then
-      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
-      s!"{spc}_ {relStr} {rhsStr} := by sorry"
+      s!"{lhsStr} {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n\
+         {spc}_ {relStr} {rhsStr} := by sorry"
     else
-      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}_ {relStr} {newRhsStr} := by sorry\n" ++
-      s!"{spc}_ {relStr} {rhsStr} := by sorry"
-  | false, true  =>
+      s!"_ {relStr} {newLhsStr} := by sorry\n{spc}\
+         _ {relStr} {newRhsStr} := by sorry\n{spc}\
+         _ {relStr} {rhsStr} := by sorry"
+  | false, true =>
     if params.isFirst then
       s!"{lhsStr} {relStr} {newRhsStr} := by sorry\n{spc}_ {relStr} {rhsStr} := by sorry"
     else
@@ -134,9 +135,9 @@ elab_rules : tactic
   for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    let json := open scoped ProofWidgets.Json in json% {"replaceRange": $(replaceRange),
+    let json := open scoped Std.Json in json% {"replaceRange": $(replaceRange),
                                                         "isFirst": $(isFirst),
                                                         "indent": $(indent)}
-    ProofWidgets.savePanelWidgetInfo proofTerm `CalcPanel (pure json)
+    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))

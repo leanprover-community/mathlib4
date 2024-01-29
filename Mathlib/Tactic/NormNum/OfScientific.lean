@@ -50,7 +50,7 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   haveI' : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
   haveI' lh : @OfScientific.ofScientific $α $σα =Q (fun m s e ↦ (Rat.ofScientific m s e : $α)) := ⟨⟩
   match b with
-  | ~q(true)  =>
+  | ~q(true) =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
     let some ⟨q, n, d, p⟩ := rme.toRat' dα | failure
     return .isRat' dα q n d q(isRat_ofScientific_of_true $σα $lh $p)

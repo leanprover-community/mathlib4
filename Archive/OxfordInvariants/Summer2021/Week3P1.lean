@@ -71,7 +71,7 @@ natural.
 
 open scoped BigOperators
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
 theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :

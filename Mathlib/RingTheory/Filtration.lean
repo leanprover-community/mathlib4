@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Data.Polynomial.Module
+import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
 
 #align_import ring_theory.filtration from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -269,7 +271,7 @@ protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
     rw [Subalgebra.smul_def, PolynomialModule.smul_apply]
     apply Submodule.sum_mem
     rintro ⟨j, k⟩ e
-    rw [Finset.Nat.mem_antidiagonal] at e
+    rw [Finset.mem_antidiagonal] at e
     subst e
     exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.2 j) (hf k))
 #align ideal.filtration.submodule Ideal.Filtration.submodule
@@ -404,7 +406,6 @@ variable {F}
 
 theorem Stable.of_le [IsNoetherianRing R] [Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
-  have := isNoetherian_of_isNoetherianRing_of_finite R M
   rw [← submodule_fg_iff_stable] at hF ⊢
   any_goals intro i; exact IsNoetherian.noetherian _
   have := isNoetherian_of_fg_of_noetherian _ hF
@@ -438,8 +439,7 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
   have hN : ∀ k, (I.stableFiltration ⊤ ⊓ I.trivialFiltration N).N k = N :=
     fun k => inf_eq_right.mpr ((iInf_le _ k).trans <| le_of_eq <| by simp)
   constructor
-  · have := isNoetherian_of_isNoetherianRing_of_finite R M
-    obtain ⟨r, hr₁, hr₂⟩ :=
+  · obtain ⟨r, hr₁, hr₂⟩ :=
       Submodule.exists_mem_and_smul_eq_self_of_fg_of_le_smul I N (IsNoetherian.noetherian N) (by
         obtain ⟨k, hk⟩ := (I.stableFiltration_stable ⊤).inter_right (I.trivialFiltration N)
         have := hk k (le_refl _)
@@ -473,6 +473,19 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
 #align ideal.infi_pow_eq_bot_of_local_ring Ideal.iInf_pow_eq_bot_of_localRing
+
+/-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
+theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing {R} [CommRing R]
+    [IsNoetherianRing R] [LocalRing R] (I : Ideal R) :
+    IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
+  constructor
+  · intro H
+    by_cases I = ⊤; · exact Or.inr ‹_›
+    refine Or.inl (eq_bot_iff.mpr ?_)
+    rw [← Ideal.iInf_pow_eq_bot_of_localRing I ‹_›]
+    apply le_iInf
+    rintro (_|n) <;> simp [H.pow_succ_eq]
+  · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :

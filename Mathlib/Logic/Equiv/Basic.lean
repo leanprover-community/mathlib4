@@ -48,6 +48,8 @@ equivalence, congruence, bijective map
 
 set_option autoImplicit true
 
+universe u
+
 open Function
 
 namespace Equiv
@@ -162,7 +164,7 @@ theorem prodProdProdComm_symm (α β γ δ : Type*) :
 #align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
   invFun := uncurry
@@ -386,7 +388,7 @@ def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
 #align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPUnitSumPUnit
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def sumComm (α β) : Sum α β ≃ Sum β α :=
   ⟨Sum.swap, Sum.swap, Sum.swap_swap, Sum.swap_swap⟩
 #align equiv.sum_comm Equiv.sumComm
@@ -838,7 +840,7 @@ theorem ofFiberEquiv_map {α β γ} {f : α → γ} {g : β → γ}
 /-- A variation on `Equiv.prodCongr` where the equivalence in the second component can depend
   on the first component. A typical example is a shear mapping, explaining the name of this
   declaration. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def prodShear (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ where
   toFun := fun x : α₁ × β₁ => (e₁ x.1, e₂ x.1 x.2)
   invFun := fun y : α₂ × β₂ => (e₁.symm y.1, (e₂ <| e₁.symm y.1).symm y.2)
@@ -922,7 +924,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
     where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
@@ -932,7 +934,7 @@ def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : (∀ i, π i) ≃ (∀ i, π
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps!]
-def prodPiEquivSumPi (π : ι → Type _) (π' : ι' → Type _) :
+def prodPiEquivSumPi (π : ι → Type u) (π' : ι' → Type u) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
   sumPiEquivProdPi (Sum.elim π π') |>.symm
 
@@ -1152,6 +1154,10 @@ def subtypeEquiv {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a,
   left_inv a := Subtype.ext <| by simp
   right_inv b := Subtype.ext <| by simp
 #align equiv.subtype_equiv Equiv.subtypeEquiv
+
+lemma coe_subtypeEquiv_eq_map {X Y : Type*} {p : X → Prop} {q : Y → Prop} (e : X ≃ Y)
+    (h : ∀ x, p x ↔ q (e x)) : ⇑(e.subtypeEquiv h) = Subtype.map e (h · |>.mp) :=
+  rfl
 
 @[simp]
 theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ a) := fun a => Iff.rfl) :
@@ -1474,27 +1480,6 @@ theorem subtypeEquivCodomain_symm_apply_ne
 
 end subtypeEquivCodomain
 
-/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
-@[simps apply]
-noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
-  toFun := f
-  invFun := Function.surjInv hf.surjective
-  left_inv := Function.leftInverse_surjInv hf
-  right_inv := Function.rightInverse_surjInv _
-#align equiv.of_bijective Equiv.ofBijective
-#align equiv.of_bijective_apply Equiv.ofBijective_apply
-
-theorem ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
-    f ((ofBijective f hf).symm x) = x :=
-  (ofBijective f hf).apply_symm_apply x
-#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
-
-@[simp]
-theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
-    (ofBijective f hf).symm (f x) = x :=
-  (ofBijective f hf).symm_apply_apply x
-#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
-
 instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
 section
@@ -1677,7 +1662,7 @@ theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (updat
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
     f ∘ Equiv.swap i j = update (update f j (f i)) i (f j) := by
-  rw [swap_eq_update, comp_update, comp_update, comp.right_id]
+  rw [swap_eq_update, comp_update, comp_update, comp_id]
 #align equiv.comp_swap_eq_update Equiv.comp_swap_eq_update
 
 @[simp]
@@ -1687,7 +1672,7 @@ theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     have : ∀ a, e.symm x = a ↔ x = e a := fun a => by
       rw [@eq_comm _ (e.symm x)]
       constructor <;> intros <;> simp_all
-    simp [trans_apply, swap_apply_def, this]
+    simp only [trans_apply, swap_apply_def, this]
     split_ifs <;> simp
 #align equiv.symm_trans_swap_trans Equiv.symm_trans_swap_trans
 
@@ -1738,7 +1723,7 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inl, comp_apply,
       swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
   · simp [Sum.map, swap_apply_of_ne_of_ne]
@@ -1751,7 +1736,7 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
 
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 #align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
@@ -1835,6 +1820,11 @@ LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For 
 we have to explicitly substitute along `e.symm (e a) = a` in the statement of this lemma. -/
 add_decl_doc Equiv.piCongrLeft'_symm_apply
 
+/-- This lemma is impractical to state in the dependent case. -/
+@[simp]
+theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :
+    (piCongrLeft' (fun _ => P) e).symm = piCongrLeft' _ e.symm := by ext; simp [piCongrLeft']
+
 /-- Note: the "obvious" statement `(piCongrLeft' P e).symm g a = g (e a)` doesn't typecheck: the
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. This lemma is a way
 around it in the case where `a` is of the form `e.symm b`, so we can use `g b` instead of
@@ -1888,13 +1878,13 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inl (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
-theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inr (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,

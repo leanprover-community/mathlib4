@@ -362,7 +362,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
     uniq := by
       rintro ⟨x⟩
       refine' congr_arg ofFinsupp _
-      simp }
+      simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
 variable (R)
@@ -673,7 +673,7 @@ theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by
   rintro ⟨p⟩ ⟨q⟩
   -- Porting note: `ofFinsupp.injEq` is required.
-  simp only [coeff, FunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
+  simp only [coeff, DFunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
 #align polynomial.coeff_injective Polynomial.coeff_injective
 
 @[simp]
@@ -757,6 +757,19 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) 0 = OfNat.ofNat a :=
+  coeff_monomial
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
+  rw [← Nat.cast_eq_ofNat]
+  simp
+
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
@@ -810,11 +823,10 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 #align polynomial.forall_eq_iff_forall_eq Polynomial.forall_eq_iff_forall_eq
 
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
-  rcases p with ⟨⟩
-  rcases q with ⟨⟩
-  -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
-  simp [coeff]
-  exact FunLike.ext_iff (F := ℕ →₀ R)
+  rcases p with ⟨f : ℕ →₀ R⟩
+  rcases q with ⟨g : ℕ →₀ R⟩
+  -- Porting note: Was `simp [coeff, DFunLike.ext_iff]`
+  simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 #align polynomial.ext_iff Polynomial.ext_iff
 
 @[ext]
@@ -843,7 +855,7 @@ theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
 @[ext high]
 theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
-  addHom_ext fun n => FunLike.congr_fun (h n)
+  addHom_ext fun n => DFunLike.congr_fun (h n)
 #align polynomial.add_hom_ext' Polynomial.addHom_ext'
 
 @[ext high]
@@ -1200,6 +1212,10 @@ theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg
 
+theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
+ rw [sub_eq_add_neg, monomial_add, monomial_neg]
+ rfl
+
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
@@ -1209,6 +1225,14 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 
 theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
+
+theorem C_neg : C (-a) = -C a :=
+  RingHom.map_neg C a
+#align polynomial.C_neg Polynomial.C_neg
+
+theorem C_sub : C (a - b) = C a - C b :=
+  RingHom.map_sub C a b
+#align polynomial.C_sub Polynomial.C_sub
 
 end Ring
 

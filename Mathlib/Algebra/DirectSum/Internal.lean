@@ -33,7 +33,7 @@ needed. In the future there will likely be a data-carrying, constructive, typecl
 When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## tags
 
@@ -317,7 +317,7 @@ end Submodule
 /-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
 def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
-  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl) fun _ => rfl
+  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)
 #align direct_sum.coe_alg_hom DirectSum.coeAlgHom
 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of

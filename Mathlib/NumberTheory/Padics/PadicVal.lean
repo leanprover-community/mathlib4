@@ -39,7 +39,7 @@ quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b`
 greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
 language of prime multiplicity.
 
-* `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits`: Legendre's Theorem.  Taking (`p - 1`) times
+* `sub_one_mul_padicValNat_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
 the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
@@ -133,7 +133,7 @@ theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h :
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  by_cases (1 < p ∧ 0 < n)
+  by_cases h : 1 < p ∧ 0 < n
   · dsimp [padicValNat]
     rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
   · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
@@ -402,9 +402,9 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
     if hr : r = 0 then by simp [hr]
     else by
       have hqn : q.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hq
-      have hqd : (q.den : ℤ) ≠ 0 := by exact_mod_cast Rat.den_nz _
+      have hqd : (q.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
       have hrn : r.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hr
-      have hrd : (r.den : ℤ) ≠ 0 := by exact_mod_cast Rat.den_nz _
+      have hrd : (r.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
       have hqreq : q + r = (q.num * r.den + q.den * r.num) /. (q.den * r.den) := Rat.add_num_den _ _
       have hqrd : q.num * r.den + q.den * r.num ≠ 0 := Rat.mk_num_ne_zero_of_ne_zero hqr hqreq
       conv_lhs => rw [← @Rat.num_den q]
@@ -506,7 +506,7 @@ variable {p a b : ℕ} [hp : Fact p.Prime]
 
 /-- A rewrite lemma for `padicValNat p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
 protected theorem mul : a ≠ 0 → b ≠ 0 → padicValNat p (a * b) = padicValNat p a + padicValNat p b :=
-  by exact_mod_cast @padicValRat.mul p _ a b
+  mod_cast @padicValRat.mul p _ a b
 #align padic_val_nat.mul padicValNat.mul
 
 protected theorem div_of_dvd (h : b ∣ a) :
@@ -607,7 +607,8 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, pow_succ] at h2
   refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
-  exact pow_succ_padicValNat_not_dvd n.succ_ne_zero ∘ dvd_of_eq
+  -- TODO(kmill): Why is this `p := 2` necessary?
+  exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
 lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
     max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
@@ -639,11 +640,11 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
   refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
-  exact (Nat.one_lt_pow _ _ k.succ_pos hp.out.one_lt).ne'
+  exact (Nat.one_lt_pow _ _ k.succ_ne_zero hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
-theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime]:
+theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
   refine' PartENat.natCast_inj.mp _
   rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
@@ -687,7 +688,7 @@ theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem sub_one_mul_padicValNat_factorial_eq_sub_sum_digits [hp : Fact p.Prime] (n : ℕ):
+theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
@@ -725,9 +726,9 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact
   simp only [Nat.choose_eq_factorial_div_factorial h]
   rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
-  simp only [sub_one_mul_padicValNat_factorial_eq_sub_sum_digits]
+  simp only [sub_one_mul_padicValNat_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
-      digit_sum_le p n, Nat.sub_sub (k + n),  ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
+      digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
       (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
 

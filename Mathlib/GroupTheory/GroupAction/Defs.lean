@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 
@@ -458,24 +458,6 @@ theorem Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α �
 
 end
 
-section ite
-
-variable [SMul M α] (p : Prop) [Decidable p]
-
-@[to_additive]
-theorem ite_smul (a₁ a₂ : M) (b : α) : ite p a₁ a₂ • b = ite p (a₁ • b) (a₂ • b) := by
-  split_ifs <;> rfl
-#align ite_smul ite_smul
-#align ite_vadd ite_vadd
-
-@[to_additive]
-theorem smul_ite (a : M) (b₁ b₂ : α) : a • ite p b₁ b₂ = ite p (a • b₁) (a • b₂) := by
-  split_ifs <;> rfl
-#align smul_ite smul_ite
-#align vadd_ite vadd_ite
-
-end ite
-
 section
 
 variable [Monoid M] [MulAction M α]
@@ -496,14 +478,13 @@ theorem one_smul (b : α) : (1 : M) • b = b :=
 
 /-- `SMul` version of `one_mul_eq_id` -/
 @[to_additive "`VAdd` version of `zero_add_eq_id`"]
-theorem one_smul_eq_id : ((· • ·) (1 : M) : α → α) = id :=
-  funext <| one_smul _
+theorem one_smul_eq_id : (((1 : M) • ·) : α → α) = id := funext <| one_smul _
 #align one_smul_eq_id one_smul_eq_id
 #align zero_vadd_eq_id zero_vadd_eq_id
 
 /-- `SMul` version of `comp_mul_left` -/
 @[to_additive "`VAdd` version of `comp_add_left`"]
-theorem comp_smul_left (a₁ a₂ : M) : (· • ·) a₁ ∘ (· • ·) a₂ = ((· • ·) (a₁ * a₂) : α → α) :=
+theorem comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁ * a₂) • ·) : α → α) :=
   funext fun _ => (mul_smul _ _ _).symm
 #align comp_smul_left comp_smul_left
 #align comp_vadd_left comp_vadd_left
@@ -595,6 +576,16 @@ theorem smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SMu
 #align smul_mul_smul smul_mul_smul
 #align vadd_add_vadd vadd_add_vadd
 
+section Monoid
+variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
+
+lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul, ← pow_succ', ← pow_succ']
+#align smul_pow smul_pow
+
+end Monoid
+
 end
 
 namespace MulAction
@@ -662,6 +653,19 @@ theorem isPretransitive_compHom
   obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
   exact ⟨e, rfl⟩
 
+@[to_additive]
+theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
+    [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
+    IsPretransitive N α :=
+  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩⟩
+
+@[to_additive]
+theorem IsPretransitive.of_compHom
+    {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
+    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] :
+    IsPretransitive N α :=
+  letI := compHom α f; h.of_smul_eq f rfl
+
 end MulAction
 
 end
@@ -674,6 +678,12 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 #align vadd_zero_vadd vadd_zero_vadd
+
+@[to_additive]
+theorem MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] :
+    IsPretransitive N α :=
+  of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 @[to_additive (attr := simp)]
 theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
@@ -706,15 +716,26 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 @[to_additive (attr := simps)
     "If the additive action of `M` on `N` is compatible with addition on `N`, then
     `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
-def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
+def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
   map_one' := one_smul _ _
   map_mul' x y := by rw [smul_one_mul, smul_smul]
-#align smul_one_hom smulOneHom
-#align vadd_zero_hom vaddZeroHom
-#align smul_one_hom_apply smulOneHom_apply
-#align vadd_zero_hom_apply vaddZeroHom_apply
+#align smul_one_hom MonoidHom.smulOneHom
+#align vadd_zero_hom AddMonoidHom.vaddZeroHom
+#align smul_one_hom_apply MonoidHom.smulOneHom_apply
+#align vadd_zero_hom_apply AddMonoidHom.vaddZeroHom_apply
+
+/-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
+multiplicative action of M on N that is compatible with the multiplication on N. -/
+@[to_additive "A monoid homomorphism between two additive monoids M and N can be equivalently
+  specified by an additive action of M on N that is compatible with the addition on N."]
+def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
+    (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
+  toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
+  left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
 
 end CompatibleScalar
 
@@ -732,6 +753,9 @@ variable [Zero A] [SMulZeroClass M A]
 theorem smul_zero (a : M) : a • (0 : A) = 0 :=
   SMulZeroClass.smul_zero _
 #align smul_zero smul_zero
+
+lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
+    (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
@@ -781,7 +805,7 @@ def SMulZeroClass.compFun (f : N → M) :
 @[simps]
 def SMulZeroClass.toZeroHom (x : M) :
     ZeroHom A A where
-  toFun := (· • ·) x
+  toFun := (x • ·)
   map_zero' := smul_zero x
 #align smul_zero_class.to_zero_hom SMulZeroClass.toZeroHom
 #align smul_zero_class.to_zero_hom_apply SMulZeroClass.toZeroHom_apply
@@ -1053,7 +1077,7 @@ def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction 
 /-- Scalar multiplication by `r` as a `MonoidHom`. -/
 def MulDistribMulAction.toMonoidHom (r : M) :
     A →* A where
-  toFun := (· • ·) r
+  toFun := (r • ·)
   map_one' := smul_one r
   map_mul' := smul_mul' r
 #align mul_distrib_mul_action.to_monoid_hom MulDistribMulAction.toMonoidHom
@@ -1065,6 +1089,10 @@ theorem MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
     MulDistribMulAction.toMonoidHom A r x = r • x :=
   rfl
 #align mul_distrib_mul_action.to_monoid_hom_apply MulDistribMulAction.toMonoidHom_apply
+
+@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+  (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
+#align smul_pow' smul_pow'
 
 variable (M A)
 
@@ -1121,12 +1149,13 @@ variable {α}
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`
 * `AddMonoid.End.applyDistribMulAction`
+* `AddMonoid.End.applyModule`
 * `AddAut.applyDistribMulAction`
 * `MulAut.applyMulDistribMulAction`
-* `RingHom.applyDistribMulAction`
 * `LinearEquiv.applyDistribMulAction`
 * `LinearMap.applyModule`
 * `RingHom.applyMulSemiringAction`
+* `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
 -/
 instance Function.End.applyMulAction :

@@ -63,7 +63,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
   (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
-  simp [Iterator.hasNext_cons_addChar, *]
+  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
   · rename_i h₂ h₁ heq ih
     simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
     repeat rw [Pos.addChar_right_comm _ c]
@@ -75,13 +75,13 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
   | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
     induction s₁ generalizing s₂ <;> cases s₂
-    · simp
+    · decide
     · rename_i c₂ cs₂; apply iff_of_true
-      · rw [ltb]; simp; apply ne_false_of_eq_true; apply decide_eq_true
+      · rw [ltb]; simp only [Iterator.hasNext, Iterator.curr]
         simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
-      · rw [ltb]; simp
+      · rw [ltb]; simp [Iterator.hasNext, Iterator.curr]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
       simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
@@ -133,9 +133,9 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
-    cases s
-    · simp only at h
-    · rename_i c cs
+    cases s with
+    | nil => simp only [ne_eq, not_true_eq_false] at h
+    | cons c cs =>
       simp only [toList, List.cons.injEq]
       constructor <;> [rfl; simp [drop_eq]]
 #align string.to_list_nonempty String.toList_nonempty
@@ -162,9 +162,10 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
+    simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
+      List.LT', toList]
     split_ifs <;>
-    simp [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at * <;>
     contradiction
 
 end String

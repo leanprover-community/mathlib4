@@ -17,8 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in
-  `Mathlib/Analysis/Calculus/Inverse.lean`)
+* taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
 
@@ -50,7 +49,7 @@ variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
 
-section ClmCompApply
+section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
@@ -158,7 +157,7 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
   (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).fderiv
 #align fderiv_clm_apply fderiv_clm_apply
 
-end ClmCompApply
+end CLMCompApply
 
 section SMul
 

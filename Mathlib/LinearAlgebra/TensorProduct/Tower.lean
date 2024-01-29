@@ -45,6 +45,8 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
+suppress_compilation
+
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -301,12 +303,18 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
-    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+    (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
-variable {R M}
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
 
+variable {R M} in
 @[simp]
 theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
+
+variable {M} in
+@[simp]
+theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
 end Semiring
 
@@ -333,7 +341,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
+`B`-linear equivalence between `(M ⊗[A] P) ⊗[R] Q` and `M ⊗[A] (P ⊗[R] Q)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
@@ -395,9 +403,9 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
     -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
     -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => Eq.refl <|
+    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
       (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => Eq.refl <|
+    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
       (m ⊗ₜ[A] p) ⊗ₜ[R] q)
 
 variable {M N P Q}
@@ -442,3 +450,54 @@ end CommSemiring
 end AlgebraTensorModule
 
 end TensorProduct
+
+namespace Submodule
+
+open TensorProduct
+
+variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+/-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
+an `A`-submodule of `A ⊗ M`.
+
+This "base change" operation is also known as "extension of scalars". -/
+def baseChange : Submodule A (A ⊗[R] M) :=
+  span A <| p.map (TensorProduct.mk R A M 1)
+
+@[simp]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange]
+
+@[simp]
+lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
+  rw [baseChange, map_top, eq_top_iff']
+  intro x
+  refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  refine smul_mem _ _ (subset_span ?_)
+  simp
+
+variable {A p} in
+lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.baseChange A := by
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  exact smul_mem (baseChange A p) a (subset_span ⟨m, hm, rfl⟩)
+
+@[simp]
+lemma baseChange_span (s : Set M) :
+    (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
+  simp only [baseChange, map_coe]
+  refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
+  rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
+  apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s)) hm
+  · intro m hm
+    exact subset_span ⟨m, hm, rfl⟩
+  · simp
+  · intro m₁ m₂ hm₁ hm₂
+    rw [tmul_add]
+    exact Submodule.add_mem _ hm₁ hm₂
+  · intro r m' hm'
+    rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
+    exact smul_mem _ (r • 1) hm'
+
+end Submodule

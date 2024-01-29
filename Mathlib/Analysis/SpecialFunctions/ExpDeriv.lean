@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.RealDeriv
+import Mathlib.Analysis.Calculus.ContDiff.IsROrC
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 #align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
@@ -23,6 +25,8 @@ noncomputable section
 open Filter Asymptotics Set Function
 
 open scoped Classical Topology
+
+/-! ## `Complex.exp` -/
 
 namespace Complex
 
@@ -173,6 +177,15 @@ theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
 
 end
 
+open Complex in
+@[simp]
+theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
+    (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+
+
+/-! ## `Real.exp` -/
+
 namespace Real
 
 variable {x y z : ℝ}
@@ -318,3 +331,9 @@ theorem fderiv_exp (hc : DifferentiableAt ℝ f x) :
 #align fderiv_exp fderiv_exp
 
 end
+
+open Real in
+@[simp]
+theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
+    (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]

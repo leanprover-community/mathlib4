@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Algebra.Order.Invertible
 
 /-!
 # `norm_num` extension for equalities
@@ -33,7 +32,7 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) = Int.mul nb (.ofNat da)) = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    rw [Rat.invOf_denom_swap]; exact_mod_cast of_decide_eq_false h
+    rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/

@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 #align_import measure_theory.measure.finite_measure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -29,7 +30,7 @@ The main definitions are
    topology of weak convergence.
  * `MeasureTheory.FiniteMeasure.map`: The push-forward `f* μ` of a finite measure `μ` on `Ω`
    along a measurable function `f : Ω → Ω'`.
- * `MeasureTheory.FiniteMeasure.mapClm`: The push-forward along a given continuous `f : Ω → Ω'`
+ * `MeasureTheory.FiniteMeasure.mapCLM`: The push-forward along a given continuous `f : Ω → Ω'`
    as a continuous linear map `f* : FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω'`.
 
 ## Main results
@@ -45,6 +46,9 @@ The main definitions are
    `MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto`.
  * `MeasureTheory.FiniteMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
    push-forward of finite measures `f* : FiniteMeasure Ω → FiniteMeasure Ω'` is continuous.
+ * `MeasureTheory.FiniteMeasure.t2Space`: The topology of weak convergence of finite Borel measures
+   is Hausdorff on spaces where indicators of closed sets have continuous decreasing approximating
+   sequences (in particular on any pseudo-metrizable spaces).
 
 ## Implementation notes
 
@@ -244,7 +248,8 @@ theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set
 @[simp, norm_cast]
 theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥0) = (⇑μ + ⇑ν : Set Ω → ℝ≥0) := by
   funext
-  simp [← ENNReal.coe_eq_coe]
+  simp only [Pi.add_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
+    ENNReal.coe_add]
   norm_cast
 #align measure_theory.finite_measure.coe_fn_add MeasureTheory.FiniteMeasure.coeFn_add
 
@@ -252,7 +257,8 @@ theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥
 theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext
-  simp [← ENNReal.coe_eq_coe, ENNReal.coe_smul]
+  simp only [Pi.smul_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
+    ENNReal.coe_smul]
   norm_cast
 #align measure_theory.finite_measure.coe_fn_smul MeasureTheory.FiniteMeasure.coeFn_smul
 
@@ -313,6 +319,15 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 
 variable [TopologicalSpace Ω]
 
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_lintegral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
+    {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
+    μ = ν := by
+  apply Subtype.ext
+  change (μ : Measure Ω) = (ν : Measure Ω)
+  exact ext_of_forall_lintegral_eq_of_IsFiniteMeasure h
+
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.
 This is `MeasureTheory.FiniteMeasure.testAgainstNN`. -/
@@ -334,7 +349,8 @@ theorem testAgainstNN_const (μ : FiniteMeasure Ω) (c : ℝ≥0) :
 theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_le_g : (f : Ω → ℝ≥0) ≤ g) :
     μ.testAgainstNN f ≤ μ.testAgainstNN g := by
   simp only [← ENNReal.coe_le_coe, testAgainstNN_coe_eq]
-  exact lintegral_mono fun ω => ENNReal.coe_mono (f_le_g ω)
+  gcongr
+  apply f_le_g
 #align measure_theory.finite_measure.test_against_nn_mono MeasureTheory.FiniteMeasure.testAgainstNN_mono
 
 @[simp]
@@ -364,6 +380,8 @@ theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω �
   simp only [testAgainstNN, toMeasure_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
     lintegral_smul_measure]
 #align measure_theory.finite_measure.smul_test_against_nn_apply MeasureTheory.FiniteMeasure.smul_testAgainstNN_apply
+
+section weak_convergence
 
 variable [OpensMeasurableSpace Ω]
 
@@ -537,6 +555,42 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
     ENNReal.toNNReal_coe]
 #align measure_theory.finite_measure.tendsto_iff_forall_lintegral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
 
+end weak_convergence -- section
+
+section Hausdorff
+
+variable [HasOuterApproxClosed Ω] [BorelSpace Ω]
+
+open Function
+
+/-- The mapping `toWeakDualBCNN` from finite Borel measures to the weak dual of `Ω →ᵇ ℝ≥0` is
+injective, if in the underlying space `Ω`, indicator functions of closed sets have decreasing
+approximations by sequences of continuous functions (in particular if `Ω` is pseudometrizable). -/
+lemma injective_toWeakDualBCNN :
+    Injective (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) := by
+  intro μ ν hμν
+  apply ext_of_forall_lintegral_eq
+  intro f
+  have key := congr_fun (congrArg DFunLike.coe hμν) f
+  apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
+  · exact (lintegral_lt_top_of_nnreal μ f).ne
+  · exact (lintegral_lt_top_of_nnreal ν f).ne
+
+variable (Ω)
+
+lemma embedding_toWeakDualBCNN :
+    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+  induced := rfl
+  inj := injective_toWeakDualBCNN
+
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
+measures is Hausdorff (`T2Space`). -/
+instance t2Space : T2Space (FiniteMeasure Ω) :=
+  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+
+end Hausdorff -- section
+
 end FiniteMeasure
 
 -- section
@@ -551,34 +605,12 @@ This section is about bounded convergence theorems for finite measures.
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 /-- A bounded convergence theorem for a finite measure:
-If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
-limit, then their integrals against the finite measure tend to the integral of the limit.
-This formulation assumes:
- * the functions tend to a limit along a countably generated filter;
- * the limit is in the almost everywhere sense;
- * boundedness holds almost everywhere;
- * integration is `MeasureTheory.lintegral`, i.e., the functions and their integrals are
-   `ℝ≥0∞`-valued.
--/
-theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated]
-    (μ : Measure Ω) [IsFiniteMeasure μ] {fs : ι → Ω →ᵇ ℝ≥0} {c : ℝ≥0}
-    (fs_le_const : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c) {f : Ω → ℝ≥0}
-    (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i => fs i ω) L (𝓝 (f ω))) :
-    Tendsto (fun i => ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
-  refine tendsto_lintegral_filter_of_dominated_convergence (fun _ => c)
-    (eventually_of_forall fun i => (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
-    (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
-  · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
-  · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
-#align measure_theory.finite_measure.tendsto_lintegral_nn_filter_of_le_const MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_filter_of_le_const
-
-/-- A bounded convergence theorem for a finite measure:
 If a sequence of bounded continuous non-negative functions are uniformly bounded by a constant
 and tend pointwise to a limit, then their integrals (`MeasureTheory.lintegral`) against the finite
 measure tend to the integral of the limit.
 
 A related result with more general assumptions is
-`MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_filter_of_le_const`.
+`MeasureTheory.tendsto_lintegral_nn_filter_of_le_const`.
 -/
 theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → Ω →ᵇ ℝ≥0} {c : ℝ≥0}
     (fs_le_const : ∀ n ω, fs n ω ≤ c) {f : Ω → ℝ≥0}
@@ -701,7 +733,7 @@ end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
 section map
 
-variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
 noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
@@ -711,6 +743,9 @@ noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure �
     · rw [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ]
       exact measure_lt_top (↑ν) (f ⁻¹' univ)
     · simp [Measure.map, f_aemble]⟩
+
+@[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
 
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.FiniteMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
@@ -725,27 +760,27 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
   have := ν.map_apply' f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
 
-@[simp] lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     ν.map f A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
-@[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω)  :
+@[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
-  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
+  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
 
-@[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω)  :
+@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
-  ext s s_mble
-  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
+  ext s _
+  simp [toMeasure_smul]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
-  map_smul' := map_smul f_mble
+  map_smul' := map_smul
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
@@ -774,11 +809,11 @@ lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
 
 /-- The push-forward of a finite measure by a continuous function between Borel spaces as
 a continuous linear map. -/
-noncomputable def mapClm {f : Ω → Ω'} (f_cont : Continuous f) :
+noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
-  map_smul' := map_smul f_cont.measurable
+  map_smul' := map_smul
   cont := continuous_map f_cont
 
 end map -- section

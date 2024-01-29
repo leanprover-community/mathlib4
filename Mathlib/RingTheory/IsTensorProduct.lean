@@ -38,7 +38,7 @@ open TensorProduct
 
 section IsTensorProduct
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 variable {M₁ M₂ M M' : Type*}
 
@@ -140,9 +140,9 @@ section IsBaseChange
 
 variable {R : Type*} {M : Type v₁} {N : Type v₂} (S : Type v₃)
 
-variable [AddCommMonoid M] [AddCommMonoid N] [CommRing R]
+variable [AddCommMonoid M] [AddCommMonoid N] [CommSemiring R]
 
-variable [CommRing S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
+variable [CommSemiring S] [Algebra R S] [Module R M] [Module R N] [Module S N] [IsScalarTower R S N]
 
 variable (f : M →ₗ[R] N)
 
@@ -179,9 +179,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       · rw [smul_zero, map_zero, smul_zero]
       · intro s m
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
-        rw [← mul_smul, hF, hF]
-        rw [mul_smul] -- Porting note: this line does nothing
-        apply mul_smul
+        rw [← mul_smul, hF, hF, mul_smul]
       · intro x₁ x₂ e₁ e₂
         rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 #align is_base_change.lift IsBaseChange.lift
@@ -279,7 +277,7 @@ theorem IsBaseChange.of_lift_unique
           TensorProduct.induction_on x _ (fun s' y => smul_assoc s s' _) fun x y hx hy => _ }
     · dsimp; rw [map_zero, smul_zero, map_zero, smul_zero]
     · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
-  simp_rw [FunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
+  simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
     LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
@@ -327,7 +325,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   simp
 #align is_base_change.of_equiv IsBaseChange.ofEquiv
 
-variable {T O : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T O : Type*} [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 variable [AddCommMonoid O] [Module R O] [Module S O] [Module T O] [IsScalarTower S T O]
 
@@ -358,7 +356,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   rfl
 #align is_base_change.comp IsBaseChange.comp
 
-variable {R' S' : Type*} [CommRing R'] [CommRing S']
+variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 
@@ -393,7 +391,10 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp only [smul_zero, map_zero]
     · intro x y
-      simp [smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra, h.1.equiv_tmul]
+      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
+        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
+        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, _root_.map_mul,
+        IsScalarTower.coe_toAlgHom']
       ring
     · intro x y hx hy
       rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
@@ -428,9 +429,9 @@ instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [Com
 #align tensor_product.is_pushout' TensorProduct.isPushout'
 
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
-such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomoprhism `S' → A`.
+such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.
 -/
---@[simps (config := { isSimp := false }) apply] --Porting note: removed and added by hand
+--@[simps (config := .lemmasOnly) apply] --Porting note: removed and added by hand
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A := by

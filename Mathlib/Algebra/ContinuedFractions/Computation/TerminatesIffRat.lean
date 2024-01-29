@@ -175,16 +175,16 @@ theorem coe_of_rat_eq : ((IntFractPair.of q).mapFr (↑) : IntFractPair K) = Int
 theorem coe_stream_nth_rat_eq :
     ((IntFractPair.stream q n).map (mapFr (↑)) : Option <| IntFractPair K) =
       IntFractPair.stream v n := by
-  induction' n with n IH
-  case zero =>
+  induction n with
+  | zero =>
     -- Porting note: was
     -- simp [IntFractPair.stream, coe_of_rat_eq v_eq_q]
     simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
-  case succ =>
+  | succ n IH =>
     rw [v_eq_q] at IH
-    cases' stream_q_nth_eq : IntFractPair.stream q n with ifp_n
-    case none => simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq]
-    case some =>
+    cases stream_q_nth_eq : IntFractPair.stream q n with
+    | none => simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq]
+    | some ifp_n =>
       cases' ifp_n with b fr
       cases' Decidable.em (fr = 0) with fr_zero fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
@@ -218,7 +218,7 @@ theorem coe_of_s_get?_rat_eq :
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
-    simp [Stream'.map, Stream'.nth, succ_nth_stream_eq]
+    simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 #align generalized_continued_fraction.coe_of_s_nth_rat_eq GeneralizedContinuedFraction.coe_of_s_get?_rat_eq
 
 theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
@@ -296,12 +296,12 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
 theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
     ∀ {ifp_n : IntFractPair ℚ},
       IntFractPair.stream q n = some ifp_n → ifp_n.fr.num ≤ (IntFractPair.of q).fr.num - n := by
-  induction' n with n IH
-  case zero =>
+  induction n with
+  | zero =>
     intro ifp_zero stream_zero_eq
     have : IntFractPair.of q = ifp_zero := by injection stream_zero_eq
     simp [le_refl, this.symm]
-  case succ =>
+  | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
       rw [Int.ofNat_succ, sub_add_eq_sub_sub]

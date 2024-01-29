@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Order.Hom.Basic
 
 #align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
@@ -19,8 +20,6 @@ This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers tha
 It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
@@ -141,7 +140,7 @@ instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
   Positive.contravariantClass_add_lt
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
   invFun := Nat.succPNat
@@ -152,7 +151,7 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
 #align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -272,7 +271,7 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 end deprecated
 
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 

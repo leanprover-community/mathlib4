@@ -124,6 +124,14 @@ example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt
   guard_target = r.lt a b ∧ ¬ s.lt a b
   exact test_sorry
 
+-- check that `push_neg` does not expand `let` definitions
+example (h : p ∧ q) : ¬¬(p ∧ q) := by
+  let r := p ∧ q
+  change ¬¬r
+  push_neg
+  guard_target =ₛ r
+  exact h
+
 section use_distrib
 set_option push_neg.use_distrib true
 
@@ -147,3 +155,40 @@ end use_distrib
 example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
   push_neg at h
   exact h
+
+example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+namespace no_proj
+
+structure G (V : Type) where
+  Adj : V → V → Prop
+
+def g : G Nat where
+  Adj a b := (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a))
+
+example {p q : Nat} : ¬ g.Adj p q := by
+  rw [g]
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  push_neg
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  dsimp only
+  guard_target =ₛ ¬ ((p ≠ q) ∧ ((p ∣ q) ∨ (q ∣ p)))
+  push_neg
+  guard_target =ₛ p ≠ q → ¬p ∣ q ∧ ¬q ∣ p
+  exact test_sorry
+
+end no_proj

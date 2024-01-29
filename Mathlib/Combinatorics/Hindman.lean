@@ -82,8 +82,8 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 @[to_additive]
 theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
     Continuous (· * V) :=
-  TopologicalSpace.IsTopologicalBasis.continuous ultrafilterBasis_is_basis _ <|
-    Set.forall_range_iff.mpr fun s => ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
+  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_range_iff.mpr fun s ↦
+    ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
 #align ultrafilter.continuous_mul_left Ultrafilter.continuous_mul_left
 #align ultrafilter.continuous_add_left Ultrafilter.continuous_add_left
 
@@ -252,7 +252,7 @@ set_option linter.uppercaseLean3 false in
 #align hindman.FS_iter_tail_sub_FS Hindman.FS_iter_tail_sub_FS
 
 @[to_additive]
-theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.nth i ∈ FP a := by
+theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get i ∈ FP a := by
   induction' i with i ih generalizing a
   · apply FP.head
   · apply FP.tail
@@ -264,7 +264,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
-    a.nth i * a.nth j ∈ FP a := by
+    a.get i * a.get j ∈ FP a := by
   refine' FP_drop_subset_FP _ i _
   rw [← Stream'.head_drop]
   apply FP.cons
@@ -272,7 +272,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
-  rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
+  rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
   convert this
   rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
 set_option linter.uppercaseLean3 false in
@@ -282,11 +282,11 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.prod fun i => a.nth i) ∈ FP a := by
+    (s.prod fun i => a.get i) ∈ FP a := by
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
-  cases' (s.erase (s.min' hs)).eq_empty_or_nonempty with h h
+  rcases (s.erase (s.min' hs)).eq_empty_or_nonempty with h | h
   · rw [h, Finset.prod_empty, mul_one]
     exact FP.head _
   · apply FP.cons

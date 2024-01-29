@@ -3,13 +3,10 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Ring.Defs
-import Mathlib.Algebra.Hom.Units
-import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Order.Basic
 
@@ -19,8 +16,7 @@ import Mathlib.Data.Nat.Order.Basic
 # Power operations on monoids with zero, semirings, and rings
 
 This file provides additional lemmas about the natural power operator on rings and semirings.
-Further lemmas about ordered semirings and rings can be found in `Algebra.GroupPower.Lemmas`.
-
+Further lemmas about ordered semirings and rings can be found in `Algebra.GroupPower.Order`.
 -/
 
 variable {R S M : Type*}
@@ -66,6 +62,7 @@ theorem pow_eq_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ 
   exact zero_pow hn
 #align pow_eq_zero_iff pow_eq_zero_iff
 
+@[simp]
 theorem pow_eq_zero_iff' [NoZeroDivisors M] [Nontrivial M] {a : M} {n : ℕ} :
     a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by cases (zero_le n).eq_or_gt <;> simp [*, ne_of_gt]
 #align pow_eq_zero_iff' pow_eq_zero_iff'
@@ -231,6 +228,16 @@ alias neg_one_pow_two := neg_one_sq
 
 end HasDistribNeg
 
+section DivisionMonoid
+variable [DivisionMonoid R] [HasDistribNeg R]
+
+set_option linter.deprecated false in
+@[simp] lemma zpow_bit0_neg (a : R) (n : ℤ) : (-a) ^ bit0 n = a ^ bit0 n := by
+  rw [zpow_bit0', zpow_bit0', neg_mul_neg]
+#align zpow_bit0_neg zpow_bit0_neg
+
+end DivisionMonoid
+
 section Ring
 
 variable [Ring R] {a b : R}
@@ -264,6 +271,10 @@ theorem sq_eq_one_iff : a ^ 2 = 1 ↔ a = 1 ∨ a = -1 := by
 theorem sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 :=
   sq_eq_one_iff.not.trans not_or
 #align sq_ne_one_iff sq_ne_one_iff
+
+lemma neg_one_pow_eq_pow_mod_two (n : ℕ) : (-1 : R) ^ n = (-1) ^ (n % 2) := by
+  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
+#align neg_one_pow_eq_pow_mod_two neg_one_pow_eq_pow_mod_two
 
 end Ring
 

@@ -580,7 +580,7 @@ def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
   induction' x using Quotient.inductionOn' with f
-  exact Quotient.sound ⟨MonoOver.mapId.app f⟩
+  exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 #align category_theory.subobject.map_id CategoryTheory.Subobject.map_id
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :

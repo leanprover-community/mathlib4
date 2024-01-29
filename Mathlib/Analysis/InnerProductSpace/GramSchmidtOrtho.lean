@@ -93,7 +93,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   clear h₀ a b
   intro a b h₀
   revert a
-  apply WellFounded.induction (@IsWellFounded.wf ι (· < ·) _) b
+  apply wellFounded_lt.induction b
   intro b ih a h₀
   simp only [gramSchmidt_def 𝕜 f b, inner_sub_right, inner_sum, orthogonalProjection_singleton,
     inner_smul_right]
@@ -186,7 +186,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
   · congr
     apply Finset.sum_eq_zero
     intro j hj
-    rw [coe_eq_zero]
+    rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left]
@@ -215,11 +215,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
   have h₂ : (f ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]
-    convert h₁ using 3
-    ext i
-    apply Iff.intro <;> simp -- Porting note: was `simpa using @le_of_lt _ _ i n`
-    · intros; simp_all only
-    · intros q; use i; exact ⟨q, le_of_lt q, rfl⟩
+    simpa using h₁
   apply LinearIndependent.not_mem_span_image h₀ _ h₂
   simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 #align gram_schmidt_ne_zero_coe gramSchmidt_ne_zero_coe
@@ -323,7 +319,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
   by_cases h : gramSchmidt 𝕜 f i = 0
   · simp [h]
   · refine' mem_span_singleton.2 ⟨‖gramSchmidt 𝕜 f i‖, smul_inv_smul₀ _ _⟩
-    exact_mod_cast norm_ne_zero_iff.2 h
+    exact mod_cast norm_ne_zero_iff.2 h
 #align span_gram_schmidt_normed span_gramSchmidtNormed
 
 theorem span_gramSchmidtNormed_range (f : ι → E) :

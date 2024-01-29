@@ -3,14 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProductBasis
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -193,7 +186,7 @@ theorem trace_eq_contract' :
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
   cases subsingleton_or_nontrivial R
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   have b := Module.Free.chooseBasis R M
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp
@@ -299,8 +292,19 @@ lemma trace_comp_cycle' (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R]
 
 @[simp]
 theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj f) = trace R M f := by
-  rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
-    LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
+  classical
+  by_cases hM : ∃ s : Finset M, Nonempty (Basis s R M)
+  · obtain ⟨s, ⟨b⟩⟩ := hM
+    haveI := Module.Finite.of_basis b
+    haveI := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
+    haveI := Module.Finite.of_basis (b.map e)
+    haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
+    rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
+      LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
+  · rw [trace, trace, dif_neg hM, dif_neg]; rfl
+    rintro ⟨s, ⟨b⟩⟩
+    exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
+      ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
 #align linear_map.trace_conj' LinearMap.trace_conj'
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
@@ -315,6 +319,27 @@ lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) 
   rw [trace_eq_matrix_trace R b]
   apply Matrix.isNilpotent_trace_of_isNilpotent
   simpa
+
+lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.End R M}
+    (μ : R) (h_comm : Commute f g) (hg : IsNilpotent (g - algebraMap R _ μ)) :
+    trace R M (f ∘ₗ g) = μ * trace R M f := by
+  set n := g - algebraMap R _ μ
+  replace hg : trace R M (f ∘ₗ n) = 0 := by
+    rw [← isNilpotent_iff_eq_zero, ← mul_eq_comp]
+    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
+    exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
+  have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
+  have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
+  rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
+
+@[simp]
+lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
+    (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
+    trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
+  let b := Module.Free.chooseBasis R M
+  let b' := Algebra.TensorProduct.basis A b
+  change _ = (algebraMap R A : R →+ A) _
+  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
 
 end
 
