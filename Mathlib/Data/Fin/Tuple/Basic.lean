@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.Zify
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -446,17 +444,13 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
+theorem repeat_rev {α : Type*} (a : Fin n → α) (k : Fin (m * n)) :
+    Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=
+  congr_arg a k.modNat_rev
+
 theorem repeat_comp_rev {α} (a : Fin n → α) :
-    (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) := by
-  ext ⟨j, h₁⟩
-  simp only [comp_apply, rev, repeat_apply, modNat]
-  congr
-  have h₂ : j % n + 1 ≤ n :=
-    Nat.mod_lt j (Nat.pos_of_ne_zero (Nat.ne_zero_of_mul_ne_zero_right (Nat.not_eq_zero_of_lt h₁)))
-  have h₁ : j + 1 ≤ m * n := h₁
-  rw [← Nat.mod_eq_of_lt (Nat.sub_lt_self (Nat.succ_pos (j % n)) h₂)]
-  zify [h₁, h₂]
-  simp [Int.sub_emod, Int.emod_self]
+    Fin.repeat m a ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) :=
+  funext <| repeat_rev a
 
 end Repeat
 
