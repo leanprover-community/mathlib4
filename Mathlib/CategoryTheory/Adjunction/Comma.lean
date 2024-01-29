@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.adjunction.comma from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
