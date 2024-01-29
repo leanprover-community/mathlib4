@@ -14,8 +14,8 @@ TODO
 
 -/
 
+/-- Typically `P` is `R^m` and `V` is `R^n` -/
 structure LinearProgram (R : Type*) (P : Type*) (V : Type*)
-    -- Typically `P` is `R^m` and `V` is `R^n`
     [Ring R] [AddCommGroup P] [Module R P] [AddCommGroup V] [Module R V] where
   /-- Linear map -/
   φ : P →ₗ[R] V
