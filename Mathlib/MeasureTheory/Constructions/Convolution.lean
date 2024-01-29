@@ -34,28 +34,6 @@ a measurable space. TODO: should get a to_additive version for AddMonoids -/
 def conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (Measure.prod μ ν)
 
-
-/-- We hope to show that something like this definition ends up being the same, some calculations
-may be easier here. I'm not able to resolve the sorry's at this point.
-def conv_int {M : Type*} [TopologicalSpace M] [Group M] [TopologicalGroup M]
-    [MeasurableSpace M] [BorelSpace M] (μ ν : Measure M) : Measure M := by
-  apply Measure.ofMeasurable (fun s hs ↦ ∫⁻ x, ∫⁻ y, s.indicator (fun _ ↦ 1) (x*y) ∂μ ∂ν)
-  · rw [Set.indicator_empty]
-    simp
-  · intro f hf hfdis
-    rw [← MeasureTheory.lintegral_tsum]
-    · congr
-      ext x
-      rw [← MeasureTheory.lintegral_tsum]
-      · congr
-        ext y
-        sorry
-      · sorry
-    · intro i
-      refine Measurable.aemeasurable ?mU.h
-      sorry
---
-
 -- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 theorem one_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : (Measure.dirac 1).conv μ = μ := by
@@ -114,9 +92,16 @@ theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [Measura
   · simp [Function.comp_def, mul_comm]
   all_goals { measurability }
 
-theorem finite_of_finite_conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
+theorem finite_of_finite_convolution {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
     (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ.conv ν) := by
 have h : (μ.conv ν) Set.univ < ⊤ := by
   unfold conv
   exact IsFiniteMeasure.measure_univ_lt_top
 exact { measure_univ_lt_top := h}
+
+lemma convolution_eq_lintegral {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+    [MeasurableSpace G] [BorelSpace G] (μ ν : Measure G) [SFinite μ] [SFinite ν]
+    (B : Set G) (hB : MeasurableSet B): (μ.conv ν) B
+    = ∫⁻ x, ∫⁻ y, B.indicator (fun _ ↦ 1) (x*y) ∂μ ∂ν := by
+  rw [conv]
+  sorry
