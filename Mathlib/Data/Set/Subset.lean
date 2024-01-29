@@ -15,7 +15,7 @@ This file defines the function `setRestrict` that converts sets in a type, to se
 lemmas for convenience.
 
 More precisely, given `α : Type` and `A : Set α`, `setRestrict A : Set α → Set A` takes
-some `B : Set α` and produces some `Set ↑A` whose elements are `{ x : ↑A | ↑x ∈ B}`.
+some `B : Set α` and produces some `Set ↑A` whose elements are `{ x : ↑A | ↑x ∈ B }`.
 
 It also defines the notation `A ↓∩ B` for `setRestrict A B`.
 
@@ -59,10 +59,10 @@ def setRestrict (A B : Set α) : Set ↑A := (↑) ⁻¹' B
 /--
 `A ↓∩ B` denotes `restrict A B`.
 -/
-infixl:67 " ↓∩ "  => setRestrict
+infixl:67 " ↓∩ " => setRestrict
 
 @[simp]
-lemma mem_setRestrict_iff (x : A) : x ∈  (A ↓∩ B) ↔ ↑x ∈ B := by rfl
+lemma mem_setRestrict_iff (x : A) : x ∈ (A ↓∩ B) ↔ ↑x ∈ B := by rfl
 
 @[simp]
 lemma setRestrict_empty : A ↓∩ (∅ : Set α) = (∅ : Set A) := rfl
@@ -90,24 +90,23 @@ lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   simp only [mem_setRestrict_iff, mem_univ, iff_true]
   exact h x.2
 
-lemma restrict_subsetRestrict_iff : A ∩ B ⊆ A ∩ C ↔ A ↓∩ B ⊆ A ↓∩ C := by
+lemma restrict_subsetRestrict_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
-  · rintro h ⟨x,hxA⟩ hx
-    specialize h ?_
-    · exact x
-    · exact ⟨hxA,hx⟩
-    exact h.2
   · rintro h x ⟨hxA,hxB⟩
     constructor
     · exact hxA
     · specialize h ?_
-      · exact ⟨x,hxA⟩
+      · exact ⟨x, hxA⟩
       · exact hxB
       exact h
+  · rintro h ⟨x,hxA⟩ hx
+    specialize h ?_
+    · exact x
+    · exact ⟨hxA, hx⟩
+    exact h.2
 
-@[simp]
 lemma setRestrict_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
-  simp only [subset_antisymm_iff,← restrict_subsetRestrict_iff, subset_inter_iff,
+  simp only [subset_antisymm_iff, restrict_subsetRestrict_iff, subset_inter_iff,
     inter_subset_left, true_and]
 
 @[simp]
@@ -115,7 +114,7 @@ lemma setRestrict_diff : A ↓∩ (B \ C) = (A ↓∩ B) \ (A ↓∩ C) := by
   apply Eq.refl
 
 @[simp]
-lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ {(A ↓∩ B) | B ∈ S} := by
+lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_setRestrict_iff]
 
@@ -130,7 +129,7 @@ lemma setRestrict_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩
   simp only [mem_iInter, mem_setRestrict_iff]
 
 @[simp]
-lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ {(A ↓∩ B) | B ∈ S} := by
+lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_setRestrict_iff]
@@ -141,12 +140,12 @@ lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B 
   exact h
 
 lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
-  simp only [← restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
+  simp only [restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
   apply subset_trans (inter_subset_right A B) h
 
 lemma mem_coe_iff (x : α) : x ∈ (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x := by rfl
 
-/--
+/-!
 The following simp lemmas try to transform operations in the subtype into operations in the ambient
 type, if possible.
 -/
@@ -160,16 +159,13 @@ lemma coe_empty : ↑(∅ : Set A) = (∅ : Set α) := image_empty _
 lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := by
   ext x
   simp_all only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  apply Iff.intro
-  · intro a
-    cases a
+  constructor
+  · rintro ⟨ha, ha'⟩
     simp_all only [exists_true_left]
-  · intro a
-    cases' a with h h
-    · cases h
-      simp_all only [true_or, exists_const]
-    · cases h
-      simp_all only [or_true, exists_const]
+  · intro ha
+    rcases ha with ⟨a, ha⟩ | ⟨a, ha⟩
+    · exact ⟨a, Or.inl ha⟩
+    · exact ⟨a, Or.inr ha⟩
 
 @[simp]
 lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := by
@@ -211,28 +207,17 @@ lemma coe_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
   ext x
   simp_all only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_image, Subtype.exists,
     exists_and_right, exists_eq_right]
-  apply Iff.intro
-  · intro a
-    rcases a with ⟨_,⟨_,⟨_,right⟩⟩⟩
-    simp_all only [exists_true_left]
-    apply Exists.intro
-    apply And.intro
-    on_goal 2 => exact right
-    simp_all only
-  · intro a
-    rcases a with ⟨_,⟨hT,⟨_,_⟩⟩⟩
-    simp_all only [exists_true_left]
-    apply Exists.intro
-    apply And.intro
-    exact hT
-    simp_all only
-
+  constructor
+  · rintro ⟨hxA, D, hDT, hxD⟩
+    exact ⟨D, hDT, hxA, hxD⟩
+  · rintro ⟨D, hDT, hxA, hxD⟩
+    exact ⟨hxA, D, hDT, hxD⟩
 
 @[simp]
 lemma coe_iUnion : ↑(⋃ (B : β), j B) = ⋃ (B : β), (j B : Set α) := image_iUnion
 
 @[simp]
-lemma coe_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T} := by
+lemma coe_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
   ext x
   cases' hT with L hL
   apply Iff.intro
@@ -322,7 +307,7 @@ lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
     Subtype.coe_prop, exists_const] at h
   exact h
 
-/-
+/-!
 Relations between restriction and coercion.
 -/
 
