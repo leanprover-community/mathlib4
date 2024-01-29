@@ -9,6 +9,10 @@ import Mathlib.Tactic.FProp.Decl
 import Mathlib.Tactic.FProp.FunctionData
 import Mathlib.Tactic.FProp.RefinedDiscrTree
 
+/-!
+## `fprop` enviroment extensions storing thorems for `fprop`
+-/
+
 namespace Mathlib
 open Lean Meta
 
@@ -278,7 +282,6 @@ Examples:
   theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
       Conttinuous f
 ```
-
 -/
 inductive Theorem where
   | lam        (thm : LambdaTheorem)

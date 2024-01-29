@@ -636,7 +636,7 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
     return .path ks (insertInTrie keys v (i + ks.size) c)
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`. -/
-def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) : 
+def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
   let k := keys[0]!
   match d.root.find? k with
@@ -692,7 +692,7 @@ private structure State where
 private abbrev M := ReaderT Context $ StateListM State
 
 /-- Return all values from `x` in an array, together with their scores. -/
-private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) : 
+private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) :
     Array (Array α × Nat) :=
   ((x.run { unify, config }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
 
@@ -756,7 +756,7 @@ mutual
 
   /-- If the head of `e` is not a metavariable,
   return the possible `Trie α` that exactly match with `e`. -/
-  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α)) : 
+  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α)) :
       M (M (Trie α) ⊕ Option MVarId) := do
 
     let findKey (k : Key) (x : Trie α → M (Trie α) := pure) (score := 1) :=

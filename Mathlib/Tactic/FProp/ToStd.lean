@@ -10,7 +10,9 @@ import Std.Lean.Expr
 
 import Mathlib.Tactic.FProp.ArraySet
 
-import Qq
+/-!
+## `fprop` missing function from standard library
+-/
 
 namespace Mathlib
 open Lean Meta
@@ -158,7 +160,7 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
 
-/-- Eta expand `f` in only one variable and reduce in others. 
+/-- Eta expand `f` in only one variable and reduce in others.
 
 Examples:
 ```

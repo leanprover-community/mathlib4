@@ -27,22 +27,22 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 
 @[tactic fpropTacStx]
 def fpropTac : Tactic
-| `(tactic| fprop $[$d]?) => do
+  | `(tactic| fprop $[$d]?) => do
 
-  let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
-    match d with
-    | none => pure emptyDischarge
-    | some d =>
+    let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
       match d with
-      | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-      | _ => pure emptyDischarge
+      | none => pure emptyDischarge
+      | some d =>
+        match d with
+        | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
+        | _ => pure emptyDischarge
 
-  let goal ← getMainGoal
-  goal.withContext do
-    let goalType ← goal.getType
+    let goal ← getMainGoal
+    goal.withContext do
+      let goalType ← goal.getType
 
-    let (.some r, _) ← fprop goalType {disch := disch} |>.run {}
-      | throwError "fprop was unable to prove `{← Meta.ppExpr goalType}`"
+      let (.some r, _) ← fprop goalType {disch := disch} |>.run {}
+        | throwError "fprop was unable to prove `{← Meta.ppExpr goalType}`"
 
-    goal.assign r.proof
-| _ => throwUnsupportedSyntax
+      goal.assign r.proof
+  | _ => throwUnsupportedSyntax
