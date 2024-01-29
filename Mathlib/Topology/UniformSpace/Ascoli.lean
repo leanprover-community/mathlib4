@@ -370,9 +370,9 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖
 /-- A version of the **Arzela-Ascoli theorem**.
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
-and `F : ι → (X → α)` a family of functions. Assume that:
-* `F` is a closed embedding to for the topology of uniform convergence on all `K ∈ 𝔖`
-  (in other words, `ι` identifies to a closed subset of `X →ᵤ[𝔖] α` through `F`)
+and `F : ι → (X → α)`. Assume that:
+* `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is a closed embedding (in other words, `ι`
+  identifies to a closed subset of `X →ᵤ[𝔖] α` through `F`)
 * `F` is equicontinuous on each `K ∈ 𝔖`
 * For all `x`, the range of `i ↦ F i x` is contained in some fixed compact subset.
 
@@ -385,6 +385,16 @@ theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖
   compactSpace_of_closed_inducing' 𝔖_compact F_clemb.toInducing F_clemb.closed_range
     F_eqcont F_pointwiseCompact
 
+/-- A version of the **Arzela-Ascoli theorem**.
+
+Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a T2 uniform space,
+`F : ι → (X → α)`, and `s` a subset of `ι`. Assume that:
+* `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is a closed embedding (in other words, `ι`
+  identifies to a closed subset of `X →ᵤ[𝔖] α` through `F`)
+* `F '' s` is equicontinuous on each `K ∈ 𝔖`
+* For all `x ∈ ⋃₀ 𝔖`, the image of `s` under `i ↦ F i x` is contained in some fixed compact subset.
+
+Then `s` has compact closure in `ι`. -/
 theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] [T2Space α]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
