@@ -617,23 +617,27 @@ end Subgroup
 
 namespace MonoidHom
 
+open Finset
+
 variable {G H F : Type*} [Group G] [Fintype G] [Group H] [DecidableEq H] [MonoidHomClass F G H]
 
-open Finset in
+@[to_additive]
+theorem card_fiber_of_mem_range (f : F) {x : H} (hx : x ∈ Set.range f) :
+    (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = 1).card := by
+  rcases hx with ⟨x, rfl⟩
+  refine card_congr (fun g _ => g * x⁻¹ * 1) ?_ ?_ fun g hg => ⟨g * 1⁻¹ * x, ?_⟩
+  · simp (config := { contextual := true }) only [mem_filter, mem_univ, true_and, mul_one, map_mul,
+      map_inv, mul_right_inv, and_self, implies_true, forall_const]
+  · simp only [mul_left_inj, imp_self, forall₂_true_iff]
+  · simp only [true_and_iff, mem_filter, mem_univ] at hg
+    simp only [inv_one, mul_one, mul_inv_cancel_right, mem_filter, mem_univ, map_mul, hg, one_mul,
+      and_self, exists_prop_of_true]
+
 @[to_additive]
 theorem card_fiber_eq_of_mem_range (f : F) {x y : H} (hx : x ∈ Set.range f)
     (hy : y ∈ Set.range f) :
-    -- porting note: the `filter` had an index `ₓ` that I removed.
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
-  rcases hx with ⟨x, rfl⟩
-  rcases hy with ⟨y, rfl⟩
-  refine card_congr (fun g _ => g * x⁻¹ * y) ?_ ?_ fun g hg => ⟨g * y⁻¹ * x, ?_⟩
-  · simp (config := { contextual := true }) only [mem_filter, mem_univ, true_and, map_mul, map_inv,
-      mul_right_inv, one_mul, and_self, implies_true, forall_const]
-  · simp only [mul_left_inj, imp_self, forall₂_true_iff]
-  · simp only [true_and_iff, mem_filter, mem_univ] at hg
-    simp only [mul_inv_cancel_right, inv_mul_cancel_right, mem_filter, mem_univ, map_mul, hg,
-      map_inv, mul_right_inv, one_mul, and_self, exists_prop_of_true]
+  simp only [card_fiber_of_mem_range f hx, card_fiber_of_mem_range f hy]
 #align card_fiber_eq_of_mem_range MonoidHom.card_fiber_eq_of_mem_range
 
 end MonoidHom
