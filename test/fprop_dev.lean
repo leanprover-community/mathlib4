@@ -132,6 +132,9 @@ instance : Obj (α -o β) := ⟨⟩
 
 -- analogous theorem with `α -o β` does no hold
 @[fprop] theorem linHom_lin (f : α -o β) : Lin f := sorry
+
+set_option pp.coercions false in
+set_option pp.notation false in
 -- the only analoge is this theorem but that is alredy provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fprop
 
@@ -248,6 +251,10 @@ example (f : α → β ->> γ) (hf : Con f) (g : α → β) (hg : Lin g)  : Con 
 example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Con (fun x => f x (g x)) := by fprop
 example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fprop
 
+-- remove arguments before applying morphism rules
+example (f : α ->> (β → γ)) (y) : Con (fun x => f x y) := by fprop
+
+
 -- sometimes unfold constants 
 example (f : α → β) (hf : Con f) : Con (fun x => id f x) := by fprop
 example (f : α → β) (hf : Con f) : Con (fun x => (id id) f x) := by fprop
@@ -255,14 +262,13 @@ example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x => i
 example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x => (id id) ((id id) f x) x) := by fprop
 example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α×α => id (f x.1) x.2) := by fprop
 
+-- this used to time out
+example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fprop
 
 -- is working up to here
-#exit 
 
--- times out 
--- example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fprop
-
-example (f : α ->> (β → γ)) (y) : Con (fun x => f x y) := by fprop
-example (f : α ->> (β → γ)) (hf : Con (fun (x,y) => f x y)) (y) : Con (fun x => f x y) := by fprop
+#exit
+-- todo: unfold fvars if can't progress
+set_option trace.Meta.Tactic.fprop true in
 example : let f := fun x : α => x; Con (fun x => f x) := by fprop
 

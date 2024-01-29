@@ -46,9 +46,6 @@ structure State where
 /-- -/
 abbrev FPropM := ReaderT FProp.Config $ StateRefT FProp.State MetaM
 
-/-- Result of `fprop`, it is a proof of function property `P f` and list of
-pending subgoals. These subgoals are meant to be solved by the user or passed to another automation.
--/
+/-- Result of `fprop`, it is a proof of function property `P f` -/
 structure Result where
   proof : Expr
-  subgoals : List MVarId

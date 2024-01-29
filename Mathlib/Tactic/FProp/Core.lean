@@ -89,14 +89,13 @@ If succesfull it returns list of subgoals that should be presented to the user.
 If fails it returns `none`. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
-    FPropM (Option (List MVarId)) := do
-  let mut subgoals : List MVarId := []
+    FPropM Bool := do
   let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
     let type ← inferType x
     if bi.isInstImplicit then
       unless (← synthesizeInstance thmId x type) do
-        return .none
+        return false
     else if (← instantiateMVars x).isMVar then
 
       -- try type class
@@ -106,14 +105,13 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
       -- try function property
       if (← isFProp type.getForallBody) then
-        if let .some ⟨proof, subgoals'⟩ ← fprop (← instantiateMVars type) then
-          subgoals := subgoals ++ subgoals'
+        if let .some ⟨proof⟩ ← fprop (← instantiateMVars type) then
           if (← isDefEq x proof) then
             continue
           else do
             trace[Meta.Tactic.fprop.discharge]
               "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-            return none
+            return false
       else
         -- try user provided discharger
         let cfg : Config ← read
@@ -124,7 +122,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
             else do
               trace[Meta.Tactic.fprop.discharge]
                 "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-              return none
+              return false
 
         -- try function property specific discharger
         if (← isProp type) then
@@ -134,7 +132,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
             else do
               trace[Meta.Tactic.fprop.discharge]
                 "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-              return none
+              return false
 
       if ¬(← isProp type) then
         postponed := postponed.push x
@@ -143,14 +141,14 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
         trace[Meta.Tactic.fprop.discharge]
           "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
-        return none
+        return false
 
   for x in postponed do
     if (← instantiateMVars x).isMVar then
       trace[Meta.Tactic.fprop.discharge] "{← ppOrigin thmId}, failed to infer data {indentExpr x}"
-      return none
+      return false
 
-  return .some subgoals
+  return true
 
 
 private def ppOrigin' (origin : Origin) : MetaM String := do
@@ -167,11 +165,12 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
   if (← isDefEq type e) then
 
-    let .some subgoals ← synthesizeArgs thmId xs bis discharge? fprop | return none
+    if ¬(← synthesizeArgs thmId xs bis discharge? fprop) then
+      return none
     let proof ← instantiateMVars (mkAppN val xs)
 
     trace[Meta.Tactic.fprop.apply] "{← ppOrigin thmId}, \n{e}"
-    return .some { proof := proof, subgoals := subgoals }
+    return .some { proof := proof }
   else
     trace[Meta.Tactic.fprop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
@@ -205,7 +204,9 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .id)
-    | return none
+    | trace[Meta.Tactic.fprop] 
+        "missing lambda rule to prove `{← ppExpr e}`"
+      return none
   let .id id_X := thm.thmArgs | return none
 
   let proof ← thm.getProof
@@ -225,7 +226,10 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const) | return none
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const) 
+    | trace[Meta.Tactic.fprop] 
+        "missing lambda rule to prove `{← ppExpr e}`"
+      return none
   let .const id_X id_y := thm.thmArgs | return none
 
   let proof ← thm.getProof
@@ -276,8 +280,8 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
   let Y := Expr.lam n X Y default
 
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep)
-    | trace[Meta.Tactic.fprop.step]
-        "missing proj rule(`P fun f => f x`) for function property `{fpropDecl.fpropName}`"
+    | trace[Meta.Tactic.fprop] 
+        "missing lambda rule to prove `{← ppExpr e}`"
       return none
   let .projDep id_x id_Y := thm.thmArgs | return none
 
@@ -299,7 +303,10 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp) | return none
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp) 
+    | trace[Meta.Tactic.fprop] 
+        "missing lambda rule to prove `{← ppExpr e}`"
+      return none
   let .comp id_f id_g := thm.thmArgs | return none
 
   let proof ← thm.getProof
@@ -321,7 +328,10 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi) | return none
+  let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi) 
+    | trace[Meta.Tactic.fprop] 
+        "missing lambda rule to prove `{← ppExpr e}`"
+      return none
   let .pi id_f := thm.thmArgs | return none
 
   let proof ← thm.getProof
@@ -551,19 +561,28 @@ def bvarAppCase (fpropDecl : FPropDecl) (e : Expr) (f : FunctionData)
 def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
-  let ext := morTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  let candidates := candidates.map (·.1) |>.flatten
+  let .some nargs := fData.getCoeAppNumArgs?
+    | throwError 
+      "fprop bug: applying morphism rules when the function body is not application of DFunLike.coe
+{←ppExpr e}"
 
-  trace[Meta.Tactic.fprop.step]
-    "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+  match compare nargs 6 with
+  | .lt => applyPiRule fpropDecl e (← fData.toExpr) fprop
+  | .gt => removeArgRule fpropDecl e (← fData.toExpr) fprop
+  | .eq => 
+    let ext := morTheoremsExt.getState (← getEnv)
+    let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+    let candidates := candidates.map (·.1) |>.flatten
 
-  for c in candidates do
-    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
-      return r
+    trace[Meta.Tactic.fprop.step]
+      "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
-  trace[Meta.Tactic.fprop.step] "no theorem matched"
-  return none
+    for c in candidates do
+      if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
+        return r
+
+    trace[Meta.Tactic.fprop.step] "no theorem matched"
+    return none
 
 
 def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
@@ -680,21 +699,19 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule fpropDecl e f' g' fprop
 
 
--- cache if there are no subgoals
-/-- -/
-def maybeCache (e : Expr) (r : Result) : FPropM (Option Result) := do -- return proof?
-  if r.subgoals.length = 0 then
-    modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
+/-- Cache result if it does not have any subgoals. -/
+def cacheResult (e : Expr) (r : Result) : FPropM Result := do -- return proof?
+  modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
   return r
 
 mutual
-  /-- -/
+  /-- Main `fprop` function. Returns proof of `e`. -/
   partial def fprop (e : Expr) : FPropM (Option Result) := do
 
     -- check cache
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fprop.cache] "cached result for {e}"
-      return .some { proof := proof, subgoals := [] }
+      return .some { proof := proof }
     else
       -- take care of forall and let binders and run main
       match e with
@@ -702,21 +719,21 @@ mutual
         letTelescope e fun xs b => do
           let .some r ← fprop b
             | return none
-          maybeCache e {proof := ← mkLambdaFVars xs r.proof, subgoals := r.subgoals}
+          cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .forallE .. =>
         forallTelescope e fun xs b => do
           let .some r ← fprop b
             | return none
-          maybeCache e {proof := ← mkLambdaFVars xs r.proof, subgoals := r.subgoals}
+          cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .mdata _ e' => fprop e'
       | .mvar _ => instantiateMVars e >>= fprop
       | _ =>
         let .some r ← main e
           | return none
-        maybeCache e r
+        cacheResult e r
 
-  /-- -/
-  partial def main (e : Expr) : FPropM (Option Result) := do
+  /-- Main `fprop` function. Returns proof of `e`. -/
+  private partial def main (e : Expr) : FPropM (Option Result) := do
 
     let .some (fpropDecl, f) ← getFProp? e
       | return none
@@ -765,15 +782,14 @@ mutual
       else
         let fData ← getFunctionData f
 
-        trace[Meta.Tactic.fprop.step] "app fun is: {← ppExpr xBody.getAppFn}"
-        if xBody.isAppOfArity ``DFunLike.coe 5 then
-          if let .some r ← applyPiRule fpropDecl e f fprop then
-            return r
-
-        -- TODO: remove arguments if arity is bigger then 7 and try to apply mor rules again
-        if xBody.isAppOfArity ``DFunLike.coe 6 then
-          if let .some r ← applyMorRules fpropDecl e fData fprop then
-            return r
+        try 
+          let .some r ← applyMorRules fpropDecl e fData fprop 
+            | pure ()
+          return r
+        catch _ => 
+          pure ()
+        -- if let .some r ← applyMorRules fpropDecl e fData fprop then
+        --   return r
 
         match fData.fn with
         | .fvar id =>

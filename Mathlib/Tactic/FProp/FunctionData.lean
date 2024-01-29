@@ -112,3 +112,19 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
     let .some projName := info.getProjFn? idx | return none
     return projName
   | _ => return none
+
+
+/-- If `f` is in the form `fun x => @DFunLike.coe F α β self f x₁ ... xₙ` return the number of
+arguments of `DFunLike.coe` i.e. `n + 5`. -/
+def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
+
+  if f.fn.isConstOf ``DFunLike.coe then
+    return f.args.size
+  else Id.run do
+
+    for i' in [0:f.args.size] do
+      let i := (f.args.size - i') - 1
+      if f.args[i]!.coe.isSome then
+        return .some (i' + 6)
+
+    return none
