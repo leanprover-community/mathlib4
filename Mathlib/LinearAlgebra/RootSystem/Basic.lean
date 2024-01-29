@@ -271,11 +271,7 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMul
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply p.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
-  · -- simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (p.toLin α β')]
-    simp only [preReflection_apply, hk, LinearMap.flip_apply, map_sub, hp j,
-      LinearMap.map_smul_of_tower, smul_eq_mul, mul_comm (p.toLin α β'),
-      map_smul, LinearMap.smul_apply, hp i, mul_two]
-    rw [sub_sub, sub_eq_self, mul_add, add_sub, sub_eq_zero]
+  · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (p.toLin α β')]
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 
