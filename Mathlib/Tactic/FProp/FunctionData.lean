@@ -58,30 +58,6 @@ structure FunctionData where
   /-- indices of `args` that contain `mainVars` -/
   mainArgs : ArraySet Nat
 
-
-/-- Get `FunctionData` for `f`. Throws if `f` can be put into fprop-normal form. -/
-def getFunctionData (f : Expr) : MetaM FunctionData := do
-  let f ← fpropNormalizeFun f
-  lambdaTelescope f fun xs b => do
-
-    let xId := xs[0]!.fvarId!
-
-    Mor.withApp b fun fn args => do
-
-      let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
-        |>.filterMap id
-        |>.toArraySet
-
-      return {
-        lctx := ← getLCtx
-        insts := ← getLocalInstances
-        fn := fn
-        args := args
-        mainVar := xs[0]!
-        mainArgs := mainArgs
-      }
-
 /-- Turn function data back to expression. -/
 def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
   withLCtx f.lctx f.insts do
@@ -113,6 +89,29 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
     return projName
   | _ => return none
 
+
+/-- Get `FunctionData` for `f`. Throws if `f` can be put into fprop-normal form. -/
+def getFunctionData (f : Expr) : MetaM FunctionData := do
+  let f ← fpropNormalizeFun f
+  lambdaTelescope f fun xs b => do
+
+    let xId := xs[0]!.fvarId!
+
+    Mor.withApp b fun fn args => do
+
+      let mainArgs := args
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.filterMap id
+        |>.toArraySet
+
+      return {
+        lctx := ← getLCtx
+        insts := ← getLocalInstances
+        fn := fn
+        args := args
+        mainVar := xs[0]!
+        mainArgs := mainArgs
+      }
 
 /-- If `f` is in the form `fun x => @DFunLike.coe F α β self f x₁ ... xₙ` return the number of
 arguments of `DFunLike.coe` i.e. `n + 5`. -/

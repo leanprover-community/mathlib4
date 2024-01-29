@@ -31,6 +31,7 @@ initialize registerTraceClass `Meta.Tactic.fprop.apply
 initialize registerTraceClass `Meta.Tactic.fprop.unfold
 initialize registerTraceClass `Meta.Tactic.fprop.cache
 
+
 /-- -/
 structure Config where
   constToUnfold : HashSet Name := .ofArray #[``id, ``Function.comp, ``Function.HasUncurry.uncurry]

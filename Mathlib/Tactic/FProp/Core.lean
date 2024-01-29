@@ -10,11 +10,9 @@ import Std.Tactic.Exact
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp.ToStd
 
-
 /-!
 ## `fprop` core tactic algorithm
 -/
-
 
 namespace Mathlib
 open Lean Meta Qq
@@ -32,7 +30,7 @@ def FunctionData.unfold? (fData : FunctionData) : FPropM (Option Expr) := do
     let mut didUnfold := false
     let mut body := Mor.mkAppN fData.fn fData.args
 
-    if cfg.constToUnfold.contains name then
+    if cfg.constToUnfold.contains name || (← isReducible name) then
       if let .some body' ← withTransparency .default <| unfoldDefinition? body then
         trace[Meta.Tactic.fprop.unfold] "unfolding {body} ==> {body'}"
         didUnfold := true

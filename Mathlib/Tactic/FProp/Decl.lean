@@ -122,9 +122,6 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
   | .none => return none
 
 
-
-
-
 open Elab Term in
 /-- -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
