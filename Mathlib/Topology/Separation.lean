@@ -952,7 +952,7 @@ theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
   ⟨fun h ↦ h.antisymm h.symm, Inseparable.specializes⟩
 #align specializes_iff_inseparable specializes_iff_inseparable
 
-/-- An R₁ space, if `x` specializes `y`, then they are inseparable,
+/-- In an R₁ space, `Specializes` implies `Inseparable`,
 i.e., an R₁ space is an R₀ space. -/
 alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
