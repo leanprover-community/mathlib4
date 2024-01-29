@@ -500,33 +500,36 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ ↦ BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
-/-- A (global) integral curve is injective iff it is not periodic. -/
-lemma IsIntegralCurve.periodic_iff_not_injective [BoundarylessManifold I M]
+/-- For a global integral curve `γ`, if it crosses itself at `a b : ℝ`, then it is periodic with
+period `a - b`. -/
+lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
-    (∃ T > 0, Periodic γ T) ↔ ¬Injective γ := by
-  constructor
-  · exact fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT)
-  · intro h
-    rw [Injective] at h
-    push_neg at h
-    obtain ⟨t₁, t₂, heq, hne⟩ := h
-    refine ⟨|t₁ - t₂|, ?_, ?_⟩
-    · rw [gt_iff_lt, abs_pos, sub_ne_zero]
-      exact hne
-    · apply congrFun
-      by_cases hle : t₁ - t₂ < 0
-      · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₁) hv (hγ.comp_add _) hγ
-        simp [abs_of_neg hle, heq]
-      · apply isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := t₂) hv (hγ.comp_add _) hγ
-        rw [not_lt] at hle
-        simp [abs_of_nonneg hle, heq]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (heq : γ a = γ b) : Periodic γ (a - b) := by
+  intro t
+  apply congrFun <|
+    isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
+  rw [comp_apply, add_sub_cancel'_right, heq]
 
-/-- A global integral curve is injective xor periodic. -/
+/-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
-    Xor' (∃ T > 0, Periodic γ T) (Injective γ) :=
-  xor_iff_iff_not.mpr (hγ.periodic_iff_not_injective hv)
+    Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
+  rw [xor_iff_iff_not]
+  refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
+  intro h
+  rw [Injective] at h
+  push_neg at h
+  obtain ⟨a, b, heq, hne⟩ := h
+  refine ⟨|a - b|, ?_, ?_⟩
+  · rw [gt_iff_lt, abs_pos, sub_ne_zero]
+    exact hne
+  · by_cases hab : a - b < 0
+    · rw [abs_of_neg hab, neg_sub]
+      exact hγ.periodic_of_eq hv heq.symm
+    · rw [not_lt] at hab
+      rw [abs_of_nonneg hab]
+      exact hγ.periodic_of_eq hv heq
 
 end ExistUnique
