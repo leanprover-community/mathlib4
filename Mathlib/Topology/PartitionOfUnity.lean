@@ -135,7 +135,7 @@ namespace PartitionOfUnity
 variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
-instance : FunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -184,15 +184,15 @@ variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
-theorem coe_finsupport (x₀ : X) :
-    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
-  rw [finsupport, Finite.coe_toFinset, setOf_set]
-  rfl
-
-@[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
   simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+
+@[simp]
+theorem coe_finsupport (x₀ : X) :
+    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
+  ext
+  rw [Finset.mem_coe, mem_finsupport]
 
 variable {x₀ : X}
 
@@ -213,7 +213,8 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
 theorem sum_finsupport_smul_eq_finsum {M : Type _} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
-  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) := rfl
+  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
+    funext fun _ => (Pi.smul_apply' _ _ _).symm
   rw [ρ.coe_finsupport x₀, this, support_smul]
   exact inter_subset_left _ _
 
@@ -281,7 +282,7 @@ namespace BumpCovering
 
 variable {s : Set X} (f : BumpCovering ι X s)
 
-instance : FunLike (BumpCovering ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
