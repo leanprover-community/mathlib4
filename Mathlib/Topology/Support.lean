@@ -165,16 +165,16 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 #align has_compact_support_def hasCompactSupport_def
 
 @[to_additive]
-theorem exists_compact_iff_hasCompactMulSupport [T2OrLocallyCompactRegularSpace α] :
+theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
-    hasCompactMulSupport_def, exists_compact_superset_iff]
+    hasCompactMulSupport_def, exists_isCompact_superset_iff]
 #align exists_compact_iff_has_compact_mul_support exists_compact_iff_hasCompactMulSupport
 #align exists_compact_iff_has_compact_support exists_compact_iff_hasCompactSupport
 
 namespace HasCompactMulSupport
 @[to_additive]
-theorem intro [T2OrLocallyCompactRegularSpace α] {K : Set α} (hK : IsCompact K)
+theorem intro [R1Space α] {K : Set α} (hK : IsCompact K)
     (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
@@ -189,9 +189,9 @@ theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [T2OrLocallyCompactRegularSpace α]
-    {K : Set α} (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
-  isCompact_closure_of_subset_compact hK h
+theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α}
+    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+  hK.closure_of_subset h
 
 @[to_additive]
 theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=

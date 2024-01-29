@@ -1771,35 +1771,31 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
 
 /-- A compact neighborhood of `1` in a topological group admits a closed compact subset
 that is a neighborhood of `1`. -/
-@[to_additive "A compact neighborhood of `0` in a topological additive group
+@[to_additive (attr := deprecated IsCompact.isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
+  "A compact neighborhood of `0` in a topological additive group
 admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
-    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
-  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) :=
+  let ⟨K, ⟨hK, hK₁, hK₂⟩, hKL⟩ := (Lcomp.isCompact_isClosed_basis_nhds L1).mem_iff.1 L1
+  ⟨K, hK₁, hK₂, hKL, hK⟩
 
 /-- If a point in a topological group has a compact neighborhood, then the group is
 locally compact. -/
 @[to_additive]
 theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
     (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
-  refine ⟨fun y n hn ↦ ?_⟩
-  have A : (y * x⁻¹) • K ∈ 𝓝 y := by
-    rw [← preimage_smul_inv]
+  suffices WeaklyLocallyCompactSpace G from inferInstance
+  refine ⟨fun y ↦ ⟨(y * x⁻¹) • K, ?_, ?_⟩⟩
+  · exact hK.smul _
+  · rw [← preimage_smul_inv]
     exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
-  rcases exists_mem_nhds_isClosed_subset (inter_mem A hn) with ⟨L, hL, L_closed, LK⟩
-  refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
-  exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
 
--- The next instance creates a loop between weakly locally compact space and locally compact space
--- for topological groups. Hopefully, it shouldn't create problems.
 /-- A topological group which is weakly locally compact is automatically locally compact. -/
-@[to_additive]
-instance (priority := 90) instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
-    LocallyCompactSpace G := by
-  rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
-  exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
+@[to_additive (attr := deprecated WeaklyLocallyCompactSpace.locallyCompactSpace)] -- 28 Jan 2024
+theorem instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
+    LocallyCompactSpace G :=
+  WeaklyLocallyCompactSpace.locallyCompactSpace
 
 /-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
@@ -1834,34 +1830,31 @@ theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
-@[to_additive
+@[to_additive (attr := deprecated isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
   "In a locally compact additive group, any neighborhood of the identity contains a
   compact closed neighborhood of the identity, even without separation assumptions on the space."]
 theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set G}
     (hU : U ∈ 𝓝 (1 : G)) :
-    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K := by
-  obtain ⟨L, L1, LU, Lcomp⟩ : ∃ (L : Set G), L ∈ 𝓝 (1 : G) ∧ L ⊆ U ∧ IsCompact L :=
-    local_compact_nhds hU
-  obtain ⟨K, Kcomp, Kcl, KL, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
-  exact ⟨K, Kcomp, Kcl, KL.trans LU, mem_interior_iff_mem_nhds.2 K1⟩
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K :=
+  let ⟨K, ⟨hK₁, hKco, hKcl⟩, hKU⟩ := (isCompact_isClosed_basis_nhds (1 : G)).mem_iff.1 hU
+  ⟨K, hKco, hKcl, hKU, mem_interior_iff_mem_nhds.2 hK₁⟩
 #align local_is_compact_is_closed_nhds_of_group local_isCompact_isClosed_nhds_of_group
 #align local_is_compact_is_closed_nhds_of_add_group local_isCompact_isClosed_nhds_of_addGroup
 
 variable (G)
 
-@[to_additive]
+@[to_additive (attr := deprecated exists_mem_nhds_isCompact_isClosed)] -- Since 28 Jan 2024
 theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
-  let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
-  let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
-  ⟨K, Kcl, Kcomp, K1⟩
+  let ⟨K, hK₁, hKcomp, hKcl⟩ := exists_mem_nhds_isCompact_isClosed (1 : G)
+  ⟨K, hKcomp, hKcl, hK₁⟩
 
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
 instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
   refine ⟨fun x n hn ↦ ?_⟩
   let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_coinduced_rng
+  have C : Continuous π := continuous_quotient_mk'
   obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
   have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
   rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
