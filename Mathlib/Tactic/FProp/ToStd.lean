@@ -38,7 +38,7 @@ def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : A
   else
     return false
 
-def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
+private def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e λ xs b => do
     if let .some i ← xs.findIdxM? (λ x => do pure ¬(← x.fvarId!.isLetVar)) then
@@ -46,23 +46,24 @@ def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr �
     else
       k xs b
 
+/-- Telescope consuming only let bindings -/
 def _root_.Lean.Meta.letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
     (k : Array Expr → Expr → n α) : n α :=
   map2MetaM (fun k => letTelescopeImpl e k) k
 
--- TODO: fix the implementation in STD
+/-- Modify argument of an expression. Indexed in reverse order. -/
 def _root_.Lean.Expr.modArgRev (modifier : Expr → Expr) (i : Nat) (e : Expr) : Expr :=
   match i, e with
   |      0, .app f x => .app f (modifier x)
   | (i'+1), .app f x => .app (modArgRev modifier i' f) x
   | _, _ => e
 
--- TODO: fix the implementation in STD
+/-- Modify argument of an expression. -/
 def _root_.Lean.Expr.modArg (modifier : Expr → Expr) (i : Nat) (e : Expr)
     (n := e.getAppNumArgs) : Expr :=
   Expr.modArgRev modifier (n - i - 1) e
 
--- TODO: fix the implementation in STD
+/-- Set argument of an expression. -/
 def _root_.Lean.Expr.setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
   e.modArg (fun _ => x) i n
 

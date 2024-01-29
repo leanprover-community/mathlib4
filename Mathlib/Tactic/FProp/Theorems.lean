@@ -245,9 +245,10 @@ structure GeneralTheorems where
   theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
+/-- -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
-
+/-- -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -256,6 +257,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
       {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
+/-- -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -362,6 +364,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       throwError "unrecognized theoremType `{← ppExpr b}`"
 
 
+/-- -/
 def addTheorem (declName : Name) (attrKind : AttributeKind := .global)
     (prio : Nat := eval_prio default) : MetaM Unit := do
   match (← getTheoremFromConst declName prio) with
