@@ -208,7 +208,7 @@ TODO: Replace this lemma by the more general version:
 theorem Sublist.length_destutter'_mono [IsEquiv α Rᶜ] (h : a :: l₁ <+ b :: l₂) :
     (List.destutter' R a l₁).length ≤ (List.destutter' R b l₂).length
 -/
-theorem le_length_destutter' [IsEquiv α Rᶜ] :
+theorem le_length_destutter'_cons [IsEquiv α Rᶜ] :
     (List.destutter' R b l).length ≤ (List.destutter' R a (b :: l)).length := by
   cases l with
   | nil => by_cases hab : (R a b) <;> simp_all [Nat.le_succ]
@@ -229,7 +229,7 @@ theorem length_destutter_cons_ge_length_destutter [IsEquiv α Rᶜ] :
     (l.destutter R).length ≤ ((a::l).destutter R).length := by
   cases l
   · simp [destutter]
-  · exact le_length_destutter' _ R
+  · exact le_length_destutter'_cons _ R
 
 /-- `destutter ≠` has length monotonic under List.cons --/
 theorem length_destutter_ne_cons_ge_length_destutter [DecidableEq α] :
