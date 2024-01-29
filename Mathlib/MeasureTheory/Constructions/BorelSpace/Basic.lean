@@ -369,7 +369,7 @@ theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : 
   hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
     fun _ _ _ h ↦ by simp [h]
 
-/-- If `K` is a compact set is a preregular space and `s ⊇ K` is a Borel measurable superset,
+/-- If `K` is a compact set in a preregular space and `s ⊇ K` is a Borel measurable superset,
 then `s` includes the closure of `K` as well. -/
 theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK : IsCompact K)
     (hs : MeasurableSet s) (hKs : K ⊆ s) : closure K ⊆ s := by

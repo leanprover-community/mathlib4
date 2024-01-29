@@ -935,7 +935,7 @@ theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ 
 theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) :=
   disjoint_nhds_nhds_iff_not_specializes.not_left.symm
 
-/-- An R₁ space is an R₀ space: the `Specializes` relation is symmetric. -/
+/-- In an R₁ space, the `Specializes` relation is symmetric, i.e., an R₁ is an R₀ space.  -/
 theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := by
   simpa only [specializes_iff_not_disjoint, disjoint_comm] using h
 #align specializes.symm Specializes.symm
@@ -1014,7 +1014,7 @@ theorem exists_isCompact_superset_iff {s : Set X} :
 @[deprecated] -- Since 28 Jan 2024
 alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
-/-- If `K` and `L` are a disjoint compact set in a preregular topological space
+/-- If `K` and `L` are disjoint compact sets in a preregular topological space
 and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
 theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
     (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : SeparatedNhds K L := by
@@ -1142,7 +1142,7 @@ theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCom
 ### Lemmas about a weakly locally compact preregular space
 
 In fact, a space with these properties is locally compact and regular.
-Some lemmas are formulated in that assumptions below.
+Some lemmas are formulated using the latter assumptions below.
 -/
 
 variable [WeaklyLocallyCompactSpace X]
@@ -1164,7 +1164,7 @@ instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : Locall
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h
 #align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
-/-- In a weakly locally compact space which is either T₂ or locally compact regular,
+/-- In a weakly locally compact preregular space,
 every compact set has an open neighborhood with compact closure. -/
 theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact K) :
     ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
@@ -2109,7 +2109,7 @@ instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
     (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
 #align normal_space.t3_space T4Space.t3Space
 
-@[deprecated inferInstance]
+@[deprecated inferInstance] -- Since 28 Jan 2024
 theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
     T4Space X := inferInstance
 #align normal_of_compact_t2 T4Space.of_compactSpace_t2Space
