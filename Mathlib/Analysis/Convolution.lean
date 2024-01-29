@@ -27,7 +27,7 @@ For many applications we can take `L = ContinuousLinearMap.lsmul ℝ ℝ` or
 
 We also define `ConvolutionExists` and `ConvolutionExistsAt` to state that the convolution is
 well-defined (everywhere or at a single point). These conditions are needed for pointwise
-computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not stong enough for any
+computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not strong enough for any
 local (or global) properties of the convolution. For this we need stronger assumptions on `f`
 and/or `g`, and generally if we impose stronger conditions on one of the functions, we can impose
 weaker conditions on the other.

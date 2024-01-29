@@ -531,7 +531,7 @@ variable (R A B C : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulA
   [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B] [NonUnitalNonAssocSemiring C]
   [DistribMulAction R C] [Star C]
 
-/-- The first projection of a product is a non-unital ⋆-algebra homomoprhism. -/
+/-- The first projection of a product is a non-unital ⋆-algebra homomorphism. -/
 @[simps!]
 def fst : A × B →⋆ₙₐ[R] A :=
   { NonUnitalAlgHom.fst R A B with map_star' := fun _ => rfl }
@@ -629,7 +629,7 @@ namespace StarAlgHom
 variable (R A B C : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C]
 
-/-- The first projection of a product is a ⋆-algebra homomoprhism. -/
+/-- The first projection of a product is a ⋆-algebra homomorphism. -/
 @[simps!]
 def fst : A × B →⋆ₐ[R] A :=
   { AlgHom.fst R A B with map_star' := fun _ => rfl }
