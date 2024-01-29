@@ -709,9 +709,9 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     find `g = g (L)` such that `L` is disjoint from `g • K`. Iterating this, one finds
     infinitely many translates of `K` which are disjoint from each other. As they all have the
     same positive mass, it follows that the space has infinite measure. -/
-  obtain ⟨K, hK, Kclosed, K1⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
-    exists_isCompact_isClosed_nhds_one G
-  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, mem_interior_iff_mem_nhds.2 K1⟩
+  obtain ⟨K, K1, hK, Kclosed⟩ : ∃ K ∈ 𝓝 (1 : G), IsCompact K ∧ IsClosed K :=
+    exists_mem_nhds_isCompact_isClosed 1
+  have K_pos : 0 < μ K := measure_pos_of_mem_nhds μ K1
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
@@ -760,11 +760,10 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
     simp only [iUnion_smul, h''f]
 
 /-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
-    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s := by
-  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_closure_one_eq]
-  exact mul_subset_mul_right h
+    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
+  hk.closure_subset_measurableSet hs h
 
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
@@ -777,20 +776,19 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.measure_closure)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k := by
-  rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
+    μ (closure k) = μ k :=
+  hk.measure_closure μ
 
 @[to_additive]
-lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [LocallyCompactSpace G]
-    [h : InnerRegularCompactLTTop μ] :
+lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegularCompactLTTop μ] :
     InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
   intro s ⟨s_meas, μs⟩ r hr
   rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
   refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
-  · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp s_meas Ks
-  · rwa [K_comp.measure_closure_eq_of_group]
+  · exact IsCompact.closure_subset_measurableSet K_comp s_meas Ks
+  · rwa [K_comp.measure_closure]
 
 end TopologicalGroup
 
