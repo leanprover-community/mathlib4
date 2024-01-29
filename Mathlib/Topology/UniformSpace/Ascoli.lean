@@ -97,7 +97,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
       (Subtype.range_coe ▸ mem_of_superset range_mem_map subset_closure)
     have H' : Tendsto id 𝒢 (𝓝 ⟨f, f_mem⟩) := by
       rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
-    rwa [ind.tendsto_nhds_iff, comp.right_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
+    rwa [ind.tendsto_nhds_iff, comp_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
 
 theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
