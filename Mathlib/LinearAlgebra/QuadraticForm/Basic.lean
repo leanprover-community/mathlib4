@@ -359,9 +359,9 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
   { toFun
     toFun_smul
     exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
-      (fun x y z => by simp_rw [polar_comm _ x, polar_add_left])
-      (fun x y z => by rw [polar_comm, polar_smul_left, polar_comm]),
-      fun q u =>  by
+      (fun x _ _ => by simp_rw [polar_comm _ x, polar_add_left])
+      (fun _ _ _ => by rw [polar_comm, polar_smul_left, polar_comm]),
+      fun _ _ =>  by
       simp only [LinearMap.mk₂_apply]
       rw [polar, sub_sub, add_sub_cancel'_right]⟩}
 #align quadratic_form.of_polar QuadraticForm.ofPolar
@@ -591,9 +591,9 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
 def _root_.LinearMap.linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R :=
   LinearMap.mk₂ R (fun x y => f x * g y) (fun x y z => by simp only [map_add, add_mul])
-  (fun r x => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
-  (fun x y z => by simp only [map_add, mul_add])
-  (fun r x => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
+  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
+  (fun _ _ _ => by simp only [map_add, mul_add])
+  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
 
 /-- The product of linear forms is a quadratic form. -/
 def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
