@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+
 import Std.Data.Nat.Lemmas
 import Std.Lean.Expr
-import Mathlib.Tactic.FProp.ArraySet
+
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Tactic.FProp.ArraySet
+import Mathlib.Tactic.FProp.Mor
 
 import Qq
 
@@ -264,88 +267,6 @@ def funTelescope (e : Expr) (config : FunTelescopeConfig) (k : Array Expr → Ex
 def constArity (decl : Name) : CoreM Nat := do
   let info ← getConstInfo decl
   return info.type.forallArity
-
-
-namespace Mor
-
-structure Arg where
-  expr : Expr -- argument of type `α`
-  coe : Option Expr -- coercion `F → α → β`
-  deriving Inhabited
-
-partial def getAppNumArgs (e : Expr) :=
-  go e 0
-where
-  go : Expr → Nat → Nat
-    | .mdata _ b, n => go b n
-    | .app f _  , n =>
-      if f.isAppOfArity' ``DFunLike.coe 5 then
-        go f.appArg! (n + 1)
-      else
-        go f (n + 1)
-    | _        , n => n
-
-def withApp (e : Expr) (k : Expr → Array Arg → α) : α :=
-  let nargs := getAppNumArgs e
-  go e (mkArray nargs default) (nargs - 1)
-where
-  go : Expr → Array Arg → Nat → α
-    | .mdata _ b, as, i => go b as i
-    | .app (.app c f) a  , as, i =>
-      if c.isAppOfArity' ``DFunLike.coe 4 then
-        go f (as.set! i ⟨a,.some c⟩) (i-1)
-      else
-        go (.app c f) (as.set! i ⟨a,.none⟩) (i-1)
-    | .app f a  , as, i =>
-      go f (as.set! i ⟨a,.none⟩) (i-1)
-    | f        , as, _ => k f as
-
-def getAppFn (e : Expr) : Expr :=
-  match e with
-  | .mdata _ b => getAppFn b
-  | .app (.app c f) _ =>
-    if c.isAppOfArity' ``DFunLike.coe 4 then
-      getAppFn f
-    else
-      getAppFn (.app c f)
-  | .app f _ =>
-    getAppFn f
-  | e => e
-
-def getAppArgs (e : Expr) : Array Arg := withApp e fun _ xs => xs
-
-def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
-  xs.foldl (init := f) (fun f x =>
-    match x with
-    | ⟨x, .none⟩ => (f.app x)
-    | ⟨x, .some coe⟩ => (coe.app f).app x)
-
-private partial def getTypeArityAux (type : Expr) (n:Nat) : MetaM Nat := do
-  forallTelescopeReducing type fun xs b => do
-    try
-      let c ← mkAppOptM ``DFunLike.coe #[b,none,none,none]
-      return ← getTypeArityAux (← inferType c) (xs.size-1 + n)
-    catch _ =>
-      return xs.size + n
-
-def getArity (e : Expr) : MetaM Nat := do
-  getTypeArityAux (← inferType e) 0
-
-def constArity (decl : Name) : MetaM Nat := do
-  let info ← getConstInfo decl
-  return ← getTypeArityAux info.type 0
-
-
--- todo: provide faster implementation
-def headBeta (e : Expr) : Expr :=
-  Mor.withApp e fun f xs =>
-    xs.foldl (init := f) fun e x =>
-      match x.coe with
-      | none => e.beta #[x.expr]
-      | .some c => (c.app e).app x.expr
-
-
-end Mor
 
 
 /--
