@@ -153,10 +153,10 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {Q Q' : QuadraticForm R M}
 
-instance instDFunLike : DFunLike (QuadraticForm R M) M fun _ => R where
+instance instFunLike : FunLike (QuadraticForm R M) M R where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
-#align quadratic_form.fun_like QuadraticForm.instDFunLike
+#align quadratic_form.fun_like QuadraticForm.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply
 `DFunLike.hasCoeToFun` directly. -/
@@ -241,7 +241,7 @@ theorem map_zero : Q 0 = 0 := by
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R :=
-  { QuadraticForm.instDFunLike with map_zero := map_zero }
+  { QuadraticForm.instFunLike with map_zero := map_zero }
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
