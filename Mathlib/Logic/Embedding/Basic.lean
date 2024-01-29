@@ -47,6 +47,9 @@ theorem exists_surjective_iff :
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
+instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+  prf _ h := ⟨⟨_, h⟩, rfl⟩
+
 end Function
 
 section Equiv
