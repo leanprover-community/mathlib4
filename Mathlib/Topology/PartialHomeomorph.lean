@@ -46,9 +46,9 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*} {Z' Z'' Z''' : Type*} [TopologicalSpace X]
-  [TopologicalSpace Y] [TopologicalSpace Z]
-  [TopologicalSpace Z'] [TopologicalSpace Z''] [TopologicalSpace Z''']
+variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
+  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
+  [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
@@ -1041,18 +1041,18 @@ section Prod
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
 @[simps! (config := mfld_cfg) toPartialEquiv apply,
   simps! (config := .lemmasOnly) source target symm_apply]
-def prod (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Z Z') :
-    PartialHomeomorph (X × Z) (Y × Z') where
-  open_source := e.open_source.prod e'.open_source
-  open_target := e.open_target.prod e'.open_target
-  continuousOn_toFun := e.continuousOn.prod_map e'.continuousOn
-  continuousOn_invFun := e.continuousOn_symm.prod_map e'.continuousOn_symm
-  toPartialEquiv := e.toPartialEquiv.prod e'.toPartialEquiv
+def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    PartialHomeomorph (X × Y) (X' × Y') where
+  open_source := eX.open_source.prod eY.open_source
+  open_target := eX.open_target.prod eY.open_target
+  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
+  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
+  toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 #align local_homeomorph.prod PartialHomeomorph.prod
 
 @[simp, mfld_simps]
-theorem prod_symm (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Z Z') :
-    (e.prod e').symm = e.symm.prod e'.symm :=
+theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    (eX.prod eY).symm = eX.symm.prod eY.symm :=
   rfl
 #align local_homeomorph.prod_symm PartialHomeomorph.prod_symm
 
@@ -1064,26 +1064,27 @@ theorem refl_prod_refl :
 
 @[simp, mfld_simps]
 theorem prod_trans (e : PartialHomeomorph X Y) (f : PartialHomeomorph Y Z)
-    (e' : PartialHomeomorph Z' Z'') (f' : PartialHomeomorph Z'' Z''') :
+    (e' : PartialHomeomorph X' Y') (f' : PartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toPartialEquiv_injective <| e.1.prod_trans ..
 #align local_homeomorph.prod_trans PartialHomeomorph.prod_trans
 
-theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph X Y} {e₂ e₂' : PartialHomeomorph Z Z'}
-    (h : (e₁.prod e₂).source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
+theorem prod_eq_prod_of_nonempty {eX eX' : PartialHomeomorph X X'} {eY eY' : PartialHomeomorph Y Y'}
+    (h : (eX.prod eY).source.Nonempty) : eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
   obtain ⟨⟨x, y⟩, -⟩ := id h
   haveI : Nonempty X := ⟨x⟩
-  haveI : Nonempty Y := ⟨e₁ x⟩
-  haveI : Nonempty Z := ⟨y⟩
-  haveI : Nonempty Z' := ⟨e₂ y⟩
+  haveI : Nonempty X' := ⟨eX x⟩
+  haveI : Nonempty Y := ⟨y⟩
+  haveI : Nonempty Y' := ⟨eY y⟩
   simp_rw [PartialHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
     Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
 #align local_homeomorph.prod_eq_prod_of_nonempty PartialHomeomorph.prod_eq_prod_of_nonempty
 
-theorem prod_eq_prod_of_nonempty' {e₁ e₁' : PartialHomeomorph X Y} {e₂ e₂' : PartialHomeomorph Z Z'}
-    (h : (e₁'.prod e₂').source.Nonempty) : e₁.prod e₂ = e₁'.prod e₂' ↔ e₁ = e₁' ∧ e₂ = e₂' := by
-  rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ e₂']
+theorem prod_eq_prod_of_nonempty'
+    {eX eX' : PartialHomeomorph X X'} {eY eY' : PartialHomeomorph Y Y'}
+    (h : (eX'.prod eY').source.Nonempty) : eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
+  rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ eY']
 #align local_homeomorph.prod_eq_prod_of_nonempty' PartialHomeomorph.prod_eq_prod_of_nonempty'
 
 end Prod
