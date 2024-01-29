@@ -1733,9 +1733,6 @@ theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = 
   (congr_arg List.join <| map_congr h : _)
 #align list.bind_congr List.bind_congr
 
-@[simp]
-theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
-  rfl
 #align list.map_eq_map List.map_eq_map
 
 @[simp]
@@ -2656,12 +2653,6 @@ local notation a " ⋆ " b => op a b
 /-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
-theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a₁ ⋆ l <*> a₂
-  | [], a₁, a₂ => rfl
-  | a :: l, a₁, a₂ =>
-    calc
-      ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
-      _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
 #align list.foldl_assoc List.foldl_assoc
 
 theorem foldl_op_eq_op_foldr_assoc :

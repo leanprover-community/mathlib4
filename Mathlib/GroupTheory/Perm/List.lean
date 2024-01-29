@@ -61,7 +61,7 @@ theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
 @[simp]
 theorem formPerm_cons_cons (x y : α) (l : List α) :
     formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
-  prod_cons
+  prod_cons'
 #align list.form_perm_cons_cons List.formPerm_cons_cons
 
 theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
@@ -168,7 +168,7 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
   · cases' l' with z l'
     · simp
     · intro x
-      simp only [Set.union_subset_iff, mem_cons, zipWith_cons_cons, foldr, prod_cons,
+      simp only [Set.union_subset_iff, mem_cons, zipWith_cons_cons, foldr, prod_cons',
         mul_apply]
       intro hx
       by_cases h : x ∈ { x | (zipWith swap l l').prod x ≠ x }

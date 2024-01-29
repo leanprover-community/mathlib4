@@ -125,7 +125,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
     Disjoint f l.prod := by
   induction' l with g l ih
   · exact disjoint_one_right _
-  · rw [List.prod_cons]
+  · rw [List.prod_cons']
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 #align equiv.perm.disjoint_prod_right Equiv.Perm.disjoint_prod_right
 
@@ -336,7 +336,7 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
   simp_rw [mem_support, not_not] at hx ⊢
   induction' l with f l ih
   · rfl
-  · rw [List.prod_cons, mul_apply, ih, hx]
+  · rw [List.prod_cons', mul_apply, ih, hx]
     simp only [List.find?, List.mem_cons, true_or]
     intros f' hf'
     refine' hx f' _
@@ -418,7 +418,7 @@ theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise D
 theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
   induction' l with hd tl hl
   · simp
-  · rw [List.prod_cons, List.map_cons, List.foldr_cons]
+  · rw [List.prod_cons', List.map_cons, List.foldr_cons]
     refine' (support_mul_le hd tl.prod).trans _
     exact sup_le_sup le_rfl hl
 #align equiv.perm.support_prod_le Equiv.Perm.support_prod_le
@@ -516,9 +516,9 @@ theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pa
     rw [List.pairwise_cons] at hl
     rw [List.mem_cons] at h
     rcases h with (rfl | h)
-    · rw [List.prod_cons, mul_apply,
+    · rw [List.prod_cons', mul_apply,
         not_mem_support.mp ((disjoint_prod_right tl hl.left).mem_imp hx)]
-    · rw [List.prod_cons, mul_apply, ← IH h hl.right _ hx, eq_comm, ← not_mem_support]
+    · rw [List.prod_cons', mul_apply, ← IH h hl.right _ hx, eq_comm, ← not_mem_support]
       refine' (hl.left _ h).symm.mem_imp _
       simpa using hx
 #align equiv.perm.eq_on_support_mem_disjoint Equiv.Perm.eq_on_support_mem_disjoint
@@ -648,7 +648,7 @@ theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.
   induction' l with a t ih
   · exact card_support_eq_zero.mpr rfl
   · obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
-    rw [List.prod_cons, List.map_cons, List.sum_cons, ← ih ht]
+    rw [List.prod_cons', List.map_cons, List.sum_cons, ← ih ht]
     exact (disjoint_prod_right _ ha).card_support_mul
 #align equiv.perm.card_support_prod_list_of_pairwise_disjoint Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
 

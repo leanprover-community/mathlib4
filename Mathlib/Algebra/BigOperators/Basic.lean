@@ -1503,7 +1503,7 @@ open List
 theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMonoid M] (f : α → M) :
     (l.map f).prod = ∏ m in l.toFinset, f m ^ l.count m := by
   induction' l with a s IH; · simp only [map_nil, prod_nil, count_nil, pow_zero, prod_const_one]
-  simp only [List.map, List.prod_cons, toFinset_cons, IH]
+  simp only [List.map, List.prod_cons', toFinset_cons, IH]
   by_cases has : a ∈ s.toFinset
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
       prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ]
@@ -2353,7 +2353,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint l.sum a ↔ ∀ b ∈ l, Multiset.Disjoint b a := by
   induction' l with b bs ih
   · simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
-  · simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
+  · simp_rw [List.sum_cons', disjoint_add_left, List.mem_cons, forall_eq_or_imp]
     simp [and_congr_left_iff, iff_self_iff, ih]
 #align multiset.disjoint_list_sum_left Multiset.disjoint_list_sum_left
 

@@ -30,7 +30,7 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
     induction' L with L_hd L_tl L_ih
     · rw [prod_nil] at h
       exact absurd h pp.not_dvd_one
-    · rw [prod_cons] at h
+    · rw [prod_cons'] at h
       cases' pp.dvd_or_dvd h with hd hd
       · exact ⟨L_hd, mem_cons_self L_hd L_tl, hd⟩
       · obtain ⟨x, hx1, hx2⟩ := L_ih hd
@@ -59,10 +59,10 @@ theorem perm_of_prod_eq_prod :
     ∀ {l₁ l₂ : List M}, l₁.prod = l₂.prod → (∀ p ∈ l₁, Prime p) → (∀ p ∈ l₂, Prime p) → Perm l₁ l₂
   | [], [], _, _, _ => Perm.nil
   | [], a :: l, h₁, _, h₃ =>
-    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁.symm ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
+    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁.symm ▸ (@prod_cons' _ _ l a).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₃ a (mem_cons_self _ _)))
   | a :: l, [], h₁, h₂, _ =>
-    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁ ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
+    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁ ▸ (@prod_cons' _ _ l a).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₂ a (mem_cons_self _ _)))
   | a :: l₁, b :: l₂, h, hl₁, hl₂ => by
     classical
@@ -70,11 +70,11 @@ theorem perm_of_prod_eq_prod :
       have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp => hl₂ p (mem_of_mem_erase hp)
       have ha : a ∈ b :: l₂ :=
         mem_list_primes_of_dvd_prod (hl₁ a (mem_cons_self _ _)) hl₂
-          (h ▸ by rw [prod_cons]; exact dvd_mul_right _ _)
+          (h ▸ by rw [prod_cons']; exact dvd_mul_right _ _)
       have hb : b :: l₂ ~ a :: (b :: l₂).erase a := perm_cons_erase ha
       have hl : prod l₁ = prod ((b :: l₂).erase a) :=
         (mul_right_inj' (hl₁ a (mem_cons_self _ _)).ne_zero).1 <| by
-          rwa [← prod_cons, ← prod_cons, ← hb.prod_eq]
+          rwa [← prod_cons', ← prod_cons', ← hb.prod_eq]
       exact Perm.trans ((perm_of_prod_eq_prod hl hl₁' hl₂').cons _) hb.symm
 #align perm_of_prod_eq_prod perm_of_prod_eq_prod
 

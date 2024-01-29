@@ -75,7 +75,7 @@ theorem prod_factors : ∀ {n}, n ≠ 0 → List.prod (factors n) = n
       have h₁ : (k + 2) / m ≠ 0 := fun h => by
         have : (k + 2) = 0 * m := (Nat.div_eq_iff_eq_mul_left (minFac_pos _) (minFac_dvd _)).1 h
         rw [zero_mul] at this; exact (show k + 2 ≠ 0 by simp) this
-      rw [factors, List.prod_cons, prod_factors h₁, Nat.mul_div_cancel' (minFac_dvd _)]
+      rw [factors, List.prod_cons', prod_factors h₁, Nat.mul_div_cancel' (minFac_dvd _)]
 #align nat.prod_factors Nat.prod_factors
 
 theorem factors_prime {p : ℕ} (hp : Nat.Prime p) : p.factors = [p] := by

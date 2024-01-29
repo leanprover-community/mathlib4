@@ -578,7 +578,7 @@ theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
         HL2 ▸
           List.recOn L inv_one.symm fun hd tl ih => by
             rw [List.reverse_cons, List.map_append, List.prod_append, ih, List.map_singleton,
-              List.prod_cons, List.prod_nil, mul_one, List.prod_cons, mul_inv_rev]⟩)
+              List.prod_cons', List.prod_nil, mul_one, List.prod_cons', mul_inv_rev]⟩)
     fun {x y} _ _ ⟨L1, HL1, HL2⟩ ⟨L2, HL3, HL4⟩ =>
     ⟨L1 ++ L2, List.forall_mem_append.2 ⟨HL1, HL3⟩, by rw [List.prod_append, HL2, HL4]⟩
 #align group.exists_list_of_mem_closure Group.exists_list_of_mem_closure

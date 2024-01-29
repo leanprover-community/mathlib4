@@ -126,7 +126,7 @@ theorem noncommProd_coe (l : List α) (comm) : noncommProd (l : Multiset α) com
   simp only [noncommFold_coe]
   induction' l with hd tl hl
   · simp
-  · rw [List.prod_cons, List.foldr, hl]
+  · rw [List.prod_cons', List.foldr, hl]
     intro x hx y hy
     exact comm (List.mem_cons_of_mem _ hx) (List.mem_cons_of_mem _ hy)
 #align multiset.noncomm_prod_coe Multiset.noncommProd_coe
@@ -150,10 +150,10 @@ theorem noncommProd_cons (s : Multiset α) (a : α) (comm) :
 theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
     noncommProd (a ::ₘ s) comm = noncommProd s (comm.mono fun _ => mem_cons_of_mem) * a := by
   induction' s using Quotient.inductionOn with s
-  simp only [quot_mk_to_coe, cons_coe, noncommProd_coe, List.prod_cons]
+  simp only [quot_mk_to_coe, cons_coe, noncommProd_coe, List.prod_cons']
   induction' s with hd tl IH
   · simp
-  · rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
+  · rw [List.prod_cons', mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
     · congr 1
       apply comm.of_refl <;> simp
     · intro x hx y hy

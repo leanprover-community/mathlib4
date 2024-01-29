@@ -545,7 +545,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
     · simp [ofDigits]
-    · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
+    · simp only [List.length_cons, List.sum_cons', self_div_pow_eq_ofDigits_drop _ _ h,
           digits_ofDigits p h (hd :: tl) h_lt (fun _ => h_ne_zero)]
       simp only [ofDigits]
       rw [sum_range_succ, Nat.cast_id]

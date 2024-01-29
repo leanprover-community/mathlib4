@@ -396,7 +396,7 @@ theorem prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
   | [], ys => by simp [Nat.zero_le]
   | xs, [] => by simp [Nat.zero_le]
   | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    simp only [drop, length, zipWith_cons_cons, prod_cons']
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]

@@ -26,7 +26,7 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) sum'_nil]
 theorem prod_nil : ([] : List M).prod = 1 :=
   rfl
 #align list.prod_nil List.prod_nil
@@ -38,29 +38,32 @@ theorem prod_singleton : [a].prod = a :=
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
 
+-- We add a prime to the name here to avoid `List.sum_cons` defined in Std,
+-- with different typeclass requirements.
+-- Later we should re-unify them.
 @[to_additive (attr := simp)]
-theorem prod_cons : (a :: l).prod = a * l.prod :=
+theorem prod_cons' : (a :: l).prod = a * l.prod :=
   calc
     (a :: l).prod = foldl (· * ·) (a * 1) l :=
       by simp only [List.prod, foldl_cons, one_mul, mul_one]
-    _ = _ := foldl_assoc
-#align list.prod_cons List.prod_cons
-#align list.sum_cons List.sum_cons
+    _ = _ := foldl_assoc _ _ _ _
+#align list.prod_cons List.prod_cons'
+#align list.sum_cons List.sum_cons'
 
 @[to_additive]
 lemma prod_induction
     (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
     p l.prod := by
   induction' l with a l ih; simpa
-  rw [List.prod_cons]
+  rw [List.prod_cons']
   simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
   exact hom _ _ (base.1) (ih base.2)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) sum'_append]
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
     (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]
-    _ = l₁.prod * l₂.prod := foldl_assoc
+    _ = l₁.prod * l₂.prod := foldl_assoc _ _ _ _
 #align list.prod_append List.prod_append
 #align list.sum_append List.sum_append
 
@@ -72,14 +75,14 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 
 @[to_additive (attr := simp)]
 theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons]]
+  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons']]
 #align list.prod_join List.prod_join
 #align list.sum_join List.sum_join
 
 @[to_additive]
 theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
   | [] => rfl
-  | cons a l => by rw [prod_cons, foldr_cons, prod_eq_foldr]
+  | cons a l => by rw [prod_cons', foldr_cons, prod_eq_foldr]
 #align list.prod_eq_foldr List.prod_eq_foldr
 #align list.sum_eq_foldr List.sum_eq_foldr
 
@@ -88,7 +91,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction' n with n ih
   · rw [pow_zero]
     rfl
-  · rw [replicate_succ, prod_cons, ih, pow_succ]
+  · rw [replicate_succ, prod_cons', ih, pow_succ]
 #align list.prod_replicate List.prod_replicate
 #align list.sum_replicate List.sum_replicate
 
@@ -101,7 +104,7 @@ theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
     (h₂ : ∀ ⦃i a b⦄, r a b → r (f i * a) (g i * b)) : r (l.map f).prod (l.map g).prod :=
-  List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
+  List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons', h₂ hl]
 #align list.prod_hom_rel List.prod_hom_rel
 #align list.sum_hom_rel List.sum_hom_rel
 
@@ -159,7 +162,7 @@ theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G 
 theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.prod
   | [], _ => by simp
   | h :: t, u => by
-    simp only [List.prod_cons]
+    simp only [List.prod_cons']
     exact IsUnit.mul (u h (mem_cons_self h t)) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
 #align list.prod_is_unit List.prod_isUnit
 #align list.sum_is_add_unit List.sum_isAddUnit
@@ -170,7 +173,7 @@ theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
   refine' ⟨fun h => _, prod_isUnit⟩
   induction' L with m L ih
   · exact fun m' h' => False.elim (not_mem_nil m' h')
-  rw [prod_cons, IsUnit.mul_iff] at h
+  rw [prod_cons', IsUnit.mul_iff] at h
   exact fun m' h' => Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 #align list.prod_is_unit_iff List.prod_isUnit_iff
 #align list.sum_is_add_unit_iff List.sum_isAddUnit_iff
@@ -181,7 +184,7 @@ theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * 
   | L, 0 => by simp
   | h :: t, n + 1 => by
     dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
+    rw [prod_cons', prod_cons', mul_assoc, prod_take_mul_prod_drop t]
 #align list.prod_take_mul_prod_drop List.prod_take_mul_prod_drop
 #align list.sum_take_add_sum_drop List.sum_take_add_sum_drop
 
@@ -192,7 +195,7 @@ theorem prod_take_succ :
   | h :: t, 0, _ => rfl
   | h :: t, n + 1, p => by
     dsimp
-    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
+    rw [prod_cons', prod_cons', prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
 #align list.prod_take_succ List.prod_take_succ
 #align list.sum_take_succ List.sum_take_succ
 
@@ -258,7 +261,7 @@ theorem _root_.Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Co
   induction' l with z l IH
   · simp
   · rw [List.forall_mem_cons] at h
-    rw [List.prod_cons]
+    rw [List.prod_cons']
     exact Commute.mul_right h.1 (IH h.2)
 #align commute.list_prod_right Commute.list_prod_right
 #align add_commute.list_sum_right AddCommute.list_sum_right
@@ -276,7 +279,7 @@ theorem Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap 
     l₁.prod ≤ l₂.prod := by
   induction' h with a b la lb hab ih ih'
   · rfl
-  · simpa only [prod_cons] using mul_le_mul' hab ih'
+  · simpa only [prod_cons'] using mul_le_mul' hab ih'
 #align list.forall₂.prod_le_prod' List.Forall₂.prod_le_prod'
 #align list.forall₂.sum_le_sum List.Forall₂.sum_le_sum
 
@@ -293,10 +296,10 @@ theorem Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (�
   induction h with
   | slnil => rfl
   | cons a _ ih' =>
-    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
+    simp only [prod_cons', forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
   | cons₂ a _ ih' =>
-    simp only [prod_cons, forall_mem_cons] at h₁ ⊢
+    simp only [prod_cons', forall_mem_cons] at h₁ ⊢
     exact mul_le_mul_left' (ih' h₁.2) _
 #align list.sublist.prod_le_prod' List.Sublist.prod_le_prod'
 #align list.sublist.sum_le_sum List.Sublist.sum_le_sum
@@ -326,7 +329,7 @@ theorem prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
   induction' l with i l ihl
   · rcases h₂ with ⟨_, ⟨⟩, _⟩
-  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons] at h₁ h₂ ⊢
+  simp only [forall_mem_cons, exists_mem_cons, map_cons, prod_cons'] at h₁ h₂ ⊢
   cases h₂
   · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
   · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
@@ -377,7 +380,7 @@ theorem one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤
   -- [covariant_class M M (function.swap (*)) (≤)]
   induction' l with hd tl ih
   · rfl
-  rw [prod_cons]
+  rw [prod_cons']
   exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 #align list.one_le_prod_of_one_le List.one_le_prod_of_one_le
 #align list.sum_nonneg List.sum_nonneg
@@ -394,7 +397,7 @@ monoid with zero with no divisors, then this implication becomes an `iff`, see
 theorem prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 := by
   induction' L with a L ihL
   · exact absurd h (not_mem_nil _)
-  · rw [prod_cons]
+  · rw [prod_cons']
     cases' mem_cons.1 h with ha hL
     exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (ihL hL)]
 #align list.prod_eq_zero List.prod_eq_zero
@@ -406,7 +409,7 @@ theorem prod_eq_zero_iff [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀}
     L.prod = 0 ↔ (0 : M₀) ∈ L := by
   induction' L with a L ihL
   · simp
-  · rw [prod_cons, mul_eq_zero, ihL, mem_cons, eq_comm]
+  · rw [prod_cons', mul_eq_zero, ihL, mem_cons, eq_comm]
 #align list.prod_eq_zero_iff List.prod_eq_zero_iff
 
 theorem prod_ne_zero [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} (hL : (0 : M₀) ∉ L) :
@@ -503,7 +506,7 @@ theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
   | [b], h, _ => by simpa using h
   | a :: b :: l, hl₁, _ => by
     simp only [forall_eq_or_imp, List.mem_cons] at hl₁
-    rw [List.prod_cons]
+    rw [List.prod_cons']
     apply one_lt_mul_of_lt_of_le' hl₁.1
     apply le_of_lt ((b :: l).one_lt_prod_of_one_lt _ (l.cons_ne_nil b))
     intro x hx; cases hx
@@ -517,7 +520,7 @@ theorem single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, 
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
   · simp
-  simp_rw [prod_cons, forall_mem_cons] at hl₁ ⊢
+  simp_rw [prod_cons', forall_mem_cons] at hl₁ ⊢
   constructor
   case cons.left => exact le_mul_of_one_le_right' (one_le_prod_of_one_le hl₁.2)
   case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
@@ -537,7 +540,7 @@ theorem all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
 theorem prod_eq_one [Monoid M] {l : List M} (hl : ∀ x ∈ l, x = (1 : M)) : l.prod = 1 := by
   induction' l with i l hil
   · rfl
-  rw [List.prod_cons, hil fun x hx => hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l),
+  rw [List.prod_cons', hil fun x hx => hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l),
     one_mul]
 #align list.prod_eq_one List.prod_eq_one
 #align list.sum_eq_zero List.sum_eq_zero
@@ -553,7 +556,7 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
   induction' l with hd tl IH
   · simpa using h0
-  simp only [List.sum_cons, List.foldr_map, List.foldr] at IH ⊢
+  simp only [List.sum_cons', List.foldr_map, List.foldr] at IH ⊢
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
 
@@ -563,7 +566,7 @@ theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a �
     a * (l.erase a).prod = l.prod := by
   induction' l with b l ih; simp at ha
   obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha; simp
-  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
+  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons', List.prod_cons', ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
     ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
 
@@ -579,8 +582,8 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
     ∀ {l : List ι}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
-    · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail _ ne.symm, prod_cons, prod_map_erase _ h,
+    · simp only [map, erase_cons_head, prod_cons']
+    · simp only [map, erase_cons_tail _ ne.symm, prod_cons', prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
@@ -595,7 +598,7 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     0 < l.prod := by
   induction' l with a l ih
   · simp
-  · rw [prod_cons]
+  · rw [prod_cons']
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
@@ -604,7 +607,7 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
-  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
+  | (x :: xs) => by simp_rw [prod_cons', forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
     list_prod_pos]
 #align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
 

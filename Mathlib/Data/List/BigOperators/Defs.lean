@@ -17,8 +17,9 @@ namespace List
 /-- Product of a list.
 
 `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`"]
-def prod {α} [Mul α] [One α] : List α → α :=
+@[to_additive existing "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`",
+  to_additive_change_numeral 3]
+def prod {α} [Mul α] [OfNat α 1] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
 #align list.sum List.sum

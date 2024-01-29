@@ -84,7 +84,7 @@ theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
   induction' l with hd tl IH
   · simp
   · simp only [List.pairwise_cons] at hl
-    simp only [List.sum_cons, List.foldr_cons, Function.comp_apply]
+    simp only [List.sum_cons', List.foldr_cons, Function.comp_apply]
     rw [Finsupp.support_add_eq, IH hl.right, Finset.sup_eq_union]
     suffices _root_.Disjoint hd.support (tl.foldr (fun x y ↦ (Finsupp.support x ⊔ y)) ∅) by
       exact Finset.disjoint_of_subset_right (List.support_sum_subset _) this

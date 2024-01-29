@@ -30,7 +30,7 @@ theorem list_sum_right [NonUnitalNonAssocSemiring R] (a : R) (l : List R)
     (h : ∀ b ∈ l, Commute a b) : Commute a l.sum := by
   induction' l with x xs ih
   · exact Commute.zero_right _
-  · rw [List.sum_cons]
+  · rw [List.sum_cons']
     exact (h _ <| mem_cons_self _ _).add_right (ih fun j hj => h _ <| mem_cons_of_mem _ hj)
 #align commute.list_sum_right Commute.list_sum_right
 
@@ -80,14 +80,14 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := mem_split ha
-  rw [h, prod_append, prod_cons, mul_left_comm]
+  rw [h, prod_append, prod_cons', mul_left_comm]
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
 
 theorem dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih
   · exact dvd_zero _
-  · rw [List.sum_cons]
+  · rw [List.sum_cons']
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun x hx => h x (mem_cons_of_mem _ hx))
 #align list.dvd_sum List.dvd_sum
 
@@ -142,7 +142,7 @@ theorem op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod := by
   intro l; induction l with
   | nil => rfl
   | cons x xs ih =>
-    rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
+    rw [List.prod_cons', List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
 #align mul_opposite.op_list_prod MulOpposite.op_list_prod
 
 theorem unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by

@@ -29,7 +29,7 @@ variable [Monoid α] [Monoid β] [MonoidHomClass F α β]
 theorem image_list_prod (f : F) :
     ∀ l : List (Set α), (f : α → β) '' l.prod = (l.map fun s => f '' s).prod
   | [] => image_one.trans <| congr_arg singleton (map_one f)
-  | a :: as => by rw [List.map_cons, List.prod_cons, List.prod_cons, image_mul, image_list_prod _ _]
+  | a :: as => by rw [List.map_cons, List.prod_cons', List.prod_cons', image_mul, image_list_prod _ _]
 #align set.image_list_prod Set.image_list_prod
 #align set.image_list_sum Set.image_list_sum
 
@@ -97,7 +97,7 @@ theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α
     (t.map g).prod ∈ (t.map f).prod := by
   induction' t with h tl ih
   · simp_rw [List.map_nil, List.prod_nil, Set.mem_one]
-  · simp_rw [List.map_cons, List.prod_cons]
+  · simp_rw [List.map_cons, List.prod_cons']
     exact mul_mem_mul (hg h <| List.mem_cons_self _ _)
       (ih fun i hi ↦ hg i <| List.mem_cons_of_mem _ hi)
 #align set.list_prod_mem_list_prod Set.list_prod_mem_list_prod
@@ -109,7 +109,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
     (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction' t with h tl ih
   · rfl
-  · simp_rw [List.map_cons, List.prod_cons]
+  · simp_rw [List.map_cons, List.prod_cons']
     exact mul_subset_mul (hf h <| List.mem_cons_self _ _)
       (ih fun i hi ↦ hf i <| List.mem_cons_of_mem _ hi)
 #align set.list_prod_subset_list_prod Set.list_prod_subset_list_prod

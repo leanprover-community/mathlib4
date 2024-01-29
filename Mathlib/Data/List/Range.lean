@@ -168,7 +168,7 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
 @[to_additive]
 theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
-  rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
+  rw [range_succ, map_append, map_singleton, prod_append, prod_cons', prod_nil, mul_one]
 #align list.prod_range_succ List.prod_range_succ
 #align list.sum_range_succ List.sum_range_succ
 

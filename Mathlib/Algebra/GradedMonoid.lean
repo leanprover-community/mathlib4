@@ -448,7 +448,7 @@ theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, 
   match l with
   | [] => simp; rfl
   | head::tail =>
-    simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
+    simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons']
 #align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dProd
 
 /-- A variant of `GradedMonoid.mk_list_dProd` for rewriting in the other direction. -/
@@ -514,7 +514,7 @@ theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α
     rw [List.dProd_nil, List.map_nil, List.prod_nil]
     rfl
   | head::tail =>
-    rw [List.dProd_cons, List.map_cons, List.prod_cons, List.dProd_monoid tail _ _]
+    rw [List.dProd_cons, List.map_cons, List.prod_cons', List.dProd_monoid tail _ _]
     rfl
 #align list.dprod_monoid List.dProd_monoid
 
@@ -613,7 +613,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
     rw [List.map_nil, List.map_nil, List.prod_nil, List.sum_nil]
     exact one_mem_graded _
   | head::tail =>
-    rw [List.map_cons, List.map_cons, List.prod_cons, List.sum_cons]
+    rw [List.map_cons, List.map_cons, List.prod_cons', List.sum_cons']
     exact
       mul_mem_graded (h _ <| List.mem_cons_self _ _)
         (list_prod_map_mem_graded tail _ _ fun j hj => h _ <| List.mem_cons_of_mem _ hj)
@@ -694,7 +694,7 @@ theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α
   | [] =>
     rw [List.dProd_nil, coe_gOne, List.map_nil, List.prod_nil]
   | head::tail =>
-    rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons,
+    rw [List.dProd_cons, coe_gMul, List.map_cons, List.prod_cons',
       SetLike.coe_list_dProd _ _ _ tail]
 #align set_like.coe_list_dprod SetLike.coe_list_dProd
 

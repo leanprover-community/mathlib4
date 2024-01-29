@@ -526,7 +526,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
         Tendsto (fun b => (l.map fun c => f c b).prod) x (𝓝 (l.map a).prod)
   | [], _ => by simp [tendsto_const_nhds]
   | f::l, h => by
-    simp only [List.map_cons, List.prod_cons]
+    simp only [List.map_cons, List.prod_cons']
     exact
       (h f (List.mem_cons_self _ _)).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
