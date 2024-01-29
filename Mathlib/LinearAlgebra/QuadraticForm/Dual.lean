@@ -51,7 +51,8 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem nondenerate_dualProd :
-    (LinearMap.toBilin (dualProd R M)).Nondegenerate ↔ Function.Injective (Module.Dual.eval R M) := by
+    (LinearMap.toBilin (dualProd R M)).Nondegenerate
+    ↔ Function.Injective (Module.Dual.eval R M) := by
   classical
   rw [nondegenerate_iff_ker_eq_bot]
   rw [LinearMap.ker_eq_bot]
