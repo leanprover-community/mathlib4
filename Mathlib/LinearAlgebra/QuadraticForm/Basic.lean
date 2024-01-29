@@ -358,21 +358,12 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
     QuadraticForm R M :=
   { toFun
     toFun_smul
-    exists_companion' := ⟨ {
-      toFun := fun a => ⟨{
-        toFun := polar toFun a
-        map_add' := fun x y  => by simp_rw [polar_comm _ a, polar_add_left]
-      }, fun _ _ => by
-        simp_rw [polar_comm _ a, polar_smul_left]
-        rfl
-
-      ⟩
-      map_add' := fun _ _ => LinearMap.ext (polar_add_left _ _)
-      map_smul' := fun _ _ => LinearMap.ext (polar_smul_left _ _)
-  }, fun q u =>  by
-      simp only [LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe]
-      rw [polar, sub_sub, add_sub_cancel'_right]
-  ⟩}
+    exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
+      (fun x y z => by simp_rw [polar_comm _ x, polar_add_left])
+      (fun x y z => by rw [polar_comm, polar_smul_left, polar_comm]),
+      fun q u =>  by
+      simp only [LinearMap.mk₂_apply]
+      rw [polar, sub_sub, add_sub_cancel'_right]⟩}
 #align quadratic_form.of_polar QuadraticForm.ofPolar
 
 /-- In a ring the companion bilinear form is unique and equal to `QuadraticForm.polar`. -/
