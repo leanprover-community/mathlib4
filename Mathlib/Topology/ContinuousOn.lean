@@ -508,18 +508,7 @@ theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t �
 
 theorem eventually_nhds_subtype_iff_eventually_nhdsWithin (s : Set α) (a : s) (P : α → Prop) :
     (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] (a:α), P x := by
-  trans ∀ᶠ x in 𝓝[s] (a:α), ∃ b : s, P b ∧ (b:α) = x
-  · simp_rw [eventually_iff, mem_nhds_subtype_iff_nhdsWithin]
-    rfl
-  · constructor
-    · intro H
-      filter_upwards [H]
-      rintro _ ⟨x, hx, rfl⟩
-      exact hx
-    · intro H
-      have H' : ∀ᶠ x in 𝓝[s] (a:α), x ∈ s := eventually_mem_nhdsWithin
-      filter_upwards [H, H'] with x hx hx'
-      exact ⟨⟨x, hx'⟩, hx, rfl⟩
+  rw [← eventually_map, nhds_induced, nhdsWithin, map_comap_setCoe_val]
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
