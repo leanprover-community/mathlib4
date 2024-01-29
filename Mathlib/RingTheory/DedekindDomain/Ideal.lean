@@ -703,6 +703,16 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
 
+lemma Ideal.prime_span_singleton_of_prime {a : A} (h : Prime a) : Prime (Ideal.span {a}) := by
+  refine Ideal.prime_of_isPrime ?_ <| (Ideal.span_singleton_prime h.ne_zero).mpr h
+  simpa using h.ne_zero
+
+open Submodule.IsPrincipal in
+lemma Ideal.prime_generator_of_prime {P : Ideal A} (h : Prime P) [P.IsPrincipal] :
+    Prime (generator P) :=
+  have : Ideal.IsPrime P := Ideal.isPrime_of_prime h
+  prime_generator_of_isPrime _ h.ne_zero
+
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
@@ -867,6 +877,15 @@ theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ 
 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
+
+theorem factors_span_eq [DecidableEq K[X]] [DecidableEq (Ideal K[X])] {p : K[X]} :
+    factors (span {p}) = (factors p).map (fun q ↦ span {q}) := by
+  rcases eq_or_ne p 0 with rfl | hp; · simpa [Set.singleton_zero] using normalizedFactors_zero
+  have : ∀ q ∈ (factors p).map (fun q ↦ span {q}), Prime q := fun q hq ↦ by
+    obtain ⟨r, hr, rfl⟩ := Multiset.mem_map.mp hq
+    exact prime_span_singleton_of_prime <| prime_of_factor r hr
+  rw [← span_singleton_eq_span_singleton.mpr (factors_prod hp), ← multiset_prod_span_singleton,
+    factors_eq_normalizedFactors, normalizedFactors_prod_of_prime this]
 
 end Ideal
 
