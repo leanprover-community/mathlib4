@@ -7,7 +7,7 @@ Authors: Emilie Burgun
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.Topology.Basic
-import Mathlib.Topology.RegularOpen
+import Mathlib.Topology.Sets.RegularOpens
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.InjectiveAction
 

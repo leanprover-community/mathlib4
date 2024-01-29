@@ -7,7 +7,7 @@ Authors: Emilie Burgun
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.GroupTheory.GroupAction.FixedPoints
-import Mathlib.Topology.RegularOpen
+import Mathlib.Topology.Sets.RegularOpens
 
 /-!
 # Regular supports in Rubin's theorem
