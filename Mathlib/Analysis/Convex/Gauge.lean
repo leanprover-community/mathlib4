@@ -501,7 +501,7 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     gauge s x = 1 ↔ x ∈ frontier s := by
   rw [eq_iff_le_not_lt, gauge_le_one_iff_mem_closure hc hs₀, gauge_lt_one_iff_mem_interior hc hs₀]
   rfl
-  
+
 end TopologicalVectorSpace
 
 section IsROrC
