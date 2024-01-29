@@ -72,8 +72,7 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
       Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
   rw [Sum.forall]
   unfold OrthonormalBasis.prod
-  constructor
-  all_goals {intro; simp; rfl}
+  aesop
 
 end OrthonormalBasis
 end
