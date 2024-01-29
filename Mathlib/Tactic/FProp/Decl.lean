@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Qq
-import Mathlib.Tactic.FProp.FPropTypes
+import Mathlib.Tactic.FProp.Types
 
 
 namespace Mathlib

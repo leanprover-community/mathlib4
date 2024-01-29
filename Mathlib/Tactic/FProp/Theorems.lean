@@ -5,7 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
 import Mathlib.Tactic.FProp.RefinedDiscrTree
-import Mathlib.Tactic.FProp.FPropDecl
+import Mathlib.Tactic.FProp.Decl
 
 namespace Mathlib
 open Lean Meta
