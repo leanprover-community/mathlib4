@@ -256,10 +256,9 @@ instance [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
 
 variable [BraidedCategory C]
 
-@[simp] theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
+theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
-@[simp] theorem tensorObj_counit (A B : Comon_ C) :
-    (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
+theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
   rfl
 
 /--
@@ -277,7 +276,7 @@ The comultiplication on the tensor product of two comonoids is
 the tensor product of the comultiplications followed by the tensor strength
 (to shuffle the factors back into order).
 -/
-@[simp] theorem tensorObj_comul (A B : Comon_ C) :
+theorem tensorObj_comul (A B : Comon_ C) :
     (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ C (A.X, A.X) (B.X, B.X) := by
   rw [tensorObj_comul']
   congr
