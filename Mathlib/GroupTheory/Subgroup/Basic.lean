@@ -3562,6 +3562,17 @@ theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
 #align monoid_hom.subgroup_map_surjective MonoidHom.subgroupMap_surjective
 #align add_monoid_hom.add_subgroup_map_surjective AddMonoidHom.addSubgroupMap_surjective
 
+/-- The `MonoidHom` of subgroups induced by a `MonoidHom` of groups. -/
+@[to_additive "The `AddMonoidHom` of additive subgroups induced by an `AddMonoidHom` of additive
+groups."]
+def subgroupMap' (f : G →* G') {H : Subgroup G} {H' : Subgroup G'} (h : H.map f ≤ H') : H →* H' :=
+  f.submonoidMap' h
+
+@[to_additive]
+lemma subgroupMap'_injective (f : G →* G') {H : Subgroup G} {H' : Subgroup G'} {hf : H.map f ≤ H'}
+    (hf' : Function.Injective f) : Function.Injective <| f.subgroupMap' hf :=
+  f.submonoidMap'_injective hf'
+
 end MonoidHom
 
 namespace MulEquiv
@@ -3587,10 +3598,10 @@ lemma subgroupCongr_symm_apply (h : H = K) (x) :
     ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
 
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
-use `Subgroup.equiv_map_of_injective`. -/
+use `Subgroup.equivMapOfInjective`. -/
 @[to_additive
       "An additive subgroup is isomorphic to its image under an isomorphism. If you only
-      have an injective map, use `AddSubgroup.equiv_map_of_injective`."]
+      have an injective map, use `AddSubgroup.equivMapOfInjective`."]
 def subgroupMap (e : G ≃* G') (H : Subgroup G) : H ≃* H.map (e : G →* G') :=
   MulEquiv.submonoidMap (e : G ≃* G') H.toSubmonoid
 #align mul_equiv.subgroup_map MulEquiv.subgroupMap

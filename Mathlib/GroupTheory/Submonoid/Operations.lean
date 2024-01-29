@@ -1257,7 +1257,7 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
     N'.comap f →* N' where
   toFun x := ⟨f x, x.2⟩
   map_one' := Subtype.eq f.map_one
-  map_mul' x y := Subtype.eq (f.map_mul x y)
+  map_mul' x y := Subtype.eq <| f.map_mul x y
 #align monoid_hom.submonoid_comap MonoidHom.submonoidComap
 #align add_monoid_hom.add_submonoid_comap AddMonoidHom.addSubmonoidComap
 #align monoid_hom.submonoid_comap_apply_coe MonoidHom.submonoidComap_apply_coe
@@ -1270,7 +1270,7 @@ See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
       `AddEquiv.AddSubmonoidMap` for a variant for `AddEquiv`s."]
 def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
   toFun x := ⟨f x, ⟨x, x.2, rfl⟩⟩
-  map_one' := Subtype.eq <| f.map_one
+  map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq <| f.map_mul x y
 #align monoid_hom.submonoid_map MonoidHom.submonoidMap
 #align add_monoid_hom.add_submonoid_map AddMonoidHom.addSubmonoidMap
@@ -1346,9 +1346,9 @@ theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ 
 #align submonoid.mrange_inl_sup_mrange_inr Submonoid.mrange_inl_sup_mrange_inr
 #align add_submonoid.mrange_inl_sup_mrange_inr AddSubmonoid.mrange_inl_sup_mrange_inr
 
-/-- The monoid hom associated to an inclusion of submonoids. -/
+/-- The `MonoidHom` associated to an inclusion of submonoids. -/
 @[to_additive
-      "The `AddMonoid` hom associated to an inclusion of submonoids."]
+      "The `AddMonoidHom` associated to an inclusion of additive submonoids."]
 def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
   S.subtype.codRestrict _ fun x => h x.2
 #align submonoid.inclusion Submonoid.inclusion
@@ -1404,6 +1404,18 @@ theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ 
 #align add_submonoid.bot_or_exists_ne_zero AddSubmonoid.bot_or_exists_ne_zero
 
 end Submonoid
+
+/-- The `MonoidHom` of submonoids induced by a `MonoidHom` of monoids. -/
+@[to_additive
+      "The `AddMonoidHom` of additive submonoids induced by an `AddMonoidHom` of additive monoids."]
+def MonoidHom.submonoidMap' {M' : Submonoid M} {N' : Submonoid N} (f : M →* N)
+    (hf : M'.map f ≤ N') : M' →* N' :=
+  (Submonoid.inclusion hf).comp <| f.submonoidMap M'
+
+@[to_additive]
+lemma MonoidHom.submonoidMap'_injective {M' : Submonoid M} {N' : Submonoid N} {f : M →* N}
+    {hf : M'.map f ≤ N'} (hf' : Function.Injective f) : Function.Injective <| f.submonoidMap' hf :=
+  fun _ _ h => Subtype.eq <| hf' <| Subtype.ext_iff.mp h
 
 namespace MulEquiv
 
