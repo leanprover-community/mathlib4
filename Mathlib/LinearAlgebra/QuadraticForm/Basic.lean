@@ -332,6 +332,7 @@ def polarBilin : BilinForm R M where
   bilin_smul_right r x y := by simp_rw [polar_comm _ x, polar_smul_left Q]
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 
+/-- `QuadraticForm.polar` as a bilinear map -/
 @[simps!]
 def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
@@ -688,6 +689,7 @@ section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
+/-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
 def _root_.LinearMap.toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
