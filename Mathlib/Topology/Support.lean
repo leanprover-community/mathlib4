@@ -165,7 +165,7 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 #align has_compact_support_def hasCompactSupport_def
 
 @[to_additive]
-theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
+theorem exists_compact_iff_hasCompactMulSupport [T2OrLocallyCompactRegularSpace α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
     hasCompactMulSupport_def, exists_compact_superset_iff]
@@ -174,7 +174,7 @@ theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
 
 namespace HasCompactMulSupport
 @[to_additive]
-theorem intro [T2Space α] {K : Set α} (hK : IsCompact K)
+theorem intro [T2OrLocallyCompactRegularSpace α] {K : Set α} (hK : IsCompact K)
     (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
@@ -189,8 +189,8 @@ theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
-    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+theorem of_mulSupport_subset_isCompact [T2OrLocallyCompactRegularSpace α]
+    {K : Set α} (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
   isCompact_closure_of_subset_compact hK h
 
 @[to_additive]
@@ -271,6 +271,14 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
   filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
+
+@[to_additive]
+lemma isCompact_preimage [TopologicalSpace β]
+    (h'f : HasCompactMulSupport f) (hf : Continuous f) {k : Set β} (hk : IsClosed k)
+    (h'k : 1 ∉ k) : IsCompact (f ⁻¹' k) := by
+  apply IsCompact.of_isClosed_subset h'f (hk.preimage hf) (fun x hx ↦ ?_)
+  apply subset_mulTSupport
+  aesop
 
 variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
 
