@@ -15,14 +15,13 @@ import Mathlib.CategoryTheory.Monoidal.Transport
 We define comonoids in a monoidal category `C`,
 and show that they are equivalently monoid objects in the opposite category.
 
+We construct the monoidal structure on `Comon_ C`, when `C` is braided.
+
 ## TODO
 * An oplax monoidal functor takes comonoid objects to comonoid objects.
   That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ Comon_ D`.
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
-* The category of comonoids in a braided monoidal category is monoidal.
-  (It may suffice to transfer this across the equivalent to monoids in the opposite category.)
-
 -/
 
 set_option linter.uppercaseLean3 false
