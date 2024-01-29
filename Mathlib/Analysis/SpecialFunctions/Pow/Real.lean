@@ -330,16 +330,16 @@ theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : r
   rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
 
-lemma norm_ofNat_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
+lemma norm_nat_cast_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
     ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
   rw [norm_eq_abs, ← ofReal_nat_cast, abs_cpow_eq_rpow_re_of_nonneg n.cast_nonneg hs]
 
-lemma norm_ofNat_cpow_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) :
+lemma norm_nat_cast_cpow_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) :
     ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
   rw [norm_eq_abs, ← ofReal_nat_cast, abs_cpow_eq_rpow_re_of_pos (Nat.cast_pos.mpr hn) _]
 
-lemma norm_ofNat_cpow_pos_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) : 0 < ‖(n : ℂ) ^ s‖ :=
-  (norm_ofNat_cpow_of_pos hn _).symm ▸ Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
+lemma norm_nat_cast_cpow_pos_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) : 0 < ‖(n : ℂ) ^ s‖ :=
+  (norm_nat_cast_cpow_of_pos hn _).symm ▸ Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
 
 end Complex
 
@@ -804,7 +804,7 @@ lemma log_le_mul_rpow {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ ε�
 
 /-- The (real) logarithm of a natural number `n`is bounded by a multiple of every power of `n`
 with positive exponent. -/
-lemma log_ofNat_le_mul_rpow (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ ε⁻¹ * n ^ ε :=
+lemma log_nat_cast_le_mul_rpow (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ ε⁻¹ * n ^ ε :=
   log_le_mul_rpow n.cast_nonneg hε
 
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
@@ -838,7 +838,7 @@ namespace Complex
 
 lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
     ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := by
-  rw [norm_ofNat_cpow_of_re_ne_zero p <| by rw [neg_re]; linarith only [hs]]
+  rw [norm_nat_cast_cpow_of_re_ne_zero p <| by rw [neg_re]; linarith only [hs]]
   refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
     by rw [neg_re]; linarith only [hs]).trans ?_
   rw [one_div, ← Real.rpow_neg_one]
@@ -852,9 +852,10 @@ lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.
   rw [← H, norm_one] at this
   norm_num at this
 
-lemma norm_ofNat_cpow_le_norm_ofNat_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z : ℂ} (h : w.re ≤ z.re) :
+lemma norm_nat_cast_cpow_le_norm_nat_cast_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z : ℂ}
+    (h : w.re ≤ z.re) :
     ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ := by
-  simp_rw [norm_ofNat_cpow_of_pos hn]
+  simp_rw [norm_nat_cast_cpow_of_pos hn]
   exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
 
 end Complex
