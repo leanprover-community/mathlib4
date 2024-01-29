@@ -332,21 +332,10 @@ def polarBilin : BilinForm R M where
   bilin_smul_right r x y := by simp_rw [polar_comm _ x, polar_smul_left Q]
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 
-@[simps]
-def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R where
-  toFun m := {
-    toFun := polar Q m
-    map_add' := polar_add_right Q m
-    map_smul' := fun _ _ => by
-      simp only [polar_smul_right, RingHom.id_apply, smul_eq_mul]
-  }
-  map_add' := fun _ _ => by
-    ext
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, polar_add_left, LinearMap.add_apply]
-  map_smul' := fun _ _ => by
-    ext
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, polar_smul_left, RingHom.id_apply,
-      LinearMap.smul_apply, smul_eq_mul]
+@[simps!]
+def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
+  LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
+  (polar_smul_right Q)
 
 variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
