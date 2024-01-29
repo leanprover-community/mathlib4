@@ -166,7 +166,7 @@ theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
   induction' l with x l ih
   · simp (config := { contextual := true }) [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
-  simp_rw [tendsto_cons_iff, prod_cons]
+  simp_rw [tendsto_cons_iff, prod_cons']
   have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
   rw [ContinuousAt, nhds_prod_eq] at this
   exact this.comp (tendsto_id.prod_map ih)

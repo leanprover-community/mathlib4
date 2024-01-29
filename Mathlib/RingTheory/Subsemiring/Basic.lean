@@ -998,7 +998,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
           ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩)
       ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨L, HL1, HL2⟩ ⟨M, HM1, HM2⟩ =>
       ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
-        rw [List.map_append, List.sum_append, HL2, HM2]⟩
+        rw [List.map_append, List.sum_append', HL2, HM2]⟩
   · rintro ⟨L, HL1, HL2⟩
     exact HL2 ▸
       list_sum_mem fun r hr =>

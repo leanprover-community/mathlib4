@@ -1249,7 +1249,7 @@ def cycleFactorsAux [Fintype α] :
               rw [mul_apply, h, Ne.def, inv_eq_iff_eq, cycleOf_apply] at hy
               split_ifs at hy <;> tauto))
       ⟨cycleOf f x::m, by
-        rw [List.prod_cons, hm₁]
+        rw [List.prod_cons', hm₁]
         simp,
         fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg.symm ▸ isCycle_cycleOf _ hx) (hm₂ g),
         List.pairwise_cons.2
@@ -1266,7 +1266,7 @@ def cycleFactorsAux [Fintype α] :
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
                     rwa [sameCycle_inv, sameCycle_apply_right]
-                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons,
+                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons',
                       ← eq_inv_mul_iff_mul_eq] at hm₁
                   rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply, inv_apply_self,
                     inv_eq_iff_eq, eq_comm],
@@ -1540,7 +1540,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
   induction' l with σ l ih
   · exact fun _ _ => base_one
   · intro h1 h2
-    rw [List.prod_cons]
+    rw [List.prod_cons']
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)
         (h1 _ (List.mem_cons_self _ _)) (base_cycles σ (h1 σ (l.mem_cons_self σ)))

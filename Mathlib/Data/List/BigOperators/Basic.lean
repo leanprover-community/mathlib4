@@ -59,7 +59,8 @@ lemma prod_induction
   simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
   exact hom _ _ (base.1) (ih base.2)
 
-@[to_additive (attr := simp) sum'_append]
+-- We name the additive version `sum_append'` to avoid a collision with the existing lemma in Std.
+@[to_additive (attr := simp) sum_append']
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
     (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]

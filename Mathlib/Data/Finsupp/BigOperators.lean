@@ -40,7 +40,7 @@ theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
-  · simp only [List.sum_cons, Finset.union_comm]
+  · simp only [List.sum_cons', Finset.union_comm]
     refine' Finsupp.support_add.trans (Finset.union_subset_union _ IH)
     rfl
 #align list.support_sum_subset List.support_sum_subset

@@ -350,7 +350,7 @@ def rcons {i} (p : Pair M i) : Word M :=
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
   if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
-  else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
+  else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons', prod]
 #align free_product.word.prod_rcons Monoid.CoprodI.Word.prod_rcons
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
@@ -393,7 +393,7 @@ theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 :
 @[simp]
 theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
     prod (cons m w h2 h1) = of m * prod w := by
-  simp [cons, prod, List.map_cons, List.prod_cons]
+  simp [cons, prod, List.map_cons, List.prod_cons']
 
 /-- Induct on a word by adding letters one at a time without reduction,
 effectively inducting on the underlying `List`. -/

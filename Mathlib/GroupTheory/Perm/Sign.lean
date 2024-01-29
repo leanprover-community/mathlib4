@@ -227,7 +227,7 @@ def swapFactorsAux :
           have : f y ≠ y ∧ y ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hy
           List.mem_of_ne_of_mem this.2 (h this.1)
       ⟨swap x (f x)::m.1, by
-        rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
+        rw [List.prod_cons', m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
         fun {g} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 #align equiv.perm.swap_factors_aux Equiv.Perm.swapFactorsAux
@@ -259,7 +259,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
   · simp (config := { contextual := true }) only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
-    rw [← hl.1, List.prod_cons, hxy.2]
+    rw [← hl.1, List.prod_cons', hxy.2]
     exact
       hmul_swap _ _ _ hxy.1
         (ih _ ⟨rfl, fun v hv => hl.2 _ (List.mem_cons_of_mem _ hv)⟩ h1 hmul_swap)
@@ -716,7 +716,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   induction' l with a' l ih
   · refine' Or.inr ⟨List.not_mem_nil _, _⟩
     rw [List.map_nil, List.prod_nil, one_apply]
-  rw [List.map_cons, List.prod_cons, mul_apply]
+  rw [List.map_cons, List.prod_cons', mul_apply]
   rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨not_mem_l, prod_eq⟩) <;>
     rw [prod_eq]
   · refine' Or.inl ⟨List.mem_cons_of_mem _ mem_l, _⟩
