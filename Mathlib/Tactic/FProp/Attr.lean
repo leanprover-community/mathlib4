@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+
 import Mathlib.Tactic.FProp.Decl
 import Mathlib.Tactic.FProp.Theorems
--- import Mathlib.Tactic.FProp.FPropLambdaTheorems
--- import Mathlib.Tactic.FProp.FPropTheorems
--- import Mathlib.Tactic.FProp.FPropTheorems2
 
 namespace Mathlib
 open Lean Meta

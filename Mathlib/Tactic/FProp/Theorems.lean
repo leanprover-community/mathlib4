@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
-import Mathlib.Tactic.FProp.RefinedDiscrTree
+
 import Mathlib.Tactic.FProp.Decl
+import Mathlib.Tactic.FProp.FunctionData
+import Mathlib.Tactic.FProp.RefinedDiscrTree
 
 namespace Mathlib
 open Lean Meta
