@@ -82,8 +82,7 @@ lemma setRestrict_union : A ↓∩ (B ∪ C) = (A ↓∩ B) ∪ (A ↓∩ C) := 
 lemma setRestrict_inter : A ↓∩ (B ∩ C) = (A ↓∩ B) ∩ (A ↓∩ C) := rfl
 
 @[simp]
-lemma set_restrit_compl : A ↓∩ Bᶜ = (A ↓∩ B)ᶜ := by
-  apply Eq.refl
+lemma set_restrit_compl : A ↓∩ Bᶜ = (A ↓∩ B)ᶜ := rfl
 
 lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x
@@ -92,14 +91,14 @@ lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
 
 lemma restrict_subsetRestrict_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
-  · rintro h x ⟨hxA,hxB⟩
+  · rintro h x ⟨hxA, hxB⟩
     constructor
     · exact hxA
     · specialize h ?_
       · exact ⟨x, hxA⟩
       · exact hxB
       exact h
-  · rintro h ⟨x,hxA⟩ hx
+  · rintro h ⟨x, hxA⟩ hx
     specialize h ?_
     · exact x
     · exact ⟨hxA, hx⟩
@@ -136,7 +135,7 @@ lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S
 
 lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
-  simp only [setRestrict_eq_iff,hB,hC] at h
+  simp only [setRestrict_eq_iff, hB, hC] at h
   exact h
 
 lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
@@ -160,7 +159,7 @@ lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := by
   ext x
   simp_all only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
   constructor
-  · rintro ⟨ha, ha'⟩
+  · rintro ⟨_⟩
     simp_all only [exists_true_left]
   · intro ha
     rcases ha with ⟨a, ha⟩ | ⟨a, ha⟩
@@ -171,12 +170,10 @@ lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := by
 lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := by
   ext
   simp_all only [mem_inter_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  apply Iff.intro
-  · intro a
-    cases a
+  constructor
+  · rintro ⟨_⟩
     simp_all only [and_self, exists_const]
-  · intro a
-    rcases a with ⟨⟨_,_⟩,⟨_,_⟩⟩
+  · rintro ⟨⟨_⟩, ⟨_⟩⟩
     simp_all only [exists_const, and_self]
 
 @[simp]
@@ -184,9 +181,8 @@ lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
   ext
   simp_all only [mem_image, mem_compl_iff, Subtype.exists, exists_and_right, exists_eq_right,
     mem_diff, not_exists]
-  apply Iff.intro
-  · intro a
-    cases a
+  constructor
+  · rintro ⟨_⟩
     simp_all only [not_false_eq_true, forall_true_left, and_self]
   · intro a
     simp_all only [not_false_eq_true, exists_const]
@@ -195,11 +191,10 @@ lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
 lemma coe_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := by
   ext
   simp_all only [mem_diff, mem_image, Subtype.exists, exists_and_right, exists_eq_right, not_exists]
-  apply Iff.intro
-  · intro a
-    cases a
+  constructor
+  · rintro ⟨_⟩
     simp_all only [exists_const, not_false_eq_true, forall_true_left, and_self]
-  · intro a
+  · intro
     simp_all only [not_false_eq_true, and_true]
 
 @[simp]
@@ -220,30 +215,30 @@ lemma coe_iUnion : ↑(⋃ (B : β), j B) = ⋃ (B : β), (j B : Set α) := imag
 lemma coe_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
   ext x
   cases' hT with L hL
-  apply Iff.intro
+  constructor
   · intro h
     simp_all only [mem_image, mem_sInter, Subtype.exists, exists_and_right, exists_eq_right,
       mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro a a_1
-    rcases h with ⟨_,_⟩
+    rcases h with ⟨_, _⟩
     simp_all only [exists_const]
   · intro h
     have haux : x ∈ (L : Set α)
     · simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-      mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
+        mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
       specialize h L hL
       cases' h with y hy
-      use ⟨x,y⟩
+      use ⟨x, y⟩
     · simp only [mem_image, mem_sInter, Subtype.exists, exists_and_right, exists_eq_right]
-      rcases haux with ⟨⟨y,hyA⟩ ,⟨_,rfl⟩⟩
+      rcases haux with ⟨⟨y, hyA⟩, ⟨_, rfl⟩⟩
       simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-       exists_true_left, implies_true, forall_const, exists_const]
+        exists_true_left, implies_true, forall_const, exists_const]
 
 @[simp]
 lemma coe_iInter (b : β) : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (↑(j B) : Set α) := by
   ext x
-  apply Iff.intro
+  constructor
   · intro a
     simp_all only [mem_image, mem_iInter, Subtype.exists, exists_and_right, exists_eq_right]
     intro i_1
@@ -251,8 +246,7 @@ lemma coe_iInter (b : β) : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (�
     simp_all only [exists_const]
   · intro h
     simp only [mem_iInter, mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
-    have hb := h b
-    cases' hb with hxA hx
+    cases' h b with hxA hx
     simp_all only [exists_true_left, mem_image, mem_iInter, Subtype.exists, exists_and_right,
       exists_eq_right, implies_true, exists_const]
 
@@ -277,7 +271,7 @@ lemma coueOut_inter_self_left : ↑D ∩ A = ↑D := by
 
 @[simp]
 lemma coe_contained_iff : D ⊆ Subtype.val ⁻¹' ↑E ↔ D ⊆ E := by
-  apply Iff.intro
+  constructor
   · intro h x hx
     simp only [image_subset_iff] at h
     specialize h hx
