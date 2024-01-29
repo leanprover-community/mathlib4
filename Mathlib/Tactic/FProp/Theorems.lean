@@ -184,7 +184,7 @@ structure FunctionTheorem where
   deriving Inhabited, BEq
 
 
-local private instance : Ord Name := ⟨Name.quickCmp⟩
+private local instance : Ord Name := ⟨Name.quickCmp⟩
 
 /-- -/
 structure FunctionTheorems where
