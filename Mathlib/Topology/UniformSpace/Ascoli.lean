@@ -245,7 +245,7 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
 
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`
-/-- Let `X` be a compact topological space, `𝔖` a family of compact subsets of `X`,
+/-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`,
 `α` a uniform space, `F : ι → (X → α)` a family equicontinuous on each `K ∈ 𝔖`, and `ℱ` a filter
 on `ι`. Then, `F` tends to `f : X → α` along `ℱ` *uniformly on each `K ∈ 𝔖`* iff it tends to `f`
 *pointwise on `⋃₀ 𝔖`* along `ℱ`. -/
@@ -262,7 +262,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| hF K hK).tendsto_uniformFun_iff_pi]
   rfl
 
-/-- Let `X` be a compact topological space, `𝔖` a covering of `X` by compact subsets,
+/-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets,
 `α` a uniform space, `F : ι → (X → α)` a family equicontinuous on each `K ∈ 𝔖`, and `ℱ` a filter
 on `ι`. Then, `F` tends to `f : X → α` along `ℱ` *uniformly on each `K ∈ 𝔖`* iff it tends to `f`
 *pointwise* along `ℱ`.
@@ -281,6 +281,9 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
       φ.symm.inducing.tendsto_nhds_iff]
 
+/-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X` and
+`α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform
+convergence on all `K ∈ 𝔖` iff it is closed in the topology of pointwise convergence on `⋃₀ 𝔖`. -/
 theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K)
@@ -295,6 +298,12 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
   exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
     eventually_of_forall mem_range_self
 
+/-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, and
+`α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform
+convergence on all `K ∈ 𝔖` iff it is closed in the topology of pointwise convergence.
+
+This is a specialization of `EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'` to the case where
+`𝔖` covers `X`. -/
 theorem EquicontinuousOn.isClosed_range_uniformOnFun_iff_pi
     {𝔖 : Set (Set X)} (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
     (hF : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -308,6 +317,19 @@ theorem EquicontinuousOn.isClosed_range_uniformOnFun_iff_pi
 alias ⟨EquicontinuousOn.isClosed_range_pi_of_uniformOnFun, _⟩ :=
   EquicontinuousOn.isClosed_range_uniformOnFun_iff_pi
 
+/-- A version of the **Arzela-Ascoli theorem**.
+
+Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
+and `F : ι → (X → α)` a family of functions. Assume that:
+* `F` has closed range for the topology of pointwise convergence on `⋃₀ 𝔖`
+* `F` is equicontinuous on each `K ∈ 𝔖`
+* For all `x ∈ ⋃₀ 𝔖`, the range of `i ↦ F i x` is contained in some fixed compact subset.
+
+Then `ι` is compact for the topology of uniform convergence on all `K ∈ 𝔖` (more precisely, its
+pullback by `F`).
+
+In order to avoid non-instance topologies, we actually assume that `ι` comes with a topology and
+ask that `F : ι → (X →ᵤ[𝔖] α)` is inducing. -/
 theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (h𝔖 : ∀ K ∈ 𝔖, IsCompact K) (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_cl : IsClosed <| range <| (⋃₀ 𝔖).restrict ∘ F)
@@ -322,6 +344,19 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
 
+/-- A version of the **Arzela-Ascoli theorem**.
+
+Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
+and `F : ι → (X → α)` a family of functions. Assume that:
+* `F` has closed range for the topology of pointwise convergence
+* `F` is equicontinuous on each `K ∈ 𝔖`
+* For all `x`, the range of `i ↦ F i x` is contained in some fixed compact subset.
+
+Then `ι` is compact for the topology of uniform convergence on all `K ∈ 𝔖` (more precisely, its
+pullback by `F`).
+
+In order to avoid non-instance topologies, we actually assume that `ι` comes with a topology and
+ask that `F : ι → (X →ᵤ[𝔖] α)` is inducing. -/
 theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
     (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
@@ -336,6 +371,16 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
 
+/-- A version of the **Arzela-Ascoli theorem**.
+
+Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
+and `F : ι → (X → α)` a family of functions. Assume that:
+* `F` is a closed embedding to for the topology of uniform convergence on all `K ∈ 𝔖`
+  (in other words, `ι` identifies to a closed subset of `X →ᵤ[𝔖] α`)
+* `F` is equicontinuous on each `K ∈ 𝔖`
+* For all `x`, the range of `i ↦ F i x` is contained in some fixed compact subset.
+
+Then `ι` is compact. -/
 theorem ArzelaAscoli.compactSpace_of_closedEmbedding [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (F_clemb : ClosedEmbedding (UniformOnFun.ofFun 𝔖 ∘ F))
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
