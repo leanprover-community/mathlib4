@@ -34,9 +34,10 @@ initialize registerTraceClass `Meta.Tactic.fprop.cache
 
 /-- -/
 structure Config where
+  /-- Name to unfold -/
   constToUnfold : HashSet Name := .ofArray #[``id, ``Function.comp, ``Function.HasUncurry.uncurry]
+  /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
-  -- config
 
 /-- -/
 structure State where
@@ -49,4 +50,5 @@ abbrev FPropM := ReaderT FProp.Config $ StateRefT FProp.State MetaM
 
 /-- Result of `fprop`, it is a proof of function property `P f` -/
 structure Result where
+  /-- -/
   proof : Expr

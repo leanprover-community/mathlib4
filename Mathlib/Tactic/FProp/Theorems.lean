@@ -108,6 +108,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
   | _ => return none
 
 
+/--  -/
 structure LambdaTheorem where
   /-- Name of function property -/
   fpropName : Name
@@ -242,6 +243,7 @@ def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
 
 /-- -/
 structure GeneralTheorems where
+  /-- -/
   theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 

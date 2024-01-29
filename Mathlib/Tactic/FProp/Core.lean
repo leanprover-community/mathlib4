@@ -578,7 +578,7 @@ def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     return none
 
 /-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
-def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr) (_fData : FunctionData)
+def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr)
     (fprop : Expr → FPropM (Option Result)) : FPropM (Option Result) := do
 
   let ext := transitionTheoremsExt.getState (← getEnv)
@@ -652,7 +652,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule fpropDecl e f' g' fprop
   else
     -- try transition rules as the last resolt
-    return ← applyTransitionRules fpropDecl e fData fprop
+    return ← applyTransitionRules fpropDecl e fprop
 
 /-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
@@ -669,7 +669,7 @@ def fvarAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
       return prf
     else
       -- try transition rules as last resort
-      return ← applyTransitionRules fpropDecl e fData fprop
+      return ← applyTransitionRules fpropDecl e fprop
 
 
 /-- Cache result if it does not have any subgoals. -/
