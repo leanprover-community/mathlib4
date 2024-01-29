@@ -296,7 +296,7 @@ does not have an exponent.
 -/
 theorem LocallyMovingSMul.exponent_eq_zero [LocallyMovingSMul G α] [ContinuousConstSMul G α]
     [FaithfulSMul G α] [T2Space α] [Nonempty α]: Monoid.exponent G = 0 := by
-  have exp_top_eq_zero := exponent_fixingSubgroup_eq_zero G (isOpen_univ (α := α)) Set.univ_nonempty
+  have exp_top_eq_zero := exponent_fixingSubgroup_eq_zero G (isOpen_univ (X := α)) Set.univ_nonempty
   rwa [Set.compl_univ, fixingSubgroup_empty, Subgroup.exponent_top] at exp_top_eq_zero
 
 section FixingSubgroup
