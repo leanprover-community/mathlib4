@@ -71,15 +71,36 @@ lemma LieSubalgebra.mem_engel_iff (x y : L) :
     y ∈ Engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
   (Module.End.mem_maximalGeneralizedEigenspace _ _ _).trans <| by simp only [zero_smul, sub_zero]
 
-variable {R}
+lemma LieSubalgebra.self_mem_engel (x : L) : x ∈ Engel R x := by
+  simp only [LieSubalgebra.mem_engel_iff]
+  exact ⟨1, by simp⟩
+
+example : NegMemClass (Submodule R M) M := by infer_instance
 
 open LieSubalgebra in
-lemma normalizer_eq_self_of_engel_le (H : LieSubalgebra R L) (x : L) (h : Engel R x ≤ H) :
-    normalizer H = H := by
-  apply le_antisymm _ (le_normalizer H)
+@[simp]
+lemma normalizer_engel (x : L) : normalizer (Engel R x) = Engel R x := by
+  apply le_antisymm _ (le_normalizer _)
   intro y hy
   rw [mem_normalizer_iff] at hy
-  -- apparently the main proof of
-  -- BARNES,D.W. : Nilpotency of Lie algebras. Math. Zeitschr. 79, 237--238 (1962).
-  -- contains an argument for this claim
-  sorry
+  specialize hy x (self_mem_engel R x)
+  rw [← lie_skew, neg_mem_iff (G := L), mem_engel_iff] at hy
+  rcases hy with ⟨n, hn⟩
+  rw [mem_engel_iff]
+  use n+1
+  rw [pow_succ', LinearMap.mul_apply]
+  exact hn
+
+-- variable {R}
+--
+-- open LieSubalgebra in
+-- lemma normalizer_eq_self_of_engel_le (H : LieSubalgebra R L) (x : L) (h : Engel R x ≤ H) :
+--     normalizer H = H := by
+--   apply le_antisymm _ (le_normalizer H)
+--   intro y hy
+--   rw [mem_normalizer_iff] at hy
+--   -- apparently the main proof of
+--   -- BARNES,D.W. : Nilpotency of Lie algebras. Math. Zeitschr. 79, 237--238 (1962).
+--   -- contains an argument for this claim
+--   -- jmc: but I don't understand the argument in that article
+--   sorry
