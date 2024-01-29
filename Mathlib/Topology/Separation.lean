@@ -935,21 +935,25 @@ theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ 
 theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) :=
   disjoint_nhds_nhds_iff_not_specializes.not_left.symm
 
-/-- In an R₁ space, the `Specializes` relation is symmetric, i.e., an R₁ is an R₀ space. -/
+/-- In an R₁ space, the `Specializes` relation is symmetric,
+i.e., an R₁ space is an R₀ space. -/
 theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := by
   simpa only [specializes_iff_not_disjoint, disjoint_comm] using h
 #align specializes.symm Specializes.symm
 
-/-- In an R₁ space, the `Specializes` relation is symmetric, i.e., an R₁ is an R₀ space. -/
+/-- In an R₁ space, the `Specializes` relation is symmetric,
+i.e., an R₁ space is an R₀ space. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
 #align specializes_comm specializes_comm
 
-/-- In an R₁ space, the `Specializes` is equivalent to `Inseparable`, i.e., an R₁ is an R₀ space. -/
+/-- In an R₁ space, `Specializes` is equivalent to `Inseparable`,
+i.e., an R₁ space is an R₀ space. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
   ⟨fun h ↦ h.antisymm h.symm, Inseparable.specializes⟩
 #align specializes_iff_inseparable specializes_iff_inseparable
 
-/-- An R₁ space, if `x` specializes `y`, then they are inseparable, i.e., an R₁ is an R₀ space. -/
+/-- An R₁ space, if `x` specializes `y`, then they are inseparable,
+i.e., an R₁ space is an R₀ space. -/
 alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
 theorem disjoint_nhds_nhds_iff_not_inseparable : Disjoint (𝓝 x) (𝓝 y) ↔ ¬Inseparable x y := by
