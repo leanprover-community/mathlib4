@@ -146,8 +146,7 @@ theorem integrable_one_add_norm [MeasureSpace E] [BorelSpace E] [(@volume E _).I
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) :=
     lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
-  unfold HasFiniteIntegral
-  rw [this]
+  rw [HasFiniteIntegral, this]
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
 
