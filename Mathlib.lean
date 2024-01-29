@@ -3356,14 +3356,17 @@ import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FProp
+import Mathlib.Tactic.FProp.ArraySet
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp.Core
 import Mathlib.Tactic.FProp.Decl
 import Mathlib.Tactic.FProp.Elab
 import Mathlib.Tactic.FProp.FunctionData
+import Mathlib.Tactic.FProp.Mor
 import Mathlib.Tactic.FProp.RefinedDiscrTree
 import Mathlib.Tactic.FProp.StateList
 import Mathlib.Tactic.FProp.Theorems
+import Mathlib.Tactic.FProp.ToStd
 import Mathlib.Tactic.FProp.Types
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
