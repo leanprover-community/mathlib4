@@ -165,16 +165,16 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 #align has_compact_support_def hasCompactSupport_def
 
 @[to_additive]
-theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
+theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
-    hasCompactMulSupport_def, exists_compact_superset_iff]
+    hasCompactMulSupport_def, exists_isCompact_superset_iff]
 #align exists_compact_iff_has_compact_mul_support exists_compact_iff_hasCompactMulSupport
 #align exists_compact_iff_has_compact_support exists_compact_iff_hasCompactSupport
 
 namespace HasCompactMulSupport
 @[to_additive]
-theorem intro [T2Space α] {K : Set α} (hK : IsCompact K)
+theorem intro [R1Space α] {K : Set α} (hK : IsCompact K)
     (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro

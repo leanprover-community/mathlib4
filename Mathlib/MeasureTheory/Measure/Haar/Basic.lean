@@ -484,8 +484,7 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
 theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     {K₁ K₂ : Compacts G} (h : Disjoint K₁.1 K₂.1) (h₂ : IsClosed K₂.1) :
     chaar K₀ (K₁ ⊔ K₂) = chaar K₀ K₁ + chaar K₀ K₂ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
-  rcases separatedNhds_of_isCompact_isCompact_isClosed K₁.2 K₂.2 h₂ h
+  rcases SeparatedNhds.of_isCompact_isCompact_isClosed K₁.2 K₂.2 h₂ h
     with ⟨U₁, U₂, h1U₁, h1U₂, h2U₁, h2U₂, hU⟩
   rcases compact_open_separated_mul_right K₁.2 h1U₁ h2U₁ with ⟨L₁, h1L₁, h2L₁⟩
   rcases mem_nhds_iff.mp h1L₁ with ⟨V₁, h1V₁, h2V₁, h3V₁⟩
@@ -577,7 +576,6 @@ theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : C
 @[to_additive]
 theorem haarContent_outerMeasure_self_pos (K₀ : PositiveCompacts G) :
     0 < (haarContent K₀).outerMeasure K₀ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   refine' zero_lt_one.trans_le _
   rw [Content.outerMeasure_eq_iInf]
   refine' le_iInf₂ fun U hU => le_iInf fun hK₀ => le_trans _ <| le_iSup₂ K₀.toCompacts hK₀
@@ -610,14 +608,12 @@ variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpa
 "The Haar measure on the locally compact additive group `G`, scaled so that
 `addHaarMeasure K₀ K₀ = 1`."]
 noncomputable def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   ((haarContent K₀).measure K₀)⁻¹ • (haarContent K₀).measure
 #align measure_theory.measure.haar_measure MeasureTheory.Measure.haarMeasure
 #align measure_theory.measure.add_haar_measure MeasureTheory.Measure.addHaarMeasure
 
 @[to_additive]
-theorem haarMeasure_apply [LocallyCompactSpace G]
-    {K₀ : PositiveCompacts G} {s : Set G} (hs : MeasurableSet s) :
+theorem haarMeasure_apply {K₀ : PositiveCompacts G} {s : Set G} (hs : MeasurableSet s) :
     haarMeasure K₀ s = (haarContent K₀).outerMeasure s / (haarContent K₀).measure K₀ := by
   change ((haarContent K₀).measure K₀)⁻¹ * (haarContent K₀).measure s = _
   simp only [hs, div_eq_mul_inv, mul_comm, Content.measure_apply]
@@ -627,7 +623,6 @@ theorem haarMeasure_apply [LocallyCompactSpace G]
 @[to_additive]
 instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
     IsMulLeftInvariant (haarMeasure K₀) := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   rw [← forall_measure_preimage_mul_iff]
   intro g A hA
   rw [haarMeasure_apply hA, haarMeasure_apply (measurable_const_mul g hA)]
@@ -767,7 +762,6 @@ variable [SecondCountableTopology G]
   See also `isAddHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability."]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
     K₀.interior_nonempty.mono (interior_mono subset_closure)
   have := measure_eq_div_smul μ (haarMeasure K₀) (isClosed_closure (s := K₀)).measurableSet
