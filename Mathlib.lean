@@ -3490,7 +3490,6 @@ import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.UnsetOption
@@ -3842,7 +3841,6 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
-import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
