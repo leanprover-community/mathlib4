@@ -319,7 +319,7 @@ class InnerRegularCompactLTTop (μ : Measure α) : Prop where
   protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)
 
 -- see Note [lower instance priority]
-/-- A regular measure is weakly regular in a preregular space. -/
+/-- A regular measure is weakly regular in an R₁ space. -/
 instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     WeaklyRegular μ where
   innerRegular := fun _U hU r hr ↦
