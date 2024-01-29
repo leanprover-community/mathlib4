@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Antoine Chambert-Loir
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 
@@ -13,18 +14,19 @@ TODO
 
 -/
 
-structure LinearProgram (R : Type*) (P : Type*) (V : Type*) [LinearOrderedRing R]
+structure LinearProgram (R : Type*) (P : Type*) (V : Type*)
     -- Typically `P` is `R^m` and `V` is `R^n`
-    [AddCommMonoid P] [Module R P] [AddCommMonoid V] [Module R V] [PartialOrder V] where
+    [Ring R] [AddCommGroup P] [Module R P] [AddCommGroup V] [Module R V] where
   /-- Linear map -/
   φ : P →ₗ[R] V
   /-- Right-hand side -/
   v : V
   /-- Objective function -/
   f : P →ₗ[R] R
+  /-- Cone defines nonnegative elements -/
+  s : AddCommGroup.PositiveCone V
 
+variable {R P V : Type*} [Ring R] [AddCommGroup P] [Module R P] [AddCommGroup V] [Module R V]
 
-variable {R V P : Type*} [LinearOrderedRing R]
-  [AddCommMonoid P] [Module R P] [AddCommMonoid V] [Module R V] [PartialOrder V]
-
-def LinearProgram.C (LP : LinearProgram R P V) : Set P := { x : P | (LP.φ x) ≤ LP.v }
+/-- Essentially the set `{ x : P | LP.φ x ≤ LP.v }` -/
+def LinearProgram.C (LP : LinearProgram R P V) := { x : P | LP.s.nonneg (LP.v - LP.φ x) }
