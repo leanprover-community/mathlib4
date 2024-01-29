@@ -1,13 +1,18 @@
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.Data.FinEnum
 import Mathlib.Tactic
 
-#check Quiver.Hom
-universe v v' u u'
+universe u u' v v'
 
 inductive ProdWord (S : Type u) : Type u where
   | of : S → ProdWord S
   | prod : ProdWord S → ProdWord S → ProdWord S
   | nil : ProdWord S
+
+def ProdWord.unpack {S : Type u} : ProdWord S → List S
+  | .of X => [X]
+  | .prod a b => a.unpack ++ b.unpack
+  | .nil => []
 
 def ProdWord.map {S : Type u} {S' : Type u'} (f : S → S') : ProdWord S → ProdWord S'
   | .of t => .of (f t)
@@ -35,13 +40,8 @@ inductive LawvereWord {S : Type u} (op : ProdWord S → S → Type v) :
   | toNil (P : ProdWord S) :
       LawvereWord op P .nil
 
-structure LawverePresentation (S : Type u) where
-  op : ProdWord S → S → Type v
-  rel : {P Q : ProdWord S} → LawvereWord op P Q → LawvereWord op P Q → Prop
-
-open CategoryTheory Limits
-
-structure LawvereTheory (S : Type u) where
+structure LawvereTheory where
+  S : Type u
   hom : ProdWord S → ProdWord S → Type v
   id (P : ProdWord S) : hom P P
   comp {P Q R : ProdWord S} : hom P Q → hom Q R → hom P R
@@ -49,106 +49,107 @@ structure LawvereTheory (S : Type u) where
   comp_id {P Q : ProdWord S} (f : hom P Q) : comp f (id _) = f
   assoc {P Q R W : ProdWord S} (f : hom P Q) (g : hom Q R) (h : hom R W) :
     comp (comp f g) h = comp f (comp g h)
-  fst (P Q : ProdWord S) : hom (P.prod Q) P
-  snd (P Q : ProdWord S) : hom (P.prod Q) Q
-  lift {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) : hom T (P.prod Q)
-  lift_fst {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) :
-    comp (lift f g) (fst _ _) = f
-  lift_snd {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) :
-    comp (lift f g) (snd _ _) = g
-  lift_unique {T P Q : ProdWord S} {f g : hom T (P.prod Q)} :
-    comp f (fst _ _) = comp g (fst _ _) →
-    comp f (snd _ _) = comp g (snd _ _) →
+  fst' (P Q : ProdWord S) : hom (P.prod Q) P
+  snd' (P Q : ProdWord S) : hom (P.prod Q) Q
+  lift' {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) : hom T (P.prod Q)
+  lift'_fst' {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) :
+    comp (lift' f g) (fst' _ _) = f
+  lift'_snd' {T P Q : ProdWord S} (f : hom T P) (g : hom T Q) :
+    comp (lift' f g) (snd' _ _) = g
+  lift'_unique {T P Q : ProdWord S} {f g : hom T (P.prod Q)} :
+    comp f (fst' _ _) = comp g (fst' _ _) →
+    comp f (snd' _ _) = comp g (snd' _ _) →
     f = g
-  toNil (P : ProdWord S) : hom P .nil
-  toNil_unique {P : ProdWord S} (f g : hom P .nil) : f = g
-
-attribute [simp]
-  LawvereTheory.id_comp
-  LawvereTheory.comp_id
-  LawvereTheory.assoc
-  LawvereTheory.lift_fst
-  LawvereTheory.lift_snd
-
-attribute [ext]
-  LawvereTheory.lift_unique
-  LawvereTheory.toNil_unique
+  toNil' (P : ProdWord S) : hom P .nil
+  toNil'_unique {P : ProdWord S} (f g : hom P .nil) : f = g
 
 namespace LawvereTheory
 
-scoped notation:10 A " ⟶[" L "]" B:11 => LawvereTheory.hom L A B
-scoped notation "𝟙[" L "]" => LawvereTheory.id L
-scoped notation:80 A " ≫[" L "]" B:81 => LawvereTheory.comp L A B
+variable (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'})
 
-variable {S : Type u} (L : LawvereTheory.{v} S)
+structure Obj : Type u where as : ProdWord L.S
 
-/-
-structure type (L : LawvereTheory.{v} S) : Type u where as : ProdWord S
+instance : CoeSort LawvereTheory (Type _) where coe := Obj
 
-instance : CoeSort (LawvereTheory.{v} S) (Type u) where coe L := L.type
+open CategoryTheory
 
-instance (L : LawvereTheory.{v} S) : Category.{v} L where
+instance : Category.{v} L where
   Hom X Y := L.hom X.as Y.as
   id X := L.id X.as
   comp := L.comp
   id_comp := L.id_comp
   comp_id := L.comp_id
-  assoc := L.comp_assoc
+  assoc := L.assoc
+
+def nil : L := .mk .nil
+
+def toNil (P : L) : P ⟶ L.nil := L.toNil' _
 
 def prod (P Q : L) : L := .mk <| P.as.prod Q.as
 
-@[simps!]
-def binaryFan (P Q : L) : BinaryFan P Q :=
-  BinaryFan.mk (P := L.prod P Q) (L.fst _ _) (L.snd _ _)
+def fst (P Q : L) : L.prod P Q ⟶ P := L.fst' _ _
+def snd (P Q : L) : L.prod P Q ⟶ Q := L.snd' _ _
 
-@[simps!]
-def isLimitBinaryFan (P Q : L) : IsLimit (L.binaryFan P Q) :=
-  BinaryFan.isLimitMk
-    (fun S => L.lift S.fst S.snd)
-    (fun S => L.lift_fst _ _)
-    (fun S => L.lift_snd _ _)
-    (fun S m hfst hsnd =>
-      L.lift_unique (by simpa [L.lift_fst]) (by simpa [L.lift_snd]))
+def lift {T P Q : L} (a : T ⟶ P) (b : T ⟶ Q) : T ⟶ L.prod P Q := L.lift' a b
 
-def emptyCone : Cone (Functor.empty L) where
-  pt := .mk <| .nil
-  π := { app := fun ⟨X⟩ => X.elim }
-
-def isLimitEmptyCone : IsLimit L.emptyCone where
-  lift _ := L.toNil _
-  fac _ := fun ⟨j⟩ => j.elim
-  uniq _ _ _ := L.toNil_unique _ _
-
--- :-)
-instance (L : LawvereTheory.{v} S) : MonoidalCategory L :=
-  monoidalOfChosenFiniteProducts
-    ⟨L.emptyCone, L.isLimitEmptyCone⟩ fun {_ _} =>
-      ⟨L.binaryFan _ _, L.isLimitBinaryFan _ _⟩
--/
-
-structure MorphismAlong {S : Type u} {S' : Type u'} (f : S → S')
-    (L : LawvereTheory.{v} S) (L' : LawvereTheory.{v'} S') where
-  map {P Q : ProdWord S} : (P ⟶[L] Q) → ((P.map f) ⟶[L'] (Q.map f))
-  map_id (P : ProdWord S) : map (𝟙[L] P) = 𝟙[L'] _
-  map_comp {P Q R : ProdWord S} (a : P ⟶[L] Q) (b : Q ⟶[L] R) :
-    map (a ≫[L] b) = (map a) ≫[L'] (map b)
-  toMapNil (P : ProdWord S') : P ⟶[L'] (ProdWord.nil.map f)
-  toMapNil_unique {P : ProdWord S'} (a b : P ⟶[L'] (ProdWord.nil.map f)) : a = b
-  fst (P Q : ProdWord S) : ((P.prod Q).map f) ⟶[L'] (P.map f)
-  snd (P Q : ProdWord S) : ((P.prod Q).map f) ⟶[L'] (Q.map f)
-  lift {T : ProdWord S'} {P Q : ProdWord S}
-    (a : T ⟶[L'] P.map f) (b : T ⟶[L'] Q.map f) : T ⟶[L'] (P.prod Q).map f
-  lift_fst {T : ProdWord S'} {P Q : ProdWord S}
-    (a : T ⟶[L'] P.map f) (b : T ⟶[L'] Q.map f) : lift a b ≫[L'] fst P Q = a
-  lift_snd {T : ProdWord S'} {P Q : ProdWord S}
-    (a : T ⟶[L'] P.map f) (b : T ⟶[L'] Q.map f) : lift a b ≫[L'] snd P Q = b
-  lift_unique {T : ProdWord S'} {P Q : ProdWord S}
-    {a b : T ⟶[L'] (P.prod Q).map f} :
-    a ≫[L'] fst _ _ = b ≫[L'] fst _ _ →
-    a ≫[L'] snd _ _ = b ≫[L'] snd _ _ →
+structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
+  obj : L → L'
+  map {P Q : L} : (P ⟶ Q) → (obj P ⟶ obj Q)
+  map_id (P : L) : map (𝟙 P) = 𝟙 (obj P)
+  map_comp {P Q R : L} (a : P ⟶ Q) (b : Q ⟶ R) :
+    map (a ≫ b) = map a ≫ map b
+  toNil (P : L') : P ⟶ (obj L.nil)
+  toNil_unique {P : L'} (f g : P ⟶ obj L.nil) : f = g
+  fst (P Q : L) : (obj (L.prod P Q)) ⟶ obj P
+  snd (P Q : L) : (obj (L.prod P Q)) ⟶ obj Q
+  lift {T : L'} {P Q : L} (a : T ⟶ obj P) (b : T ⟶ obj Q) :
+    T ⟶ obj (L.prod P Q)
+  lift_fst {T : L'} {P Q : L} (a : T ⟶ obj P) (b : T ⟶ obj Q) :
+    lift a b ≫ fst P Q = a
+  lift_snd {T : L'} {P Q : L} (a : T ⟶ obj P) (b : T ⟶ obj Q) :
+    lift a b ≫ snd P Q = b
+  lift_unique {T : L'} {P Q : L} {a b : T ⟶ obj (L.prod P Q)} :
+    a ≫ fst _ _ = b ≫ fst _ _ →
+    a ≫ snd _ _ = b ≫ snd _ _ →
     a = b
 
-scoped notation:26 L " ⥤[" f "]" L':27 => MorphismAlong f L L' -- type as \func
+def Morphism.preservesNil {L L' : LawvereTheory} (F : Morphism L L') :
+    F.obj L.nil ≅ L'.nil where
+  hom := L'.toNil _
+  inv := F.toNil _
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+def Morphism.id (L : LawvereTheory.{u,v}) : Morphism L L where
+  obj X := X
+  map f := f
+  map_id _ := rfl
+  map_comp _ _ := rfl
+  toNil _ := L.toNil' _
+  toNil_unique := sorry
+  fst _ _ := L.fst _ _
+  snd _ _ := L.snd _ _
+  lift := L.lift
+  lift_fst := sorry
+  lift_snd := sorry
+  lift_unique := sorry
+
+def Morphism.comp {L L' L'' : LawvereTheory} (f : Morphism L L') (g : Morphism L' L'') :
+    Morphism L L'' where
+  obj X := g.obj (f.obj X)
+  map a := g.map (f.map a)
+  map_id _ := by simp [f.map_id, g.map_id]
+  map_comp := by simp [f.map_comp, g.map_comp]
+  toNil X := g.toNil _ ≫ g.map (f.toNil _)
+  toNil_unique := sorry
+  fst P Q := by
+    dsimp
+    refine ?_ ≫ g.fst _ _
+  snd := _
+  lift := _
+  lift_fst := _
+  lift_snd := _
+  lift_unique := _
 
 attribute [simp]
   MorphismAlong.map_id
