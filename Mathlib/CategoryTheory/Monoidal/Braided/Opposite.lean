@@ -40,3 +40,5 @@ instance : BraidedCategory Cᵒᵖ where
     simp? [op_associator] says simp only [op_associator, Iso.op_inv, Iso.symm_inv,
         Quiver.Hom.unop_op, Iso.hom_inv_id_assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
     coherence
+
+@[simp] theorem braiding_op (X Y : Cᵒᵖ) : β_ X Y = (β_ (unop Y) (unop X)).op := rfl

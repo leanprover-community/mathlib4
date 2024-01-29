@@ -194,6 +194,13 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
   rfl
 #align category_theory.op_tensor_unit CategoryTheory.op_tensorUnit
 
+theorem op_tensorHom {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = (f.unop ⊗ g.unop).op :=
+  rfl
+
+theorem op_leftUnitor {X : Cᵒᵖ} : λ_ X = (λ_ (unop X)).symm.op := rfl
+
+theorem op_rightUnitor {X : Cᵒᵖ} : ρ_ X = (ρ_ (unop X)).symm.op := rfl
+
 theorem op_associator {X Y Z : Cᵒᵖ} : α_ X Y Z = (α_ (unop X) (unop Y) (unop Z)).symm.op := rfl
 
 theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op = (f ⊗ g).op := rfl
