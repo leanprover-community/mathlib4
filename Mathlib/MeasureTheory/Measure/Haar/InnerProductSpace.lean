@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Integral.Bochner
 
 #align_import measure_theory.measure.haar.inner_product_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -20,7 +21,7 @@ the canonical `volume` from the `MeasureSpace` instance.
 
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
-variable {ι F : Type*}
+variable {ι E F A : Type*}
 
 variable [Fintype ι] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F]
@@ -127,3 +128,37 @@ lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
   rfl
 
 end PiLp
+
+namespace LinearIsometryEquiv
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E] [BorelSpace E]
+
+variable (f : E ≃ₗᵢ[ℝ] F)
+
+/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+theorem measurePreserving : MeasurePreserving f := by
+  refine ⟨f.continuous.measurable, ?_⟩
+  rcases exists_orthonormalBasis ℝ E with ⟨w, b, _hw⟩
+  erw [← OrthonormalBasis.addHaar_eq_volume b, ← OrthonormalBasis.addHaar_eq_volume (b.map f),
+    Basis.map_addHaar _ f.toContinuousLinearEquiv]
+  congr
+
+def toMeasureEquiv : E ≃ᵐ F where
+  toEquiv := f
+  measurable_toFun := f.continuous.measurable
+  measurable_invFun := f.symm.continuous.measurable
+
+@[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
+
+theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
+
+variable [NormedAddCommGroup A] [NormedSpace ℝ A]
+
+theorem integrable_comp (g : F → A) : Integrable (g ∘ f) ↔ Integrable g :=
+  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
+
+theorem integral_comp (g : F → A) : ∫ (x : E), g (f x) = ∫ (y : F), g y :=
+  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
+
+end LinearIsometryEquiv
