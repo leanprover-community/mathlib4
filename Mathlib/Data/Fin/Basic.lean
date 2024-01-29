@@ -349,11 +349,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
-theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
-  ext <| by
-    dsimp only [rev]
-    rw [← tsub_tsub, tsub_tsub_cancel_of_le (Nat.add_one_le_iff.2 i.is_lt),
-      add_tsub_cancel_right]
+theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 #align fin.rev_involutive Fin.rev_involutive
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
