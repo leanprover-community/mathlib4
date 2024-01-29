@@ -588,13 +588,6 @@ section CommRing
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
-def _root_.LinearMap.linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R :=
-  LinearMap.mk₂ R (fun x y => f x * g y) (fun x y z => by simp only [map_add, add_mul])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
-  (fun _ _ _ => by simp only [map_add, mul_add])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
-
 /-- The product of linear forms is a quadratic form. -/
 def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
   toFun := f * g
