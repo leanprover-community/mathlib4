@@ -210,10 +210,16 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     · exact h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
+@[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
+
+@[simp]
+theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
+  (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]
