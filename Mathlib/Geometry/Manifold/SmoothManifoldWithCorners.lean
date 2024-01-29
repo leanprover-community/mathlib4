@@ -938,7 +938,7 @@ open scoped Topology
 variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] (f f' : PartialHomeomorph M H)
   (I : ModelWithCorners 𝕜 E H) [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
-  [TopologicalSpace M'] (I' : ModelWithCorners 𝕜 E' H') /-(x : M)-/ {s t : Set M}
+  [TopologicalSpace M'] (I' : ModelWithCorners 𝕜 E' H') {s t : Set M}
 
 /-!
 ### Extended charts
@@ -1484,7 +1484,7 @@ theorem extChartAt_preimage_mem_nhdsWithin' {x x' : M} (h : x' ∈ (extChartAt I
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of the
 base point is a neighborhood of the preimage, within a set. -/
-theorem extChartAt_preimage_mem_nhdsWithin (x : M) (ht : t ∈ 𝓝[s] x) :
+theorem extChartAt_preimage_mem_nhdsWithin {x : M} (ht : t ∈ 𝓝[s] x) :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
   extChartAt_preimage_mem_nhdsWithin' I (mem_extChartAt_source I x) ht
 #align ext_chart_at_preimage_mem_nhds_within extChartAt_preimage_mem_nhdsWithin
@@ -1496,7 +1496,7 @@ theorem extChartAt_preimage_mem_nhds' {x x' : M} (h : x' ∈ (extChartAt I x).so
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 is a neighborhood of the preimage. -/
-theorem extChartAt_preimage_mem_nhds (x : M) (ht : t ∈ 𝓝 x) :
+theorem extChartAt_preimage_mem_nhds {x : M} (ht : t ∈ 𝓝 x) :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝 ((extChartAt I x) x) := by
   apply (continuousAt_extChartAt_symm I x).preimage_mem_nhds
   rwa [(extChartAt I x).left_inv (mem_extChartAt_source _ _)]
