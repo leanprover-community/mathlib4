@@ -40,9 +40,6 @@ def fpropNormalizeFun (f : Expr) : MetaM Expr := do
   let f := f.consumeMData.eta
   lambdaTelescope f fun xs _ => do
 
-    if xs.size > 1 then
-      throwError "fprop bug: can't transform `{← ppExpr f}` to fprop-normal form"
-
     if xs.size = 0 then
       let X := (← inferType f).bindingDomain!
       return (.lam `x X (f.app (.bvar 0)) default)
@@ -115,6 +112,3 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
     let .some projName := info.getProjFn? idx | return none
     return projName
   | _ => return none
-
-
-

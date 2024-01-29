@@ -158,7 +158,22 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
 
+/-- Eta expand `f` in only one variable and reduce in others. 
 
+Examples:
+```
+  f                ==> fun x => f x
+  fun x y => f x y ==> fun x => f x
+  HAdd.hAdd y      ==> fun x => HAdd.hAdd y x
+  HAdd.hAdd        ==> fun x => HAdd.hAdd x
+``` -/
+def etaExpand1 (f : Expr) : MetaM Expr := do
+  let f := f.eta
+  if f.isLambda then
+    return f
+  else
+    withDefault do forallBoundedTelescope (← inferType f) (.some 1) fun xs _ => do
+      mkLambdaFVars xs (mkAppN f xs)
 
 /--
 Split lambda function into composition by specifying over which auguments in the lambda body this

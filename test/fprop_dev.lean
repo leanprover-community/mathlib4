@@ -153,6 +153,8 @@ example (x : α) (y : β) : Con (fun f : α → β → (x' : α) → E x' => f x
 example (y : β) : Con (fun (f : α → β → (x' : α) → E x') x => f x y x) := by fprop
 example : Con (fun (f : α → β → (x' : α) → E x') x y => f x y x) := by fprop
 
+example (x : α) [Add α] : Con (let y := x + x; fun x' : α => x' + y) := by fprop
+
 example (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := by fprop
 example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => f x (g x)) := by fprop
 example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y := g x; f x y) := by fprop

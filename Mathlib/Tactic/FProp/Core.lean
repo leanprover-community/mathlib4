@@ -721,70 +721,75 @@ mutual
     let .some (fpropDecl, f) ← getFProp? e
       | return none
 
-    let f ← fpropNormalizeFun f
-    let e := e.setArg fpropDecl.funArgId f
-
     withTraceNode `Meta.Tactic.fprop
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
-    match f with
-    | .letE .. => letTelescope f fun xs b => do
-      trace[Meta.Tactic.fprop.step] "Case `P (let x := ..; f)`\n{e}"
-      let e' := e.setArg fpropDecl.funArgId b
-      fprop (← mkLambdaFVars xs e')
+    -- if function starts with let bindings move them the top of `e` and try 
+    -- again
+    if f.isLet then
+      return ← letTelescope f fun xs b => do
+        trace[Meta.Tactic.fprop.step] "Case `P (let x := ..; f)`\n{e}"
+        let e' := e.setArg fpropDecl.funArgId b
+        fprop (← mkLambdaFVars xs e')
 
-    | .lam xName xType xBody xBi =>
+    -- make sure `f` is lambda with at least one bound variable
+    let f ← etaExpand1 f
+    -- reset `f` to the new form in `e`
+    -- todo: remove this as it should not be necessary but some parts of the 
+    --       code still relies on this
+    let e := e.setArg fpropDecl.funArgId f
 
-      match xBody.consumeMData.headBeta.consumeMData with
-      | (.bvar 0) =>
-        trace[Meta.Tactic.fprop.step] "case `P (fun x => x)\n{e}"
-        applyIdRule fpropDecl e xType fprop
+    let .lam _xName xType xBody _xBi := f 
+      | throwError "fprop bug: function {← ppExpr f} is in invalid form"
 
-      | .letE .. =>
-        trace[Meta.Tactic.fprop.step] "case `P (fun x => let y := ..; ..)\n{e}"
-        letCase fpropDecl e f fprop
+    match xBody.consumeMData.headBeta.consumeMData with
+    | (.bvar 0) =>
+      trace[Meta.Tactic.fprop.step] "case `P (fun x => x)\n{e}"
+      applyIdRule fpropDecl e xType fprop
 
-      | .lam  .. =>
-        trace[Meta.Tactic.fprop.step] "case `P (fun x y => f x y)`\n{e}"
-        applyPiRule fpropDecl e f fprop
+    | .letE .. =>
+      trace[Meta.Tactic.fprop.step] "case `P (fun x => let y := ..; ..)\n{e}"
+      letCase fpropDecl e f fprop
 
-      | .mvar .. => fprop (← instantiateMVars e)
+    | .lam  .. =>
+      trace[Meta.Tactic.fprop.step] "case `P (fun x y => f x y)`\n{e}"
+      applyPiRule fpropDecl e f fprop
 
-      | xBody => do
+    | .mvar .. => fprop (← instantiateMVars e)
 
-        if ¬xBody.hasLooseBVars then
-          trace[Meta.Tactic.fprop.step] "case `P (fun x => y)`\n{e}"
-          applyConstRule fpropDecl e xType xBody fprop
-        else
-          let fData ← getFunctionData f
+    | xBody => do
 
-          trace[Meta.Tactic.fprop.step] "app fun is: {← ppExpr xBody.getAppFn}"
-          if xBody.isAppOfArity ``DFunLike.coe 5 then
-            if let .some r ← applyPiRule fpropDecl e f fprop then
-              return r
+      if ¬xBody.hasLooseBVars then
+        trace[Meta.Tactic.fprop.step] "case `P (fun x => y)`\n{e}"
+        applyConstRule fpropDecl e xType xBody fprop
+      else
+        let fData ← getFunctionData f
 
-          -- TODO: remove arguments if arity is bigger then 7 and try to apply mor rules again
-          if xBody.isAppOfArity ``DFunLike.coe 6 then
-            if let .some r ← applyMorRules fpropDecl e fData fprop then
-              return r
+        trace[Meta.Tactic.fprop.step] "app fun is: {← ppExpr xBody.getAppFn}"
+        if xBody.isAppOfArity ``DFunLike.coe 5 then
+          if let .some r ← applyPiRule fpropDecl e f fprop then
+            return r
 
-          match fData.fn with
-          | .fvar id =>
-            if id == fData.mainVar.fvarId! then
-              trace[Meta.Tactic.fprop.step] "case `P (fun f => f x)`\n{e}"
-              bvarAppCase fpropDecl e fData fprop
-            else
-              trace[Meta.Tactic.fprop.step]
-                "case `P (fun x => f x)` where `f` is free variable\n{e}"
-              fvarAppCase fpropDecl e fData fprop
-          | .mvar .. =>
-            fprop (← instantiateMVars e)
-          | .const n _ | .proj .. => do
-            constAppCase fpropDecl e fData fprop
-          | _ =>
-            trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{e}"
-            return none
+        -- TODO: remove arguments if arity is bigger then 7 and try to apply mor rules again
+        if xBody.isAppOfArity ``DFunLike.coe 6 then
+          if let .some r ← applyMorRules fpropDecl e fData fprop then
+            return r
 
-    | _ => throwError "fprop bug: non-lambda case"
+        match fData.fn with
+        | .fvar id =>
+          if id == fData.mainVar.fvarId! then
+            trace[Meta.Tactic.fprop.step] "case `P (fun f => f x)`\n{e}"
+            bvarAppCase fpropDecl e fData fprop
+          else
+            trace[Meta.Tactic.fprop.step]
+              "case `P (fun x => f x)` where `f` is free variable\n{e}"
+            fvarAppCase fpropDecl e fData fprop
+        | .mvar .. =>
+          fprop (← instantiateMVars e)
+        | .const .. | .proj .. => do
+          constAppCase fpropDecl e fData fprop
+        | _ =>
+          trace[Meta.Tactic.fprop.step] "unknown case, ctor: {f.ctorName}\n{e}"
+          return none
 
 end
