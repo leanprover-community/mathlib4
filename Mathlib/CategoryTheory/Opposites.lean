@@ -498,8 +498,6 @@ between the opposite functors `F.op ≅ G.op`. -/
 protected def removeOp (α : F.op ≅ G.op) : G ≅ F where
   hom := NatTrans.removeOp α.hom
   inv := NatTrans.removeOp α.inv
-  hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
 #align category_theory.nat_iso.remove_op CategoryTheory.NatIso.removeOp
 
 /-- The natural isomorphism between functors `G.unop ≅ F.unop` induced by a natural isomorphism
@@ -508,8 +506,6 @@ between the original functors `F ≅ G`. -/
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : G.unop ≅ F.unop where
   hom := NatTrans.unop α.hom
   inv := NatTrans.unop α.inv
-  hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
 #align category_theory.nat_iso.unop CategoryTheory.NatIso.unop
 
 end NatIso
