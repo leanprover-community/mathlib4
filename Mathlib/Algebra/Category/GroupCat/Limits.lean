@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 

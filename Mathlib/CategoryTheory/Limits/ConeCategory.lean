@@ -6,7 +6,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Adjunction.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 
 #align_import category_theory.limits.cone_category from "leanprover-community/mathlib"@"18302a460eb6a071cf0bfe11a4df025c8f8af244"
 
