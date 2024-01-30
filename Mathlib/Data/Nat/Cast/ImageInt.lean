@@ -10,7 +10,7 @@ import Mathlib.Order.UpperLower.Basic
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
 
-In this file we prove that image of each `Set.Ixx` interval under `Nat.cast : ℕ → ℤ`
+In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast : ℕ → ℤ`
 is the corresponding interval in `ℤ`.
 -/
 
