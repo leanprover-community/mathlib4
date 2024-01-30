@@ -83,7 +83,7 @@ theorem closure_induction_left {p : (x : G) → x ∈ closure s → Prop} (H1 : 
       p (x⁻¹ * y) (mul_mem (inv_mem (subset_closure hx)) hy))
     {x : G} (h : x ∈ closure s) : p x h := by
   revert h
-  simp_rw [←mem_toSubmonoid, closure_toSubmonoid] at *
+  simp_rw [← mem_toSubmonoid, closure_toSubmonoid] at *
   intro h
   induction h using Submonoid.closure_induction_left with
   | one => exact H1
@@ -104,7 +104,7 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (H1 :
       p (x * y⁻¹) (mul_mem hx (inv_mem (subset_closure hy))))
     {x : G} (h : x ∈ closure s) : p x h := by
   revert h
-  simp_rw [←mem_toSubmonoid, closure_toSubmonoid] at *
+  simp_rw [← mem_toSubmonoid, closure_toSubmonoid] at *
   intro h
   induction h using Submonoid.closure_induction_right with
   | one => exact H1

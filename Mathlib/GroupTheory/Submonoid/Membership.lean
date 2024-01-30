@@ -444,10 +444,10 @@ theorem closure_induction_right {s : Set M} {p : (m : M) → m ∈ closure s →
     (mul_right : ∀ x hx, ∀ (y) (hy : y ∈ s), p x hx → p (x * y) (mul_mem hx (subset_closure hy)))
     {x : M} (h : x ∈ closure s) : p x h :=
   @closure_induction_left _ _ (MulOpposite.unop ⁻¹' s)
-    (fun m hm => p m.unop <| by rwa [←op_closure] at hm)
+    (fun m hm => p m.unop <| by rwa [← op_closure] at hm)
     one
     (fun _x hx _y hy => mul_right _ _ _ hx)
-    (MulOpposite.op x) (by rwa [←op_closure])
+    (MulOpposite.op x) (by rwa [← op_closure])
 #align submonoid.closure_induction_right Submonoid.closure_induction_right
 #align add_submonoid.closure_induction_right AddSubmonoid.closure_induction_right
 
