@@ -127,6 +127,22 @@ lemma isSemisimpleModule_of_IsSemisimpleModule_submodule {s : Set ι} {p : ι �
   let e : Submodule R (p i) ≃o Set.Iic (p i) := Submodule.MapSubtype.relIso (p i)
   simpa only [← e.complementedLattice_iff] using hp i hi
 
+lemma isSemisimpleModule_biSup_of_IsSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+    (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) :
+    IsSemisimpleModule R ↥(⨆ i ∈ s, p i) := by
+  let q := ⨆ i ∈ s, p i
+  let p' : ι → Submodule R q := fun i ↦ (p i).comap q.subtype
+  have hp₀ : ∀ i ∈ s, p i ≤ LinearMap.range q.subtype := fun i hi ↦ by
+    simpa only [Submodule.range_subtype] using le_biSup _ hi
+  have hp₁ : ∀ i ∈ s, IsSemisimpleModule R (p' i) := fun i hi ↦ by
+    let e : p' i ≃ₗ[R] p i := (p i).comap_equiv_self_of_inj_of_le q.injective_subtype (hp₀ i hi)
+    exact (Submodule.orderIsoMapComap e).complementedLattice_iff.mpr <| hp i hi
+  have hp₂ : ⨆ i ∈ s, p' i = ⊤ := by
+    apply Submodule.map_injective_of_injective q.injective_subtype
+    simp_rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_iSup]
+    exact biSup_congr fun i hi ↦ Submodule.map_comap_eq_of_le (hp₀ i hi)
+  exact isSemisimpleModule_of_IsSemisimpleModule_submodule hp₁ hp₂
+
 lemma isSemisimpleModule_of_IsSemisimpleModule_submodule' {p : ι → Submodule R M}
     (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
     IsSemisimpleModule R M :=
