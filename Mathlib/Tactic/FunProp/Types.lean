@@ -10,26 +10,26 @@ import Std.Lean.HashSet
 import Mathlib.Logic.Function.Basic
 
 /-!
-## `fprop`
+## `funProp`
 
-this file defines enviroment extension for `fprop`
+this file defines enviroment extension for `funProp`
 -/
 
 
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 
-initialize registerTraceClass `Meta.Tactic.fprop.attr
-initialize registerTraceClass `Meta.Tactic.fprop
-initialize registerTraceClass `Meta.Tactic.fprop.step
-initialize registerTraceClass `Meta.Tactic.fprop.unify
-initialize registerTraceClass `Meta.Tactic.fprop.discharge
-initialize registerTraceClass `Meta.Tactic.fprop.apply
-initialize registerTraceClass `Meta.Tactic.fprop.unfold
-initialize registerTraceClass `Meta.Tactic.fprop.cache
+initialize registerTraceClass `Meta.Tactic.fun_prop.attr
+initialize registerTraceClass `Meta.Tactic.fun_prop
+initialize registerTraceClass `Meta.Tactic.fun_prop.step
+initialize registerTraceClass `Meta.Tactic.fun_prop.unify
+initialize registerTraceClass `Meta.Tactic.fun_prop.discharge
+initialize registerTraceClass `Meta.Tactic.fun_prop.apply
+initialize registerTraceClass `Meta.Tactic.fun_prop.unfold
+initialize registerTraceClass `Meta.Tactic.fun_prop.cache
 
 
 /-- -/
@@ -46,7 +46,7 @@ structure Config where
 
 /-- -/
 structure State where
-  /-- Simp's cache is used as the `fprop` tactic is designed to be used inside of simp and utilize
+  /-- Simp's cache is used as the `funProp` tactic is designed to be used inside of simp and utilize
   its cache -/
   cache        : Simp.Cache := {}
   /-- The number of used transition theorems. -/
@@ -58,16 +58,16 @@ def Config.addThm (cfg : Config) (thmId : Origin) :
   {cfg with thmStack := thmId :: cfg.thmStack}
 
 /-- -/
-abbrev FPropM := ReaderT FProp.Config $ StateT FProp.State MetaM
+abbrev FunPropM := ReaderT FunProp.Config $ StateT FunProp.State MetaM
 
 
-/-- Result of `fprop`, it is a proof of function property `P f` -/
+/-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/
   proof : Expr
 
 /-- Get the name of previously used theorem. -/
-def getLastUsedTheoremName : FPropM (Option Name) := do
+def getLastUsedTheoremName : FunPropM (Option Name) := do
   match (← read).thmStack.head? with
   | .some (.decl n) => return n
   | _ => return none

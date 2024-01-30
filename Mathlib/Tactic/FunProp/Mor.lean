@@ -6,11 +6,11 @@ Authors: Tomas Skrivan
 import Lean
 import Mathlib.Data.FunLike.Basic
 
-import Mathlib.Tactic.FProp.ToStd
+import Mathlib.Tactic.FunProp.ToStd
 
 
 /-!
-## `fprop` meta programming function like in Lean.Expr.* but for working with bundled morphisms
+## `funProp` meta programming function like in Lean.Expr.* but for working with bundled morphisms
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
 morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib the convention is that `coe`
@@ -28,7 +28,7 @@ the head of expression is considered to be `f` and not `coe`.
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 namespace Mor
 

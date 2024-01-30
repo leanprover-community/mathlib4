@@ -5,31 +5,31 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Mathlib.Tactic.FProp.Decl
-import Mathlib.Tactic.FProp.Theorems
+import Mathlib.Tactic.FunProp.Decl
+import Mathlib.Tactic.FunProp.Theorems
 
 /-!
-## `fprop` attribute
+## `funProp` attribute
 -/
 
 
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 -- TODO: add support for specifying priority and discharger
 -- open Lean.Parser.Tactic
--- syntax (name:=Attr.fprop) "fprop" (prio)? (discharger)? : attr
+-- syntax (name:=Attr.funProp) "funProp" (prio)? (discharger)? : attr
 
-private def fpropHelpString : String :=
-"`fprop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap` ..."
+private def funPropHelpString : String :=
+"`funProp` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
-/-- Initialization of `fprop` attribute -/
-initialize fpropAttr : Unit ←
+/-- Initialization of `funProp` attribute -/
+initialize funPropAttr : Unit ←
   registerBuiltinAttribute {
-    name  := `fprop
-    descr := fpropHelpString
+    name  := `fun_prop
+    descr := funPropHelpString
     applicationTime := AttributeApplicationTime.afterCompilation
     add   := fun declName _stx attrKind =>
        discard <| MetaM.run do
@@ -37,9 +37,9 @@ initialize fpropAttr : Unit ←
 
        forallTelescope info.type fun _ b => do
          if b.isProp then
-           addFPropDecl declName none
+           addFunPropDecl declName none
          else
            addTheorem declName attrKind
     erase := fun _declName =>
-      throwError "can't remove `fprop` attribute (not implemented yet)"
+      throwError "can't remove `funProp` attribute (not implemented yet)"
   }

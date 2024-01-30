@@ -8,12 +8,12 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
-import Mathlib.Tactic.FProp
-import Mathlib.Tactic.FProp.Continuous
-import Mathlib.Tactic.FProp.Differentiable
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp.Continuous
+import Mathlib.Tactic.FunProp.Differentiable
 
 /-!
-## `fprop` minimal setup for ContDiff(At/On)
+## `funProp` minimal setup for ContDiff(At/On)
 -/
 
 section Missing
@@ -79,7 +79,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`
-and `fprop` can't work with such theorem. The theorem should be state where `n` is explicitely
+and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitely
 the smallest possible value i.e. `n=m+1`.
 
 In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem.  -/
@@ -93,14 +93,14 @@ end Missing
 
 
 -- mark definition
-attribute [fprop]
+attribute [fun_prop]
   ContDiff
   ContDiffAt
   ContDiffOn
 
 
 -- lambda rules
-attribute [fprop]
+attribute [fun_prop]
   contDiff_id'
   contDiff_const
   ContDiff.comp'
@@ -120,7 +120,7 @@ attribute [fprop]
   contDiffOn_pi'
 
 -- product
-attribute [fprop]
+attribute [fun_prop]
   ContDiff.prod
   ContDiff.fst
   ContDiff.snd
@@ -134,7 +134,7 @@ attribute [fprop]
   ContDiffOn.snd
 
 -- transitions
-attribute [fprop]
+attribute [fun_prop]
   ContDiff.contDiffAt
   ContDiff.contDiffOn
   ContDiffAt.differentiableAt
@@ -144,7 +144,7 @@ attribute [fprop]
   ContDiff.of_le
 
 -- algebra
-attribute [fprop]
+attribute [fun_prop]
   ContDiff.add
   ContDiff.sub
   ContDiff.neg
@@ -171,7 +171,7 @@ attribute [fprop]
 
 
 -- special function
-attribute [fprop]
+attribute [fun_prop]
   ContDiff.exp
   ContDiff.log
   ContDiff.pow
@@ -187,11 +187,11 @@ attribute [fprop]
   ContDiff.differentiable_iteratedDeriv'
 
 example {n} : ContDiffOn ℝ n (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 example {n} (y : ℝ) (hy : y≠0) :
     ContDiffAt ℝ n (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 private noncomputable def S (a b c d : ℝ) : ℝ :=
     a / (a + b + d) + b / (a + b + c) +
@@ -201,10 +201,10 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 
 example {n}: ContDiffOn ℝ n T (Set.Icc 0 1) := by
   unfold T S
-  fprop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
 
 private axiom t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞)
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) :=
-  by fprop (disch:=(exact t1))
+  by fun_prop (disch:=(exact t1))

@@ -5,10 +5,10 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Mathlib.Tactic.FProp.Mor
+import Mathlib.Tactic.FunProp.Mor
 
 /-!
-## `fprop` data structure holding information about a function
+## `funProp` data structure holding information about a function
 
 `FunctionData` holds data about function in the form `fun x => f x₁ ... xₙ`.
 -/
@@ -16,26 +16,26 @@ import Mathlib.Tactic.FProp.Mor
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 
-/-- fprop-normal form of a function is of the form `fun x => f x₁ ... xₙ`.
+/-- funProp-normal form of a function is of the form `fun x => f x₁ ... xₙ`.
 
-Throws and error if function can't be turned into fprop-normal form.
+Throws and error if function can't be turned into funProp-normal form.
 
 Examples:
-In fprop-normal form
+In funProp-normal form
 ```
 fun x => f x
 fun x => y + x
 ```
 
-Not in fprop-normal form
+Not in funProp-normal form
 ```
 fun x y => f x y
 HAdd.hAdd y
 ```-/
-def fpropNormalizeFun (f : Expr) : MetaM Expr := do
+def funPropNormalizeFun (f : Expr) : MetaM Expr := do
   let f := f.consumeMData.eta
   lambdaTelescope f fun xs _ => do
 
@@ -46,7 +46,7 @@ def fpropNormalizeFun (f : Expr) : MetaM Expr := do
       return f
 
 
-/-- Structure storing parts of a function in fprop-normal form. -/
+/-- Structure storing parts of a function in funProp-normal form. -/
 structure FunctionData where
   /-- local context where `mainVar` exists -/
   lctx : LocalContext
@@ -93,9 +93,9 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
   | _ => return none
 
 
-/-- Get `FunctionData` for `f`. Throws if `f` can be put into fprop-normal form. -/
+/-- Get `FunctionData` for `f`. Throws if `f` can be put into funProp-normal form. -/
 def getFunctionData (f : Expr) : MetaM FunctionData := do
-  let f ← fpropNormalizeFun f
+  let f ← funPropNormalizeFun f
   lambdaTelescope f fun xs b => do
 
     let xId := xs[0]!.fvarId!

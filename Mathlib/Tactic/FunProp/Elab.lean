@@ -4,32 +4,32 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
-import Mathlib.Tactic.FProp.Core
+import Mathlib.Tactic.FunProp.Core
 
 /-!
-## `fprop` tactic syntax
+## `funProp` tactic syntax
 -/
 
 namespace Mathlib
 open Lean Meta Elab Tactic
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 open Lean.Parser.Tactic
 
 /-- Tactic to prove function properties -/
-syntax (name := fpropTacStx) "fprop" (discharger)? : tactic
+syntax (name := funPropTacStx) "fun_prop" (discharger)? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
-    withTraceNode `Meta.Tactic.fprop
+    withTraceNode `Meta.Tactic.funProp
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/
-@[tactic fpropTacStx]
-def fpropTac : Tactic
-  | `(tactic| fprop $[$d]?) => do
+@[tactic funPropTacStx]
+def funPropTac : Tactic
+  | `(tactic| fun_prop $[$d]?) => do
 
     let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
       match d with
@@ -43,8 +43,8 @@ def fpropTac : Tactic
     goal.withContext do
       let goalType ← goal.getType
 
-      let (.some r, _) ← fprop goalType {disch := disch} |>.run {}
-        | throwError "fprop was unable to prove `{← Meta.ppExpr goalType}`"
+      let (.some r, _) ← funProp goalType {disch := disch} |>.run {}
+        | throwError "funProp was unable to prove `{← Meta.ppExpr goalType}`"
 
       goal.assign r.proof
   | _ => throwUnsupportedSyntax

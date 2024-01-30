@@ -5,26 +5,26 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Qq
-import Mathlib.Tactic.FProp.Types
+import Mathlib.Tactic.FunProp.Types
 
 /-!
-## `fprop` environment extension that stores all registered function properties
+## `funProp` environment extension that stores all registered function properties
 -/
 
 
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 
 
 /-- Basic information about function property
 
-To use `fprop` to prove a function property `P : (α→β)→Prop` one has to provide `FPropDecl`.
+To use `funProp` to prove a function property `P : (α→β)→Prop` one has to provide `FunPropDecl`.
 -/
-structure FPropDecl where
+structure FunPropDecl where
   /-- function transformation name -/
-  fpropName : Name
+  funPropName : Name
   /-- path for discriminatory tree -/
   path : Array DiscrTree.Key
   /-- argument index of a function this function property talks about.
@@ -35,16 +35,16 @@ structure FPropDecl where
   deriving Inhabited, BEq
 
 /-- -/
-structure FPropDecls where
+structure FunPropDecls where
   /-- discriminatory tree for function properties -/
-  decls : DiscrTree FPropDecl := {}
+  decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
 /-- -/
-abbrev FPropDeclsExt := SimpleScopedEnvExtension FPropDecl FPropDecls
+abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
 /-- -/
-initialize fpropDeclsExt : FPropDeclsExt ←
+initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
@@ -53,14 +53,14 @@ initialize fpropDeclsExt : FPropDeclsExt ←
   }
 
 /-- -/
-def addFPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
+def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
   let (xs,_,b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
-    throwError "invalid fprop declaration, has to be `Prop` valued function"
+    throwError "invalid fun_prop declaration, has to be `Prop` valued function"
 
   let lvls := info.levelParams.map (fun l => Level.param l)
   let e := mkAppN (.const declName lvls) xs
@@ -72,25 +72,25 @@ def addFPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : 
       return true
     else
       return false
-    | throwError "invalid fprop declaration, can't find argument of type `α → β`"
+    | throwError "invalid fun_prop declaration, can't find argument of type `α → β`"
   funArgId := xs.size - funArgId - 1
 
-  let decl : FPropDecl := {
-    fpropName := declName
+  let decl : FunPropDecl := {
+    funPropName := declName
     path := path
     funArgId := funArgId
     dischargeStx? := dischargeStx?
   }
 
-  modifyEnv fun env => fpropDeclsExt.addEntry env decl
+  modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.fprop.attr]
+  trace[Meta.Tactic.funProp.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
 /-- -/
-def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
-  let ext := fpropDeclsExt.getState (← getEnv)
+def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
+  let ext := funPropDeclsExt.getState (← getEnv)
 
   let decls ← ext.decls.getMatch e {}
 
@@ -99,8 +99,8 @@ def getFProp? (e : Expr) : MetaM (Option (FPropDecl × Expr)) := do
 
   if decls.size > 1 then
     throwError "\
-fprop bug: expression {← ppExpr e} matches multiple function properties
-{decls.map (fun d => d.fpropName)}"
+fun_prop bug: expression {← ppExpr e} matches multiple function properties
+{decls.map (fun d => d.funPropName)}"
 
   let decl := decls[0]!
   let f := e.getArg! decl.funArgId
@@ -108,18 +108,18 @@ fprop bug: expression {← ppExpr e} matches multiple function properties
   return (decl,f)
 
 /-- -/
-def isFProp (e : Expr) : MetaM Bool := do return (← getFProp? e).isSome
+def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
-def getFPropDecl? (e : Expr) : MetaM (Option FPropDecl) := do
-  match ← getFProp? e with
+def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
+  match ← getFunProp? e with
   | .some (decl,_) => return decl
   | .none => return none
 
 
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
-def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
-  match ← getFProp? e with
+def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
+  match ← getFunProp? e with
   | .some (_,f) => return f
   | .none => return none
 
@@ -127,9 +127,9 @@ def getFPropFun? (e : Expr) : MetaM (Option Expr) := do
 open Elab Term in
 /-- -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
-  withTraceNode `Meta.Tactic.fprop
+  withTraceNode `Meta.Tactic.funProp
     (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
-    let mvar ← mkFreshExprSyntheticOpaqueMVar e `fprop.discharger
+    let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
         withoutModifyingStateWithInfoAndMessages do
@@ -151,7 +151,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     return result?
 
 /-- -/
-def FPropDecl.discharger (fpropDecl : FPropDecl) (e : Expr) : MetaM (Option Expr) := do
-    let .some stx := fpropDecl.dischargeStx?
+def FunPropDecl.discharger (funPropDecl : FunPropDecl) (e : Expr) : MetaM (Option Expr) := do
+    let .some stx := funPropDecl.dischargeStx?
       | return none
     tacticToDischarge stx e

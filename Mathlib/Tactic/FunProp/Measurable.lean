@@ -8,16 +8,16 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Topology.Constructions
 
-import Mathlib.Tactic.FProp
+import Mathlib.Tactic.FunProp
 
 open Mathlib
 
 -- mark definition
-attribute [fprop]
+attribute [fun_prop]
   Measurable
 
 -- lambda rules
-attribute [fprop]
+attribute [fun_prop]
   measurable_id'
   measurable_const
   Measurable.comp'
@@ -25,13 +25,13 @@ attribute [fprop]
   measurable_pi_lambda
 
 -- product
-attribute [fprop]
+attribute [fun_prop]
   Measurable.prod_mk
   Measurable.fst
   Measurable.snd
 
 -- algebra
-attribute [fprop]
+attribute [fun_prop]
   Measurable.add
   Measurable.sub
   Measurable.mul
@@ -42,11 +42,11 @@ attribute [fprop]
 
 
 -- transitions
-attribute [fprop]
+attribute [fun_prop]
   Continuous.measurable -- Continuous f → Measurable f
 
 -- morphisms
-attribute [fprop]
+attribute [fun_prop]
   ContinuousLinearMap.measurable
   ContinuousLinearMap.measurable_comp
   ContinuousLinearMap.measurable_apply

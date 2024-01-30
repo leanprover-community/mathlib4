@@ -9,10 +9,10 @@ import Mathlib.Topology.Algebra.Field
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Tactic.FProp
+import Mathlib.Tactic.FunProp
 
 /-!
-## `fprop` minimal setup for Continuous(At/On)
+## `funProp` minimal setup for Continuous(At/On)
 -/
 
 section Missing
@@ -70,14 +70,14 @@ end Missing
 
 
 -- mark definition
-attribute [fprop]
+attribute [fun_prop]
   Continuous
   ContinuousAt
   ContinuousOn
 
 
 -- lambda rules
-attribute [fprop]
+attribute [fun_prop]
   continuous_id'
   continuous_const
   Continuous.comp'
@@ -97,7 +97,7 @@ attribute [fprop]
   continuousOn_pi'
 
 -- product
-attribute [fprop]
+attribute [fun_prop]
   Continuous.prod_mk
   Continuous.fst
   Continuous.snd
@@ -111,12 +111,12 @@ attribute [fprop]
   ContinuousOn.snd
 
 -- transitions
-attribute [fprop]
+attribute [fun_prop]
   Continuous.continuousAt
   Continuous.continuousOn
 
 -- algebra
-attribute [fprop]
+attribute [fun_prop]
   Continuous.add
   Continuous.sub
   Continuous.neg
@@ -149,7 +149,7 @@ attribute [fprop]
 
 
 -- special function
-attribute [fprop]
+attribute [fun_prop]
   Continuous.exp
   Continuous.log
   Continuous.pow
@@ -164,10 +164,10 @@ attribute [fprop]
 
 
 example : ContinuousOn (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 example (y : ℝ) (hy : y≠0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 private noncomputable def S (a b c d : ℝ) : ℝ :=
     a / (a + b + d) + b / (a + b + c) +
@@ -177,4 +177,4 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 
 example : ContinuousOn T (Set.Icc 0 1) := by
   unfold T S
-  fprop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))

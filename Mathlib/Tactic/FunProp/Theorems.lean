@@ -5,19 +5,18 @@ Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
 
-import Mathlib.Tactic.FProp.Decl
-import Mathlib.Tactic.FProp.FunctionData
-import Mathlib.Tactic.FProp.RefinedDiscrTree
+import Mathlib.Tactic.FunProp.Decl
+import Mathlib.Tactic.FunProp.FunctionData
+import Mathlib.Tactic.FunProp.RefinedDiscrTree
 
 /-!
-## `fprop` enviroment extensions storing thorems for `fprop`
+## `funProp` enviroment extensions storing thorems for `funProp`
 -/
 
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
-
+namespace Meta.FunProp
 
 /-- Stores important argument indices of lambda theorems
 
@@ -111,7 +110,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 /--  -/
 structure LambdaTheorem where
   /-- Name of function property -/
-  fpropName : Name
+  funPropName : Name
   /-- Name of lambda theorem -/
   thmName : Name
   /-- Type and important argument of the theorem. -/
@@ -138,13 +137,13 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with theorems := d.theorems.insert (e.fpropName, e.thmArgs.type) e}
+      {d with theorems := d.theorems.insert (e.funPropName, e.thmArgs.type) e}
   }
 
 /-- -/
-def getLambdaTheorem (fpropName : Name) (type : LambdaTheoremType) :
+def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (fpropName,type)
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (funPropName,type)
 
 
 --------------------------------------------------------------------------------
@@ -169,7 +168,7 @@ inductive TheoremForm where
 /-- theorem about specific function (eiter declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
-  fpropName : Name
+  funPropName : Name
   /-- theorem name -/
   thmName   : Name
   /-- function name -/
@@ -212,14 +211,16 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
         theorems :=
           d.theorems.alter e.funName fun funProperties =>
             let funProperties := funProperties.getD {}
-            funProperties.alter e.fpropName fun thms =>
+            funProperties.alter e.funPropName fun thms =>
               let thms := thms.getD #[]
               thms.push e}
   }
 
 /-- -/
-def getTheoremsForFunction (funName : Name) (fpropName : Name) : CoreM (Array FunctionTheorem) := do
-  return (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {} |>.findD fpropName #[]
+def getTheoremsForFunction (funName : Name) (funPropName : Name) :
+    CoreM (Array FunctionTheorem) := do
+  return (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
+    |>.findD funPropName #[]
 
 
 --------------------------------------------------------------------------------
@@ -228,7 +229,7 @@ def getTheoremsForFunction (funName : Name) (fpropName : Name) : CoreM (Array Fu
   used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
-  fpropName   : Name
+  funPropName   : Name
   /-- theorem name -/
   thmName     : Name
   /-- discreminatory tree keys used to index this theorem -/
@@ -316,13 +317,13 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
 
-    let .some (decl,f) ← getFProp? b
+    let .some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
-    let fpropName := decl.fpropName
+    let funPropName := decl.funPropName
 
     if let .some thmArgs ← detectLambdaTheoremArgs f xs then
       return .lam {
-        fpropName := fpropName
+        funPropName := funPropName
         thmName := declName
         thmArgs := thmArgs
       }
@@ -333,13 +334,13 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     | .const funName _ =>
 
       let .some (f',_) ← splitMorToComp f
-        | throwError s!"fprop bug: failed at detecting theorem type `{← ppExpr b}`"
+        | throwError s!"funProp bug: failed at detecting theorem type `{← ppExpr b}`"
 
       let form : TheoremForm := if (← isDefEq f' f) then .uncurried else .comp
 
       return .function {
--- fpropName funName fData.mainArgs fData.args.size thmForm
-        fpropName := fpropName
+-- funPropName funName fData.mainArgs fData.args.size thmForm
+        funPropName := funPropName
         thmName := declName
         funName := funName
         mainArgs := fData.mainArgs
@@ -351,7 +352,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       let (_,_,b') ← forallMetaTelescope info.type
       let keys := ← RefinedDiscrTree.mkDTExprs b'
       let thm : GeneralTheorem := {
-        fpropName := fpropName
+        funPropName := funPropName
         thmName := declName
         keys    := keys
         priority  := prio
@@ -371,27 +372,27 @@ def addTheorem (declName : Name) (attrKind : AttributeKind := .global)
     (prio : Nat := eval_prio default) : MetaM Unit := do
   match (← getTheoremFromConst declName prio) with
   | .lam thm =>
-    trace[Meta.Tactic.fprop.attr] "\
+    trace[Meta.Tactic.funProp.attr] "\
 lambda theorem: {thm.thmName}
-function property: {thm.fpropName}
+function property: {thm.funPropName}
 type: {repr thm.thmArgs.type}"
     lambdaTheoremsExt.add thm attrKind
   | .function thm =>
-    trace[Meta.Tactic.fprop.attr] "\
+    trace[Meta.Tactic.funProp.attr] "\
 function theorem: {thm.thmName}
-function property: {thm.fpropName}
+function property: {thm.funPropName}
 function name: {thm.funName}
 main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
 form: {repr thm.form}"
     functionTheoremsExt.add thm attrKind
   | .mor thm =>
-    trace[Meta.Tactic.fprop.attr] "\
+    trace[Meta.Tactic.funProp.attr] "\
 morphism theorem: {thm.thmName}
-function property: {thm.fpropName}"
+function property: {thm.funPropName}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
-    trace[Meta.Tactic.fprop.attr] "\
+    trace[Meta.Tactic.funProp.attr] "\
 transition theorem: {thm.thmName}
-function property: {thm.fpropName}"
+function property: {thm.funPropName}"
     transitionTheoremsExt.add thm attrKind

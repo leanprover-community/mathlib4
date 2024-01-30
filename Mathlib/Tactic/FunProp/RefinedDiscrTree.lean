@@ -3,7 +3,7 @@ Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
-import Mathlib.Tactic.FProp.StateList
+import Mathlib.Tactic.FunProp.StateList
 import Std.Data.List.Basic
 import Lean.Meta
 
@@ -60,7 +60,7 @@ set_option autoImplicit true
 
 open Lean Meta
 
-namespace Mathlib.Meta.FProp.RefinedDiscrTree
+namespace Mathlib.Meta.FunProp.RefinedDiscrTree
 
 -- ## Definitions
 
@@ -206,7 +206,7 @@ instance [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
 
 
 /-- Discrimination tree. It is an index from expressions to values of type `α`. -/
-structure _root_.Mathlib.Meta.FProp.RefinedDiscrTree (α : Type) where
+structure _root_.Mathlib.Meta.FunProp.RefinedDiscrTree (α : Type) where
   /-- The underlying `PersistentHashMap` of a `RefinedDiscrTree`. -/
   root : PersistentHashMap Key (Trie α) := {}
   deriving Inhabited

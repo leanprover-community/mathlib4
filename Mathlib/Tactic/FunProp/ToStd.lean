@@ -10,13 +10,13 @@ import Std.Lean.Expr
 
 
 /-!
-## `fprop` missing function from standard library
+## `funProp` missing function from standard library
 -/
 
 namespace Mathlib
 open Lean Meta
 
-namespace Meta.FProp
+namespace Meta.FunProp
 set_option autoImplicit true
 
 /-- Check if `a` can be obtained by removing elemnts from `b`. -/

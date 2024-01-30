@@ -14,11 +14,11 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
-import Mathlib.Tactic.FProp
-import Mathlib.Tactic.FProp.Continuous
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp.Continuous
 
 /-!
-## `fprop` minimal setup for Differentiable(At/On)
+## `funProp` minimal setup for Differentiable(At/On)
 -/
 
 
@@ -56,14 +56,14 @@ end Missing
 
 
 -- mark definition
-attribute [fprop]
+attribute [fun_prop]
   Differentiable
   DifferentiableAt
   DifferentiableOn
 
 
 -- lambda rules
-attribute [fprop]
+attribute [fun_prop]
   differentiable_id'
   differentiable_const
   Differentiable.comp'
@@ -77,7 +77,7 @@ attribute [fprop]
   DifferentiableOn.comp'
 
 -- product
-attribute [fprop]
+attribute [fun_prop]
   Differentiable.prod
   Differentiable.fst
   Differentiable.snd
@@ -91,14 +91,14 @@ attribute [fprop]
   DifferentiableOn.snd
 
 -- transitions
-attribute [fprop]
+attribute [fun_prop]
   Differentiable.differentiableAt
   Differentiable.differentiableOn
   DifferentiableAt.continuousAt
   DifferentiableOn.continuousOn
 
 -- algebra
-attribute [fprop]
+attribute [fun_prop]
   Differentiable.add
   Differentiable.sub
   Differentiable.neg
@@ -128,7 +128,7 @@ attribute [fprop]
 
 
 -- special function
-attribute [fprop]
+attribute [fun_prop]
   Differentiable.exp
   Differentiable.log
   Differentiable.pow
@@ -143,11 +143,11 @@ attribute [fprop]
 
 
 example : DifferentiableOn ℝ (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 example (y : ℝ) (hy : y≠0) :
     DifferentiableAt ℝ (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fprop (disch:=aesop)
+  by fun_prop (disch:=aesop)
 
 private noncomputable def S (a b c d : ℝ) : ℝ :=
     a / (a + b + d) + b / (a + b + c) +
@@ -157,4 +157,4 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 
 example : DifferentiableOn ℝ T (Set.Icc 0 1) := by
   unfold T S
-  fprop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))

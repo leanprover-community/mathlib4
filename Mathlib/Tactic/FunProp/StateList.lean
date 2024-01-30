@@ -22,7 +22,7 @@ def problem : StateListT Unit (StateM (Array Nat)) Unit := do
 ```
 will yield either `#[0,1,0,1]`, or `#[0,0,1,1]`, depending on the order in which the actions
 in the do block are combined.
-
+v
 -/
 
 universe u v w
