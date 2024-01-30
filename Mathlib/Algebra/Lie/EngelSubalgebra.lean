@@ -221,9 +221,9 @@ theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) 
     specialize @h d' hd'
     rw [← h, aux]
 
-lemma IsHomogeneous.optionEquivLeft_coeff_isHomogeneous
-    (φ : MvPolynomial (Option σ) R) (n : ℕ) (h : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
-    ((optionEquivLeft _ _ φ).coeff i).IsHomogeneous j := by
+lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
+    (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (h : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
+    ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   sorry
 
@@ -232,48 +232,31 @@ end MvPolynomial
 open Cardinal Polynomial in
 private
 lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card_aux
-    {σ : Type*} [Fintype σ] [IsDomain R]
-    (F : MvPolynomial σ R) (n : ℕ)
+    [IsDomain R] {N : ℕ} (F : MvPolynomial (Fin N) R) (n : ℕ)
     (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hn₀ : n ≠ 0) (hnR : n ≤ #R) :
-    ∃ r : σ → R, eval r F ≠ 0 := by
-  revert F n
-  refine Fintype.induction_empty_option ?equiv ?empty ?option σ
-  case equiv =>
-    rintro σ₁ σ₂ _ft e IH F n hF₀ hF hn₀ hnR
-    obtain ⟨r, hr⟩ :=
-      IH (rename e.symm F) n
-      (by simpa using (rename_injective e.symm e.symm.injective).ne hF₀)
-      (by rwa [rename_isHomogeneous]; exact e.symm.injective)
-      hn₀ hnR
-    use r ∘ e.symm
-    rwa [eval_rename] at hr
-  case empty =>
-    intro F n hF₀ hF hn₀ hnR
+    ∃ r, eval r F ≠ 0 := by
+  induction N generalizing n with
+  | zero =>
     refine ⟨fun _ ↦ 0, ?_⟩
     simp only [eval_zero']
     sorry
-  case option =>
-    intro σ _ft IH F n hF₀ hF hn₀ hnR
-    obtain ⟨i, hi⟩ : ∃ i : ℕ, (optionEquivLeft _ _ F).coeff i ≠ 0 := by
+  | succ N IH =>
+    obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv _ _ F).coeff i ≠ 0 := by
       contrapose! hF₀
-      apply (optionEquivLeft _ _).injective
+      apply (finSuccEquiv _ _).injective
       apply Polynomial.ext
       simp only [hF₀, map_zero, Polynomial.coeff_zero, forall_const]
     have hin : i ≤ n := by
       sorry
     rcases eq_or_lt_of_le hin with rfl | hin
-    · let r : Option σ → R
-        | none => 1
-        | some _ => 0
-      use r
-      sorry
+    · sorry
     · obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_lt hin
       rw [add_assoc] at hj
-      specialize IH _ _ hi (hF.optionEquivLeft_coeff_isHomogeneous _ _ _ _ hj.symm)
+      specialize IH _ _ hi (hF.finSuccEquiv_coeff_isHomogeneous _ _ _ _ hj.symm)
         (Nat.succ_ne_zero _) (le_trans _ hnR)
       · norm_cast; omega
       rcases IH with ⟨r, hr⟩
-      let φ : R[X] := Polynomial.map (eval r) (optionEquivLeft _ _ F)
+      let φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F)
       sorry
 
 open Cardinal in
@@ -283,14 +266,10 @@ lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
     (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hn₀ : n ≠ 0) (h : n ≤ #R) :
     ∃ r : σ → R, eval r F ≠ 0 := by
   -- reduce to the case where σ is finite
-  obtain ⟨s, F, rfl⟩ := exists_finset_rename F
+  obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
   have hF₀ : F ≠ 0 := by rintro rfl; simp at hF₀
-  have hF : F.IsHomogeneous n := by
-    rwa [rename_isHomogeneous] at hF
-    exact Subtype.val_injective
+  have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous _ _ _ hf] at hF
   obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux F n hF₀ hF hn₀ h
-  classical
-  let r' : σ → R := fun i ↦ if h : i ∈ s then r ⟨i, h⟩ else 0
-  have hr' : r' ∘ Subtype.val = r := by ext i; simp [r']
-  use r'
-  rwa [eval_rename, hr']
+  obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
+  use r
+  rwa [eval_rename]
