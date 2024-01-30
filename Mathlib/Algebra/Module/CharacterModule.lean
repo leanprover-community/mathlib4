@@ -23,8 +23,8 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 ## Main results
 
 - `CharacterModuleFunctor` : the contravariant functor of `R`-modules where `M ↦ M⋆` and
-an `R`-lineara map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
-- `LinearMap.charaterfy_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
+an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
+- `LinearMap.dual_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.exists_character_apply_ne_zero_of_ne_zero` : for nonzero `a ∈ M`, there is a
   character `c` in `M⋆` such that `c a` is nonzero as well.
