@@ -29,7 +29,7 @@ of `•` belong elsewhere.
 -/
 
 
-universe u v
+universe u v w
 
 open Pointwise
 
@@ -212,65 +212,127 @@ end Stabilizers
 
 end MulAction
 
-namespace MulDistribMulAction
+section Fixed
 
-variable (M : Type u) [Monoid M] (A : Type v)
+variable (M : Type u) (α : Type v) {β : Type w} [Monoid M]
+
+section Monoid
+
+variable [Monoid α] [MulDistribMulAction M α] [Monoid β] [MulDistribMulAction M β] {f : α →* β}
 
 /-- The submonoid of elements fixed under the whole action. -/
-def fixedSubmonoid [Monoid A] [MulDistribMulAction M A] : Submonoid A where
-  carrier := MulAction.fixedPoints M A
+def MulDistribMulAction.fixedSubmonoid : Submonoid α where
+  carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
   mul_mem' := fun ha hb _ => by rw [smul_mul, ha, hb]
 
 @[simp]
-lemma mem_fixedSubmonoid [Monoid A] [MulDistribMulAction M A] (a : A) :
-    a ∈ fixedSubmonoid M A ↔ ∀ m : M, m • a = a :=
+lemma MulDistribMulAction.mem_fixedSubmonoid (a : α) :
+    a ∈ fixedSubmonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+variable {M α}
+
+/-- The `MonoidHom` of submonoids `MulDistribMulAction.fixedSubmonoid` fixed by the whole action
+induced by a `MonoidHom` of monoids. -/
+def MonoidHom.fixedSubmonoidMap (hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    MulDistribMulAction.fixedSubmonoid M α →* MulDistribMulAction.fixedSubmonoid M β :=
+  f.submonoidMap' <| by rintro _ ⟨g, h, rfl⟩ m; rw [← hf, h]
+
+lemma MonoidHom.fixedSubmonoidMap_injective {hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a}
+    (hf' : Function.Injective f) : Function.Injective <| f.fixedSubmonoidMap hf :=
+  submonoidMap'_injective hf'
+
+end Monoid
+
+section Group
+
+variable [Group α] [MulDistribMulAction M α] [Group β] [MulDistribMulAction M β] {f : α →* β}
 
 /-- The subgroup of elements fixed under the whole action. -/
-def fixedSubgroup [Group A] [MulDistribMulAction M A] : Subgroup A where
-  __ := fixedSubmonoid M A
-  inv_mem' := fun ha m => by rw [smul_inv', ha]
+def MulDistribMulAction.fixedSubgroup : Subgroup α where
+  __ := fixedSubmonoid M α
+  inv_mem' := fun ha _ => by rw [smul_inv', ha]
 
 /-- The notation for `MulDistribMulAction.fixedSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^*" M:51 => fixedSubgroup M α
+notation α "^*" M:51 => MulDistribMulAction.fixedSubgroup M α
 
 @[simp]
-lemma mem_fixedSubgroup [Group A] [MulDistribMulAction M A] (a : A) :
-    a ∈ fixedSubgroup M A ↔ ∀ m : M, m • a = a :=
+lemma MulDistribMulAction.mem_fixedSubgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-end MulDistribMulAction
+variable {M α}
 
-namespace DistribMulAction
+/-- The `MonoidHom` of subgroups `MulDistribMulAction.fixedSubgroup` fixed by the whole action
+induced by a `MonoidHom` of groups. -/
+def MonoidHom.fixedSubgroupMap (hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : α^*M →* β^*M :=
+  fixedSubmonoidMap hf
 
-variable (M : Type u) [Monoid M] (α : Type v)
+lemma MonoidHom.fixedSubgroupMap_injective {hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a}
+    (hf' : Function.Injective f) : Function.Injective <| f.fixedSubgroupMap hf :=
+  fixedSubmonoidMap_injective hf'
+
+end Group
+
+section AddMonoid
+
+variable [AddMonoid α] [DistribMulAction M α] [AddMonoid β] [DistribMulAction M β] {f : α →+ β}
 
 /-- The additive submonoid of elements fixed under the whole action. -/
-def fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] : AddSubmonoid α where
+def DistribMulAction.fixedAddSubmonoid : AddSubmonoid α where
   carrier := MulAction.fixedPoints M α
   zero_mem' := smul_zero
   add_mem' := fun ha hb _ => by rw [smul_add, ha, hb]
 
 @[simp]
-lemma mem_fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] (a : α) :
+lemma DistribMulAction.mem_fixedAddSubmonoid (a : α) :
     a ∈ fixedAddSubmonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
+variable {M α}
+
+/-- The `AddMonoidHom` of additive submonoids `DistribMulAction.fixedAddSubmonoid` fixed by the
+whole action induced by an `AddMonoidHom` of additive monoids. -/
+def AddMonoidHom.fixedAddSubmonoidMap (hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    DistribMulAction.fixedAddSubmonoid M α →+ DistribMulAction.fixedAddSubmonoid M β :=
+  f.addSubmonoidMap' <| by rintro _ ⟨g, h, rfl⟩ m; rw [← hf, h]
+
+lemma AddMonoidHom.fixedAddSubmonoidMap_injective {hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a}
+    (hf' : Function.Injective f) : Function.Injective <| f.fixedAddSubmonoidMap hf :=
+  addSubmonoidMap'_injective hf'
+
+end AddMonoid
+
+section AddGroup
+
+variable [AddGroup α] [DistribMulAction M α] [AddGroup β] [DistribMulAction M β] {f : α →+ β}
+
 /-- The additive subgroup of elements fixed under the whole action. -/
-def fixedAddSubgroup [AddGroup α] [DistribMulAction M α] : AddSubgroup α where
+def DistribMulAction.fixedAddSubgroup : AddSubgroup α where
   __ := fixedAddSubmonoid M α
   neg_mem' := fun ha _ => by rw [smul_neg, ha]
 
 /-- The notation for `DistribMulAction.fixedAddSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => fixedAddSubgroup M α
+notation α "^+" M:51 => DistribMulAction.fixedAddSubgroup M α
 
 @[simp]
-lemma mem_fixedAddSubgroup [AddGroup α] [DistribMulAction M α] (a : α) :
-    a ∈ fixedAddSubgroup M α ↔ ∀ m : M, m • a = a :=
+lemma DistribMulAction.mem_fixedAddSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-end DistribMulAction
+variable {M α}
+
+/-- The `AddMonoidHom` of additive subgroups `DistribMulAction.fixedAddSubgroup` fixed by the whole
+action induced by an `AddMonoidHom` of additive groups. -/
+def AddMonoidHom.fixedAddSubgroupMap (hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : α^+M →+ β^+M :=
+  fixedAddSubmonoidMap hf
+
+lemma AddMonoidHom.fixedAddSubgroupMap_injective {hf : ∀ m : M, ∀ a : α, f (m • a) = m • f a}
+    (hf' : Function.Injective f) : Function.Injective <| f.fixedAddSubgroupMap hf :=
+  fixedAddSubmonoidMap_injective hf'
+
+end AddGroup
+
+end Fixed
 
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
