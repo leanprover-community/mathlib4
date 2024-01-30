@@ -52,6 +52,7 @@ structure State where
   /-- The number of used transition theorems. -/
   transitionDepth := 0
 
+/-- Log used theorem -/
 def Config.addThm (cfg : Config) (thmId : Origin) : Config := {cfg with thmStack := thmId :: cfg.thmStack}
 
 /-- -/
@@ -63,7 +64,7 @@ structure Result where
   /-- -/
   proof : Expr
 
-
+/-- Get the name of previously used theorem. -/
 def getLastUsedTheoremName : FPropM (Option Name) := do
   match (← read).thmStack.head? with
   | .some (.decl n) => return n
