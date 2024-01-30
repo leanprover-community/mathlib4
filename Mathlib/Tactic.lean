@@ -47,7 +47,6 @@ import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
-import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp
 import Mathlib.Tactic.FProp.ContDiff
