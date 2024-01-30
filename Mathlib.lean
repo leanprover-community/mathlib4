@@ -387,6 +387,7 @@ import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Interval
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
@@ -665,7 +666,7 @@ import Mathlib.Analysis.Calculus.Monotone
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 import Mathlib.Analysis.Calculus.Rademacher
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
@@ -832,6 +833,7 @@ import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
@@ -1049,6 +1051,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Basic
+import Mathlib.CategoryTheory.Galois.Examples
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
@@ -1510,6 +1513,9 @@ import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
@@ -1890,6 +1896,7 @@ import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.PartialFractions
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Data.Polynomial.Smeval
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.Data.Polynomial.UnitTrinomial
@@ -1920,6 +1927,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.Rat.NNRat.BigOperators
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
@@ -2526,6 +2534,7 @@ import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.SModEq
+import Mathlib.LinearAlgebra.Semisimple
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
@@ -2691,7 +2700,6 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.TorusIntegral
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
-import Mathlib.MeasureTheory.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Card
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
@@ -2740,6 +2748,8 @@ import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.MeasureTheory.Order.Group.Lattice
+import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.Tactic
@@ -2930,7 +2940,9 @@ import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Order.Filter.Germ
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
+import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.ListTraverse
 import Mathlib.Order.Filter.ModEq
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Partial
