@@ -2491,6 +2491,21 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
+/-- Consider two lists `l₁` and `l₂` with designated elements `a₁` and `a₂` somewhere in them:
+`l₁ = x₁ ++ [a₁] ++ z₁` and `l₂ = x₂ ++ [a₂] ++ z₂`.
+Assume the designated element `a₂` is present in neither `x₁` nor `z₁`.
+We conclude that the lists are equal (`l₁ = l₂`) if and only if their respective parts are equal
+(`x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂`). -/
+lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+    (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
+    x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
+  constructor
+  · simp only [append_eq_append_iff, cons_eq_append, cons_eq_cons]
+    rintro (⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩ |
+      ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
+  · rintro ⟨rfl, rfl, rfl⟩
+    rfl
+
 section Scanl
 
 variable {f : β → α → β} {b : β} {a : α} {l : List α}
