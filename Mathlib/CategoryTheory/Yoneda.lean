@@ -400,7 +400,6 @@ def yonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type v₁} : (yoneda.obj X ⟶ F) ≃ F
   (yonedaSections X F).toEquiv.trans Equiv.ulift
 #align category_theory.yoneda_equiv CategoryTheory.yonedaEquiv
 
-@[simp]
 theorem yonedaEquiv_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F) :
     yonedaEquiv f = f.app (op X) (𝟙 X) :=
   rfl
