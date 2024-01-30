@@ -59,7 +59,8 @@ theorem AEval.isTorsion_of_aeval_eq_zero
 -- TODO MOVE
 theorem AEval.isTorsion_of_finiteDimensional
     (K M : Type*) {A : Type*} [Field K] [Ring A] [Algebra K A]
-    [AddCommMonoid M] [Module A M] [Module K M] [IsScalarTower K A M] [FiniteDimensional K A] (a : A) :
+    [AddCommMonoid M] [Module A M] [Module K M] [IsScalarTower K A M] [FiniteDimensional K A]
+    (a : A) :
     IsTorsion K[X] (AEval K M a) :=
   AEval.isTorsion_of_aeval_eq_zero (minpoly.aeval K a) (minpoly.ne_zero_of_finite K a)
 -- No help from `#find_home AEval.isTorsion_of_aeval_eq_zero`; just reports:
