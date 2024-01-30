@@ -484,8 +484,7 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
 theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     {K₁ K₂ : Compacts G} (h : Disjoint K₁.1 K₂.1) (h₂ : IsClosed K₂.1) :
     chaar K₀ (K₁ ⊔ K₂) = chaar K₀ K₁ + chaar K₀ K₂ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
-  rcases separatedNhds_of_isCompact_isCompact_isClosed K₁.2 K₂.2 h₂ h
+  rcases SeparatedNhds.of_isCompact_isCompact_isClosed K₁.2 K₂.2 h₂ h
     with ⟨U₁, U₂, h1U₁, h1U₂, h2U₁, h2U₂, hU⟩
   rcases compact_open_separated_mul_right K₁.2 h1U₁ h2U₁ with ⟨L₁, h1L₁, h2L₁⟩
   rcases mem_nhds_iff.mp h1L₁ with ⟨V₁, h1V₁, h2V₁, h3V₁⟩
@@ -577,7 +576,6 @@ theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : C
 @[to_additive]
 theorem haarContent_outerMeasure_self_pos (K₀ : PositiveCompacts G) :
     0 < (haarContent K₀).outerMeasure K₀ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   refine' zero_lt_one.trans_le _
   rw [Content.outerMeasure_eq_iInf]
   refine' le_iInf₂ fun U hU => le_iInf fun hK₀ => le_trans _ <| le_iSup₂ K₀.toCompacts hK₀
@@ -610,14 +608,12 @@ variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpa
 "The Haar measure on the locally compact additive group `G`, scaled so that
 `addHaarMeasure K₀ K₀ = 1`."]
 noncomputable def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   ((haarContent K₀).measure K₀)⁻¹ • (haarContent K₀).measure
 #align measure_theory.measure.haar_measure MeasureTheory.Measure.haarMeasure
 #align measure_theory.measure.add_haar_measure MeasureTheory.Measure.addHaarMeasure
 
 @[to_additive]
-theorem haarMeasure_apply [LocallyCompactSpace G]
-    {K₀ : PositiveCompacts G} {s : Set G} (hs : MeasurableSet s) :
+theorem haarMeasure_apply {K₀ : PositiveCompacts G} {s : Set G} (hs : MeasurableSet s) :
     haarMeasure K₀ s = (haarContent K₀).outerMeasure s / (haarContent K₀).measure K₀ := by
   change ((haarContent K₀).measure K₀)⁻¹ * (haarContent K₀).measure s = _
   simp only [hs, div_eq_mul_inv, mul_comm, Content.measure_apply]
@@ -627,7 +623,6 @@ theorem haarMeasure_apply [LocallyCompactSpace G]
 @[to_additive]
 instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
     IsMulLeftInvariant (haarMeasure K₀) := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   rw [← forall_measure_preimage_mul_iff]
   intro g A hA
   rw [haarMeasure_apply hA, haarMeasure_apply (measurable_const_mul g hA)]
@@ -663,7 +658,7 @@ instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Re
 
 @[to_additive]
 theorem haarMeasure_closure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ (closure K₀) = 1 := by
-  rw [IsCompact.measure_closure_eq_of_group K₀.isCompact, haarMeasure_self]
+  rw [K₀.isCompact.measure_closure, haarMeasure_self]
 
 /-- The Haar measure is sigma-finite in a second countable group. -/
 @[to_additive "The additive Haar measure is sigma-finite in a second countable group."]
@@ -702,6 +697,8 @@ but `E / E` does not contain a neighborhood of zero. On the other hand, it is al
 inner regular Haar measures (and in particular for any Haar measure on a second countable group).
 -/
 
+open Pointwise
+
 /-- **Steinhaus Theorem** In any locally compact group `G` with an inner regular Haar measure `μ`,
 for any measurable set `E` of positive measure, the set `E / E` is a neighbourhood of `1`. -/
 @[to_additive
@@ -711,42 +708,29 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     [InnerRegular μ] (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) :
     E / E ∈ 𝓝 (1 : G) := by
   /- For any inner regular measure `μ` and set `E` of positive measure, we can find a compact
-       set `K` of positive measure inside `E`. Further, there exists an open
-       set `U` containing `K` with measure arbitrarily close to `K` (here `μ U < 2 * μ K` suffices).
-       Then, we can pick an open neighborhood of `1`, say `V` such that such that `V * K` is
-       contained in `U`. Now note that for any `v` in `V`, the sets `K` and `{v} * K` can not be
-       disjoint because they are both of measure `μ K` (since `μ` is left invariant) and also
-       contained in `U`, yet we have that `μ U < 2 * μ K`. This show that `K / K` contains the
-       neighborhood `V` of `1`, and therefore that it is itself such a neighborhood. -/
+    set `K` of positive measure inside `E`. Further, there exists a neighborhood `V` of the
+    identity such that `v • K \ K` has small measure for all `v ∈ V`, say `< μ K`.
+    Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
+    This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
+    itself such a neighborhood. -/
   obtain ⟨K, hKE, hK, K_closed, hKpos⟩ :
       ∃ (K : Set G), K ⊆ E ∧ IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
     rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
-    · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp hE KE
+    · exact K_comp.closure_subset_measurableSet hE KE
     · rwa [K_comp.measure_closure_eq_of_group]
-  obtain ⟨U, hUK, hU, hμUK⟩ : ∃ (U : Set G), K ⊆ U ∧ IsOpen U ∧ μ U < μ K + μ K :=
-    hK.exists_isOpen_lt_add hKpos.ne'
-  obtain ⟨V, hV1, hVKU⟩ : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U :=
-    compact_open_separated_mul_left hK hU hUK
-  have hv : ∀ v : G, v ∈ V → ¬Disjoint ({v} * K) K := by
+  obtain ⟨V, hV1, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • K \ K) < μ K :=
+    exists_nhds_measure_smul_diff_lt hK K_closed hKpos.ne'
+  have hv : ∀ v : G, v ∈ V → ¬Disjoint (v • K) K := by
     intro v hv hKv
-    have hKvsub : {v} * K ∪ K ⊆ U := by
-      apply Set.union_subset _ hUK
-      apply _root_.subset_trans _ hVKU
-      apply Set.mul_subset_mul _ (Set.Subset.refl K)
-      simp only [Set.singleton_subset_iff, hv]
-    replace hKvsub := @measure_mono _ _ μ _ _ hKvsub
-    have hcontr := lt_of_le_of_lt hKvsub hμUK
-    rw [measure_union hKv K_closed.measurableSet] at hcontr
-    have hKtranslate : μ ({v} * K) = μ K := by
-      simp only [singleton_mul, image_mul_left, measure_preimage_mul]
-    rw [hKtranslate, lt_self_iff_false] at hcontr
-    assumption
+    have Z := hV v hv
+    rw [hKv.symm.sdiff_eq_right, measure_smul] at Z
+    exact lt_irrefl _ Z
   suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
   intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
+  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ v • K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
   refine ⟨x, hKE hxvK, v⁻¹ * x, hKE ?_, ?_⟩
-  · simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
+  · simpa [mem_smul_set_iff_inv_smul_mem] using hxK
   · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
@@ -778,13 +762,11 @@ variable [SecondCountableTopology G]
   See also `isAddHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability."]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
-  have : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
     K₀.interior_nonempty.mono (interior_mono subset_closure)
   have := measure_eq_div_smul μ (haarMeasure K₀) (isClosed_closure (s := K₀)).measurableSet
     (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_lt_top.ne
-  rwa [haarMeasure_closure_self, div_one, IsCompact.measure_closure_eq_of_group K₀.isCompact]
-    at this
+  rwa [haarMeasure_closure_self, div_one, K₀.isCompact.measure_closure] at this
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
 

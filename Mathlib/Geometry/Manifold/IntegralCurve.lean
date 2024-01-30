@@ -60,7 +60,7 @@ integral curve, vector field, local existence, uniqueness
 
 open scoped Manifold Topology
 
-open Set Classical
+open Function Set Classical
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -213,8 +213,7 @@ section Translation
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
-  rw [Function.comp_apply,
-    ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+  rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t (hγ (t + dt) ht)
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
@@ -301,7 +300,7 @@ section Scaling
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
-  rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
+  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
@@ -573,6 +572,40 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ ↦ BoundarylessManifold.isInteriorPoint I) hv hγ hγ' h
 
+/-- For a global integral curve `γ`, if it crosses itself at `a b : ℝ`, then it is periodic with
+period `a - b`. -/
+lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (heq : γ a = γ b) : Periodic γ (a - b) := by
+  intro t
+  apply congrFun <|
+    isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
+  rw [comp_apply, add_sub_cancel'_right, heq]
+
+/-- A global integral curve is injective xor periodic with positive period. -/
+lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
+    (hγ : IsIntegralCurve γ v)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
+  rw [xor_iff_iff_not]
+  refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
+  intro h
+  rw [Injective] at h
+  push_neg at h
+  obtain ⟨a, b, heq, hne⟩ := h
+  refine ⟨|a - b|, ?_, ?_⟩
+  · rw [gt_iff_lt, abs_pos, sub_ne_zero]
+    exact hne
+  · by_cases hab : a - b < 0
+    · rw [abs_of_neg hab, neg_sub]
+      exact hγ.periodic_of_eq hv heq.symm
+    · rw [not_lt] at hab
+      rw [abs_of_nonneg hab]
+      exact hγ.periodic_of_eq hv heq
+
+section UniformTime
+
 lemma exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a a' : ℝ} (hpos : 0 < a')
@@ -734,5 +767,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
       ⟨⟨neg_lt_neg hlt, by linarith⟩, ⟨by linarith, by linarith⟩⟩ heq1.symm).mono
     (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
   rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2]
+
+end UniformTime
 
 end ExistUnique
