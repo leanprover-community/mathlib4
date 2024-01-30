@@ -9,7 +9,6 @@ import Mathlib.Lean.Meta.Basic
 import Std.Util.Cache
 import Mathlib.Tactic.Core
 import Std.Tactic.SolveByElim
-import Mathlib.Tactic.TryThis
 
 /-!
 # Propose
