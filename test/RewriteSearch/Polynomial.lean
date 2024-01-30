@@ -155,7 +155,7 @@ example {R : Type u} {a b : R} [Semiring R] (ha : a ≠ 0) :
 --   rw_search [-Polynomial.degree_X_sub_C]
 --   -- Mathlib proof:
 --   -- rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
---   done
+-- done
 
 -- Polynomial.natDegree_X_sub_C.{u}
 #guard_msgs(drop info) in
