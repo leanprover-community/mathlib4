@@ -119,12 +119,11 @@ instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f
   left_id a := by cases a <;> simp [liftOrGet]
   right_id a := by cases a <;> simp [liftOrGet]
 
-
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
---#align option.lift_or_get_is_left_id LawfulIdentity.toLeftIdentity
---#align option.lift_or_get_is_right_id LawfulIdentity.toLeftIdentity
+#align option.lift_or_get_is_left_id Option.liftOrGet_isId
+#align option.lift_or_get_is_right_id Option.liftOrGet_isId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
