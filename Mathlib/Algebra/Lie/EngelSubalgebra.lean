@@ -91,16 +91,50 @@ lemma normalizer_engel (x : L) : normalizer (Engel R x) = Engel R x := by
   rw [pow_succ', LinearMap.mul_apply]
   exact hn
 
--- variable {R}
---
--- open LieSubalgebra in
--- lemma normalizer_eq_self_of_engel_le (H : LieSubalgebra R L) (x : L) (h : Engel R x ≤ H) :
---     normalizer H = H := by
---   apply le_antisymm _ (le_normalizer H)
---   intro y hy
---   rw [mem_normalizer_iff] at hy
---   -- apparently the main proof of
---   -- BARNES,D.W. : Nilpotency of Lie algebras. Math. Zeitschr. 79, 237--238 (1962).
---   -- contains an argument for this claim
---   -- jmc: but I don't understand the argument in that article
---   sorry
+variable {R}
+
+open LieSubalgebra in
+lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
+    (H : LieSubalgebra R L) (x : L) (h : Engel R x ≤ H) :
+    normalizer H = H := by
+  apply le_antisymm _ (le_normalizer H)
+  set N := normalizer H
+  calc N.toSubmodule ≤ (Engel R x).toSubmodule ⊔ H.toSubmodule := ?_
+       _ = H := by rwa [sup_eq_right]
+  have aux₁ : ∀ n ∈ N, ⁅x, n⁆ ∈ H := by
+    intro n hn
+    rw [mem_normalizer_iff] at hn
+    specialize hn x (h (self_mem_engel R x))
+    rwa [← lie_skew, neg_mem_iff (G := L)] at hn
+  have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
+  let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
+  have := dx.eventually_codisjoint_ker_pow_range_pow
+  obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp this
+  specialize hk (k+1) (Nat.le_add_right k 1)
+  rw [← Submodule.map_subtype_top N.toSubmodule, Submodule.map_le_iff_le_comap]
+  apply hk
+  · rw [← Submodule.map_le_iff_le_comap]
+    apply le_sup_of_le_left
+    rw [Submodule.map_le_iff_le_comap]
+    intro y hy
+    simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
+    use (k+1)
+    clear hk; revert hy
+    generalize k+1 = k
+    induction k generalizing y with
+    | zero => cases y; intro hy; simpa using hy
+    | succ k ih =>
+      intro hy
+      rw [pow_succ'] at hy ⊢
+      simp only [LinearMap.mem_ker, LinearMap.mul_apply] at hy
+      specialize ih hy
+      cases y
+      simpa only [LinearMap.mul_apply, ad_apply] using ih
+  · rw [← Submodule.map_le_iff_le_comap]
+    apply le_sup_of_le_right
+    rw [Submodule.map_le_iff_le_comap]
+    rintro _ ⟨y, rfl⟩
+    cases y
+    simp only [pow_succ, LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
+    apply aux₁
+    simp only [Submodule.coeSubtype, SetLike.coe_mem]
