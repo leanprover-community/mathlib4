@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
@@ -138,3 +139,51 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     simp only [pow_succ, LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
     apply aux₁
     simp only [Submodule.coeSubtype, SetLike.coe_mem]
+
+lemma LieSubmodule.coe_toEndomorphism (N : LieSubmodule R L M) (x : L) (y : N) :
+    (toEndomorphism R L N x y : M) = toEndomorphism R L M x y := rfl
+
+lemma LieSubmodule.coe_toEndomorphism_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
+    ((toEndomorphism R L N x ^ n) y : M) = (toEndomorphism R L M x ^ n) y := by
+  induction n generalizing y with
+  | zero => rfl
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEndomorphism]
+
+lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
+    (ad R H x y : L) = ad R L x y := rfl
+
+lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
+    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y := by
+  induction n generalizing y with
+  | zero => rfl
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubalgebra.coe_ad]
+
+lemma LieSubalgebra.isNilpotent_of_forall_le_engel [IsNoetherian R L]
+    (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ Engel R x) :
+    LieAlgebra.IsNilpotent R H := by
+  rw [LieAlgebra.isNilpotent_iff_forall]
+  intro x
+  let K : ℕ →o Submodule R H :=
+    ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ ?mono⟩
+  case mono =>
+    obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+    intro y hy
+    rw [LinearMap.mem_ker] at hy ⊢
+    rw [add_comm, pow_add, LinearMap.mul_apply, hy, map_zero]
+  obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr inferInstance K
+  use n
+  ext y
+  rw [LieSubalgebra.coe_ad_pow]
+  specialize h x x.2 y.2
+  rw [mem_engel_iff] at h
+  obtain ⟨m, hm⟩ := h
+  obtain (hmn|hmn) : m ≤ n ∨ n ≤ m := le_total m n
+  · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+    rw [add_comm, pow_add, LinearMap.mul_apply, hm, map_zero,
+      LinearMap.zero_apply, ZeroMemClass.coe_zero]
+  · suffices y ∈ K n by
+      simpa only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff,
+        LieSubalgebra.coe_ad_pow, ZeroMemClass.coe_zero]
+    rw [hn m hmn]
+    simpa only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff,
+      LieSubalgebra.coe_ad_pow, ZeroMemClass.coe_zero]
