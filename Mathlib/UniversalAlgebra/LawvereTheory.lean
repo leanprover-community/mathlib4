@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 import Mathlib.Data.FinEnum
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.Tactic
 
 universe u u' v v'
@@ -40,17 +41,59 @@ inductive LawvereWord {S : Type u} (op : ProdWord S → S → Type v) :
   | toNil (P : ProdWord S) :
       LawvereWord op P .nil
 
-structure FiniteLawverePresentation where
-  numSort : ℕ
-  sortName (S : Fin numSort) :
-    String := s!"X_{S}"
-  numOps (P : ProdWord (Fin numSort)) (Q : Fin numSort) :
-    ℕ
-  opName (P : ProdWord (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) :
-    String := s!"op_{op}"
-  rels {P Q : ProdWord (Fin numSort)} :
-    List (Lean.Name × LawvereWord (fun a b => Fin (numOps a b)) P Q ×
-      LawvereWord (fun a b => Fin (numOps a b)) P Q)
+inductive LawvereRel {S : Type u} {op : ProdWord S → S → Type v}
+    (rel : {X Y : ProdWord S} → LawvereWord op X Y → LawvereWord op X Y → Prop) :
+    {X Y : ProdWord S} → LawvereWord op X Y → LawvereWord op X Y → Prop where
+  | of {X Y : ProdWord S} {f g : LawvereWord op X Y} : rel f g → LawvereRel rel f g
+  | rfl {X Y : ProdWord S} (f : LawvereWord op X Y) : LawvereRel rel f f
+  | symm {X Y : ProdWord S} {f g : LawvereWord op X Y} :
+      LawvereRel rel f g → LawvereRel rel g f
+  | trans {X Y : ProdWord S} {f g h : LawvereWord op X Y} :
+      LawvereRel rel f g → LawvereRel rel g h → LawvereRel rel f h
+  | comp_congr {X Y Z : ProdWord S}
+      {f f' : LawvereWord op X Y}
+      {g g' : LawvereWord op Y Z} :
+      LawvereRel rel f f' → LawvereRel rel g g' → LawvereRel rel (f.comp g) (f'.comp g')
+  | id_comp {X Y : ProdWord S} (f : LawvereWord op X Y) :
+      LawvereRel rel (LawvereWord.id _ |>.comp f) f
+  | comp_id {X Y : ProdWord S} (f : LawvereWord op X Y) :
+      LawvereRel rel (f.comp <| .id _) f
+  | assoc {X Y Z W : ProdWord S}
+      (f : LawvereWord op X Y)
+      (g : LawvereWord op Y Z)
+      (h : LawvereWord op Z W) :
+      LawvereRel rel ((f.comp g).comp h) (f.comp (g.comp h))
+  | lift_congr
+      {T P Q : ProdWord S}
+      {f f' : LawvereWord op T P}
+      {g g' : LawvereWord op T Q} :
+      LawvereRel rel f f' →
+      LawvereRel rel g g' →
+      LawvereRel rel (.lift f g) (.lift f' g')
+  | lift_fst
+      {T P Q : ProdWord S}
+      (f : LawvereWord op T P)
+      (g : LawvereWord op T Q) :
+      LawvereRel rel ((LawvereWord.lift f g).comp <| .fst _ _) f
+  | lift_snd
+      {T P Q : ProdWord S}
+      (f : LawvereWord op T P)
+      (g : LawvereWord op T Q) :
+      LawvereRel rel ((LawvereWord.lift f g).comp <| .snd _ _) g
+  | lift_unique
+      {T P Q : ProdWord S}
+      (f g : LawvereWord op T (P.prod Q)) :
+      LawvereRel rel (f.comp <| .fst _ _) (g.comp <| .fst _ _) →
+      LawvereRel rel (f.comp <| .snd _ _) (g.comp <| .snd _ _) →
+      LawvereRel rel f g
+  | toNil_unique {P : ProdWord S} (f g : LawvereWord op P .nil) : LawvereRel rel f g
+
+def LawvereSetoid {S : Type u} {op : ProdWord S → S → Type v}
+    (rel : {X Y : ProdWord S} → LawvereWord op X Y → LawvereWord op X Y → Prop)
+    (X Y : ProdWord S) :
+    Setoid (LawvereWord op X Y) where
+  r := LawvereRel rel
+  iseqv := ⟨LawvereRel.rfl, LawvereRel.symm, LawvereRel.trans⟩
 
 structure LawvereTheory where
   S : Type u
