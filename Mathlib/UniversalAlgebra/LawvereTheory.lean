@@ -42,9 +42,12 @@ inductive LawvereWord {S : Type u} (op : ProdWord S → S → Type v) :
 
 structure FiniteLawverePresentation where
   numSort : ℕ
-  sortName (S : Fin numSort) : String
-  numOps (P : ProdWord (Fin numSort)) (Q : Fin numSort) : ℕ
-  opName (P : ProdWord (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) : Lean.Name
+  sortName (S : Fin numSort) :
+    String := s!"X_{S}"
+  numOps (P : ProdWord (Fin numSort)) (Q : Fin numSort) :
+    ℕ
+  opName (P : ProdWord (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) :
+    String := s!"op_{op}"
   rels {P Q : ProdWord (Fin numSort)} :
     List (Lean.Name × LawvereWord (fun a b => Fin (numOps a b)) P Q ×
       LawvereWord (fun a b => Fin (numOps a b)) P Q)
@@ -90,16 +93,52 @@ instance : Category.{v} L where
   comp_id := L.comp_id
   assoc := L.assoc
 
+@[simps]
 def nil : L := .mk .nil
 
 def toNil (P : L) : P ⟶ L.nil := L.toNil' _
 
+lemma toNil_unique {P : L} (a b : P ⟶ L.nil) : a = b := L.toNil'_unique _ _
+
+instance {P : L} : Unique (P ⟶ L.nil) where
+  default := L.toNil _
+  uniq _ := L.toNil_unique _ _
+
+@[simps]
 def prod (P Q : L) : L := .mk <| P.as.prod Q.as
 
 def fst (P Q : L) : L.prod P Q ⟶ P := L.fst' _ _
 def snd (P Q : L) : L.prod P Q ⟶ Q := L.snd' _ _
 
+@[simps!]
+def binaryFan (P Q : L) : Limits.BinaryFan P Q := .mk (L.fst _ _) (L.snd _ _)
+
 def lift {T P Q : L} (a : T ⟶ P) (b : T ⟶ Q) : T ⟶ L.prod P Q := L.lift' a b
+
+@[reassoc (attr := simp)]
+lemma lift_fst {T P Q : L} (a : T ⟶ P) (b : T ⟶ Q) :
+    L.lift a b ≫ L.fst P Q = a :=
+  L.lift'_fst' _ _
+
+@[reassoc (attr := simp)]
+lemma lift_snd {T P Q : L} (a : T ⟶ P) (b : T ⟶ Q) :
+    L.lift a b ≫ L.snd P Q = b :=
+  L.lift'_snd' _ _
+
+@[ext]
+lemma lift_unique {T P Q : L} (a b : T ⟶ L.prod P Q)
+    (hfst : a ≫ L.fst _ _ = b ≫ L.fst _ _)
+    (hsnd : a ≫ L.snd _ _ = b ≫ L.snd _ _) :
+    a = b :=
+  L.lift'_unique hfst hsnd
+
+@[simps!]
+def isLimitBinaryFan (P Q : L) : Limits.IsLimit (L.binaryFan P Q) :=
+  Limits.BinaryFan.isLimitMk
+    (fun S => L.lift S.fst S.snd)
+    (by aesop_cat)
+    (by aesop_cat)
+    (by aesop_cat)
 
 @[ext]
 structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
@@ -123,47 +162,39 @@ structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
     a ≫ snd _ _ = b ≫ snd _ _ →
     a = b
 
-def Morphism.preservesNil {L L' : LawvereTheory} (F : Morphism L L') :
-    F.obj L.nil ≅ L'.nil where
-  hom := L'.toNil _
-  inv := F.toNil _
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+attribute [reassoc (attr := simp)]
+  Morphism.lift_fst
+  Morphism.lift_snd
 
+attribute [ext]
+  Morphism.lift_unique
+
+instance {L L' : LawvereTheory} (F : Morphism L L') (P : L') : Unique (P ⟶ F.obj L.nil) where
+  default := F.toNil _
+  uniq _ := F.toNil_unique _ _
+
+def Morphism.binaryFan {L L' : LawvereTheory}
+    (F : Morphism L L') (P Q : L) : Limits.BinaryFan (F.obj P) (F.obj Q) :=
+    Limits.BinaryFan.mk (F.fst P Q) (F.snd P Q)
+
+def Morphism.isLimitBinaryFan {L L' : LawvereTheory}
+    (F : Morphism L L') (P Q : L) : Limits.IsLimit (F.binaryFan P Q) :=
+  Limits.BinaryFan.isLimitMk
+    (fun S => F.lift S.fst S.snd)
+    (by aesop_cat)
+    (by aesop_cat)
+    (by aesop_cat)
+
+@[simps]
+def Morphism.functor {L L' : LawvereTheory} (F : Morphism L L') : L ⥤ L' where
+  obj := F.obj
+  map := F.map
+  map_id := F.map_id
+  map_comp := F.map_comp
+
+@[simps!]
 def Morphism.preservesProd {L L' : LawvereTheory} (F : Morphism L L') (P Q : L) :
-    F.obj (L.prod P Q) ≅ L'.prod (F.obj P) (F.obj Q) where
-  hom := L'.lift (F.map <| L.fst _ _) (F.map <| L.snd _ _)
-  inv := F.lift (L'.fst _ _) (L'.snd _ _)
-  hom_inv_id := sorry
-  inv_hom_id := sorry
-
-def Morphism.id (L : LawvereTheory.{u,v}) : Morphism L L where
-  obj X := X
-  map f := f
-  map_id _ := rfl
-  map_comp _ _ := rfl
-  toNil _ := L.toNil' _
-  toNil_unique := sorry
-  fst _ _ := L.fst _ _
-  snd _ _ := L.snd _ _
-  lift := L.lift
-  lift_fst := sorry
-  lift_snd := sorry
-  lift_unique := sorry
-
-def Morphism.comp {L L' L'' : LawvereTheory} (f : Morphism L L') (g : Morphism L' L'') :
-    Morphism L L'' where
-  obj X := g.obj (f.obj X)
-  map a := g.map (f.map a)
-  map_id _ := by simp [f.map_id, g.map_id]
-  map_comp := by simp [f.map_comp, g.map_comp]
-  toNil X := g.toNil _ ≫ g.map (f.toNil _)
-  toNil_unique := sorry
-  fst P Q := g.map <| f.map <| L.fst _ _
-  snd P Q := g.map <| f.map <| L.snd _ _
-  lift a b := g.lift a b ≫ g.map (f.lift (L'.fst _ _) (L'.snd _ _))
-  lift_fst := sorry
-  lift_snd := sorry
-  lift_unique := sorry
+    F.obj (L.prod P Q) ≅ L'.prod (F.obj P) (F.obj Q) :=
+  (F.isLimitBinaryFan P Q).conePointUniqueUpToIso (L'.isLimitBinaryFan _ _)
 
 end LawvereTheory
