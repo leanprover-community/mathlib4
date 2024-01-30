@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.PID
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.FiniteDimensional
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.CompleteSublattice
@@ -41,44 +41,6 @@ In finite dimensions over a field:
 -/
 
 open Set Function Polynomial
-
-section find_home
-
-open Module
-
--- TODO MOVE
-theorem AEval.isTorsion_of_aeval_eq_zero
-    {R M A : Type*} [CommSemiring R] [NoZeroDivisors R] [Semiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
-    {a : A} {p : R[X]} (h : aeval a p = 0) (h' : p ≠ 0) :
-    IsTorsion R[X] (AEval R M a) := by
-  intro x
-  have hp : p ∈ nonZeroDivisors R[X] := fun q hq ↦ Or.resolve_right (mul_eq_zero.mp hq) h'
-  exact ⟨⟨p, hp⟩, (AEval.of R M a).symm.injective <| by simp [h]⟩
-
--- TODO MOVE
-theorem AEval.isTorsion_of_finiteDimensional
-    (K M : Type*) {A : Type*} [Field K] [Ring A] [Algebra K A]
-    [AddCommMonoid M] [Module A M] [Module K M] [IsScalarTower K A M] [FiniteDimensional K A]
-    (a : A) :
-    IsTorsion K[X] (AEval K M a) :=
-  AEval.isTorsion_of_aeval_eq_zero (minpoly.aeval K a) (minpoly.ne_zero_of_finite K a)
--- No help from `#find_home AEval.isTorsion_of_aeval_eq_zero`; just reports:
--- [RingTheory.LocalProperties, RingTheory.Ideal.Cotangent, RingTheory.IntegralClosure]
-
--- TODO MOVE
-@[simp]
-theorem Ideal.squarefree_span_singleton
-    {R : Type*} [CommRing R] [IsPrincipalIdealRing R] [IsDomain R] {r : R} :
-    Squarefree (span {r}) ↔ Squarefree r := by
-  refine ⟨fun h x hx ↦ ?_, fun h I hI ↦ ?_⟩
-  · rw [← span_singleton_dvd_span_singleton_iff_dvd, ← span_singleton_mul_span_singleton] at hx
-    simpa using h _ hx
-  · rw [← span_singleton_generator I, span_singleton_mul_span_singleton,
-      span_singleton_dvd_span_singleton_iff_dvd] at hI
-    exact isUnit_iff.mpr <| eq_top_of_isUnit_mem _ (Submodule.IsPrincipal.generator_mem I) (h _ hI)
-
-end find_home
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 

@@ -1420,6 +1420,16 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
 #align span_singleton_dvd_span_singleton_iff_dvd span_singleton_dvd_span_singleton_iff_dvd
 
+@[simp]
+theorem Ideal.squarefree_span_singleton {a : R} :
+    Squarefree (span {a}) ↔ Squarefree a := by
+  refine ⟨fun h x hx ↦ ?_, fun h I hI ↦ ?_⟩
+  · rw [← span_singleton_dvd_span_singleton_iff_dvd, ← span_singleton_mul_span_singleton] at hx
+    simpa using h _ hx
+  · rw [← span_singleton_generator I, span_singleton_mul_span_singleton,
+      span_singleton_dvd_span_singleton_iff_dvd] at hI
+    exact isUnit_iff.mpr <| eq_top_of_isUnit_mem _ (Submodule.IsPrincipal.generator_mem I) (h _ hI)
+
 theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [NormalizationMonoid R]
     [DecidableEq R] [DecidableEq (Ideal R)] {a b : R} (ha : a ∈ normalizedFactors b) :
     Ideal.span ({a} : Set R) ∈ normalizedFactors (Ideal.span ({b} : Set R)) := by
