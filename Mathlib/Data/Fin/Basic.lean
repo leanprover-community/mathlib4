@@ -449,7 +449,7 @@ theorem top_eq_last (n : ℕ) : ⊤ = last n := rfl
 #align fin.top_eq_last Fin.top_eq_last
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
-`[NeZero n]` wheras `last n` is of type `Fin (n + 1)`. To address this properly would
+`[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
 require a change to the standard library, defining `NeZero n` and thus re-defining `last n`,
 or possibly just `last`, as `rev 0`, of type `Fin n`. As we can see from these lemmas, this
 would be definitionally equal to the existing definition. -/
