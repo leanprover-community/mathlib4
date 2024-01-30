@@ -351,9 +351,6 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
-    -- Porting note: this instance is needed for the following `apply`
-    haveI := @IntermediateField.toAlgebra F (solvableByRad F E) _ _ _ F⟮α, β⟯
-      (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
