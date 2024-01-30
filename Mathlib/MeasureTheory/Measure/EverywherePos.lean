@@ -223,13 +223,9 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   positive measure around the point `z`. -/
   obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 1)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ≥0∞) < 1)
-  have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) ≤ u n := by
-    intro n
-    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 1, ∀ g ∈ V, μ (g • k \ k) < u n :=
-      exists_nhds_measure_smul_diff_lt (μ := μ) hk h'k (u_mem n).1.ne'
-    obtain ⟨W, W_open, hW1, hW⟩ : ∃ W, IsOpen W ∧ 1 ∈ W ∧ W * W ⊆ V :=
-      exists_open_nhds_one_mul_subset V_mem
-    exact ⟨W, W_open, hW1, fun g hg ↦ (hV g (hW hg)).le⟩
+  have : ∀ n, ∃ (W : Set G), IsOpen W ∧ 1 ∈ W ∧ ∀ g ∈ W * W, μ ((g • k) \ k) < u n :=
+    fun n ↦ exists_open_nhds_one_mul_subset
+      (eventually_nhds_one_measure_smul_diff_lt hk h'k (u_mem n).1.ne')
   choose W W_open mem_W hW using this
   let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
@@ -243,7 +239,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
   have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
-    apply hW
+    apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
