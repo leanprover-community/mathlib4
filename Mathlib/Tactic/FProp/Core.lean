@@ -166,26 +166,34 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
 
 /-- Try to apply declared theorem -/
-def tryTheorem? (e : Expr) (thmName : Name)
-    (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
+def tryTheorem? (e : Expr) (thmName : Name) (discharge? : Expr → MetaM (Option Expr))
+    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := true) :
     FPropM (Option Result) := do
-  -- is extra depth important?
-  -- withNewMCtxDepth do
+  let go : FPropM (Option Result) := do
     let thmProof ← mkConstWithFreshMVarLevels thmName
     let type ← inferType thmProof
     let (xs, bis, type) ← forallMetaTelescope type
     tryTheoremCore xs bis thmProof type e (.decl thmName) discharge? fprop
 
+  if newMCtxDepth then
+    withNewMCtxDepth go
+  else
+    go
+
 /-- Try to apply local theorem -/
-def tryLocalTheorem? (e : Expr) (fvarId : FVarId)
-    (discharge? : Expr → MetaM (Option Expr)) (fprop : Expr → FPropM (Option Result)) :
+def tryLocalTheorem? (e : Expr) (fvarId : FVarId) (discharge? : Expr → MetaM (Option Expr))
+    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := true) :
     FPropM (Option Result) := do
-  -- is extra depth important?
-  -- withNewMCtxDepth do
-  let thmProof := .fvar fvarId
-  let type ← inferType thmProof
-  let (xs, bis, type) ← forallMetaTelescope type
-  tryTheoremCore xs bis thmProof type e (.fvar fvarId) discharge? fprop
+  let go : FPropM (Option Result) := do
+    let thmProof := .fvar fvarId
+    let type ← inferType thmProof
+    let (xs, bis, type) ← forallMetaTelescope type
+    tryTheoremCore xs bis thmProof type e (.fvar fvarId) discharge? fprop
+
+  if newMCtxDepth then
+    withNewMCtxDepth go
+  else
+    go
 
 /-- Apply lambda calculus rule P fun x => x` -/
 def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
@@ -589,7 +597,7 @@ def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr)
     "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
-    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
+    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop (newMCtxDepth := false) then
       return r
 
   trace[Meta.Tactic.fprop.step] "no theorem matched"
