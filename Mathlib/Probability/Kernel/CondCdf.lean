@@ -8,6 +8,7 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.Topology.Order.Basic
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
@@ -65,27 +66,6 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
   exact exists_rat_lt x
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
-
--- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
-    [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
-  cases subsingleton_or_nontrivial α
-  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
-      eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
-  have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
-  have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
-  intro s
-  rw [h.mem_iff, h_nhds.mem_iff]
-  rintro ⟨a, ha_bot_lt, h_Iio_a_subset_s⟩
-  refine' ⟨⊥, trivial, _root_.trans _ h_Iio_a_subset_s⟩
-  simpa only [Iic_bot, singleton_subset_iff, mem_Iio]
-#align at_bot_le_nhds_bot atBot_le_nhds_bot
-
--- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
-    [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  @atBot_le_nhds_bot αᵒᵈ _ _ _ _
-#align at_top_le_nhds_top atTop_le_nhds_top
 
 -- todo: move to measure_theory/measurable_space
 /-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
