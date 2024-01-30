@@ -66,31 +66,28 @@ end Set
 namespace Set
 
 theorem finite_def {s : Set α} : s.Finite ↔ Nonempty (Fintype s) :=
-  ⟨fun ⟨h⟩ => ⟨h⟩, fun ⟨h⟩ => ⟨h⟩⟩
+  finite_iff_nonempty_fintype s
 #align set.finite_def Set.finite_def
 
 protected alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
 #align set.finite.nonempty_fintype Set.Finite.nonempty_fintype
 
-theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
-  rw [finite_iff_nonempty_fintype, finite_def]
+theorem finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := .rfl
 #align set.finite_coe_iff Set.finite_coe_iff
 
 /-- Constructor for `Set.Finite` using a `Finite` instance. -/
-theorem toFinite (s : Set α) [Finite s] : s.Finite :=
-  finite_coe_iff.mp ‹_›
+theorem toFinite (s : Set α) [Finite s] : s.Finite := ‹_›
 #align set.to_finite Set.toFinite
 
 /-- Construct a `Finite` instance for a `Set` from a `Finset` with the same elements. -/
 protected theorem Finite.ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : p.Finite :=
-  ⟨Fintype.ofFinset s H⟩
+  have := Fintype.ofFinset s H; p.toFinite
 #align set.finite.of_finset Set.Finite.ofFinset
 
 /-- Projection of `Set.Finite` to its `Finite` instance.
 This is intended to be used with dot notation.
 See also `Set.Finite.Fintype` and `Set.Finite.nonempty_fintype`. -/
-protected theorem Finite.to_subtype {s : Set α} (h : s.Finite) : Finite s :=
-  finite_coe_iff.mpr h
+protected theorem Finite.to_subtype {s : Set α} (h : s.Finite) : Finite s := h
 #align set.finite.to_subtype Set.Finite.to_subtype
 
 /-- A finite set coerced to a type is a `Fintype`.
@@ -122,12 +119,12 @@ theorem toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toF
 
 theorem Finite.exists_finset {s : Set α} (h : s.Finite) :
     ∃ s' : Finset α, ∀ a : α, a ∈ s' ↔ a ∈ s := by
-  cases h
+  cases h.nonempty_fintype
   exact ⟨s.toFinset, fun _ => mem_toFinset⟩
 #align set.finite.exists_finset Set.Finite.exists_finset
 
 theorem Finite.exists_finset_coe {s : Set α} (h : s.Finite) : ∃ s' : Finset α, ↑s' = s := by
-  cases h
+  cases h.nonempty_fintype
   exact ⟨s.toFinset, s.coe_toFinset⟩
 #align set.finite.exists_finset_coe Set.Finite.exists_finset_coe
 
@@ -733,16 +730,20 @@ theorem finite_univ [Finite α] : (@univ α).Finite :=
   Set.toFinite _
 #align set.finite_univ Set.finite_univ
 
-theorem finite_univ_iff : (@univ α).Finite ↔ Finite α :=
-  finite_coe_iff.symm.trans (Equiv.Set.univ α).finite_iff
+theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α).finite_iff
 #align set.finite_univ_iff Set.finite_univ_iff
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 #align finite.of_finite_univ Finite.of_finite_univ
 
+theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
+  rw [Set.Finite] at hs
+  haveI := Finite.Set.subset _ ht
+  apply toFinite
+#align set.finite.subset Set.Finite.subset
+
 theorem Finite.union {s t : Set α} (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
-  cases hs
-  cases ht
+  rw [Set.Finite] at hs ht
   apply toFinite
 #align set.finite.union Set.Finite.union
 
@@ -755,19 +756,16 @@ theorem Finite.sup {s t : Set α} : s.Finite → t.Finite → (s ⊔ t).Finite :
   Finite.union
 #align set.finite.sup Set.Finite.sup
 
-theorem Finite.sep {s : Set α} (hs : s.Finite) (p : α → Prop) : { a ∈ s | p a }.Finite := by
-  cases hs
-  apply toFinite
+theorem Finite.sep {s : Set α} (hs : s.Finite) (p : α → Prop) : { a ∈ s | p a }.Finite :=
+  hs.subset <| sep_subset _ _
 #align set.finite.sep Set.Finite.sep
 
-theorem Finite.inter_of_left {s : Set α} (hs : s.Finite) (t : Set α) : (s ∩ t).Finite := by
-  cases hs
-  apply toFinite
+theorem Finite.inter_of_left {s : Set α} (hs : s.Finite) (t : Set α) : (s ∩ t).Finite :=
+  hs.subset <| inter_subset_left _ _
 #align set.finite.inter_of_left Set.Finite.inter_of_left
 
-theorem Finite.inter_of_right {s : Set α} (hs : s.Finite) (t : Set α) : (t ∩ s).Finite := by
-  cases hs
-  apply toFinite
+theorem Finite.inter_of_right {s : Set α} (hs : s.Finite) (t : Set α) : (t ∩ s).Finite :=
+  hs.subset <| inter_subset_right _ _
 #align set.finite.inter_of_right Set.Finite.inter_of_right
 
 theorem Finite.inf_of_left {s : Set α} (h : s.Finite) (t : Set α) : (s ⊓ t).Finite :=
@@ -778,28 +776,21 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
   h.inter_of_right t
 #align set.finite.inf_of_right Set.Finite.inf_of_right
 
-theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
-  cases hs
-  haveI := Finite.Set.subset _ ht
-  apply toFinite
-#align set.finite.subset Set.Finite.subset
-
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 #align set.infinite.mono Set.Infinite.mono
 
-theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite := by
-  cases hs
-  apply toFinite
+theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite :=
+  hs.subset <| diff_subset _ _
 #align set.finite.diff Set.Finite.diff
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
 #align set.finite.of_diff Set.Finite.of_diff
 
-theorem finite_iUnion [Finite ι] {f : ι → Set α} (H : ∀ i, (f i).Finite) : (⋃ i, f i).Finite := by
-  haveI := fun i => (H i).fintype
-  apply toFinite
+theorem finite_iUnion [Finite ι] {f : ι → Set α} (H : ∀ i, (f i).Finite) : (⋃ i, f i).Finite :=
+  haveI := fun i => (H i).to_subtype
+  toFinite _
 #align set.finite_Union Set.finite_iUnion
 
 theorem Finite.sUnion {s : Set (Set α)} (hs : s.Finite) (H : ∀ t ∈ s, Set.Finite t) :
