@@ -103,18 +103,15 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
   by cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
-theorem bind_eq_none' {o : Option α} {f : α → Option β} :
-    o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
-  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
-#align option.bind_eq_bind Option.bind_eq_bind
+#align option.bind_eq_bind Option.bind_eq_bind'
 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
@@ -328,7 +325,7 @@ theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
-  by_cases h : p <;> simp [_root_.guard, h]; rfl
+  by_cases h : p <;> simp [_root_.guard, h]
 #align option.guard_eq_some' Option.guard_eq_some'
 
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :

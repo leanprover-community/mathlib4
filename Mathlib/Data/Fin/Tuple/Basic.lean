@@ -46,7 +46,7 @@ section Tuple
 /-- There is exactly one tuple of size zero. -/
 example (α : Fin 0 → Sort u) : Unique (∀ i : Fin 0, α i) := by infer_instance
 
-theorem tuple0_le {α : ∀ _ : Fin 0, Type*} [∀ i, Preorder (α i)] (f g : ∀ i, α i) : f ≤ g :=
+theorem tuple0_le {α : Fin 0 → Type*} [∀ i, Preorder (α i)] (f g : ∀ i, α i) : f ≤ g :=
   finZeroElim
 #align fin.tuple0_le Fin.tuple0_le
 
@@ -444,8 +444,13 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
-proof_wanted repeat_comp_rev {α} (a : Fin n → α) :
-  (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev)
+theorem repeat_rev {α : Type*} (a : Fin n → α) (k : Fin (m * n)) :
+    Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=
+  congr_arg a k.modNat_rev
+
+theorem repeat_comp_rev {α} (a : Fin n → α) :
+    Fin.repeat m a ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) :=
+  funext <| repeat_rev a
 
 end Repeat
 

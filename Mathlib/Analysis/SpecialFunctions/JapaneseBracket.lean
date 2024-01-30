@@ -141,11 +141,10 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
 theorem integrable_one_add_norm [MeasureSpace E] [BorelSpace E] [(@volume E _).IsAddHaarMeasure]
     {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) : Integrable fun x : E => (1 + ‖x‖) ^ (-r) := by
   constructor
-  · -- porting note: was `measurability`
-    exact ((measurable_norm.const_add _).pow_const _).aestronglyMeasurable
+  · measurability
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) :=
-    lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg_of_nonneg (by positivity) _
+    lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
   rw [HasFiniteIntegral, this]
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
@@ -156,8 +155,7 @@ theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)
-  · -- porting note: was `measurability`
-    exact (((measurable_id.norm.pow_const _).const_add _).pow_const _).aestronglyMeasurable
+  · measurability
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

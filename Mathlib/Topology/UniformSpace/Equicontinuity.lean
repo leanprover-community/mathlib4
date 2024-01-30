@@ -792,7 +792,7 @@ theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : 
 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S ∪ {x₀}` is continuous. Since
-this will be applied to `FunLike` types, we state it for any topological space whith a map
+this will be applied to `DFunLike` types, we state it for any topological space whith a map
 to `X → α` satisfying the right continuity conditions. See also `EquicontinuousWithinAt.closure`
 for a more familiar (but weaker) statement. -/
 theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
@@ -809,7 +809,7 @@ theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Se
 
 /-- If a set of functions is equicontinuous at some `x₀`, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
-`FunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
+`DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
 continuity conditions. See also `EquicontinuousAt.closure` for a more familiar statement. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
@@ -835,7 +835,7 @@ protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X
 
 /-- If a set of functions is equicontinuous, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
-`FunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
+`DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
 continuity conditions. See also `Equicontinuous.closure` for a more familiar statement. -/
 theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     (hA : Equicontinuous (u ∘ (↑) : A → X → α)) (hu : Continuous u) :
@@ -844,7 +844,7 @@ theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
 
 /-- If a set of functions is equicontinuous on a set `S`, the same is true for its closure in *any*
 topology for which evaluation at any `x ∈ S` is continuous. Since this will be applied to
-`FunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
+`DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
 continuity conditions. See also `EquicontinuousOn.closure` for a more familiar
 (but weaker) statement. -/
 theorem EquicontinuousOn.closure' {A : Set Y} {u : Y → X → α} {S : Set X}
@@ -867,7 +867,7 @@ protected theorem EquicontinuousOn.closure {A : Set <| X → α} {S : Set X}
 
 /-- If a set of functions is uniformly equicontinuous on a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S` i continuous. Since this will be
-applied to `FunLike` types, we state it for any topological space whith a map to `β → α` satisfying
+applied to `DFunLike` types, we state it for any topological space whith a map to `β → α` satisfying
 the right continuity conditions. See also `UniformEquicontinuousOn.closure` for a more familiar
 (but weaker) statement. -/
 theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : Set β}
@@ -885,7 +885,7 @@ theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : 
 
 /-- If a set of functions is uniformly equicontinuous, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
-`FunLike` types, we state it for any topological space whith a map to `β → α` satisfying the right
+`DFunLike` types, we state it for any topological space whith a map to `β → α` satisfying the right
 continuity conditions. See also `UniformEquicontinuous.closure` for a more familiar statement. -/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :

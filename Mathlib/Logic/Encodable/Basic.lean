@@ -644,7 +644,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' h : (decode n: Option α) with a
+  cases' (decode n : Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
@@ -655,7 +655,11 @@ theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f
   exact (Classical.choose_spec (hf _ a)).2
 #align directed.rel_sequence Directed.rel_sequence
 
-variable [Preorder β] {f : α → β} (hf : Directed (· ≤ ·) f)
+variable [Preorder β] {f : α → β}
+
+section
+
+variable (hf : Directed (· ≤ ·) f)
 
 theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
   monotone_nat_of_le_succ <| hf.sequence_mono_nat
@@ -664,6 +668,22 @@ theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
 theorem le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
   hf.rel_sequence a
 #align directed.le_sequence Directed.le_sequence
+
+end
+
+section
+
+variable (hf : Directed (· ≥ ·) f)
+
+theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
+  antitone_nat_of_succ_le <| hf.sequence_mono_nat
+#align directed.sequence_anti Directed.sequence_anti
+
+theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
+  hf.rel_sequence a
+#align directed.sequence_le Directed.sequence_le
+
+end
 
 end Directed
 

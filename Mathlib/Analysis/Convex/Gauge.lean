@@ -38,9 +38,6 @@ For a real vector space,
 Minkowski functional, gauge
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set
 open scoped Pointwise Topology NNReal
 
@@ -58,7 +55,7 @@ def gauge (s : Set E) (x : E) : ℝ :=
   sInf { r : ℝ | 0 < r ∧ x ∈ r • s }
 #align gauge gauge
 
-variable {s t : Set E} {a : ℝ}
+variable {s t : Set E} {x : E} {a : ℝ}
 
 theorem gauge_def : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | x ∈ r • s }) :=
   rfl
@@ -78,8 +75,8 @@ private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • 
 which is useful for proving many properties about the gauge.  -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
-  let ⟨r, hr₁, hr₂⟩ := absorbs x
-  ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge⟩
+  let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
+  ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 #align absorbent.gauge_set_nonempty Absorbent.gauge_set_nonempty
 
 theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
@@ -236,7 +233,7 @@ theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
 theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
   rw [starConvex_zero_iff] at hs₀
-  obtain ⟨r, hr, h⟩ := hs₂
+  obtain ⟨r, hr, h⟩ := hs₂.exists_pos
   refine' le_csInf ⟨r, hr, singleton_subset_iff.1 <| h _ (Real.norm_of_nonneg hr.le).ge⟩ _
   rintro b ⟨hb, x, hx', rfl⟩
   refine' not_lt.1 fun hba => hx _
@@ -408,10 +405,9 @@ variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
 `Convex.lipschitz_gauge`. -/
-theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) := by
+theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : ContinuousAt (gauge s) x := by
   have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
-  simp only [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_Icc_pos _).tendsto_right_iff]
-  intro x ε hε₀
+  refine (nhds_basis_Icc_pos _).tendsto_right_iff.2 fun ε hε₀ ↦ ?_
   rw [← map_add_left_nhds_zero, eventually_map]
   have : ε • s ∩ -(ε • s) ∈ 𝓝 0
   · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
@@ -426,6 +422,13 @@ theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous
   · calc
       gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
       _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
+
+/-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
+is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
+`Convex.lipschitz_gauge`. -/
+@[continuity]
+theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
+  continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
 theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     { x | gauge s x < 1 } = interior s := by
@@ -451,7 +454,7 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
 theorem gauge_eq_zero [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     gauge s x = 0 ↔ x = 0 := by
   refine ⟨not_imp_not.1 fun (h : x ≠ 0) ↦ ne_of_gt ?_, fun h ↦ h.symm ▸ gauge_zero⟩
-  rcases hb (isOpen_compl_singleton.mem_nhds h.symm) with ⟨c, hc₀, hc⟩
+  rcases (hb (isOpen_compl_singleton.mem_nhds h.symm)).exists_pos with ⟨c, hc₀, hc⟩
   refine (inv_pos.2 hc₀).trans_le <| le_csInf hs.gauge_set_nonempty ?_
   rintro r ⟨hr₀, x, hx, rfl⟩
   contrapose! hc
@@ -522,7 +525,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
 theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
     gaugeSeminorm (p.balanced_ball_zero 1) (p.convex_ball 0 1) (p.absorbent_ball_zero zero_lt_one) =
       p :=
-  FunLike.coe_injective p.gauge_ball
+  DFunLike.coe_injective p.gauge_ball
 #align seminorm.gauge_seminorm_ball Seminorm.gaugeSeminorm_ball
 
 end AddCommGroup
