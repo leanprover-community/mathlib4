@@ -34,11 +34,11 @@ variable {R M N : Type*}
 
 /-- `LP.primal = { x : M | LP.linmap x ≤ LP.upper }` -/
 def LinearProgram.primal (LP : LinearProgram R M N) :=
-  { x : M | ∃ c ∈ LP.cone, LP.upper = LP.linmap x + c }
+  { x : M | ∃ c ∈ LP.cone, LP.linmap x + c = LP.upper }
 
 /-- `LP.dual = { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ 0 ≤ g }` -/
 def LinearProgram.dual (LP : LinearProgram R M N) :=
-  { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ ∀ p ∈ LP.cone, 0 ≤ g p }
+  { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ ∀ a ∈ LP.cone, 0 ≤ g a }
 
 -- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
 
@@ -49,7 +49,7 @@ theorem LinearProgram.strongDuality (LP : LinearProgram R M N)
   sorry
 
 /-- Theorem 1.4.1.b (TODO maybe add item (iii), which is easy,
-    and item (iv), which holds when `N = ℝ^n` and `LP.cone` is the positive ortant) -/
+    and item (iv), which holds when `N` is `ℝ^n` and `LP.cone` is the positive ortant) -/
 theorem LinearProgram.min_max (LP : LinearProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) (hs : LP.cone.FG) :
     -- TODO maybe `hs` is not needed
