@@ -409,13 +409,13 @@ function `f : X → ℝ` such that
 * `f` equals zero on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 
-Moreover, if `s` is a Gδ, one can make sure that `f ⁻¹ {1}` is exactly `s`.
+Moreover, if `s` is Gδ, one can ensure that `f ⁻¹ {1}` is exactly `s`.
 -/
 theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (h's : IsGδ s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C(X, ℝ), s = f ⁻¹' {1} ∧ EqOn f 0 t ∧ HasCompactSupport f
       ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  rcases isGδ_iff_eq_iInter_nat.1 h's with ⟨U, U_open, hU⟩
+  rcases h's.eq_iInter_nat with ⟨U, U_open, hU⟩
   obtain ⟨m, m_comp, -, sm, mt⟩ : ∃ m, IsCompact m ∧ IsClosed m ∧ s ⊆ interior m ∧ m ⊆ tᶜ :=
     exists_compact_closed_between hs ht.isOpen_compl hd.symm.subset_compl_left
   have A n : ∃ f : C(X, ℝ), EqOn f 1 s ∧ EqOn f 0 (U n ∩ interior m)ᶜ ∧ HasCompactSupport f
