@@ -446,7 +446,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
 #align normed_add_comm_group.cauchy_series_of_le_geometric'' NormedAddCommGroup.cauchy_series_of_le_geometric''
 
 /-- The term norms of any convergent series are bounded by a constant. -/
-lemma norm_bounded_of_cauchy_series (h : CauchySeq fun n ↦ ∑ k in range n, f k) :
+lemma exists_norm_le_of_cauchySeq (h : CauchySeq fun n ↦ ∑ k in range n, f k) :
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
   obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
   refine ⟨b 0, fun n ↦ ?_⟩
@@ -578,7 +578,7 @@ theorem summable_powerSeries_of_norm_lt {w z : α}
     (h : CauchySeq fun n ↦ ∑ i in range n, f i * w ^ i) (hz : ‖z‖ < ‖w‖) :
     Summable fun n ↦ f n * z ^ n := by
   have hw : 0 < ‖w‖ := (norm_nonneg z).trans_lt hz
-  obtain ⟨C, hC⟩ := norm_bounded_of_cauchy_series h
+  obtain ⟨C, hC⟩ := exists_norm_le_of_cauchySeq h
   rw [summable_iff_cauchySeq_finset]
   refine cauchySeq_finset_of_geometric_bound (r := ‖z‖ / ‖w‖) (C := C) ((div_lt_one hw).mpr hz)
     (fun n ↦ ?_)
