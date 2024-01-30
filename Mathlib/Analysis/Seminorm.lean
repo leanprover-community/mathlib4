@@ -965,7 +965,7 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
 
 theorem neg_mem_ball_zero_iff (r : ℝ) {x : E} : x ∈ ball p 0 r ↔ -x ∈ ball p 0 r := by
   simp only [mem_ball_zero, map_neg_eq_map]
-#align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
+#align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero_iff
 
 @[simp]
 theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
