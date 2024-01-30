@@ -8,6 +8,9 @@ Authors: Scott Morrison
 import Aesop
 import Qq
 
+-- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
+import ImportGraph.Imports
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -97,7 +100,6 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
@@ -108,7 +110,6 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
-import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
 
 /-!

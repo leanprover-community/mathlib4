@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
 
@@ -53,7 +53,7 @@ namespace SimplicialObject
 set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the simplicial object X -/
 scoped[Simplicial]
-  notation:1000 X " _[" n "]" =>
+  notation3:1000 X " _[" n "]" =>
     (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 open Simplicial

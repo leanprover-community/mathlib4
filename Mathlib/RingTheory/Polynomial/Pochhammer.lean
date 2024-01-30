@@ -335,6 +335,18 @@ theorem descPochhammer_mul (n m : ℕ) :
   · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih,
       Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
+theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
+    (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
+  | 0 => by
+    rw [ascPochhammer_zero, descPochhammer_zero]
+    simp only [eval_one, pow_zero, mul_one]
+  | (k+1) => by
+    rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, eval_nat_cast_mul,
+      Nat.cast_comm, ← mul_add, ascPochhammer_eval_neg_eq_descPochhammer r k, mul_assoc,
+      descPochhammer_succ_right, mul_sub, eval_sub, eval_mul_X, ← Nat.cast_comm, eval_nat_cast_mul,
+      pow_add, pow_one, mul_assoc ((-1)^k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
+      Nat.cast_comm, sub_eq_add_neg, neg_one_mul, neg_neg, ← mul_add]
+
 theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
     ∀ k, (descPochhammer ℤ k).eval (n : ℤ) = n.descFactorial k
   | 0 => by

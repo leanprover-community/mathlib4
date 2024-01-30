@@ -61,6 +61,7 @@ import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
@@ -92,7 +93,6 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
-import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Mathport.Notation
 
@@ -209,8 +209,6 @@ syntax termList := " [" term,* "]"
   (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
-
-/- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic

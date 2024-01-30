@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Common
@@ -278,7 +277,7 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
   rw [Nat.sub_one, factorial_mul_ascFactorial]
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
-theorem ascFactorial_eq_div (n k : ℕ) :  (n + 1).ascFactorial k = (n + k)! / n ! := by
+theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n ! := by
   apply mul_left_cancel₀ n.factorial_ne_zero
   rw [factorial_mul_ascFactorial]
   exact (Nat.mul_div_cancel_left' <| factorial_dvd_factorial <| le_add_right n k).symm
@@ -307,7 +306,7 @@ theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, n ^ k ≤ n.ascFactori
 
 theorem pow_lt_ascFactorial' (n k : ℕ) : (n + 1) ^ (k + 2) < (n + 1).ascFactorial (k + 2) := by
   rw [pow_succ, ascFactorial, mul_comm]
-  exact Nat.mul_lt_mul (lt_add_of_pos_right (n + 1) (succ_pos k))
+  exact Nat.mul_lt_mul_of_lt_of_le' (lt_add_of_pos_right (n + 1) (succ_pos k))
     (pow_succ_le_ascFactorial n.succ _) (NeZero.pos ((n + 1) ^ (k + 1)))
 #align nat.pow_lt_asc_factorial' Nat.pow_lt_ascFactorial'
 
@@ -321,7 +320,7 @@ theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, (n+1).ascFactorial k �
   | 0 => by rw [ascFactorial_zero, pow_zero]
   | k + 1 => by
     rw [ascFactorial_succ, pow_succ, mul_comm, ← add_assoc, add_right_comm n 1 k]
-    exact Nat.mul_le_mul_of_nonneg_right
+    exact Nat.mul_le_mul_right _
       ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_of_le_left (le_succ _) _))
 #align nat.asc_factorial_le_pow_add Nat.ascFactorial_le_pow_add
 
@@ -330,7 +329,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1).a
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [pow_succ, mul_comm, ascFactorial_succ, succ_add_eq_add_succ n (k + 1)]
-    exact Nat.mul_lt_mul' le_rfl ((ascFactorial_le_pow_add n _).trans_lt
+    exact Nat.mul_lt_mul_of_le_of_lt le_rfl ((ascFactorial_le_pow_add n _).trans_lt
       (pow_lt_pow_left (@lt_add_one ℕ _ _ _ _ _ _ _) (zero_le _) k.succ_ne_zero)) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 
@@ -438,7 +437,7 @@ theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.
   | 0 => by rw [descFactorial_zero, pow_zero]
   | k + 1 => by
     rw [descFactorial_succ, pow_succ, succ_sub_succ, mul_comm]
-    apply Nat.mul_le_mul_of_nonneg_left
+    apply Nat.mul_le_mul_left
     exact   (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
           (pow_sub_le_descFactorial n k))
 #align nat.pow_sub_le_desc_factorial Nat.pow_sub_le_descFactorial
@@ -480,7 +479,7 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', mul_comm, mul_comm n]
-    exact Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ)
+    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ)
       (pow_pos (Nat.lt_of_succ_le hn) _)
 #align nat.desc_factorial_lt_pow Nat.descFactorial_lt_pow
 

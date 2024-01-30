@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -166,6 +166,10 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 #align pow_strict_mono_right' pow_left_strictMono
 #align nsmul_strict_mono_left nsmul_right_strictMono
+
+@[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
+lemma pow_lt_pow_left' (hn : n ≠ 0) {a b : M} (hab : a < b) : a ^ n < b ^ n :=
+  pow_left_strictMono hn hab
 
 end CovariantLTSwap
 

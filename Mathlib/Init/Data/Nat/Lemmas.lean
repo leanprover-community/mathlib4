@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
+import Std.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Init.Order.Defs
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -462,7 +463,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.mul_self_sub_mul_self_eq Nat.mul_self_sub_mul_self_eq
 
-#align nat.succ_mul_succ_eq Nat.succ_mul_succ_eq
+#align nat.succ_mul_succ_eq Nat.succ_mul_succ
 
 /-! min -/
 

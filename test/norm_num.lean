@@ -17,6 +17,10 @@ axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
 
+axiom NNReal : Type
+notation "ℝ≥0" => NNReal
+@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
+
 axiom Complex : Type
 notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
@@ -38,11 +42,15 @@ example : (7:ℝ)/2 > 3 := by norm_num1
 example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
 example : 2 ^ 17 - 1 = 131071 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
--- example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
--- example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
--- example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
+example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
+example : (-3 : ℝ) ^ (-1 : ℤ) = -1/3 := by norm_num1
+example : (-3 : ℝ) ^ (1 : ℤ) = -3 := by norm_num1
+example : (-3 : ℝ) ^ (2 : ℤ) = 9 := by norm_num1
+example : (1/3 : ℝ) ^ (2 : ℤ) = 1/9 := by norm_num1
+example : (1/3 : ℝ) ^ (-2 : ℤ) = 9 := by norm_num1
+example : (-1/3 : ℝ) ^ (-1 : ℤ) = -3 := by norm_num1
+example : (3 : ℝ≥0) ^ (2 : ℤ) = 9 := by norm_num1
 
 section InvLit
 

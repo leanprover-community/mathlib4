@@ -232,7 +232,7 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 #align continuous_map.apply_le_norm ContinuousMap.apply_le_norm
 
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
-  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs_self (f x)))
+  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 #align continuous_map.neg_norm_le_apply ContinuousMap.neg_norm_le_apply
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
@@ -282,12 +282,12 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
 
 variable {α E}
 
--- to match `BoundedContinuousFunction.evalClm`
+-- to match `BoundedContinuousFunction.evalCLM`
 /-- The evaluation at a point, as a continuous linear map from `C(α, 𝕜)` to `𝕜`. -/
-def evalClm (x : α) : C(α, E) →L[𝕜] E :=
-  (BoundedContinuousFunction.evalClm 𝕜 x).comp
+def evalCLM (x : α) : C(α, E) →L[𝕜] E :=
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp
     (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
-#align continuous_map.eval_clm ContinuousMap.evalClm
+#align continuous_map.eval_clm ContinuousMap.evalCLM
 
 end
 
