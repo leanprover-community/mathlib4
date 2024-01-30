@@ -12,7 +12,7 @@ import Mathlib.Logic.Equiv.List
 /-!
 # Countable sets
 
-In this file we define `Set.Countable s` as an abbreviation for `Countable s`
+In this file we define `Set.Countable s` as `Countable s`
 and prove basic properties of this definition.
 
 Note that this definition does not provide a computable encoding.
