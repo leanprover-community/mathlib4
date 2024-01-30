@@ -38,17 +38,33 @@ structure Config where
   constToUnfold : HashSet Name := .ofArray #[``id, ``Function.comp, ``Function.HasUncurry.uncurry]
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  /-- Maximal number of transitions between function properties
+  e.g. infering differentiability from linearity -/
+  maxTransitionDepth := 20
+  /-- Stack of used theorem, used to prevent trivial loops. -/
+  thmStack    : List Origin := []
 
 /-- -/
 structure State where
   /-- Simp's cache is used as the `fprop` tactic is designed to be used inside of simp and utilize
   its cache -/
   cache        : Simp.Cache := {}
+  /-- The number of used transition theorems. -/
+  transitionDepth := 0
+
+def Config.addThm (cfg : Config) (thmId : Origin) : Config := {cfg with thmStack := thmId :: cfg.thmStack}
 
 /-- -/
-abbrev FPropM := ReaderT FProp.Config $ StateRefT FProp.State MetaM
+abbrev FPropM := ReaderT FProp.Config $ StateT FProp.State MetaM
+
 
 /-- Result of `fprop`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/
   proof : Expr
+
+
+def getLastUsedTheoremName : FPropM (Option Name) := do
+  match (← read).thmStack.head? with
+  | .some (.decl n) => return n
+  | _ => return none

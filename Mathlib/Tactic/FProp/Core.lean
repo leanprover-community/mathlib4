@@ -94,7 +94,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
       -- try function property
       if (← isFProp type.getForallBody) then
-        if let .some ⟨proof⟩ ← fprop (← instantiateMVars type) then
+        if let .some ⟨proof⟩ ← withReader (·.addThm thmId) (fprop type) then
           if (← isDefEq x proof) then
             continue
           else do
@@ -167,7 +167,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
 /-- Try to apply declared theorem -/
 def tryTheorem? (e : Expr) (thmName : Name) (discharge? : Expr → MetaM (Option Expr))
-    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := true) :
+    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FPropM (Option Result) := do
   let go : FPropM (Option Result) := do
     let thmProof ← mkConstWithFreshMVarLevels thmName
@@ -182,7 +182,7 @@ def tryTheorem? (e : Expr) (thmName : Name) (discharge? : Expr → MetaM (Option
 
 /-- Try to apply local theorem -/
 def tryLocalTheorem? (e : Expr) (fvarId : FVarId) (discharge? : Expr → MetaM (Option Expr))
-    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := true) :
+    (fprop : Expr → FPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FPropM (Option Result) := do
   let go : FPropM (Option Result) := do
     let thmProof := .fvar fvarId
@@ -202,7 +202,7 @@ def applyIdRule (fpropDecl : FPropDecl) (e X : Expr)
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .id)
     | trace[Meta.Tactic.fprop]
-        "missing lambda rule to prove `{← ppExpr e}`"
+        "missing identity rule to prove `{← ppExpr e}`"
       return none
   let .id id_X := thm.thmArgs | return none
 
@@ -225,7 +225,7 @@ def applyConstRule (fpropDecl : FPropDecl) (e X y : Expr)
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .const)
     | trace[Meta.Tactic.fprop]
-        "missing lambda rule to prove `{← ppExpr e}`"
+        "missing constant rule to prove `{← ppExpr e}`"
       return none
   let .const id_X id_y := thm.thmArgs | return none
 
@@ -278,7 +278,7 @@ def applyProjRule (fpropDecl : FPropDecl) (e x XY : Expr)
 
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .projDep)
     | trace[Meta.Tactic.fprop]
-        "missing lambda rule to prove `{← ppExpr e}`"
+        "missing projection rule to prove `{← ppExpr e}`"
       return none
   let .projDep id_x id_Y := thm.thmArgs | return none
 
@@ -302,7 +302,7 @@ def applyCompRule (fpropDecl : FPropDecl) (e f g : Expr)
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .comp)
     | trace[Meta.Tactic.fprop]
-        "missing lambda rule to prove `{← ppExpr e}`"
+        "missing composition rule to prove `{← ppExpr e}`"
       return none
   let .comp id_f id_g := thm.thmArgs | return none
 
@@ -327,7 +327,7 @@ def applyPiRule (fpropDecl : FPropDecl) (e f : Expr)
   let ext := lambdaTheoremsExt.getState (← getEnv)
   let .some thm := ext.theorems.find? (fpropDecl.fpropName, .pi)
     | trace[Meta.Tactic.fprop]
-        "missing lambda rule to prove `{← ppExpr e}`"
+        "missing pi rule to prove `{← ppExpr e}`"
       return none
   let .pi id_f := thm.thmArgs | return none
 
@@ -575,8 +575,8 @@ def applyMorRules (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
     let candidates := candidates.map (·.1) |>.flatten
 
-    trace[Meta.Tactic.fprop.step]
-      "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+    trace[Meta.Tactic.fprop]
+      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
     for c in candidates do
       if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop then
@@ -593,12 +593,24 @@ def applyTransitionRules (fpropDecl : FPropDecl) (e : Expr)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
   let candidates := candidates.map (·.1) |>.flatten
 
-  trace[Meta.Tactic.fprop.step]
-    "candidate theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+  trace[Meta.Tactic.fprop]
+    "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  let d := (← get).transitionDepth
+  let md := (← read).maxTransitionDepth
+  if d ≥ md then
+    trace[Meta.Tactic.fprop] "maximum transition depth({d}) reached"
+    return none
 
   for c in candidates do
-    if let .some r ← tryTheorem? e c.thmName fpropDecl.discharger fprop (newMCtxDepth := false) then
-      return r
+    if (← getLastUsedTheoremName) == .some c.thmName then
+      trace[Meta.Tactic.fprop]
+        "skipping {← ppOrigin (.decl c.thmName)}, can't use it twice in a row"
+      continue
+    if let .some r ← fun cfg state =>
+      let state := {state with transitionDepth := d+1}
+      tryTheorem? e c.thmName fpropDecl.discharger fprop (newMCtxDepth := false) cfg state
+      then return r
 
   trace[Meta.Tactic.fprop.step] "no theorem matched"
   return none
