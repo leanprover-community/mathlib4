@@ -91,14 +91,13 @@ attribute [coe] ModuleCat.carrier
 
 instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
-  id _ := LinearMap.id -- porting note: was `1`
+  id _ := LinearMap.id
   comp f g := g.comp f
   id_comp _ := LinearMap.id_comp _
   comp_id _ := LinearMap.comp_id _
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
--- porting note: was not necessary in mathlib
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
@@ -120,7 +119,6 @@ instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
 instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
   (inferInstance : Module R M)
 
--- porting note: added to ease automation
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ h
@@ -273,9 +271,6 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 #align linear_equiv.to_Module_iso LinearEquiv.toModuleIso
 
--- porting note: for the following three definitions, Lean3 is not able to see that
--- `Module.of R M` is defeq to `M` when `M : Module R`. Lean4 is, so that we no longer
--- need different versions of `LinearEquiv.toModuleIso`.
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N :=
   i.toModuleIso
@@ -335,9 +330,6 @@ instance : Preadditive (ModuleCat.{v} R) where
     dsimp
     erw [map_add]
     rfl
-  comp_add P Q R f g g' := by
-    ext
-    rfl
 
 instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
     where
@@ -354,10 +346,6 @@ instance : Linear S (ModuleCat.{v} S) where
     ext
     dsimp
     rw [LinearMap.smul_apply, LinearMap.smul_apply, map_smul]
-    rfl
-  comp_smul := by
-    intros
-    ext
     rfl
 
 variable {X Y X' Y' : ModuleCat.{v} S}
