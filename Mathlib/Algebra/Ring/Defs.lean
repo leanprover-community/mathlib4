@@ -137,9 +137,13 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
+/-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
+commutative and associative, multiplication is associative and left and right distributive over
+addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
+/-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
@@ -213,6 +217,21 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- `mul_ite` and `ite_mul`.
 attribute [simp] mul_ite ite_mul
 
+section MulZeroClass
+variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
+
+lemma ite_zero_mul : ite P a 0 * b = ite P (a * b) 0 := by simp
+#align ite_mul_zero_left ite_zero_mul
+
+lemma mul_ite_zero : a * ite P b 0 = ite P (a * b) 0 := by simp
+#align ite_mul_zero_right mul_ite_zero
+
+lemma ite_zero_mul_ite_zero : ite P a 0 * ite Q b 0 = ite (P ∧ Q) (a * b) 0 := by
+  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
+#align ite_and_mul_zero ite_zero_mul_ite_zero
+
+end MulZeroClass
+
 -- Porting note: no @[simp] because simp proves it
 theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
@@ -223,18 +242,8 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
-theorem ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
-    ite P (a * b) 0 = ite P a 0 * b := by by_cases h : P <;> simp [h]
-#align ite_mul_zero_left ite_mul_zero_left
-
-theorem ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
-    ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
-#align ite_mul_zero_right ite_mul_zero_right
-
-theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
-    (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
-  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
-#align ite_and_mul_zero ite_and_mul_zero
+/-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
+class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
@@ -421,8 +430,13 @@ instance (priority := 200) : Semiring α :=
 
 end Ring
 
+/-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
+multiplication. -/
+class NonUnitalNonAssocCommRing (α : Type u)
+  extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
+
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
+class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 #align non_unital_comm_ring NonUnitalCommRing
 
 -- see Note [lower instance priority]

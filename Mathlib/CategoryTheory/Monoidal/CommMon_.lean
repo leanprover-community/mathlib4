@@ -73,7 +73,7 @@ lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) 
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-  ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
 
 section
 
@@ -161,17 +161,17 @@ namespace CommMon_
 
 open CategoryTheory.LaxBraidedFunctor
 
-namespace EquivLaxBraidedFunctorPunit
+namespace EquivLaxBraidedFunctorPUnit
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
   obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
   map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPunit.laxBraidedToCommMon
+#align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 1}) C where
   obj A :=
@@ -187,9 +187,9 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
       unit := Mon_.Hom.one_hom f
       tensor := fun _ _ => Mon_.Hom.mul_hom f }
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.CommMon_to_lax_braided CommMon_.EquivLaxBraidedFunctorPunit.commMonToLaxBraided
+#align CommMon_.equiv_lax_braided_functor_punit.CommMon_to_lax_braided CommMon_.EquivLaxBraidedFunctorPUnit.commMonToLaxBraided
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def unitIso :
     𝟭 (LaxBraidedFunctor (Discrete PUnit.{u + 1}) C) ≅
@@ -201,9 +201,9 @@ def unitIso :
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
           (by rintro ⟨⟩ ⟨⟩ f; aesop_cat) (by aesop_cat) (by aesop_cat)))
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPunit.unitIso
+#align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPUnit.unitIso
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMon_ C) :=
   NatIso.ofComponents
@@ -211,22 +211,22 @@ def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMo
       { hom := { hom := 𝟙 _ }
         inv := { hom := 𝟙 _ } })
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.counit_iso CommMon_.EquivLaxBraidedFunctorPunit.counitIso
+#align CommMon_.equiv_lax_braided_functor_punit.counit_iso CommMon_.EquivLaxBraidedFunctorPUnit.counitIso
 
-end EquivLaxBraidedFunctorPunit
+end EquivLaxBraidedFunctorPUnit
 
-open EquivLaxBraidedFunctorPunit
+open EquivLaxBraidedFunctorPUnit
 
 /-- Commutative monoid objects in `C` are "just" braided lax monoidal functors from the trivial
 braided monoidal category to `C`.
 -/
 @[simps]
-def equivLaxBraidedFunctorPunit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ≌ CommMon_ C where
+def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ≌ CommMon_ C where
   functor := laxBraidedToCommMon C
   inverse := commMonToLaxBraided C
   unitIso := unitIso C
   counitIso := counitIso C
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit CommMon_.equivLaxBraidedFunctorPunit
+#align CommMon_.equiv_lax_braided_functor_punit CommMon_.equivLaxBraidedFunctorPUnit
 
 end CommMon_

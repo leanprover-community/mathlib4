@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
 
 #align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
@@ -129,84 +130,66 @@ namespace Sym2
 variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
-theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
+theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card := by
   rw [card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
-  cases Quotient.eq'.1 h
+  cases Sym2.eq.1 h
   · rfl
   · simp only [mem_coe, mem_diag] at hx
     rw [hx.2]
 #align sym2.card_image_diag Sym2.card_image_diag
 
 theorem two_mul_card_image_offDiag (s : Finset α) :
-    2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card := by
-  rw [card_eq_sum_card_image (Quotient.mk' : α × α → _), sum_const_nat (Quotient.ind' _), mul_comm]
-  rintro ⟨x, y⟩ hxy
+    2 * (s.offDiag.image Sym2.mk).card = s.offDiag.card := by
+  rw [card_eq_sum_card_image (Sym2.mk : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
+  rintro x y hxy
   simp_rw [mem_image, mem_offDiag] at hxy
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
-  replace h := Quotient.eq.1 h
+  replace h := Sym2.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
     cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
-  have : (s.offDiag.filter fun z => ⟦z⟧ = ⟦(x, y)⟧) = ({(x, y), (y, x)} : Finset _) := by
+  have : (s.offDiag.filter fun z => Sym2.mk z = s(x, y)) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩
     rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
       and_iff_right_iff_imp]
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  dsimp [Quotient.mk', Quotient.mk''_eq_mk] -- Porting note: Added `dsimp`
   rw [this, card_insert_of_not_mem, card_singleton]
   simp only [not_and, Prod.mk.inj_iff, mem_singleton]
   exact fun _ => hxy'
 #align sym2.two_mul_card_image_off_diag Sym2.two_mul_card_image_offDiag
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
-This is because every element `⟦(x, y)⟧` of `Sym2 α` not on the diagonal comes from exactly two
+This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
 theorem card_image_offDiag (s : Finset α) :
-    (s.offDiag.image Quotient.mk').card = s.card.choose 2 := by
+    (s.offDiag.image Sym2.mk).card = s.card.choose 2 := by
   rw [Nat.choose_two_right, mul_tsub, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
-  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
-  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
+  rw [← filter_image_mk_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
-  obtain ⟨a, ha⟩ := Quotient.exists_rep x
+  obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_diag Sym2.card_subtype_diag
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
-  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
-  rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_not_isDiag]
+  rw [← filter_image_mk_not_isDiag, Fintype.card_of_subtype]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
-  obtain ⟨a, ha⟩ := Quotient.exists_rep x
+  obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
-/-- Finset **stars and bars** for the case `n = 2`. -/
-theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
-  rw [← image_diag_union_image_offDiag, card_union_eq, Sym2.card_image_diag,
-    Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
-    mul_comm]
-  rw [disjoint_left]
-  rintro m ha hb
-  rw [mem_image] at ha hb
-  obtain ⟨⟨a, ha, rfl⟩, ⟨b, hb, hab⟩⟩ := ha, hb
-  refine' not_isDiag_mk'_of_mem_offDiag hb _
-  dsimp [Quotient.mk'] at hab -- Porting note: Added `dsimp`
-  rw [hab]
-  exact isDiag_mk'_of_mem_diag ha
-#align finset.card_sym2 Finset.card_sym2
-
 /-- Type **stars and bars** for the case `n = 2`. -/
-protected theorem card [Fintype α] : card (Sym2 α) = card α * (card α + 1) / 2 :=
+protected theorem card [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
   Finset.card_sym2 _
 #align sym2.card Sym2.card
 

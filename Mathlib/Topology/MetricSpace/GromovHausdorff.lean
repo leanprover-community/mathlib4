@@ -113,9 +113,9 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     have f :=
       ((kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm.trans
           isomΨ.isometryEquivOnRange).symm
-    have E :
-      (range Ψ ≃ᵢ NonemptyCompacts.kuratowskiEmbedding X) = (p ≃ᵢ range (kuratowskiEmbedding X)) :=
-      by dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rw [rangeΨ]; rfl
+    have E : (range Ψ ≃ᵢ NonemptyCompacts.kuratowskiEmbedding X)
+        = (p ≃ᵢ range (kuratowskiEmbedding X)) := by
+      dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rw [rangeΨ]; rfl
     exact ⟨cast E f⟩
 #align Gromov_Hausdorff.eq_to_GH_space_iff GromovHausdorff.eq_toGHSpace_iff
 
@@ -156,8 +156,8 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
     rintro ⟨e⟩
     have I :
       (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) =
-        (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) :=
-      by dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
+        (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) := by
+      dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange
     have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange.symm
     exact ⟨f.trans <| (cast I e).trans g⟩, by
@@ -167,8 +167,8 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
     have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange
     have I :
       (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) =
-        (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) :=
-      by dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
+        (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) := by
+      dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
     rw [Quotient.eq]
     exact ⟨cast I ((f.trans e).trans g)⟩⟩
 #align Gromov_Hausdorff.to_GH_space_eq_to_GH_space_iff_isometry_equiv GromovHausdorff.toGHSpace_eq_toGHSpace_iff_isometryEquiv
@@ -624,12 +624,12 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
     refine' hausdorffDist_le_of_mem_dist (by linarith) _ _
     · intro x' hx'
-      rcases(Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
+      rcases (Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
       rw [← xx']
       use Fr (Φ ⟨x, x_in_s⟩), mem_image_of_mem Fr (mem_range_self _)
       exact le_of_eq (glueDist_glued_points (fun x : s => (x : X)) Φ (ε₂ / 2 + δ) ⟨x, x_in_s⟩)
     · intro x' hx'
-      rcases(Set.mem_image _ _ _).1 hx' with ⟨y, ⟨y_in_s', yx'⟩⟩
+      rcases (Set.mem_image _ _ _).1 hx' with ⟨y, ⟨y_in_s', yx'⟩⟩
       rcases mem_range.1 y_in_s' with ⟨x, xy⟩
       use Fl x, mem_image_of_mem _ x.2
       rw [← yx', ← xy, dist_comm]
@@ -1002,8 +1002,6 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
       isom := (toGlueR_isometry _ _).comp (isometry_optimalGHInjr (X n) (X (n + 1))) }
 #align Gromov_Hausdorff.aux_gluing GromovHausdorff.auxGluing
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- The Gromov-Hausdorff space is complete. -/
 instance : CompleteSpace GHSpace := by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
@@ -1081,7 +1079,7 @@ instance : CompleteSpace GHSpace := by
     rw [Function.comp_apply, NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
       toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     constructor
-    convert(isom n).isometryEquivOnRange.symm
+    convert (isom n).isometryEquivOnRange.symm
   -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
   -- so the images of `u n` converge to the image of `L` as well
   use L.toGHSpace

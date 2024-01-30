@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 #align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -368,7 +367,7 @@ set_option linter.uppercaseLean3 false in
 /-- The forgetful functor from commutative groups to types preserves all limits. (That is, the
 underlying types could have been computed instead as limits in the category of types.)
 -/
-@[to_additive AddCommGroupCat.forgetPreservesLimits
+@[to_additive
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
@@ -385,7 +384,11 @@ noncomputable instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_preserves_limits_of_size CommGroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimits
+#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
+
+@[to_additive]
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+  CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGroupCat) : HasProduct f := by infer_instance
@@ -400,7 +403,7 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGroupCat.of f.ker where
   hom :=
-    { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
+    { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp [(AddSubgroup.coe_zero _).symm]
@@ -411,7 +414,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
     -- porting note : used to be `tidy`, but `aesop` can't do it
-    refine FunLike.ext _ _ ?_
+    refine DFunLike.ext _ _ ?_
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
@@ -421,7 +424,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     ext x
     dsimp
     generalize_proofs _ h1 h2
-    erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
+    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
     rfl
   inv_hom_id := by
     apply AddCommGroupCat.ext
@@ -430,7 +433,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
     generalize_proofs _ h1 h2
-    erw [FunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
+    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
     rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
@@ -460,5 +463,9 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
   Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.kernelIsoKerOver_inv_left_apply
+  AddCommGroupCat.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGroupCat

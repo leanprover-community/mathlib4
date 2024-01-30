@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 #align_import data.sum.basic from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
@@ -33,6 +34,10 @@ theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ �
 
 theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ ↦ inr.inj
 #align sum.inr_injective Sum.inr_injective
+
+theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
+    {x y : α ⊕ β} (h : x = y) :
+    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
 
 section get
 
@@ -184,7 +189,9 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 #align sum.get_left_swap Sum.getLeft?_swap
 #align sum.get_right_swap Sum.getRight?_swap
 
-section LiftRel
+mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
+
+namespace LiftRel
 
 #align sum.lift_rel Sum.LiftRel
 #align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
@@ -196,6 +203,36 @@ section LiftRel
 #align sum.lift_rel.mono_right Sum.LiftRel.mono_right
 #align sum.lift_rel.swap Sum.LiftRel.swap
 #align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
+
+variable {r : α → γ → Prop} {s : β → δ → Prop} {x : Sum α β} {y : Sum γ δ}
+  {a : α} {b : β} {c : γ} {d : δ}
+
+theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by cases h <;> rfl
+theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by cases h <;> rfl
+
+theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by cases h; rfl
+theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by cases h; rfl
+theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by cases h; rfl
+theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
+
+theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
+    ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
+  rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
+  simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
+  exact h₁
+
+theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
+    ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
+
+theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
+    ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
+  rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
+  simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
+  exact h₁
+
+theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
+    ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
+  exists_of_isRight_left h₁ ((isRight_congr h₁).mpr h₂)
 
 end LiftRel
 

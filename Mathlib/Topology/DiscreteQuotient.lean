@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Topology.Separation
-import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
 
 #align_import topology.discrete_quotient from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
@@ -83,10 +82,10 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
 /-- Construct a discrete quotient from a clopen set. -/
-def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
+def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
-#align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
+#align discrete_quotient.of_clopen DiscreteQuotient.ofIsClopen
 
 theorem refl : ∀ x, S.Rel x x := S.refl'
 #align discrete_quotient.refl DiscreteQuotient.refl
@@ -140,11 +139,11 @@ theorem isClopen_preimage (A : Set S) : IsClopen (S.proj ⁻¹' A) :=
 #align discrete_quotient.is_clopen_preimage DiscreteQuotient.isClopen_preimage
 
 theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).1
+  (S.isClopen_preimage A).2
 #align discrete_quotient.is_open_preimage DiscreteQuotient.isOpen_preimage
 
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).2
+  (S.isClopen_preimage A).1
 #align discrete_quotient.is_closed_preimage DiscreteQuotient.isClosed_preimage
 
 theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
@@ -363,10 +362,10 @@ end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
-  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
+  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_isClopen,
     mem_iInter]
   rintro ⟨U, hU1, hU2⟩
-  exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
+  exact (Quotient.exact' (h (ofIsClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
@@ -384,7 +383,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
     IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_inf H₁)
+      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
   exact ⟨x, mem_iInter.1 hx⟩

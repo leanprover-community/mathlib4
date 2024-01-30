@@ -42,6 +42,14 @@ initialize_simps_projections Embedding (toFun → apply)
 -- porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
+theorem exists_surjective_iff :
+    (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
+  ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
+    (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
+
+instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+  prf _ h := ⟨⟨_, h⟩, rfl⟩
+
 end Function
 
 section Equiv
@@ -74,6 +82,9 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
+theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
+
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
@@ -93,17 +104,17 @@ namespace Function
 namespace Embedding
 
 theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `FunLike.ext_iff.symm` works
+-- port note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (FunLike.ext_iff)
+  Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
@@ -192,10 +203,10 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
-        (try simp only [f.injective.eq_iff] at *)
+        (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
-    · rw[h₅,←h]
+    · rw[h₅, ← h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h
@@ -208,7 +219,7 @@ theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 #align function.embedding.some Function.Embedding.some
@@ -219,7 +230,7 @@ protected def some {α} : α ↪ Option α :=
 #align function.embedding.coe_option Function.Embedding.some
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 #align function.embedding.option_map Function.Embedding.optionMap
@@ -266,7 +277,7 @@ def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 #align function.embedding.sectr Function.Embedding.sectr
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply
 
-/-- If `e₁` and `e₂` are embeddings, then so is `prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
+/-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.Prod_map e₂.injective⟩
 #align function.embedding.prod_map Function.Embedding.prodMap

@@ -77,7 +77,7 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
   lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (α →₀ N) ↦ toLex (⇑(ofLex x)))
-    (FunLike.coe_injective (F := Finsupp α N))
+    (DFunLike.coe_injective (F := Finsupp α N))
 #align finsupp.lex.partial_order Finsupp.Lex.partialOrder
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
@@ -151,7 +151,7 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀ N)) where
+instance Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 

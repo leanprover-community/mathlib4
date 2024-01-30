@@ -45,7 +45,7 @@ inductive FieldAxiom : Type
   | oneMul : FieldAxiom
   | existsInv : FieldAxiom
   | leftDistrib : FieldAxiom
-  | existsPairNe : FieldAxiom
+  | existsPairNE : FieldAxiom
 
 /-- The first order sentence corresponding to each field axiom -/
 @[simp]
@@ -58,7 +58,7 @@ def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .oneMul => ∀' (((1 : Language.ring.Term _) * &0) =' &0)
   | .existsInv => ∀' (∼(&0 =' 0) ⟹ ∃' ((&0 * &1) =' 1))
   | .leftDistrib => ∀' ∀' ∀' ((&0 * (&1 + &2)) =' ((&0 * &1) + (&0 * &2)))
-  | .existsPairNe => ∃' ∃' (∼(&0 =' &1))
+  | .existsPairNE => ∃' ∃' (∼(&0 =' &1))
 
 /-- The Proposition corresponding to each field axiom -/
 @[simp]
@@ -72,7 +72,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
   | .oneMul => ∀ x : K, 1 * x = x
   | .existsInv => ∀ x : K, x ≠ 0 → ∃ y, x * y = 1
   | .leftDistrib => ∀ x y z : K, x * (y + z) = x * y + x * z
-  | .existsPairNe => ∃ x y : K, x ≠ y
+  | .existsPairNE => ∃ x y : K, x ≠ y
 
 /-- The first order theory of fields, as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
@@ -123,7 +123,7 @@ noncomputable def fieldOfModelField (K : Type*) [Language.ring.Structure K]
         (dif_neg hx0).symm ▸ Classical.choose_spec (existsInv.toProp_of_model x hx0))
     (dif_pos rfl)
     leftDistrib.toProp_of_model
-    existsPairNe.toProp_of_model
+    existsPairNE.toProp_of_model
 
 section
 
@@ -148,7 +148,7 @@ instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
       rintro φ a rfl
       rw [a.realize_toSentence_iff_toProp (K := K)]
       cases a with
-      | existsPairNe => exact exists_pair_ne K
+      | existsPairNE => exact exists_pair_ne K
       | existsInv => exact fun x hx0 => ⟨x⁻¹, mul_inv_cancel hx0⟩
       | addAssoc => exact add_assoc
       | zeroAdd => exact zero_add

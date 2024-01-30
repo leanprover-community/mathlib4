@@ -3,9 +3,10 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Int.Defs
+import Mathlib.Tactic.Common
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
@@ -17,7 +18,7 @@ We separate this from group, because it depends on `ℕ`,
 which in turn depends on other parts of algebra.
 
 This module contains lemmas about `a ^ n` and `n • a`, where `n : ℕ` or `n : ℤ`.
-Further lemmas can be found in `Algebra.GroupPower.Lemmas`.
+Further lemmas can be found in `Algebra.GroupPower.Ring`.
 
 The analogous results for groups with zero can be found in `Algebra.GroupWithZero.Power`.
 
@@ -31,6 +32,8 @@ The analogous results for groups with zero can be found in `Algebra.GroupWithZer
 We adopt the convention that `0^0 = 1`.
 -/
 
+open Int
+
 universe u v w x y z u₁ u₂
 
 variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : Type y} {B : Type z}
@@ -42,24 +45,6 @@ variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : T
 First we prove some facts about `SemiconjBy` and `Commute`. They do not require any theory about
 `pow` and/or `nsmul` and will be useful later in this file.
 -/
-
-
-section Pow
-
-variable [Pow M ℕ]
-
-@[to_additive (attr := simp) ite_nsmul]
-theorem pow_ite (P : Prop) [Decidable P] (a : M) (b c : ℕ) :
-    (a ^ if P then b else c) = if P then a ^ b else a ^ c := by split_ifs <;> rfl
-#align pow_ite pow_ite
-
-@[to_additive (attr := simp) nsmul_ite]
-theorem ite_pow (P : Prop) [Decidable P] (a b : M) (c : ℕ) :
-    (if P then a else b) ^ c = if P then a ^ c else b ^ c := by split_ifs <;> rfl
-#align ite_pow ite_pow
-
-end Pow
-
 
 /-!
 ### Monoids
@@ -230,48 +215,24 @@ theorem pow_mul_pow_eq_one {a b : M} (n : ℕ) (h : a * b = 1) : a ^ n * b ^ n =
 #align pow_mul_pow_eq_one pow_mul_pow_eq_one
 #align nsmul_add_nsmul_eq_zero nsmul_add_nsmul_eq_zero
 
-theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y ^ n
-  | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by
-    rw [pow_succ]
-    exact hxy.mul_right _
-#align dvd_pow dvd_pow
-
-alias Dvd.dvd.pow := dvd_pow
-
-theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
-  dvd_rfl.pow hn
-#align dvd_pow_self dvd_pow_self
-
 end Monoid
+
+lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 = x) :
+    x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
 
 /-!
 ### Commutative (additive) monoid
 -/
 
 section CommMonoid
-
-variable [CommMonoid M] [AddCommMonoid A]
+variable [CommMonoid M]
 
 @[to_additive nsmul_add]
 theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_pow n
 #align mul_pow mul_pow
 #align nsmul_add nsmul_add
-
-/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
-monoids. -/
-@[to_additive (attr := simps)
-      "Multiplication by a natural `n` on a commutative additive
-       monoid, considered as a morphism of additive monoids."]
-def powMonoidHom (n : ℕ) : M →* M where
-  toFun := (· ^ n)
-  map_one' := one_pow _
-  map_mul' a b := mul_pow a b n
-#align pow_monoid_hom powMonoidHom
-#align nsmul_add_monoid_hom nsmulAddMonoidHom
-#align pow_monoid_hom_apply powMonoidHom_apply
-#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
 end CommMonoid
 
@@ -375,6 +336,44 @@ protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i 
 #align commute.mul_zpow Commute.mul_zpow
 #align add_commute.zsmul_add AddCommute.zsmul_add
 
+-- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
+-- when additivised since their argument order,
+-- and therefore the more "natural" choice of lemma, is reversed.
+@[to_additive mul_zsmul'] lemma zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
+  | (m : ℕ), (n : ℕ) => by
+    rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat]
+    rfl
+  | (m : ℕ), -[n+1] => by
+    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_ofNat]
+  | -[m+1], (n : ℕ) => by
+    rw [zpow_ofNat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
+      inv_inj, ← zpow_ofNat]
+  | -[m+1], -[n+1] => by
+    rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
+      zpow_ofNat]
+    rfl
+#align zpow_mul zpow_mul
+#align mul_zsmul' mul_zsmul'
+
+@[to_additive mul_zsmul]
+lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.mul_comm, zpow_mul]
+#align zpow_mul' zpow_mul'
+#align mul_zsmul mul_zsmul
+
+set_option linter.deprecated false
+
+@[to_additive bit0_zsmul]
+lemma zpow_bit0 (a : α) (n : ℤ) : a ^ bit0 n = a ^ n * a ^ n := by
+  rw [bit0, ← Int.two_mul, zpow_mul', ← pow_two, ← zpow_coe_nat]; norm_cast
+#align zpow_bit0 zpow_bit0
+#align bit0_zsmul bit0_zsmul
+
+@[to_additive bit0_zsmul']
+theorem zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
+  (zpow_bit0 a n).trans ((Commute.refl a).mul_zpow n).symm
+#align zpow_bit0' zpow_bit0'
+#align bit0_zsmul' bit0_zsmul'
+
 end DivisionMonoid
 
 section DivisionCommMonoid
@@ -398,20 +397,6 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 #align div_zpow div_zpow
 #align zsmul_sub zsmul_sub
-
-/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
-homomorphism. -/
-@[to_additive (attr := simps)
-      "Multiplication by an integer `n` on a commutative additive group, considered as an
-       additive group homomorphism."]
-def zpowGroupHom (n : ℤ) : α →* α where
-  toFun := (· ^ n)
-  map_one' := one_zpow n
-  map_mul' a b := mul_zpow a b n
-#align zpow_group_hom zpowGroupHom
-#align zsmul_add_group_hom zsmulAddGroupHom
-#align zpow_group_hom_apply zpowGroupHom_apply
-#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 end DivisionCommMonoid
 
@@ -437,30 +422,107 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 #align inv_pow_sub inv_pow_sub
 #align sub_nsmul_neg sub_nsmul_neg
 
+@[to_additive add_one_zsmul]
+lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_ofNat, pow_succ']
+  | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, mul_left_inv]
+  | -[n + 1+1] => by
+    rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
+    rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]
+    exact zpow_negSucc _ _
+#align zpow_add_one zpow_add_one
+#align add_one_zsmul add_one_zsmul
+
+@[to_additive sub_one_zsmul]
+lemma zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
+  calc
+    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := (mul_inv_cancel_right _ _).symm
+    _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, Int.sub_add_cancel]
+#align zpow_sub_one zpow_sub_one
+#align sub_one_zsmul sub_one_zsmul
+
+@[to_additive add_zsmul]
+lemma zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, Int.add_sub_assoc]
+#align zpow_add zpow_add
+#align add_zsmul add_zsmul
+
+@[to_additive one_add_zsmul]
+lemma zpow_one_add (a : G) (n : ℤ) : a ^ (1 + n) = a * a ^ n := by rw [zpow_add, zpow_one]
+#align zpow_one_add zpow_one_add
+#align one_add_zsmul one_add_zsmul
+
+@[to_additive add_zsmul_self]
+lemma mul_self_zpow (a : G) (n : ℤ) : a * a ^ n = a ^ (n + 1) := by
+  rw [Int.add_comm, zpow_add, zpow_one]
+#align mul_self_zpow mul_self_zpow
+#align add_zsmul_self add_zsmul_self
+
+@[to_additive add_self_zsmul]
+lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one ..).symm
+#align mul_zpow_self mul_zpow_self
+#align add_self_zsmul add_self_zsmul
+
+@[to_additive sub_zsmul] lemma zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
+#align zpow_sub zpow_sub
+#align sub_zsmul sub_zsmul
+
+@[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
+  rw [← zpow_add, Int.add_comm, zpow_add]
+#align zpow_mul_comm zpow_mul_comm
+#align zsmul_add_comm zsmul_add_comm
+
+section bit1
+
+set_option linter.deprecated false
+
+@[to_additive bit1_zsmul]
+lemma zpow_bit1 (a : G) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
+  rw [bit1, zpow_add, zpow_bit0, zpow_one]
+#align zpow_bit1 zpow_bit1
+#align bit1_zsmul bit1_zsmul
+
+end bit1
+
+/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
+by `g` and `g⁻¹` on the left. For subgroups generated by more than one element, see
+`Subgroup.closure_induction_left`. -/
+@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+addition by `g` and `-g` on the left. For additive subgroups generated by more than one element, see
+`AddSubgroup.closure_induction_left`."]
+lemma zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
+    (h_mul : ∀ a, P a → P (g * a)) (h_inv : ∀ a, P a → P (g⁻¹ * a)) (n : ℤ) : P (g ^ n) := by
+  induction' n using Int.induction_on with n ih n ih
+  · rwa [zpow_zero]
+  · rw [Int.add_comm, zpow_add, zpow_one]
+    exact h_mul _ ih
+  · rw [Int.sub_eq_add_neg, Int.add_comm, zpow_add, zpow_neg_one]
+    exact h_inv _ ih
+#align zpow_induction_left zpow_induction_left
+#align zsmul_induction_left zsmul_induction_left
+
+/-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
+by `g` and `g⁻¹` on the right. For subgroups generated by more than one element, see
+`Subgroup.closure_induction_right`. -/
+@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+addition by `g` and `-g` on the right. For additive subgroups generated by more than one element,
+see `AddSubgroup.closure_induction_right`."]
+lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
+    (h_mul : ∀ a, P a → P (a * g)) (h_inv : ∀ a, P a → P (a * g⁻¹)) (n : ℤ) : P (g ^ n) := by
+  induction' n using Int.induction_on with n ih n ih
+  · rwa [zpow_zero]
+  · rw [zpow_add_one]
+    exact h_mul _ ih
+  · rw [zpow_sub_one]
+    exact h_inv _ ih
+#align zpow_induction_right zpow_induction_right
+#align zsmul_induction_right zsmul_induction_right
+
 end Group
-
-theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^ n :=
-  ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
-#align pow_dvd_pow pow_dvd_pow
-
-theorem ofAdd_nsmul [AddMonoid A] (x : A) (n : ℕ) :
-    Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
-  rfl
-#align of_add_nsmul ofAdd_nsmul
-
-theorem ofAdd_zsmul [SubNegMonoid A] (x : A) (n : ℤ) :
-    Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
-  rfl
-#align of_add_zsmul ofAdd_zsmul
-
-theorem ofMul_pow [Monoid A] (x : A) (n : ℕ) : Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
-  rfl
-#align of_mul_pow ofMul_pow
-
-theorem ofMul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
-    Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
-  rfl
-#align of_mul_zpow ofMul_zpow
 
 @[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :

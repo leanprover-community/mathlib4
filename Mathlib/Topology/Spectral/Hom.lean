@@ -21,7 +21,7 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `topology.spectral.basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
 -/
 
 
@@ -76,7 +76,7 @@ section
 
 You should extend this class when you extend `SpectralMap`. -/
 class SpectralMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends FunLike F α fun _ => β where
+  [TopologicalSpace β] extends DFunLike F α fun _ => β where
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
 #align spectral_map_class SpectralMapClass
@@ -116,10 +116,10 @@ instance : SpectralMapClass (SpectralMap α β) α β
   map_spectral f := f.spectral'
 
 -- Porting note: These CoeFun instances are not desirable in Lean 4.
---/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+--/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 --directly. -/
 --instance : CoeFun (SpectralMap α β) fun _ => α → β :=
---  FunLike.hasCoeToFun
+--  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
@@ -128,7 +128,7 @@ theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
 
 @[ext]
 theorem ext {f g : SpectralMap α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align spectral_map.ext SpectralMap.ext
 
 /-- Copy of a `SpectralMap` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -143,7 +143,7 @@ theorem coe_copy (f : SpectralMap α β) (f' : α → β) (h : f' = f) : ⇑(f.c
 #align spectral_map.coe_copy SpectralMap.coe_copy
 
 theorem copy_eq (f : SpectralMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align spectral_map.copy_eq SpectralMap.copy_eq
 
 variable (α)
@@ -213,7 +213,7 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
    fun a => of_eq (congrFun (congrArg comp a) f)⟩
 #align spectral_map.cancel_right SpectralMap.cancel_right
 

@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Hom.Aut
+import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
-#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
+#align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Group actions applied to various types of group
@@ -141,19 +142,19 @@ theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower �
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
-protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
+protected theorem MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
 #align add_action.bijective AddAction.bijective
 
 @[to_additive]
-protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
+protected theorem MulAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
 #align add_action.injective AddAction.injective
 
 @[to_additive]
-protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
+protected theorem MulAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
 #align add_action.surjective AddAction.surjective
@@ -177,6 +178,28 @@ theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹
 #align vadd_eq_iff_eq_neg_vadd vadd_eq_iff_eq_neg_vadd
 
 end Group
+
+section Monoid
+
+variable [Monoid α] [MulAction α β]
+
+variable (c : α) (x y : β) [Invertible c]
+
+@[simp]
+theorem invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
+
+@[simp]
+theorem smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
+
+variable {c x y}
+
+theorem invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y :=
+  inv_smul_eq_iff (a := unitOfInvertible c)
+
+theorem smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
+  smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
+
+end Monoid
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
@@ -218,15 +241,22 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
+/-- Right scalar multiplication as an order isomorphism. -/
+@[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
+  toFun b := a • b
+  invFun b := a⁻¹ • b
+  left_inv := inv_smul_smul₀ ha
+  right_inv := smul_inv_smul₀ ha
+
+protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective (a • · : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀
 
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
+protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective (a • · : β → β) :=
   (MulAction.bijective₀ ha).injective
 #align mul_action.injective₀ MulAction.injective₀
 
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
+protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective (a • · : β → β) :=
   (MulAction.bijective₀ ha).surjective
 #align mul_action.surjective₀ MulAction.surjective₀
 
@@ -265,6 +295,16 @@ def DistribMulAction.toAddAut : α →* AddAut β where
 #align distrib_mul_action.to_add_aut DistribMulAction.toAddAut
 #align distrib_mul_action.to_add_aut_apply DistribMulAction.toAddAut_apply
 
+/-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
+`AddMonoid` on which it acts distributively.
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
+    [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
+  { DistribMulAction.toAddMonoidHom β x with
+    invFun := fun b ↦ x⁻¹ • b
+    left_inv := fun b ↦ inv_smul_smul₀ hx b
+    right_inv := fun b ↦ smul_inv_smul₀ hx b }
+
 variable {α β}
 
 theorem smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -276,20 +316,6 @@ theorem smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 #align smul_ne_zero_iff_ne smul_ne_zero_iff_ne
 
 end Group
-
-section Gwz
-
-variable [GroupWithZero α] [AddMonoid β] [DistribMulAction α β]
-
-theorem smul_eq_zero_iff_eq' {a : α} (ha : a ≠ 0) {x : β} : a • x = 0 ↔ x = 0 :=
-  show Units.mk0 a ha • x = 0 ↔ x = 0 from smul_eq_zero_iff_eq _
-#align smul_eq_zero_iff_eq' smul_eq_zero_iff_eq'
-
-theorem smul_ne_zero_iff_ne' {a : α} (ha : a ≠ 0) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
-  show Units.mk0 a ha • x ≠ 0 ↔ x ≠ 0 from smul_ne_zero_iff_ne _
-#align smul_ne_zero_iff_ne' smul_ne_zero_iff_ne'
-
-end Gwz
 
 end DistribMulAction
 

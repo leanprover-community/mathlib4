@@ -5,6 +5,7 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Support
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
@@ -25,9 +26,6 @@ We also prove that the image of a closed interval under a continuous map is a cl
 
 compact, extreme value theorem
 -/
-
-set_option autoImplicit true
-
 
 open Filter OrderDual TopologicalSpace Function Set
 
@@ -55,10 +53,12 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
 
 export CompactIccSpace (isCompact_Icc)
 
+variable {α : Type*}
+
 -- porting note: new lemma; TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
-  isCompact_Icc {a b} := by_cases h $ fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
+  isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
 -- porting note: new lemma; TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
@@ -70,7 +70,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
   refine' .mk'' fun {a b} hlt => ?_
-  cases' le_or_lt a b with hab hab
+  rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
   refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
@@ -104,7 +104,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
   contrapose! hf
   intro U hU
-  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
   refine' mem_of_superset _ hyU; clear! U
@@ -174,7 +174,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
-      (directed_of_inf fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
+      (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 #align is_compact.exists_is_least IsCompact.exists_isLeast
 
@@ -381,10 +381,10 @@ end ConditionallyCompleteLinearOrder
 ### Min and max elements of a compact set
 -/
 
-section OrderClosedTopology
+section InfSup
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+  [TopologicalSpace β]
 
 theorem IsCompact.sInf_mem [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : sInf s ∈ s :=
@@ -442,17 +442,23 @@ theorem IsCompact.exists_sSup_image_eq [ClosedIciTopology α] {s : Set β} (hs :
   IsCompact.exists_sInf_image_eq (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_Sup_image_eq IsCompact.exists_sSup_image_eq
 
+end InfSup
+
+section ExistsExtr
+
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
+
 theorem IsCompact.exists_isMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsMinOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMinOn ⟨z, hz⟩ hf
-  ⟨x, by_contra <| fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z' < f z) : ∃ x ∈ s, IsMaxOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
-  ⟨x, by_contra <| fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 @[deprecated IsCompact.exists_isMinOn_mem_subset]
 theorem IsCompact.exists_isLocalMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
@@ -477,7 +483,7 @@ theorem IsCompact.exists_isLocalMax_mem_open [ClosedIciTopology α] {f : β → 
   let ⟨x, hxs, h⟩ := ht.exists_isMaxOn_mem_subset hf hz hfz
   ⟨x, hxs, h.isLocalMax <| mem_nhds_iff.2 ⟨s, hst, hs, hxs⟩⟩
 
-end OrderClosedTopology
+end ExistsExtr
 
 variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
   [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]

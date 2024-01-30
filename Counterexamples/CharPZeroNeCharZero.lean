@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.PUnitInstances
 
 #align_import char_p_zero_ne_char_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 

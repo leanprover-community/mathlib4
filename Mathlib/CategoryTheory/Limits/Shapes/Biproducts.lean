@@ -58,8 +58,9 @@ namespace CategoryTheory
 namespace Limits
 
 variable {J : Type w}
-
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+universe uC' uC uD' uD
+variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
+variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 /-- A `c : Bicone F` is:
 * an object `c.pt` and
@@ -91,6 +92,70 @@ theorem bicone_ι_π_ne {F : J → C} (B : Bicone F) {j j' : J} (h : j ≠ j') :
 
 variable {F : J → C}
 
+/-- A bicone morphism between two bicones for the same diagram is a morphism of the bicone points
+which commutes with the cone and cocone legs. -/
+structure BiconeMorphism {F : J → C} (A B : Bicone F) where
+  /-- A morphism between the two vertex objects of the bicones -/
+  hom : A.pt ⟶ B.pt
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wπ : ∀ j : J, hom ≫ B.π j = A.π j := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wι : ∀ j : J, A.ι j ≫ hom = B.ι j := by aesop_cat
+
+attribute [reassoc (attr := simp)] BiconeMorphism.wι
+attribute [reassoc (attr := simp)] BiconeMorphism.wπ
+
+/-- The category of bicones on a given diagram. -/
+@[simps]
+instance Bicone.category : Category (Bicone F) where
+  Hom A B := BiconeMorphism A B
+  comp f g := { hom := f.hom ≫ g.hom }
+  id B := { hom := 𝟙 B.pt }
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
+  cases f
+  cases g
+  congr
+
+namespace Bicones
+
+/-- To give an isomorphism between cocones, it suffices to give an
+  isomorphism between their vertices which commutes with the cocone
+  maps. -/
+-- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
+@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
+    (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
+    (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
+      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
+
+variable (F) in
+/-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
+@[simps]
+def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
+    Bicone F ⥤ Bicone (G.obj ∘ F) where
+  obj A :=
+    { pt := G.obj A.pt
+      π := fun j => G.map (A.π j)
+      ι := fun j => G.map (A.ι j)
+      ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
+        rw [A.ι_π]
+        aesop_cat }
+  map f :=
+    { hom := G.map f.hom
+      wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
+      wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
+
+end Bicones
+
 namespace Bicone
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
@@ -99,9 +164,12 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
-def toCone (B : Bicone F) : Cone (Discrete.functor F) where
-  pt := B.pt
-  π := { app := fun j => B.π j.as }
+def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
+  obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wπ _ }
+
+/-- A shorthand for `toConeFunctor.obj` -/
+abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
 #align category_theory.limits.bicone.to_cone CategoryTheory.Limits.Bicone.toCone
 
 -- TODO Consider changing this API to `toFan (B : Bicone F) : Fan F`.
@@ -122,10 +190,12 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π
 theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
-def toCocone (B : Bicone F) : Cocone (Discrete.functor F) where
-  pt := B.pt
-  ι := { app := fun j => B.ι j.as
-         naturality := by intro ⟨j⟩ ⟨j'⟩ ⟨⟨f⟩⟩; cases f; simp}
+def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
+  obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
+  map {X Y} F := { hom := F.hom, w := fun _ => F.wι _ }
+
+/-- A shorthand for `toCoconeFunctor.obj` -/
+abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
 #align category_theory.limits.bicone.to_cocone CategoryTheory.Limits.Bicone.toCocone
 
 @[simp]
@@ -138,7 +208,7 @@ theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = 
 #align category_theory.limits.bicone.to_cocone_ι_app CategoryTheory.Limits.Bicone.toCocone_ι_app
 
 @[simp]
-theorem toCocone_proj (B : Bicone F) (j : J) : Cofan.proj B.toCocone j = B.ι j := rfl
+theorem toCocone_inj (B : Bicone F) (j : J) : Cofan.inj B.toCocone j = B.ι j := rfl
 
 theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : B.toCocone.ι.app ⟨j⟩ = B.ι j := rfl
 #align category_theory.limits.bicone.to_cocone_ι_app_mk CategoryTheory.Limits.Bicone.toCocone_ι_app_mk
@@ -641,17 +711,17 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
           split_ifs with h
           · obtain ⟨rfl, rfl⟩ := h
             simp
-          · simp at h
+          · simp only [Sigma.mk.inj_iff, not_and] at h
             by_cases w : j = j'
             · cases w
-              simp at h
+              simp only [heq_eq_eq, forall_true_left] at h
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
       { isLimit := mkFanLimit _
           (fun s => biproduct.lift fun b => biproduct.lift fun c => s.proj ⟨b, c⟩)
         isColimit := mkCofanColimit _
-          (fun s => biproduct.desc fun b => biproduct.desc fun c => s.proj ⟨b, c⟩) } }
+          (fun s => biproduct.desc fun b => biproduct.desc fun c => s.inj ⟨b, c⟩) } }
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
 @[simps]
@@ -1031,6 +1101,7 @@ section
 
 variable {C} [Unique J] (f : J → C)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
 def limitBiconeOfUnique : LimitBicone f where
@@ -1291,7 +1362,7 @@ def getBinaryBiproductData (P Q : C) [HasBinaryBiproduct P Q] : BinaryBiproductD
   Classical.choice HasBinaryBiproduct.exists_binary_biproduct
 #align category_theory.limits.get_binary_biproduct_data CategoryTheory.Limits.getBinaryBiproductData
 
-/-- A bicone for `P Q ` which is both a limit cone and a colimit cocone. -/
+/-- A bicone for `P Q` which is both a limit cone and a colimit cocone. -/
 def BinaryBiproduct.bicone (P Q : C) [HasBinaryBiproduct P Q] : BinaryBicone P Q :=
   (getBinaryBiproductData P Q).bicone
 #align category_theory.limits.binary_biproduct.bicone CategoryTheory.Limits.BinaryBiproduct.bicone
@@ -1333,8 +1404,7 @@ This is not an instance as typically in concrete categories there will be
 an alternative construction with nicer definitional properties.
 -/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
-  {
-    has_binary_biproduct := fun P Q =>
+  { has_binary_biproduct := fun P Q =>
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
@@ -1906,6 +1976,21 @@ def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X �
     apply hY.eq_of_tgt
 #align category_theory.limits.iso_zero_biprod CategoryTheory.Limits.isoZeroBiprod
 
+@[simp]
+lemma biprod_isZero_iff (A B : C) [HasBinaryBiproduct A B] :
+    IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
+  constructor
+  · intro h
+    simp only [IsZero.iff_id_eq_zero] at h ⊢
+    simp only [show 𝟙 A = biprod.inl ≫ 𝟙 (A ⊞ B) ≫ biprod.fst by simp,
+      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero,
+      and_self]
+  · rintro ⟨hA, hB⟩
+    rw [IsZero.iff_id_eq_zero]
+    apply biprod.hom_ext
+    · apply hA.eq_of_tgt
+    · apply hB.eq_of_tgt
+
 end IsZero
 
 section
@@ -1959,7 +2044,7 @@ theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braidi
 
 /-- The associator isomorphism which associates a binary biproduct. -/
 @[simps]
-def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
   hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
   inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
 

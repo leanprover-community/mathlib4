@@ -121,7 +121,7 @@ theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
 #align rat.cast_mk Rat.cast_mk
 
 @[simp, norm_cast]
-theorem cast_pow (q) (k : ℕ) : ((q : ℚ) ^ k : α) = (q : α) ^ k :=
+theorem cast_pow (q : ℚ) (k : ℕ) : ↑(q ^ k) = (q : α) ^ k :=
   (castHom α).map_pow q k
 #align rat.cast_pow Rat.cast_pow
 

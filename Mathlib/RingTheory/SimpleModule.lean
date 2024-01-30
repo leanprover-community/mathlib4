@@ -70,13 +70,15 @@ theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m 
   exact Submodule.comapMkQRelIso m
 #align is_simple_module_iff_is_coatom isSimpleModule_iff_isCoatom
 
-theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
+theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
-  rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
+  rw [covBy_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
+  -- This used to be in the next `simp`, but we need `erw` after leanprover/lean4#2644
+  erw [RelIso.coe_fn_mk]
   simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
     inf_eq_right.2 hAB]
-#align covby_iff_quot_is_simple covby_iff_quot_is_simple
+#align covby_iff_quot_is_simple covBy_iff_quot_is_simple
 
 namespace IsSimpleModule
 
@@ -220,9 +222,9 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
 
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
-  lt_of_isMaximal := Covby.lt
-  sup_eq_of_isMaximal hxz hyz := Wcovby.sup_eq hxz.wcovby hyz.wcovby
-  isMaximal_inf_left_of_isMaximal_sup := inf_covby_of_covby_sup_of_covby_sup_left
+  lt_of_isMaximal := CovBy.lt
+  sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
+  isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
   Iso := Iso
   iso_symm := iso_symm
   iso_trans := iso_trans

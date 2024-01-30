@@ -107,12 +107,9 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
   -- If we had a Gröbner basis algorithm, this would be trivial.
   -- Without one, it is somewhat tedious!
   rw [← sub_eq_zero]
-  repeat'
-    ring_nf
-    simp only [A₁_inv, B₁_inv, sub_eq_add_neg, add_mul, mul_add, sub_mul, mul_sub, add_assoc,
-      neg_add, neg_sub, sub_add, sub_sub, neg_mul, ← sq, A₀_inv, B₀_inv, ← sq, ← mul_assoc, one_mul,
-      mul_one, add_right_neg, add_zero, sub_eq_add_neg, A₀_inv, mul_one, add_right_neg,
-      zero_mul]
+  ring_nf
+  simp_all
+  ring_nf
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 
@@ -135,14 +132,8 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       dsimp
       simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
-    rw [idem']
-    conv_rhs =>
-      arg 2
-      arg 1
-      rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg P) _
-    · simp
-    · norm_num
+    simpa only [← idem', sa]
+      using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 set_option linter.uppercaseLean3 false in
@@ -241,7 +232,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         congr
         rw [← Q_sa]
       convert (star_mul_self_nonneg Q)
-    convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
+    convert smul_le_smul_of_nonneg_left (add_nonneg P2_nonneg Q2_nonneg)
         (le_of_lt (show 0 < √2⁻¹ by norm_num))
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`
     simp

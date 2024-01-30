@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.Analysis.Calculus.SmoothSeries
 
 #align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
@@ -26,8 +26,6 @@ subset of the complex plane.
 open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}

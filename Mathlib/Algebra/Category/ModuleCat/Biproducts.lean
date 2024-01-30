@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Group.Pi
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.ShortExact.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 #align_import algebra.category.Module.biproducts from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -77,6 +77,9 @@ noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
 #align Module.biprod_iso_prod ModuleCat.biprodIsoProd
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply
+
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
     (biprodIsoProd M N).inv ≫ biprod.fst = LinearMap.fst R M N :=
@@ -138,6 +141,9 @@ noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align Module.biproduct_iso_pi ModuleCat.biproductIsoPi
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
+
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = (LinearMap.proj j : (∀ j, f j) →ₗ[R] f j) :=
@@ -155,24 +161,26 @@ variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
 open ModuleCat
 
+
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules.-/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
-  (({ right_split := ⟨ModuleCat.asHom f, h⟩
-      mono := (ModuleCat.mono_iff_injective <| asHom j).mpr hj
-      exact := (exact_iff _ _).mpr exac } : RightSplit _ _).splitting.iso.trans <|
-    biprodIsoProd _ _).toLinearEquiv.symm
-#align lequiv_prod_of_right_split_exact lequivProdOfRightSplitExact
+  ((ShortComplex.Splitting.ofExactOfSection _
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
+    (ModuleCat.ofHom g) exac) (asHom f) h
+    (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
+    biprodIsoProd _ _ ).symm.toLinearEquiv
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules.-/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
-  (({ left_split := ⟨ModuleCat.asHom f, h⟩
-      epi := (ModuleCat.epi_iff_surjective <| asHom g).mpr hg
-      exact := (exact_iff _ _).mpr exac } : LeftSplit _ _).splitting.iso.trans <|
-    biprodIsoProd _ _).toLinearEquiv.symm
+  ((ShortComplex.Splitting.ofExactOfRetraction _
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
+    (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) h
+    (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
+    biprodIsoProd _ _).symm.toLinearEquiv
 #align lequiv_prod_of_left_split_exact lequivProdOfLeftSplitExact
 
 end SplitExact

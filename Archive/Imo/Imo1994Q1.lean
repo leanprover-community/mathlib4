@@ -53,7 +53,7 @@ open Imo1994Q1
 
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
-    (hadd : ∀ (a) (_ : a ∈ A) (b) (_ : b ∈ A), a + b ≤ n → a + b ∈ A) :
+    (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
     (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
@@ -75,7 +75,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
   -- It remains to prove the key inequality, by contradiction
   rintro k -
-  by_contra' h : a k + a (rev k) < n + 1
+  by_contra! h : a k + a (rev k) < n + 1
   -- We exhibit `k+1` elements of `A` greater than `a (rev k)`
   set f : Fin (m + 1) ↪ ℕ :=
     ⟨fun i => a i + a (rev k), by
@@ -89,11 +89,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and_iff, Equiv.subLeft_apply,
       Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding] at hx ⊢
     rcases hx with ⟨i, ⟨hi, rfl⟩⟩
-    have h1 : a i + a (Fin.last m - k) ≤ n := by
-      -- Porting note: Original proof was `by linarith only [h, a.monotone hi]`
-      have := a.monotone hi
-      simp only at this ⊢
-      linarith only [h, this]
+    have h1 : a i + a (Fin.last m - k) ≤ n := by linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
     cases' h2 with j hj
@@ -101,5 +97,5 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
-  simpa [Fin.coe_sub, tedious] using card_le_of_subset hf
+  simpa [Fin.coe_sub, tedious] using card_le_card hf
 #align imo1994_q1 imo1994_q1

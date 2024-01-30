@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 #align_import analysis.special_functions.trigonometric.complex from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
@@ -97,6 +98,22 @@ theorem sin_eq_sin_iff {x y : ℂ} :
   refine' exists_congr fun k => or_congr _ _ <;> refine' Eq.congr rfl _ <;> field_simp <;> ring
 #align complex.sin_eq_sin_iff Complex.sin_eq_sin_iff
 
+theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
+  rw [← cos_zero, eq_comm, cos_eq_cos_iff]
+  simp [mul_assoc, mul_left_comm, eq_comm]
+
+theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x := by
+  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
+  simp only [eq_sub_iff_add_eq']
+
+theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
+  rw [← cos_sub_pi_div_two, cos_eq_one_iff]
+  simp only [eq_sub_iff_add_eq']
+
+theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
+  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff]
+  simp only [← sub_eq_neg_add, sub_eq_iff_eq_add]
+
 theorem tan_add {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
@@ -120,8 +137,6 @@ theorem tan_add' {x y : ℂ}
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 #align complex.tan_add' Complex.tan_add'
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
@@ -170,7 +185,7 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x
-  obtain ⟨w, w₀, hw⟩ : ∃ (w : _) (_ : w ≠ 0), 1 * w * w + -2 * x * w + 1 = 0 := by
+  obtain ⟨w, w₀, hw⟩ : ∃ w ≠ 0, 1 * w * w + -2 * x * w + 1 = 0 := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩
@@ -205,22 +220,31 @@ namespace Real
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
-  exact_mod_cast @Complex.cos_eq_zero_iff θ
+theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
+  mod_cast @Complex.cos_eq_zero_iff θ
 #align real.cos_eq_zero_iff Real.cos_eq_zero_iff
 
-theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
-  rw [← not_exists, not_iff_not, cos_eq_zero_iff]
+theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 :=
+  mod_cast @Complex.cos_ne_zero_iff θ
 #align real.cos_ne_zero_iff Real.cos_ne_zero_iff
 
 theorem cos_eq_cos_iff {x y : ℝ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
-  by exact_mod_cast @Complex.cos_eq_cos_iff x y
+  mod_cast @Complex.cos_eq_cos_iff x y
 #align real.cos_eq_cos_iff Real.cos_eq_cos_iff
 
 theorem sin_eq_sin_iff {x y : ℝ} :
-    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
-  exact_mod_cast @Complex.sin_eq_sin_iff x y
+    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x :=
+  mod_cast @Complex.sin_eq_sin_iff x y
 #align real.sin_eq_sin_iff Real.sin_eq_sin_iff
+
+theorem cos_eq_neg_one_iff {x : ℝ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x :=
+  mod_cast @Complex.cos_eq_neg_one_iff x
+
+theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x :=
+  mod_cast @Complex.sin_eq_one_iff x
+
+theorem sin_eq_neg_one_iff {x : ℝ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x :=
+  mod_cast @Complex.sin_eq_neg_one_iff x
 
 theorem lt_sin_mul {x : ℝ} (hx : 0 < x) (hx' : x < 1) : x < sin (π / 2 * x) := by
   simpa [mul_comm x] using

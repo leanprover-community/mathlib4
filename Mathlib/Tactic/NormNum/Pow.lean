@@ -3,8 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
 
 /-!
 ## `norm_num` plugin for `^`.
@@ -33,7 +34,7 @@ structure IsNatPowT (p : Prop) (a b c : Nat) : Prop where
   run' : p → Nat.pow a b = c
 
 theorem IsNatPowT.run
-  (p : IsNatPowT (Nat.pow a (nat_lit 1) = a) a b c) : Nat.pow a b = c := p.run' (Nat.pow_one _)
+    (p : IsNatPowT (Nat.pow a (nat_lit 1) = a) a b c) : Nat.pow a b = c := p.run' (Nat.pow_one _)
 
 /-- This is the key to making the proof proceed as a balanced tree of applications instead of
 a linear sequence. It is just modus ponens after unwrapping the definitions. -/
@@ -105,13 +106,14 @@ theorem intPow_ofNat (h1 : Nat.pow a b = c) :
 theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
-  rw [← hb, Int.negOfNat_eq, pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc, ← h1]
+  rw [← hb, Int.negOfNat_eq, Int.pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc,
+    ← h1]
   simp
 
 theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
-  rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
+  rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, Int.pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
     two_mul, pow_add, ← hc, ← h1]
   simp [mul_assoc, mul_comm, mul_left_comm]
 
@@ -191,3 +193,73 @@ def evalPow : NormNumExt where eval {u α} e := do
       let qc := mkRat zc dc.natLit!
       return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
   core
+
+theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isNat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ nb)⁻¹ ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+theorem isInt_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ nb)⁻¹ (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, zpow_coe_nat]
+
+theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a^nb)⁻¹) num den) :
+    IsRat (a^b) num den := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+
+/-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
+such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
+@[norm_num (_ : α) ^ (_ : ℤ)]
+def evalZPow : NormNumExt where eval {u α} e := do
+  let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
+  let _c ← synthInstanceQ q(DivisionSemiring $α)
+  let rb ← derive (α := q(ℤ)) b
+  have h : $e =Q $a ^ $b := ⟨⟩
+  h.check
+  match rb with
+  | .isBool .. | .isRat _ .. => failure
+  | .isNat sβ nb pb =>
+    match ← derive q($a ^ $nb) with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      let _c ← synthInstanceQ q(DivisionRing $α)
+      assumeInstancesCommute
+      return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
+  | .isNegNat sβ nb pb =>
+    match ← derive q(($a ^ $nb)⁻¹) with
+    | .isBool .. => failure
+    | .isNat sα' ne' pe' =>
+      assumeInstancesCommute
+      return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
+    | .isNegNat sα' ne' pe' =>
+      let _c ← synthInstanceQ q(DivisionRing $α)
+      assumeInstancesCommute
+      return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
+    | .isRat sα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')

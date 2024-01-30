@@ -94,7 +94,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     by_contra H
     haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
-    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
+    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := exists_clusterPt_of_compactSpace _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
@@ -260,6 +260,33 @@ theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
   this.tendstoUniformly hxK
 #align continuous.tendsto_uniformly Continuous.tendstoUniformly
+
+/-- In a product space `α × β`, assume that a function `f` is continuous on `s × k` where `k` is
+compact. Then, along the fiber above any `q ∈ s`, `f` is transversely uniformly continuous, i.e.,
+if `p ∈ s` is close enough to `q`, then `f p x` is uniformly close to `f q x` for all `x ∈ k`. -/
+lemma IsCompact.mem_uniformity_of_prod
+    {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
+    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ k)) (hq : q ∈ s) (hu : u ∈ 𝓤 E) :
+    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, (f p x, f q x) ∈ u := by
+  apply hk.induction_on (p := fun t ↦ ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ t, (f p x, f q x) ∈ u)
+  · exact ⟨univ, univ_mem, by simp⟩
+  · intro t' t ht't ⟨v, v_mem, hv⟩
+    exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
+  · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
+    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
+    rcases hx with h'x|h'x
+    · exact hv p hp.1 x h'x
+    · exact hv' p hp.2 x h'x
+  · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩
+    intro x hx
+    obtain ⟨v, hv, w, hw, hvw⟩ :
+      ∃ v ∈ 𝓝[s] q, ∃ w ∈ 𝓝[k] x, v ×ˢ w ⊆ f.uncurry ⁻¹' {z | (f q x, z) ∈ u'} :=
+        mem_nhdsWithin_prod_iff.1 (hf (q, x) ⟨hq, hx⟩ (mem_nhds_left (f q x) u'_mem))
+    refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
+    have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
+    have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
+    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
 
 section UniformConvergence
 

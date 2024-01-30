@@ -20,7 +20,7 @@ We also develop basic API about these equivalences.
 -/
 
 open scoped NNReal ENNReal
-open Function Set
+open Function Set Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
@@ -33,7 +33,7 @@ class DilationEquivClass extends EquivLike F X Y where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X fun _ ↦ Y), ‹DilationEquivClass F X Y› with }
+  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 
@@ -55,7 +55,7 @@ instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   inv f := f.1.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact FunLike.ext' h
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
   edist_eq' f := f.edist_eq'
 
 instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
@@ -65,7 +65,7 @@ instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
 
 @[ext]
 protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
@@ -77,6 +77,10 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
       ENNReal.coe_one, one_mul]
 
 @[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
@@ -84,6 +88,8 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
 
 initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_apply)
+
+lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
 /-- Identity map as a `DilationEquiv`. -/
 @[simps! (config := .asFn) apply]
@@ -172,6 +178,56 @@ def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
 theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
   rw [← coe_toEquiv, ← toPerm_apply, map_pow, Equiv.Perm.coe_pow]; rfl
 
+-- TODO: Once `IsometryEquiv` follows the `*EquivClass` pattern, replace this with an instance
+-- of `DilationEquivClass` assuming `IsometryEquivClass`.
+/-- Every isometry equivalence is a dilation equivalence of ratio `1`. -/
+def _root_.IsometryEquiv.toDilationEquiv (e : X ≃ᵢ Y) : X ≃ᵈ Y where
+  edist_eq' := ⟨1, one_ne_zero, by simpa using e.isometry⟩
+  __ := e.toEquiv
+
+@[simp]
+lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : X ≃ᵢ Y) (x : X) :
+    e.toDilationEquiv x = e x :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : X ≃ᵢ Y) :
+    e.toDilationEquiv.symm = e.symm.toDilationEquiv :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.toDilationEquiv_toDilation (e : X ≃ᵢ Y) :
+    (e.toDilationEquiv.toDilation : X →ᵈ Y) = e.isometry.toDilation :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.toDilationEquiv_ratio (e : X ≃ᵢ Y) : ratio e.toDilationEquiv = 1 := by
+  rw [← ratio_toDilation, IsometryEquiv.toDilationEquiv_toDilation, Isometry.toDilation_ratio]
+
+/-- Reinterpret a `DilationEquiv` as a homeomorphism. -/
+def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
+  continuous_toFun := Dilation.toContinuous e
+  continuous_invFun := Dilation.toContinuous e.symm
+  __ := e.toEquiv
+
+@[simp]
+lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
+  rfl
+
+@[simp]
+lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+  rfl
+
 end PseudoEMetricSpace
+
+section PseudoMetricSpace
+
+variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] [DilationEquivClass F X Y]
+
+@[simp]
+lemma map_cobounded (e : F) : map e (cobounded X) = cobounded Y := by
+  rw [← Dilation.comap_cobounded e, map_comap_of_surjective (EquivLike.surjective e)]
+
+end PseudoMetricSpace
 
 end DilationEquiv

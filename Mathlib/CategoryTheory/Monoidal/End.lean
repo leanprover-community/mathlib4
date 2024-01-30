@@ -35,7 +35,7 @@ def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   whiskerLeft X _ _ F := whiskerLeft X F
   whiskerRight F X := whiskerRight F X
   tensorHom α β := α ◫ β
-  tensorUnit' := 𝟭 C
+  tensorUnit := 𝟭 C
   associator F G H := Functor.associator F G H
   leftUnitor F := Functor.leftUnitor F
   rightUnitor F := Functor.rightUnitor F
@@ -60,6 +60,14 @@ attribute [local instance] endofunctorMonoidalCategory
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
     (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+
+@[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
+    {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
+    (F ◁ β).app X = β.app (F.obj X) := rfl
+
+@[simp] theorem endofunctorMonoidalCategory_whiskerRight_app
+    {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :
+    (α ▷ H).app X = H.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_hom_app (F G H : C ⥤ C) (X : C) :
   (α_ F G H).hom.app X = 𝟙 _ := rfl
@@ -89,11 +97,19 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
-    μ_natural := fun f g => by
+    -- The proof will be automated after merging #6307.
+    μ_natural_left := fun f X => by
       ext Z
       dsimp
-      simp only [← id_tensor_comp_tensor_id g f, id_tensor_comp, ← tensor_id, Category.assoc,
+      simp only [← id_tensor_comp_tensor_id f (𝟙 X), id_tensor_comp, ← tensor_id, Category.assoc,
         associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.id_comp]
+    μ_natural_right := fun X g => by
+      ext Z
+      dsimp
+      simp only [← id_tensor_comp_tensor_id (𝟙 X) g, id_tensor_comp, ← tensor_id, Category.assoc,
+        associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.comp_id]
     associativity := fun X Y Z => by
       ext W
       simp [pentagon]

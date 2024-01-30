@@ -122,7 +122,6 @@ variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
 
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
-set_option maxHeartbeats 250000 in
 /-- Local cohomology along a composition of diagrams. -/
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _
@@ -146,7 +145,7 @@ variable {R : Type u} [CommRing R]
 /-- The functor sending a natural number `i` to the `i`-th power of the ideal `J` -/
 def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
   obj t := J ^ unop t
-  map w := ⟨⟨Ideal.pow_le_pow w.unop.down.down⟩⟩
+  map w := ⟨⟨Ideal.pow_le_pow_right w.unop.down.down⟩⟩
 #align local_cohomology.ideal_powers_diagram localCohomology.idealPowersDiagram
 
 /-- The full subcategory of all ideals with radical containing `J` -/
@@ -235,7 +234,7 @@ theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
   use k
   calc
-    I ^ k ≤ J.radical ^ k := Ideal.pow_mono hIJ _
+    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
     _ ≤ J := hk
 #align local_cohomology.ideal.exists_pow_le_of_le_radical_of_fg localCohomology.Ideal.exists_pow_le_of_le_radical_of_fG
 
@@ -251,7 +250,7 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       apply Relation.ReflTransGen.single
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
-      cases' le_total (unop j1.left) (unop j2.left) with h h
+      rcases le_total (unop j1.left) (unop j2.left) with h | h
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial

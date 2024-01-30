@@ -196,7 +196,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
         dsimp at *
         simp
-        rfl )
+        rfl)
   counitIso :=
     NatIso.ofComponents
       (fun X => by

@@ -3,18 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
@@ -100,13 +101,12 @@ immediate predecessors and what conditions are added to each of them.
   - `StrictOrderedRing` & totality of the order
   - `LinearOrderedSemiring` & additive inverses
   - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Domain` & linear order structure
+  - `Ring` & `IsDomain` & linear order structure
 * `LinearOrderedCommRing`
   - `StrictOrderedCommRing` & totality of the order
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
-  - `IsDomain` & linear order structure
-
+  - `CommRing` & `IsDomain` & linear order structure
 -/
 
 open Function
@@ -141,7 +141,10 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α
+class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+  mul_le_mul_of_nonneg_right a b c ha hc :=
+    -- parentheses ensure this generates an `optParam` rather than an `autoParam`
+    (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
@@ -330,27 +333,24 @@ theorem mul_lt_one_of_nonneg_of_lt_one_right (ha : a ≤ 1) (hb₀ : 0 ≤ b) (h
   (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 #align mul_lt_one_of_nonneg_of_lt_one_right mul_lt_one_of_nonneg_of_lt_one_right
 
-end OrderedSemiring
-
-section OrderedRing
-
-variable [OrderedRing α] {a b c d : α}
-
--- see Note [lower instance priority]
-instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
-  { ‹OrderedRing α›, (Ring.toSemiring : Semiring α) with
-    mul_le_mul_of_nonneg_left := fun a b c h hc => by
-      simpa only [mul_sub, sub_nonneg] using OrderedRing.mul_nonneg _ _ hc (sub_nonneg.2 h),
-    mul_le_mul_of_nonneg_right := fun a b c h hc => by
-      simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
-#align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
+variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
-  simpa only [neg_mul, neg_le_neg_iff] using mul_le_mul_of_nonneg_left h (neg_nonneg.2 hc)
+  obtain ⟨d, hcd⟩ := exists_add_of_le hc
+  refine le_of_add_le_add_right (a := d * b + d * a) ?_
+  calc
+    _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
+    _ ≤ d * a := mul_le_mul_of_nonneg_left h <| hcd.trans_le <| add_le_of_nonpos_left hc
+    _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 #align mul_le_mul_of_nonpos_left mul_le_mul_of_nonpos_left
 
 theorem mul_le_mul_of_nonpos_right (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
-  simpa only [mul_neg, neg_le_neg_iff] using mul_le_mul_of_nonneg_right h (neg_nonneg.2 hc)
+  obtain ⟨d, hcd⟩ := exists_add_of_le hc
+  refine le_of_add_le_add_right (a := b * d + a * d) ?_
+  calc
+    _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
+    _ ≤ a * d := mul_le_mul_of_nonneg_right h <| hcd.trans_le <| add_le_of_nonpos_left hc
+    _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 #align mul_le_mul_of_nonpos_right mul_le_mul_of_nonpos_right
 
 theorem mul_nonneg_of_nonpos_of_nonpos (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a * b := by
@@ -411,7 +411,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
@@ -451,11 +451,30 @@ theorem Antitone.mul (hf : Antitone f) (hg : Antitone g) (hf₀ : ∀ x, f x ≤
 
 end Monotone
 
-theorem le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c :=
-  ⟨fun h => ⟨b - a, sub_nonneg.mpr h, by simp⟩, fun ⟨c, hc, h⟩ => by
-    rw [h, le_add_iff_nonneg_right]
-    exact hc⟩
+variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+
+lemma le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨c, rfl⟩ := exists_add_of_le h
+    exact ⟨c, nonneg_of_le_add_right h, rfl⟩
+  · rintro ⟨c, hc, rfl⟩
+    exact le_add_of_nonneg_right hc
 #align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
+
+end OrderedSemiring
+
+section OrderedRing
+
+variable [OrderedRing α] {a b c d : α}
+
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
+  { ‹OrderedRing α›, (Ring.toSemiring : Semiring α) with
+    mul_le_mul_of_nonneg_left := fun a b c h hc => by
+      simpa only [mul_sub, sub_nonneg] using OrderedRing.mul_nonneg _ _ hc (sub_nonneg.2 h),
+    mul_le_mul_of_nonneg_right := fun a b c h hc => by
+      simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
+#align ordered_ring.to_ordered_semiring OrderedRing.toOrderedSemiring
 
 end OrderedRing
 
@@ -625,10 +644,114 @@ instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
   ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
 #align strict_ordered_semiring.to_no_max_order StrictOrderedSemiring.toNoMaxOrder
 
+variable [ExistsAddOfLE α]
+
+theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
+  obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
+  refine (add_lt_add_iff_right (d * b + d * a)).1 ?_
+  calc
+    _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
+    _ < d * a := mul_lt_mul_of_pos_left h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
+    _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
+#align mul_lt_mul_of_neg_left mul_lt_mul_of_neg_left
+
+theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
+  obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
+  refine (add_lt_add_iff_right (b * d + a * d)).1 ?_
+  calc
+    _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
+    _ < a * d := mul_lt_mul_of_pos_right h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
+    _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
+#align mul_lt_mul_of_neg_right mul_lt_mul_of_neg_right
+
+theorem mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
+  simpa only [zero_mul] using mul_lt_mul_of_neg_right ha hb
+#align mul_pos_of_neg_of_neg mul_pos_of_neg_of_neg
+
+/-- Variant of `mul_lt_of_lt_one_left` for `b` negative instead of positive. -/
+theorem lt_mul_of_lt_one_left (hb : b < 0) (h : a < 1) : b < a * b := by
+  simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
+#align lt_mul_of_lt_one_left lt_mul_of_lt_one_left
+
+/-- Variant of `lt_mul_of_one_lt_left` for `b` negative instead of positive. -/
+theorem mul_lt_of_one_lt_left (hb : b < 0) (h : 1 < a) : a * b < b := by
+  simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
+#align mul_lt_of_one_lt_left mul_lt_of_one_lt_left
+
+/-- Variant of `mul_lt_of_lt_one_right` for `a` negative instead of positive. -/
+theorem lt_mul_of_lt_one_right (ha : a < 0) (h : b < 1) : a < a * b := by
+  simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
+#align lt_mul_of_lt_one_right lt_mul_of_lt_one_right
+
+/-- Variant of `lt_mul_of_lt_one_right` for `a` negative instead of positive. -/
+theorem mul_lt_of_one_lt_right (ha : a < 0) (h : 1 < b) : a * b < a := by
+  simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
+#align mul_lt_of_one_lt_right mul_lt_of_one_lt_right
+
+section Monotone
+
+variable [Preorder β] {f g : β → α}
+
+theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
+  mul_lt_mul_of_neg_left b_lt_c ha
+#align strict_anti_mul_left strictAnti_mul_left
+
+theorem strictAnti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
+  mul_lt_mul_of_neg_right b_lt_c ha
+#align strict_anti_mul_right strictAnti_mul_right
+
+theorem StrictMono.const_mul_of_neg (hf : StrictMono f) (ha : a < 0) :
+    StrictAnti fun x => a * f x :=
+  (strictAnti_mul_left ha).comp_strictMono hf
+#align strict_mono.const_mul_of_neg StrictMono.const_mul_of_neg
+
+theorem StrictMono.mul_const_of_neg (hf : StrictMono f) (ha : a < 0) :
+    StrictAnti fun x => f x * a :=
+  (strictAnti_mul_right ha).comp_strictMono hf
+#align strict_mono.mul_const_of_neg StrictMono.mul_const_of_neg
+
+theorem StrictAnti.const_mul_of_neg (hf : StrictAnti f) (ha : a < 0) :
+    StrictMono fun x => a * f x :=
+  (strictAnti_mul_left ha).comp hf
+#align strict_anti.const_mul_of_neg StrictAnti.const_mul_of_neg
+
+theorem StrictAnti.mul_const_of_neg (hf : StrictAnti f) (ha : a < 0) :
+    StrictMono fun x => f x * a :=
+  (strictAnti_mul_right ha).comp hf
+#align strict_anti.mul_const_of_neg StrictAnti.mul_const_of_neg
+
+end Monotone
+
+/-- Binary **rearrangement inequality**. -/
+lemma mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
+  obtain ⟨b, rfl⟩ := exists_add_of_le hab
+  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
+  rw [mul_add, add_right_comm, mul_add, ← add_assoc]
+  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
+#align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
+
+/-- Binary **rearrangement inequality**. -/
+lemma mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) : a * d + b * c ≤ a * c + b * d := by
+  rw [add_comm (a * d), add_comm (a * c)]; exact mul_add_mul_le_mul_add_mul hba hdc
+#align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
+  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
+  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
+  rw [mul_add, add_right_comm, mul_add, ← add_assoc]
+  exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
+#align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
+
+/-- Binary **rearrangement inequality**. -/
+lemma mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
+  rw [add_comm (a * d), add_comm (a * c)]
+  exact mul_add_mul_lt_mul_add_mul hba hdc
+#align mul_add_mul_lt_mul_add_mul' mul_add_mul_lt_mul_add_mul'
+
 end StrictOrderedSemiring
 
 section StrictOrderedCommSemiring
-
 variable [StrictOrderedCommSemiring α]
 
 -- See note [reducible non-instances]
@@ -649,7 +772,6 @@ instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
 end StrictOrderedCommSemiring
 
 section StrictOrderedRing
-
 variable [StrictOrderedRing α] {a b c : α}
 
 -- see Note [lower instance priority]
@@ -683,72 +805,6 @@ instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
       letI := @StrictOrderedRing.toOrderedRing' α _ (Classical.decRel _)
       mul_nonneg }
 #align strict_ordered_ring.to_ordered_ring StrictOrderedRing.toOrderedRing
-
-theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
-  simpa only [neg_mul, neg_lt_neg_iff] using mul_lt_mul_of_pos_left h (neg_pos_of_neg hc)
-#align mul_lt_mul_of_neg_left mul_lt_mul_of_neg_left
-
-theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
-  simpa only [mul_neg, neg_lt_neg_iff] using mul_lt_mul_of_pos_right h (neg_pos_of_neg hc)
-#align mul_lt_mul_of_neg_right mul_lt_mul_of_neg_right
-
-theorem mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
-  simpa only [zero_mul] using mul_lt_mul_of_neg_right ha hb
-#align mul_pos_of_neg_of_neg mul_pos_of_neg_of_neg
-
-/-- Variant of `mul_lt_of_lt_one_left` for `b` negative instead of positive. -/
-theorem lt_mul_of_lt_one_left (hb : b < 0) (h : a < 1) : b < a * b := by
-  simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
-#align lt_mul_of_lt_one_left lt_mul_of_lt_one_left
-
-/-- Variant of `lt_mul_of_one_lt_left` for `b` negative instead of positive. -/
-theorem mul_lt_of_one_lt_left (hb : b < 0) (h : 1 < a) : a * b < b := by
-  simpa only [one_mul] using mul_lt_mul_of_neg_right h hb
-#align mul_lt_of_one_lt_left mul_lt_of_one_lt_left
-
-/-- Variant of `mul_lt_of_lt_one_right` for `a` negative instead of positive. -/
-theorem lt_mul_of_lt_one_right (ha : a < 0) (h : b < 1) : a < a * b := by
-  simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
-#align lt_mul_of_lt_one_right lt_mul_of_lt_one_right
-
-/-- Variant of `lt_mul_of_lt_one_right` for `a` negative instead of positive. -/
-theorem mul_lt_of_one_lt_right (ha : a < 0) (h : 1 < b) : a * b < a := by
-  simpa only [mul_one] using mul_lt_mul_of_neg_left h ha
-#align mul_lt_of_one_lt_right mul_lt_of_one_lt_right
-
-section Monotone
-
-variable [Preorder β] {f g : β → α}
-
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
-  mul_lt_mul_of_neg_left b_lt_c ha
-#align strict_anti_mul_left strictAnti_mul_left
-
-theorem strictAnti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
-  mul_lt_mul_of_neg_right b_lt_c ha
-#align strict_anti_mul_right strictAnti_mul_right
-
-theorem StrictMono.const_mul_of_neg (hf : StrictMono f) (ha : a < 0) :
-    StrictAnti fun x => a * f x :=
-  (strictAnti_mul_left ha).comp_strictMono hf
-#align strict_mono.const_mul_of_neg StrictMono.const_mul_of_neg
-
-theorem StrictMono.mul_const_of_neg (hf : StrictMono f) (ha : a < 0) :
-    StrictAnti fun x => f x * a :=
-  (strictAnti_mul_right ha).comp_strictMono hf
-#align strict_mono.mul_const_of_neg StrictMono.mul_const_of_neg
-
-theorem StrictAnti.const_mul_of_neg (hf : StrictAnti f) (ha : a < 0) :
-    StrictMono fun x => a * f x :=
-  (strictAnti_mul_left ha).comp hf
-#align strict_anti.const_mul_of_neg StrictAnti.const_mul_of_neg
-
-theorem StrictAnti.mul_const_of_neg (hf : StrictAnti f) (ha : a < 0) :
-    StrictMono fun x => f x * a :=
-  (strictAnti_mul_right ha).comp hf
-#align strict_anti.mul_const_of_neg StrictAnti.mul_const_of_neg
-
-end Monotone
 
 end StrictOrderedRing
 
@@ -793,18 +849,15 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
 
 attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
-theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
+theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
-  -- Porting note: for the middle case, we used to have `rfl`, but it is now rejected.
-  -- https://github.com/leanprover/std4/issues/62
-  rcases lt_trichotomy 0 a with (ha | ha | ha)
+  rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
-  · subst ha
-    exact ((ab le_rfl).asymm (nab le_rfl)).elim
+  · exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
-#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
+#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
   le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
@@ -831,18 +884,15 @@ theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
 #align nonpos_of_mul_nonpos_right nonpos_of_mul_nonpos_right
 
 @[simp]
-theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  -- Porting note: this used to be by:
-  -- convert mul_le_mul_left h
-  -- simp
-  -- but the `convert` no longer works.
-  simpa using (mul_le_mul_left h : c * 0 ≤ c * b ↔ 0 ≤ b)
-#align zero_le_mul_left zero_le_mul_left
+theorem mul_nonneg_iff_of_pos_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
+  convert mul_le_mul_left h
+  simp
+#align zero_le_mul_left mul_nonneg_iff_of_pos_left
 
 @[simp]
-theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
+theorem mul_nonneg_iff_of_pos_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
   simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
-#align zero_le_mul_right zero_le_mul_right
+#align zero_le_mul_right mul_nonneg_iff_of_pos_right
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
@@ -904,22 +954,22 @@ theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
 
 @[simp]
 theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
 #align one_le_bit1 one_le_bit1
 
 @[simp]
 theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
 #align one_lt_bit1 one_lt_bit1
 
 @[simp]
 theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
 #align zero_le_bit0 zero_le_bit0
 
 @[simp]
 theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
-  rw [bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
 #align zero_lt_bit0 zero_lt_bit0
 
 end
@@ -943,7 +993,7 @@ theorem nonpos_of_mul_nonneg_right (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
 @[simp]
 theorem Units.inv_pos {u : αˣ} : (0 : α) < ↑u⁻¹ ↔ (0 : α) < u :=
   have : ∀ {u : αˣ}, (0 : α) < u → (0 : α) < ↑u⁻¹ := @fun u h =>
-    (zero_lt_mul_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
+    (mul_pos_iff_of_pos_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
   ⟨this, this⟩
 #align units.inv_pos Units.inv_pos
 
@@ -998,52 +1048,26 @@ theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b �
   (@strictMonoOn_mul_self α _).eq_iff_eq h1 h2
 #align mul_self_inj mul_self_inj
 
-end LinearOrderedSemiring
+variable [ExistsAddOfLE α]
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
-    [LinearOrderedCommSemiring α] : LinearOrderedCancelAddCommMonoid α :=
-  { ‹LinearOrderedCommSemiring α› with }
-#align linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
+instance (priority := 100) LinearOrderedSemiring.noZeroDivisors : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
+    contrapose! hab
+    obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
+    exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
+      (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
+#align linear_ordered_ring.no_zero_divisors LinearOrderedSemiring.noZeroDivisors
 
-section LinearOrderedRing
-
-variable [LinearOrderedRing α] {a b c : α}
-
-attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
-  { ‹LinearOrderedRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
-#align linear_ordered_ring.to_linear_ordered_semiring LinearOrderedRing.toLinearOrderedSemiring
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
-    LinearOrderedAddCommGroup α :=
-  { ‹LinearOrderedRing α› with }
-#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
-  { ‹LinearOrderedRing α› with
-    eq_zero_or_eq_zero_of_mul_eq_zero := by
-      intro a b hab
-      refine' Decidable.or_iff_not_and_not.2 fun h => _; revert hab
-      cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
-      exacts [(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
-        (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
-#align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
-
--- see Note [lower instance priority]
---We don't want to import `Algebra.Ring.Basic`, so we cannot use `NoZeroDivisors.to_isDomain`.
-instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
-  { (inferInstance : Nontrivial α) with
-    mul_left_cancel_of_ne_zero := fun {a b c} ha h => by
-      rw [← sub_eq_zero, ← mul_sub] at h
-      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha),
-    mul_right_cancel_of_ne_zero := fun {a b c} hb h => by
-      rw [← sub_eq_zero, ← sub_mul] at h
-      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+-- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α where
+  mul_left_cancel_of_ne_zero {a b c} ha h := by
+    obtain ha | ha := ha.lt_or_lt
+    exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
+  mul_right_cancel_of_ne_zero {b a c} ha h := by
+    obtain ha | ha := ha.lt_or_lt
+    exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 #align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
@@ -1051,12 +1075,8 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 #align mul_pos_iff mul_pos_iff
 
-theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
-  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
-#align mul_neg_iff mul_neg_iff
-
 theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg, fun h =>
+  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 #align mul_nonneg_iff mul_nonneg_iff
 
@@ -1086,43 +1106,12 @@ theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤
               (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
 #align mul_nonneg_of_three mul_nonneg_of_three
 
-theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
-  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
-#align mul_nonpos_iff mul_nonpos_iff
-
-theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
-  (le_total 0 a).elim (fun h => mul_nonneg h h) fun h => mul_nonneg_of_nonpos_of_nonpos h h
-#align mul_self_nonneg mul_self_nonneg
-
-@[simp]
-theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
-  simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
-#align neg_le_self_iff neg_le_self_iff
-
-@[simp]
-theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
-  simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
-#align neg_lt_self_iff neg_lt_self_iff
-
-@[simp]
-theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
-  calc
-    a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
-    _ ↔ 0 ≤ -a := neg_le_self_iff
-    _ ↔ a ≤ 0 := neg_nonneg
-#align le_neg_self_iff le_neg_self_iff
-
-@[simp]
-theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
-  calc
-    a < -a ↔ - -a < -a := by rw [neg_neg]
-    _ ↔ 0 < -a := neg_lt_self_iff
-    _ ↔ a < 0 := neg_pos
-#align lt_neg_self_iff lt_neg_self_iff
-
-theorem neg_one_lt_zero : -1 < (0 : α) :=
-  neg_lt_zero.2 zero_lt_one
-#align neg_one_lt_zero neg_one_lt_zero
+lemma mul_nonneg_iff_pos_imp_nonneg : 0 ≤ a * b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) := by
+  refine mul_nonneg_iff.trans ?_
+  simp_rw [← not_le, ← or_iff_not_imp_left]
+  have := le_total a 0
+  have := le_total b 0
+  tauto
 
 @[simp]
 theorem mul_le_mul_left_of_neg {a b c : α} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
@@ -1145,11 +1134,11 @@ theorem mul_lt_mul_right_of_neg {a b c : α} (h : c < 0) : a * c < b * c ↔ b <
 #align mul_lt_mul_right_of_neg mul_lt_mul_right_of_neg
 
 theorem lt_of_mul_lt_mul_of_nonpos_left (h : c * a < c * b) (hc : c ≤ 0) : b < a :=
-  lt_of_mul_lt_mul_left (by rwa [neg_mul, neg_mul, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+  (antitone_mul_left hc).reflect_lt h
 #align lt_of_mul_lt_mul_of_nonpos_left lt_of_mul_lt_mul_of_nonpos_left
 
 theorem lt_of_mul_lt_mul_of_nonpos_right (h : a * c < b * c) (hc : c ≤ 0) : b < a :=
-  lt_of_mul_lt_mul_right (by rwa [mul_neg, mul_neg, neg_lt_neg_iff]) <| neg_nonneg.2 hc
+  (antitone_mul_right hc).reflect_lt h
 #align lt_of_mul_lt_mul_of_nonpos_right lt_of_mul_lt_mul_of_nonpos_right
 
 theorem cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
@@ -1159,10 +1148,6 @@ theorem cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) 
 theorem cmp_mul_neg_right {a : α} (ha : a < 0) (b c : α) : cmp (b * a) (c * a) = cmp c b :=
   (strictAnti_mul_right ha).cmp_map_eq b c
 #align cmp_mul_neg_right cmp_mul_neg_right
-
-theorem sub_one_lt (a : α) : a - 1 < a :=
-  sub_lt_iff_lt_add.2 (lt_add_one a)
-#align sub_one_lt sub_one_lt
 
 @[simp]
 theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
@@ -1174,12 +1159,6 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
     cases' h.lt_or_lt with h h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 #align mul_self_pos mul_self_pos
-
-theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=
-  (le_total 0 x).elim (fun h => mul_le_mul h₁ h₁ h (h.trans h₁)) fun h =>
-    le_of_eq_of_le (neg_mul_neg x x).symm
-      (mul_le_mul h₂ h₂ (neg_nonneg.mpr h) ((neg_nonneg.mpr h).trans h₂))
-#align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
 theorem nonneg_of_mul_nonpos_left {a b : α} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
   le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
@@ -1205,14 +1184,118 @@ theorem pos_iff_neg_of_mul_neg (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 #align pos_iff_neg_of_mul_neg pos_iff_neg_of_mul_neg
 
+lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
+  obtain ha | ha := le_total 0 a
+  · exact pow_nonneg ha _
+  obtain ⟨b, hab⟩ := exists_add_of_le ha
+  calc
+    0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt <| add_neg_of_nonpos_of_neg ha hb) _
+    _ = a ^ 2 := add_left_injective (a * b) ?_
+  calc
+    b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
+    _ = a * (a + b) := by simp [← hab]
+    _ = a ^ 2 + a * b := by rw [sq, mul_add]
+
+lemma mul_self_nonneg (a : α) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
+
 /-- The sum of two squares is zero iff both elements are zero. -/
-theorem mul_self_add_mul_self_eq_zero {x y : α} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
+lemma mul_self_add_mul_self_eq_zero : a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 
-theorem eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
+lemma eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 #align eq_zero_of_mul_self_add_mul_self_eq_zero eq_zero_of_mul_self_add_mul_self_eq_zero
+
+lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
+  calc
+    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
+        simp_rw [pow_succ, pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
+  cases le_total a b
+  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
+  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
+
+end LinearOrderedSemiring
+
+section LinearOrderedCommSemiring
+variable [LinearOrderedCommSemiring α] {a b c d : α}
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid :
+    LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedCommSemiring α›
+#align linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
+
+lemma max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
+    max (a * b) (d * c) ≤ max a c * max d b :=
+  have ba : b * a ≤ max d b * max c a :=
+    mul_le_mul (le_max_right d b) (le_max_right c a) ha (le_trans hd (le_max_left d b))
+  have cd : c * d ≤ max a c * max b d :=
+    mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
+  max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
+#align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
+
+variable [ExistsAddOfLE α]
+
+/-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
+commutative semirings. -/
+lemma two_mul_le_add_sq (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
+  simpa [fn_min_add_fn_max (fun x ↦ x * x), sq, two_mul, add_mul]
+    using mul_add_mul_le_mul_add_mul (@min_le_max _ _ a b) (@min_le_max _ _ a b)
+#align two_mul_le_add_sq two_mul_le_add_sq
+
+alias two_mul_le_add_pow_two := two_mul_le_add_sq
+#align two_mul_le_add_pow_two two_mul_le_add_pow_two
+
+end LinearOrderedCommSemiring
+
+section LinearOrderedRing
+variable [LinearOrderedRing α] {a b c : α}
+
+attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
+
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
+  { ‹LinearOrderedRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
+#align linear_ordered_ring.to_linear_ordered_semiring LinearOrderedRing.toLinearOrderedSemiring
+
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
+    LinearOrderedAddCommGroup α where __ := ‹LinearOrderedRing α›
+#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
+
+-- TODO: Can the following five lemmas be generalised to
+-- `[LinearOrderedSemiring α] [ExistsAddOfLE α]`?
+
+lemma mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
+  rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
+#align mul_neg_iff mul_neg_iff
+
+lemma mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
+  rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
+#align mul_nonpos_iff mul_nonpos_iff
+
+lemma mul_nonneg_iff_neg_imp_nonpos : 0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma mul_nonpos_iff_pos_imp_nonpos : a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
+  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
+  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma neg_one_lt_zero : -1 < (0 : α) := neg_lt_zero.2 zero_lt_one
+#align neg_one_lt_zero neg_one_lt_zero
+
+lemma sub_one_lt (a : α) : a - 1 < a := sub_lt_iff_lt_add.2 <| lt_add_one a
+#align sub_one_lt sub_one_lt
+
+lemma mul_self_le_mul_self_of_le_of_neg_le (h₁ : a ≤ b) (h₂ : -a ≤ b) : a * a ≤ b * b :=
+  (le_total 0 a).elim (mul_self_le_mul_self · h₁) fun h ↦
+    (neg_mul_neg a a).symm.trans_le <|
+      mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
+#align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
 end LinearOrderedRing
 
@@ -1228,17 +1311,15 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
-section LinearOrderedCommRing
+/-!
+### Deprecated lemmas
 
-variable [LinearOrderedCommRing α] {a b c d : α}
+Those lemmas have been deprecated on 2023/12/23
+-/
 
-theorem max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
-    max (a * b) (d * c) ≤ max a c * max d b :=
-  have ba : b * a ≤ max d b * max c a :=
-    mul_le_mul (le_max_right d b) (le_max_right c a) ha (le_trans hd (le_max_left d b))
-  have cd : c * d ≤ max a c * max b d :=
-    mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
-  max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
-#align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
+@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
 
-end LinearOrderedCommRing
+assert_not_exists MonoidHom

@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
@@ -12,7 +13,7 @@ set_option autoImplicit true
 -- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
+-- `.lake/build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
 set_option autoImplicit true
@@ -51,59 +52,50 @@ info: Try this: rw [← @Nat.prime_iff]
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   rw?
 
+#guard_msgs(drop info) in
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
   rw? at hyp
   assumption
 
+#guard_msgs(drop info) in
 example : ∀ (x y : ℕ), x ≤ y := by
   intros x y
   rw? -- Used to be an error here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
-  admit
+  exact test_sorry
 
 example : ∀ (x y : ℕ), x ≤ y := by
   -- Used to be a panic here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370495531
   success_if_fail_with_msg "Could not find any lemmas which can rewrite the goal" rw?
-  admit
+  exact test_sorry
 
 axiom K : Type
 @[instance] axiom K.ring : Ring K
 
-def foo : K → K := sorry
+noncomputable def foo : K → K := test_sorry
 
+#guard_msgs(drop info) in
 example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
   rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
-  admit
+  exact test_sorry
 
-lemma six_eq_seven : 6 = 7 := sorry
+lemma six_eq_seven : 6 = 7 := test_sorry
 
 -- This test also verifies that we are removing duplicate results;
 -- it previously also reported `Nat.cast_ofNat`
-/--
-info: Try this: rw [six_eq_seven]
--- ∀ (x : ℕ), x ≤ 7
----
-info: Try this: rw [← @Nat.cast_eq_ofNat]
--- ∀ (x : ℕ), x ≤ ↑6
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in
+#guard_msgs(drop info) in
 example : ∀ (x : ℕ), x ≤ 6 := by
   rw?
   guard_target = ∀ (x : ℕ), x ≤ 7
-  admit
+  exact test_sorry
 
-example : ∀ (x : ℕ) (w : x ≤ 6), x ≤ 8 := by
+#guard_msgs(drop info) in
+example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   rw?
-  guard_target = ∀ (x : ℕ) (w : x ≤ 7), x ≤ 8
-  admit
+  guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
+  exact test_sorry
 
 -- check we can look inside let expressions
-/--
-info: Try this: rw [@AddCommMonoidWithOne.add_comm]
--- "no goals"
--/
-#guard_msgs in
+#guard_msgs(drop info) in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?
 
@@ -115,21 +107,14 @@ axiom f_eq (n) : f n = z
 -- Check that the same lemma isn't used multiple times.
 -- This used to report two redundant copies of `f_eq`.
 -- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
-/--
-info: Try this: rw [f_eq]
--- z = f m
--/
-#guard_msgs in
+#guard_msgs(drop info) in
 lemma test : f n = f m := by
+  fail_if_success rw? [-f_eq] -- Check that we can forbid lemmas.
   rw?
   rw [f_eq]
 
 -- Check that we can rewrite by local hypotheses.
-/--
-info: Try this: rw [h]
--- "no goals"
--/
-#guard_msgs in
+#guard_msgs(drop info) in
 example (h : 1 = 2) : 2 = 1 := by
   rw?
 
@@ -137,6 +122,36 @@ def zero : Nat := 0
 
 -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
 -- rather than `withReducible` `rfl`.
+#guard_msgs(drop info) in
 example : zero = 0 := by
   rw?
-  sorry
+  exact test_sorry
+
+-- Discharge side conditions from local hypotheses.
+/--
+info: Try this: rw [h p]
+-- "no goals"
+-/
+#guard_msgs in
+example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
+  rw?
+
+-- Use `solve_by_elim` to discharge side conditions.
+/--
+info: Try this: rw [h (f p)]
+-- "no goals"
+-/
+#guard_msgs in
+example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
+  rw?
+
+
+-- Rewrite in reverse, discharging side conditions from local hypotheses.
+/--
+info: Try this: rw [← h₁ p]
+-- Q a
+-/
+#guard_msgs in
+example {P : Prop} (p : P) (Q : α → Prop) (a b : α) (h₁ : P → a = b) (w : Q a) : Q b := by
+  rw?
+  exact w

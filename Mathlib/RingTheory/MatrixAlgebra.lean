@@ -12,6 +12,7 @@ import Mathlib.RingTheory.TensorProduct
 We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 
+suppress_compilation
 
 universe u v w
 
@@ -71,16 +72,13 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
       simp_rw [Matrix.mul_apply, Matrix.smul_apply, Matrix.map_apply, smul_eq_mul, Finset.mul_sum,
         _root_.mul_assoc, Algebra.left_comm])
     (by
-      intros
       simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply,
-        Matrix.map_one (algebraMap R A) (map_zero _) (map_one _), algebraMap_smul,
-        Algebra.algebraMap_eq_smul_one])
+        Matrix.map_one (algebraMap R A) (map_zero _) (map_one _), one_smul])
 #align matrix_equiv_tensor.to_fun_alg_hom MatrixEquivTensor.toFunAlgHom
 
 @[simp]
 theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
-    toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := by
-  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]
+    toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := rfl
 #align matrix_equiv_tensor.to_fun_alg_hom_apply MatrixEquivTensor.toFunAlgHom_apply
 
 /-- (Implementation detail.)
@@ -174,8 +172,6 @@ theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
-    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x := by
-  simp [matrixEquivTensor, MatrixEquivTensor.toFunAlgHom, algHomOfLinearMapTensorProduct,
-    MatrixEquivTensor.toFunLinear]
+    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
   rfl
 #align matrix_equiv_tensor_apply_symm matrixEquivTensor_apply_symm

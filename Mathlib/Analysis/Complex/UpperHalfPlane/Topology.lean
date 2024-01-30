@@ -51,7 +51,7 @@ theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 #align upper_half_plane.continuous_im UpperHalfPlane.continuous_im
 
-instance : TopologicalSpace.SecondCountableTopology ℍ :=
+instance : SecondCountableTopology ℍ :=
   TopologicalSpace.Subtype.secondCountableTopology _
 
 instance : T3Space ℍ := Subtype.t3Space

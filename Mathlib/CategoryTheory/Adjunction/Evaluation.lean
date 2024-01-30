@@ -64,12 +64,14 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             ext x
             dsimp
             ext g
-            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ←f.naturality,
+            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
           right_inv := fun f => by
             dsimp
-            simp } }
+            simp }
+      -- This used to be automatic before leanprover/lean4#2644
+      homEquiv_naturality_right := by intros; dsimp; simp }
 #align category_theory.evaluation_adjunction_right CategoryTheory.evaluationAdjunctionRight
 
 instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj c) :=

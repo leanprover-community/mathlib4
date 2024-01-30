@@ -102,19 +102,15 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
-    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
-  refine' (Finset.sup_mono <| support_mul _ _).trans _
-  simp_rw [Finset.sup_biUnion, Finset.sup_singleton]
-  refine' Finset.sup_le fun fd fds => Finset.sup_le fun gd gds => degbm.trans <| add_le_add _ _ <;>
-    exact Finset.le_sup ‹_›
+    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb :=
+  (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
+    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
 #align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
-    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
-    refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le (_) f g
-    intros a b
-    exact OrderDual.ofDual_le_ofDual.mp degtm
+    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
+  sup_support_mul_le (B := Tᵒᵈ) degtm f g
 #align add_monoid_algebra.le_inf_support_mul AddMonoidAlgebra.le_inf_support_mul
 
 end AddOnly
@@ -161,8 +157,8 @@ theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + deg
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) n f
-  exact degt0
-  exact degtm _ _
+  · exact degt0
+  · exact degtm _ _
 #align add_monoid_algebra.le_inf_support_pow AddMonoidAlgebra.le_inf_support_pow
 
 end AddMonoids
@@ -189,7 +185,7 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (m.map fun f : R[A] => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp (_)) m
+      (fun a b => OrderDual.ofDual_le_ofDual.mp _) m
   exact degt0
   exact degtm _ _
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
@@ -227,8 +223,8 @@ variable [AddZeroClass A] [SemilatticeSup B] [AddZeroClass B] [OrderBot B]
 
 /-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
-For an element `f : R[A]`, the `R[A]`, the element `supDegree f : B` is the
-supremum of all the elements in the support of `f`, or `⊥` if `f` is zero.
+For an element `f : R[A]`, the element `supDegree f : B` is the supremum of all the elements in the
+support of `f`, or `⊥` if `f` is zero.
 Often, the Type `B` is `WithBot A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the maximum of the exponents. -/
@@ -254,8 +250,8 @@ variable [AddZeroClass A] [SemilatticeInf T] [AddZeroClass T] [OrderTop T]
 
 /-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `T` be an `OrderTop`,
 and let `D : A → T` be a "degree" function.
-For an element `f : R[A]`, the `R[A]`, the element `infDegree f : T` is the
-infimum of all the elements in the support of `f`, or `⊤` if `f` is zero.
+For an element `f : R[A]`, the element `infDegree f : T` is the infimum of all the elements in the
+support of `f`, or `⊤` if `f` is zero.
 Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/

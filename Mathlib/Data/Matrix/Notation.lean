@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.BigOperators.Fin
 
 #align_import data.matrix.notation from "leanprover-community/mathlib"@"a99f85220eaf38f14f94e04699943e185a5e1d1a"
 
@@ -72,9 +72,29 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
+/-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
+
+For instance:
+* `!![a, b, c; d, e, f]` is the matrix with two rows and three columns, of type
+  `Matrix (Fin 2) (Fin 3) α`
+* `!![a, b, c]` is a row vector of type `Matrix (Fin 1) (Fin 3) α` (see also `Matrix.row`).
+* `!![a; b; c]` is a column vector of type `Matrix (Fin 3) (Fin 1) α` (see also `Matrix.col`).
+
+This notation implements some special cases:
+
+* `![,,]`, with `n` `,`s, is a term of type `Matrix (Fin 0) (Fin n) α`
+* `![;;]`, with `m` `;`s, is a term of type `Matrix (Fin m) (Fin 0) α`
+* `![]` is the 0×0 matrix
+
+Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![a, b, c]`.
+Under the hood, `!![a, b, c; d, e, f]` is syntax for `Matrix.of ![![a, b, c], ![d, e, f]]`.
+-/
 syntax (name := matrixNotation)
   "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
+
+@[inherit_doc matrixNotation]
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+@[inherit_doc matrixNotation]
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
 macro_rules
@@ -83,9 +103,9 @@ macro_rules
     let n := if h : 0 < m then rows[0].size else 0
     let rowVecs ← rows.mapM fun row : Array Term => do
       unless row.size = n do
-        Macro.throwErrorAt (mkNullNode row)
-          s!"Rows must be of equal length; this row has {row.size} items, the previous rows {"
-          "}have {n}"
+        Macro.throwErrorAt (mkNullNode row) s!"\
+          Rows must be of equal length; this row has {row.size} items, \
+          the previous rows have {n}"
       `(![$row,*])
     `(@Matrix.of (Fin $(quote m)) (Fin $(quote n)) _ ![$rowVecs,*])
   | `(!![$[;%$semicolons]*]) => do
@@ -350,7 +370,7 @@ theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
 
 end VecMulVec
 
-section Smul
+section SMul
 
 variable [NonUnitalNonAssocSemiring α]
 
@@ -366,7 +386,7 @@ theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_mat_cons Matrix.smul_mat_cons
 
-end Smul
+end SMul
 
 section Submatrix
 

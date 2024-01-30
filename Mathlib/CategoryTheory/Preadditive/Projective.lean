@@ -23,7 +23,7 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`CategoryTheory.Limits.kernel f`, and `Projective.d f : Projective.left f ⟶ X` is the morphism
 `π (kernel f) ≫ kernel.ι f`.
 
 -/
@@ -45,6 +45,9 @@ An object `P` is called *projective* if every morphism out of `P` factors throug
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
 #align category_theory.projective CategoryTheory.Projective
+
+lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
+  factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
 
 section
 
@@ -80,7 +83,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
   (Projective.factors f e).choose
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
@@ -90,8 +93,8 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) where
-  factors f e _ := ⟨0, by ext⟩
+instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
+  (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
 end
@@ -174,7 +177,7 @@ section
 
 variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 
-/-- When `C` has enough projectives, the object `projective.syzygies f` is
+/-- When `C` has enough projectives, the object `Projective.syzygies f` is
 an arbitrarily chosen projective object over `kernel f`.
 -/
 def syzygies : C := over (kernel f)
@@ -183,7 +186,7 @@ def syzygies : C := over (kernel f)
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 /-- When `C` has enough projectives,
-`projective.d f : projective.syzygies f ⟶ X` is the composition
+`Projective.d f : Projective.syzygies f ⟶ X` is the composition
 `π (kernel f) ≫ kernel.ι f`.
 
 (When `C` is abelian, we have `exact (projective.d f) f`.)
