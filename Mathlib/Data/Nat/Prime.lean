@@ -77,6 +77,8 @@ theorem Prime.one_lt {p : ℕ} : Prime p → 1 < p :=
   Prime.two_le
 #align nat.prime.one_lt Nat.Prime.one_lt
 
+lemma Prime.one_le {p : ℕ} (hp : p.Prime) : 1 ≤ p := hp.one_lt.le
+
 instance Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
   ⟨hp.1.one_lt⟩
 #align nat.prime.one_lt' Nat.Prime.one_lt'
@@ -213,25 +215,20 @@ theorem Prime.not_dvd_one {p : ℕ} (pp : Prime p) : ¬p ∣ 1 :=
   Irreducible.not_dvd_one pp
 #align nat.prime.not_dvd_one Nat.Prime.not_dvd_one
 
-theorem not_prime_mul {a b : ℕ} (a1 : 1 < a) (b1 : 1 < b) : ¬Prime (a * b) := fun h =>
-  ne_of_lt (Nat.mul_lt_mul_of_pos_left b1 (lt_of_succ_lt a1)) <| by
-    simpa using (dvd_prime_two_le h a1).1 (dvd_mul_right _ _)
-#align nat.not_prime_mul Nat.not_prime_mul
-
-theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : 1 < a) (h₂ : 1 < b) : ¬Prime n := by
-  rw [← h]
-  exact not_prime_mul h₁ h₂
-#align nat.not_prime_mul' Nat.not_prime_mul'
-
 theorem prime_mul_iff {a b : ℕ} : Nat.Prime (a * b) ↔ a.Prime ∧ b = 1 ∨ b.Prime ∧ a = 1 := by
   simp only [iff_self_iff, irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]
 #align nat.prime_mul_iff Nat.prime_mul_iff
 
+theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b) := by
+  simp [prime_mul_iff, _root_.not_or, *]
+#align nat.not_prime_mul Nat.not_prime_mul
+
+theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
+  h ▸ not_prime_mul h₁ h₂
+#align nat.not_prime_mul' Nat.not_prime_mul'
+
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
-  refine'
-    ⟨_, by
-      rintro rfl
-      rfl⟩
+  refine ⟨?_, by rintro rfl; rfl⟩
   rintro ⟨j, rfl⟩
   rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
   · exact mul_one _
@@ -740,6 +737,14 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
         (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
         simpa only [Int.coe_nat_dvd, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
 #align nat.prime_iff_prime_int Nat.prime_iff_prime_int
+
+/-- Two prime powers with positive exponents are equal only when the primes and the
+exponents are equal. -/
+lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (h : p ^ (m + 1) = q ^ (n + 1)) : p = q ∧ m = n := by
+  have H := dvd_antisymm (Prime.dvd_of_dvd_pow hp <| h ▸ dvd_pow_self p (succ_ne_zero m))
+    (Prime.dvd_of_dvd_pow hq <| h.symm ▸ dvd_pow_self q (succ_ne_zero n))
+  exact ⟨H, succ_inj'.mp <| Nat.pow_right_injective hq.two_le (H ▸ h)⟩
 
 /-- The type of prime numbers -/
 def Primes :=
