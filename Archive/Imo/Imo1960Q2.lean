@@ -11,38 +11,58 @@ import Mathlib.Data.Real.Sqrt
 For what values of the variable $x$ does the following inequality hold:
 
 \[\dfrac{4x^2}{(1 - \sqrt {2x + 1})^2} < 2x + 9 \ ?\]
+
+We follow solution at
+[Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1960_IMO_Problems/Problem_2)
+with minor modifications.
 -/
 
 open Real Set
 
 namespace Imo1960Q2
 
-def IsGood (x : ℝ) : Prop :=
-  4 * x ^ 2 / (1 - sqrt (2 * x + 1)) ^ 2 < 2 * x + 9 ∧ 0 ≤ 2 * x + 1 ∧
-    (1 - sqrt (2 * x + 1)) ^ 2 ≠ 0
+/-- The predicate says that `x` satisfies the inequality
 
+\[\dfrac{4x^2}{(1 - \sqrt {2x + 1})^2} < 2x + 9\]
+
+and belongs to the domain of the function on the left-hand side.
+-/
+@[mk_iff isGood_iff']
+structure IsGood (x : ℝ) : Prop where
+  /-- The number satisfies the inequality. -/
+  ineq : 4 * x ^ 2 / (1 - sqrt (2 * x + 1)) ^ 2 < 2 * x + 9
+  /-- The number belongs to the domain of \(\sqrt {2x + 1}\). -/
+  sqrt_dom : 0 ≤ 2 * x + 1
+  /-- The number belongs to the domain of the denominator. -/
+  denom_dom : (1 - sqrt (2 * x + 1)) ^ 2 ≠ 0
+
+/-- Solution of IMO 1960 Q2: solutions of the inequality
+are the numbers of the half-closed interval \([-1/2, 45/8)\) except for the number zero. -/
 theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
+  -- First, note that the denominator is equal to zero at `x = 0`, hence it's not a solution.
   rcases eq_or_ne x 0 with rfl | hx
-  · simp [IsGood]
+  · simp [isGood_iff']
   cases lt_or_le x (-1/2) with
   | inl hx2 =>
+    -- Next, if `x < -1/2`, then the square root is undefined.
     have : 2 * x + 1 < 0 := by linarith
-    simp [hx2.not_le, IsGood, this.not_le]
+    simp [hx2.not_le, isGood_iff', this.not_le]
   | inr hx2 =>
+    -- Now, if `x ≥ -1/2`, `x ≠ 0`, then the expression is well-defined.
     have hx2' : 0 ≤ 2 * x + 1 := by linarith
     have H : 1 - sqrt (2 * x + 1) ≠ 0 := by
       rw [sub_ne_zero, ne_comm, ne_eq, sqrt_eq_iff_sq_eq hx2' zero_le_one]
       simpa
-    suffices 4 * x ^ 2 < (2 * x + 9) * (1 - sqrt (2 * x + 1)) ^ 2 ↔ x < 45 / 8 by
-      simp [IsGood, div_lt_iff ((sq_pos_iff _).2 H), *]
-    rw [sub_sq, sq_sqrt hx2', ← sub_pos]
-    set a := sqrt (2 * x + 1) with ha
-    have ha₀ : 0 ≤ a := sqrt_nonneg _
-    clear_value a
-    have hxa : x = (a ^ 2 - 1) / 2 := by field_simp [ha, sq_sqrt hx2', mul_comm x]
-    rw [hxa]
-    suffices 0 < (1 - a) ^ 2 * (7 - 2 * a) ↔ a ^ 2 < (7 / 2) ^ 2 by
-      rw [div_lt_iff two_pos, sub_lt_iff_lt_add]
-      convert this using 2 <;> ring_nf
-    rw [mul_pos_iff_of_pos_left ((sq_pos_iff _).2 H), pow_lt_pow_iff_left, sub_pos,
-      lt_div_iff'] <;> positivity
+    calc
+      -- Note that the fraction in the LHS is equal to `(1 + sqrt (2 * x + 1)) ^ 2`
+      IsGood x ↔ (1 + sqrt (2 * x + 1)) ^ 2 < 2 * x + 9 := by
+        have : 4 * x ^ 2 = (1 + sqrt (2 * x + 1)) ^ 2 * (1 - sqrt (2 * x + 1)) ^ 2 := by
+          rw [← mul_pow, ← sq_sub_sq, sq_sqrt hx2']
+          ring
+        simp [isGood_iff', *]
+      -- Simplify the inequality
+      _ ↔ sqrt (2 * x + 1) < 7 / 2 := by
+        rw [add_sq, sq_sqrt hx2']; constructor <;> intro <;> linarith
+      _ ↔ 2 * x + 1 < (7 / 2) ^ 2 := sqrt_lt' <| by positivity
+      _ ↔ x < 45 / 8 := by constructor <;> intro <;> linarith
+      _ ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by simp [*]
