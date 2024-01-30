@@ -225,7 +225,7 @@ lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact mt h h'
+  exact? says exact fun a ↦ h' (h a)
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
