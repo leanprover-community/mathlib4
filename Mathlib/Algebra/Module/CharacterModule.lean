@@ -10,6 +10,7 @@ import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+import Mathlib.GroupTheory.GroupAction.DomAct.ActionHom
 
 /-!
 # Character module of a module
@@ -53,8 +54,6 @@ instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add := by aesop
   map_smulₛₗ := by aesop
 
-  -- inferInstanceAs (LinearMapClass (A →+ AddCircle (1 : ℚ)) ℤ A _)
-
 instance : AddCommGroup (CharacterModule A) :=
   inferInstanceAs (AddCommGroup (A →+ _))
 
@@ -62,19 +61,17 @@ section module
 
 variable [Module R A]  [Module R B]
 
-instance : Module R (CharacterModule A) where
-  smul r l :=
-    { toFun := fun x => l (r • x)
-      map_add' := fun x y => by dsimp; rw [smul_add, map_add]
-      map_zero' := by dsimp; rw [smul_zero, l.map_zero] }
-  one_smul l := DFunLike.ext _ _ fun x => show l _ = _ by rw [one_smul]
-  mul_smul r₁ r₂ l := DFunLike.ext _ _ fun x => show l _ = l _ by rw [mul_smul, smul_comm]
-  smul_zero r := rfl
-  smul_add r l₁ l₂ := DFunLike.ext _ _ fun x => show (l₁ + _) _ = _ by
-    rw [AddMonoidHom.add_apply, AddMonoidHom.add_apply]; rfl
-  add_smul r₁ r₂ l := DFunLike.ext _ _ fun x => show l _ = l _ + l _ by
-    rw [add_smul, map_add]
-  zero_smul l := DFunLike.ext _ _ fun x => show l _ = 0 by rw [zero_smul, map_zero]
+instance : Module R (CharacterModule A) :=
+  letI : DistribMulAction Rᵈᵐᵃ (CharacterModule A) :=
+    inferInstanceAs <| DistribMulAction Rᵈᵐᵃ (A →+ (AddCircle (1 : ℚ)))
+  { smul := fun r l ↦ (DomMulAct.mk r) • l
+    one_smul := fun l ↦ DFunLike.ext _ _ <| fun x ↦ show l _ = _ by simp
+    mul_smul := fun r₁ r₂ l ↦ DFunLike.ext _ _ <| fun x ↦ show l _ = l _ by
+      dsimp; rw [mul_comm, mul_smul]
+    smul_zero := fun _ ↦ rfl
+    smul_add := fun r l₁ l₂ ↦ DFunLike.ext _ _ fun _ ↦ rfl
+    add_smul := fun r₁ r₂ l ↦ DFunLike.ext _ _ fun _ ↦ show l _ = l _ + l _ by simp [add_smul]
+    zero_smul := fun l ↦ DFunLike.ext _ _ fun _ ↦ show l _ = 0 by simp }
 
 variable {R A B}
 
