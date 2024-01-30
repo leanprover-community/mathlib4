@@ -420,7 +420,7 @@ end
 
 variable (R A)
 
-/-- The canonical ring homomorphism `algebraMap R A : R →+* A` for any `R`-algebra `A`,
+/-- The canonical ring homomorphism `algebraMap R A : R →* A` for any `R`-algebra `A`,
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
@@ -436,14 +436,8 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-/- The identity map inducing an `Algebra` structure. -/
-instance id : Algebra R R where
-  -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
-  -- be made so without a significant performance hit.
-  -- see library note [reducible non-instances].
-  toFun x := x
-  toSMul := Mul.toSMul _
-  __ := (RingHom.id R).toAlgebra
+instance id : Algebra R R :=
+  (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
 variable {R A}
@@ -784,12 +778,17 @@ variable (R A)
 
 theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
-  simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
+  -- porting note: todo: drop implicit args
+  have := @smul_left_injective R A CommRing.toRing Ring.toAddCommGroup Algebra.toModule
+    ‹_› 1 one_ne_zero
+  simpa only [algebraMap_eq_smul_one'] using this
 #align no_zero_smul_divisors.algebra_map_injective NoZeroSMulDivisors.algebraMap_injective
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
-  NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
+  -- porting note: todo: drop implicit args
+  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <|
+    NoZeroSMulDivisors.algebraMap_injective R A
 #align ne_zero.of_no_zero_smul_divisors NeZero.of_noZeroSMulDivisors
 
 variable {R A}

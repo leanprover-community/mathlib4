@@ -169,8 +169,8 @@ theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circ
 
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
-  simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
-    using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
+  simpa only [mul_assoc, one_mul, ofRealClm_apply, circleMap, ofReal_one, zero_add]
+    using (((ofRealClm.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
 #align has_deriv_at_circle_map hasDerivAt_circleMap
 
 /- TODO: prove `ContDiff ℝ (circleMap c R)`. This needs a version of `ContDiff.mul`

@@ -298,7 +298,7 @@ end PartialOrderTop
 
 section PartialBoundedOrder
 
-variable [PartialOrder α] [BoundedOrder α] {a b : α}
+variable [PartialOrder α] [BoundedOrder α] {a : α}
 
 @[simp]
 theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
@@ -309,12 +309,6 @@ theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
 theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
   ⟨fun h ↦ top_unique <| h bot_le le_rfl, fun h _ _ ha ↦ h.symm.trans_le ha⟩
 #align bot_codisjoint bot_codisjoint
-
-lemma Codisjoint.ne_bot_of_ne_top (h : Codisjoint a b) (ha : a ≠ ⊤) : b ≠ ⊥ := by
-  rintro rfl; exact ha <| by simpa using h
-
-lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ := by
-  rintro rfl; exact hb <| by simpa using h
 
 end PartialBoundedOrder
 

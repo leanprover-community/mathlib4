@@ -83,7 +83,7 @@ end MulOpposite
 /-! ### Right actions
 
 In this section we establish `SMul αᵐᵒᵖ β` as the canonical spelling of right scalar multiplication
-of `β` by `α`, and provide convenient notations.
+of `β` by `α`, and provide convienient notations.
 -/
 
 namespace RightActions

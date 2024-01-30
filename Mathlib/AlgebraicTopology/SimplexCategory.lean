@@ -97,7 +97,7 @@ protected def Hom (a b : SimplexCategory) :=
 
 namespace Hom
 
-/-- Make a morphism in `SimplexCategory` from a monotone map of `Fin`'s. -/
+/-- Make a moprhism in `SimplexCategory` from a monotone map of `Fin`'s. -/
 def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
   f
 #align simplex_category.hom.mk SimplexCategory.Hom.mk

@@ -1199,12 +1199,12 @@ def C1 := C ∩ {f | f (term I ho) = true}
 theorem isClosed_C0 : IsClosed (C0 C ho) := by
   refine hC.inter ?_
   have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
-  exact IsClosed.preimage h (t := {false}) (isClosed_discrete _)
+  exact IsClosed.preimage h (s := {false}) (isClosed_discrete _)
 
 theorem isClosed_C1 : IsClosed (C1 C ho) := by
   refine hC.inter ?_
   have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
-  exact IsClosed.preimage h (t := {true}) (isClosed_discrete _)
+  exact IsClosed.preimage h (s := {true}) (isClosed_discrete _)
 
 theorem contained_C1 : contained (π (C1 C ho) (ord I · < o)) o :=
   contained_proj _ _

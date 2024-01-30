@@ -113,7 +113,7 @@ variable [Ring R] [AddCommMonoid M] [Module R M] (r : R) (N : Submodule R M) (m 
 ```
 Without the macro, the expression would elaborate as `m + ↑(r • n : ↑N) : M`.
 With the macro, the expression elaborates as `m + r • (↑n : M) : M`.
-To get the first interpretation, one can write `m + (r • n :)`.
+To get the first intepretation, one can write `m + (r • n :)`.
 
 Here is a quick review of the expression tree elaborator:
 1. It builds up an expression tree of all the immediately accessible operations

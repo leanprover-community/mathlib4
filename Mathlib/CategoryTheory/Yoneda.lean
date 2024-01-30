@@ -365,21 +365,35 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
     { app := fun F x => ULift.up ((x.app F.1) (𝟙 (unop F.1)))
       naturality := by
         intro X Y f
+        simp only [yonedaEvaluation]
         ext
-        simp [yonedaEvaluation, ← FunctorToTypes.naturality] }
+        dsimp
+        erw [Category.id_comp, ← FunctorToTypes.naturality]
+        simp only [Category.comp_id, yoneda_obj_map] }
   inv :=
     { app := fun F x =>
-        { app := fun X a => (F.2.map a.op) x.down }
+        { app := fun X a => (F.2.map a.op) x.down
+          naturality := by
+            intro X Y f
+            ext
+            dsimp
+            rw [FunctorToTypes.map_comp_apply] }
       naturality := by
         intro X Y f
+        simp only [yoneda]
         ext
-        simp [yoneda, ← FunctorToTypes.naturality] }
+        dsimp
+        rw [← FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
   hom_inv_id := by
     ext
-    simp [← FunctorToTypes.naturality]
+    dsimp
+    erw [← FunctorToTypes.naturality, obj_map_id]
+    simp only [yoneda_map_app, Quiver.Hom.unop_op]
+    erw [Category.id_comp]
   inv_hom_id := by
     ext
-    simp [ULift.up_down]
+    dsimp
+    rw [FunctorToTypes.map_id_apply, ULift.up_down]
 #align category_theory.yoneda_lemma CategoryTheory.yonedaLemma
 
 variable {C}

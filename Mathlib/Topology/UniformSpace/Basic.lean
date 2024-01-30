@@ -115,9 +115,12 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
+set_option autoImplicit true
+
+
 open Set Filter Topology
 
-universe u v ua ub uc ud
+universe ua ub uc ud
 
 /-!
 ### Relations, seen as `Set (α × α)`
@@ -1258,9 +1261,7 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
-  is the inverse image in the filter sense of the induced function `α × α → β × β`.
-  See note [reducible non-instances]. -/
-@[reducible]
+  is the inverse image in the filter sense of the induced function `α × α → β × β`. -/
 def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :=
   .ofNhdsEqComap
     { uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
@@ -1572,10 +1573,10 @@ section Prod
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
--- check the above produces no diamond for `simp` and typeclass search
+-- check the above produces no diamond
 example [UniformSpace α] [UniformSpace β] :
-    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace := by
-  with_reducible_and_instances rfl
+    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace :=
+  rfl
 
 theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
@@ -1810,12 +1811,12 @@ theorem isOpen_of_uniformity_sum_aux {s : Set (Sum α β)}
       { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈ (@UniformSpace.Core.sum α β _ _).uniformity) :
     IsOpen s := by
   constructor
-  · refine (isOpen_iff_mem_nhds (X := α)).2 fun a ha ↦ mem_nhds_uniformity_iff_right.2 ?_
+  · refine' (@isOpen_iff_mem_nhds α _ _).2 fun a ha => mem_nhds_uniformity_iff_right.2 _
     rcases mem_map_iff_exists_image.1 (hs _ ha).1 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl
     exact st ⟨_, pt, rfl⟩ rfl
-  · refine (@isOpen_iff_mem_nhds (X := β)).2 fun b hb ↦ mem_nhds_uniformity_iff_right.2 ?_
+  · refine' (@isOpen_iff_mem_nhds β _ _).2 fun b hb => mem_nhds_uniformity_iff_right.2 _
     rcases mem_map_iff_exists_image.1 (hs _ hb).2 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl

@@ -26,11 +26,11 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.le.refl -/
+/-- info: Try this: exact Nat.lt.base x -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.le.step Nat.le.refl -/
+/-- info: Try this: exact Nat.succ_pos 1 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -38,7 +38,7 @@ example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
 
-/-- info: Try this: exact fun a ↦ Nat.add_le_add a Nat.le.refl -/
+/-- info: Try this: exact fun a ↦ Nat.add_le_add_right a k -/
 #guard_msgs in
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
@@ -50,7 +50,7 @@ example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 #guard_msgs (drop info) in
 example : Int := by apply?
 
-/-- info: Try this: Nat.le.refl -/
+/-- info: Try this: Nat.lt.base x -/
 #guard_msgs in
 example : x < x + 1 := exact?%
 
@@ -88,7 +88,7 @@ by apply?
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
 
-/-- info: Try this: exact { mp := fun a ↦ id a.symm, mpr := fun a ↦ id a.symm } -/
+/-- info: Try this: exact eq_comm -/
 #guard_msgs in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
@@ -174,7 +174,7 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
-/-- info: Try this: exact List.findIdxs (fun a ↦ false) L -/
+/-- info: Try this: exact List.join L -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 
@@ -225,7 +225,7 @@ lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact fun a ↦ h' (h a)
+  exact? says exact mt h h'
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
@@ -236,10 +236,3 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy
-
--- Check that adding `with_reducible` prevents expensive kernel reductions.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60exact.3F.60.20failure.3A.20.22maximum.20recursion.20depth.20has.20been.20reached.22/near/417649319
-/-- info: Try this: exact Nat.add_comm n m -/
-#guard_msgs in
-example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by
-  with_reducible exact?

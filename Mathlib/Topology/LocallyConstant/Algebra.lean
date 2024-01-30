@@ -17,6 +17,8 @@ on the type of locally constant functions.
 
 -/
 
+set_option autoImplicit true
+
 namespace LocallyConstant
 
 variable {X Y : Type*} [TopologicalSpace X]
@@ -150,8 +152,6 @@ instance [SemigroupWithZero Y] : SemigroupWithZero (LocallyConstant X Y) :=
 @[to_additive]
 instance [CommSemigroup Y] : CommSemigroup (LocallyConstant X Y) :=
   Function.Injective.commSemigroup DFunLike.coe DFunLike.coe_injective' fun _ _ => rfl
-
-variable {α R : Type*}
 
 @[to_additive]
 instance smul [SMul α Y] : SMul α (LocallyConstant X Y) where
@@ -341,7 +341,7 @@ end Eval
 
 section Comap
 
-variable [TopologicalSpace Y] {Z : Type*}
+variable [TopologicalSpace Y]
 
 /-- `LocallyConstant.comap` as a `MulHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddHom`."]

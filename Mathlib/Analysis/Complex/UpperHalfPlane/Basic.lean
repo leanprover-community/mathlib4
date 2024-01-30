@@ -139,40 +139,6 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
-end UpperHalfPlane
-
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq
-
-/-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
-@[positivity UpperHalfPlane.im _]
-def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
-  -- TODO: can't merge the `match`es without lean4#3060
-  match u with
-  | 0 => match α, e with
-    | ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
-      assertInstancesCommute
-      pure (.positive q(@UpperHalfPlane.im_pos $a))
-    | _, _ => throwError "not UpperHalfPlane.im"
-  | _ => throwError "not UpperHalfPlane.im"
-
-/-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
-@[positivity UpperHalfPlane.coe _]
-def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
-  -- TODO: can't merge the `match`es without lean4#3060
-  match u with
-  | 0 => match α, e with
-    | ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
-      assertInstancesCommute
-      pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
-    | _, _ => throwError "not UpperHalfPlane.coe"
-  | _ => throwError "not UpperHalfPlane.coe"
-
-end Mathlib.Meta.Positivity
-
-namespace UpperHalfPlane
-
 theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
   rw [Complex.normSq_pos]; exact z.ne_zero
 #align upper_half_plane.norm_sq_pos UpperHalfPlane.normSq_pos

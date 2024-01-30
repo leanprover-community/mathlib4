@@ -40,7 +40,7 @@ the augmentation on the alternating face map complex of `X` is a homotopy
 equivalence.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
@@ -78,7 +78,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
-augmented simplicial object in `D` obtained by applying `F` to `X`. -/
+augmented simplical object in `D` obtained by applying `F` to `X`. -/
 def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'

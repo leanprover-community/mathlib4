@@ -89,7 +89,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
       (g := Complex.arg) (fun z hz => _) _ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
-    · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
+    · exact Complex.equivRealProdClm.symm.continuous.continuousOn
 #align polar_coord polarCoord
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
@@ -162,7 +162,7 @@ open scoped Real
 /-- The polar coordinates partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
+  equivRealProdClm.toHomeomorph.transPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
@@ -177,7 +177,7 @@ protected theorem polarCoord_target :
 @[simp]
 protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
-  simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
+  simp [Complex.polarCoord, equivRealProdClm_symm_apply, mul_add, mul_assoc]
 
 theorem polardCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp

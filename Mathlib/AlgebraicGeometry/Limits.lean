@@ -96,7 +96,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
   · apply openEmbedding_of_continuous_injective_open
     · continuity
     · rintro (i : X.carrier); exact isEmptyElim i
-    · intro U _; convert isOpen_empty (X := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
+    · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
       exact fun x => isEmptyElim (show X.carrier from x.choose)
   · rintro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty

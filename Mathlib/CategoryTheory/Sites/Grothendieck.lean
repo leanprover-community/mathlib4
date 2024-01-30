@@ -606,7 +606,7 @@ def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X 
     J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
 #align category_theory.grothendieck_topology.cover.bind CategoryTheory.GrothendieckTopology.Cover.bind
 
-/-- The canonical morphism from `S.bind T` to `T`. -/
+/-- The canonical moprhism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=
   homOfLE <| by
     rintro Y f ⟨Z, e1, e2, h1, _, h3⟩

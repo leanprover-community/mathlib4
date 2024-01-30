@@ -405,9 +405,10 @@ variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
 `Convex.lipschitz_gauge`. -/
-theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : ContinuousAt (gauge s) x := by
+theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) := by
   have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
-  refine (nhds_basis_Icc_pos _).tendsto_right_iff.2 fun ε hε₀ ↦ ?_
+  simp only [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_Icc_pos _).tendsto_right_iff]
+  intro x ε hε₀
   rw [← map_add_left_nhds_zero, eventually_map]
   have : ε • s ∩ -(ε • s) ∈ 𝓝 0
   · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
@@ -422,13 +423,6 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
   · calc
       gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
       _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
-
-/-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
-is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
-`Convex.lipschitz_gauge`. -/
-@[continuity]
-theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
-  continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
 theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     { x | gauge s x < 1 } = interior s := by

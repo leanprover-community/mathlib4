@@ -458,7 +458,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     have hx' : 0 < ‖x‖ := by simpa using hx
     have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
     have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right $ by simp [hb']
+    simpa [hb'] using SameRay.sameRay_nonneg_smul_right x ha'
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
@@ -472,7 +472,7 @@ real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
 On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`. -/
 def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
-  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealCLM ∘ₗ innerₛₗ ℝ +
+  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealClm ∘ₗ innerₛₗ ℝ +
     LinearMap.llcomp ℝ E ℝ ℂ ((LinearMap.lsmul ℝ ℂ).flip Complex.I) ∘ₗ ω
 #align orientation.kahler Orientation.kahler
 

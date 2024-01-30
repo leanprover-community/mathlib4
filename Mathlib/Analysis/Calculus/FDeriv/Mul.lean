@@ -49,7 +49,7 @@ variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
 
-section CLMCompApply
+section ClmCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
@@ -157,7 +157,7 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
   (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).fderiv
 #align fderiv_clm_apply fderiv_clm_apply
 
-end CLMCompApply
+end ClmCompApply
 
 section SMul
 

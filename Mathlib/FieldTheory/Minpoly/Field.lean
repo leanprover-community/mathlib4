@@ -78,10 +78,6 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
-variable {A x} in
-lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
-  ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
-
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
@@ -107,15 +103,6 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
       (minpoly.dvd_map_of_isScalarTower R K x) hy
 #align minpoly.aeval_of_is_scalar_tower minpoly.aeval_of_isScalarTower
-
-/-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
-stronger assumptions on `B`. -/
-@[simp]
-lemma ker_aeval_eq_span_minpoly :
-    RingHom.ker (Polynomial.aeval x) = A[X] ∙ minpoly A x := by
-  ext p
-  simp_rw [RingHom.mem_ker, ← minpoly.dvd_iff, Submodule.mem_span_singleton,
-    dvd_iff_exists_eq_mul_left, smul_eq_mul, eq_comm (a := p)]
 
 variable {A x}
 

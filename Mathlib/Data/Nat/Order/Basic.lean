@@ -181,8 +181,12 @@ theorem add_eq_three_iff :
     ← add_assoc, succ_inj', add_eq_two_iff]
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
-theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
-  rw [le_iff_lt_or_eq, lt_add_one_iff]
+theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 :=
+  ⟨fun h =>
+    match Nat.eq_or_lt_of_le h with
+    | Or.inl h => Or.inr h
+    | Or.inr h => Or.inl <| Nat.le_of_succ_le_succ h,
+    Or.rec (fun h => le_trans h <| Nat.le_add_right _ _) le_of_eq⟩
 #align nat.le_add_one_iff Nat.le_add_one_iff
 
 theorem le_and_le_add_one_iff : n ≤ m ∧ m ≤ n + 1 ↔ m = n ∨ m = n + 1 := by

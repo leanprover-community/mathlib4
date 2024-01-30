@@ -22,7 +22,7 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 ## Main definitions and results
 
-* `NumberField.canonicalEmbedding`: the ring homomorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
+* `NumberField.canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
 sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
 
 * `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the

@@ -186,15 +186,15 @@ theorem associativity (X Y Z : Type u) :
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
 /-- The free R-module functor is lax monoidal. -/
 @[simps]
-instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
+instance : LaxMonoidal.{u} (free R).obj where
   -- Send `R` to `PUnit →₀ R`
-  (ε := ε R)
+  ε := ε R
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
-  (μ := fun X Y => (μ R X Y).hom)
-  (μ_natural := fun {_} {_} {_} {_} f g ↦ μ_natural R f g)
-  (left_unitality := left_unitality R)
-  (right_unitality := right_unitality R)
-  (associativity := associativity R)
+  μ X Y := (μ R X Y).hom
+  μ_natural {_} {_} {_} {_} f g := μ_natural R f g
+  left_unitality := left_unitality R
+  right_unitality := right_unitality R
+  associativity := associativity R
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩

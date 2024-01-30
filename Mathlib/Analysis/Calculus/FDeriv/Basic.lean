@@ -779,7 +779,7 @@ theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilte
     refine' h.isBigO_sub.trans_tendsto (Tendsto.mono_left _ hL)
     rw [← sub_self x]
     exact tendsto_id.sub tendsto_const_nhds
-  have := this.add (tendsto_const_nhds (x := f x))
+  have := this.add (@tendsto_const_nhds _ _ _ (f x) _)
   rw [zero_add (f x)] at this
   exact this.congr (by simp only [sub_add_cancel, eq_self_iff_true, forall_const])
 #align has_fderiv_at_filter.tendsto_nhds HasFDerivAtFilter.tendsto_nhds

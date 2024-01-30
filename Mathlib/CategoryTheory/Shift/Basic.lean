@@ -129,13 +129,8 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
   ⟨{ Discrete.functor h.F with
       ε := h.zero.inv
       μ := fun m n => (h.add m.as n.as).inv
-      μ_natural_left := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
-        ext
-        dsimp
-        simp
-      μ_natural_right := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
+      μ_natural := by
+        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨Y'⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
         dsimp
         simp

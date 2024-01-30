@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Set
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.Basic
 import Mathlib.Mathport.Notation
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
@@ -1462,14 +1462,6 @@ theorem sSup_image {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a ∈ s, f
 theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f a :=
   @sSup_image αᵒᵈ _ _ _ _
 #align Inf_image sInf_image
-
-theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
-    f (sSup s) = sSup (f.symm ⁻¹' s) := by
-  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
-
-theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
-    f (sInf s) = sInf (f.symm ⁻¹' s) := by
-  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
 
 /-
 ### iSup and iInf under set constructions

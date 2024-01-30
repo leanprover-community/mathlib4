@@ -934,7 +934,6 @@ instance (priority := 100) {α : Type u} [LinearOrder α] :
     | Or.inr h => inf_le_of_right_le <| sup_le_sup_left (le_inf h (le_refl c)) _
 
 instance : DistribLattice ℕ := inferInstance
-instance : Lattice ℤ := inferInstance
 
 /-! ### Dual order -/
 

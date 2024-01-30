@@ -341,7 +341,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
-`B`-linear equivalence between `(M ⊗[A] P) ⊗[R] Q` and `M ⊗[A] (P ⊗[R] Q)`.
+Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/

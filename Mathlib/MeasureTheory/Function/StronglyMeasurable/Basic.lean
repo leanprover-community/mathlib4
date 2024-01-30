@@ -1111,7 +1111,7 @@ protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [AddMonoid β] [Mono
     FinStronglyMeasurable (c • f) μ := by
   refine' ⟨fun n => c • hf.approx n, fun n => _, fun x => (hf.tendsto_approx x).const_smul c⟩
   rw [SimpleFunc.coe_smul]
-  exact (measure_mono (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
+  refine' (measure_mono (support_smul_subset_right c _)).trans_lt (hf.fin_support_approx n)
 #align measure_theory.fin_strongly_measurable.const_smul MeasureTheory.FinStronglyMeasurable.const_smul
 
 end Arithmetic
@@ -1658,10 +1658,14 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   refine'
     ⟨fun H => aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨_, _⟩, fun H =>
       hg.continuous.comp_aestronglyMeasurable H⟩
-  · let G : β → range g := rangeFactorization g
+  · let G : β → range g := codRestrict g (range g) mem_range_self
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
+        closed_range := by
+          convert isClosed_univ (α := ↥(range g))
+          apply eq_univ_of_forall
+          rintro ⟨-, ⟨x, rfl⟩⟩
+          exact mem_range_self x }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩

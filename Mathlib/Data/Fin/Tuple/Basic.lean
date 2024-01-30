@@ -444,13 +444,8 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
-theorem repeat_rev {α : Type*} (a : Fin n → α) (k : Fin (m * n)) :
-    Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=
-  congr_arg a k.modNat_rev
-
-theorem repeat_comp_rev {α} (a : Fin n → α) :
-    Fin.repeat m a ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) :=
-  funext <| repeat_rev a
+proof_wanted repeat_comp_rev {α} (a : Fin n → α) :
+  (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev)
 
 end Repeat
 

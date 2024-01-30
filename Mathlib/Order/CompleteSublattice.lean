@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Oliver Nash. All rights reserved.
+Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
@@ -122,54 +122,4 @@ sublattice. -/
 
 @[simp] theorem mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 
-protected lemma disjoint_iff {a b : L} :
-    Disjoint a b ↔ Disjoint (a : α) (b : α) := by
-  rw [disjoint_iff, disjoint_iff, ← Sublattice.coe_inf, ← coe_bot (L := L),
-    Subtype.coe_injective.eq_iff]
-
-protected lemma codisjoint_iff {a b : L} :
-    Codisjoint a b ↔ Codisjoint (a : α) (b : α) := by
-  rw [codisjoint_iff, codisjoint_iff, ← Sublattice.coe_sup, ← coe_top (L := L),
-    Subtype.coe_injective.eq_iff]
-
-protected lemma isCompl_iff {a b : L} :
-    IsCompl a b ↔ IsCompl (a : α) (b : α) := by
-  rw [isCompl_iff, isCompl_iff, CompleteSublattice.disjoint_iff, CompleteSublattice.codisjoint_iff]
-
-lemma isComplemented_iff : ComplementedLattice L ↔ ∀ a ∈ L, ∃ b ∈ L, IsCompl a b := by
-  refine ⟨fun ⟨h⟩ a ha ↦ ?_, fun h ↦ ⟨fun ⟨a, ha⟩ ↦ ?_⟩⟩
-  · obtain ⟨b, hb⟩ := h ⟨a, ha⟩
-    exact ⟨b, b.property, CompleteSublattice.isCompl_iff.mp hb⟩
-  · obtain ⟨b, hb, hb'⟩ := h a ha
-    exact ⟨⟨b, hb⟩, CompleteSublattice.isCompl_iff.mpr hb'⟩
-
-instance : Top (CompleteSublattice α) := ⟨mk' univ (fun _ _ ↦ mem_univ _) (fun _ _ ↦ mem_univ _)⟩
-
-variable (L)
-
-/-- Copy of a complete sublattice with a new `carrier` equal to the old one. Useful to fix
-definitional equalities. -/
-protected def copy (s : Set α) (hs : s = L) : CompleteSublattice α :=
-  mk' s (hs ▸ L.sSupClosed') (hs ▸ L.sInfClosed')
-
-@[simp, norm_cast] lemma coe_copy (s : Set α) (hs) : L.copy s hs = s := rfl
-
-lemma copy_eq (s : Set α) (hs) : L.copy s hs = L := SetLike.coe_injective hs
-
 end CompleteSublattice
-
-namespace CompleteLatticeHom
-
-/-- The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
-
-See Note [range copy pattern]. -/
-protected def range : CompleteSublattice β :=
-  (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
-
-theorem range_coe : (f.range : Set β) = range f := rfl
-
-/-- We can regard a complete lattice homomorphism as an order equivalence to its range. -/
-@[simps! apply] noncomputable def toOrderIsoRangeOfInjective (hf : Injective f) : α ≃o f.range :=
-  (orderEmbeddingOfInjective f hf).orderIso
-
-end CompleteLatticeHom

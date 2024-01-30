@@ -106,26 +106,26 @@ of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
 
 This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
 followed by a more-bundled version of `LinearMap.toContinuousLinearMap`. -/
-def toEuclideanCLM :
+def toEuclideanClm :
     Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
   toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|
     { toContinuousLinearMap with
       map_mul' := fun _ _ ↦ rfl
       map_star' := adjoint_toContinuousLinearMap }
 
-lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
-    (toEuclideanCLM (n := n) (𝕜 := 𝕜) A : _ →ₗ[𝕜] _) = toEuclideanLin A :=
+lemma coe_toEuclideanClm_eq_toEuclideanLin (A : Matrix n n 𝕜) :
+    (toEuclideanClm (n := n) (𝕜 := 𝕜) A : _ →ₗ[𝕜] _) = toEuclideanLin A :=
   rfl
 
 @[simp]
-lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
-    toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
+lemma toEuclideanClm_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
+    toEuclideanClm (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
       (WithLp.equiv _ _).symm (toLin' A x) :=
   rfl
 
 @[simp]
-lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) =
+lemma piLp_equiv_toEuclideanClm (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    WithLp.equiv _ _ (toEuclideanClm (n := n) (𝕜 := 𝕜) A x) =
       toLin' A (WithLp.equiv _ _ x) :=
   rfl
 
@@ -140,7 +140,7 @@ def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`.  -/
 def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
-    _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
+    _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanClm.injective
 
 open Bornology Filter
 open scoped Topology Uniformity
@@ -234,11 +234,11 @@ def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 
 /-- This is the same as `Matrix.l2_op_norm_def`, but with a more bundled RHS for square matrices. -/
-lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ := rfl
+lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖ := rfl
 
 /-- This is the same as `Matrix.l2_op_nnnorm_def`, but with a more bundled RHS for square
 matrices. -/
-lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanClm (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/

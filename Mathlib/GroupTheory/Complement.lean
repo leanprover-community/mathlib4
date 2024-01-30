@@ -767,7 +767,7 @@ noncomputable def quotientEquivSigmaZMod :
 
 theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out' :=
+    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (k : ℤ) • q.out' :=
   rfl
 #align subgroup.quotient_equiv_sigma_zmod_symm_apply Subgroup.quotientEquivSigmaZMod_symm_apply
 
@@ -781,13 +781,12 @@ theorem quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H
   in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
   representative `g₀` of `q₀`. -/
 noncomputable def transferFunction : G ⧸ H → G := fun q =>
-  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out'.out'
+  g ^ ((quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out'.out'
 #align subgroup.transfer_function Subgroup.transferFunction
 
 theorem transferFunction_apply (q : G ⧸ H) :
     transferFunction H g q =
-      g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
-        (quotientEquivSigmaZMod H g q).1.out'.out' :=
+      g ^ ((quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out'.out' :=
   rfl
 #align subgroup.transfer_function_apply Subgroup.transferFunction_apply
 
@@ -819,17 +818,16 @@ theorem transferTransversal_apply (q : G ⧸ H) :
 
 theorem transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      g ^ (cast k : ℤ) * q.out'.out' := by
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) = g ^ (k : ℤ) * q.out'.out' := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 #align subgroup.transfer_transversal_apply' Subgroup.transferTransversal_apply'
 
 theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
+    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (k : ℤ) • q.out')) =
       if k = 0 then g ^ minimalPeriod (g • ·) q.out' * q.out'.out'
-      else g ^ (cast k : ℤ) * q.out'.out' := by
+      else g ^ (k : ℤ) * q.out'.out' := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
     mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id.def, ←

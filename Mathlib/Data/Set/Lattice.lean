@@ -1989,13 +1989,6 @@ theorem prod_sInter {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
   simp_rw [singleton_prod, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_right]
 #align set.prod_sInter Set.prod_sInter
 
-theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
-    (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
-  ext x
-  simp only [mem_prod, mem_iInter]
-  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
-#align prod_Inter Set.prod_iInter
-
 end Prod
 
 section Image2

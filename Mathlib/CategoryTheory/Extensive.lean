@@ -387,7 +387,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => ContinuousMap.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inl (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (embedding_inl (α := X') (β := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
     · refine' ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ _⟩⟩
@@ -404,7 +404,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
           ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inr (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (embedding_inr (α := X') (β := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
   · intro Z f

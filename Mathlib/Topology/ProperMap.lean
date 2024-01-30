@@ -67,13 +67,15 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
+set_option autoImplicit true
+
 open Filter Topology Function Set
 open Prod (fst snd)
 
-variable {X Y Z W ι : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  [TopologicalSpace W] {f : X → Y}
 
-universe u v
+
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+  {f : X → Y}
 
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point

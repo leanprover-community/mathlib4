@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Dilations of emetric and metric spaces
 Authors: Hanting Zhang
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.FunLike.Basic
 
 #align_import topology.metric_space.dilation from "leanprover-community/mathlib"@"93f880918cb51905fd51b76add8273cbc27718ab"
@@ -264,20 +263,6 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable [DilationClass F α β] [DilationClass G β γ]
 
 variable (f : F) (g : G) {x y z : α} {s : Set α}
-
-/-- Every isometry is a dilation of ratio `1`. -/
-@[simps]
-def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
-  toFun := f
-  edist_eq' := ⟨1, one_ne_zero, by simpa using hf⟩
-
-@[simp]
-lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
-  · exact ratio_of_trivial hf.toDilation h
-  · push_neg at h
-    obtain ⟨x, y, h₁, h₂⟩ := h
-    exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
 theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
 #align dilation.lipschitz Dilation.lipschitz

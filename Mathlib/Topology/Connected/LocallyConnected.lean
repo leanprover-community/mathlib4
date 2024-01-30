@@ -83,7 +83,7 @@ theorem isOpen_connectedComponent [LocallyConnectedSpace α] {x : α} :
 
 theorem isClopen_connectedComponent [LocallyConnectedSpace α] {x : α} :
     IsClopen (connectedComponent x) :=
-  ⟨isClosed_connectedComponent, isOpen_connectedComponent⟩
+  ⟨isOpen_connectedComponent, isClosed_connectedComponent⟩
 #align is_clopen_connected_component isClopen_connectedComponent
 
 theorem locallyConnectedSpace_iff_connectedComponentIn_open :

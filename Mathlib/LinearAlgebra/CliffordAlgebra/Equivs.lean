@@ -295,7 +295,7 @@ def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
     ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
         map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
+        map_smul' := fun r v => by dsimp; rw [mul_zero]; rfl }, fun v => by
       dsimp
       ext
       all_goals dsimp; ring⟩

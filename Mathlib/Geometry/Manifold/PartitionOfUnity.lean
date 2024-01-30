@@ -483,7 +483,7 @@ See also `exists_msmooth_zero_iff_one_iff_of_isClosed`, which ensures additional
 `f` is equal to `0` exactly on `s` and to `1` exactly on `t`. -/
 theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc 0 1 := by
+    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   have : ∀ x ∈ t, sᶜ ∈ 𝓝 x := fun x hx => hs.isOpen_compl.mem_nhds (disjoint_right.1 hd hx)
   rcases SmoothBumpCovering.exists_isSubordinate I ht this with ⟨ι, f, hf⟩
   set g := f.toSmoothPartitionOfUnity
@@ -494,35 +494,6 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
   refine' fun i => f.toSmoothPartitionOfUnity_zero_of_zero _
   exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 #align exists_smooth_zero_one_of_closed exists_smooth_zero_one_of_isClosed
-
-/-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite dimensional
-manifold `M`, there exists a smooth function `f : M → [0,1]` that vanishes in a neighbourhood of `s`
-and is equal to `1` in a neighbourhood of `t`. -/
-theorem exists_smooth_zero_one_nhds_of_isClosed [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
-    {s t : Set M} (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 0) ∧ (∀ᶠ x in 𝓝ˢ t, f x = 1) ∧
-      ∀ x, f x ∈ Icc 0 1 := by
-  obtain ⟨u, u_op, hsu, hut⟩ := normal_exists_closure_subset hs ht.isOpen_compl
-    (subset_compl_iff_disjoint_left.mpr hd.symm)
-  obtain ⟨v, v_op, htv, hvu⟩ := normal_exists_closure_subset ht isClosed_closure.isOpen_compl
-    (subset_compl_comm.mp hut)
-  obtain ⟨f, hfu, hfv, hf⟩ := exists_smooth_zero_one_of_isClosed I isClosed_closure isClosed_closure
-    (subset_compl_iff_disjoint_left.mp hvu)
-  refine ⟨f, ?_, ?_, hf⟩
-  · exact eventually_of_mem (mem_of_superset (u_op.mem_nhdsSet.mpr hsu) subset_closure) hfu
-  · exact eventually_of_mem (mem_of_superset (v_op.mem_nhdsSet.mpr htv) subset_closure) hfv
-
-/-- Given two sets `s, t` in a Hausdorff normal σ-compact finite-dimensional manifold `M`
-with `s` open and `s ⊆ interior t`, there is a smooth function `f : M → [0,1]` which is equal to `s`
-in a neighbourhood of `s` and has support contained in `t`. -/
-theorem exists_smooth_one_nhds_of_subset_interior [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
-    {s t : Set M} (hs : IsClosed s) (hd : s ⊆ interior t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 1) ∧ (∀ x ∉ t, f x = 0) ∧
-      ∀ x, f x ∈ Icc 0 1 := by
-  rcases exists_smooth_zero_one_nhds_of_isClosed I isOpen_interior.isClosed_compl hs
-    (by rwa [← subset_compl_iff_disjoint_left, compl_compl]) with ⟨f, h0, h1, hf⟩
-  refine ⟨f, h1, fun x hx ↦ ?_, hf⟩
-  exact h0.self_of_nhdsSet _ fun hx' ↦ hx <| interior_subset hx'
 
 namespace SmoothPartitionOfUnity
 

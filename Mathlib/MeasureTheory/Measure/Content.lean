@@ -41,9 +41,9 @@ For `μ : Content G`, we define
 * `μ.outerMeasure` : the outer measure associated to `μ`.
 * `μ.measure`      : the Borel measure associated to `μ`.
 
-These definitions are given for spaces which are R₁.
-The resulting measure `μ.measure` is always outer regular by design.
-When the space is locally compact, `μ.measure` is also regular.
+These definitions are given for spaces which are either T2, or locally compact and regular (which
+covers possibly non-Hausdorff locally compact groups). The resulting measure `μ.measure` is always
+outer regular by design. When the space is locally compact, `μ.measure` is also regular.
 
 ## References
 
@@ -171,7 +171,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
 #align measure_theory.content.inner_content_exists_compact MeasureTheory.Content.innerContent_exists_compact
 
 /-- The inner content of a supremum of opens is at most the sum of the individual inner contents. -/
-theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
+theorem innerContent_iSup_nat [T2OrLocallyCompactRegularSpace G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
     intro t K
@@ -200,7 +200,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
 /-- The inner content of a union of sets is at most the sum of the individual inner contents.
   This is the "unbundled" version of `innerContent_iSup_nat`.
   It is required for the API of `inducedOuterMeasure`. -/
-theorem innerContent_iUnion_nat [R1Space G] ⦃U : ℕ → Set G⦄
+theorem innerContent_iUnion_nat [T2OrLocallyCompactRegularSpace G] ⦃U : ℕ → Set G⦄
     (hU : ∀ i : ℕ, IsOpen (U i)) :
     μ.innerContent ⟨⋃ i : ℕ, U i, isOpen_iUnion hU⟩ ≤ ∑' i : ℕ, μ.innerContent ⟨U i, hU i⟩ := by
   have := μ.innerContent_iSup_nat fun i => ⟨U i, hU i⟩
@@ -225,7 +225,8 @@ theorem is_mul_left_invariant_innerContent [Group G] [TopologicalGroup G]
 #align measure_theory.content.is_add_left_invariant_inner_content MeasureTheory.Content.is_add_left_invariant_innerContent
 
 @[to_additive]
-theorem innerContent_pos_of_is_mul_left_invariant [Group G] [TopologicalGroup G]
+theorem innerContent_pos_of_is_mul_left_invariant [T2OrLocallyCompactRegularSpace G] [Group G]
+    [TopologicalGroup G]
     (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (K : Compacts G)
     (hK : μ K ≠ 0) (U : Opens G) (hU : (U : Set G).Nonempty) : 0 < μ.innerContent U := by
   have : (interior (U : Set G)).Nonempty
@@ -254,7 +255,7 @@ protected def outerMeasure : OuterMeasure G :=
   inducedOuterMeasure (fun U hU => μ.innerContent ⟨U, hU⟩) isOpen_empty μ.innerContent_bot
 #align measure_theory.content.outer_measure MeasureTheory.Content.outerMeasure
 
-variable [R1Space G]
+variable [T2OrLocallyCompactRegularSpace G]
 
 theorem outerMeasure_opens (U : Opens G) : μ.outerMeasure U = μ.innerContent U :=
   inducedOuterMeasure_eq' (fun _ => isOpen_iUnion) μ.innerContent_iUnion_nat μ.innerContent_mono U.2
@@ -449,7 +450,7 @@ theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSp
     (ENNReal.lt_add_right (ne_top_of_lt (μ.lt_top K)) (ENNReal.coe_ne_zero.mpr hε)))
 #align measure_theory.content.content_regular_exists_compact MeasureTheory.Content.contentRegular_exists_compact
 
-variable [MeasurableSpace G] [R1Space G] [BorelSpace G]
+variable [MeasurableSpace G] [T2OrLocallyCompactRegularSpace G] [BorelSpace G]
 
 /-- If `μ` is a regular content, then the measure induced by `μ` will agree with `μ`
   on compact sets. -/

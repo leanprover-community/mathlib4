@@ -740,16 +740,3 @@ end R
 end Instances
 
 end Equiv
-
-namespace Finite
-
-attribute [-instance] Fin.instMulFin
-
-/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
-lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
-    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
-
-end Finite

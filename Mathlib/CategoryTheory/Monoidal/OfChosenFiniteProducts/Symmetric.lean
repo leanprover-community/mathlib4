@@ -93,8 +93,7 @@ open MonoidalOfChosenFiniteProducts
 def symmetricOfChosenFiniteProducts : SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ)
     where
   braiding _ _ := Limits.BinaryFan.braiding (ℬ _ _).isLimit (ℬ _ _).isLimit
-  braiding_naturality_left f X := braiding_naturality ℬ f (𝟙 X)
-  braiding_naturality_right X _ _ f := braiding_naturality ℬ (𝟙 X) f
+  braiding_naturality f g := braiding_naturality ℬ f g
   hexagon_forward X Y Z := hexagon_forward ℬ X Y Z
   hexagon_reverse X Y Z := hexagon_reverse ℬ X Y Z
   symmetry X Y := symmetry ℬ X Y

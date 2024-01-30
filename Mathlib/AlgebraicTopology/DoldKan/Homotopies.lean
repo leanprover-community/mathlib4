@@ -53,7 +53,7 @@ compatible the application of additive functors (see `map_Hσ`).
 
 ## References
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
-* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
 
 -/
 

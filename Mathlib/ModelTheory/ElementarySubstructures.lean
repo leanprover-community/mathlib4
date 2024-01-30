@@ -31,7 +31,7 @@ variable {L : Language} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
-/-- A substructure is elementary when every formula applied to a tuple in the substructure
+/-- A substructure is elementary when every formula applied to a tuple in the subtructure
   agrees with its value in the overall structure. -/
 def Substructure.IsElementary (S : L.Substructure M) : Prop :=
   ∀ ⦃n⦄ (φ : L.Formula (Fin n)) (x : Fin n → S), φ.Realize (((↑) : _ → M) ∘ x) ↔ φ.Realize x
@@ -39,7 +39,7 @@ def Substructure.IsElementary (S : L.Substructure M) : Prop :=
 
 variable (L M)
 
-/-- An elementary substructure is one in which every formula applied to a tuple in the substructure
+/-- An elementary substructure is one in which every formula applied to a tuple in the subtructure
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
   toSubstructure : L.Substructure M

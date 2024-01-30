@@ -98,9 +98,6 @@ theorem specializes_iff_nhds : x ⤳ y ↔ 𝓝 x ≤ 𝓝 y :=
   Iff.rfl
 #align specializes_iff_nhds specializes_iff_nhds
 
-theorem Specializes.not_disjoint (h : x ⤳ y) : ¬Disjoint (𝓝 x) (𝓝 y) := fun hd ↦
-  absurd (hd.mono_right h) <| by simp [NeBot.ne']
-
 theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
 #align specializes_iff_pure specializes_iff_pure
