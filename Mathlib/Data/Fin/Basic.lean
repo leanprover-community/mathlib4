@@ -430,8 +430,8 @@ instance [NeZero n] : BoundedOrder (Fin n) where
 instance : Lattice (Fin n) :=
   LinearOrder.toLattice
 
-theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
-theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
+@[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
+@[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
