@@ -4,6 +4,7 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 open BigOperators LieAlgebra LieModule
 
@@ -29,7 +30,8 @@ lemma ad_lie (x y z : L) :
 open Finset in
 lemma toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((toEndomorphism R L M x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((toEndomorphism R L M x) ^ ij.2) z⁆ := by
+      ∑ ij in antidiagonal n, n.choose ij.1 •
+        ⁅((ad R L x) ^ ij.1) y, ((toEndomorphism R L M x) ^ ij.2) z⁆ := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -187,3 +189,75 @@ lemma LieSubalgebra.isNilpotent_of_forall_le_engel [IsNoetherian R L]
     rw [hn m hmn]
     simpa only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff,
       LieSubalgebra.coe_ad_pow, ZeroMemClass.coe_zero]
+
+namespace MvPolynomial -- move this
+
+variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
+variable (f : R →+* S) (k : σ → τ) (g : τ → R) (p : MvPolynomial σ R)
+
+theorem eval_rename : eval g (rename k p) = eval (g ∘ k) p :=
+  eval₂_rename _ _ _ _
+
+@[simp]
+theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
+    (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
+  rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
+
+theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) (hf : f.Injective) :
+    (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
+  obtain ⟨f, rfl⟩ : ∃ f' : σ ↪ τ, f = f' := ⟨⟨f, hf⟩, rfl⟩
+  have aux : ∀ d : σ →₀ ℕ,
+    ∑ i in (d.embDomain f).support, (d.embDomain f) i = ∑ i in d.support, d i := by
+    intro d
+    simp only [Finsupp.support_embDomain, Finset.sum_map, Finsupp.embDomain_apply]
+  constructor
+  · intro h d hd
+    specialize @h (d.embDomain f) ?aux
+    case aux => erw [coeff_rename_embDomain]; exact hd
+    rw [← h, aux]
+  · intro h d hd
+    obtain ⟨d', hd'₀, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
+    rw [← Finsupp.embDomain_eq_mapDomain] at hd'₀; cases hd'₀
+    specialize @h d' hd'
+    rw [← h, aux]
+
+end MvPolynomial
+
+open Cardinal in
+private
+lemma MvPolynomial.exists_root_of_totalDegree_le_card_aux {σ : Type*} [Fintype σ] [IsDomain R]
+    (F : MvPolynomial σ R) (n : ℕ) (hF : F.IsHomogeneous n) (h : n ≤ #R) :
+    ∃ r : σ → R, eval r F = 0 := by
+  revert F
+  refine Fintype.induction_empty_option ?equiv ?empty ?option σ
+  case equiv =>
+    rintro σ₁ σ₂ _ft e IH F hF
+    obtain ⟨r, hr⟩ :=
+      IH (rename e.symm F) (by rwa [rename_isHomogeneous]; exact e.symm.injective)
+    use r ∘ e.symm
+    rwa [eval_rename] at hr
+  case empty =>
+    intro F hF
+    refine ⟨fun _ ↦ 0, ?_⟩
+    simp only [eval_zero']
+    -- doesn't seem provable? What if `n = 0`?
+    sorry
+  case option =>
+    intro σ _ft IH F hF
+    sorry
+
+open Cardinal in
+lemma MvPolynomial.exists_root_of_totalDegree_le_card {σ : Type*} [IsDomain R]
+    (F : MvPolynomial σ R) (n : ℕ) (hF : F.IsHomogeneous n) (h : n ≤ #R) :
+    ∃ r : σ → R, eval r F = 0 := by
+  -- reduce to the case where σ is finite
+  obtain ⟨s, F, rfl⟩ := exists_finset_rename F
+  have : F.IsHomogeneous n := by
+    rwa [rename_isHomogeneous] at hF
+    exact Subtype.val_injective
+  obtain ⟨r, hr⟩ := exists_root_of_totalDegree_le_card_aux F n this h
+  classical
+  let r' : σ → R := fun i ↦ if h : i ∈ s then r ⟨i, h⟩ else 0
+  have hr' : r' ∘ Subtype.val = r := by ext i; simp [r']
+  use r'
+  rw [eval_rename, hr', hr]
