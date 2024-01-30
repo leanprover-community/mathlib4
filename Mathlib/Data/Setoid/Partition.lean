@@ -491,33 +491,17 @@ theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)):
     Injective (piecewise hs f) := by
   intro x y hfxy
-  set F := fun i => (f i) '' (s i)
   let i := index hs x
   have hix : piecewise hs f x = f i x := rfl
   let j := index hs y
   have hjy : piecewise hs f y = f j y := rfl
-  have hz : piecewise hs f x ∈ (⋃ i ∈ univ, F i) := by
+  have hz : piecewise hs f x ∈ (⋃ i' ∈ univ, (f i') '' (s i')) := by
     simp only [mem_univ, iUnion_true, mem_iUnion, mem_image]
-    unfold piecewise
-    use i
-    use x
-    simp only [and_true]
-    exact mem_index hs x
+    exact ⟨i, x, mem_index hs x, rfl⟩
   choose k hk_exist hk_unique using pairwiseDisjoint_unique h_disjoint hz
   set g := piecewise hs f
-  have hik : i = k := hk_unique i ⟨trivial, by
-    rw [hix]
-    simp only [mem_image]
-    use x
-    simp only [and_true]
-    exact mem_index hs x⟩
-  have hjk : j = k := hk_unique j ⟨trivial, by
-    rw [hfxy]
-    rw [hjy]
-    simp only [mem_image]
-    use y
-    simp only [and_true]
-    exact mem_index hs y⟩
+  have hik : i = k := hk_unique i ⟨trivial, ⟨x, mem_index hs x, rfl⟩⟩
+  have hjk : j = k := hk_unique j ⟨trivial, ⟨y, mem_index hs y, by rw [hfxy, hjy]⟩⟩
   have hij : i = j := hik.trans hjk.symm
   rw [hix, hjy, hij] at hfxy
   refine (h_injOn j) ?_ (mem_index hs y) hfxy
