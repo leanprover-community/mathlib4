@@ -137,6 +137,12 @@ instance : Category.{v} L where
   assoc := L.assoc
 
 @[simps]
+def sort (s : L.S) : L := .mk <| .of s
+
+inductive isSort : L → Prop
+  | of (s : L.S) : isSort (L.sort s)
+
+@[simps]
 def nil : L := .mk .nil
 
 def toNil (P : L) : P ⟶ L.nil := L.toNil' _
@@ -184,7 +190,7 @@ def isLimitBinaryFan (P Q : L) : Limits.IsLimit (L.binaryFan P Q) :=
     (by aesop_cat)
 
 @[ext]
-structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
+structure Morphism (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
   obj : L → L'
   map {P Q : L} : (P ⟶ Q) → (obj P ⟶ obj Q)
   map_id (P : L) : map (𝟙 P) = 𝟙 (obj P)
@@ -204,6 +210,13 @@ structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
     a ≫ fst _ _ = b ≫ fst _ _ →
     a ≫ snd _ _ = b ≫ snd _ _ →
     a = b
+
+structure Morphism' (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
+  obj : L.S → ProdWord L'.S
+  map {P Q : L.S} : L.hom (.of P) (.of Q) → L'.hom (obj P) (obj Q)
+  map_id (P : L.S) : map (L.id <| .of P) = L'.id _
+  map_comp {P Q R : L.S} (f : L.hom (.of P) (.of Q)) (g : L.hom (.of Q) (.of R)) :
+    map (L.comp f g) = L'.comp (map f) (map g)
 
 attribute [reassoc (attr := simp)]
   Morphism.lift_fst
