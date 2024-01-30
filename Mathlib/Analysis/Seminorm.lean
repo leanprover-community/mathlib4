@@ -967,7 +967,6 @@ theorem neg_mem_ball_zero (r : ℝ) {x : E} : x ∈ ball p 0 r ↔ -x ∈ ball p
   simp only [mem_ball_zero, map_neg_eq_map]
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
-
 @[simp]
 theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
   ext
