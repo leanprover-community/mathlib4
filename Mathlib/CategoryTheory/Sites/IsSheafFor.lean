@@ -488,7 +488,7 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
     dsimp
-    simp
+    simp [yonedaEquiv_apply]
   -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
