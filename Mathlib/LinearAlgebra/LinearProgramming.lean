@@ -30,3 +30,6 @@ variable {R P V : Type*} [Ring R] [AddCommGroup P] [Module R P] [AddCommGroup V]
 
 /-- Essentially the set `{ x : P | LP.φ x ≤ LP.v }` -/
 def LinearProgram.C (LP : LinearProgram R P V) := { x : P | LP.s.nonneg (LP.v - LP.φ x) }
+
+/-- TODO `g` must be positive (linear form) -/
+def LinearProgram.D (LP : LinearProgram R P V) := { g : V →ₗ[R] R | LP.f = g ∘ LP.φ }
