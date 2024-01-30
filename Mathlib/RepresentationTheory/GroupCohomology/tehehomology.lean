@@ -7,6 +7,8 @@ import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.CategoryTheory.Abelian.LeftDerived
+
 #align_import representation_theory.group_cohomology.basic from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
 /-!
@@ -74,55 +76,189 @@ noncomputable section
 
 universe u
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
+--variable {k G : Type u} [CommRing k] [Group G] {n : ℕ}
 
 open CategoryTheory
 
-namespace groupCohomology
+namespace Representation
 
-variable [Group G]
-/-
-@[simps]
-def ChainComplex.linearYoneda {R : Type*} [Ring R] {C : Type*} [Category C] [Abelian C]
-  [Linear R C] [EnoughProjectives C]
-  {α : Type*} [AddRightCancelSemigroup α] [One α]
-  {X Y : ChainComplex C α} (A : Type*) [Ring A] [Linear A C] (Z : C)
-#check Functor.mapHomologicalComplex
--/
+variable {k G : Type*} [CommRing k] [Group G] {A B C D : Type*}
+  [AddCommGroup A] [Module k A] [AddCommGroup B] [Module k B]
+  [AddCommGroup C] [Module k C] [AddCommGroup D] [Module k D]
+  (ρ : Representation k G A) (τ : Representation k G B)
+  (η : Representation k G C) (ν : Representation k G D) {n : ℕ}
 
-@[simps!] def ChainComplex.linearYoneda (R : Type*) [Ring R] {C : Type*} [Category C] [Abelian C]
-  [Linear R C] [EnoughProjectives C]
-  {α : Type*} [AddRightCancelSemigroup α] [One α] (Z : C) :
-  ChainComplex C α ⥤ (CochainComplex (ModuleCat R) α)ᵒᵖ :=
-  ((CategoryTheory.linearYoneda R C).obj Z).rightOp.mapHomologicalComplex _ ⋙
-    HomologicalComplex.opInverse (ModuleCat R) (ComplexShape.up α)
+@[simp]
+theorem inv_self_apply (g : G) (x : A) :
+    ρ g⁻¹ (ρ g x) = x :=
+  show (ρ g⁻¹ * ρ g) x = x by rw [← map_mul, inv_mul_self, map_one, LinearMap.one_apply]
 
-def ChainComplex.linearYoneda' (R : Type*) [Ring R] {C : Type*} [Category C] [Abelian C]
-  [Linear R C] [EnoughProjectives C]
-  {α : Type*} [AddRightCancelSemigroup α] [One α] (Z : C) :
-  (ChainComplex C α)ᵒᵖ ⥤ CochainComplex (ModuleCat R) α :=
-  HomologicalComplex.opFunctor C (ComplexShape.down α) ⋙
-    ((CategoryTheory.linearYoneda R C).obj Z).mapHomologicalComplex _
+@[simp]
+theorem self_inv_apply (g : G) (x : A) :
+    ρ g (ρ g⁻¹ x) = x :=
+  show (ρ g * ρ g⁻¹) x = x by rw [← map_mul, mul_inv_self, map_one, LinearMap.one_apply]
 
-def ugh {R : Type*} [Ring R] {C : Type*} [Category C] [Abelian C]
-  [Linear R C] [EnoughProjectives C]
-  {α : Type*} [AddRightCancelSemigroup α] [One α] (Z : C) (X : ChainComplex C α) :
-  ((ChainComplex.linearYoneda R Z).obj X).unop ≅ X.linearYonedaObj R Z :=
-Iso.refl _
-/-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
-`G`-representation. -/
-abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  (groupCohomology.resolution k G).linearYonedaObj k A
+def inv : Representation k Gᵐᵒᵖ A :=
+ρ.comp (MulEquiv.inv' G).symm.toMonoidHom
 
-abbrev linearYonedaObjBarResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  (Rep.barResolution k G).linearYonedaObj k A
+@[simp] lemma inv_apply (g : Gᵐᵒᵖ) (x : A) :
+  ρ.inv g x = ρ g.unop⁻¹ x := rfl
 
-theorem linearYonedaObjBarResolution_d_apply {A : Rep k G} (i j : ℕ)
-    (x : (Rep.barResolution k G).X i ⟶ A) :
-    (linearYonedaObjBarResolution A).d i j x = (Rep.barResolution k G).d j i ≫ x :=
-  rfl
+abbrev coinvariantsKer := Submodule.span k (Set.range <| fun (x : G × A) => ρ x.1 x.2 - x.2)
+abbrev coinvariants := A ⧸ coinvariantsKer ρ
 
-end groupCohomology
+def coinvariantsLift (f : A →ₗ[k] B) (h : ∀ (x : G) (a : A), f (ρ x a) = f a) :
+    ρ.coinvariants →ₗ[k] B :=
+  Submodule.liftQ _ f <| Submodule.span_le.2 fun x ⟨⟨g, y⟩, hy⟩ => by
+    simp only [← hy, SetLike.mem_coe, LinearMap.mem_ker, map_sub, h, sub_self]
+
+@[simp] theorem coinvariantsLift_mkQ (f : A →ₗ[k] B) {h : ∀ (x : G) (a : A), f (ρ x a) = f a} :
+  coinvariantsLift ρ f h ∘ₗ (coinvariantsKer ρ).mkQ = f := rfl
+
+def coinvariantsLift' (f : ρ.hom (Representation.trivial k (G := G) (V := B))) :
+    ρ.coinvariants →ₗ[k] B :=
+  coinvariantsLift _ f.hom <| hom.comm_apply _ _ _
+
+variable {ρ τ}
+
+def coinvariantsMap (f : ρ.hom τ) :
+    ρ.coinvariants →ₗ[k] τ.coinvariants :=
+  coinvariantsLift _ (Submodule.mkQ _ ∘ₗ f.hom) fun x a => (Submodule.Quotient.eq _).2 <|
+    Submodule.subset_span <| by rw [hom.comm_apply]; exact Set.mem_range_self (x, f.hom a)
+
+@[simp] theorem coinvariantsMap_mkQ (f : ρ.hom τ) :
+  coinvariantsMap f ∘ₗ (coinvariantsKer ρ).mkQ = (coinvariantsKer τ).mkQ ∘ₗ f.hom := rfl
+
+variable {η ν}
+
+@[simps] def tprodMap (f : ρ.hom τ) (g : η.hom ν) :
+    (ρ.tprod η).hom (τ.tprod ν) where
+      hom := TensorProduct.map f.hom g.hom
+      comm := fun x => TensorProduct.ext' fun x y => by
+        simp only [tprod_apply, LinearMap.coe_comp, Function.comp_apply, TensorProduct.map_tmul,
+          hom.comm_apply]
+
+variable (ρ τ)
+
+abbrev tensor2Obj := coinvariants (ρ.tprod τ)
+
+variable {ρ τ}
+
+def tensor2Map (f : ρ.hom τ) (g : η.hom ν) :
+    coinvariantsMap (tprodMap (hom.id (ρ := τ)) g) ∘ₗ coinvariantsMap (tprodMap f (hom.id (ρ := η)))
+      = coinvariantsMap (tprodMap f (hom.id (ρ := ν)))
+        ∘ₗ coinvariantsMap (tprodMap (hom.id (ρ := ρ)) g) :=
+  Submodule.linearMap_qext _ <| by
+    simp_rw [LinearMap.comp_assoc, coinvariantsMap_mkQ, tprodMap_hom, hom.id_hom,
+      ← LinearMap.comp_assoc, coinvariantsMap_mkQ, tprodMap_hom, hom.id_hom,
+      LinearMap.comp_assoc, ← TensorProduct.map_comp, LinearMap.id_comp, LinearMap.comp_id]
+
+variable (ρ)
+
+def tensor2Hom : tensor2Obj ρ (ofMulAction k G G) →ₗ[k] A :=
+  coinvariantsLift _ (TensorProduct.lift (Finsupp.total _ _ _ (fun g => ρ g⁻¹))
+    ∘ₗ (TensorProduct.comm _ _ _).toLinearMap) fun g a => by
+    show ((TensorProduct.lift _ ∘ₗ _) ∘ₗ tprod _ _ g) a = _
+    refine' LinearMap.ext_iff.1 (TensorProduct.ext _) a
+    ext x h
+    simp only [tprod_apply, LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+      LinearMap.compr₂_apply, TensorProduct.mk_apply, LinearEquiv.coe_coe, TensorProduct.map_tmul,
+      ofMulAction_single, smul_eq_mul, TensorProduct.comm_tmul, TensorProduct.lift.tmul,
+      Finsupp.total_single, mul_inv_rev, map_mul, one_smul, LinearMap.mul_apply, inv_self_apply]
+
+@[simp] lemma tensor2Hom_apply (x : A) (g : G) (r : k) :
+    tensor2Hom ρ (Submodule.Quotient.mk (p := coinvariantsKer _) (x ⊗ₜ Finsupp.single g r))
+      = r • ρ g⁻¹ x := by
+  simp only [tensor2Hom, coinvariantsLift, Submodule.mkQ_apply, Submodule.liftQ_apply,
+    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.comm_tmul,
+    TensorProduct.lift.tmul, Finsupp.total_single, LinearMap.smul_apply]
+
+def tensor2Iso : (tensor2Obj ρ (ofMulAction k G G)) ≃ₗ[k] A where
+  toFun := tensor2Hom ρ
+  map_add' := map_add _
+  map_smul' := map_smul _
+  invFun := fun x => Submodule.mkQ _ (x ⊗ₜ Finsupp.single 1 1)
+  left_inv := fun x => Quotient.inductionOn' x fun y => by
+    refine' TensorProduct.induction_on y _ _ _
+    · simp only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_zero, map_zero,
+      TensorProduct.zero_tmul]
+    sorry
+    sorry
+    /-rw [tensor2Hom_apply ρ]
+    simp only [coinvariantsLift, Submodule.Quotient.mk''_eq_mk, Submodule.liftQ_apply,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Submodule.mkQ_apply,
+      Submodule.Quotient.eq]
+    refine' Submodule.subset_span _
+    rw [TensorProduct.comm_apply]-/
+  right_inv := sorry
+
+
+variable {α : Type*}
+
+#check @tensor2Obj k G _ _ A (α →₀ G →₀ k) _ _ Finsupp.addCommGroup (Finsupp.module α (G →₀ k)) ρ (free k G α)
+
+-- what the hell
+def ermmmmmmm (α : Type*) : @tensor2Obj _ _ _ _ _ _ _ _ Finsupp.addCommGroup _ ρ (free k G α)
+    ≃ₗ[k] α →₀ A := sorry
+
+end Representation
+namespace groupHomology
+
+open MonoidalCategory
+
+abbrev coinvariantsObj (A : Rep k G) := A.ρ.coinvariants
+
+abbrev coinvariantsMap {A B : Rep k G} (f : A ⟶ B) :
+    coinvariantsObj A →ₗ[k] coinvariantsObj B :=
+  Representation.coinvariantsMap ⟨f.hom, f.comm⟩
+
+variable (k G)
+
+@[simps] def coinvariants : Rep k G ⥤ ModuleCat k where
+  obj := fun A => ModuleCat.of k (coinvariantsObj A)
+  map := fun f => ModuleCat.ofHom (coinvariantsMap f)
+  map_id := fun X => by
+    ext x
+    refine Quotient.inductionOn' x (fun y => rfl)
+  map_comp := fun f g => by
+    ext x
+    refine Quotient.inductionOn' x (fun y => rfl)
+
+instance : (coinvariants k G).Additive where
+  map_add := fun {_ _ _ _} => LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
+
+def ermmm (A : Rep k G) : (coinvariants k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
+  A.ρ.tensor2Iso.toModuleIso
+
+open MonoidalCategory
+set_option profiler true
+
+def ok : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
+{ obj := fun A => MonoidalCategory.tensorLeft A ⋙ coinvariants k G
+  map := fun f => {
+    app := fun A => coinvariantsMap (f ⊗ 𝟙 A)
+    naturality := fun A B g => (Representation.tensor2Map ⟨f.hom, f.comm⟩ ⟨g.hom, g.comm⟩).symm }
+  map_id := fun A => NatTrans.ext _ _ <| by
+    ext B : 1
+    dsimp only
+    rw [MonoidalCategory.tensor_id]
+    exact (coinvariants k G).map_id _
+  map_comp := fun f g => NatTrans.ext _ _ <| by
+    ext B : 1
+    dsimp only
+    rw [MonoidalCategory.comp_tensor_id]
+    exact (coinvariants k G).map_comp _ _ }
+
+instance (A : Rep k G) : ((ok k G).obj A).Additive := by
+  unfold ok
+  infer_instance
+
+def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
+  obj X := Functor.leftDerived ((ok k G).obj X) n
+  map f := NatTrans.leftDerived ((ok k G).map f) n
+
+end groupHomology
+#exit
 
 namespace inhomogeneousCochains
 
@@ -189,7 +325,7 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 
 set_option profiler true
 
-def inhomogeneousCochainsBarIso : inhomogeneousCochains A ≅ linearYonedaObjBarResolution A := by
+def ForFuckSake : inhomogeneousCochains A ≅ linearYonedaObjBarResolution A := by
   refine' HomologicalComplex.Hom.isoOfComponents _ _
   · intro i
     apply (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm
@@ -201,7 +337,7 @@ def inhomogeneousCochainsBarIso : inhomogeneousCochains A ≅ linearYonedaObjBar
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A :=
-  inhomogeneousCochainsBarIso A ≪≫ ((ChainComplex.linearYoneda (R := k) A).mapIso (Rep.barResolutionIso k G).symm).unop
+  ForFuckSake A ≪≫ ((ChainComplex.linearYoneda (R := k) A).mapIso (Rep.barResolutionIso k G).symm).unop
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/

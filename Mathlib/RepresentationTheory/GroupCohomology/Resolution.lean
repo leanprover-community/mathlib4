@@ -120,7 +120,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
     · dsimp [actionDiagonalSucc]
-      erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+      simp only [hn]
       exact Fin.cases rfl (fun i => rfl) x
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
@@ -715,3 +715,329 @@ def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
   (groupCohomology.projectiveResolution k G).isoExt n V
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso
+
+namespace Rep
+variable {k G}
+def finsuppObj (α : Type u) (A : Rep k G) :
+    Rep k G := of (Representation.finsupp A.ρ α)
+
+def finsuppMap {α β : Type u}
+    (f : α → β) (A : Rep k G) : finsuppObj α A ⟶ finsuppObj β A :=
+  mkHom (A.ρ.finsuppHom f).hom (A.ρ.finsuppHom f).comm
+/-  mkHom (Finsupp.lmapDomain A k f) fun g => Finsupp.lhom_ext fun i x => by
+    simp only [LinearMap.coe_comp, Function.comp_apply]
+    simp only [finsuppObj, coe_of, of_ρ, Representation.finsupp_apply, Finsupp.coe_lsum,
+      LinearMap.coe_comp, Function.comp_apply, map_zero, Finsupp.sum_single_index,
+      Finsupp.lsingle_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+    -- erm. strange-/
+
+def finsupp (A : Rep k G) :
+    Type u ⥤ Rep k G where
+      obj := fun α => finsuppObj α A
+      map := fun f => finsuppMap f A
+      map_id := fun _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_id _ _
+      map_comp := fun _ _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_comp _ _ _ _
+
+lemma finsupp_ρ_single {A : Rep k G} {α : Type u} (g : G) (i : α) (x : A) :
+    ((finsupp A).obj α).ρ g (Finsupp.single i x) = Finsupp.single i (A.ρ g x) :=
+Representation.finsupp_single _ _ _ _
+
+variable (k G)
+
+def free : Type u ⥤ Rep k G := finsupp (leftRegular k G)
+
+variable {k G}
+
+lemma free_ρ_single_single {α : Type u} (g h : G) (i : α) (r : k) :
+    ((free k G).obj α).ρ g (Finsupp.single i (Finsupp.single h r)) =
+      Finsupp.single i (Finsupp.single (g * h) r) :=
+  Representation.free_ρ_single_single _ _ _ _
+
+@[simp] lemma free_map_hom {α β : Type u} (f : α → β) :
+    ((free k G).map f).hom = Finsupp.lmapDomain _ k f := rfl
+
+def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
+    (free k G).obj α ⟶ A :=
+  mkHom (A.ρ.freeLift f).hom (A.ρ.freeLift f).comm
+  /-(Finsupp.total (α × G) A k
+    (fun x => A.ρ x.2 (f x.1)) ∘ₗ (Finsupp.finsuppProdLEquiv
+      (α := α) (β := G) k (M := k)).symm.toLinearMap) fun g =>
+        Finsupp.lhom_ext' fun i => Finsupp.lhom_ext fun j y => by
+          dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+            Finsupp.lsingle_apply]
+          erw [Finsupp.lsingle_apply]
+          erw [free_ρ_single_single]
+          erw [Finsupp.finsuppProdLEquiv_symm_single_single]
+          erw [Finsupp.finsuppProdLEquiv_symm_single_single]
+          simp only [Finsupp.total_single, map_mul, LinearMap.mul_apply, map_smul]
+-/
+
+@[simp] lemma freeLift_hom_single_single {α : Type u} (A : Rep k G) (f : α → A) (i : α) (g : G) (r : k) :
+    (freeLift A f).hom (Finsupp.single i (Finsupp.single g r)) = r • A.ρ g (f i) :=
+  Representation.freeLift_hom_single_single _ _ _ _ _
+
+def freeLiftEquiv (α : Type u) (A : Rep k G) :
+    ((free k G).obj α ⟶ A) ≃ₗ[k] (α → A) :=
+(homLEquiv _ _).trans <| Representation.freeLiftEquiv A.ρ α
+      /-toFun := fun f i => f.hom (Finsupp.single i (Finsupp.single 1 1))
+      invFun := freeLift A
+      left_inv := fun x => Action.hom_ext _ _ <| Finsupp.lhom_ext' fun i =>
+        Finsupp.lhom_ext fun j y => by
+        simp_rw [LinearMap.comp_apply]
+        erw [Finsupp.lsingle_apply, freeLift_hom_single_single]
+        rw [← Finsupp.smul_single_one j, ← Finsupp.smul_single, map_smul,
+          ← hom_comm_apply, free_ρ_single_single, mul_one]
+        rfl
+      right_inv := fun x => by
+        ext i
+        simp_rw [freeLift_hom_single_single, one_smul, map_one]
+        rfl-/
+
+@[simp] lemma freeLiftEquiv_apply {α : Type u} {A : Rep k G} (f : (free k G).obj α ⟶ A) (x : α) :
+    freeLiftEquiv α A f x = f.hom (Finsupp.single x (Finsupp.single 1 1)) :=
+  Representation.freeLiftEquiv_apply _ _ _ _
+
+@[simp] lemma freeLiftEquiv_symm_apply {α : Type u} {A : Rep k G} (f : α → A)
+    (x : α) (g : G) (r : k) :
+    ((freeLiftEquiv α A).symm f).hom (Finsupp.single x (Finsupp.single g r))
+      = r • A.ρ g (f x) :=
+  Representation.freeLift_hom_single_single _ _ _ _ _
+
+lemma free_ext {α : Type u} (A : Rep k G) (f g : (free k G).obj α ⟶ A)
+  (h : ∀ i : α, f.hom (Finsupp.single i (Finsupp.single 1 1))
+    = g.hom (Finsupp.single i (Finsupp.single 1 1))) : f = g :=
+  (freeLiftEquiv α A).injective (Function.funext_iff.2 h)
+
+variable (k G)
+
+def freeAdjunction : free k G ⊣ forget (Rep k G) :=
+Adjunction.mkOfHomEquiv <| {
+  homEquiv := fun α A => (freeLiftEquiv α A).toEquiv
+  homEquiv_naturality_left_symm := fun f g => by
+    refine' Action.Hom.ext _ _ _
+    dsimp
+    simp only [freeLiftEquiv, types_comp, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm,
+      EquivLike.coe_coe, homLEquiv_symm_apply_hom]
+    exact (Representation.hom.ext_iff _ _).1 (Representation.freeLiftEquiv_naturality _ _ _)
+  /-fun f g => by
+    dsimp
+    refine' free_ext _ _ _ _
+    intro i
+    simp only [Action.comp_hom, ModuleCat.coe_comp, Function.comp_apply]
+    erw [freeLiftEquiv_symm_apply, freeLiftEquiv_symm_apply,
+      freeLift_hom_single_single, one_smul, free_map_hom,
+      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, freeLift_hom_single_single,
+      one_smul]
+    rfl-/
+  homEquiv_naturality_right := fun f g => rfl }
+
+instance : IsLeftAdjoint (free k G) where
+  right := forget (Rep k G)
+  adj := freeAdjunction k G
+
+instance : Limits.PreservesColimitsOfSize.{u, u} (free k G) :=
+  (freeAdjunction k G).leftAdjointPreservesColimits
+
+def moduleCatFreeCompEquivalenceToFree : ModuleCat.free (MonoidAlgebra k G)
+  ⋙ equivalenceModuleMonoidAlgebra.inverse ⟶ free k G :=
+  (transferNatTransSelf  (freeAdjunction k G) ((ModuleCat.adj (MonoidAlgebra k G)).comp
+    (equivalenceModuleMonoidAlgebra (k := k) (G := G)).symm.toAdjunction)).symm (𝟙 _)
+
+instance : IsIso (moduleCatFreeCompEquivalenceToFree k G) := by
+  unfold moduleCatFreeCompEquivalenceToFree
+  infer_instance
+
+open MonoidalCategory
+
+-- i guess this one was already fine actually.
+def tprodIsoFree (α : Type u) :
+    leftRegular k G ⊗ trivial k G (α →₀ k) ≅ (free k G).obj α :=
+  mkIso (Representation.tprodIsoFree k G α).toLinearEquiv
+    (Representation.tprodIsoFree k G α).comm
+
+variable {α : Type u} (i : α)
+
+@[simp] lemma tprodIsoFree_inv_hom_single_single {α : Type u} (i : α) (g : G) (r : k) :
+    (tprodIsoFree k G α).inv.hom (Finsupp.single i (Finsupp.single g r)) =
+      TensorProduct.tmul k (Finsupp.single g r) (Finsupp.single i 1) :=
+  Representation.tprodIsoFree_inv_hom_single_single _ _ _ _ _ _
+
+@[simp] lemma tprodIsoFree_hom_hom_single_tmul_single {α : Type u} (i : α) (g : G) (r s : k) :
+    (tprodIsoFree k G α).hom.hom (Finsupp.single g r ⊗ₜ Finsupp.single i s)
+      = Finsupp.single i (Finsupp.single g (r * s)) :=
+  Representation.tprodIsoFree_hom_hom_single_tmul_single _ _ _ _ _ _ _
+
+def diagonalIsoFree (n : ℕ) :
+  diagonal k G (n + 1) ≅ (free k G).obj (Fin n → G) :=
+groupCohomology.resolution.diagonalSucc k G n ≪≫ tprodIsoFree k G _
+
+@[simp] lemma diagonalIsoFree_hom_hom_single (n : ℕ) (g : Fin (n + 1) → G) (r : k) :
+    (diagonalIsoFree k G n).hom.hom (Finsupp.single g r)
+      = Finsupp.single (fun i => (g i.castSucc)⁻¹ * g i.succ) (Finsupp.single (g 0) r) := by
+  simp only [diagonalIsoFree, Monoidal.transportStruct_tensorObj, Equivalence.symm_functor,
+    Action.functorCategoryEquivalence_inverse, Equivalence.symm_inverse,
+    Action.functorCategoryEquivalence_functor, Iso.trans_hom, Action.comp_hom,
+    Action.FunctorCategoryEquivalence.inverse_obj_V, Monoidal.tensorObj_obj,
+    Action.FunctorCategoryEquivalence.functor_obj_obj, ModuleCat.coe_comp, Function.comp_apply]
+  erw [diagonalSucc_hom_single, tprodIsoFree_hom_hom_single_tmul_single]
+  rw [one_mul]
+
+@[simp] lemma diagonalIsoFree_inv_hom_single_single (n : ℕ) (f : Fin n → G) (g : G) (r : k) :
+    (diagonalIsoFree k G n).inv.hom (Finsupp.single f (Finsupp.single g r))
+      = (Finsupp.single (g • Fin.partialProd f) r) := by
+  simp only [diagonalIsoFree, Monoidal.transportStruct_tensorObj, Equivalence.symm_functor,
+    Action.functorCategoryEquivalence_inverse, Equivalence.symm_inverse,
+    Action.functorCategoryEquivalence_functor, Iso.trans_inv, Action.comp_hom,
+    Action.FunctorCategoryEquivalence.inverse_obj_V, Monoidal.tensorObj_obj,
+    Action.FunctorCategoryEquivalence.functor_obj_obj, ModuleCat.coe_comp, Function.comp_apply]
+  erw [tprodIsoFree_inv_hom_single_single, diagonalSucc_inv_single_single]
+  simp only [mul_one]
+/-def diagonalIsoFree_inv_hom_single_single (n : ℕ) (f : Fin n → G) :
+    (diagonalIsoFree k G n).inv.hom (Finsupp.single f (Finsupp.single 1 1))
+      = (Finsupp.single (Fin.partialProd f) 1) := by
+  simp only [diagonalIsoFree, Monoidal.transportStruct_tensorObj, Equivalence.symm_functor,
+    Action.functorCategoryEquivalence_inverse, Equivalence.symm_inverse,
+    Action.functorCategoryEquivalence_functor, Iso.trans_inv, Action.comp_hom,
+    Action.FunctorCategoryEquivalence.inverse_obj_V, Monoidal.tensorObj_obj,
+    Action.FunctorCategoryEquivalence.functor_obj_obj, ModuleCat.coe_comp, Function.comp_apply]
+  erw [tprodIsoFree_inv_hom_single_single, diagonalSucc_inv_single_single] -- well ig that was a waste of time.
+  simp only [one_smul, mul_one]-/
+/-
+theorem diagonalIsoFree_symm_partialProd_succ (g : Fin (n + 1) → G)
+    (a : Fin (n + 1)) :
+  (diagonalIsoFree k G n).inv.hom
+    (Finsupp.single (Fin.contractNth x (fun x x_1 ↦ x * x_1) i) (Finsupp.single 1 ((-1) ^ (↑x + 1)))) =
+  Finsupp.single (Fin.partialProd i ∘ Fin.succAbove (Fin.succ x)) ((-1) ^ (↑x + 1))
+    ((diagonalIsoFree k G n).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
+      = Finsupp.single (Fin.contractNth a (· * ·) g) _ := by
+  simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
+    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
+    Fin.partialProd_succ]
+  congr
+  ext
+  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
+-/
+
+def d (n : ℕ) : (free k G).obj (Fin (n + 1) → G) ⟶ (free k G).obj (Fin n → G) :=
+freeLift _ fun g => Finsupp.single (fun i => g i.succ) (Finsupp.single (g 0) 1)
+  + Finset.univ.sum fun j : Fin (n + 1) =>
+        Finsupp.single (Fin.contractNth j (· * ·) g)
+          (Finsupp.single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
+
+@[simp] lemma d_single (x : Gⁿ⁺¹) :
+    (d k G n).hom (Finsupp.single x (Finsupp.single 1 1)) =
+      Finsupp.single (fun i => x i.succ) (Finsupp.single (x 0) 1)
+    + Finset.univ.sum fun j : Fin (n + 1) =>
+          Finsupp.single (Fin.contractNth j (· * ·) x)
+            (Finsupp.single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+  simp only [d, freeLift_hom_single_single, map_one, LinearMap.one_apply, smul_add, one_smul]
+
+lemma Fin.partialProd_contractNth_eq (g : Fin (n + 1) → G) (a : Fin (n + 1)) :
+    Fin.partialProd (Fin.contractNth a (· * ·) g) = Fin.partialProd g ∘ a.succ.succAbove := by
+  ext i
+  refine' Fin.inductionOn i _ _
+  · simp only [Fin.partialProd_zero, Function.comp_apply, Fin.succ_succAbove_zero]
+  · intro i hi
+    simp only [Function.comp_apply, Fin.succ_succAbove_succ] at *
+    rw [Fin.partialProd_succ, Fin.partialProd_succ, hi]
+    rcases lt_trichotomy (i : ℕ) a with (h | h | h)
+    · rw [Fin.succAbove_below _ _ (Fin.lt_def.2 h),
+      Fin.contractNth_apply_of_lt _ _ _ _ h, Fin.succAbove_below _ _ (Fin.lt_def.2 _)]
+      · simp only [Fin.coe_castSucc, Fin.val_succ, lt_trans h (Nat.lt_succ_self a)]
+    · rw [Fin.succAbove_below, Fin.contractNth_apply_of_eq _ _ _ _ h,
+        Fin.succAbove_above, Fin.castSucc_fin_succ, Fin.partialProd_succ, mul_assoc]
+      all_goals { simp only [Fin.le_def, h, le_refl, Fin.lt_def, Fin.coe_castSucc, Fin.val_succ,
+        lt_add_iff_pos_right, zero_lt_one]}
+    · rw [Fin.succAbove_above, Fin.succAbove_above, Fin.contractNth_apply_of_gt _ _ _ _ h,
+        Fin.castSucc_fin_succ]
+      all_goals { simp only [Fin.le_def, Fin.coe_castSucc, gt_iff_lt, h, le_of_lt,
+        Fin.val_succ, Nat.succ_le] }
+
+variable (n)
+
+lemma d_comp_diagonalIsoFree_inv_eq :
+    d k G n ≫ (diagonalIsoFree k G n).inv =
+      (diagonalIsoFree k G (n + 1)).inv ≫ (groupCohomology.resolution k G).d (n + 1) n :=
+  free_ext _ _ _ fun i => by
+    simp only [Action.comp_hom, ModuleCat.coe_comp, Function.comp_apply, d_single, d_eq,
+      diagonalIsoFree_inv_hom_single_single]
+    erw [groupCohomology.resolution.d_of]
+    simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero,
+      Fin.succAbove_zero]
+    rw [map_add, diagonalIsoFree_inv_hom_single_single]
+    simp only [map_sum, one_smul, Fin.val_succ]
+    rcongr x
+    · simp only [Pi.smul_apply, smul_eq_mul, Function.comp_apply, Fin.partialProd_succ',
+        mul_right_inj]
+      rfl
+    · rw [diagonalIsoFree_inv_hom_single_single]
+      simp only [one_smul, Fin.partialProd_contractNth_eq]
+
+/-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
+$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
+which calculates the group cohomology of `A`. -/
+noncomputable abbrev barResolution : ChainComplex (Rep k G) ℕ :=
+  ChainComplex.of (fun n => (Rep.free k G).obj (Fin n → G))
+    (fun n => d k G n) fun n => by
+    ext x
+    simp only [(diagonalIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalIsoFree_inv_eq k G _),
+      Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
+      Limits.zero_comp, Limits.comp_zero, Action.zero_hom]
+
+@[simp]
+theorem barResolution.d_def (n : ℕ) :
+    (barResolution k G).d (n + 1) n = d k G n :=
+  ChainComplex.of_d _ _ _ _
+
+/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
+to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
+def barResolutionIso : barResolution k G ≅ groupCohomology.resolution k G := by
+/- Porting note: just needs a `refine'` now, instead of term mode -/
+  refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
+    (diagonalIsoFree k G i).symm) _
+  rintro i j (h : j + 1 = i)
+  subst h
+  simp only [ChainComplex.of_x, Iso.symm_hom, barResolution.d_def, d_comp_diagonalIsoFree_inv_eq]
+
+variable {k G}
+variable (A : Rep k G)
+
+noncomputable def diagonalHomEquiv' :
+    (ofMulAction k G (Fin (n + 1) → G) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
+  Linear.homCongr k
+        ((diagonalIsoFree k G n))
+        (Iso.refl _) ≪≫ₗ freeLiftEquiv _ _
+
+variable {n A}
+
+theorem diagonalHomEquiv_apply' (f : ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
+    diagonalHomEquiv' n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
+  simp only [diagonalHomEquiv', LinearEquiv.trans_apply, Linear.homCongr_apply, Iso.refl_hom,
+    Category.comp_id, freeLiftEquiv_apply, Action.comp_hom, ModuleCat.coe_comp, Function.comp_apply]
+  erw [diagonalIsoFree_inv_hom_single_single] -- why do I try
+  simp only [one_smul]
+
+theorem diagonalHomEquiv'_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
+    ((diagonalHomEquiv' n A).symm f).hom (Finsupp.single x 1) =
+      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
+  unfold diagonalHomEquiv'
+  simp only [LinearEquiv.trans_symm, LinearEquiv.trans_apply, Linear.homCongr_symm_apply,
+    Iso.refl_inv, Category.comp_id, Action.comp_hom, ModuleCat.coe_comp, Function.comp_apply]
+  erw [diagonalIsoFree_hom_hom_single]
+  rw [freeLiftEquiv_symm_apply, one_smul]
+
+/-theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
+    (a : Fin (n + 1)) :
+    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
+      = f (Fin.contractNth a (· * ·) g) := by
+  simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
+    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
+    Fin.partialProd_succ]
+  congr
+  ext
+  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]-/
+
+end Rep
+namespace groupCohomology.barResolution
+
+end groupCohomology.barResolution
