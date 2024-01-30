@@ -374,17 +374,7 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
-/- More general form of `IntermediateField.algebra`.
-
-This instance should have low priority since it is slow to fail:
-before failing, it will cause a search through all `SMul K' K` instances,
-which can quickly get expensive.
--/
-instance (priority := 500) algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
-    [IsScalarTower K' K L] :
-    Algebra K' S :=
-  S.toSubalgebra.algebra'
-#align intermediate_field.algebra' IntermediateField.algebra'
+#noalign intermediate_field.algebra'
 
 instance algebra : Algebra K S :=
   inferInstanceAs (Algebra K S.toSubsemiring)
