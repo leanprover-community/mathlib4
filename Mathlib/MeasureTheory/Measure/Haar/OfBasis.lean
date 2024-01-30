@@ -280,7 +280,7 @@ theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepip
 variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
 
 theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
-    (v.prod w).addHaar = MeasureTheory.Measure.prod v.addHaar w.addHaar := by
+    (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
   simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end NormedSpace
