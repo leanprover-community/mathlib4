@@ -181,7 +181,7 @@ protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s
 
 instance : Inter (Set α) := ⟨Set.inter⟩
 
-/-- The intersection of a set `s` is the set of elements not contained in `s`.
+/-- The complement of a set `s` is the set of elements not contained in `s`.
 
 Note that you should **not** use this definition directly, but instead write `sᶜ`. -/
 protected def compl (s : Set α) : Set α := {a | a ∉ s}
