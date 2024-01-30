@@ -53,6 +53,7 @@ import Mathlib.Tactic.FProp.ContDiff
 import Mathlib.Tactic.FProp.Continuous
 import Mathlib.Tactic.FProp.Attr
 import Mathlib.Tactic.FProp.Core
+import Mathlib.Tactic.FProp.Differentiable
 import Mathlib.Tactic.FProp.Decl
 import Mathlib.Tactic.FProp.Elab
 import Mathlib.Tactic.FProp.FunctionData
