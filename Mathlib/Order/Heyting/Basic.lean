@@ -33,13 +33,6 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `CoheytingAlgebra`: Co-Heyting algebra.
 * `BiheytingAlgebra`: bi-Heyting algebra.
 
-## Notation
-
-* `⇨`: Heyting implication
-* `\`: Difference
-* `￢`: Heyting negation
-* `ᶜ`: (Pseudo-)complement
-
 ## References
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
@@ -56,37 +49,6 @@ universe u
 variable {ι α β : Type*}
 
 /-! ### Notation -/
-
-
-/-- Syntax typeclass for Heyting implication `⇨`. -/
-@[notation_class]
-class HImp (α : Type*) where
-  /-- Heyting implication `⇨` -/
-  himp : α → α → α
-#align has_himp HImp
-
-/-- Syntax typeclass for Heyting negation `￢`.
-
-The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
-while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal.
-See `hnot_eq_compl`.
--/
-@[notation_class]
-class HNot (α : Type*) where
-  /-- Heyting negation `￢` -/
-  hnot : α → α
-#align has_hnot HNot
-
-export HImp (himp)
-export SDiff (sdiff)
-export HNot (hnot)
-
-/-- Heyting implication -/
-infixr:60 " ⇨ " => himp
-
-/-- Heyting negation -/
-prefix:72 "￢" => hnot
 
 section
 variable (α β)

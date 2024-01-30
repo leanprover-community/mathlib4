@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -447,6 +448,11 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
     ⟨fun ⟨x, hx, hy⟩ => hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ =>
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 #align submodule.map_neg Submodule.map_neg
+
+@[simp]
+lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
+    p.comap (-f) = p.comap f := by
+  ext; simp
 
 end AddCommGroup
 

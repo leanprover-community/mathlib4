@@ -59,7 +59,7 @@ namespace ContMDiffSection
 
 variable {I} {I'} {n} {F} {V}
 
-instance : FunLike Cₛ^n⟮I; F, V⟯ M V where
+instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
 
@@ -98,7 +98,7 @@ protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
 #align cont_mdiff_section.mdifferentiable_at ContMDiffSection.mdifferentiableAt
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cont_mdiff_section.coe_inj ContMDiffSection.coe_inj
 
 theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
@@ -106,7 +106,7 @@ theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 #align cont_mdiff_section.coe_injective ContMDiffSection.coe_injective
 
 @[ext]
-theorem ext (h : ∀ x, s x = t x) : s = t := FunLike.ext _ _ h
+theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 #align cont_mdiff_section.ext ContMDiffSection.ext
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by

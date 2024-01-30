@@ -574,7 +574,7 @@ section Coeff
 
 /-- The coefficient of the monomial `m` in the multi-variable polynomial `p`. -/
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
-  @FunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
+  @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
   -- porting note: I changed this from `@CoeFun.coe _ _ (MonoidAlgebra.coeFun _ _) p m` because
   -- I think it should work better syntactically. They are defeq.
 #align mv_polynomial.coeff MvPolynomial.coeff
@@ -756,6 +756,7 @@ theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolyn
   simp [hm.2, hm.1]
 #align mv_polynomial.support_sdiff_support_subset_support_add MvPolynomial.support_sdiff_support_subset_support_add
 
+open scoped symmDiff in
 theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support ∆ q.support ⊆ (p + q).support := by
   rw [symmDiff_def, Finset.sup_eq_union]
@@ -1413,7 +1414,7 @@ def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ �
       have h₂ : algebraMap R (MvPolynomial σ S₂) r = C (algebraMap R S₂ r) := rfl
       simp_rw [OneHom.toFun_eq_coe]
       -- porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
-      change @FunLike.coe (_ →+* _) _ _ _ _ _ = _
+      change @DFunLike.coe (_ →+* _) _ _ _ _ _ = _
       rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
 #align mv_polynomial.map_alg_hom MvPolynomial.mapAlgHom
 
