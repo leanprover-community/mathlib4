@@ -451,7 +451,7 @@ def proveFVarFPropFromLocalTheorems (fpropDecl : FPropDecl) (e : Expr) (fData : 
         trace[Meta.Tactic.fprop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
         return .some r
 
-      if args.isOrderedSubsetOf args' then
+      if isOrderedSubsetOf args args' then
 
         match compare numAppArgs numAppArgs' with
         | .lt =>
@@ -611,7 +611,7 @@ def constAppCase (fpropDecl : FPropDecl) (e : Expr) (fData : FunctionData)
     | return none
 
   let thms ← getTheoremsForFunction functionName fpropDecl.fpropName
-  let thms := thms.filter (fun thm => fData.mainArgs.isOrderedSubsetOf thm.mainArgs)
+  let thms := thms.filter (fun thm => isOrderedSubsetOf fData.mainArgs thm.mainArgs)
   trace[Meta.Tactic.fprop]
     "applicable theorems for {functionName}: {thms.map fun thm => toString thm.thmName}"
 

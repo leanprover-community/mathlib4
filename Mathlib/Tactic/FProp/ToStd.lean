@@ -17,12 +17,10 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FProp
-
-
 set_option autoImplicit true
 
 /-- Check if `a` can be obtained by removing elemnts from `b`. -/
-def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool :=
+def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bool :=
   Id.run do
   if a.size > b.size then
     return false
@@ -39,7 +37,7 @@ def _root_.Array.isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : A
   else
     return false
 
-private def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
+private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e λ xs b => do
     if let .some i ← xs.findIdxM? (λ x => do pure ¬(← x.fvarId!.isLetVar)) then
@@ -48,25 +46,9 @@ private def _root_.Lean.Meta.letTelescopeImpl {α} (e : Expr) (k : Array Expr �
       k xs b
 
 /-- Telescope consuming only let bindings -/
-def _root_.Lean.Meta.letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
+def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
     (k : Array Expr → Expr → n α) : n α :=
   map2MetaM (fun k => letTelescopeImpl e k) k
-
-/-- Modify argument of an expression. Indexed in reverse order. -/
-def _root_.Lean.Expr.modArgRev (modifier : Expr → Expr) (i : Nat) (e : Expr) : Expr :=
-  match i, e with
-  |      0, .app f x => .app f (modifier x)
-  | (i'+1), .app f x => .app (modArgRev modifier i' f) x
-  | _, _ => e
-
-/-- Modify argument of an expression. -/
-def _root_.Lean.Expr.modArg (modifier : Expr → Expr) (i : Nat) (e : Expr)
-    (n := e.getAppNumArgs) : Expr :=
-  Expr.modArgRev modifier (n - i - 1) e
-
-/-- Set argument of an expression. -/
-def _root_.Lean.Expr.setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
-  e.modArg (fun _ => x) i n
 
 /--
   Swaps bvars indices `i` and `j`
@@ -87,57 +69,16 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
   e.instantiate swapBVarArray
 
-
-/-- -/
-def joinlM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
-  if h : 0 < xs.size then
-    xs[1:].foldlM (init:=(← map xs[0])) λ acc x => do op acc (← map x)
-  else
-    pure default
-
-/-- -/
-def joinl [Inhabited β] (xs : Array α) (map : α → β) (op : β → β → β) : β := Id.run do
-  joinlM xs map op
-
-/-- -/
-def joinrM [Monad m] [Inhabited β] (xs : Array α) (map : α → m β) (op : β → β → m β) : m β := do
-  if h : 0 < xs.size then
-    let n := xs.size - 1
-    have : n < xs.size := by apply Nat.sub_one_lt_of_le h (by simp)
-    xs[0:n].foldrM (init:=(← map xs[n])) λ x acc => do op (← map x) acc
-  else
-    pure default
-
-/-- -/
-def joinr [Inhabited β] (xs : Array α) (map : α → β) (op : β → β → β) : β := Id.run do
-  joinrM xs map op
-
-/-- -/
-def mkAppFoldrM (const : Name) (xs : Array Expr) : MetaM Expr := do
-  if xs.size = 0 then
-    return default
-  if xs.size = 1 then
-    return xs[0]!
-  else
-    joinrM xs pure
-      λ x p =>
-        mkAppM const #[x,p]
-
-/-- -/
-def mkAppFoldlM (const : Name) (xs : Array Expr) : MetaM Expr := do
-  if xs.size = 0 then
-    return default
-  if xs.size = 1 then
-    return xs[0]!
-  else
-    joinlM xs pure
-      λ p x =>
-        mkAppM const #[p,x]
-
 /--
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
 -/
-def mkProdElem (xs : Array Expr) : MetaM Expr := mkAppFoldrM ``Prod.mk xs
+def mkProdElem (xs : Array Expr) : MetaM Expr := do
+  match xs.size with
+  | 0 => return default
+  | 1 => return xs[0]!
+  | _ =>
+    let n := xs.size
+    xs[0:n-1].foldrM (init:=xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.
@@ -157,13 +98,13 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   | 0, _ => mkAppM ``Prod.fst #[x]
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM ``Prod.snd #[x]) i' n'
 
-/-- -/
+/-- For an elemnt of a product type(of size`n`) `xs` create an array of all possible projections
+i.e. `#[xs.1, xs.2.1, xs.2.2.1, ..., xs.2..2]` -/
 def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
-  (Array.mkArray n 0)
-    |>.mapIdx (λ i _ => i.1)
+  (Array.range n)
     |>.mapM (λ i => mkProdProj xs i n)
 
-/-- -/
+/-- Uncurry function `f` in `n` arguments. -/
 def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
   if n ≤ 1 then
     return f
