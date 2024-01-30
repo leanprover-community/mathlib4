@@ -1775,10 +1775,10 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Nat.Cast.ImageInt
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Data.Nat.Cast.SetInterval
 import Mathlib.Data.Nat.Cast.Synonym
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
