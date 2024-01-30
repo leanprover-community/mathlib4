@@ -811,11 +811,13 @@ theorem triangle_assoc_comp_left_inv (X Y : C) :
   simp
 #align category_theory.monoidal_category.triangle_assoc_comp_left_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_left_inv
 
+@[reassoc]
 theorem rightUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
     f ⊗ 𝟙 (𝟙_ C) = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
   simp
 #align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.rightUnitor_conjugation
 
+@[reassoc]
 theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
     𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
   simp
