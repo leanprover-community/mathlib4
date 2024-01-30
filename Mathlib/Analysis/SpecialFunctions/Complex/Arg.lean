@@ -228,7 +228,7 @@ theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [ar
 #align complex.arg_of_real_of_nonneg Complex.arg_ofReal_of_nonneg
 
 @[simp, norm_cast]
-lemma nat_cast_arg {n : ℕ} : arg n = 0 :=
+lemma natCast_arg {n : ℕ} : arg n = 0 :=
   ofReal_nat_cast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
