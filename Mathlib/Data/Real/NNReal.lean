@@ -270,6 +270,8 @@ instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
 -- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
+-- note (kmb) : I don't understand this note: the coercion from where to where?
+-- the coercion from ℝ≥0 to ℝ is still `toReal` after this declaration
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)

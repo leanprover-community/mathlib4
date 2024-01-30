@@ -90,7 +90,7 @@ namespace IsROrC
 open ComplexConjugate
 
 /-- Coercion from `ℝ` to an `IsROrC` field. -/
-@[coe] abbrev ofReal : ℝ → K := Algebra.cast
+@[coe] abbrev ofReal : ℝ → K := algebraMap ℝ K
 
 /- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/

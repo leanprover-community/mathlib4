@@ -88,7 +88,7 @@ variable {R K}
 
 @[norm_cast, simp]
 -- Porting note: using `↑` didn't work, so I needed to explicitly put in the cast myself
-theorem coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
+theorem coe_inj {a b : R} : algebraMap R K a = algebraMap R K b ↔ a = b :=
   (IsFractionRing.injective R K).eq_iff
 #align is_fraction_ring.coe_inj IsFractionRing.coe_inj
 

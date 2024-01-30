@@ -121,15 +121,13 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
   Algebra.toRingHom
 #align algebra_map algebraMap
 
-/-- Coercion from a commutative semiring to an algebra over this semiring. -/
-@[coe] def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
-  algebraMap R A
+attribute [coe] algebraMap
 
 namespace algebraMap
 
 scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
     CoeHTCT R A :=
-  ⟨Algebra.cast⟩
+  ⟨algebraMap _ _⟩
 #align algebra_map.has_lift_t algebraMap.coeHTCT
 
 section CommSemiringSemiring
