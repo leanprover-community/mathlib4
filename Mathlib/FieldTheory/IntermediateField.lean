@@ -390,9 +390,7 @@ instance algebra : Algebra K S :=
   inferInstanceAs (Algebra K S.toSubsemiring)
 #align intermediate_field.algebra IntermediateField.algebra
 
-instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
-  S.toSubalgebra.toAlgebra
-#align intermediate_field.to_algebra IntermediateField.toAlgebra
+#noalign intermediate_field.to_algebra
 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
