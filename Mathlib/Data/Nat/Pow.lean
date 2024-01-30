@@ -241,3 +241,5 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
 @[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
 @[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
+
+assert_not_exists Set.range

@@ -3,10 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Group.AddCircle
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"

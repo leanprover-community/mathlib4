@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"

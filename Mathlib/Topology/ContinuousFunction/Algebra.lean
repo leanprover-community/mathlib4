@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
