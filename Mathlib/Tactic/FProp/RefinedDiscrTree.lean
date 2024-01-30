@@ -435,7 +435,7 @@ private structure Context where
 private abbrev M := ReaderT Context $ StateListT (AssocList Expr DTExpr) MetaM
 
 /-
-Caching values is a bit dangerous, because when two expressions are be equal and they live under
+Caching values is a bit dangerous, because when two expressions are equal and they live under
 a different number of binders, then the resulting De Bruijn indices are offset.
 In practice, getting a `.bvar` in a `DTExpr` is very rare, so we exclude such values from the cache.
 -/

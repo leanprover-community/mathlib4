@@ -77,7 +77,7 @@ example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x
     Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by (try measurability); fprop
 
 /-!
-To give more complicated examples we mark theorems about arithmetic operations with `@[fprop]
+To give more complicated examples we mark theorems about arithmetic operations with `@[fprop]`
 
 Again we mark both versions of theorems. Internally `fprop` says that theorems like `measurable_add`
 are in "uncurried form" and theorems like `Measurable.add` are in compositional form.

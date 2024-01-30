@@ -7,7 +7,7 @@ import Mathlib.Tactic.FProp.Elab
 
 /-! # Tests for the `fprop` tactic
 
-This file is designed for developlemnt of fprop and does not depend on most of mathlib. It defineds
+This file is designed for development of fprop and does not depend on most of mathlib. It defines
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
 
