@@ -95,8 +95,7 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   comp f g := g.comp f
   id_comp _ := LinearMap.id_comp _
   comp_id _ := LinearMap.comp_id _
-  assoc f g h := @LinearMap.comp_assoc _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    RingHomCompTriple.ids RingHomCompTriple.ids RingHomCompTriple.ids f g h
+  assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
 -- porting note: was not necessary in mathlib
@@ -124,7 +123,7 @@ instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
 -- porting note: added to ease automation
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=

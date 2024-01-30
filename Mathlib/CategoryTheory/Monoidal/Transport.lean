@@ -17,7 +17,7 @@ we can transport a monoidal structure on `C` along the equivalence as
 More generally, we can transport the lawfulness of a monoidal structure along a suitable faithful
 functor, as `CategoryTheory.Monoidal.induced`.
 The comparison is analogous to the difference between `Equiv.monoid` and
-`Function.Injective.Monoid`.
+`Function.Injective.monoid`.
 
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
@@ -150,7 +150,8 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   { toFunctor := F
     ε := fData.εIso.hom
     μ := fun X Y => (fData.μIso X Y).hom
-    μ_natural := by cases fData; aesop_cat
+    μ_natural_left := by cases fData; aesop_cat
+    μ_natural_right := by cases fData; aesop_cat
     associativity := by cases fData; aesop_cat
     left_unitality := by cases fData; aesop_cat
     right_unitality := by cases fData; aesop_cat }
@@ -224,9 +225,8 @@ def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
   monoidalInverse (fromTransported e)
 #align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
 
-instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor := by
-  dsimp [toTransported]
-  infer_instance
+instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
+  inferInstanceAs (IsEquivalence e.functor)
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]

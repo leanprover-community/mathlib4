@@ -3,7 +3,7 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Fixed
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
 
@@ -63,10 +63,10 @@ linear independence of characters -/
   have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
     LinearIndependent.comp (ι' := L ≃ₐ[K] L)
       (linearIndependent_monoidHom L L) (fun f => f)
-      (fun x y h => by ext; exact FunLike.ext_iff.1 h _)
+      (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
-  fun H => Units.ne_zero (f 1) (FunLike.ext_iff.1 (h H) 1)
+  fun H => Units.ne_zero (f 1) (DFunLike.ext_iff.1 (h H) 1)
 
 end Hilbert90
 section

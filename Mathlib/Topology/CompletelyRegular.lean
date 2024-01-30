@@ -29,8 +29,8 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 
 ### T₃.₅ spaces
 
-* `T35Space.t3Space`: A T₃.₅ is a T₃ space.
-* `T4Space.t35Space`: A T₄ space is a T₃.₅ space.
+* `T35Space.instT3Space`: A T₃.₅ space is a T₃ space.
+* `T4Space.instT35Space`: A T₄ space is a T₃.₅ space.
 
 ## Implementation notes
 
@@ -57,12 +57,12 @@ variable {X : Type u} [TopologicalSpace X] [T1Space X]
 
 /-- A space is completely regular if points can be separated from closed sets via
   continuous functions to the unit interval. -/
-@[mk_iff completelyRegularSpace_iff]
+@[mk_iff]
 class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
-  completely_regular : ∀ (x : X), ∀ (K : Set X) (_: IsClosed K), x ∉ K →
+  completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
 
-instance CompletelyRegularSpace.RegularSpace [CompletelyRegularSpace X] : RegularSpace X := by
+instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : RegularSpace X := by
   rw [regularSpace_iff]
   intro s a hs ha
   obtain ⟨f, cf, hf, hhf⟩ := CompletelyRegularSpace.completely_regular a s hs ha
@@ -70,10 +70,10 @@ instance CompletelyRegularSpace.RegularSpace [CompletelyRegularSpace X] : Regula
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
-instance NormalSpace.completelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := by
+instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
   intro x K hK hx
-  have cx : IsClosed {x} := by apply T1Space.t1
+  have cx : IsClosed {x} := T1Space.t1 x
   have d : Disjoint {x} K := by rwa [Set.disjoint_iff, subset_empty_iff, singleton_inter_eq_empty]
   let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
   let g : X → I := fun x => ⟨f x, hficc x⟩
@@ -83,15 +83,15 @@ instance NormalSpace.completelyRegularSpace [NormalSpace X] : CompletelyRegularS
   exact ⟨g, cg, hgx, hgK⟩
 
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
-@[mk_iff t35Space_iff]
+@[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
 
-instance T35Space.t3space [T35Space X] : T3Space X := by
-  have : T0Space X := by apply T1Space.t0Space
-  have : RegularSpace X := by apply CompletelyRegularSpace.RegularSpace
+instance T35Space.instT3space [T35Space X] : T3Space X := by
+  have : T0Space X := T1Space.t0Space
+  have : RegularSpace X := CompletelyRegularSpace.instRegularSpace
   exact {}
 
-instance T4Space.t35Space [T4Space X] : T35Space X := by
-  have : T1Space X := by apply T2Space.t1Space
-  have : CompletelyRegularSpace X := by apply NormalSpace.completelyRegularSpace
+instance T4Space.instT35Space [T4Space X] : T35Space X := by
+  have : T1Space X := T2Space.t1Space
+  have : CompletelyRegularSpace X := NormalSpace.instCompletelyRegularSpace
   exact {}

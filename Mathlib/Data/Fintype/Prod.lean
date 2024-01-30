@@ -44,11 +44,16 @@ end Set
 instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
-@[simp]
-theorem Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
-    (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
-  rfl
+namespace Finset
+variable [Fintype α] [Fintype β] {s : Finset α} {t : Finset β}
+
+@[simp] lemma univ_product_univ : univ ×ˢ univ = (univ : Finset (α × β)) := rfl
 #align finset.univ_product_univ Finset.univ_product_univ
+
+@[simp] lemma product_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
+  simp [eq_univ_iff_forall, forall_and]
+
+end Finset
 
 @[simp]
 theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
@@ -82,7 +87,7 @@ instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivia
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
 theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
-  let ⟨m⟩ := @Pi.Nonempty ι π _
+  let ⟨m⟩ := @Pi.instNonempty ι π _
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 

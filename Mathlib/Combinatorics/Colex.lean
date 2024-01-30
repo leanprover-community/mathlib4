@@ -119,7 +119,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
-  by_contra' hat
+  by_contra! hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
@@ -266,6 +266,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
   decidableLE := instDecidableLE
   decidableLT := instDecidableLT
 
+open scoped symmDiff
+
 private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofColex t).Nonempty := by
   simpa
 
@@ -315,7 +317,7 @@ lemma toColex_image_lt_toColex_image (hf : StrictMono f) :
   lt_iff_lt_of_le_iff_le <| toColex_image_le_toColex_image hf
 
 lemma toColex_image_ofColex_strictMono (hf : StrictMono f) :
-    StrictMono fun s ↦ toColex $ image f $ ofColex s :=
+    StrictMono fun s ↦ toColex <| image f <| ofColex s :=
   fun _s _t ↦ (toColex_image_lt_toColex_image hf).2
 
 /-! ### Initial segments -/
@@ -334,7 +336,7 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
   classical
   simp_rw [← sdiff_eq_empty_iff_subset, ← not_nonempty_iff_eq_empty]
-  by_contra' h
+  by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht
   obtain hst | hst | hts := trichotomous_of (α := Colex α) (· < ·) (toColex s) (toColex t)
@@ -402,7 +404,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in 
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn $ by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order

@@ -3,7 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -23,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Polynomial BigOperators
+open Set Function Polynomial BigOperators
 
 namespace Module
 /--
@@ -69,6 +70,9 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
+@[simp] lemma C_smul (t : R) (m : AEval R M a) : C t • m = t • m :=
+  (of R M a).symm.injective <| by simp
+
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [← of_aeval_smul, aeval_X]
 
@@ -79,11 +83,76 @@ lemma of_symm_X_smul (m : AEval R M a) :
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
   smul_assoc r f m := by
     apply (of R M a).symm.injective
-    rw [of_symm_smul, map_smul, smul_assoc]
-    rfl
+    rw [of_symm_smul, map_smul, smul_assoc, map_smul, of_symm_smul]
 
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
+
+@[simp]
+lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
+    (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by
+  ext p
+  simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
+  change (∀ m : M, aeval a p • m = 0) ↔ _
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+
+section Submodule
+
+variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
+  {q : Submodule R[X] <| AEval R M a}
+
+variable (R M) in
+/-- We can turn an `R[X]`-submodule into an `R`-submodule by forgetting the action of `X`. -/
+def comapSubmodule :
+    CompleteLatticeHom (Submodule R[X] <| AEval R M a) (Submodule R M) :=
+  (Submodule.orderIsoMapComap (of R M a)).symm.toCompleteLatticeHom.comp <|
+    Submodule.restrictScalarsLatticeHom R R[X] (AEval R M a)
+
+@[simp] lemma mem_comapSubmodule {x : M} :
+    x ∈ comapSubmodule R M a q ↔ of R M a x ∈ q :=
+  Iff.rfl
+
+@[simp] lemma comapSubmodule_le_comap :
+    comapSubmodule R M a q ≤ (comapSubmodule R M a q).comap (Algebra.lsmul R R M a) := by
+  intro m hm
+  simpa only [Submodule.mem_comap, Algebra.lsmul_coe, mem_comapSubmodule, ← X_smul_of] using
+    q.smul_mem (X : R[X]) hm
+
+/-- An `R`-submodule which is stable under the action of `a` can be promoted to an
+`R[X]`-submodule. -/
+def mapSubmodule : Submodule R[X] <| AEval R M a :=
+  { toAddSubmonoid := p.toAddSubmonoid.map (of R M a)
+    smul_mem' := by
+      rintro f - ⟨m : M, h : m ∈ p, rfl⟩
+      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_map,
+        Submodule.mem_toAddSubmonoid]
+      exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
+
+@[simp] lemma mem_mapSubmodule {m : AEval R M a} :
+    m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=
+  ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
+
+@[simp] lemma mapSubmodule_comapSubmodule (h := comapSubmodule_le_comap a) :
+    mapSubmodule a (p := comapSubmodule R M a q) h = q := by
+  ext; simp
+
+@[simp] lemma comapSubmodule_mapSubmodule :
+    comapSubmodule R M a (mapSubmodule a hp) = p := by
+  ext; simp
+
+variable (R M)
+
+lemma injective_comapSubmodule : Injective (comapSubmodule R M a) := by
+  intro q₁ q₂ hq
+  rw [← mapSubmodule_comapSubmodule (q := q₁), ← mapSubmodule_comapSubmodule (q := q₂)]
+  simp_rw [hq]
+
+lemma range_comapSubmodule :
+    range (comapSubmodule R M a) = {p | p ≤ p.comap (Algebra.lsmul R R M a)} :=
+  le_antisymm (fun _ ⟨_, hq⟩ ↦ hq ▸ comapSubmodule_le_comap a)
+    (fun _ hp ↦ ⟨mapSubmodule a hp, comapSubmodule_mapSubmodule a hp⟩)
+
+end Submodule
 
 end AEval
 
@@ -154,8 +223,8 @@ namespace PolynomialModule
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
-instance funLike : FunLike (PolynomialModule R M) ℕ fun _ => M :=
-  Finsupp.funLike
+instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
+  Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
   Finsupp.coeFun
@@ -409,14 +478,10 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
   eval_map R f q r
 #align polynomial_module.eval_map' PolynomialModule.eval_map'
 
--- Porting note: Synthesized `RingHomCompTriple (RingHom.id R) (RingHom.id R) (RingHom.id R)`
--- in a very ugly way.
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
 @[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
-  @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (@RingHomInvPair.triples _ _ _ _ _ _ RingHomInvPair.ids)
-    ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
+  LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))
 #align polynomial_module.comp PolynomialModule.comp
 
 theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i • single R 0 m := by

@@ -402,8 +402,8 @@ theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
 theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     Step L₁ L₂ → sizeOf L₂ < sizeOf L₁
   | _, _, @Step.not _ L1 L2 x b => by
-    induction' L1 with hd tl ih
-    case nil =>
+    induction L1 with
+    | nil =>
       -- dsimp [sizeOf]
       dsimp
       simp only [Bool.sizeOf_eq_one]
@@ -416,7 +416,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
       apply Nat.zero_lt_one
-    case cons =>
+    | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
 #align free_group.red.sizeof_of_step FreeGroup.Red.sizeof_of_step
@@ -737,7 +737,7 @@ theorem lift.of {x} : lift f (of x) = f x :=
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
 #align free_add_group.lift.unique FreeAddGroup.lift.unique
 
@@ -754,7 +754,7 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 
 @[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -1123,16 +1123,16 @@ theorem reduce.cons (x) :
 @[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
   maximal reduction."]
 theorem reduce.red : Red L (reduce L) := by
-  induction' L with hd1 tl1 ih
-  case nil => constructor
-  case cons =>
+  induction L with
+  | nil => constructor
+  | cons hd1 tl1 ih =>
     dsimp
     revert ih
     generalize htl : reduce tl1 = TL
     intro ih
-    cases' TL with hd2 tl2
-    case nil => exact Red.cons_cons ih
-    case cons =>
+    cases TL with
+    | nil => exact Red.cons_cons ih
+    | cons hd2 tl2 =>
       dsimp only
       split_ifs with h
       · trans
@@ -1147,40 +1147,37 @@ theorem reduce.red : Red L (reduce L) := by
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red
 
--- porting notes: deleted mathport junk and manually formatted below.
 @[to_additive]
-theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α} {b},
-    ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
-  | [], L2 ,L3, _, _ => fun h => by cases L2 <;> injections
-  | (x, b)::L1, L2, L3, x', b' => by
-      dsimp
-      cases r : reduce L1 with
-      | nil =>
-        dsimp
-        intro h
-        exfalso
-        have := congr_arg List.length h
-        simp [List.length] at this
-        rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-        simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
-        -- Porting note: needed to add this step in #3414.
-        -- This is caused by https://github.com/leanprover/lean4/pull/2146.
-        -- Nevertheless the proof could be cleaned up.
-        cases this
-      | cons hd tail =>
-        cases' hd with y c
-        dsimp only
-        split_ifs with h <;> intro H
-        · rw [ H ] at r
-          exact @reduce.not _ L1 ((y, c)::L2) L3 x' b' r
-        · rcases L2 with ( _ | ⟨ a , L2 ⟩ )
-          · injections
-            subst_vars
-            simp at h
-          · refine' @reduce.not _ L1 L2 L3 x' b' _
-            injection H with _ H
-            rw [ r , H ]
-            rfl
+theorem reduce.not {p : Prop} :
+    ∀ {L₁ L₂ L₃ : List (α × Bool)} {x b}, reduce L₁ = L₂ ++ (x, b) :: (x, !b) :: L₃ → p
+  | [], L2, L3, _, _ => fun h => by cases L2 <;> injections
+  | (x, b) :: L1, L2, L3, x', b' => by
+    dsimp
+    cases r : reduce L1 with
+    | nil =>
+      dsimp; intro h
+      exfalso
+      have := congr_arg List.length h
+      simp? [List.length] at this says
+        simp only [List.length, zero_add, List.length_append] at this
+      rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
+      simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
+      -- Porting note: needed to add this step in #3414.
+      -- This is caused by https://github.com/leanprover/lean4/pull/2146.
+      -- Nevertheless the proof could be cleaned up.
+      cases this
+    | cons hd tail =>
+      cases' hd with y c
+      dsimp only
+      split_ifs with h <;> intro H
+      · rw [H] at r
+        exact @reduce.not _ L1 ((y, c) :: L2) L3 x' b' r
+      rcases L2 with (_ | ⟨a, L2⟩)
+      · injections; subst_vars
+        simp at h
+      · refine' @reduce.not _ L1 L2 L3 x' b' _
+        injection H with _ H
+        rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not
 #align free_add_group.reduce.not FreeAddGroup.reduce.not
 
@@ -1343,8 +1340,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser
@@ -1366,7 +1363,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H $ (Red.cons_cons_iff _).1 $ h.symm ▸ H2
+      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not

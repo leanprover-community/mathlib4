@@ -220,6 +220,19 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
     Category.comp_id]
 #align group_cohomology.inhomogeneous_cochains_iso groupCohomology.inhomogeneousCochainsIso
 
+/-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
+`n`th differential in the complex of inhomogeneous cochains. -/
+abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+
+/-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
+abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
+  (inhomogeneousCochains A).iCycles n
+
+/-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
+inhomogeneous cochains. -/
+abbrev toCocycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) → A) ⟶ cocycles A j :=
+  (inhomogeneousCochains A).toCycles i j
+
 end groupCohomology
 
 open groupCohomology
@@ -229,6 +242,12 @@ of inhomogeneous cochains. -/
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
+
+/-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
+`G`-representation `A`. -/
+abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
+    groupCohomology.cocycles A n ⟶ groupCohomology A n :=
+  (inhomogeneousCochains A).homologyπ n
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/

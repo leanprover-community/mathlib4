@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Monoidal.Linear
 
 #align_import algebra.category.Module.monoidal.basic from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
@@ -233,13 +232,13 @@ theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
     (l : L) (m : M) :
-      (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
+    (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
   rfl
 
 @[simp]
 theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
     (l : L) (n : N) :
-      (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
+    (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
   rfl
 
 @[simp]

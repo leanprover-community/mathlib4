@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
 import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -88,26 +88,20 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
   · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonneg_iff, this]
-    rw [one_le_div] <;> norm_num1
-    apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
-    apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg; norm_num1
-    apply rpow_pos_of_pos; norm_num1
-    apply hf' 18; norm_num1
+    rw [hf _ (by norm_num1), log_nonneg_iff (by positivity), this, one_le_div (by norm_num1)]
     norm_num1
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    · conv in 512 => equals 2 ^ 9 => norm_num1
-      conv in 1024 => equals 2 ^ 10 => norm_num1
-      conv in 32 => rw [← Nat.cast_ofNat]
-      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
-      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
-      rw [← rpow_mul, ← rpow_nat_cast]
-      apply rpow_le_rpow_of_exponent_le
-      all_goals norm_num1
-    · apply rpow_pos_of_pos four_pos
+    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)), this,
+        div_le_one (by positivity)]
+    conv in 512 => equals 2 ^ 9 => norm_num1
+    conv in 2 * 512 => equals 2 ^ 10 => norm_num1
+    conv in 32 => rw [← Nat.cast_ofNat]
+    rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+    conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+    rw [← rpow_mul, ← rpow_nat_cast]
+    apply rpow_le_rpow_of_exponent_le
+    all_goals norm_num1
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
@@ -178,13 +172,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow n2_pos ((Finset.card_le_of_subset fun x hx => _).trans this.le)
+    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
@@ -192,7 +186,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
 
 namespace Nat
 
-/-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
+/-- Proves that **Bertrand's postulate** holds for all sufficiently large `n`.
 -/
 theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by

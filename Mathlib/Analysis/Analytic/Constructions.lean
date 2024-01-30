@@ -149,7 +149,7 @@ lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝
     AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
   (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
 
-/-- Multiplication in a normed algebra over `𝕜` is -/
+/-- Multiplication in a normed algebra over `𝕜` is analytic. -/
 lemma analyticAt_mul (z : A × A) : AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.2) z :=
   (ContinuousLinearMap.mul 𝕜 A).analyticAt_bilinear z
 
@@ -165,12 +165,12 @@ lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E �
     AnalyticOn 𝕜 (fun x ↦ f x • g x) s :=
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
-/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
+/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
   (analyticAt_mul _).comp₂ hf hg
 
-/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
+/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (fun x ↦ f x * g x) s :=
   fun _ m ↦ (hf _ m).mul (hg _ m)
@@ -178,10 +178,12 @@ lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
-  induction' n with m hm
-  · simp only [Nat.zero_eq, pow_zero]
+  induction n with
+  | zero =>
+    simp only [Nat.zero_eq, pow_zero]
     apply analyticAt_const
-  · simp only [pow_succ]
+  | succ m hm =>
+    simp only [pow_succ]
     exact hf.mul hm
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/

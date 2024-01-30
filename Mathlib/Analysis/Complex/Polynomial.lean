@@ -3,9 +3,10 @@ Copyright (c) 2019 Chris Hughes All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
+import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Analysis.Complex.Liouville
-import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
 #align_import analysis.complex.polynomial from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
@@ -27,7 +28,7 @@ namespace Complex
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
-  by_contra' hf'
+  by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
   infinity at infinity, thus `f⁻¹` tends to zero at infinity. By Liouville's theorem, `f⁻¹ = 0`. -/
   have (z : ℂ) : (f.eval z)⁻¹ = 0 :=

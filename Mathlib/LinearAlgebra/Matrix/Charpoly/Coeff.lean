@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jalex Stark
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.Data.Polynomial.Laurent
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent
 
 #align_import linear_algebra.matrix.charpoly.coeff from "leanprover-community/mathlib"@"9745b093210e9dac443af24da9dba0f9e2b6c912"
@@ -162,7 +163,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    FunLike.congr_fun this M
+    DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
     simp [Function.comp]
@@ -193,6 +194,69 @@ theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
   simp
 #align matrix.det_eq_sign_charpoly_coeff Matrix.det_eq_sign_charpoly_coeff
+
+lemma eval_det_add_X_smul (A : Matrix n n R[X]) (M : Matrix n n R) :
+    (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
+  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, _root_.map_mul]
+  simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
+    mul_zero, add_zero]
+
+lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
+    (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [det_succ_row_zero, map_sum, eval_finset_sum]
+    simp only [add_apply, smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
+      submatrix_smul, Pi.add_apply, Pi.smul_apply, submatrix_map, derivative_mul, map_add,
+      derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
+      mul_zero, add_zero, eval_det_add_X_smul, eval_pow, eval_neg, eval_one]
+    rw [Finset.sum_eq_single 0]
+    · simp only [Fin.val_zero, pow_zero, derivative_one, eval_zero, one_apply_eq, eval_one,
+        mul_one, zero_add, one_mul, Fin.succAbove_zero, submatrix_one _ (Fin.succ_injective _),
+        det_one, IH, trace_submatrix_succ]
+    · intro i _ hi
+      cases n with
+      | zero => exact (hi (Subsingleton.elim i 0)).elim
+      | succ n =>
+        simp only [one_apply_ne' hi, eval_zero, mul_zero, zero_add, zero_mul, add_zero]
+        rw [det_eq_zero_of_column_eq_zero 0, eval_zero, mul_zero]
+        intro j
+        rw [submatrix_apply, Fin.succAbove_below, one_apply_ne]
+        · exact (bne_iff_ne (Fin.succ j) (Fin.castSucc 0)).mp rfl
+        · rw [Fin.castSucc_zero]; exact lt_of_le_of_ne (Fin.zero_le _) hi.symm
+    · exact fun H ↦ (H <| Finset.mem_univ _).elim
+
+/-- The derivative of `det (1 + M X)` at `0` is the trace of `M`. -/
+lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
+    (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
+  let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
+  rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
+  convert derivative_det_one_add_X_smul_aux (e M)
+  · ext; simp
+  · delta trace
+    rw [← (Fintype.equivFin n).symm.sum_comp]
+    rfl
+
+lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
+    (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
+  simp only [← derivative_det_one_add_X_smul, ← coeff_zero_eq_eval_zero,
+    coeff_derivative, zero_add, Nat.cast_zero, mul_one]
+
+lemma det_one_add_X_smul (M : Matrix n n R) :
+    det (1 + (X : R[X]) • M.map C) =
+      (1 : R[X]) + trace M • X + (det (1 + (X : R[X]) • M.map C)).divX.divX * X ^ 2 := by
+  rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
+    ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
+    add_comm (1 : R[X]), ← C.map_one]
+  convert (divX_mul_X_add _).symm
+  rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
+
+/-- The first two terms of the taylor expansion of `det (1 + r • M)` at `r = 0`. -/
+lemma det_one_add_smul (r : R) (M : Matrix n n R) :
+    det (1 + r • M) =
+      1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
+  simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
 
 end Matrix
 
@@ -299,7 +363,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; cases' eq_or_ne i j with hij hij <;> simp [hij]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :

@@ -50,6 +50,8 @@ ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
+ERR_ARR = 18 # space after "←"
+ERR_NUM_LIN = 19 # file is too large
 
 exceptions = []
 
@@ -59,20 +61,22 @@ ROOT_DIR = SCRIPTS_DIR.parent
 
 with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
-        filename, _, _, _, _, errno, *_ = exline.split()
+        filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path)]
+            exceptions += [(ERR_COP, path, None)]
         if errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path)]
+            exceptions += [(ERR_MOD, path, None)]
         if errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path)]
+            exceptions += [(ERR_LIN, path, None)]
         if errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path)]
+            exceptions += [(ERR_OPT, path, None)]
         if errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path)]
+            exceptions += [(ERR_AUT, path, None)]
         if errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path)]
+            exceptions += [(ERR_TAC, path, None)]
+        if errno == "ERR_NUM_LIN":
+            exceptions += [(ERR_NUM_LIN, path, extra[1])]
 
 new_exceptions = False
 
@@ -86,7 +90,7 @@ def annotate_comments(enumerate_lines):
     """
     in_comment = False
     for line_nr, line, *rem in enumerate_lines:
-        if line.startswith("--"):
+        if line.lstrip().startswith("--"):
             yield line_nr, line, *rem, True
             continue
         if "/-" in line:
@@ -297,6 +301,19 @@ def isolated_by_dot_semicolon_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
+def left_arrow_check(lines, path):
+    errors = []
+    newlines = []
+    for line_nr, line, is_comment, in_string in annotate_strings(annotate_comments(lines)):
+        if is_comment or in_string:
+            newlines.append((line_nr, line))
+            continue
+        new_line = re.sub(r'←(?!%)(\S)', r'← \1', line)
+        if new_line != line:
+            errors += [(ERR_ARR, line_nr, path)]
+        newlines.append((line_nr, new_line))
+    return errors, newlines
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -314,7 +331,7 @@ def output_message(path, line_nr, code, msg):
 def format_errors(errors):
     global new_exceptions
     for errno, line_nr, path in errors:
-        if (errno, path.resolve()) in exceptions:
+        if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
         if errno == ERR_COP:
@@ -343,6 +360,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
+        if errno == ERR_ARR:
+            output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -355,11 +374,27 @@ def lint(path, fix=False):
                             four_spaces_in_second_line,
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
-                            set_option_check]:
+                            set_option_check,
+                            left_arrow_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
         if not import_only_check(newlines, path):
+            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
+            # Each exception contains a "watermark". If the file is longer than that, we also complain.
+            if len(lines) > 1500:
+                ex = [e for e in exceptions if e[1] == path.resolve()]
+                if ex:
+                    (_ERR_NUM, _path, watermark) = list(ex)[0]
+                    assert int(watermark) > 500 # protect against parse error
+                    is_too_long = len(lines) > int(watermark)
+                else:
+                    is_too_long = True
+                if is_too_long:
+                    new_exceptions = True
+                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
+                    watermark = len(lines) // 100 * 100 + 200
+                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
