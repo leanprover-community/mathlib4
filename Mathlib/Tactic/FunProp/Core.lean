@@ -134,7 +134,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
   for x in postponed do
     if (← instantiateMVars x).isMVar then
-      trace[Meta.Tactic.fun_prop.discharge] 
+      trace[Meta.Tactic.fun_prop.discharge]
         "{← ppOrigin thmId}, failed to infer data {indentExpr x}"
       return false
 
@@ -214,7 +214,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
   try
     xs[id_X]!.mvarId!.assignIfDefeq X
   catch _ =>
-    trace[Meta.Tactic.fun_prop.discharge] 
+    trace[Meta.Tactic.fun_prop.discharge]
       "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
@@ -292,7 +292,7 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
     xs[id_x]!.mvarId!.assignIfDefeq x
     xs[id_Y]!.mvarId!.assignIfDefeq Y
   catch _ =>
-    trace[Meta.Tactic.fun_prop.discharge] 
+    trace[Meta.Tactic.fun_prop.discharge]
       "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
@@ -317,7 +317,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     xs[id_f]!.mvarId!.assignIfDefeq f
     xs[id_g]!.mvarId!.assignIfDefeq g
   catch _ =>
-    trace[Meta.Tactic.fun_prop.discharge] 
+    trace[Meta.Tactic.fun_prop.discharge]
       "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 
@@ -342,7 +342,7 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
   try
     xs[id_f]!.mvarId!.assignIfDefeq f
   catch _ =>
-    trace[Meta.Tactic.fun_prop.discharge] 
+    trace[Meta.Tactic.fun_prop.discharge]
       "failed to use `{← ppOrigin (.decl thm.thmName)}` on `{e}`"
     return none
 

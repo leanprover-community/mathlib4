@@ -10,6 +10,10 @@ import Mathlib.Topology.Constructions
 
 import Mathlib.Tactic.FunProp
 
+/-!
+## `fun_prop` minimal setup for Measurable
+-/
+
 open Mathlib
 
 -- mark definition
