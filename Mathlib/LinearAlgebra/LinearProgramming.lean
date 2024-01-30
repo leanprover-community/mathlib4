@@ -42,6 +42,11 @@ def LinearProgram.dual (LP : LinearProgram R M N) :=
 
 -- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
 
+theorem LinearProgram.weakDuality (LP : LinearProgram R M N)
+    {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) :
+    LP.objective c ≤ d LP.upper :=
+  sorry
+
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
 theorem LinearProgram.strongDuality (LP : LinearProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual.Nonempty) :
