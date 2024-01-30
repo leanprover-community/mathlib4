@@ -93,7 +93,6 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
-import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Mathport.Notation
 
