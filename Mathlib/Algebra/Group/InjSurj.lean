@@ -48,6 +48,15 @@ protected def semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective f)
 #align function.injective.semigroup Function.Injective.semigroup
 #align function.injective.add_semigroup Function.Injective.addSemigroup
 
+/-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
+`*` from a commutative magma. -/
+@[to_additive (attr := reducible) -- See note [reducible non-instances]
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₁ where
+  mul_comm x y := hf <| by rw [mul, mul, mul_comm]
+
 /-- A type endowed with `*` is a commutative semigroup, if it admits an injective map that
 preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
@@ -372,6 +381,15 @@ protected def semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
   { ‹Mul M₂› with mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc] }
 #align function.surjective.semigroup Function.Surjective.semigroup
 #align function.surjective.add_semigroup Function.Surjective.addSemigroup
+
+/-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
+`*` from a commutative semigroup. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₂ where
+  mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
 `*` from a commutative semigroup. See note [reducible non-instances]. -/
