@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.Init.Align
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 #align_import category_theory.abelian.pseudoelements from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"

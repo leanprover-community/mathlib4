@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 
 /-!
 # Extensions and lifts in bicategories

@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 
 #align_import category_theory.comm_sq from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
