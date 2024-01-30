@@ -9,7 +9,6 @@ import Mathlib.Data.Subtype
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Cases
 import Mathlib.Order.Notation
 
