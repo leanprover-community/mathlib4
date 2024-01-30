@@ -36,11 +36,6 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
 
-noncomputable
-instance preserves_smaller_limits_toTopCat :
-    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
-  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
-
 -- include hC
 -- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
 
