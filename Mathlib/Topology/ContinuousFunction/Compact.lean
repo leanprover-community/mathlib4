@@ -282,12 +282,12 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
 
 variable {α E}
 
--- to match `BoundedContinuousFunction.evalClm`
+-- to match `BoundedContinuousFunction.evalCLM`
 /-- The evaluation at a point, as a continuous linear map from `C(α, 𝕜)` to `𝕜`. -/
-def evalClm (x : α) : C(α, E) →L[𝕜] E :=
-  (BoundedContinuousFunction.evalClm 𝕜 x).comp
+def evalCLM (x : α) : C(α, E) →L[𝕜] E :=
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp
     (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
-#align continuous_map.eval_clm ContinuousMap.evalClm
+#align continuous_map.eval_clm ContinuousMap.evalCLM
 
 end
 
