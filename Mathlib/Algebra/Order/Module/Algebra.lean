@@ -81,14 +81,13 @@ def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
   let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
   match ← core q(inferInstance) pα a with
   | .positive pa =>
+    let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
     try
-      let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
       let _instβring ← synthInstanceQ q(StrictOrderedSemiring $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
       assertInstancesCommute
       return .positive q(algebraMap_pos $β $pa)
     catch _ =>
-      let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
       let _instβring ← synthInstanceQ q(OrderedSemiring $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
       assertInstancesCommute
