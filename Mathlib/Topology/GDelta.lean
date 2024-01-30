@@ -96,6 +96,8 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
   · rintro ⟨f, hf, rfl⟩
     apply isGδ_iInter_of_isOpen hf
 
+alias ⟨IsGδ.eq_iInter_nat, _⟩ := isGδ_iff_eq_iInter_nat
+
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
 theorem isGδ_iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
