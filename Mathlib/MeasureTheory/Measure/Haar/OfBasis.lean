@@ -214,6 +214,36 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
+theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
+  ext x
+  simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
+    mem_parallelepiped_iff]
+  constructor
+  · intro h
+    rcases h with ⟨t, ht1, ht2⟩
+    constructor
+    · use t ∘ Sum.inl
+      constructor
+      · exact ⟨fun x ↦ ht1.1 (Sum.inl x), fun x ↦ ht1.2 (Sum.inl x)⟩
+      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+    · use t ∘ Sum.inr
+      constructor
+      · exact ⟨fun x ↦ ht1.1 (Sum.inr x), fun x ↦ ht1.2 (Sum.inr x)⟩
+      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+  intro h
+  rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
+  use Sum.elim t s
+  constructor
+  · constructor
+    · change ∀ x : ι ⊕ ι', 0 ≤ Sum.elim t s x
+      aesop
+    · change ∀ x : ι ⊕ ι', Sum.elim t s x ≤ 1
+      aesop
+  ext
+  · simp [ht2, Prod.fst_sum]
+  · simp [hs2, Prod.snd_sum]
+
 variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
@@ -246,6 +276,12 @@ theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
+
+variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
+
+theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+    (v.prod w).addHaar = MeasureTheory.Measure.prod v.addHaar w.addHaar := by
+  simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end NormedSpace
 
