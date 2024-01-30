@@ -280,7 +280,7 @@ theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : 
 theorem rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r :=
   rfl
 
-  attribute [eqns rotateR_node rotateR_nil] rotateR
+attribute [eqns rotateR_node rotateR_nil] rotateR
 
 -- should not happen
 /-- A left balance operation. This will rebalance a concatenation, assuming the original nodes are
