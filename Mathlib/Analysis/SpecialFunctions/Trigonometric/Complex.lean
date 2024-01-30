@@ -66,13 +66,13 @@ iff this number is equal to `k * π / 2` for an integer `k`.
 
 Note that this lemma takes into account that we use zero as the junk value for division by zero.
 See also `Complex.tan_eq_zero_iff'`.  -/
-theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
+theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
     ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
-  field_simp [mul_comm]
+  field_simp [mul_comm, eq_comm]
 #align complex.tan_eq_zero_iff Complex.tan_eq_zero_iff
 
-theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
+theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
   rw [← not_exists, not_iff_not, tan_eq_zero_iff]
 #align complex.tan_ne_zero_iff Complex.tan_ne_zero_iff
 
@@ -84,8 +84,8 @@ theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
 then it is equal to zero iff the number is equal to `k * π` for an integer `k`.
 
 See also `Complex.tan_eq_zero_iff` for a version that takes into account junk values of `θ`. -/
-theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π := by
-  simp [tan, hθ, sin_eq_zero_iff]
+theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
+  simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
@@ -254,6 +254,18 @@ theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * 
 
 theorem sin_eq_neg_one_iff {x : ℝ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x :=
   mod_cast @Complex.sin_eq_neg_one_iff x
+
+theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ :=
+  mod_cast @Complex.tan_eq_zero_iff θ
+#align real.tan_eq_zero_iff Real.tan_eq_zero_iff
+
+theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
+  revert hθ
+  exact_mod_cast @Complex.tan_eq_zero_iff' θ
+
+theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
+  mod_cast @Complex.tan_ne_zero_iff θ
+#align real.tan_ne_zero_iff Real.tan_ne_zero_iff
 
 theorem lt_sin_mul {x : ℝ} (hx : 0 < x) (hx' : x < 1) : x < sin (π / 2 * x) := by
   simpa [mul_comm x] using
