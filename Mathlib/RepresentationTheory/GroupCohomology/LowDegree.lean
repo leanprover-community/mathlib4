@@ -371,30 +371,83 @@ theorem mem_range_of_mem_twoCoboundaries (f : twoCocycles A) (h : f ∈ twoCobou
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
 end Coboundaries
-section ofDistribMulAction
+section IsCocycle
 section
-variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A] (n : ℕ)
+variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A]
 
 /-- A function `f : G → A` satisfies the 1-cocycle condition if
 `f(gh) = g • f(h) + f(g)` for all `g, h : G`. -/
 def IsOneCocycle (f : G → A) : Prop := ∀ g h : G, f (g * h) = g • f h + f g
 
-/-- A function `f : G → A` satisfies the 1-coboundary condition if there's `x : A` such that
-`g • x - x = f(g)` for all `g : G`. -/
-def IsOneCoboundary (f : G → A) : Prop := ∃ x : A, ∀ g : G, g • x - x = f g
+theorem isOneCocycle_iff (f : G → A) :
+    IsOneCocycle f ↔ ∀ g h : G, f (g * h) = g • f h + f g := Iff.rfl
 
 /-- A function `f : G × G → A` satisfies the 2-cocycle condition if
 `f(gh, j) + f(g, h) = g • f(h, j) + f(g, hj)` for all `g, h : G`. -/
 def IsTwoCocycle (f : G × G → A) : Prop :=
   ∀ g h j : G, f (g * h, j) + f (g, h) = g • (f (h, j)) + f (g, h * j)
 
+theorem isTwoCocycle_iff (f : G × G → A) :
+    IsTwoCocycle f ↔ ∀ g h j : G, f (g * h, j) + f (g, h) = g • (f (h, j)) + f (g, h * j) :=
+  Iff.rfl
+
+end
+section
+variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
+
+@[simp] theorem map_one_of_isOneCocycle (f : G → A) (hf : IsOneCocycle f) :
+    f 1 = 0 := by
+  have := (isOneCocycle_iff f).1 hf 1 1
+  simpa only [mul_one, one_smul, self_eq_add_right] using this
+
+theorem map_one_fst_of_isTwoCocycle (f : G × G → A) (hf : IsTwoCocycle f) (g : G) :
+    f (1, g) = f (1, 1) := by
+  have := ((isTwoCocycle_iff f).1 hf 1 1 g).symm
+  simpa only [one_smul, one_mul, mul_one, add_right_inj] using this
+
+theorem map_one_snd_of_isTwoCocycle (f : G × G → A) (hf : IsTwoCocycle f) (g : G) :
+    f (g, 1) = g • f (1, 1) := by
+  have := (isTwoCocycle_iff f).1 hf g 1 1
+  simpa only [mul_one, add_left_inj, this]
+
+end
+section
+variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
+
+@[simp] theorem map_inv_of_isOneCocycle (f : G → A) (hf : IsOneCocycle f) (g : G) :
+    g • f g⁻¹ = - f g := by
+  rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isOneCocycle f hf, ← mul_inv_self g,
+    (isOneCocycle_iff f).1 hf g g⁻¹]
+
+theorem smul_map_inv_sub_map_inv_of_isTwoCocycle (f : G × G → A) (hf : IsTwoCocycle f) (g : G) :
+    g • f (g⁻¹, g) - f (g, g⁻¹) = f (1, 1) - f (g, 1) := by
+  have := (isTwoCocycle_iff f).1 hf g g⁻¹ g
+  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isTwoCocycle _ hf g]
+    at this
+  exact sub_eq_sub_iff_add_eq_add.2 this.symm
+
+end
+end IsCocycle
+section IsCoboundary
+variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A]
+
+/-- A function `f : G → A` satisfies the 1-coboundary condition if there's `x : A` such that
+`g • x - x = f(g)` for all `g : G`. -/
+def IsOneCoboundary (f : G → A) : Prop := ∃ x : A, ∀ g : G, g • x - x = f g
+
+theorem isOneCoboundary_iff (f : G → A) :
+    IsOneCoboundary f ↔ ∃ x : A, ∀ g : G, g • x - x = f g := Iff.rfl
+
 /-- A function `f : G × G → A` satisfies the 2-coboundary condition if there's `x : G → A` such
 that `g • x(h) - x(gh) + x(g) = f(g, h)` for all `g, h : G`. -/
 def IsTwoCoboundary (f : G × G → A) : Prop :=
   ∃ x : G → A, ∀ g h : G, g • x h - x (g * h) + x g = f (g, h)
 
-end
-section
+theorem isTwoCoboundary_iff (f : G × G → A) :
+    IsTwoCoboundary f ↔ ∃ x : G → A, ∀ g h : G, g • x h - x (g * h) + x g = f (g, h) := Iff.rfl
+
+end IsCoboundary
+section ofDistribMulAction
 
 variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
@@ -443,32 +496,85 @@ theorem isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMu
   rcases mem_range_of_mem_twoCoboundaries f.1 f.2 with ⟨x, hx⟩
   exact ⟨x, fun g h => Function.funext_iff.1 hx (g, h)⟩
 
-end
 end ofDistribMulAction
-section ofMulDistribMulAction
+section IsMulCocycle
 section
-variable {G M : Type*} [Mul G] [Group M] [SMul G M] (n : ℕ)
+variable {G M : Type*} [Mul G] [CommGroup M] [SMul G M]
 
-/-- A function `f : G → A` satisfies the multiplicative 1-cocycle condition if
+/-- A function `f : G → M` satisfies the multiplicative 1-cocycle condition if
 `f(gh) = g • f(h) * f(g)` for all `g, h : G`. -/
 def IsMulOneCocycle (f : G → M) : Prop := ∀ g h : G, f (g * h) = g • f h * f g
 
-/-- A function `f : G → A` satisfies the multiplicative 1-coboundary condition if there's `x : A`
-such that `g • x / x = f(g)` for all `g : G`. -/
-def IsMulOneCoboundary (f : G → M) : Prop := ∃ x : M, ∀ g : G, g • x / x = f g
+theorem isMulOneCocycle_iff (f : G → M) :
+    IsMulOneCocycle f ↔ ∀ g h : G, f (g * h) = g • f h * f g := Iff.rfl
 
-/-- A function `f : G × G → A` satisfies the multiplicative 2-cocycle condition if
+/-- A function `f : G × G → M` satisfies the multiplicative 2-cocycle condition if
 `f(gh, j) * f(g, h) = g • f(h, j) * f(g, hj)` for all `g, h : G`. -/
 def IsMulTwoCocycle (f : G × G → M) : Prop :=
   ∀ g h j : G, f (g * h, j) * f (g, h) = g • (f (h, j)) * f (g, h * j)
 
-/-- A function `f : G × G → A` satisfies the multiplicative 2-coboundary condition if there's
-`x : G → A` such that `g • x(h) / x(gh) * x(g) = f(g, h)` for all `g, h : G`. -/
-def IsMulTwoCoboundary (f : G × G → M) : Prop :=
-  ∃ x : G → M, ∀ g h : G, g • x h / x (g * h) * x g = f (g, h)
+theorem isMulTwoCocycle_iff (f : G × G → M) :
+    IsMulTwoCocycle f ↔ ∀ g h j : G, f (g * h, j) * f (g, h) = g • (f (h, j)) * f (g, h * j) :=
+  Iff.rfl
 
 end
 section
+variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
+
+@[simp] theorem map_one_of_isMulOneCocycle (f : G → M) (hf : IsMulOneCocycle f) :
+    f 1 = 1 := by
+  have := (isMulOneCocycle_iff f).1 hf 1 1
+  simpa only [mul_one, one_smul, self_eq_mul_right] using this
+
+theorem map_one_fst_of_isMulTwoCocycle (f : G × G → M) (hf : IsMulTwoCocycle f) (g : G) :
+    f (1, g) = f (1, 1) := by
+  have := ((isMulTwoCocycle_iff f).1 hf 1 1 g).symm
+  simpa only [one_smul, one_mul, mul_one, mul_right_inj] using this
+
+theorem map_one_snd_of_isMulTwoCocycle (f : G × G → M) (hf : IsMulTwoCocycle f) (g : G) :
+    f (g, 1) = g • f (1, 1) := by
+  have := (isMulTwoCocycle_iff f).1 hf g 1 1
+  simpa only [mul_one, mul_left_inj, this]
+
+end
+section
+variable {G M : Type*} [Group G] [CommGroup M] [MulAction G M]
+
+@[simp] theorem map_inv_of_isMulOneCocycle (f : G → M) (hf : IsMulOneCocycle f) (g : G) :
+    g • f g⁻¹ = (f g)⁻¹ := by
+  rw [← mul_eq_one_iff_eq_inv, ← map_one_of_isMulOneCocycle f hf, ← mul_inv_self g,
+    (isMulOneCocycle_iff f).1 hf g g⁻¹]
+
+theorem smul_map_inv_div_map_inv_of_isMulTwoCocycle
+    (f : G × G → M) (hf : IsMulTwoCocycle f) (g : G) :
+    g • f (g⁻¹, g) / f (g, g⁻¹) = f (1, 1) / f (g, 1) := by
+  have := (isMulTwoCocycle_iff f).1 hf g g⁻¹ g
+  simp only [mul_right_inv, mul_left_inv, map_one_fst_of_isMulTwoCocycle _ hf g]
+    at this
+  exact div_eq_div_iff_mul_eq_mul.2 this.symm
+
+end
+end IsMulCocycle
+section IsMulCoboundary
+variable {G M : Type*} [Mul G] [CommGroup M] [SMul G M]
+
+/-- A function `f : G → M` satisfies the multiplicative 1-coboundary condition if there's `x : M`
+such that `g • x / x = f(g)` for all `g : G`. -/
+def IsMulOneCoboundary (f : G → M) : Prop := ∃ x : M, ∀ g : G, g • x / x = f g
+
+theorem isMulOneCoboundary_iff (f : G → M) :
+    IsMulOneCoboundary f ↔ ∃ x : M, ∀ g : G, g • x / x = f g := Iff.rfl
+
+/-- A function `f : G × G → M` satisfies the 2-coboundary condition if there's `x : G → M` such
+that `g • x(h) / x(gh) * x(g) = f(g, h)` for all `g, h : G`. -/
+def IsMulTwoCoboundary (f : G × G → M) : Prop :=
+  ∃ x : G → M, ∀ g h : G, g • x h / x (g * h) * x g = f (g, h)
+
+theorem isMulTwoCoboundary_iff (f : G × G → M) :
+    IsMulTwoCoboundary f ↔ ∃ x : G → M, ∀ g h : G, g • x h / x (g * h) * x g = f (g, h) := Iff.rfl
+
+end IsMulCoboundary
+section ofMulDistribMulAction
 variable {G M : Type} [Group G] [CommGroup M] [MulDistribMulAction G M]
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
@@ -518,7 +624,6 @@ theorem isMulTwoCoboundary_of_twoCoboundaries
   rcases mem_range_of_mem_twoCoboundaries f.1 f.2 with ⟨x, hx⟩
   exact ⟨x, fun g h => Function.funext_iff.1 hx (g, h)⟩
 
-end
 end ofMulDistribMulAction
 section Cohomology
 
