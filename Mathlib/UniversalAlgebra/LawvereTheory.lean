@@ -40,6 +40,15 @@ inductive LawvereWord {S : Type u} (op : ProdWord S → S → Type v) :
   | toNil (P : ProdWord S) :
       LawvereWord op P .nil
 
+structure FiniteLawverePresentation where
+  numSort : ℕ
+  sortName (S : Fin numSort) : String
+  numOps (P : ProdWord (Fin numSort)) (Q : Fin numSort) : ℕ
+  opName (P : ProdWord (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) : Lean.Name
+  rels {P Q : ProdWord (Fin numSort)} :
+    List (Lean.Name × LawvereWord (fun a b => Fin (numOps a b)) P Q ×
+      LawvereWord (fun a b => Fin (numOps a b)) P Q)
+
 structure LawvereTheory where
   S : Type u
   hom : ProdWord S → ProdWord S → Type v
@@ -92,6 +101,7 @@ def snd (P Q : L) : L.prod P Q ⟶ Q := L.snd' _ _
 
 def lift {T P Q : L} (a : T ⟶ P) (b : T ⟶ Q) : T ⟶ L.prod P Q := L.lift' a b
 
+@[ext]
 structure Morphism  (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
   obj : L → L'
   map {P Q : L} : (P ⟶ Q) → (obj P ⟶ obj Q)
@@ -120,6 +130,13 @@ def Morphism.preservesNil {L L' : LawvereTheory} (F : Morphism L L') :
   hom_inv_id := sorry
   inv_hom_id := sorry
 
+def Morphism.preservesProd {L L' : LawvereTheory} (F : Morphism L L') (P Q : L) :
+    F.obj (L.prod P Q) ≅ L'.prod (F.obj P) (F.obj Q) where
+  hom := L'.lift (F.map <| L.fst _ _) (F.map <| L.snd _ _)
+  inv := F.lift (L'.fst _ _) (L'.snd _ _)
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
 def Morphism.id (L : LawvereTheory.{u,v}) : Morphism L L where
   obj X := X
   map f := f
@@ -142,66 +159,11 @@ def Morphism.comp {L L' L'' : LawvereTheory} (f : Morphism L L') (g : Morphism L
   map_comp := by simp [f.map_comp, g.map_comp]
   toNil X := g.toNil _ ≫ g.map (f.toNil _)
   toNil_unique := sorry
-  fst P Q := by
-    dsimp
-    refine ?_ ≫ g.fst _ _
-  snd := _
-  lift := _
-  lift_fst := _
-  lift_snd := _
-  lift_unique := _
-
-attribute [simp]
-  MorphismAlong.map_id
-  MorphismAlong.map_comp
-  MorphismAlong.lift_fst
-  MorphismAlong.lift_snd
-
-attribute [simp]
-  MorphismAlong.lift_unique
-  MorphismAlong.toMapNil_unique
-
-structure Iso (a b : ProdWord S) where
-  hom : a ⟶[L] b
-  inv : b ⟶[L] a
-  hom_inv_id : hom ≫[L] inv = 𝟙[L] a
-  inv_hom_id : inv ≫[L] hom = 𝟙[L] b
-
-scoped notation:10 A " ≅[" L "]" B:11 => LawvereTheory.Iso L A B
-
-@[simps]
-def mapNilIso {S : Type u} {S' : Type u'} {f : S → S'}
-    {L : LawvereTheory.{v} S} {L' : LawvereTheory.{v'} S'}
-    (F : L ⥤[f] L') :
-    ProdWord.nil.map f ≅[L'] ProdWord.nil where
-  hom := L'.toNil _
-  inv := F.toMapNil _
-  hom_inv_id := F.toMapNil_unique _ _
-  inv_hom_id := L'.toNil_unique _ _
-
-@[simps]
-def mapProdIso {S : Type u} {S' : Type u'} {f : S → S'}
-    {L : LawvereTheory.{v} S} {L' : LawvereTheory.{v'} S'}
-    (F : L ⥤[f] L') (P Q : ProdWord S) :
-    (P.prod Q).map f ≅[L'] (P.map f).prod (Q.map f) where
-  hom := L'.lift (F.fst _ _) (F.snd _ _)
-  inv := F.lift (L'.fst _ _) (L'.snd _ _)
-  hom_inv_id := by
-    apply F.lift_unique
-    · rw [L'.id_comp, L'.assoc, F.lift_fst, L'.lift_fst]
-    · rw [L'.id_comp, L'.assoc, F.lift_snd, L'.lift_snd]
-  inv_hom_id := by
-    apply L'.lift_unique
-    · rw [L'.id_comp, L'.assoc, L'.lift_fst, F.lift_fst]
-    · rw [L'.id_comp, L'.assoc, L'.lift_snd, F.lift_snd]
-
-structure cat {S : Type u} (L : LawvereTheory.{v} S) : Type u where
-  as : ProdWord S
-
-open CategoryTheory
-instance {S : Type u} (L : LawvereTheory.{v} S) : Category.{v} L.cat where
-  Hom X Y := L.hom X.as Y.as
-  id X := L.id X.as
-  comp := L.comp
+  fst P Q := g.map <| f.map <| L.fst _ _
+  snd P Q := g.map <| f.map <| L.snd _ _
+  lift a b := g.lift a b ≫ g.map (f.lift (L'.fst _ _) (L'.snd _ _))
+  lift_fst := sorry
+  lift_snd := sorry
+  lift_unique := sorry
 
 end LawvereTheory
