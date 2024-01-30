@@ -167,6 +167,10 @@ theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := st
 #align pow_strict_mono_right' pow_left_strictMono
 #align nsmul_strict_mono_left nsmul_right_strictMono
 
+@[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
+lemma pow_lt_pow_left' (hn : n ≠ 0) {a b : M} (hab : a < b) : a ^ n < b ^ n :=
+  pow_left_strictMono hn hab
+
 end CovariantLTSwap
 
 section CovariantLESwap
