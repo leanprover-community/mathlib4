@@ -9,10 +9,11 @@ import Mathlib.Topology.Algebra.Field
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-
 import Mathlib.Tactic.FProp
 
-
+/-!
+## `fprop` minimal setup for Continuous(At/On)
+-/
 
 section Missing
 

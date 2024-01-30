@@ -3357,8 +3357,11 @@ import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FProp
 import Mathlib.Tactic.FProp.Attr
+import Mathlib.Tactic.FProp.ContDiff
+import Mathlib.Tactic.FProp.Continuous
 import Mathlib.Tactic.FProp.Core
 import Mathlib.Tactic.FProp.Decl
+import Mathlib.Tactic.FProp.Differentiable
 import Mathlib.Tactic.FProp.Elab
 import Mathlib.Tactic.FProp.FunctionData
 import Mathlib.Tactic.FProp.Mor

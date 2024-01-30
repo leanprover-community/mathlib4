@@ -12,6 +12,10 @@ import Mathlib.Tactic.FProp
 import Mathlib.Tactic.FProp.Continuous
 import Mathlib.Tactic.FProp.Differentiable
 
+/-!
+## `fprop` minimal setup for ContDiff(At/On)
+-/
+
 section Missing
 
 section lambda_rules

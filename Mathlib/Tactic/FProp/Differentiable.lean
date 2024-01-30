@@ -17,6 +17,11 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Tactic.FProp
 import Mathlib.Tactic.FProp.Continuous
 
+/-!
+## `fprop` minimal setup for Differentiable(At/On)
+-/
+
+
 section Missing
 
 section lambda_rules
