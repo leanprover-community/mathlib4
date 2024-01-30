@@ -46,7 +46,7 @@ i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheav
 -/
 
 
-universe w v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 noncomputable section
 
@@ -55,13 +55,13 @@ open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTh
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
-variable {A : Type u₃} [Category.{v₃} A]
+variable {A : Type u₄} [Category.{v₄} A]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
-variable {L : GrothendieckTopology A}
+  (L : GrothendieckTopology E)
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
@@ -98,6 +98,8 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
       {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
+
+section
 
 variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
 
@@ -174,7 +176,7 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F
       (F.map_injective <| by simpa using he)
 #align category_theory.compatible_preserving_of_downwards_closed CategoryTheory.compatiblePreservingOfDownwardsClosed
 
-variable (J K)
+end
 
 /-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type w`
 to sheaves. -/
@@ -196,21 +198,20 @@ lemma Functor.isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
 instance Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
   op_comp_isSheafOfTypes G := G.2
 
-lemma Functor.isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ A) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
-    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
-    Functor.IsContinuous.{w} (F₁ ⋙ F₂) J L where
-  op_comp_isSheafOfTypes G := F₁.op_comp_isSheafOfTypes J K ⟨_, F₂.op_comp_isSheafOfTypes K L G⟩
+lemma Functor.isContinuous_comp
+    [Functor.IsContinuous.{w} F J K] [Functor.IsContinuous.{w} G K L] :
+    Functor.IsContinuous.{w} (F ⋙ G) J L where
+  op_comp_isSheafOfTypes H := F.op_comp_isSheafOfTypes J K ⟨_, G.op_comp_isSheafOfTypes K L H⟩
 
-lemma Functor.isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ A} {F₁₂ : C ⥤ A}
+lemma Functor.isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
+    (K : GrothendieckTopology D) (L : GrothendieckTopology E)
     [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
     Functor.IsContinuous.{w} F₁₂ J L := by
   have := Functor.isContinuous_comp F₁ F₂ J K L
   apply Functor.isContinuous_of_iso e
 
-lemma Functor.op_comp_isSheaf [Functor.IsContinuous.{v₃} F J K] (G : Sheaf K A) :
+lemma Functor.op_comp_isSheaf [Functor.IsContinuous.{v₄} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
   fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 
@@ -243,7 +244,8 @@ variable (F J K A)
 /-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
 if `G` is a continuous functor.
 -/
-def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
+@[simps! obj_val map_val_app]
+def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₄} F J K] :
     Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
@@ -254,5 +256,60 @@ def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
     ext1
     apply ((whiskeringLeft _ _ _).obj F.op).map_comp
 #align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
+
+/-- Isomorphic continuous functors induce isomorphic pushforward functors of sheaves. -/
+@[simps! hom_app_val_app inv_app_val_app]
+def Functor.sheafPushforwardContinuousIso {F F' : C ⥤ D} (e : F ≅ F')
+    (A : Type u₄) [Category.{v₄} A] (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+    [Functor.IsContinuous.{v₄} F J K] [Functor.IsContinuous.{v₄} F' J K] :
+    F.sheafPushforwardContinuous A J K ≅ F'.sheafPushforwardContinuous A J K :=
+  NatIso.ofComponents
+    (fun ℱ => (sheafToPresheaf J A).preimageIso (isoWhiskerRight (NatIso.op e.symm) _)) (by
+      intros ℱ 𝒢 φ
+      apply (sheafToPresheaf J A).map_injective
+      simp only [Functor.map_comp, preimageIso_hom, image_preimage]
+      aesop_cat)
+
+/-- A composition of pushforward functors by continuous functors identify to
+the pushforward functor for their composition. -/
+@[simps! hom_app_val_app inv_app_val_app]
+def Functor.sheafPushforwardContinuousComp [Functor.IsContinuous.{v₄} F J K]
+    [Functor.IsContinuous.{v₄} G K L] [Functor.IsContinuous.{v₄} (F ⋙ G) J L] :
+    G.sheafPushforwardContinuous A K L ⋙ F.sheafPushforwardContinuous A J K ≅
+      (F ⋙ G).sheafPushforwardContinuous A J L :=
+  Iso.refl _
+
+section
+
+variable {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
+  (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
+  (K : GrothendieckTopology D) (L : GrothendieckTopology E)
+  [Functor.IsContinuous.{v₄} F₁ J K] [Functor.IsContinuous.{v₄} F₂ K L]
+  [Functor.IsContinuous.{v₄} F₁₂ J L]
+
+/-- A composition of pushforward functors by continuous functors identify to
+the pushforward functor for their composition. -/
+def Functor.sheafPushforwardContinuousComp' :
+    F₂.sheafPushforwardContinuous A K L ⋙ F₁.sheafPushforwardContinuous A J K ≅
+      F₁₂.sheafPushforwardContinuous A J L :=
+  haveI := Functor.isContinuous_comp F₁ F₂ J K L
+  Functor.sheafPushforwardContinuousComp F₁ F₂ A J K L ≪≫
+    Functor.sheafPushforwardContinuousIso e _ _ _
+
+@[simp]
+lemma Functor.sheafPushforwardContinuousComp'_hom_app_val_app (ℱ : Sheaf L A) (X : Cᵒᵖ) :
+    ((Functor.sheafPushforwardContinuousComp' A e J K L).hom.app ℱ).val.app X =
+      ℱ.val.map (e.inv.app X.unop).op := by
+  haveI := Functor.isContinuous_comp F₁ F₂ J K L
+  simp [Functor.sheafPushforwardContinuousComp']
+
+@[simp]
+lemma Functor.sheafPushforwardContinuousComp'_inv_app_val_app (ℱ : Sheaf L A) (X : Cᵒᵖ) :
+    ((Functor.sheafPushforwardContinuousComp' A e J K L).inv.app ℱ).val.app X =
+      ℱ.val.map (e.hom.app X.unop).op := by
+  haveI := Functor.isContinuous_comp F₁ F₂ J K L
+  simp [Functor.sheafPushforwardContinuousComp']
+
+end
 
 end CategoryTheory

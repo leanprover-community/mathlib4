@@ -241,4 +241,11 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
     ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := rfl
 
+@[simp]
+lemma overPullback_map_sheafHomSectionsEquiv_apply {F G : Sheaf J A}
+    (s : (sheafHom F G).1.sections) (X : C) :
+    (J.overPullback A X).map (sheafHomSectionsEquiv F G s) = s.1 (Opposite.op X) := by
+  obtain ⟨φ, rfl⟩ := (sheafHomSectionsEquiv F G).symm.surjective s
+  simp
+
 end CategoryTheory

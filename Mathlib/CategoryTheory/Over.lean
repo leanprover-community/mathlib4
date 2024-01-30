@@ -195,6 +195,11 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ 
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
+/-- When `f ≫ g = h`, mapping by `h` is the same as mapping by `f` then by `g`. -/
+def mapComp' {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (fac : f ≫ g = h) :
+    map h ≅ map f ⋙ map g :=
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where

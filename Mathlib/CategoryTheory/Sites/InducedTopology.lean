@@ -143,6 +143,15 @@ theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget
     exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
 #align category_theory.over_forget_locally_cover_dense CategoryTheory.over_forget_locallyCoverDense
 
+instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+    Functor.IsContinuous G (G.inducedTopologyOfIsCoverDense K) K := by
+  apply Functor.IsCoverDense.isContinuous
+  exact (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverPreserving
+
+instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+    Functor.IsCocontinuous G (G.inducedTopologyOfIsCoverDense K) K :=
+  (G.locallyCoverDense_of_isCoverDense K).inducedTopology_isCocontinuous
+
 end
 
 section SmallSite
@@ -152,15 +161,6 @@ variable {C : Type v} [SmallCategory C] {D : Type v} [SmallCategory D] {G : C �
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 
 variable (A : Type u) [Category.{v} A]
-
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
-    Functor.IsContinuous G (G.inducedTopologyOfIsCoverDense K) K := by
-  apply Functor.IsCoverDense.isContinuous
-  exact (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverPreserving
-
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
-    Functor.IsCocontinuous G (G.inducedTopologyOfIsCoverDense K) K :=
-  (G.locallyCoverDense_of_isCoverDense K).inducedTopology_isCocontinuous
 
 /-- Cover-dense functors induces an equivalence of categories of sheaves.
 

@@ -197,6 +197,50 @@ abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
 
+@[simp]
+lemma overMapPullback_map_overPullback_map {A : Type u'} [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
+    {F G : Sheaf J A} (φ : F ⟶ G) :
+    (J.overMapPullback A f).map ((J.overPullback A Y).map φ) = (J.overPullback A X).map φ := rfl
+
+/-- The functors `J.overMapPullback A` are compatible with the composition of morphisms. -/
+def overMapPullbackComp' (A : Type u') [Category.{v'} A] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (h : X ⟶ Z) (fac : f ≫ g = h) :
+    J.overMapPullback A g ⋙ J.overMapPullback A f ≅
+      J.overMapPullback A h :=
+  Functor.sheafPushforwardContinuousComp' A (Over.mapComp' f g h fac).symm _ _ _
+
+/-- The functors `J.overMapPullback A` are compatible with the composition of morphisms. -/
+abbrev overMapPullbackComp (A : Type u') [Category.{v'} A] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    J.overMapPullback A g ⋙ J.overMapPullback A f ≅
+      J.overMapPullback A (f ≫ g) :=
+  J.overMapPullbackComp' A f g _ rfl
+
+/-- Given a morphism `f : X ⟶ Y` in a category `C` equipped with a Grothendieck topology,
+this the natural isomorphism, for each `F : Sheaf (J.over Y) A`,
+between section `(J.overMapPullback A f).obj F` on `W : Over X`
+and the sections of `F` on `W' : Over Y` when `W' ≅ (Over.map f).obj W`. -/
+def overMapPullbackSectionsIso (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
+    (W : Over X) (W' : Over Y) (e : W' ≅ (Over.map f).obj W) :
+    (J.overMapPullback A f) ⋙ (sheafSections (J.over X) A).obj (Opposite.op W) ≅
+      (sheafSections (J.over Y) A).obj (Opposite.op W') :=
+  (sheafSections (J.over Y) A).mapIso e.op
+
+@[simp]
+lemma overMapPullBackComp'_hom_app_overPullback_obj
+    {A : Type u'} [Category.{v'} A] (F : Sheaf J A) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (h : X ⟶ Z) (fac : f ≫ g = h) (W : Over X) :
+    ((J.overMapPullbackComp' A f g h fac).hom.app
+      ((J.overPullback A Z).obj F)).val.app (Opposite.op W) = 𝟙 _ := by
+  simp [overMapPullbackComp', Over.mapComp']
+
+@[simp]
+lemma overMapPullBackComp'_inv_app_overPullback_obj
+    {A : Type u'} [Category.{v'} A] (F : Sheaf J A) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (h : X ⟶ Z) (fac : f ≫ g = h) (W : Over X) :
+    ((J.overMapPullbackComp' A f g h fac).inv.app
+      ((J.overPullback A Z).obj F)).val.app (Opposite.op W) = 𝟙 _ := by
+  simp [overMapPullbackComp', Over.mapComp']
+
 end GrothendieckTopology
 
 end CategoryTheory
