@@ -4,7 +4,7 @@
  [{"url": "https://github.com/leanprover/std4",
    "type": "git",
    "subDir": null,
-   "rev": "128fd8e663353da2a3666167605b510824fe2eb5",
+   "rev": "a11bdfc39e95fa5b09e06638a43bd8bd2eddce12",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
