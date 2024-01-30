@@ -44,7 +44,7 @@ def lawvereTheory : LawvereTheory where
 
 /-
 syntax sort := str
-syntax op := str ":" sepBy(sort,"→") "→" sort
+syntax op := (str ":" sort) <|> (str ":" sepBy1(sort,"→") "→" sort)
 syntax rel := term
 
 syntax "`[FLP|"
