@@ -792,19 +792,16 @@ theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0
 #align real.abs_log_mul_self_rpow_lt Real.abs_log_mul_self_rpow_lt
 
 /-- `log x` is bounded above by a multiple of every power of `x` with positive exponent. -/
-lemma log_le_mul_rpow {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ ε⁻¹ * x ^ ε := by
+lemma log_le_mul_rpow {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^ ε / ε := by
   rcases hx.eq_or_lt with rfl | h
-  · rw [log_zero, zero_rpow hε.ne', mul_zero]
-  suffices : ε * log x ≤ x ^ ε
-  · apply_fun (ε⁻¹ * ·) at this using monotone_mul_left_of_nonneg (inv_pos.mpr hε).le
-    simp only at this
-    rwa [← mul_assoc, inv_mul_cancel hε.ne', one_mul] at this
+  · rw [log_zero, zero_rpow hε.ne', zero_div]
+  rw [le_div_iff' hε]
   exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
     (sub_one_lt _).le
 
 /-- The (real) logarithm of a natural number `n`is bounded by a multiple of every power of `n`
 with positive exponent. -/
-lemma log_natCast_le_mul_rpow (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ ε⁻¹ * n ^ ε :=
+lemma log_natCast_le_mul_rpow (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_mul_rpow n.cast_nonneg hε
 
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
