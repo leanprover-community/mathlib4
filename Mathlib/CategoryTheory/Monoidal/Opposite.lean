@@ -31,6 +31,7 @@ def MonoidalOpposite (C : Type u₁) :=
 
 namespace MonoidalOpposite
 
+@[inherit_doc]
 notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 
 /-- Think of an object of `C` as an object of `Cᴹᵒᵖ`. -/

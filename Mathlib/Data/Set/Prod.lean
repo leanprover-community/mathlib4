@@ -1002,21 +1002,3 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
   · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
 
 end Equiv
-
-namespace Equiv.Set
-
-/-- The canonical equivalence between `{a} ×ˢ t` and `t`, considered as types. -/
-def prod_singleton_left {α β : Type*} (a : α) (t : Set β) : ↑({a} ×ˢ t) ≃ ↑t where
-  toFun := fun x ↦ ⟨x.val.snd, (Set.mem_prod.mp x.prop).2⟩
-  invFun := fun b ↦ ⟨(a, b.val), Set.mem_prod.mpr ⟨Set.mem_singleton a, Subtype.mem b⟩⟩
-  left_inv := by simp [Function.LeftInverse]
-  right_inv := by simp [Function.RightInverse, Function.LeftInverse]
-
-/-- The canonical equivalence between `s ×ˢ {b}` and `s`, considered as types. -/
-def prod_singleton_right {α β : Type*} (s : Set α) (b : β) : ↑(s ×ˢ {b}) ≃ ↑s where
-  toFun := fun x ↦ ⟨x.val.fst, (Set.mem_prod.mp x.prop).1⟩
-  invFun := fun a ↦ ⟨(a.val, b), Set.mem_prod.mpr ⟨Subtype.mem a, Set.mem_singleton b⟩⟩
-  left_inv := by simp [Function.LeftInverse]
-  right_inv := by simp [Function.RightInverse, Function.LeftInverse]
-
-end Equiv.Set
