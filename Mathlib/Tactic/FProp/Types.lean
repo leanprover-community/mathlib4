@@ -53,7 +53,9 @@ structure State where
   transitionDepth := 0
 
 /-- Log used theorem -/
-def Config.addThm (cfg : Config) (thmId : Origin) : Config := {cfg with thmStack := thmId :: cfg.thmStack}
+def Config.addThm (cfg : Config) (thmId : Origin) :
+    Config :=
+  {cfg with thmStack := thmId :: cfg.thmStack}
 
 /-- -/
 abbrev FPropM := ReaderT FProp.Config $ StateT FProp.State MetaM
