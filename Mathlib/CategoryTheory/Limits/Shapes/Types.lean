@@ -625,6 +625,13 @@ open CategoryTheory.Limits.WalkingCospan
 
 open CategoryTheory.Limits.WalkingCospan.Hom
 
+-- #synth HasPullbacks.{u} (Type u)
+instance : HasPullbacks.{u} (Type u) :=
+  -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
+  -- https://github.com/leanprover-community/mathlib4/issues/5752
+  -- inferInstance
+  hasPullbacks_of_hasWidePullbacks.{u} (Type u)
+
 variable {W X Y Z : Type u}
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
