@@ -56,7 +56,7 @@ class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!`. -/
   factorial_nsmul_multichoose : ∀ (r : R) (n : ℕ),
-    n.factorial • multichoose r n = Polynomial.smeval r (ascPochhammer ℕ n)
+    n.factorial • multichoose r n = Polynomial.smeval (ascPochhammer ℕ n) r
 
 namespace Ring
 
@@ -75,7 +75,7 @@ theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
     BinomialRing.multichoose r n = multichoose r n := rfl
 
 theorem factorial_nsmul_multichoose_eq_ascPochhammer (r : R) (n : ℕ) :
-    n.factorial • multichoose r n = smeval r (ascPochhammer ℕ n) :=
+    n.factorial • multichoose r n = smeval (ascPochhammer ℕ n) r :=
   BinomialRing.factorial_nsmul_multichoose r n
 
 theorem multichoose_zero_right' (r : R) : multichoose r 0 = r ^ 0 := by
@@ -109,8 +109,8 @@ theorem multichoose_zero_succ (k : ℕ) : multichoose (0 : R) (k + 1) = 0 := by
 
 
 theorem ascPochhammer_succ_succ (r : R) (k : ℕ) :
-    smeval (r + 1) (ascPochhammer ℕ (k + 1)) = Nat.factorial (k + 1) • multichoose (r + 1) k +
-    smeval r (ascPochhammer ℕ (k + 1)) := by
+    smeval (ascPochhammer ℕ (k + 1)) (r + 1) = Nat.factorial (k + 1) • multichoose (r + 1) k +
+    smeval (ascPochhammer ℕ (k + 1)) r := by
   nth_rw 1 [ascPochhammer_succ_right, ascPochhammer_succ_left, mul_comm (ascPochhammer ℕ k)]
   simp only [smeval_mul, smeval_comp ℕ r, smeval_add, smeval_X]
   rw [Nat.factorial, mul_smul, factorial_nsmul_multichoose_eq_ascPochhammer]
@@ -123,7 +123,7 @@ theorem multichoose_succ_succ (r : R) (k : ℕ) :
     multichoose (r + 1) (k + 1) = multichoose r (k + 1) + multichoose (r + 1) k := by
   refine nsmul_right_injective (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only [factorial_nsmul_multichoose_eq_ascPochhammer, smul_add]
-  rw [add_comm (smeval r (ascPochhammer ℕ (k+1)))]
+  rw [add_comm (smeval (ascPochhammer ℕ (k+1)) r)]
   exact @ascPochhammer_succ_succ R _ _ _ _ r k
 
 @[simp]
@@ -161,7 +161,7 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
 theorem multichoose_eq (n k : ℕ) : Ring.multichoose n k = (n + k - 1).choose k := rfl
 
 theorem ascPochhammer_smeval_eq_eval {R : Type*} [Semiring R] (r : R) (k : ℕ) :
-    smeval r (ascPochhammer ℕ k) = Polynomial.eval r (ascPochhammer R k) := by
+    smeval (ascPochhammer ℕ k) r = Polynomial.eval r (ascPochhammer R k) := by
   induction k with
   | zero =>
     rw [ascPochhammer_zero, ascPochhammer_zero, eval_one, smeval_one, nsmul_eq_mul, npow_zero,
@@ -206,7 +206,7 @@ open Polynomial
 variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
 theorem ascPochhammer_smeval_neg : ∀(n : ℕ),
-    smeval (-n : ℤ) (ascPochhammer ℕ n) = (-1)^n * n.factorial
+    smeval (ascPochhammer ℕ n) (-n : ℤ) = (-1)^n * n.factorial
   | 0 => by
     rw [Nat.cast_zero, neg_zero, ascPochhammer_zero, Nat.factorial_zero, smeval_one, pow_zero,
       one_smul, pow_zero, Nat.cast_one, one_mul]
@@ -218,12 +218,12 @@ theorem ascPochhammer_smeval_neg : ∀(n : ℕ),
       Nat.factorial, Nat.cast_mul, ← mul_assoc, Nat.cast_succ]
 
 theorem ascPochhammer_succ_smeval_neg (n : ℕ) :
-    smeval (-n : ℤ) (ascPochhammer ℕ (n + 1)) = 0 := by
+    smeval (ascPochhammer ℕ (n + 1)) (-n : ℤ) = 0 := by
   rw [ascPochhammer_succ_right, smeval_mul, smeval_add, smeval_X, ← C_eq_nat_cast, smeval_C,
     pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, add_left_neg, mul_zero]
 
 theorem ascPochhammer_smeval_neg_add (n : ℕ) : ∀(k : ℕ),
-    smeval (-n : ℤ) (ascPochhammer ℕ (n + k + 1)) = 0
+    smeval (ascPochhammer ℕ (n + k + 1)) (-n : ℤ) = 0
   | 0 => by
     rw [add_zero, ascPochhammer_succ_smeval_neg]
   | k + 1 => by
@@ -231,13 +231,13 @@ theorem ascPochhammer_smeval_neg_add (n : ℕ) : ∀(k : ℕ),
       zero_mul]
 
 theorem ascPochhammer_smeval_neg_lt (n k : ℕ) (h : n < k) :
-    smeval (-n : ℤ) (ascPochhammer ℕ k) = 0 := by
+    smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
   have hk : k = n + (k - n - 1) + 1 := by
     rw [add_rotate, Nat.sub_sub, Nat.add_right_comm, Nat.add_assoc, Nat.sub_add_cancel h]
   rw [hk, ascPochhammer_smeval_neg_add]
 
 theorem ascPochhammer_smeval_nat_cast [NatPowAssoc R] (n k : ℕ) :
-    smeval (n : R) (ascPochhammer ℕ k) = smeval n (ascPochhammer ℕ k) := by
+    smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by
   rw [smeval_at_nat_cast (ascPochhammer ℕ k) n]
 
 theorem multichoose_neg (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
@@ -271,7 +271,7 @@ theorem multichoose_succ_neg_cast [NatPowAssoc R] (n : ℕ) :
     ascPochhammer_succ_smeval_neg, Int.cast_zero]
 
 theorem ascPochhammer_smeval_nat_int [NatPowAssoc R] (r : R) : ∀(n : ℕ),
-    smeval r (ascPochhammer ℤ n) = smeval r (ascPochhammer ℕ n)
+    smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
   | 0 => by
     simp only [ascPochhammer_zero, smeval_one]
   | n + 1 => by
@@ -298,10 +298,10 @@ def choose {R: Type _} [NonAssocRing R] [Pow R ℕ] [BinomialRing R] (r : R) (n 
   multichoose (r-n+1) n
 
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
-    smeval r (descPochhammer ℤ n) = n.factorial • choose r n := by
+    smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
     smeval_comp ℤ r, add_comm_sub, smeval_add, smeval_X, npow_one]
-  have h : smeval r (1 - n : Polynomial ℤ) = 1 - n := by
+  have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
     simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, zsmul_one]
   rw [h, ascPochhammer_smeval_nat_int, add_comm_sub]
@@ -345,14 +345,14 @@ theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
 
 theorem descPochhammer_succ_succ_smeval {S : Type*} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
-    (r : S) (k : ℕ) : smeval (r + 1) (descPochhammer ℤ (Nat.succ k)) =
-    (k + 1) • smeval r (descPochhammer ℤ k) + smeval r (descPochhammer ℤ (Nat.succ k)) := by
+    (r : S) (k : ℕ) : smeval (descPochhammer ℤ (Nat.succ k)) (r + 1) =
+    (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (Nat.succ k)) r := by
   nth_rw 1 [descPochhammer_succ_left]
   rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ k)]
   simp only [smeval_comp ℤ (r + 1), smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one,
   npow_one, npow_zero, one_smul, add_sub_cancel, sub_mul, add_mul, add_smul, one_mul]
-  rw [← C_eq_nat_cast, smeval_C, npow_zero, add_comm (k • smeval r (descPochhammer ℤ k)) _,
-    add_assoc, add_comm (k • smeval r (descPochhammer ℤ k)) _, ← add_assoc,  ← add_sub_assoc,
+  rw [← C_eq_nat_cast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
+    add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
     nsmul_eq_mul, zsmul_one, Int.cast_ofNat, sub_add_cancel, add_comm]
 
 theorem choose_succ_succ [NatPowAssoc R] (r:R) (k : ℕ) :

@@ -3,7 +3,6 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.RingTheory.Binomial
@@ -22,6 +21,8 @@ In this file we introduce vertex operators using Laurent series.
 * Comparison between Hasse derivatives and iterated derivatives.
 * Boundedness lemmas for defining residue products
 ## To do:
+* Write iterated vertex operators as Hahn series on lex order product.
+* Write iterated Laurent series `V((X))((Y))` as Hahn series - make API for variables.
 * locality at order `≤ n` implies locality at order `≤ n + 1`.
 * residue products with identity give Hasse derivatives.
 * Dong's lemma : pairwise locality implies locality with residue products.
@@ -34,6 +35,11 @@ In this file we introduce vertex operators using Laurent series.
 
 variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
+/-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
+`R`-module `V` to Hahn series with coefficients in an `R`-module `W`.-/
+abbrev HetVertexOperator (Γ : Type*) (R : Type*) (V : Type*) (W : Type*) [PartialOrder Γ]
+[CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] := V →ₗ[R] HahnSeries Γ W
+
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`. -/
 
@@ -42,10 +48,8 @@ abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
 
 namespace VertexAlg
 
---theorem VertexOperator_add (A B : VertexOperator R V) (x : V) : (A + B) x = (A x) + (B x) := rfl
-
 /-- The coefficient of a vertex operator, viewed as a formal power series with coefficients in
-linear endomorphisms. -/
+linear endomorphisms.  Refactor to heterogeneous case!!! -/
 def coeff [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V :=
   {
@@ -55,7 +59,7 @@ def coeff [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n
   }
 
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
-Alternative suggestions welcome.  Also, should this be an abbrev? -/
+Alternative suggestions welcome.  Change this to ℤ case only. -/
 def ncoef [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n - 1)
 
@@ -437,8 +441,17 @@ noncomputable def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOp
 /-- The the `m`-th residue product of vertex operators -/
 noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
   res_prod_left A B m + res_prod_right A B m
-
 /-!
+theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
+  ext x n
+  unfold res_prod res_prod_left res_prod_right composite_ncoef.linearMap composite_ncoef
+  unfold composite_summand
+  simp only [neg_sub, sub_neg_eq_add, smul_eq_mul, add_zero, LinearMap.coe_mk, AddHom.coe_mk,
+    neg_zero, zero_sub, zero_add, smul_assoc, LinearMap.add_apply, HahnSeries.add_coeff',
+    Pi.add_apply]
+
+  sorry
+
 residue products with 1, interaction with Hasse derivatives.
 
 /-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`

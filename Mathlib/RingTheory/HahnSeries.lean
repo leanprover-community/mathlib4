@@ -519,7 +519,7 @@ theorem smul_order_leq {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries �
   · rw [hx, smul_zero r] at h
     exact (h rfl).elim
   simp_all only [not_false_eq_true, dite_false, h, support]
-  refine (Set.IsWF.min_le_min_of_subset (@Function.support_smul_subset_right Γ R V _ _ r x.coeff))
+  exact (Set.IsWF.min_le_min_of_subset (Function.support_smul_subset_right (fun _ => r) x.coeff))
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
@@ -622,21 +622,35 @@ theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
 
-instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
-  mul x y :=
-    { coeff := fun a =>
-        ∑ ij in addAntidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd
-      isPWO_support' :=
+section SMul
+
+variable {V : Type*} [AddCommMonoid V]
+
+instance instSMulHahnHahn [MulZeroClass R] [SMul R V] : SMul (HahnSeries Γ R)
+    (HahnSeries Γ V) where
+  smul x y := {
+    coeff := fun a =>
+      ∑ ij in addAntidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd
+    isPWO_support' :=
         haveI h :
           { a : Γ |
               (∑ ij : Γ × Γ in addAntidiagonal x.isPWO_support y.isPWO_support a,
-                  x.coeff ij.fst * y.coeff ij.snd) ≠
+                  x.coeff ij.fst • y.coeff ij.snd) ≠
                 0 } ⊆
             { a : Γ | (addAntidiagonal x.isPWO_support y.isPWO_support a).Nonempty } := by
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_addAntidiagonal.mono h }
+
+theorem smul_coeff' [MulZeroClass R] [SMul R V] {x : HahnSeries Γ R}
+    {y : HahnSeries Γ V} {a : Γ} : (x • y).coeff a = ∑ ij in addAntidiagonal x.isPWO_support
+    y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd := rfl
+
+end SMul
+
+instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
+  mul x y := instSMulHahnHahn.smul x y
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
 failures elsewhere-/

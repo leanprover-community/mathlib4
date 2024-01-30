@@ -28,39 +28,43 @@ namespace Polynomial
 
 section MulActionWithZero
 
-variable {S : Type*} [AddCommMonoid S] [Pow S ℕ] (x : S)
+variable {R : Type*} [Semiring R] {S : Type*} [AddCommMonoid S] [Pow S ℕ] [MulActionWithZero R S]
+  (p : R[X]) (x : S)
 
 /-- Scalar multiplication by a natural number power. -/
-def smul_pow {R : Type*} [Semiring R] [MulActionWithZero R S] : ℕ → R → S := fun n r => r • x^n
+def smul_pow : ℕ → R → S := fun n r => r • x^n
 
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
-irreducible_def smeval {R : Type*} [Semiring R] [MulActionWithZero R S] (p : R[X]) : S :=
-  p.sum (smul_pow x)
+irreducible_def smeval : S := p.sum (smul_pow x)
 
-theorem smeval_eq_sum {R : Type*} [Semiring R] [MulActionWithZero R S] (p : R[X]) :
-    p.smeval x = p.sum (smul_pow x) := by rw [smeval_def]
+theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := by rw [smeval_def]
 
 @[simp]
-theorem smeval_zero (R : Type*) [Semiring R] [MulActionWithZero R S] :
-    (0 : R[X]).smeval x = 0 := by
+theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
   simp only [smeval_eq_sum, smul_pow, sum_zero_index]
 
-theorem smeval_C {R : Type*} [Semiring R] [MulActionWithZero R S] (r : R) :
-    (C r).smeval x = r • x ^ 0 := by
+@[simp]
+theorem smeval_C (r : R) : (C r).smeval x = r • x ^ 0 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_C_index]
 
 @[simp]
+theorem smeval_one (R : Type*) [Semiring R] [MulActionWithZero R S] :
+    (1 : R[X]).smeval x = 1 • x ^ 0 := by
+  rw [← C_1, smeval_C]
+  simp only [Nat.cast_one, one_smul]
+
+@[simp]
+theorem smeval_X (R : Type*) [Semiring R] [MulActionWithZero R S] :
     (X : R[X]).smeval x = x ^ 1 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_X_index, one_smul]
 
 @[simp]
-theorem smeval_monomial {R : Type*} [Semiring R] [MulActionWithZero R S] (r : R) (n : ℕ) :
-    (monomial n r).smeval x = r • x ^ n := by
+theorem smeval_monomial (r : R) (n : ℕ) : (monomial n r).smeval x = r • x ^ n := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_monomial_index]
 
 @[simp]
-theorem smeval_X_pow (R : Type*) [Semiring R] [MulActionWithZero R S] {n : ℕ} :
+theorem smeval_X_pow (R : Type*) [Semiring R] [MulActionWithZero R S] (n : ℕ) :
     (X ^ n : R[X]).smeval x = x ^ n := by
   simp only [smeval_eq_sum, smul_pow, X_pow_eq_monomial, zero_smul, sum_monomial_index, one_smul]
 
@@ -175,7 +179,7 @@ theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
     simp only [C_mul_monomial, smeval_monomial, mul_smul]
 
 theorem smeval_monomial_mul (r : R) (n : ℕ) :
-    smeval x (monomial n r * p) = r • (x ^ n * p.smeval x) := by
+    (monomial n r * p).smeval x  = r • (x ^ n * p.smeval x) := by
   induction p using Polynomial.induction_on' with
   | h_add r s hr hs =>
     simp only [add_comp, hr, hs, smeval_add, add_mul]
@@ -264,7 +268,7 @@ def smeval.linearMap {R : Type*} [Semiring R] {S : Type*} [AddCommMonoid S] [Pow
 
 @[simp]
 theorem smeval.linearMap_apply {R : Type*} [Semiring R] {S : Type*} [AddCommMonoid S] [Pow S ℕ]
-    [Module R S] (x : S) (p : R[X]) : smeval.linearMap x p = smeval x p := rfl
+    [Module R S] (x : S) (p : R[X]) : smeval.linearMap x p = p.smeval x := rfl
 
 theorem leval_eq_smeval {R : Type*} [Semiring R] (r : R) : leval r = smeval.linearMap r := by
   refine LinearMap.ext ?_
@@ -272,7 +276,7 @@ theorem leval_eq_smeval {R : Type*} [Semiring R] (r : R) : leval r = smeval.line
   rw [leval_apply, smeval.linearMap_apply, ← eval₂_eq_smeval R (RingHom.id _), eval]
 
 theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) : ⇑(aeval x) = fun p => @smeval S _ _ x R _ _ p := by
+    (x : S) : ⇑(aeval x) = fun p => @smeval R _ S _ _ _ p x := by
   refine funext ?_
   intro
   rw [aeval_def, eval₂_def, Algebra.algebraMap_eq_smul_one', smeval_def]
@@ -282,21 +286,21 @@ theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S
 /-- `Polynomial.smeval` as a linear map. -/
 def smeval.algebraMap {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) : R[X] →ₐ[R] S where
-  toFun := fun p => @smeval S _ _ x R _ _ p
+  toFun := fun p => @smeval R _ S _ _ _ p x
   map_one' := by simp only [smeval_one, pow_zero, one_smul]
   map_mul' := by
     intro p q
     simp only
     exact smeval_mul R x p q
   map_zero' := by simp only [smeval_zero]
-  map_add' := fun p q => smeval_add x R p q
+  map_add' := fun p q => smeval_add R p q x
   commutes' := by
     intro r
     simp only
     rw [← C_eq_algebraMap, Algebra.algebraMap_eq_smul_one, smeval_C, pow_zero]
 
 theorem smeval.algebraMap.apply {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) (p : R[X]) : smeval.algebraMap x p = smeval x p := rfl
+    (x : S) (p : R[X]) : smeval.algebraMap x p = p.smeval x := rfl
 
 theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) : Polynomial.aeval x = @smeval.algebraMap R _ S _ _ x := by

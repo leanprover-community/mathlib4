@@ -23,6 +23,8 @@ Borcherds identity that defines vertex algebras is introduced in pieces for easi
 ## Main results
 We postpone the proofs of equivalences of various identities to Mathlib.Algebra.Vertex.Basic.
 ## To do:
+* Refactor: remove non-unital non-associative vertex algebra.  Introduce Y by itself.
+* Use formal series more, instead of combinatorial coefficient calculations.
 *  order of associativity, weak associativity
 * Fix weak associativity defs
 * cofiniteness conditions?
