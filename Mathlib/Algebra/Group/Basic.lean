@@ -410,7 +410,7 @@ end DivInvOneMonoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {a b c : α}
+variable [DivisionMonoid α] {a b c d : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
 
@@ -470,6 +470,10 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 #align one_div_one_div one_div_one_div
 #align zero_sub_zero_sub zero_sub_zero_sub
+
+@[to_additive]
+theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
+  inv_inj.symm.trans <| by simp only [inv_div]
 
 @[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
