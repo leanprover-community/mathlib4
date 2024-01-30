@@ -212,65 +212,79 @@ end Stabilizers
 
 end MulAction
 
-namespace MulDistribMulAction
+section FixedPoints
 
-variable (M : Type u) [Monoid M] (A : Type v)
+variable (M : Type u) (α : Type v) [Monoid M]
+
+section Monoid
+
+variable [Monoid α] [MulDistribMulAction M α]
 
 /-- The submonoid of elements fixed under the whole action. -/
-def fixedSubmonoid [Monoid A] [MulDistribMulAction M A] : Submonoid A where
-  carrier := MulAction.fixedPoints M A
+def FixedPoints.submonoid : Submonoid α where
+  carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
-  mul_mem' := fun ha hb _ => by rw [smul_mul, ha, hb]
+  mul_mem' := fun ha hb _ => by rw [MulDistribMulAction.smul_mul, ha, hb]
 
 @[simp]
-lemma mem_fixedSubmonoid [Monoid A] [MulDistribMulAction M A] (a : A) :
-    a ∈ fixedSubmonoid M A ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_fixedSubmonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+end Monoid
+
+section Group
+
+variable [Group α] [MulDistribMulAction M α]
 
 /-- The subgroup of elements fixed under the whole action. -/
-def fixedSubgroup [Group A] [MulDistribMulAction M A] : Subgroup A where
-  __ := fixedSubmonoid M A
+def FixedPoints.subgroup : Subgroup α where
+  __ := submonoid M α
   inv_mem' := fun ha m => by rw [smul_inv', ha]
 
-/-- The notation for `MulDistribMulAction.fixedSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^*" M:51 => fixedSubgroup M α
+/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
+notation α "^*" M:51 => FixedPoints.subgroup M α
 
 @[simp]
-lemma mem_fixedSubgroup [Group A] [MulDistribMulAction M A] (a : A) :
-    a ∈ fixedSubgroup M A ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-end MulDistribMulAction
+end Group
 
-namespace DistribMulAction
+section AddMonoid
 
-variable (M : Type u) [Monoid M] (α : Type v)
+variable [AddMonoid α] [DistribMulAction M α]
 
 /-- The additive submonoid of elements fixed under the whole action. -/
-def fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] : AddSubmonoid α where
+def FixedPoints.addSubmonoid : AddSubmonoid α where
   carrier := MulAction.fixedPoints M α
   zero_mem' := smul_zero
   add_mem' := fun ha hb _ => by rw [smul_add, ha, hb]
 
 @[simp]
-lemma mem_fixedAddSubmonoid [AddMonoid α] [DistribMulAction M α] (a : α) :
-    a ∈ fixedAddSubmonoid M α ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+end AddMonoid
+
+section AddGroup
+
+variable [AddGroup α] [DistribMulAction M α]
 
 /-- The additive subgroup of elements fixed under the whole action. -/
-def fixedAddSubgroup [AddGroup α] [DistribMulAction M α] : AddSubgroup α where
-  __ := fixedAddSubmonoid M α
+def FixedPoints.addSubgroup : AddSubgroup α where
+  __ := addSubmonoid M α
   neg_mem' := fun ha _ => by rw [smul_neg, ha]
 
-/-- The notation for `DistribMulAction.fixedAddSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => fixedAddSubgroup M α
+/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
+notation α "^+" M:51 => FixedPoints.addSubgroup M α
 
 @[simp]
-lemma mem_fixedAddSubgroup [AddGroup α] [DistribMulAction M α] (a : α) :
-    a ∈ fixedAddSubgroup M α ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-end DistribMulAction
+end AddGroup
+
+end FixedPoints
 
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
