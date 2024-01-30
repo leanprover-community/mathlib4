@@ -59,7 +59,7 @@ noncomputable def floorRoot (n a : ℕ) : ℕ :=
 @[simp] lemma floorRoot_pow_self (hn : n ≠ 0) (a : ℕ) : floorRoot n (a ^ n) = a := by
   simp [floorRoot, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
-@[simp] lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
+lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp (config := { contextual := true }) [floorRoot, not_imp_not, not_or]
 
 @[simp] lemma floorRoot_eq_zero : floorRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
@@ -113,8 +113,11 @@ noncomputable def ceilRoot (n a : ℕ) : ℕ :=
 @[simp] lemma ceilRoot_pow_self (hn : n ≠ 0) (a : ℕ) : ceilRoot n (a ^ n) = a := by
   simp [ceilRoot, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
-@[simp] lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
+lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp (config := { contextual := true }) [ceilRoot, not_imp_not, not_or]
+
+@[simp] lemma ceilRoot_eq_zero : ceilRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
+  ceilRoot_ne_zero.not_right.trans $ by simp only [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_ceilRoot (n a : ℕ) :
     (ceilRoot n a).factorization = a.factorization ⌈/⌉ n := by
