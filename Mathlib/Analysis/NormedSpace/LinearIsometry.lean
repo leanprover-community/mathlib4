@@ -47,10 +47,13 @@ structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedA
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
 #align linear_isometry LinearIsometry
 
+@[inherit_doc]
 notation:25 E " →ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometry σ₁₂ E E₂
 
+/-- A linear isometric embedding of a normed `R`-module into another one. -/
 notation:25 E " →ₗᵢ[" R:25 "] " E₂:0 => LinearIsometry (RingHom.id R) E E₂
 
+/-- An antilinear isometric embedding of a normed `R`-module into another one. -/
 notation:25 E " →ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometry (starRingEnd R) E E₂
 
 /-- `SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
@@ -485,10 +488,13 @@ structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R
   norm_map' : ∀ x, ‖toLinearEquiv x‖ = ‖x‖
 #align linear_isometry_equiv LinearIsometryEquiv
 
+@[inherit_doc]
 notation:25 E " ≃ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometryEquiv σ₁₂ E E₂
 
+/-- A linear isometric equivalence between two normed vector spaces. -/
 notation:25 E " ≃ₗᵢ[" R:25 "] " E₂:0 => LinearIsometryEquiv (RingHom.id R) E E₂
 
+/-- An antilinear isometric equivalence between two normed vector spaces. -/
 notation:25 E " ≃ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometryEquiv (starRingEnd R) E E₂
 
 /-- `SemilinearIsometryEquivClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear

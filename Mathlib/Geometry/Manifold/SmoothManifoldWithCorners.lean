@@ -159,7 +159,9 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
   continuous_invFun := continuous_id
 #align model_with_corners_self modelWithCornersSelf
 
-scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
+@[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
+
+/-- A normed field is a model with corners. -/
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 section

@@ -387,8 +387,12 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+@[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+
+/-- The fundamental groupoid of a topological space. -/
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+
+/-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :

@@ -48,6 +48,7 @@ def SorgenfreyLine : Type := ℝ
 -- porting note: was deriving ConditionallyCompleteLinearOrder, LinearOrderedField, Archimedean
 #align counterexample.sorgenfrey_line Counterexample.SorgenfreyLine
 
+@[inherit_doc]
 scoped[SorgenfreyLine] notation "ℝₗ" => Counterexample.SorgenfreyLine
 open scoped SorgenfreyLine
 

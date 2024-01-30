@@ -42,7 +42,7 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
   o.oangle (p₁ -ᵥ p₂) (p₃ -ᵥ p₂)
 #align euclidean_geometry.oangle EuclideanGeometry.oangle
 
-scoped notation "∡" => EuclideanGeometry.oangle
+@[inherit_doc] scoped notation "∡" => EuclideanGeometry.oangle
 
 /-- Oriented angles are continuous when neither end point equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :

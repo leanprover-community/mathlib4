@@ -97,11 +97,13 @@ This allows us to simply write `W n` or `W_ ℤ n`. -/
 -- mathport name: witt_polynomial
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
 -- mathport name: witt_polynomial.infer
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt

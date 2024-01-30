@@ -66,7 +66,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 #align polynomial.to_finsupp Polynomial.toFinsupp
 
 -- mathport name: polynomial
-scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
 open AddMonoidAlgebra
 open Finsupp hiding single

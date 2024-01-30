@@ -73,7 +73,13 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /-- An exact pairing is a pair of objects `X Y : C` which admit
   a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
+  /-- Coevaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.coevaluation` instead. -/
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
+  /-- Evaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.evaluation` instead. -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     (𝟙 Y ⊗ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
@@ -93,11 +99,14 @@ namespace ExactPairing
 variable (X Y : C)
 variable [ExactPairing X Y]
 
+/-- Coevaluation of an exact pairing. -/
 def coevaluation : 𝟙_ C ⟶ X ⊗ Y := @coevaluation' _ _ _ X Y _
+
+/-- Evaluation of an exact pairing. -/
 def evaluation : Y ⊗ X ⟶ 𝟙_ C := @evaluation' _ _ _ X Y _
 
-notation "η_" => ExactPairing.coevaluation
-notation "ε_" => ExactPairing.evaluation
+@[inherit_doc] notation "η_" => ExactPairing.coevaluation
+@[inherit_doc] notation "ε_" => ExactPairing.evaluation
 
 lemma coevaluation_evaluation :
     (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
@@ -121,12 +130,14 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
+  /-- The right dual of the object `X`. -/
   rightDual : C
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
 /-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
+  /-- The left dual of the object `X`. -/
   leftDual : C
   [exact : ExactPairing leftDual Y]
 #align category_theory.has_left_dual CategoryTheory.HasLeftDual
@@ -136,8 +147,8 @@ attribute [instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
-prefix:1024 "ᘁ" => leftDual
-postfix:1024 "ᘁ" => rightDual
+@[inherit_doc] prefix:1024 "ᘁ" => leftDual
+@[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
 instance hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
@@ -175,8 +186,8 @@ def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : �
   (λ_ _).inv ≫ (η_ (ᘁX) X ⊗ 𝟙 _) ≫ ((𝟙 _ ⊗ f) ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom
 #align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
-notation f "ᘁ" => rightAdjointMate f
-notation "ᘁ" f => leftAdjointMate f
+@[inherit_doc] notation f "ᘁ" => rightAdjointMate f
+@[inherit_doc] notation "ᘁ" f => leftAdjointMate f
 
 @[simp]
 theorem rightAdjointMate_id {X : C} [HasRightDual X] : (𝟙 X)ᘁ = 𝟙 (Xᘁ) := by

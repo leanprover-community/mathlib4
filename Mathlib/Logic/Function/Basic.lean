@@ -854,7 +854,7 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
-notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩

@@ -49,6 +49,7 @@ def IsTheta (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   IsBigO l f g ∧ IsBigO l g f
 #align asymptotics.is_Theta Asymptotics.IsTheta
 
+@[inherit_doc]
 notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
 
 theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=

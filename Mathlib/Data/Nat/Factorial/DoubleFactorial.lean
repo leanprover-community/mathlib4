@@ -35,7 +35,7 @@ def doubleFactorial : ℕ → ℕ
 #align nat.double_factorial Nat.doubleFactorial
 
 -- This notation is `\!!` not two !'s
-scoped notation:10000 n "‼" => Nat.doubleFactorial n
+@[inherit_doc] scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
 lemma doubleFactorial_pos : ∀ n, 0 < n‼
   | 0 | 1 => zero_lt_one

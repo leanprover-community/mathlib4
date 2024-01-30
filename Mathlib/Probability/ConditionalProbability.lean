@@ -75,8 +75,8 @@ def cond (s : Set Ω) : Measure Ω :=
 
 end Definitions
 
-scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
-scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
+@[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
+@[inherit_doc] scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
 is a probability measure. -/
