@@ -4,13 +4,13 @@ structure FiniteLawverePresentation where
   numSort : ℕ
   sortName (S : Fin numSort) :
     String := s!"X_{S}"
-  numOps (P : ProdWord (Fin numSort)) (Q : Fin numSort) :
+  numOps (P : List (Fin numSort)) (Q : Fin numSort) :
     ℕ
-  opName (P : ProdWord (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) :
+  opName (P : List (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) :
     String := s!"op_{op}"
   rels {P Q : ProdWord (Fin numSort)} :
-    List (Lean.Name × LawvereWord (fun a b => Fin (numOps a b)) P Q ×
-      LawvereWord (fun a b => Fin (numOps a b)) P Q)
+    List (String × LawvereWord (fun a b => Fin (numOps a.unpack b)) P Q ×
+      LawvereWord (fun a b => Fin (numOps a.unpack b)) P Q)
 
 namespace FiniteLawverePresentation
 
@@ -41,5 +41,17 @@ def lawvereTheory : LawvereTheory where
     · exact Quotient.exact hsnd
   toNil' _ := Quotient.mk _ <| .toNil _
   toNil'_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
+
+/-
+syntax sort := str
+syntax op := str ":" sepBy(sort,"→") "→" sort
+syntax rel := term
+
+syntax "`[FLP|"
+  ("SORTS:\n" sepBy(sort, ";"))
+  ("OPS:\n" sepBy(op, ";"))
+  ("RELS:\n" sepBy(rel,";"))
+  "]" : term
+-/
 
 end FiniteLawverePresentation
