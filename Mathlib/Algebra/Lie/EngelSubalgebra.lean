@@ -190,6 +190,10 @@ lemma LieSubalgebra.isNilpotent_of_forall_le_engel [IsNoetherian R L]
     simpa only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff,
       LieSubalgebra.coe_ad_pow, ZeroMemClass.coe_zero]
 
+lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
+    (Finsupp.cons y s).support = _ := by
+  sorry
+
 namespace MvPolynomial -- move this
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
@@ -222,9 +226,12 @@ theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) 
     rw [← h, aux]
 
 lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
-    (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (h : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
+    (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
+  rw [finSuccEquiv_coeff_coeff] at hd
+  specialize hφ hd
+  -- fix `Finsupp.cons_support` above
   sorry
 
 end MvPolynomial
