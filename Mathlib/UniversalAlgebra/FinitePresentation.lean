@@ -41,16 +41,4 @@ def lawvereTheory : LawvereTheory (Fin P.numSort) where
   toNil _ := Quotient.mk _ <| .toNil _
   toNil_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
 
-/-
-syntax sort := str
-syntax op := (str ":" sort) <|> (str ":" sepBy1(sort,"→") "→" sort)
-syntax rel := term
-
-syntax "`[FLP|"
-  ("SORTS:\n" sepBy(sort, ";"))
-  ("OPS:\n" sepBy(op, ";"))
-  ("RELS:\n" sepBy(rel,";"))
-  "]" : term
--/
-
 end FiniteLawverePresentation
