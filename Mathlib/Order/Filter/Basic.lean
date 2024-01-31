@@ -776,7 +776,7 @@ instance unique [IsEmpty α] : Unique (Filter α) where
   uniq := filter_eq_bot_of_isEmpty
 #align filter.unique Filter.unique
 
-theorem NeBot.nonempty (f : Filter α) [f.NeBot] : Nonempty α :=
+theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
   not_isEmpty_iff.mp fun _ ↦ hf.ne (Subsingleton.elim _ _)
 
 /-- There are only two filters on a `subsingleton`: `⊥` and `⊤`. If the type is empty, then they are
