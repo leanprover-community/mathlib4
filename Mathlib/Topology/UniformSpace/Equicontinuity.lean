@@ -136,7 +136,7 @@ protected abbrev Set.EquicontinuousOn (H : Set <| X → α) (S : Set X) : Prop :
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is *uniformly equicontinuous* if,
 for all entourage `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
-`V`-close, we have that, *for all `i : ι`*, `F i x` is `U`-close to `F i x₀`. -/
+`V`-close, we have that, *for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuous (F : ι → β → α) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ U
 #align uniform_equicontinuous UniformEquicontinuous
@@ -150,7 +150,7 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
 /-- A family `F : ι → β → α` of functions between uniform spaces is
 *uniformly equicontinuous on `S : Set β`* if, for all entourage `U ∈ 𝓤 α`, there is a relative
 entourage `V ∈ 𝓤 β ⊓ 𝓟 (S ×ˢ S)` such that, whenever `x` and `y` are `V`-close, we have that,
-*for all `i : ι`*, `F i x` is `U`-close to `F i x₀`. -/
+*for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuousOn (F : ι → β → α) (S : Set β) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β ⊓ 𝓟 (S ×ˢ S), ∀ i, (F i xy.1, F i xy.2) ∈ U
 
@@ -383,7 +383,7 @@ theorem UniformEquicontinuous.uniformContinuous {F : ι → β → α} (h : Unif
   mem_map.mpr (mem_of_superset (h U hU) fun _ hxy => hxy i)
 #align uniform_equicontinuous.uniform_continuous UniformEquicontinuous.uniformContinuous
 
-/-- Each function of a family uniformly equicontinuous on `S` is uniformly continuous `S`. -/
+/-- Each function of a family uniformly equicontinuous on `S` is uniformly continuous on `S`. -/
 theorem UniformEquicontinuousOn.uniformContinuousOn {F : ι → β → α} {S : Set β}
     (h : UniformEquicontinuousOn F S) (i : ι) :
     UniformContinuousOn (F i) S := fun U hU =>
@@ -548,7 +548,7 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
   rfl
 #align uniform_equicontinuous_iff_uniform_continuous uniformEquicontinuous_iff_uniformContinuous
 
-/-- A family `𝓕 : ι → β → α` is uniformly equicontinuous n `S` iff the function `swap 𝓕 : β → ι → α`
+/-- A family `𝓕 : ι → β → α` is uniformly equicontinuous on `S` iff the function `swap 𝓕 : β → ι → α`
 is uniformly continuous on `S`
 *when `ι → α` is equipped with the uniform structure of uniform convergence*. This is very useful
 for developping the equicontinuity API, but it should not be used directly for other purposes. -/
@@ -926,7 +926,7 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
 ```
 
 Unfortunately, the proofs get painful when dealing with the relative case as one needs to change
-the ambiant topology. So it turns out to be easier to re-do the proof by hand.
+the ambient topology. So it turns out to be easier to re-do the proof by hand.
 -/
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise on `S ∪ {x₀} : Set X`* along some nontrivial
