@@ -1179,17 +1179,29 @@ theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f �
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
+theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
+    ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
+  simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
+
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
 of `map u F`. -/
 def MapClusterPt {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) : Prop :=
   ClusterPt x (map u F)
 #align map_cluster_pt MapClusterPt
 
+theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
+
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
+  simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
+    ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
 theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
     {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
@@ -1431,6 +1443,10 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
+
+theorem isClosed_iff_ultrafilter : IsClosed s ↔
+    ∀ x, ∀ u : Ultrafilter X, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
+  simp [isClosed_iff_clusterPt, ClusterPt, ← exists_ultrafilter_iff]
 
 theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by
