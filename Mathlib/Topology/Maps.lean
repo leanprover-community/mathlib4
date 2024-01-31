@@ -339,12 +339,6 @@ end QuotientMap
 end QuotientMap
 
 section OpenMap
-/-- A map `f : X → Y` is said to be an *open map*, if the image of any open `U : Set X`
-is open in `Y`. -/
-def IsOpenMap [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :=
-  ∀ U : Set X, IsOpen U → IsOpen (f '' U)
-#align is_open_map IsOpenMap
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsOpenMap
@@ -470,12 +464,6 @@ end OpenMap
 section IsClosedMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-/-- A map `f : X → Y` is said to be a *closed map*, if the image of any closed `U : Set X`
-is closed in `Y`. -/
-def IsClosedMap (f : X → Y) :=
-  ∀ U : Set X, IsClosed U → IsClosed (f '' U)
-#align is_closed_map IsClosedMap
 
 namespace IsClosedMap
 open Function

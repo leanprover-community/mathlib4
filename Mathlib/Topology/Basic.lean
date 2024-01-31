@@ -5,8 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Tactic.Continuity
+import Mathlib.Topology.Defs.Filter
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
@@ -61,22 +60,6 @@ universe u v w x
 ### Topological spaces
 -/
 
-
-/-- A topology on `X`. -/
-@[to_additive existing TopologicalSpace]
-class TopologicalSpace (X : Type u) where
-  /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
-  protected IsOpen : Set X → Prop
-  /-- The set representing the whole space is an open set. Use `isOpen_univ` in the root namespace
-  instead. -/
-  protected isOpen_univ : IsOpen univ
-  /-- The intersection of two open sets is an open set. Use `IsOpen.inter` instead. -/
-  protected isOpen_inter : ∀ s t, IsOpen s → IsOpen t → IsOpen (s ∩ t)
-  /-- The union of a family of open sets is an open set. Use `isOpen_sUnion` in the root namespace
-  instead. -/
-  protected isOpen_sUnion : ∀ s, (∀ t ∈ s, IsOpen t) → IsOpen (⋃₀ s)
-#align topological_space TopologicalSpace
-
 /-- A constructor for topologies by specifying the closed sets,
 and showing that they satisfy the appropriate conditions. -/
 def TopologicalSpace.ofClosed {X : Type u} (T : Set (Set X)) (empty_mem : ∅ ∈ T)
@@ -95,14 +78,6 @@ section TopologicalSpace
 variable {X : Type u} {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X} {p p₁ p₂ : X → Prop}
 
-/-- `IsOpen s` means that `s` is open in the ambient topological space on `X` -/
-def IsOpen [TopologicalSpace X] : Set X → Prop := TopologicalSpace.IsOpen
-#align is_open IsOpen
-
-set_option quotPrecheck false in
-/-- Notation for `IsOpen` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
-
 open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
@@ -117,17 +92,6 @@ protected theorem TopologicalSpace.ext :
 section
 
 variable [TopologicalSpace X]
-
-@[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
-#align is_open_univ isOpen_univ
-
-theorem IsOpen.inter (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ ∩ s₂) :=
-  TopologicalSpace.isOpen_inter s₁ s₂ h₁ h₂
-#align is_open.inter IsOpen.inter
-
-theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
-  TopologicalSpace.isOpen_sUnion s h
-#align is_open_sUnion isOpen_sUnion
 
 end
 
@@ -195,16 +159,6 @@ theorem isOpen_const {p : Prop} : IsOpen { _x : X | p } := by by_cases p <;> sim
 theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen { x | p₁ x ∧ p₂ x } :=
   IsOpen.inter
 #align is_open.and IsOpen.and
-
-/-- A set is closed if its complement is open -/
-class IsClosed (s : Set X) : Prop where
-  /-- The complement of a closed set is an open set. -/
-  isOpen_compl : IsOpen sᶜ
-#align is_closed IsClosed
-
-set_option quotPrecheck false in
-/-- Notation for `IsClosed` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 @[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
@@ -294,11 +248,6 @@ theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
 /-!
 ### Interior of a set
 -/
-
-/-- The interior of a set `s` is the largest open subset of `s`. -/
-def interior (s : Set X) : Set X :=
-  ⋃₀ { t | IsOpen t ∧ t ⊆ s }
-#align interior interior
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
 theorem mem_interior : x ∈ interior s ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
@@ -428,16 +377,6 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
 /-!
 ### Closure of a set
 -/
-
-
-/-- The closure of `s` is the smallest closed set containing `s`. -/
-def closure (s : Set X) : Set X :=
-  ⋂₀ { t | IsClosed t ∧ s ⊆ t }
-#align closure closure
-
-set_option quotPrecheck false in
-/-- Notation for `closure` with respect to a non-standard topology. -/
-scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 
 @[simp]
 theorem isClosed_closure : IsClosed (closure s) :=
@@ -625,11 +564,6 @@ theorem Filter.lift'_closure_eq_bot {l : Filter X} : l.lift' closure = ⊥ ↔ l
     h.symm ▸ by rw [lift'_bot (monotone_closure _), closure_empty, principal_empty]⟩
 #align filter.lift'_closure_eq_bot Filter.lift'_closure_eq_bot
 
-/-- A set is dense in a topological space if every point belongs to its closure. -/
-def Dense (s : Set X) : Prop :=
-  ∀ x, x ∈ closure s
-#align dense Dense
-
 theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
   eq_univ_iff_forall.symm
 #align dense_iff_closure_eq dense_iff_closure_eq
@@ -711,11 +645,6 @@ theorem dense_compl_singleton_iff_not_open :
 /-!
 ### Frontier of a set
 -/
-
-/-- The frontier of a set is the set of points between the closure and interior. -/
-def frontier (s : Set X) : Set X :=
-  closure s \ interior s
-#align frontier frontier
 
 @[simp]
 theorem closure_diff_interior (s : Set X) : closure s \ interior s = frontier s :=
@@ -842,45 +771,6 @@ theorem compl_frontier_eq_union_interior :
 /-!
 ### Neighborhoods
 -/
-
-/-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
-neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
-infimum over the principal filters of all open sets containing `x`. -/
-irreducible_def nhds (x : X) : Filter X :=
-  ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
-#align nhds nhds
-#align nhds_def nhds_def
-
-/-- The "neighborhood within" filter. Elements of `𝓝[s] x` are sets containing the
-intersection of `s` and a neighborhood of `x`. -/
-def nhdsWithin (x : X) (s : Set X) : Filter X :=
-  nhds x ⊓ 𝓟 s
-#align nhds_within nhdsWithin
-
-section
-
-@[inherit_doc]
-scoped[Topology] notation "𝓝" => nhds
-
-@[inherit_doc]
-scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
-
-/-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
-
-/-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
-
-/-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
-
-/-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
-
-/-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
-
-end
 
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
@@ -1111,13 +1001,6 @@ In this section we define [cluster points](https://en.wikipedia.org/wiki/Limit_p
 -/
 
 
-/-- A point `x` is a cluster point of a filter `F` if `𝓝 x ⊓ F ≠ ⊥`. Also known as
-an accumulation point or a limit point, but beware that terminology varies. This
-is *not* the same as asking `𝓝[≠] x ⊓ F ≠ ⊥`. See `mem_closure_iff_clusterPt` in particular. -/
-def ClusterPt (x : X) (F : Filter X) : Prop :=
-  NeBot (𝓝 x ⊓ F)
-#align cluster_pt ClusterPt
-
 theorem ClusterPt.neBot {F : Filter X} (h : ClusterPt x F) : NeBot (𝓝 x ⊓ F) :=
   h
 #align cluster_pt.ne_bot ClusterPt.neBot
@@ -1179,12 +1062,6 @@ theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f �
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
-/-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
-of `map u F`. -/
-def MapClusterPt {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) : Prop :=
-  ClusterPt x (map u F)
-#align map_cluster_pt MapClusterPt
-
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
@@ -1201,11 +1078,6 @@ theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
   have : map (u ∘ φ) p ≤ 𝓝 x ⊓ map u F := le_inf H this
   exact neBot_of_le this
 #align map_cluster_pt_of_comp mapClusterPt_of_comp
-
-/-- A point `x` is an accumulation point of a filter `F` if `𝓝[≠] x ⊓ F ≠ ⊥`.-/
-def AccPt (x : X) (F : Filter X) : Prop :=
-  NeBot (𝓝[≠] x ⊓ F)
-#align acc_pt AccPt
 
 theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
@@ -1560,25 +1432,6 @@ section lim
 -- "Lim"
 set_option linter.uppercaseLean3 false
 
-/-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
-noncomputable def lim [Nonempty X] (f : Filter X) : X :=
-  Classical.epsilon fun x => f ≤ 𝓝 x
-#align Lim lim
-
-/--
-If `F` is an ultrafilter, then `Filter.Ultrafilter.lim F` is a limit of the filter, if it exists.
-Note that dot notation `F.lim` can be used for `F : Filter.Ultrafilter X`.
--/
-noncomputable nonrec def Ultrafilter.lim (F : Ultrafilter X) : X :=
-  @lim X _ (nonempty_of_neBot F) F
-#align ultrafilter.Lim Ultrafilter.lim
-
-/-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
-at `f`, if it exists. -/
-noncomputable def limUnder [Nonempty X] (f : Filter α) (g : α → X) : X :=
-  lim (f.map g)
-#align lim limUnder
-
 /-- If a filter `f` is majorated by some `𝓝 x`, then it is majorated by `𝓝 (Filter.lim f)`. We
 formulate this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it useful for
 types without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify
@@ -1611,19 +1464,6 @@ section Continuous
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 open TopologicalSpace
-
-/-- A function between topological spaces is continuous if the preimage
-  of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
-structure Continuous (f : X → Y) : Prop where
-  /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
-  instead. -/
-  isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
-#align continuous Continuous
-
-set_option quotPrecheck false in
-/-- Notation for `Continuous` with respect to a non-standard topologies. -/
-scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
-  @Continuous _ _ t₁ t₂
 
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
@@ -1858,10 +1698,6 @@ theorem Set.MapsTo.closure_left {t : Set Y} (h : MapsTo f s t)
 section DenseRange
 
 variable {α ι : Type*} (f : α → X) (g : X → Y)
-
-/-- `f : α → X` has dense range if its range (image) is a dense subset of `X`. -/
-def DenseRange := Dense (range f)
-#align dense_range DenseRange
 
 variable {f : α → X} {s : Set X}
 
