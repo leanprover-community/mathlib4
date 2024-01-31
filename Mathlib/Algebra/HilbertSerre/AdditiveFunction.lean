@@ -80,11 +80,6 @@ section ShortComplex
 
 variable (s : ShortComplex 𝒞) (hs : s.Exact)
 
--- A -f-> B -g-> C
-
--- 0 -> ker f -> A -> im f -> 0
--- 0 -> ker g -> B -> im g -> 0
-
 private noncomputable abbrev sc1 : ShortComplex 𝒞 where
   X₁ := kernel s.f
   X₂ := s.X₁
@@ -196,12 +191,6 @@ private lemma im_eq_ker_succ (n : ℕ) (hn : n + 2 ≤ N) : (im_ n) ≅ ker_ (n 
 lemma apply_image_eq_apply_ker_succ (n : ℕ) (hn : n + 2 ≤ N) : μ (im_ n) = μ (ker_ (n + 1)) :=
   μ.eq_of_iso (im_eq_ker_succ S hS n hn)
 
-/-
-A0 -> A1 -> A2 -> ... -> A (n-3) -> A(n-2) -> A (n-1) -> A(n)
-this covers
-A0 -> A1 -> A2 -> ... -> A (n-3)
-
--/
 lemma apply_sub_apply_succ (n : ℕ) (hn : n + 3 ≤ N) :
     μ (S.obj' n) - μ (S.obj' (n + 1)) =
     μ (ker_ n) - μ (ker_ (n + 2)) := by
@@ -216,14 +205,7 @@ variable (S : ComposableArrows 𝒞 5) (hS : S.Exact)
 
 local notation "μ_" n => μ (S.obj' n)
 
-/-
-A0 -> A1 -> A2 -> A3 -> A4 -> A5
-
-μ0 - μ1 + μ2 - μ3 + μ4 - μ5 =
-μ (ker0) - μ(ker2) + μ(ker2) - μ(ker4) + μ4 - μ5 =
-μ (ker0) - μ(ker4)
--/
-lemma alternating_apply_aux :
+lemma alternating_apply_aux_of_length6 :
     (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) =
     (μ (kernel (S.map' 0 1)) - μ (kernel (S.map' 4 5))) + (μ_ 4) - (μ_ 5) := by
   rw [show (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) =
@@ -231,10 +213,10 @@ lemma alternating_apply_aux :
   rw [apply_sub_apply_succ (hS := hS) (n := 0), apply_sub_apply_succ (hS := hS) (n := 2)]
   all_goals try omega
 
-lemma alternating_sum_apply :
+lemma alternating_sum_apply_of_length6 :
     (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) =
     μ (kernel (S.map' 0 1)) - μ (cokernel (S.map' 4 5)) := by
-  rw [μ.alternating_apply_aux (hS := hS)]
+  rw [μ.alternating_apply_aux_of_length6 (hS := hS)]
   have := S.sc hS.toIsComplex 3
   have eq0 : _ = μ (S.obj' 4) - μ (S.obj' 5) :=
     μ.apply_shortComplex_of_exact' (S.sc hS.toIsComplex 3)
@@ -242,10 +224,10 @@ lemma alternating_sum_apply :
   simp only [Int.ofNat_eq_coe, Int.Nat.cast_ofNat_Int, id_eq, Nat.cast_ofNat, Fin.zero_eta,
     Fin.mk_one, ComposableArrows.map', sub_add_sub_cancel]
 
-lemma alternating_sum_apply_eq_zero_of_zero_zero
+lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6
     (left_zero : IsZero S.left) (right_zero : IsZero S.right) :
     (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) = 0 := by
-  rw [alternating_sum_apply (hS := hS)]
+  rw [alternating_sum_apply_of_length6 (hS := hS)]
   rw [show μ (kernel (S.map' 0 1)) = 0 from ?_, show μ (cokernel (S.map' 4 5)) = 0 from ?_,
     sub_zero]
   · rw [μ.eq_of_iso, μ.map_zero]
