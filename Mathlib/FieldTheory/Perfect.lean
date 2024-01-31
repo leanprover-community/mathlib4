@@ -152,11 +152,9 @@ noncomputable def rootsExpandPowEquivRoots :
 @[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
     (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := by
-  induction' n with n ih
-  · simp only [pow_zero, pow_one]
-    rfl
-  simp_rw [rootsExpandPowEquivRoots, Equiv.trans_apply, ih, pow_succ, pow_mul]
-  rfl
+  induction n with
+  | zero => simp only [pow_zero, pow_one]; rfl
+  | succ n ih => simp_rw [rootsExpandPowEquivRoots, Equiv.trans_apply, ih, pow_succ, pow_mul]; rfl
 
 end Polynomial
 
