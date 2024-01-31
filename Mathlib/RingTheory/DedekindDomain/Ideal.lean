@@ -703,6 +703,17 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
 
+open UniqueFactorizationMonoid in
+nonrec theorem Ideal.mem_normalizedFactors_iff [DecidableEq (Ideal A)]
+    {p I : Ideal A} (hI : I ≠ ⊥) :
+    p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
+  rw [← Ideal.dvd_iff_le]
+  by_cases hp : p = 0
+  · rw [← zero_eq_bot] at hI
+    simp only [hp, zero_not_mem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
+      not_false_eq_true, implies_true]
+  · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
+
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
