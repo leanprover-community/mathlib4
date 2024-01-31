@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Josha Dekker
+Authors: Josha Dekker, Kexing Ying
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
