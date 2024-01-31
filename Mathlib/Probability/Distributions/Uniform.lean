@@ -208,4 +208,10 @@ lemma uniformVolume.IsUniform {s : Set E} : IsUniform (id : E → E) s (uniformV
   unfold IsUniform
   rw [map_id]
 
+/-- Measure defined by a uniform distribution on s. -/
+def uniformMeasure (s : Set E) (μ : Measure E := by volume_tac) : Measure E := uniformVolume s μ
+
+lemma isProbabilityMeasureUniform {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞) :
+    IsProbabilityMeasure (uniformMeasure s μ) := UniformVolume.isProbabilityMeasure hns hnt
+
 end pdf
