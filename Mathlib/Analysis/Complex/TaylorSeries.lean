@@ -88,7 +88,7 @@ lemma hasSum_taylorSeries_on_emetric_ball :
   exact hf.mono <| EMetric.ball_subset_ball hr'.le
 
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
-is given by evaluating its Taylor series at `c` on theis open ball. -/
+is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma taylorSeries_eq_on_emetric_ball :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_on_emetric_ball hf hz).tsum_eq
