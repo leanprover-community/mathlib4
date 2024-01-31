@@ -97,18 +97,15 @@ def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
       rwa [Germ.coe_eq.mpr (EventuallyEq.symm hy')]
     fun f f' hff' ↦ propext <| forall_congr' fun _ ↦ ⟨this f f' hff', this f' f hff'.symm⟩
 
-theorem Filter.Eventually.germ_congr
-    {P : Germ (𝓝 x) Y → Prop} (hf : P f) (h : ∀ᶠ z in 𝓝 x, g z = f z) : P g := by
-  convert hf using 1
-  exact Germ.coe_eq.mpr h
-
 theorem Filter.Eventually.germ_congr_set
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (hf : ∀ᶠ x in 𝓝ˢ A, P x f)
     (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) : ∀ᶠ x in 𝓝ˢ A, P x g := by
   rw [eventually_nhdsSet_iff_forall] at *
   intro x hx
   apply ((hf x hx).and (h x hx).eventually_nhds).mono
-  exact fun y hy ↦ hy.2.germ_congr hy.1
+  intro y hy
+  convert hy.1 using 1
+  exact Germ.coe_eq.mpr hy.2
 
 theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}
     (hf : RestrictGermPredicate P A x f) (h : ∀ᶠ z in 𝓝ˢ A, g z = f z) :
