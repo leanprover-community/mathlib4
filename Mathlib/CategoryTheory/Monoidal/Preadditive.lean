@@ -63,11 +63,11 @@ theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ f = 0 := by
 
 theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ (g + h) = f ⊗ g + f ⊗ h := by
   rw [← tensor_id_comp_id_tensor]
-  simp
+  simp [tensor_id_comp_id_tensor]
 
 theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
   rw [← tensor_id_comp_id_tensor]
-  simp
+  simp [tensor_id_comp_id_tensor]
 
 end MonoidalPreadditive
 
