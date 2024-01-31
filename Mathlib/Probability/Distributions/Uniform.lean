@@ -9,11 +9,11 @@ import Mathlib.Probability.Density
 
 /-! # Uniform distributions
 
-Defines the uniform distribution for any set with finite volume.
+Defines the uniform distribution for any set with finite measure.
 
 ## Main definitions
-* `uniformMeasure s` : The uniform volume on `s` is the
-  the volume measure restricted to `s`, normalized.
+* `uniformMeasure s` : The uniform measure on `s` is the
+  the measure restricted to `s`, normalized.
 * `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
   push-forward measure agrees with the rescaled restricted volume measure `μ`.
 -/
@@ -28,7 +28,7 @@ namespace MeasureTheory
 
 variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 
-/-- A measure is a uniform volume for a set `s` if it is the rescaled restriction of the volume to
+/-- A measure is a uniform measure for a set `s` if it is the rescaled restriction of the volume to
 this set.  -/
 def uniformMeasure (s : Set E) (μ : Measure E) : Measure E := (μ s)⁻¹ • μ.restrict s
 
