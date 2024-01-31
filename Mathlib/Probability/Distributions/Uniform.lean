@@ -30,7 +30,8 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 
 /-- A measure is a uniform measure for a set `s` if it is the rescaled restriction of the measure to
 this set.  -/
-def uniformMeasure (s : Set E) (μ : Measure E := by volume_tac) : Measure E := (μ s)⁻¹ • μ.restrict s
+def uniformMeasure (s : Set E) (μ : Measure E := by volume_tac) : Measure E :=
+  (μ s)⁻¹ • μ.restrict s
 
 namespace UniformMeasure
 
