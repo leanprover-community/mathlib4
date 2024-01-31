@@ -10,10 +10,10 @@ inductive ProdWord (S : Type u) : Type u where
   | prod : ProdWord S → ProdWord S → ProdWord S
   | nil : ProdWord S
 
-def ProdWord.unpack {S : Type u} : ProdWord S → List S
-  | .of X => [X]
+def ProdWord.unpack {S : Type u} : ProdWord S → Array S
+  | .of X => #[X]
   | .prod a b => a.unpack ++ b.unpack
-  | .nil => []
+  | .nil => #[]
 
 def ProdWord.lift {S : Type u} {S' : Type u'} (f : S → ProdWord S') : ProdWord S → ProdWord S'
   | .of t => f t

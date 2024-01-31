@@ -1,21 +1,73 @@
 import Mathlib.UniversalAlgebra.LawvereTheory
 
 structure FiniteLawverePresentation where
-  numSort : ℕ
-  sortName (S : Fin numSort) :
-    String := s!"X_{S}"
-  numOps (P : List (Fin numSort)) (Q : Fin numSort) :
-    ℕ
-  opName (P : List (Fin numSort)) (S : Fin numSort) (op : Fin (numOps P S)) :
-    String := s!"op_{op}"
-  rels {P Q : ProdWord (Fin numSort)} :
-    List (String × LawvereWord (fun a b => Fin (numOps a.unpack b)) P Q ×
-      LawvereWord (fun a b => Fin (numOps a.unpack b)) P Q)
+  sortNames : Array String
+  opNames (P : Array (Fin sortNames.size)) (Q : Fin sortNames.size) :
+    Array String
+  rels {P Q : ProdWord (Fin sortNames.size)} :
+    List (String × LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q ×
+      LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q)
+
+syntax sortName := str
+syntax sortDescr := sortName ";"
+syntax opName := str
+syntax opDescr := opName ":" sepBy(sortName,",") " → " sortName
+
+syntax (name := flpStx) "`[FLP|"
+  ("SORTS:" sepBy(sortName,","))?
+  ("OPS:" sepBy(opDescr,","))?
+"]" : term
+
+open Qq Lean Elab Term
+
+def elabSortName (nm : TSyntax `sortName) : TermElabM String :=
+  match nm with
+  | `(sortName|$s:str) => return s.getString
+  | _ => throwUnsupportedSyntax
+
+def elabOpName (nm : TSyntax `opName) : TermElabM String :=
+  match nm with
+  | `(opName|$s:str) => return s.getString
+  | _ => throwUnsupportedSyntax
+
+def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String × String) :=
+  match descr with
+  | `(opDescr|$nm : $nms,* → $out) => do
+    let nm ← elabOpName nm
+    let nms ← nms.getElems.mapM elabSortName
+    let out ← elabSortName out
+    return (nm, nms, out)
+  | _ => throwUnsupportedSyntax
+
+@[term_elab flpStx]
+def elabFlp : TermElab := fun stx tp =>
+  match stx with
+  | `(`[FLP| $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
+    let sorts ← match sorts with
+      | some sorts => sorts.getElems.mapM elabSortName
+      | none => pure #[]
+    let ops ← match ops with
+      | some ops => ops.getElems.mapM elabOpDescr
+      | none => pure #[]
+    logInfo m!"{sorts}"
+    logInfo m!"{ops}"
+    return q(0)
+  | _ => throwUnsupportedSyntax
+
+#check `[FLP|
+  SORTS:
+    "a" ,
+    "b"
+  OPS:
+    "a" : "a", "b" → "c",
+    "a" : "b" → "c"
+]
 
 namespace FiniteLawverePresentation
 
 variable (P : FiniteLawverePresentation)
 
+/-
 def lawvereTheory : LawvereTheory (Fin P.numSort) where
   hom X Y := Quotient (LawvereSetoid (fun f g => ∃ n, (n, f, g) ∈ P.rels) X Y)
   id X := Quotient.mk _ <| LawvereWord.id X
@@ -40,5 +92,6 @@ def lawvereTheory : LawvereTheory (Fin P.numSort) where
     · exact Quotient.exact hsnd
   toNil _ := Quotient.mk _ <| .toNil _
   toNil_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
+-/
 
 end FiniteLawverePresentation
