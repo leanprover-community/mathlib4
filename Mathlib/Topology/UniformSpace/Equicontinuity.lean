@@ -174,7 +174,7 @@ lemma EquicontinuousWithinAt.mono {F : ι → X → α} {x₀ : X} {S T : Set X}
 lemma equicontinuousAt_restrict_iff (F : ι → X → α) {S : Set X} (x₀ : S) :
     EquicontinuousAt (S.restrict ∘ F) x₀ ↔ EquicontinuousWithinAt F S x₀ := by
   simp [EquicontinuousWithinAt, EquicontinuousAt,
-    ← eventually_nhds_subtype_iff_eventually_nhdsWithin]
+    ← eventually_nhds_subtype_iff]
 
 lemma Equicontinuous.equicontinuousOn {F : ι → X → α} (H : Equicontinuous F)
     (S : Set X) : EquicontinuousOn F S :=
@@ -930,7 +930,7 @@ the ambiant topology. So it turns out to be easier to re-do the proof by hand.
 -/
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise on `S ∪ {x₀} : Set X`* along some nontrivial
-filter, and if the family `𝓕` is equicontinuous at some `x₀ : X` within `S`, then the limit is
+filter, and if the family `𝓕` is equicontinuous at `x₀ : X` within `S`, then the limit is
 continuous at `x₀` within `S`. -/
 theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter ι} [l.NeBot]
     {F : ι → X → α} {f : X → α} {S : Set X} {x₀ : X} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))

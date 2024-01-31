@@ -104,7 +104,7 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
-scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+@[inherit_doc] scoped[Topology.Homotopy] notation "Ω^" => GenLoop
 
 open Topology.Homotopy
 
