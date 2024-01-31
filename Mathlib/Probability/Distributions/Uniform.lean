@@ -32,7 +32,7 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 this set.  -/
 def uniformMeasure (s : Set E) (μ : Measure E) : Measure E := (μ s)⁻¹ • μ.restrict s
 
-namespace UniformVolume
+namespace UniformMeasure
 
 theorem absolutelyContinuous {s : Set E} :
     uniformMeasure s μ ≪ μ := by
@@ -63,7 +63,7 @@ theorem toMeasurable_eq {s : Set E} :
   · simp [hnt]
   · simp [restrict_toMeasurable hnt]
 
-end UniformVolume
+end UniformMeasure
 
 namespace pdf
 
@@ -92,13 +92,13 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
   rw [hu]
-  exact UniformVolume.absolutelyContinuous
+  exact UniformMeasure.absolutelyContinuous
 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
     ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
   rw [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu,
-    ← UniformVolume.uniformMeasure_apply hA]
+    ← UniformMeasure.uniformMeasure_apply hA]
 #align measure_theory.pdf.is_uniform.measure_preimage MeasureTheory.pdf.IsUniform.measure_preimage
 
 theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
@@ -112,12 +112,12 @@ theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt 
 theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
     IsUniform X (toMeasurable μ s) ℙ μ ↔ IsUniform X s ℙ μ := by
   unfold IsUniform
-  rw [UniformVolume.toMeasurable_eq]
+  rw [UniformMeasure.toMeasurable_eq]
 
 protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
     IsUniform X (toMeasurable μ s) ℙ μ := by
   unfold IsUniform at *
-  rwa [UniformVolume.toMeasurable_eq]
+  rwa [UniformMeasure.toMeasurable_eq]
 
 theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
