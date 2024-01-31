@@ -548,8 +548,8 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
   rfl
 #align uniform_equicontinuous_iff_uniform_continuous uniformEquicontinuous_iff_uniformContinuous
 
-/-- A family `𝓕 : ι → β → α` is uniformly equicontinuous on `S` iff the function `swap 𝓕 : β → ι → α`
-is uniformly continuous on `S`
+/-- A family `𝓕 : ι → β → α` is uniformly equicontinuous on `S` iff the function
+`swap 𝓕 : β → ι → α` is uniformly continuous on `S`
 *when `ι → α` is equipped with the uniform structure of uniform convergence*. This is very useful
 for developping the equicontinuity API, but it should not be used directly for other purposes. -/
 theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {S : Set β} :
