@@ -6,6 +6,7 @@ Authors: Josha Dekker, Kexing Ying
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
 import Mathlib.Probability.Density
+import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-! # Uniform distributions
 
@@ -18,9 +19,9 @@ Defines the uniform distribution for any set with finite measure.
   push-forward measure agrees with the rescaled restricted measure `μ`.
 -/
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped Classical MeasureTheory BigOperators NNReal ENNReal
 
-open TopologicalSpace MeasureTheory.Measure
+open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
 
@@ -202,8 +203,54 @@ theorem integral_eq (huX : IsUniform X s ℙ) :
 
 end IsUniform
 
+variable {X : Ω → E}
+
 lemma uniformMeasure.IsUniform {s : Set E} : IsUniform (id : E → E) s (uniformMeasure s μ) μ := by
   unfold IsUniform
-  rw [map_id]
+  rw [Measure.map_id]
+
+/-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
+away the choice of random variable and probability space. -/
+def uniformPDF {s : Set E} {x : E} : ℝ≥0∞ := s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
+
+def uniformPDF_ite {s : Set E} {x : E} : ℝ≥0∞ := if x ∈ s then (μ s)⁻¹ else 0
+
+/-- Check that indeed any uniform random variable has the uniformPDF. -/
+lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
+    @uniformPDF _ _ μ s  =ᵐ[μ] pdf X ℙ μ := by
+  unfold uniformPDF
+  exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
+
+lemma uniformPDF_eq_ite {s : Set E} {x : E} :
+    @uniformPDF _ _ μ s x = @uniformPDF_ite _ _ μ s x := by
+  unfold uniformPDF
+  unfold uniformPDF_ite
+  unfold Set.indicator
+  rename_i inst x_1
+  simp_all only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 end pdf
+
+
+noncomputable section
+
+section UniformOfFinset
+
+namespace PMF
+
+variable {α β γ : Type*}
+
+--My next step would be to replace `fun a => if a ∈ s then s.card⁻¹ else 0 ` by `uniformPDF_ite`
+--applied to `s`, where I would use for `μ` the counting measure on `s`. I don't manage to get it
+-- to work though.
+
+/-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
+protected def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
+  refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
+  · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
+    have : (s.card : ℝ≥0∞) ≠ 0 := by
+      simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
+        Finset.nonempty_iff_ne_empty.1 hs
+    refine' ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
+  · exact fun x hx => by simp only [hx, if_false]
+#align pmf.uniform_of_finset PMF.uniformOfFinset
