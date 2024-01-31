@@ -31,7 +31,7 @@ theorem pow_sub₀ (a : G₀) {m n : ℕ} (ha : a ≠ 0) (h : n ≤ m) : a ^ (m 
 
 theorem pow_sub_of_lt (a : G₀) {m n : ℕ} (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (tsub_pos_of_lt h), zero_pow (n.zero_le.trans_lt h), zero_mul]
+  · rw [zero_pow (tsub_pos_of_lt h).ne', zero_pow h.ne_bot, zero_mul]
   · exact pow_sub₀ _ ha h.le
 #align pow_sub_of_lt pow_sub_of_lt
 
@@ -61,7 +61,7 @@ variable {G₀ : Type*} [GroupWithZero G₀]
 
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
-    rw [zpow_ofNat, zero_pow']
+    rw [zpow_ofNat, zero_pow]
     simpa using h
   | -[n+1], _ => by simp
 #align zero_zpow zero_zpow

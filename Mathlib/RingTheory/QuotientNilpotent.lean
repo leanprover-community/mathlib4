@@ -34,8 +34,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   by_cases hI' : I = ⊥
   · subst hI'
     apply h₁
-    rw [← Ideal.zero_eq_bot, zero_pow]
-    exact zero_lt_two
+    rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top] at hI
     haveI := subsingleton_of_bot_eq_top hI.symm

@@ -87,16 +87,16 @@ theorem eval_at_0 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 0 = if ν = 0
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · simp [zero_pow (Nat.pos_of_ne_zero h)]
+  · simp [zero_pow h]
 #align bernstein_polynomial.eval_at_0 bernsteinPolynomial.eval_at_0
 
 theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n then 1 else 0 := by
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · obtain w | w := (n - ν).eq_zero_or_pos
-    · simp [Nat.choose_eq_zero_of_lt ((tsub_eq_zero_iff_le.mp w).lt_of_ne (Ne.symm h))]
-    · simp [zero_pow w]
+  · obtain hνn | hnν := Ne.lt_or_lt h
+    · simp [zero_pow $ Nat.sub_ne_zero_of_lt hνn]
+    · simp [Nat.choose_eq_zero_of_lt hnν]
 #align bernstein_polynomial.eval_at_1 bernsteinPolynomial.eval_at_1
 
 theorem derivative_succ_aux (n ν : ℕ) :

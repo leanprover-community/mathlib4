@@ -330,7 +330,7 @@ theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
   rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
-    zero_pow (Fact.out (p := Nat.Prime p)).pos]
+    zero_pow (Fact.out (p := Nat.Prime p)).ne_zero]
 #align char_p.neg_one_pow_char CharP.neg_one_pow_char
 
 theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
@@ -338,7 +338,7 @@ theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prim
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
   rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
-    zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
+    zero_pow (pow_ne_zero _ (Fact.out (p := Nat.Prime p)).ne_zero)]
 #align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
 theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
@@ -358,7 +358,7 @@ def frobenius : R →+* R where
   toFun x := x ^ p
   map_one' := one_pow p
   map_mul' x y := mul_pow x y p
-  map_zero' := zero_pow (Fact.out (p := Nat.Prime p)).pos
+  map_zero' := zero_pow (Fact.out (p := Nat.Prime p)).ne_zero
   map_add' := add_pow_char R
 #align frobenius frobenius
 
