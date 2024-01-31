@@ -62,7 +62,7 @@ local macro "C_simp" : tactic =>
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_neg, eval_add, eval_sub, eval_mul, eval_pow])
 
-universe u
+universe s u v w
 
 namespace WeierstrassCurve.Affine
 
@@ -227,16 +227,16 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((W.equation_iff _ _).mp h.left).symm)
+      congr_arg C (congr_arg C ((W.equation_iff ..).mp h.left).symm)
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
     ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
-  simp_rw [← @Set.image_singleton _ _ <| mk W, ← Set.image_insert_eq, ← map_span]
+  simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
-  rcases ((W.nonsingular_iff' _ _).mp h).right with hx | hy
+  rcases ((W.nonsingular_iff' ..).mp h).right with hx | hy
   · let W_X := W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)
     refine
       ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
@@ -256,7 +256,7 @@ set_option linter.uppercaseLean3 false in
 private lemma XYIdeal'_mul_inv {x y : F} (h : W.nonsingular x y) :
     XYIdeal W x (C y) * (XYIdeal W x (C <| W.negY x y) *
         (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) = 1 := by
-  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W _ _, XYIdeal_neg_mul h,
+  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h,
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
 
 lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁) (h₂ : W.equation x₂ y₂)
@@ -266,7 +266,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
-    fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
+    fun _ _ c _ => by rw [← sup_assoc, sup_comm (a := c), sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
@@ -279,7 +279,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
-  simp_rw [XClass, ← @Set.image_singleton _ _ <| mk W, ← map_span, ← Ideal.map_sup, eq_top_iff_one,
+  simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
@@ -293,7 +293,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (W.equation_iff _ _).mp h₁)
+      -4 * congr_arg C (congr_arg C <| (W.equation_iff ..).mp h₁)
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
@@ -321,7 +321,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
   exact
-    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul _ _).symm.trans <|
+    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.mk_XY_ideal'_mul_mk_XY_ideal'_of_Yeq WeierstrassCurve.Affine.CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq
@@ -331,7 +331,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.nonsingula
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
-  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul _ _).symm) <|
+  exact (ClassGroup.mk_eq_mk_of_coe_ideal (by exact (FractionalIdeal.coeIdeal_mul ..).symm) <|
       XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 set_option linter.uppercaseLean3 false in
@@ -545,13 +545,12 @@ noncomputable def toClassFun : W.Point → Additive (ClassGroup W.CoordinateRing
 
 /-- The group homomorphism mapping an affine point $(x, y)$ of `W` to the class of the non-zero
 fractional ideal $\langle X - x, Y - y \rangle$ of $F(W)$ in the class group of $F[W]$. -/
-@[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun := toClassFun
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, _root_.zero_add, _root_.add_zero]
+    any_goals simp only [zero_def, toClassFun, zero_add, add_zero]
     by_cases hx : x₁ = x₂
     · by_cases hy : y₁ = W.negY x₂ y₂
       · substs hx hy
@@ -568,6 +567,7 @@ lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 #align weierstrass_curve.point.to_class_zero WeierstrassCurve.Affine.Point.toClass_zero
 
+@[simp]
 lemma toClass_some {x y : F} (h : W.nonsingular x y) :
     toClass (some h) = ClassGroup.mk (CoordinateRing.XYIdeal' h) :=
   rfl
@@ -601,6 +601,7 @@ lemma neg_add_eq_zero (P Q : W.Point) : -P + Q = 0 ↔ P = Q := by
   rw [add_eq_zero, neg_inj]
 #align weierstrass_curve.point.neg_add_eq_zero WeierstrassCurve.Affine.Point.neg_add_eq_zero
 
+@[simp]
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
@@ -631,11 +632,71 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
-  zero_add := zero_add
-  add_zero := add_zero
+  __ := instAddZeroClassPoint
   add_left_neg := add_left_neg
   add_comm := add_comm
   add_assoc := add_assoc
+
+variable {R : Type u} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [Algebra R S]
+  (F : Type v) [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
+  (K : Type w) [Field K] [Algebra R K] [Algebra F K] [IsScalarTower R F K]
+
+instance instDistribMulActionPoint : DistribMulAction (F ≃ₐ[S] F) <| W⟮F⟯ where
+  smul := fun σ => map W σ.toAlgHom
+  one_smul := by rintro (_ | _) <;> rfl
+  mul_smul := fun _ _ => by rintro (_ | _) <;> rfl
+  smul_add := fun _ => map_add _
+  smul_zero := fun _ => rfl
+
+@[simp]
+lemma smul_def (P : W⟮F⟯) (σ : F ≃ₐ[S] F) : σ • P = map W σ.toAlgHom P :=
+  rfl
+
+lemma smul_baseChange (P : W⟮F⟯) (σ : K ≃ₐ[F] K) : σ • baseChange W F K P = baseChange W F K P := by
+  rcases P with _ | h
+  · exact rfl
+  · exact map_baseChange W σ.toAlgHom <| some h
+
+/-- The group homomorphism from `W⟮F⟯` to the subgroup of `W⟮K⟯` fixed by the natural action of the
+automorphism group of `K` over `F` induced by `WeierstrassCurve.Affine.Point.baseChange W F K`. -/
+abbrev baseChangeFixedPointsRestrict : W⟮F⟯ →+ W⟮K⟯^+(K ≃ₐ[F] K) :=
+  (baseChange W F K).codRestrict (W⟮K⟯^+(K ≃ₐ[F] K)) <| smul_baseChange W F K
+
+@[simp]
+lemma baseChangeFixedPointsRestrict_comp :
+    (W⟮K⟯^+(K ≃ₐ[F] K)).subtype.comp (baseChangeFixedPointsRestrict W F K) = baseChange W F K :=
+  rfl
+
+@[simp]
+lemma baseChangeFixedPointsRestrict_apply (P : W⟮F⟯) :
+    (W⟮K⟯^+(K ≃ₐ[F] K)).subtype (baseChangeFixedPointsRestrict W F K P) = baseChange W F K P :=
+  rfl
+
+lemma baseChangeFixedPointsRestrict_injective :
+    Function.Injective <| baseChangeFixedPointsRestrict W F K :=
+  fun _ _ h => map_injective W (Algebra.ofId F K) <| Subtype.ext_iff.mp h
+
+lemma baseChange_range_le_fixedSubgroup : (baseChange W F K).range ≤ W⟮K⟯^+(K ≃ₐ[F] K) := by
+  rw [← baseChangeFixedPointsRestrict_comp]
+  exact (baseChangeFixedPointsRestrict W F K).subtype_comp_range_le
+
+-- `FiniteDimensional` is unnecessary with infinite Galois theory
+variable [FiniteDimensional F K] [IsGalois F K]
+
+lemma baseChangeFixedPointsRestrict_surjective :
+    Function.Surjective <| baseChangeFixedPointsRestrict W F K := by
+  rintro ⟨_ | @⟨x, y, hxy⟩, h⟩
+  · exact ⟨0, rfl⟩
+  · simp only [FixedPoints.mem_addSubgroup, smul_def, map_some, some.injEq] at h
+    have hFK : IntermediateField.fixedField (F := F) (E := K) ⊤ = ⊥ :=
+      IsGalois.intermediateFieldEquivSubgroup.symm.map_bot
+    rcases (hFK ▸ fun σ => (h σ).left : x ∈ (⊥ : IntermediateField F K)) with ⟨x, rfl⟩
+    rcases (hFK ▸ fun σ => (h σ).right : y ∈ (⊥ : IntermediateField F K)) with ⟨y, rfl⟩
+    exact ⟨some <| (W.baseChange_nonsingular (algebraMap F K).injective x y).mp hxy, rfl⟩
+
+lemma baseChange_range_eq_fixedPoints : (baseChange W F K).range = W⟮K⟯^+(K ≃ₐ[F] K) := by
+  rw [← baseChangeFixedPointsRestrict_comp]
+  exact (baseChangeFixedPointsRestrict_surjective W F K).subtype_comp_range_eq
 
 end Point
 
