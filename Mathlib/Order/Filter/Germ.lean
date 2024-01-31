@@ -135,6 +135,12 @@ theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
   use b
 
+/-- If `f : α → β` is constant w.r.t. `l` and `g : β → γ`, then `g ∘ f : α → γ` also is. -/
+lemma isConstant_comp {l : Filter α} {f : α → β} {g : β → γ}
+    (h : (f : Germ l β).IsConstant) : ((g ∘ f) : Germ l γ).IsConstant := by
+  obtain ⟨b, hb⟩ := h
+  exact ⟨g b, hb.fun_comp g⟩
+
 @[simp]
 theorem quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
   rfl
@@ -273,6 +279,12 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
 theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β} (h : f =ᶠ[l'] g)
     {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
   EventuallyEq.germ_eq (h.comp_tendsto hφ)
+
+/-- If a germ `f : Germ l β` is constant, where `l : Filter α`,
+and a function `g : γ → α` tends to `l` along `lc : Filter γ`,
+the germ of the composition `f ∘ g` is also constant. -/
+proof_wanted isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
+    (_hf : (f : Germ l β).IsConstant) (_hg : Tendsto g lc l) : (f.compTendsto g _hg).IsConstant
 
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=

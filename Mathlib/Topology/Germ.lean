@@ -165,35 +165,23 @@ private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (�
   rw [mem_preimage, this]
   exact ha
 
-section IsConstant  -- missing API about IsConstant
--- xxx: is this true, under appropriate hypotheses on g?
-/- lemma Germ.isConstant_comp {α β γ : Type*} {l : Filter α} {f : α → β} {g : β → γ}
-    (h : (↑f : Germ l β).IsConstant) /-(hg : Continuous g)-/ : ((g ∘ f) : Germ l γ).IsConstant :=
-  sorry -/
+-- should follow from `isConstant_compTendsto` specialised to the neigbourhood filter
+proof_wanted isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
+  (_hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
+    ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant
 
-lemma foo {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y} {g : Y → Z} {x : X}
-    (hf : (f : Germ (𝓝 x) Y).IsConstant) : ((g ∘ f) : Germ (𝓝 x) Z).IsConstant := by
-  obtain ⟨b, hb⟩ := hf
-  exact ⟨g b, hb.fun_comp g⟩
-
--- this should imply `bar2`
-lemma bar {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z] {f : Y → Z} {g : X → Y} {y : Y}
-    (hf : (f : Germ (𝓝 (g x)) Z).IsConstant) (hg : Continuous g) :
-    ((f ∘ g) : Germ (𝓝 x) Z).IsConstant := by
-  obtain ⟨b, hb⟩ := hf
-  sorry -- something like: apply hb.comp_tendsto --hg
-
-lemma bar2 {s : Set X} {f : X → Y} {x : s} (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
-    ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant := sorry
-end IsConstant
+-- if f is locally constant
+lemma foo {f : X → Y} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  {i : Z → X} (hi : Inducing i) (hF : IsLocallyConstant (f ∘ i)) : IsLocallyConstant f := by
+  sorry
 
 private lemma IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X}
+    [TopologicalSpace Y]
     (hs : IsPreconnected s) (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f := by
   haveI := isPreconnected_iff_preconnectedSpace.mp hs
   let F : s → Y := f ∘ (↑)
-  suffices IsLocallyConstant F by
-    sorry -- TODO: if F is locally constant, so is f
-  exact IsLocallyConstant.of_germ_isConstant (fun ⟨x, hx⟩ ↦ bar2 (h x hx))
+  suffices h : IsLocallyConstant F from foo inducing_subtype_val h
+  sorry -- exact IsLocallyConstant.of_germ_isConstant (fun ⟨x, hx⟩ ↦ isConstant_comp_subtype (h x hx))
 
 theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
@@ -203,8 +191,8 @@ theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
 theorem eq_of_germ_isConstant_on {s : Set X}
     (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s)
     (x'_in : x' ∈ s) : f x = f x' :=
-  (IsLocallyConstant.of_germ_isConstantOn_of_preconnected hs h).apply_eq_of_isPreconnected
-    hs x_in x'_in
+  sorry --(IsLocallyConstant.of_germ_isConstantOn_of_preconnected hs h).apply_eq_of_isPreconnected
+  --  hs x_in x'_in
 
 open scoped BigOperators in
 @[to_additive (attr := simp)]
