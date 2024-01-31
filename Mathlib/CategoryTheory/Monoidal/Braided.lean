@@ -40,7 +40,7 @@ which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
 class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
-  /-- braiding natural isomorphism -/
+  /-- The braiding natural isomorphism. -/
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
   braiding_naturality_right :
     ∀ (X : C) {Y Z : C} (f : Y ⟶ Z),
@@ -50,12 +50,13 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
     ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
       f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
     aesop_cat
-  -- hexagon identities:
+  /-- The first hexagon identity. -/
   hexagon_forward :
     ∀ X Y Z : C,
       (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
         ((braiding X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ (Y ◁ (braiding X Z).hom) := by
     aesop_cat
+  /-- The second hexagon identity. -/
   hexagon_reverse :
     ∀ X Y Z : C,
       (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
@@ -74,6 +75,7 @@ open MonoidalCategory
 
 open BraidedCategory
 
+@[inherit_doc]
 notation "β_" => BraidedCategory.braiding
 
 namespace BraidedCategory

@@ -216,6 +216,10 @@ def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶
       MonoidalCategory.whiskerLeft_comp]
 #align category_theory.center.tensor_hom CategoryTheory.Center.tensorHom
 
+section
+
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
@@ -236,6 +240,8 @@ def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
   isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
 #align category_theory.center.right_unitor CategoryTheory.Center.rightUnitor
+
+end
 
 section
 

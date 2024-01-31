@@ -30,7 +30,6 @@ which seems less often useful.
 
 universe v u
 
-noncomputable section
 
 namespace CategoryTheory
 
@@ -190,16 +189,7 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
 def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
     {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.snd
-  inv :=
-    Q.lift
-      (BinaryFan.mk
-        (P.lift
-          { pt := X, π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
-        (𝟙 X))
-  -- Porting note: this should be automatable:
+  inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -214,15 +204,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
     {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.fst
-  inv :=
-    Q.lift
-      (BinaryFan.mk (𝟙 X)
-        (P.lift
-          { pt := X
-            π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
+  inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
