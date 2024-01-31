@@ -139,6 +139,10 @@ lemma IsIntegralCurveOn.congr_of_eqOn (hs : IsOpen s) (h : IsIntegralCurveOn γ 
   apply (h t ht).congr_of_eventuallyEq
   exact Filter.eventuallyEq_of_mem (hs.mem_nhds ht) hγ.symm
 
+lemma isIntegralCurveOn_congr_of_eqOn (hs : IsOpen s) (hγ : EqOn γ γ' s) :
+    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn γ' v s :=
+  ⟨fun h ↦ h.congr_of_eqOn hs hγ, fun h ↦ h.congr_of_eqOn hs hγ.symm⟩
+
 lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
     (hγ : γ =ᶠ[nhds t₀] γ') : IsIntegralCurveAt γ' v t₀ := by
   obtain ⟨s, hdrv, hs1, hs2⟩ := eventually_nhds_iff.mp (h.and hγ)
@@ -147,10 +151,9 @@ lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
   rw [Filter.eventuallyEq_iff_exists_mem]
   exact ⟨s, hs1.mem_nhds ht, fun t' ht' ↦ (hdrv t' ht').2.symm⟩
 
-lemma IsIntegralCurve.congr (h : IsIntegralCurve γ v) (hγ : γ = γ') :
-    IsIntegralCurve γ' v := by
-  rw [isIntegralCurve_iff_isIntegralCurveOn] at *
-  apply h.congr_of_eqOn isOpen_univ <| (eqOn_univ γ γ').mpr hγ
+lemma isIntegralCurveAt_congr_of_eventuallyEq (hγ : γ =ᶠ[nhds t₀] γ') :
+    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt γ' v t₀ :=
+  ⟨fun h ↦ h.congr_of_eventuallyEq hγ, fun h ↦ h.congr_of_eventuallyEq hγ.symm⟩
 
 lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
     IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
@@ -222,18 +225,12 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
 lemma isIntegralCurveOn_comp_add (dt : ℝ) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add (-dt)
-  · ext t
-    simp only [Function.comp_apply, neg_add_cancel_right]
-  · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
+  convert hγ.comp_add (-dt) <;> ext <;> simp
 
 lemma isIntegralCurveOn_comp_sub (dt : ℝ) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add dt
-  ext t
-  · simp only [Function.comp_apply, add_sub_cancel]
-  · simp only [mem_setOf_eq, add_sub_cancel, setOf_mem_eq]
+  convert hγ.comp_add dt <;> ext <;> simp
 
 -- TODO: missing lemma(s) for `Ioo`
 lemma isIntegralCurveOn_Ioo_comp_add {a b : ℝ} (dt : ℝ) :
@@ -271,8 +268,7 @@ lemma isIntegralCurveAt_comp_add (dt : ℝ) :
 
 lemma isIntegralCurveAt_comp_sub (dt : ℝ) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· - dt)) v (t₀ + dt) := by
-  have := isIntegralCurveAt_comp_add (v := v) (γ := γ) (t₀ := t₀) (-dt)
-  simpa
+  simpa using isIntegralCurveAt_comp_add (-dt)
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
@@ -288,8 +284,7 @@ lemma isIntegralCurve_comp_add (dt : ℝ) :
 
 lemma isIntegralCurve_comp_sub (dt : ℝ) :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· - dt)) v := by
-  have := isIntegralCurve_comp_add (v := v) (γ := γ) (-dt)
-  simpa
+  simpa using isIntegralCurve_comp_add (-dt)
 
 end Translation
 
@@ -517,12 +512,12 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
-    rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
-      image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
-    intros t ht
-    rw [mem_preimage, ← closure_subtype] at ht
-    revert ht t
-    apply IsClosed.closure_subset (isClosed_eq _ _)
+    suffices IsClosed (Subtype.val ⁻¹' {t | γ t = γ' t} : Set { x // x ∈ Ioo a b }) by
+      simp_rw [← Subtype.image_preimage_val (Ioo a b),
+        ← embedding_subtype_val.closure_eq_preimage_closure_image, this.closure_eq]
+      rfl
+    rw [preimage_setOf_eq]
+    apply isClosed_eq
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
@@ -606,13 +601,13 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
 
 section UniformTime
 
-lemma exists_isIntegralCurveOn_Ioo_eqOn [BoundarylessManifold I M]
+lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a a' : ℝ} (hpos : 0 < a')
-    (hle : a' ≤ a) : EqOn (choose (h a')) (choose (h a)) (Ioo (-a') a') := by
-  have ⟨h0', hγ'⟩ := choose_spec (h a')
-  have ⟨h0, hγ⟩ := choose_spec (h a)
-  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv hγ' (hγ.mono _) (by rw [h0', h0])
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
+    {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
+    EqOn (γ a') (γ a) (Ioo (-a') a') := by
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv (hγ a') ((hγ a).mono _)
+    (by rw [hγx a, hγx a'])
   · rw [mem_Ioo]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
   · apply Ioo_subset_Ioo <;> linarith
@@ -624,17 +619,15 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [Boundaryles
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
     EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
+  let γ := fun a' ↦ choose (h a')
+  have hγx := fun a' ↦ (choose_spec (h a')).1
+  have hγ := fun a' ↦ (choose_spec (h a')).2
   intros t' ht'
   by_cases hlt : |t'| + 1 < a
-  · apply exists_isIntegralCurveOn_Ioo_eqOn hv h (by positivity) (le_of_lt hlt)
-    · rw [mem_Ioo, ← abs_lt]
-      exact lt_add_one _
-  · apply (exists_isIntegralCurveOn_Ioo_eqOn hv h _ _ _).symm
-    · have := lt_trans ht'.1 ht'.2
-      rw [neg_lt_self_iff] at this
-      exact this
-    · exact not_lt.mp hlt
-    · exact ht'
+  · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
+      (by positivity) (le_of_lt hlt) (abs_lt.mp <| lt_add_one _)
+  · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
+      (neg_lt_self_iff.mp <| lt_trans ht'.1 ht'.2) (not_lt.mp hlt) ht' |>.symm
 
 /-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, then there exists
   a global integral curve. -/
