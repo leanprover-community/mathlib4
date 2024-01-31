@@ -472,12 +472,12 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
-  (le_stabilizer_smul_right _ _).antisymm' $ (le_stabilizer_smul_right a⁻¹ _).trans_eq $ by
+  (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
-    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ $ mul_left_injective _
+    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
@@ -531,3 +531,9 @@ end AddAction
 
 attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
+
+theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
+    Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
+  rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
+  simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
+  exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩

@@ -3,11 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
-import Std.Data.List.Count
+import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -26,7 +25,7 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
-      let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
+      let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
       sg1.assign e
@@ -120,24 +119,6 @@ namespace Lean.Meta
 def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
   let e' ← instantiateMVars e
   return (← getLocalHyps).toList.countP fun h => h.occurs e'
-
-/--
-Given a monadic function `F` that takes a type and a term of that type and produces a new term,
-lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
-and then builds the lambda telescope term for the new term.
--/
-def mapForallTelescope' (F : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
-  forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
-    Meta.mkLambdaFVars xs (← F ty (mkAppN forallTerm xs))
-
-/--
-Given a monadic function `F` that takes a term and produces a new term,
-lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
-and then builds the lambda telescope term for the new term.
--/
-def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
-  mapForallTelescope' (fun _ e => F e) forallTerm
-
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
 annotations. -/

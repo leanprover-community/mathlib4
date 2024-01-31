@@ -287,8 +287,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine' ⟨t, fun u => _⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ = 2 * (S / 2) := by ring
-      _ ≤ 2 * f (↑t \ ↑s) := mul_le_mul_of_nonneg_left ht.le (by norm_num)
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -440,16 +439,16 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
 @[simp]
-theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
-    (x : α) : (evalClm ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
-  let f := (evalClm ℝ x).toBoundedAdditiveMeasure
+theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
+    (x : α) : (evalCLM ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
+  let f := (evalCLM ℝ x).toBoundedAdditiveMeasure
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
     _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
-#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalClm_eq_zero
+#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalCLM_eq_zero
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
@@ -639,7 +638,7 @@ theorem no_pettis_integral (Hcont : #ℝ = aleph 1) :
   simp only [integral_comp] at h
   have : g = 0 := by
     ext x
-    have : g x = evalClm ℝ x g := rfl
+    have : g x = evalCLM ℝ x g := rfl
     rw [this, ← h]
     simp
   simp only [this, ContinuousLinearMap.map_zero] at h

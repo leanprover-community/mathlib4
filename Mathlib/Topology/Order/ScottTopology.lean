@@ -90,14 +90,14 @@ alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
 alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
 
 lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha $ hds.trans $ inter_subset_left _ _,
-    ht hd hd' ha $ hds.trans $ inter_subset_right _ _⟩
+  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans <| inter_subset_left _ _,
+    ht hd hd' ha <| hds.trans <| inter_subset_right _ _⟩
 
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
 
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  fun _d ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) $ hds hb
+  fun _d ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) <| hds hb
 
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := hs.compl.dirSupClosed.of_compl
 
@@ -168,7 +168,7 @@ lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
   isOpen_iff.2 fun _d ⟨b, hb⟩ _ _ hda ha ↦ ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
 
 lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
-  isOpen_compl_iff.1 $ isOpen_of_isLowerSet h.compl
+  isOpen_compl_iff.1 <| isOpen_of_isLowerSet h.compl
 
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
   fun d hd₁ hd₂ a hda hd₃ ↦ by
@@ -248,7 +248,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
 `(-∞,a]`.
 -/
 @[simp] lemma closure_singleton : closure {a} = Iic a := le_antisymm
-  (closure_minimal (by rw [singleton_subset_iff, mem_Iic]) isClosed_Iic) $ by
+  (closure_minimal (by rw [singleton_subset_iff, mem_Iic]) isClosed_Iic) <| by
     rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_subset_closure
 
@@ -263,7 +263,7 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
     exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
-      image_inter_nonempty_iff.mp $ (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
+      image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
         (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
   · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
@@ -273,7 +273,7 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     rw [isOpen_iff_isUpperSet_and_dirSupInacc] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 d₁ d₂ d₃ h
     simp [upperBounds] at hb
-    exact hfcb $ hb _ hcd
+    exact hfcb <| hb _ hcd
 
 end Preorder
 
@@ -285,8 +285,8 @@ The Scott topology on a partial order is T₀.
 -/
 -- see Note [lower instance priority]
 instance (priority := 90) : T0Space α :=
-    (t0Space_iff_inseparable α).2 fun x y h ↦ Iic_injective $
-  by simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
+  (t0Space_iff_inseparable α).2 fun x y h ↦ Iic_injective <| by
+    simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder
 end IsScott
@@ -346,6 +346,6 @@ lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff ≤ ‹Topological
 
 lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff ≤ ‹TopologicalSpace α› :=
   fun _ h ↦
-    @IsScottHausdorff.isOpen_of_isLowerSet _ _ scottHausdorff _ _ $ IsLower.isLowerSet_of_isOpen h
+    @IsScottHausdorff.isOpen_of_isLowerSet _ _ scottHausdorff _ _ <| IsLower.isLowerSet_of_isOpen h
 
 end Topology

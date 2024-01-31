@@ -67,13 +67,13 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
-/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
-infixl:100 " ∆ " => symmDiff
+scoped[symmDiff] infixl:100 " ∆ " => symmDiff
 
 /-- Notation for bihimp -/
-infixl:100 " ⇔ " => bihimp
+scoped[symmDiff] infixl:100 " ⇔ " => bihimp
+
+open scoped symmDiff
 
 theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl

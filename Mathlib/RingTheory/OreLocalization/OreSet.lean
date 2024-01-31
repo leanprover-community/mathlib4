@@ -5,6 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import ring_theory.ore_localization.ore_set from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 

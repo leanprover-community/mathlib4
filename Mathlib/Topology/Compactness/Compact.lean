@@ -43,6 +43,13 @@ def IsCompact (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 #align is_compact IsCompact
 
+lemma IsCompact.exists_clusterPt (hs : IsCompact s) {f : Filter X} [NeBot f] (hf : f ≤ 𝓟 s) :
+    ∃ x ∈ s, ClusterPt x f := hs hf
+
+lemma IsCompact.exists_mapClusterPt {ι : Type*} (hs : IsCompact s) {f : Filter ι} [NeBot f]
+    {u : ι → X} (hf : Filter.map u f ≤ 𝓟 s) :
+    ∃ x ∈ s, MapClusterPt x f u := hs hf
+
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
 `𝓝 x ⊓ f`, `x ∈ s`. -/
 theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) :
@@ -675,12 +682,6 @@ theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact
   simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,
     nhds_prod_eq]
 
-/-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
-formulated in terms of a filter inequality. -/
-theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
-  ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
-    (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
-
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
 
@@ -714,9 +715,13 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
   h.isCompact_univ
 #align is_compact_univ isCompact_univ
 
-theorem cluster_point_of_compact [CompactSpace X] (f : Filter X) [NeBot f] : ∃ x, ClusterPt x f :=
+theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
+    ∃ x, ClusterPt x f :=
   by simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
-#align cluster_point_of_compact cluster_point_of_compact
+#align cluster_point_of_compact exists_clusterPt_of_compactSpace
+
+@[deprecated] -- Since 28 January 2024
+alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
   rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
@@ -928,6 +933,15 @@ theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClo
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
   rwa [hf.isCompact_iff, image_preimage_eq_inter_range]
+
+lemma Inducing.isCompact_preimage_iff {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) ↔ IsCompact K := by
+  rw [hf.isCompact_iff, image_preimage_eq_of_subset Kf]
+
+/-- The preimage of a compact set in the image of an inducing map is compact. -/
+lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
+    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
+  (hf.isCompact_preimage_iff Kf).2 hK
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)

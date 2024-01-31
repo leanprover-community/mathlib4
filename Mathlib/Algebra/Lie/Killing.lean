@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
@@ -53,8 +54,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
-
-attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
@@ -387,7 +386,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = I.restrictBilinear (killingForm R L) :=
-  LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
+  LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
 lemma restrictBilinear_killingForm :
     I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
@@ -407,7 +406,7 @@ namespace LieAlgebra
 
 /-- We say a Lie algebra is Killing if its Killing form is non-singular.
 
-NB: The is not standard terminology (the literature does not seem to name Lie algebras with this
+NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
 class IsKilling : Prop :=
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/

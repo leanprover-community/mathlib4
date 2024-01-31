@@ -15,9 +15,9 @@ import Mathlib.Topology.Sober
 #align_import algebraic_geometry.prime_spectrum.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
-# Prime spectrum of a commutative ring
+# Prime spectrum of a commutative (semi)ring
 
-The prime spectrum of a commutative ring is the type of all prime ideals.
+The prime spectrum of a commutative (semi)ring is the type of all prime ideals.
 It is naturally endowed with a topology: the Zariski topology.
 
 (It is also naturally endowed with a sheaf of rings,
@@ -25,7 +25,7 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 ## Main definitions
 
-* `PrimeSpectrum R`: The prime spectrum of a commutative ring `R`,
+* `PrimeSpectrum R`: The prime spectrum of a commutative (semi)ring `R`,
   i.e., the set of all prime ideals of `R`.
 * `zeroLocus s`: The zero locus of a subset `s` of `R`
   is the subset of `PrimeSpectrum R` consisting of all prime ideals that contain `s`.
@@ -34,7 +34,7 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 ## Conventions
 
-We denote subsets of rings with `s`, `s'`, etc...
+We denote subsets of (semi)rings with `s`, `s'`, etc...
 whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 
 ## Inspiration/contributors
@@ -51,15 +51,15 @@ open Classical
 
 universe u v
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S]
+variable (R : Type u) (S : Type v)
 
-/-- The prime spectrum of a commutative ring `R` is the type of all prime ideals of `R`.
+/-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
 and a sheaf of commutative rings (see `AlgebraicGeometry.StructureSheaf`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
-structure PrimeSpectrum where
+structure PrimeSpectrum [CommSemiring R] where
   asIdeal : Ideal R
   IsPrime : asIdeal.IsPrime
 #align prime_spectrum PrimeSpectrum
@@ -67,6 +67,10 @@ structure PrimeSpectrum where
 attribute [instance] PrimeSpectrum.IsPrime
 
 namespace PrimeSpectrum
+
+section CommSemiRing
+
+variable [CommSemiring R] [CommSemiring S]
 
 variable {R S}
 
@@ -123,8 +127,8 @@ theorem primeSpectrumProd_symm_inr_asIdeal (x : PrimeSpectrum S) :
   rfl
 #align prime_spectrum.prime_spectrum_prod_symm_inr_as_ideal PrimeSpectrum.primeSpectrumProd_symm_inr_asIdeal
 
-/-- The zero locus of a set `s` of elements of a commutative ring `R` is the set of all prime ideals
-of the ring that contain the set `s`.
+/-- The zero locus of a set `s` of elements of a commutative (semi)ring `R` is the set of all
+prime ideals of the ring that contain the set `s`.
 
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
 At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in the quotient ring
@@ -395,8 +399,8 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align prime_spectrum.mem_compl_zero_locus_iff_not_mem PrimeSpectrum.mem_compl_zeroLocus_iff_not_mem
 
-/-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
-of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
+/-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined via the closed
+sets of the topology: they are exactly those sets that are the zero locus of a subset of the ring.-/
 instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
   TopologicalSpace.ofClosed (Set.range PrimeSpectrum.zeroLocus) ⟨Set.univ, by simp⟩
     (by
@@ -484,7 +488,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 #align prime_spectrum.vanishing_ideal_strict_anti_mono_iff PrimeSpectrum.vanishingIdeal_strict_anti_mono_iff
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
-def closedsEmbedding (R : Type*) [CommRing R] :
+def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
   OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal ↑(OrderDual.ofDual s)) fun s _ =>
     (vanishingIdeal_anti_mono_iff s.2).symm
@@ -502,7 +506,7 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
           (by aesop))
   · refine' ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 _⟩
     by_cases hx : x.asIdeal = ⊥
-    · letI := h.toField
+    · letI := h.toSemifield
       exact hx.symm ▸ Ideal.bot_isMaximal
     · exact absurd h (Ring.not_isField_iff_exists_prime.2 ⟨x.asIdeal, ⟨hx, x.2⟩⟩)
 #align prime_spectrum.t1_space_iff_is_field PrimeSpectrum.t1Space_iff_isField
@@ -545,13 +549,13 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-lemma vanishingIdeal_isIrreducible {R} [CommRing R] :
+lemma vanishingIdeal_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsIrreducible s} = {P | P.IsPrime} :=
   Set.ext fun I ↦ ⟨fun ⟨_, hs, e⟩ ↦ e ▸ isIrreducible_iff_vanishingIdeal_isPrime.mp hs,
     fun h ↦ ⟨zeroLocus I, (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h,
       (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
 
-lemma vanishingIdeal_isClosed_isIrreducible {R} [CommRing R] :
+lemma vanishingIdeal_isClosed_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
   · exact Set.image_subset _ fun _ ↦ And.right
@@ -567,7 +571,7 @@ instance quasiSober : QuasiSober (PrimeSpectrum R) :=
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
 
-/-- The prime spectrum of a commutative ring is a compact topological space. -/
+/-- The prime spectrum of a commutative (semi)ring is a compact topological space. -/
 instance compactSpace : CompactSpace (PrimeSpectrum R) := by
   refine compactSpace_of_finite_subfamily_closed fun S S_closed S_empty ↦ ?_
   choose I hI using fun i ↦ (isClosed_iff_zeroLocus_ideal (S i)).mp (S_closed i)
@@ -576,7 +580,7 @@ instance compactSpace : CompactSpace (PrimeSpectrum R) := by
 
 section Comap
 
-variable {S' : Type*} [CommRing S']
+variable {S' : Type*} [CommSemiring S']
 
 theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
     (fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩ : PrimeSpectrum S → PrimeSpectrum R) ⁻¹'
@@ -586,7 +590,7 @@ theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
   simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
 #align prime_spectrum.preimage_comap_zero_locus_aux PrimeSpectrum.preimage_comap_zeroLocus_aux
 
-/-- The function between prime spectra of commutative rings induced by a ring homomorphism.
+/-- The function between prime spectra of commutative (semi)rings induced by a ring homomorphism.
 This function is continuous. -/
 def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
   toFun y := ⟨Ideal.comap f y.asIdeal, inferInstance⟩
@@ -631,40 +635,18 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
       (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 #align prime_spectrum.comap_injective_of_surjective PrimeSpectrum.comap_injective_of_surjective
 
-theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Surjective f)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
-  haveI : x.asIdeal.IsMaximal := (isClosed_singleton_iff_isMaximal x).1 hx
-  (isClosed_singleton_iff_isMaximal _).2 (Ideal.comap_isMaximal_of_surjective f hf)
-#align prime_spectrum.comap_singleton_is_closed_of_surjective PrimeSpectrum.comap_singleton_isClosed_of_surjective
-
-theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegral)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
-  (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
-      (isClosed_singleton_iff_isMaximal x).1 hx)
-#align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
-
 variable (S)
 
 theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Inducing (comap (algebraMap R S)) := by
-  constructor
-  rw [TopologicalSpace.ext_iff]
-  intro U
-  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (α := PrimeSpectrum S) (s := U)]
-  generalize Uᶜ = Z
-  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus]
+  refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
+  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
+    exists_exists_eq_and, preimage_comap_zeroLocus]
   constructor
   · rintro ⟨s, rfl⟩
-    refine ⟨_, ⟨algebraMap R S ⁻¹' Ideal.span s, rfl⟩, ?_⟩
-    rw [preimage_comap_zeroLocus, ← zeroLocus_span, ← zeroLocus_span s]
-    congr 2
-    exact congr_arg (zeroLocus ·) <| Submodule.carrier_inj.mpr
-      (IsLocalization.map_comap M S (Ideal.span s))
-  · rintro ⟨_, ⟨t, rfl⟩, rfl⟩
-    rw [preimage_comap_zeroLocus]
+    refine ⟨(Ideal.span s).comap (algebraMap R S), ?_⟩
+    rw [← zeroLocus_span, ← zeroLocus_span s, ← Ideal.map, IsLocalization.map_comap M S]
+  · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 #align prime_spectrum.localization_comap_inducing PrimeSpectrum.localization_comap_inducing
 
@@ -696,11 +678,6 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
     exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 #align prime_spectrum.localization_comap_range PrimeSpectrum.localization_comap_range
 
-section SpecOfSurjective
-
-/-! The comap of a surjective ring homomorphism is a closed embedding between the prime spectra. -/
-
-
 open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
@@ -717,6 +694,36 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
     rintro ⟨-, ⟨F, rfl⟩, hF⟩
     exact ⟨f '' F, hF.symm.trans (preimage_comap_zeroLocus f F)⟩
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
+
+
+end Comap
+end CommSemiRing
+
+section SpecOfSurjective
+
+/-! The comap of a surjective ring homomorphism is a closed embedding between the prime spectra. -/
+
+
+open Function RingHom
+
+variable [CommRing R] [CommRing S]
+variable (f : R →+* S)
+variable {R}
+
+theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Surjective f)
+    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+  haveI : x.asIdeal.IsMaximal := (isClosed_singleton_iff_isMaximal x).1 hx
+  (isClosed_singleton_iff_isMaximal _).2 (Ideal.comap_isMaximal_of_surjective f hf)
+#align prime_spectrum.comap_singleton_is_closed_of_surjective PrimeSpectrum.comap_singleton_isClosed_of_surjective
+
+theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegral)
+    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+  (isClosed_singleton_iff_isMaximal _).2
+    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
+      (isClosed_singleton_iff_isMaximal x).1 hx)
+#align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 
 theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     comap f '' zeroLocus I = zeroLocus (I.comap f) := by
@@ -758,7 +765,10 @@ theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbeddin
 
 end SpecOfSurjective
 
-end Comap
+section CommSemiRing
+
+variable [CommSemiring R] [CommSemiring S]
+variable {R S}
 
 section BasicOpen
 
@@ -848,7 +858,7 @@ theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
   exact ⟨fun h I hI => h ⟨I, hI⟩, fun h ⟨I, hI⟩ => h I hI⟩
 #align prime_spectrum.basic_open_eq_bot_iff PrimeSpectrum.basicOpen_eq_bot_iff
 
-theorem localization_away_comap_range (S : Type v) [CommRing S] [Algebra R S] (r : R)
+theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : Set.range (comap (algebraMap R S)) = basicOpen r := by
   rw [localization_comap_range S (Submonoid.powers r)]
   ext x
@@ -861,7 +871,7 @@ theorem localization_away_comap_range (S : Type v) [CommRing S] [Algebra R S] (r
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 #align prime_spectrum.localization_away_comap_range PrimeSpectrum.localization_away_comap_range
 
-theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] (r : R)
+theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     open_range := by
@@ -952,7 +962,12 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
+end CommSemiRing
+
 end PrimeSpectrum
+
+section CommSemiring
+variable [CommSemiring R]
 
 open PrimeSpectrum in
 /--
@@ -1002,9 +1017,11 @@ lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
 
 end PrimeSpectrum
 
+end CommSemiring
+
 namespace LocalRing
 
-variable [LocalRing R]
+variable [CommSemiring R] [LocalRing R]
 
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
@@ -1013,8 +1030,8 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommRing S] [LocalRing S] (f : R →+* S) :
-    IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
+theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+    (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note : inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
@@ -1022,8 +1039,8 @@ theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommRing S] [LocalRin
 #align local_ring.is_local_ring_hom_iff_comap_closed_point LocalRing.isLocalRingHom_iff_comap_closedPoint
 
 @[simp]
-theorem comap_closedPoint {S : Type v} [CommRing S] [LocalRing S] (f : R →+* S) [IsLocalRingHom f] :
-    PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
+    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
 #align local_ring.comap_closed_point LocalRing.comap_closedPoint
 
@@ -1041,8 +1058,8 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
 #align local_ring.closed_point_mem_iff LocalRing.closedPoint_mem_iff
 
 @[simp]
-theorem PrimeSpectrum.comap_residue (x : PrimeSpectrum (ResidueField R)) :
-    PrimeSpectrum.comap (residue R) x = closedPoint R := by
+theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
+    (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
   rw [Subsingleton.elim x ⊥]
   ext1
   exact Ideal.mk_ker

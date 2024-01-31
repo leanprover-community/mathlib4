@@ -32,7 +32,7 @@ continuity set of a function from a topological space to an (e)metric space is a
 
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
-- `meagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+- `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
 union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
@@ -45,8 +45,9 @@ Gδ set, residual set, nowhere dense set, meagre set
 noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
+open scoped Uniformity
 
-variable {X Y ι : Type*}
+variable {X Y ι : Type*} {ι' : Sort*}
 
 set_option linter.uppercaseLean3 false
 
@@ -79,19 +80,30 @@ theorem isGδ_biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set 
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
 #align is_Gδ_bInter_of_open isGδ_biInter_of_isOpen
 
--- porting note: TODO: generalize to `Sort*` + `Countable _`
-theorem isGδ_iInter_of_isOpen [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
+theorem isGδ_iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open isGδ_iInter_of_isOpen
 
--- porting note: TODO: generalize to `Sort*` + `Countable _`
+lemma isGδ_iff_eq_iInter_nat {s : Set X} :
+    IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
+  refine ⟨?_, ?_⟩
+  · rintro ⟨T, hT, T_count, rfl⟩
+    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
+    · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
+      exact ⟨f, by aesop, by simp [hf]⟩
+  · rintro ⟨f, hf, rfl⟩
+    apply isGδ_iInter_of_isOpen hf
+
+alias ⟨IsGδ.eq_iInter_nat, _⟩ := isGδ_iff_eq_iInter_nat
+
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
-theorem isGδ_iInter [Encodable ι] {s : ι → Set X} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
+theorem isGδ_iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
-  simpa [@forall_swap ι] using hTo
+  simpa [@forall_swap ι'] using hTo
 #align is_Gδ_Inter isGδ_iInter
 
 theorem isGδ_biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
@@ -130,8 +142,7 @@ theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
   exact fun _ _ ihs H => H.1.union (ihs H.2)
 #align is_Gδ_bUnion isGδ_biUnion
 
--- Porting note: Did not recognize notation 𝓤 X, needed to replace with uniformity X
-theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)] {s : Set X}
+theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
@@ -185,7 +196,7 @@ section ContinuousAt
 variable [TopologicalSpace X]
 
 /-- The set of points where a function is continuous is a Gδ set. -/
-theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (uniformity Y)] (f : X → Y) :
+theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
@@ -283,13 +294,13 @@ lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono (inter_subset_left s t)
 
 /-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
-lemma meagre_iff_countable_union_isNowhereDense {s : Set X} : IsMeagre s ↔
-    ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
+lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
   simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
