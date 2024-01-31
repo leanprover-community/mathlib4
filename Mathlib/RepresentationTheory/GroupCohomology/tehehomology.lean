@@ -9,72 +9,66 @@ import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 
-#align_import representation_theory.group_cohomology.basic from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
-
-/-!
-# The group cohomology of a `k`-linear `G`-representation
-
-Let `k` be a commutative ring and `G` a group. This file defines the group cohomology of
-`A : Rep k G` to be the cohomology of the complex
-$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
-with differential $d^n$ sending $f: G^n \to A$ to the function mapping $(g_0, \dots, g_n)$ to
-$$\rho(g_0)(f(g_1, \dots, g_n))
-+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
-$$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
-
-We have a `k`-linear isomorphism $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(k[G^{n + 1}], A)$, where
-the righthand side is morphisms in `Rep k G`, and the representation on $k[G^{n + 1}]$
-is induced by the diagonal action of `G`. If we conjugate the $n$th differential in
-$\mathrm{Hom}(P, A)$ by this isomorphism, where `P` is the standard resolution of `k` as a trivial
-`k`-linear `G`-representation, then the resulting map agrees with the differential $d^n$ defined
-above, a fact we prove.
-
-This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
-$\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
-`Rep k G`.
-
-To talk about cohomology in low degree, please see the file
-`RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for `H⁰, H¹, H²`
-than the definition `groupCohomology` in this file.
-
-## Main definitions
-
-* `groupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
-morphisms $\mathrm{Hom}(k[G^{n + 1}], A)$ and whose cohomology is the group cohomology
-$\mathrm{H}^n(G, A)$.
-* `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
-$\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
-* `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
-* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
-second complex, `inhomogeneousCochains A`.
-* `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
-
-## Implementation notes
-
-Group cohomology is typically stated for `G`-modules, or equivalently modules over the group ring
-`ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
-Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
-possible scalar action diamonds.
-
-## TODO
-
-* API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-the inflation-restriction exact sequence.
-* The long exact sequence in cohomology attached to a short exact sequence of representations.
-* Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
-* Profinite cohomology.
-
-Longer term:
-* The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
-spectral sequences in general).
--/
-
-
 noncomputable section
 
 universe u
+section
+variable (R A B α : Type*) [CommRing R] [AddCommGroup A] [AddCommGroup B]
+  [Module R A] [Module R B]
+open TensorProduct
+
+def finsuppTensorLeft :
+    (α →₀ A) ⊗[R] B ≃ₗ[R] α →₀ A ⊗[R] B :=
+  TensorProduct.congr (LinearEquiv.refl _ _)
+    (Finsupp.LinearEquiv.finsuppUnique _ _ _).symm ≪≫ₗ
+  finsuppTensorFinsupp R A B α Unit ≪≫ₗ
+  Finsupp.domLCongr (Equiv.prodUnique α Unit)
+
+def finsuppTensorRight :
+    A ⊗[R] (α →₀ B) ≃ₗ[R] α →₀ A ⊗[R] B :=
+  TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique _ _ _).symm
+    (LinearEquiv.refl _ _) ≪≫ₗ
+  finsuppTensorFinsupp R A B Unit α ≪≫ₗ
+  Finsupp.domLCongr (Equiv.uniqueProd α Unit)
+
+variable {R A B α}
+open Finsupp
+@[simp] lemma finsuppTensorLeft_tmul_single
+    (a : α) (x : A) (y : B) :
+    finsuppTensorLeft R A B α (Finsupp.single a x ⊗ₜ y) =
+      Finsupp.single a (x ⊗ₜ y) := by
+    simp only [finsuppTensorLeft, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
+      LinearEquiv.finsuppUnique_symm_apply, PUnit.default_eq_unit, finsuppTensorFinsupp_single,
+      domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.coe_prodUnique]
+
+@[simp] lemma finsuppTensorLeft_symm_single_tmul
+    (a : α) (x : A) (y : B) :
+    (finsuppTensorLeft R A B α).symm (Finsupp.single a (x ⊗ₜ y)) =
+      Finsupp.single a x ⊗ₜ y := by
+  simp only [finsuppTensorLeft, LinearEquiv.trans_symm, domLCongr_symm, LinearEquiv.trans_apply,
+    domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.prodUnique_symm_apply,
+    PUnit.default_eq_unit, finsuppTensorFinsupp_symm_single, congr_symm_tmul, LinearEquiv.refl_symm,
+    LinearEquiv.refl_apply, LinearEquiv.symm_symm, LinearEquiv.finsuppUnique_apply, single_eq_same]
+
+@[simp] lemma finsuppTensorRight_tmul_single
+    (a : α) (x : A) (y : B) :
+    finsuppTensorRight R A B α (x ⊗ₜ Finsupp.single a y) =
+      Finsupp.single a (x ⊗ₜ y) := by
+    simp only [finsuppTensorRight, LinearEquiv.trans_apply, congr_tmul,
+      LinearEquiv.finsuppUnique_symm_apply, PUnit.default_eq_unit, LinearEquiv.refl_apply,
+      finsuppTensorFinsupp_single, domLCongr_apply, domCongr_apply, equivMapDomain_single,
+      Equiv.coe_uniqueProd]
+
+@[simp] lemma finsuppTensorRight_symm_single_tmul
+    (a : α) (x : A) (y : B) :
+    (finsuppTensorRight R A B α).symm (Finsupp.single a (x ⊗ₜ y)) =
+      x ⊗ₜ Finsupp.single a y := by
+  simp only [finsuppTensorRight, LinearEquiv.trans_symm, domLCongr_symm, LinearEquiv.trans_apply,
+    domLCongr_apply, domCongr_apply, equivMapDomain_single, Equiv.uniqueProd_symm_apply,
+    PUnit.default_eq_unit, finsuppTensorFinsupp_symm_single, congr_symm_tmul, LinearEquiv.symm_symm,
+    LinearEquiv.finsuppUnique_apply, single_eq_same, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
+end
+
 open CategoryTheory CategoryTheory.Limits
 
 namespace Representation
@@ -84,6 +78,26 @@ variable {k G : Type*} [CommRing k] [Group G] {A B C D : Type*}
   [AddCommGroup C] [Module k C] [AddCommGroup D] [Module k D]
   (ρ : Representation k G A) (τ : Representation k G B)
   (η : Representation k G C) (ν : Representation k G D) {n : ℕ}
+  (α : Type*)
+
+def finsuppTprodLeft :
+    ((ρ.finsupp α).tprod τ).iso ((ρ.tprod τ).finsupp α) :=
+  iso.mk' _ _ (finsuppTensorLeft k A B α) fun g => by
+    ext a x y : 4
+    simp only [tprod_apply, finsupp_apply, LinearMap.coe_comp, Function.comp_apply,
+      Finsupp.lsingle_apply, TensorProduct.AlgebraTensorModule.curry_apply,
+      TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+      TensorProduct.map_tmul, Finsupp.coe_lsum, map_zero, Finsupp.sum_single_index,
+      finsuppTensorLeft_tmul_single]
+
+def finsuppTprodRight :
+    (ρ.tprod (τ.finsupp α)).iso ((ρ.tprod τ).finsupp α) :=
+  iso.mk' _ _ (finsuppTensorRight k A B α) fun g => by
+    ext a x y : 4
+    simp only [tprod_apply, finsupp_apply, TensorProduct.AlgebraTensorModule.curry_apply,
+      LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, TensorProduct.map_tmul, Finsupp.coe_lsum,
+      map_zero, Finsupp.sum_single_index, finsuppTensorRight_tmul_single]
 
 @[simp]
 theorem inv_self_apply (g : G) (x : A) :
@@ -108,24 +122,26 @@ Submodule.subset_span ⟨(g, x), h⟩
 
 abbrev coinvariants := A ⧸ coinvariantsKer ρ
 
-def coinvariantsLift (f : A →ₗ[k] B) (h : ∀ (x : G) (a : A), f (ρ x a) = f a) :
+def coinvariantsLift (f : A →ₗ[k] B) (h : ∀ (x : G), f ∘ₗ ρ x = f) :
     ρ.coinvariants →ₗ[k] B :=
   Submodule.liftQ _ f <| Submodule.span_le.2 fun x ⟨⟨g, y⟩, hy⟩ => by
-    simp only [← hy, SetLike.mem_coe, LinearMap.mem_ker, map_sub, h, sub_self]
+    simpa only [← hy, SetLike.mem_coe, LinearMap.mem_ker, map_sub, sub_eq_zero, LinearMap.coe_comp,
+      Function.comp_apply] using LinearMap.ext_iff.1 (h g) y
 
-@[simp] theorem coinvariantsLift_mkQ (f : A →ₗ[k] B) {h : ∀ (x : G) (a : A), f (ρ x a) = f a} :
+@[simp] theorem coinvariantsLift_mkQ (f : A →ₗ[k] B) {h : ∀ (x : G), f ∘ₗ ρ x = f} :
   coinvariantsLift ρ f h ∘ₗ (coinvariantsKer ρ).mkQ = f := rfl
 
 def coinvariantsLift' (f : ρ.hom (Representation.trivial k (G := G) (V := B))) :
     ρ.coinvariants →ₗ[k] B :=
-  coinvariantsLift _ f.hom <| hom.comm_apply _ _ _
+  coinvariantsLift _ f.hom f.comm
 
 variable {ρ τ}
 
 def coinvariantsMap (f : ρ.hom τ) :
     ρ.coinvariants →ₗ[k] τ.coinvariants :=
-  coinvariantsLift _ (Submodule.mkQ _ ∘ₗ f.hom) fun x a => (Submodule.Quotient.eq _).2 <|
-    Submodule.subset_span <| by rw [hom.comm_apply]; exact Set.mem_range_self (x, f.hom a)
+  coinvariantsLift _ (Submodule.mkQ _ ∘ₗ f.hom) fun g => LinearMap.ext fun x => by
+    simp only [LinearMap.coe_comp, Function.comp_apply, hom.comm_apply, Submodule.mkQ_apply,
+      Submodule.Quotient.eq, mem_coinvariantsKer _ g (f.hom x) _ rfl]
 
 @[simp] theorem coinvariantsMap_mkQ (f : ρ.hom τ) :
   coinvariantsMap f ∘ₗ (coinvariantsKer ρ).mkQ = (coinvariantsKer τ).mkQ ∘ₗ f.hom := rfl
@@ -143,6 +159,44 @@ variable (B ρ)
       invFun := fun f => coinvariantsLift' _ f
       left_inv := fun x => Submodule.linearMap_qext _ rfl
       right_inv := fun x => hom.ext _ _ rfl
+
+@[simp] def coinvariantsToFinsupp (α : Type*) :
+  (ρ.finsupp α).coinvariants →ₗ[k] α →₀ ρ.coinvariants :=
+(coinvariantsLift _ (Finsupp.mapRange.linearMap (Submodule.mkQ _)) <| fun g => by
+  ext i x j
+  simp only [finsupp_apply, LinearMap.coe_comp, Finsupp.coe_lsum, Function.comp_apply,
+    Finsupp.lsingle_apply, map_zero, Finsupp.sum_single_index, Finsupp.mapRange.linearMap_apply,
+    Finsupp.mapRange_single, Submodule.mkQ_apply, (Submodule.Quotient.eq _).2
+    (mem_coinvariantsKer _ g _ _ rfl)])
+
+@[simp] def finsuppToCoinvariants (α : Type*) :
+    (α →₀ ρ.coinvariants) →ₗ[k] (ρ.finsupp α).coinvariants :=
+  Finsupp.lsum (R := k) k fun a => coinvariantsMap (ρ.lsingle a)
+
+@[simps] def coinvariantsFinsuppLEquiv (α : Type*) :
+    (ρ.finsupp α).coinvariants ≃ₗ[k] α →₀ ρ.coinvariants where
+      toFun := coinvariantsToFinsupp ρ α
+      map_add' := map_add _
+      map_smul' := map_smul _
+      invFun := finsuppToCoinvariants ρ α
+      left_inv := fun x => by
+        show (finsuppToCoinvariants ρ α ∘ₗ _) x = LinearMap.id (R := k) x
+        refine' LinearMap.ext_iff.1 (Submodule.linearMap_qext _ _) x
+        ext a x
+        simp only [finsuppToCoinvariants, coinvariantsMap, coinvariantsLift, lsingle_hom,
+          coinvariantsToFinsupp, LinearMap.coe_comp, Finsupp.coe_lsum, LinearMap.coe_mk,
+          AddHom.coe_mk, Function.comp_apply, Finsupp.lsingle_apply, Submodule.mkQ_apply,
+          Submodule.liftQ_apply, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
+          map_zero, Finsupp.sum_single_index, LinearMap.id_comp]
+      right_inv := fun x => by
+        show (coinvariantsToFinsupp ρ α ∘ₗ _) x = LinearMap.id (R := k) x
+        refine' LinearMap.ext_iff.1 _ x
+        ext i x j
+        simp only [coinvariantsToFinsupp, coinvariantsLift, finsuppToCoinvariants, coinvariantsMap,
+          lsingle_hom, LinearMap.coe_comp, Finsupp.coe_lsum, Function.comp_apply,
+          Submodule.mkQ_apply, Finsupp.lsingle_apply, map_zero, Finsupp.sum_single_index,
+          Submodule.liftQ_apply, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
+          LinearMap.id_comp]
 
 variable {B ρ η ν}
 
@@ -172,9 +226,7 @@ variable (ρ)
 
 def tensor2Hom : tensor2Obj ρ (ofMulAction k G G) →ₗ[k] A :=
   coinvariantsLift _ (TensorProduct.lift (Finsupp.total _ _ _ (fun g => ρ g⁻¹))
-    ∘ₗ (TensorProduct.comm _ _ _).toLinearMap) fun g a => by
-    show ((TensorProduct.lift _ ∘ₗ _) ∘ₗ tprod _ _ g) a = _
-    refine' LinearMap.ext_iff.1 (TensorProduct.ext _) a
+    ∘ₗ (TensorProduct.comm _ _ _).toLinearMap) fun g => TensorProduct.ext <| by
     ext x h
     simp only [tprod_apply, LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
       LinearMap.compr₂_apply, TensorProduct.mk_apply, LinearEquiv.coe_coe, TensorProduct.map_tmul,
@@ -191,7 +243,10 @@ def tensor2Hom : tensor2Obj ρ (ofMulAction k G G) →ₗ[k] A :=
 def tensor2Inv : A →ₗ[k] tensor2Obj ρ (ofMulAction k G G) :=
   Submodule.mkQ _ ∘ₗ (TensorProduct.mk k A (G →₀ k)).flip (Finsupp.single 1 1)
 
-def tensor2Iso : (tensor2Obj ρ (ofMulAction k G G)) ≃ₗ[k] A where
+@[simp] lemma tensor2Inv_apply (x : A) :
+    tensor2Inv ρ x = Submodule.Quotient.mk (x ⊗ₜ Finsupp.single (1 : G) (1 : k)) := rfl
+
+@[simps] def tensor2Iso : (tensor2Obj ρ (ofMulAction k G G)) ≃ₗ[k] A where
   toFun := tensor2Hom ρ
   map_add' := map_add _
   map_smul' := map_smul _
@@ -210,23 +265,97 @@ def tensor2Iso : (tensor2Obj ρ (ofMulAction k G G)) ≃ₗ[k] A where
     simp only [tensor2Inv, LinearMap.coe_comp, Function.comp_apply, LinearMap.flip_apply,
       TensorProduct.mk_apply, Submodule.mkQ_apply, tensor2Hom_apply, inv_one, map_one,
       LinearMap.one_apply, one_smul]
-#check finsuppTensorFinsupp
-def ugh (α : Type*) : ((ρ.finsupp α).tprod τ).iso ((ρ.tprod τ).finsupp α) :=
-iso.mk' _ _ (LinearEquiv.symm _) _
-variable {α : Type*}
 
-#check @tensor2Obj k G _ _ A (α →₀ G →₀ k) _ _ Finsupp.addCommGroup (Finsupp.module α (G →₀ k)) ρ (free k G α)
+variable (α : Type*)
 
+open TensorProduct
 
--- what the hell
-def ermmmmmmm (α : Type*) : @tensor2Obj _ _ _ _ _ _ _ _ Finsupp.addCommGroup _ ρ (free k G α)
-    ≃ₗ[k] α →₀ A := sorry
+-- ??!!
+instance whatTheFuck2 : AddCommGroup (A ⊗[k] (G →₀ k)) := by infer_instance
+instance whatTheFuck : AddCommGroup (A ⊗[k] (α →₀ (G →₀ k))) :=
+@TensorProduct.addCommGroup k _ A (α →₀ (G →₀ k)) _ _ _ _
+
+def coinvariantsTprodFreeToFinsupp :
+    (ρ.tprod (Representation.free k G α)).coinvariants →ₗ[k] (α →₀ A) :=
+  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ Finsupp.lcongr (Equiv.refl α)
+    (tensor2Iso ρ)).toLinearMap ∘ₗ coinvariantsMap (finsuppTprodRight ρ
+      (Representation.ofMulAction k G G) α).tohom
+
+@[simp] lemma coinvariantsTprodFreeToFinsupp_apply (x : A) (i : α) (g : G) (r : k) :
+    coinvariantsTprodFreeToFinsupp ρ α (Submodule.Quotient.mk
+      (x ⊗ₜ Finsupp.single i (Finsupp.single g r)))
+      = Finsupp.single i (r • ρ g⁻¹ x) := by
+  simp only [coinvariantsTprodFreeToFinsupp, coinvariantsMap, coinvariantsLift, finsuppTprodRight,
+    iso.mk', LinearEquiv.invFun_eq_symm, LinearEquiv.mk_coe, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Function.comp_apply, Submodule.liftQ_apply, finsuppTensorRight_tmul_single,
+    Submodule.mkQ_apply, LinearEquiv.trans_apply, coinvariantsFinsuppLEquiv_apply,
+    coinvariantsToFinsupp, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
+    Finsupp.lcongr_single, Equiv.refl_apply, tensor2Iso_apply, tensor2Hom_apply]
+
+def finsuppToCoinvariantsTprodFree :
+    (α →₀ A) →ₗ[k] (ρ.tprod (Representation.free k G α)).coinvariants :=
+  coinvariantsMap (iso.symm _ _ (finsuppTprodRight ρ
+    (Representation.ofMulAction k G G) α)).tohom ∘ₗ
+      (coinvariantsFinsuppLEquiv _ α ≪≫ₗ Finsupp.lcongr (Equiv.refl α)
+        (tensor2Iso ρ)).symm.toLinearMap
+
+@[simp] lemma finsuppToCoinvariantsTprodFree_apply (i : α) (x : A) :
+    finsuppToCoinvariantsTprodFree ρ α (Finsupp.single i x)
+      = Submodule.Quotient.mk (x ⊗ₜ Finsupp.single i (Finsupp.single (1 : G) (1 : k))) := by
+  simp only [finsuppToCoinvariantsTprodFree, coinvariantsMap, coinvariantsLift, finsuppTprodRight,
+    iso.mk', LinearEquiv.invFun_eq_symm, LinearEquiv.mk_coe, iso.symm_hom, LinearEquiv.trans_symm,
+    Finsupp.lcongr_symm, Equiv.refl_symm, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, LinearEquiv.trans_apply, Finsupp.lcongr_single, Equiv.refl_apply,
+    tensor2Iso_symm_apply, tensor2Inv_apply, coinvariantsFinsuppLEquiv_symm_apply,
+    finsuppToCoinvariants, lsingle_hom, Finsupp.coe_lsum, map_zero, Finsupp.sum_single_index,
+    Submodule.liftQ_apply, Finsupp.lsingle_apply, Submodule.mkQ_apply,
+    finsuppTensorRight_symm_single_tmul]
+
+@[simps] def coinvariantsTprodFreeLEquiv :
+    (ρ.tprod (Representation.free k G α)).coinvariants ≃ₗ[k] (α →₀ A) where
+      toFun := coinvariantsTprodFreeToFinsupp ρ α
+      map_add' := map_add _
+      map_smul' := map_smul _
+      invFun := finsuppToCoinvariantsTprodFree ρ α
+      left_inv := fun x => by
+        show (finsuppToCoinvariantsTprodFree ρ α ∘ₗ _) x = LinearMap.id (R := k) x
+        refine' LinearMap.ext_iff.1 (Submodule.linearMap_qext _ <| TensorProduct.ext <|
+          LinearMap.ext fun a => _) x
+        ext i g
+        simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+          LinearMap.compr₂_apply, mk_apply, LinearMap.coe_mk, AddHom.coe_mk, Submodule.mkQ_apply,
+          coinvariantsTprodFreeToFinsupp_apply, one_smul, finsuppToCoinvariantsTprodFree_apply,
+          LinearMap.id_comp, Submodule.Quotient.eq]
+        refine' mem_coinvariantsKer (ρ.tprod (free k G α)) g⁻¹ (a ⊗ₜ[k] Finsupp.single i
+          (Finsupp.single g 1)) _ (by simp only [tprod_apply, map_tmul, free_ρ_single_single,
+            mul_left_inv])
+      right_inv := fun x => by
+        show (coinvariantsTprodFreeToFinsupp ρ α ∘ₗ _) x = LinearMap.id (R := k) x
+        refine' LinearMap.ext_iff.1 _ x
+        ext i a
+        simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+          finsuppToCoinvariantsTprodFree_apply, coinvariantsTprodFreeToFinsupp_apply, inv_one, _root_.map_one,
+          LinearMap.one_apply, one_smul, LinearMap.id_comp]
+
+def d (n : ℕ) : ((Fin (n + 1) → G) →₀ A) →ₗ[k] (Fin n → G) →₀ A :=
+  Finsupp.lsum (R := k) k fun g => Finsupp.lsingle (fun i => g i.succ) ∘ₗ ρ (g 0)⁻¹
+    + Finset.univ.sum fun j : Fin (n + 1) =>
+      (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.lsingle (Fin.contractNth j (· * ·) g)
 
 end Representation
-namespace groupHomology
-
+namespace Rep
 variable {k G : Type u} [CommRing k] [Group G]
 open MonoidalCategory
+
+def finsuppTensorLeft (α : Type u) (A B : Rep k G) :
+    A.finsupp.obj α ⊗ B ≅ (A ⊗ B).finsupp.obj α :=
+Rep.mkIso (A.ρ.finsuppTprodLeft B.ρ α).toLinearEquiv
+  (A.ρ.finsuppTprodLeft B.ρ α).tohom.comm
+
+def finsuppTensorRight (α : Type u) (A B : Rep k G) :
+    A ⊗ B.finsupp.obj α ≅ (A ⊗ B).finsupp.obj α :=
+Rep.mkIso (A.ρ.finsuppTprodRight B.ρ α).toLinearEquiv
+  (A.ρ.finsuppTprodRight B.ρ α).tohom.comm
 
 abbrev coinvariantsObj (A : Rep k G) := A.ρ.coinvariants
 
@@ -258,17 +387,31 @@ Adjunction.mkOfHomEquiv <| {
 instance : IsLeftAdjoint (coinvariants k G) where
   right := Rep.trivialFunctor k G
   adj := coinvariantsAdjunction k G
-#check ModuleCat.free
+
 instance : Limits.PreservesColimitsOfSize.{u, u} (coinvariants k G) :=
   (coinvariantsAdjunction k G).leftAdjointPreservesColimits
 
-def ermmm (A : Rep k G) : (coinvariants k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
+variable {k G}
+
+def coinvariantsFinsuppIso (A : Rep k G) (α : Type u) :
+  (coinvariants k G).obj ((Rep.finsupp A).obj α)
+    ≅ ModuleCat.of k (α →₀ (coinvariants k G).obj A) :=
+  (A.ρ.coinvariantsFinsuppLEquiv α).toModuleIso
+
+def coinvariantsTensorLeftRegular (A : Rep k G) :
+    (coinvariants k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
   A.ρ.tensor2Iso.toModuleIso
 
 open MonoidalCategory
-set_option profiler true
 
-def ok : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
+def coinvariantsTensorFreeIso (A : Rep k G) (α : Type u) :
+    (coinvariants k G).obj (A ⊗ (Rep.free k G).obj α)
+      ≅ ModuleCat.of k (α →₀ A) :=
+  (A.ρ.coinvariantsTprodFreeLEquiv α).toModuleIso
+
+variable (k G)
+
+@[simps] def ok : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
 { obj := fun A => MonoidalCategory.tensorLeft A ⋙ coinvariants k G
   map := fun f => {
     app := fun A => coinvariantsMap (f ⊗ 𝟙 A)
@@ -292,122 +435,97 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
   obj X := Functor.leftDerived ((ok k G).obj X) n
   map f := NatTrans.leftDerived ((ok k G).map f) n
 
-end groupHomology
-#exit
+variable {k G}
+variable (A : Rep k G)
 
-namespace inhomogeneousCochains
+def okChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] :
+  ChainComplex (Rep k G) α ⥤ ChainComplex (ModuleCat k) α :=
+Functor.mapHomologicalComplex ((ok k G).obj A) _
 
-open Rep groupCohomology
+def okBarResolution := (okChainComplex A ℕ).obj (Rep.barResolution k G)
 
-/-- The differential in the complex of inhomogeneous cochains used to
-calculate group cohomology. -/
-@[simps]
-def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
-  toFun f g :=
-    A.ρ (g 0) (f fun i => g i.succ) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
-  map_add' f g := by
-    ext x
-/- Porting note: changed from `simp only` which needed extra heartbeats -/
-    simp_rw [Pi.add_apply, map_add, smul_add, Finset.sum_add_distrib, add_add_add_comm]
-  map_smul' r f := by
-    ext x
-/- Porting note: changed from `simp only` which needed extra heartbeats -/
-    simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
-      smul_eq_mul, mul_comm r]
-#align inhomogeneous_cochains.d inhomogeneousCochains.d
+def okStdResolution := (okChainComplex A ℕ).obj (groupCohomology.resolution k G)
 
-set_option profiler true
-variable [Group G] (n) (A : Rep k G)
-
-@[nolint checkType] theorem d_eq :
-    d n A =
-      (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
-        (linearYonedaObjBarResolution A).d n (n + 1) ≫
-          (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
-  ext f g
-  simp only [ChainComplex.of_x, ChainComplex.linearYonedaObj_d, barResolution.d_def,
-    Function.comp_apply, freeLiftEquiv_apply]
-  show _ = ((freeLiftEquiv _ _).symm f).hom _
-  rw [d_single, map_add, map_sum, freeLiftEquiv_symm_apply, one_smul]
+@[nolint checkType] theorem d_eq (n : ℕ) :
+    A.ρ.d n =
+      (coinvariantsTensorFreeIso A (Fin (n + 1) → G)).inv ≫
+        (okBarResolution A).d (n + 1) n ≫
+          (coinvariantsTensorFreeIso A (Fin n → G)).hom := by
+  ext g a : 2
+  simp only [ModuleCat.comp_def, LinearMap.comp_apply,
+    coinvariantsTensorFreeIso, LinearEquiv.toModuleIso_inv,
+    LinearEquiv.toModuleIso_hom]
+  show _ = A.ρ.coinvariantsTprodFreeToFinsupp (Fin n → G) ((okBarResolution A).d _ _
+    (A.ρ.finsuppToCoinvariantsTprodFree _ _))
+  simp only [Finsupp.lsingle_apply, Representation.finsuppToCoinvariantsTprodFree_apply]
+  simp only [okBarResolution, okChainComplex, ok_obj, Functor.mapHomologicalComplex_obj_X,
+    ChainComplex.of_x, Functor.comp_obj, tensorLeft_obj, Monoidal.transportStruct_tensorObj,
+    Equivalence.symm_functor, Action.functorCategoryEquivalence_inverse, Equivalence.symm_inverse,
+    Action.functorCategoryEquivalence_functor, coinvariants_obj,
+    Functor.mapHomologicalComplex_obj_d, barResolution.d_def, Functor.comp_map, tensorLeft_map,
+    Monoidal.transportStruct_tensorHom, CategoryTheory.Functor.map_id, coinvariants_map,
+    coinvariantsMap, Representation.coinvariantsMap, Representation.coinvariantsLift,
+    Action.FunctorCategoryEquivalence.inverse_map_hom, Monoidal.tensorHom_app,
+    Action.FunctorCategoryEquivalence.functor_obj_obj, NatTrans.id_app,
+    Action.FunctorCategoryEquivalence.functor_map_app, ModuleCat.ofHom_apply, Submodule.liftQ_apply,
+    LinearMap.coe_comp, Function.comp_apply]
+  erw [ModuleCat.MonoidalCategory.hom_apply]
+  rw [Rep.d_single]
+  rw [TensorProduct.tmul_add]
+  rw [map_add]
+  rw [TensorProduct.tmul_sum]
+  rw [map_sum]
+  simp only [Submodule.mkQ_apply]
+  rw [map_add, map_sum,
+    A.ρ.coinvariantsTprodFreeToFinsupp_apply, one_smul, ModuleCat.id_apply]
   conv =>
     · enter [2, 2, 2, x]
-      rw [freeLiftEquiv_symm_apply, map_one]
+      rw [A.ρ.coinvariantsTprodFreeToFinsupp_apply, inv_one, map_one]
+  rw [Representation.d]
+  simp only [Finsupp.coe_lsum, map_zero, Finsupp.sum_single_index, LinearMap.add_apply,
+    LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, LinearMap.coeFn_sum,
+    Finset.sum_apply, LinearMap.smul_apply, Finsupp.smul_single, LinearMap.one_apply]
 
-end inhomogeneousCochains
-
-namespace groupCohomology
-
-variable [Group G] (n) (A : Rep k G)
-
-open inhomogeneousCochains
-
-/-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
-$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
-which calculates the group cohomology of `A`. -/
-noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
-  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => inhomogeneousCochains.d n A) fun n => by
+-- needs a ModuleCat.ofHom and in d_eq.
+noncomputable abbrev inhomogeneousChains :
+    ChainComplex (ModuleCat k) ℕ :=
+  ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
+    (fun n => A.ρ.d n) fun n => by
     simp only [d_eq, d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, (linearYonedaObjBarResolution A).d_comp_d] }
+    slice_lhs 2 4 => { rw [Category.id_comp, (okBarResolution A).d_comp_d] }
 
 @[simp]
-theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
-  CochainComplex.of_d _ _ _ _
+theorem inhomogeneousChains.d_def (n : ℕ) :
+    (inhomogeneousChains A).d (n + 1) n = A.ρ.d n :=
+  ChainComplex.of_d _ _ _ _
 
 set_option profiler true
 
-def ForFuckSake : inhomogeneousCochains A ≅ linearYonedaObjBarResolution A := by
+def inhomogeneousChainsIsoOkBar  :
+    inhomogeneousChains A ≅ okBarResolution A := by
   refine' HomologicalComplex.Hom.isoOfComponents _ _
   · intro i
-    apply (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm
-  rintro i j (h : i + 1 = j)
+    apply (coinvariantsTensorFreeIso A (Fin i → G)).symm
+  rintro i j (h : j + 1 = i)
   subst h
-  simp only [Iso.symm_hom, inhomogeneousCochains.d_def, d_eq, Category.assoc]
+  simp only [Iso.symm_hom, inhomogeneousChains.d_def, d_eq, Category.assoc]
   slice_rhs 2 4 => { rw [Iso.hom_inv_id, Category.comp_id] }
 
-/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
-to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A :=
-  ForFuckSake A ≪≫ ((ChainComplex.linearYoneda (R := k) A).mapIso (Rep.barResolutionIso k G).symm).unop
+def inhomogeneousChainsIsoOkStd  : inhomogeneousChains A ≅ okStdResolution A :=
+  inhomogeneousChainsIsoOkBar A ≪≫ (okChainComplex A ℕ).mapIso (Rep.barResolutionIso k G)
 
-/-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
-`n`th differential in the complex of inhomogeneous cochains. -/
-abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
-/-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
-abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
-  (inhomogeneousCochains A).iCycles n
+abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
+  (inhomogeneousChains A).iCycles n
 
-/-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
-inhomogeneous cochains. -/
-abbrev toCocycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) → A) ⟶ cocycles A j :=
-  (inhomogeneousCochains A).toCycles i j
+abbrev toCycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) →₀ A) ⟶ cycles A j :=
+  (inhomogeneousChains A).toCycles i j
 
-end groupCohomology
+def groupHomology (n : ℕ) : ModuleCat k :=
+  (inhomogeneousChains A).homology n
 
-open groupCohomology
-
-/-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
-of inhomogeneous cochains. -/
-def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
-  (inhomogeneousCochains A).homology n
-#align group_cohomology groupCohomology
-
-/-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
-`G`-representation `A`. -/
-abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
-    groupCohomology.cocycles A n ⟶ groupCohomology A n :=
-  (inhomogeneousCochains A).homologyπ n
-
-/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
-`Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
-    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
-  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
-    (extIso k G A n).symm
-set_option linter.uppercaseLean3 false in
-#align group_cohomology_iso_Ext groupCohomologyIsoExt
+abbrev groupHomologyπ (n : ℕ) :
+    cycles A n ⟶ groupHomology A n :=
+  (inhomogeneousChains A).homologyπ n

@@ -79,6 +79,11 @@ variable (ρ τ)
 
 structure iso extends V ≃ₗ[k] W, ρ.hom τ
 
+@[simps] def iso.symm (f : ρ.iso τ) : τ.iso ρ :=
+{ f.toLinearEquiv.symm with
+  hom := f.toLinearEquiv.symm
+  comm := sorry }
+
 def iso.mk' (f : V ≃ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
     ρ.iso τ :=
   { f, hom.mk f.toLinearMap hf with }
@@ -670,6 +675,11 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
     ρ.finsupp α g (Finsupp.single x a) = Finsupp.single x (ρ g a) := by
   simp only [finsupp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Function.comp_apply, map_zero,
     Finsupp.sum_single_index, Finsupp.lsingle_apply]
+
+@[simps] def lsingle {α : Type*} (a : α) :
+  ρ.hom (ρ.finsupp α) where
+    hom := Finsupp.lsingle a
+    comm := fun g => by simp only [finsupp_apply, Finsupp.lsum_comp_lsingle]
 
 def free (k G : Type*) [CommRing k] [Group G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
