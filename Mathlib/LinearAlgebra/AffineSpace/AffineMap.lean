@@ -798,8 +798,7 @@ theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
   rfl
 
 theorem pi_comp {V3 P3 : Type*} [AddCommGroup V3] [Module k V3] [AffineSpace V3 P3]
-  (g : P3 →ᵃ[k] P1) :
-    (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+    (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
   rfl
 
 theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
@@ -843,8 +842,8 @@ def single [DecidableEq ι] (i : ι) : φv i →ᵃ[k] (j : ι) → φv j :=
   }
 
 @[simp]
-theorem coe_single [DecidableEq ι] (i : ι) : ⇑(single i : φv i →ᵃ[k] (j : ι) → φv j) = Pi.single i :=
-  rfl
+theorem coe_single [DecidableEq ι] (i : ι) : ⇑(single i : φv i →ᵃ[k] (j : ι) → φv j) = Pi.single i
+    := rfl
 
 section Ext
 
@@ -852,7 +851,8 @@ variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
 /- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and at zero. -/
-theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) : f = g := by
+theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
+    f = g := by
   apply ext_linear
   next =>
     apply LinearMap.pi_ext
@@ -869,7 +869,8 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
 
 /- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and `ι` is nonempty. -/
-theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g := by
+theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
+    f = g := by
   apply pi_ext_zero h
   rw [← Pi.single_zero]
   apply h
