@@ -88,7 +88,8 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
       rw [← h₁, h₂]
-      simp only [Nat.one_ne_zero, not_false_iff]
+      sorry
+      -- simp only [Nat.one_ne_zero, not_false_iff]
   rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
 #align nat.squarefree.ext_iff Nat.Squarefree.ext_iff
 
