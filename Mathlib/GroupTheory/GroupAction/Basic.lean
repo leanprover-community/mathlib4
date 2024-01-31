@@ -224,10 +224,10 @@ variable [Monoid α] [MulDistribMulAction M α]
 def FixedPoints.submonoid : Submonoid α where
   carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
-  mul_mem' := fun ha hb _ => by rw [MulDistribMulAction.smul_mul, ha, hb]
+  mul_mem' ha hb _ := by rw [MulDistribMulAction.smul_mul, ha, hb]
 
 @[simp]
-lemma FixedPoints.mem_fixedSubmonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 end Monoid
@@ -239,7 +239,7 @@ variable [Group α] [MulDistribMulAction M α]
 /-- The subgroup of elements fixed under the whole action. -/
 def FixedPoints.subgroup : Subgroup α where
   __ := submonoid M α
-  inv_mem' := fun ha m => by rw [smul_inv', ha]
+  inv_mem' ha _ := by rw [smul_inv', ha]
 
 /-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
 notation α "^*" M:51 => FixedPoints.subgroup M α
@@ -258,7 +258,7 @@ variable [AddMonoid α] [DistribMulAction M α]
 def FixedPoints.addSubmonoid : AddSubmonoid α where
   carrier := MulAction.fixedPoints M α
   zero_mem' := smul_zero
-  add_mem' := fun ha hb _ => by rw [smul_add, ha, hb]
+  add_mem' ha hb _ := by rw [smul_add, ha, hb]
 
 @[simp]
 lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
@@ -273,7 +273,7 @@ variable [AddGroup α] [DistribMulAction M α]
 /-- The additive subgroup of elements fixed under the whole action. -/
 def FixedPoints.addSubgroup : AddSubgroup α where
   __ := addSubmonoid M α
-  neg_mem' := fun ha _ => by rw [smul_neg, ha]
+  neg_mem' ha _ := by rw [smul_neg, ha]
 
 /-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
 notation α "^+" M:51 => FixedPoints.addSubgroup M α
