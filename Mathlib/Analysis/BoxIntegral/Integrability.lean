@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Regular
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
