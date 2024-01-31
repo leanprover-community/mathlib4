@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Algebra.Order.Field.Power
 import Qq
 
 /-!
@@ -248,64 +246,8 @@ where `a` and `b` are integers. -/
     pure (.nonnegative (q(Int.ediv_nonneg $pa $pb) : Expr))
   | _, _ => pure .none
 
-section LinearOrderedSemifield
-variable [LinearOrderedSemifield R] {a b : R}
-
-private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
-  div_nonneg ha.le hb
-
-private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
-  div_nonneg ha hb.le
-
-private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
-  div_ne_zero ha.ne' hb
-
-private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
-  div_ne_zero ha hb.ne'
-
-end LinearOrderedSemifield
-
-/-- The `positivity` extension which identifies expressions of the form `a / b`,
-such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not /"
-  let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
-  let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
-  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
-  | _, _ => pure .none
-
-/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
-such that `positivity` successfully recognises `a`. -/
-@[positivity (_ : α)⁻¹]
-def evalInv : PositivityExt where eval {u α} zα pα e := do
-  let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
-  let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
-  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
-  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
-  | .none => pure .none
-
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
-
-private lemma zpow_zero_pos [LinearOrderedSemifield R] (a : R) : 0 < a ^ (0 : ℤ) :=
-  zero_lt_one.trans_le (zpow_zero a).ge
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
@@ -315,13 +257,6 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
-
-/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
-@[positivity (_ : α) ^ (0:ℤ), Pow.pow _ (0:ℤ)]
-def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
-  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
 
 set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
@@ -360,58 +295,6 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(OrderedSemiring $α)
-        orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
-    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
-    | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
-    | .none => pure .none
-
-/-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
-such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-def evalZpow : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
-  let result ← catchNone do
-    let _a ← synthInstanceQ q(LinearOrderedField $α)
-    assumeInstancesCommute
-    match ← whnfR b with
-    | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
-      guard (n % 2 = 0)
-      have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
-      haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
-    | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
-      let b' ← whnfR b'
-      let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
-      let some n := (b'.getRevArg! 1).natLit? | throwError "not a ^ -n where n is a literal"
-      guard (n % 2 = 0)
-      have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)
-      haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a (-$m)))
-    | _ => throwError "not a ^ n where n is a literal or a negated literal"
-  orElse result do
-    let ra ← core zα pα a
-    let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) :
-        MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
-      assumeInstancesCommute
-      pure (by exact .nonnegative (q(zpow_nonneg $pa $b)))
-    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
-      let _a ← synthInstanceQ q(GroupWithZero $α)
-      assumeInstancesCommute
-      pure (.nonzero (by exact q(zpow_ne_zero $b $pa)))
-    match ra with
-    | .positive pa =>
-      try
-        let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-        haveI' : $e =Q $a ^ $b := ⟨⟩
-        assumeInstancesCommute
-        pure (by exact .positive (q(zpow_pos_of_pos $pa $b)))
-      catch e : Exception =>
-        trace[Tactic.positivity.failure] "{e.toMessageData}"
-        let oα ← synthInstanceQ q(LinearOrderedSemifield $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
     | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
@@ -503,39 +386,8 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   | .none =>
     pure .none
 
-/-- Extension for Rat.cast. -/
-@[positivity Rat.cast _]
-def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
-  let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
-  let zα' : Q(Zero ℚ) := q(inferInstance)
-  let pα' : Q(PartialOrder ℚ) := q(inferInstance)
-  match ← core zα' pα' a with
-  | .positive pa =>
-    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
-    pure (.positive (q((Rat.cast_pos (K := $α)).mpr $pa) : Expr))
-  | .nonnegative pa =>
-    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
-    pure (.nonnegative (q((Rat.cast_nonneg (K := $α)).mpr $pa) : Expr))
-  | .nonzero pa =>
-    let _oα ← synthInstanceQ (q(DivisionRing $α) : Q(Type u))
-    let _cα ← synthInstanceQ (q(CharZero $α) : Q(Prop))
-    pure (.nonzero (q((Rat.cast_ne_zero (α := $α)).mpr $pa) : Expr))
-  | .none => pure .none
-
 /-- Extension for Nat.succ. -/
 @[positivity Nat.succ _]
 def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
   let ~q(Nat.succ $a) := e | throwError "not Nat.succ"
   pure (.positive (q(Nat.succ_pos $a) : Expr))
-
-/-- Extension for Nat.factorial. -/
-@[positivity Nat.factorial _]
-def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.factorial $a) := e | throwError "failed to match Nat.factorial"
-  pure (.positive (q(Nat.factorial_pos $a) : Expr))
-
-/-- Extension for Nat.ascFactorial. -/
-@[positivity Nat.ascFactorial _ _]
-def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
-  pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))
