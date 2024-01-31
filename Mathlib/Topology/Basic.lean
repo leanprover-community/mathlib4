@@ -26,13 +26,11 @@ partially defined functions.
 
 ## Notation
 
+The following notation is introduced elsewhere and it heavily used in this file.
+
 * `𝓝 x`: the filter `nhds x` of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
-* `𝓝[≤] x`: the filter `nhdsWithin x (Set.Iic x)` of left-neighborhoods of `x`;
-* `𝓝[≥] x`: the filter `nhdsWithin x (Set.Ici x)` of right-neighborhoods of `x`;
-* `𝓝[<] x`: the filter `nhdsWithin x (Set.Iio x)` of punctured left-neighborhoods of `x`;
-* `𝓝[>] x`: the filter `nhdsWithin x (Set.Ioi x)` of punctured right-neighborhoods of `x`;
 * `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`.
 
 ## Implementation notes
@@ -1483,12 +1481,6 @@ theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
 theorem Continuous.congr {g : X → Y} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g :=
   continuous_congr h' |>.mp h
 #align continuous.congr Continuous.congr
-
-/-- A function between topological spaces is continuous at a point `x₀`
-if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
-def ContinuousAt (f : X → Y) (x : X) :=
-  Tendsto f (𝓝 x) (𝓝 (f x))
-#align continuous_at ContinuousAt
 
 theorem ContinuousAt.tendsto (h : ContinuousAt f x) :
     Tendsto f (𝓝 x) (𝓝 (f x)) :=

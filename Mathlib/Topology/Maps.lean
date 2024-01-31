@@ -53,16 +53,6 @@ variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y �
 
 section Inducing
 
-/-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
-by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
-under `f` of some open set `t : Set Y`. -/
-@[mk_iff]
-structure Inducing [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop where
-  /-- The topology on the domain is equal to the induced topology. -/
-  induced : tX = tY.induced f
-#align inducing Inducing
-#align inducing_iff inducing_iff
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem inducing_induced (f : X → Y) : @Inducing X Y (TopologicalSpace.induced f ‹_›) _ f :=
@@ -189,16 +179,6 @@ end Inducing
 
 section Embedding
 
-/-- A function between topological spaces is an embedding if it is injective,
-  and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff]
-structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) extends
-  Inducing f : Prop where
-  /-- A topological embedding is injective. -/
-  inj : Injective f
-#align embedding Embedding
-#align embedding_iff embedding_iff
-
 theorem Function.Injective.embedding_induced [t : TopologicalSpace Y] (hf : Injective f) :
     @_root_.Embedding X Y (t.induced f) t f :=
   @_root_.Embedding.mk X Y (t.induced f) t _ (inducing_induced f) hf
@@ -271,12 +251,6 @@ theorem Embedding.discreteTopology [DiscreteTopology Y] (hf : Embedding f) : Dis
 end Embedding
 
 section QuotientMap
-/-- A function between topological spaces is a quotient map if it is surjective,
-  and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-def QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-    (f : X → Y) : Prop :=
-  Surjective f ∧ tY = tX.coinduced f
-#align quotient_map QuotientMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -557,14 +531,6 @@ section OpenEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-/-- An open embedding is an embedding with open image. -/
-@[mk_iff]
-structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
-  /-- The range of an open embedding is an open set. -/
-  open_range : IsOpen <| range f
-#align open_embedding OpenEmbedding
-#align open_embedding_iff openEmbedding_iff
-
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range
 #align open_embedding.is_open_map OpenEmbedding.isOpenMap
@@ -666,14 +632,6 @@ end OpenEmbedding
 section ClosedEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-/-- A closed embedding is an embedding with closed image. -/
-@[mk_iff]
-structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
-  /-- The range of a closed embedding is a closed set. -/
-  closed_range : IsClosed <| range f
-#align closed_embedding ClosedEmbedding
-#align closed_embedding_iff closedEmbedding_iff
 
 namespace ClosedEmbedding
 
