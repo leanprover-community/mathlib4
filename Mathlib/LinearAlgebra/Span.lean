@@ -92,7 +92,7 @@ theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScal
   span_eq (p.restrictScalars S)
 #align submodule.span_coe_eq_restrict_scalars Submodule.span_coe_eq_restrictScalars
 
-/-- A version of `Submodule.RingHomSurjective` that does not require the `RingHomSurjective`
+/-- A version of `Submodule.map_span_le` that does not require the `RingHomSurjective`
 assumption. -/
 theorem image_span_subset (f : F) (s : Set M) (N : Submodule R₂ M₂) :
     f '' span R s ⊆ N ↔ ∀ m ∈ s, f m ∈ N := image_subset_iff.trans <| span_le (p := N.comap f)
