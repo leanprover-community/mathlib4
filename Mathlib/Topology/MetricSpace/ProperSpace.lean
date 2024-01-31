@@ -72,7 +72,7 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
 alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
 
 /-- If there exists a sequence of compact closed balls with the same center
-such that radii tend to infinity, then the space is proper. -/
+such that the radii tend to infinity, then the space is proper. -/
 theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x : α} {r : β → ℝ}
     (hr : Tendsto r l atTop) (hc : ∀ᶠ i in l, IsCompact (closedBall x (r i))) :
     ProperSpace α where
