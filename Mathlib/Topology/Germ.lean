@@ -170,29 +170,23 @@ proof_wanted isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
   (_hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
     ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant
 
--- if f is locally constant
-lemma foo {f : X → Y} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  {i : Z → X} (hi : Inducing i) (hF : IsLocallyConstant (f ∘ i)) : IsLocallyConstant f := by
-  sorry
+-- move to `LocallyConstant/Basic.lean` once proven
+proof_wanted IsLocallyConstant.of_comp_of_inducing
+  {f : X → Y} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  {i : Z → X} (_hi : Inducing i) (_hF : IsLocallyConstant (f ∘ i)) : IsLocallyConstant f
 
-private lemma IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X}
-    [TopologicalSpace Y]
-    (hs : IsPreconnected s) (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f := by
-  haveI := isPreconnected_iff_preconnectedSpace.mp hs
-  let F : s → Y := f ∘ (↑)
-  suffices h : IsLocallyConstant F from foo inducing_subtype_val h
-  sorry -- exact IsLocallyConstant.of_germ_isConstant (fun ⟨x, hx⟩ ↦ isConstant_comp_subtype (h x hx))
+-- use previous lemma: `Subtype.val` is inducing
+proof_wanted IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X} [TopologicalSpace Y]
+    (_hs : IsPreconnected s) (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f
 
 theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
   (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
     (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)
 
-theorem eq_of_germ_isConstant_on {s : Set X}
-    (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s)
-    (x'_in : x' ∈ s) : f x = f x' :=
-  sorry --(IsLocallyConstant.of_germ_isConstantOn_of_preconnected hs h).apply_eq_of_isPreconnected
-  --  hs x_in x'_in
+-- use `IsLocallyConstant.of_germ_isConstantOn_of_preconnected`
+proof_wanted eq_of_germ_isConstant_on {s : Set X} (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant)
+    (_hs : IsPreconnected s) {x' : X} (_x_in : x ∈ s) (_x'_in : x' ∈ s) : f x = f x'
 
 open scoped BigOperators in
 @[to_additive (attr := simp)]
