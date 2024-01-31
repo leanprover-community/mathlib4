@@ -224,7 +224,7 @@ variable [Monoid α] [MulDistribMulAction M α]
 def FixedPoints.submonoid : Submonoid α where
   carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
-  mul_mem' ha hb _ := by rw [MulDistribMulAction.smul_mul, ha, hb]
+  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
 @[simp]
 lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
@@ -247,6 +247,10 @@ notation α "^*" M:51 => FixedPoints.subgroup M α
 @[simp]
 lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+@[simp]
+lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+  rfl
 
 end Group
 
@@ -281,6 +285,10 @@ notation α "^+" M:51 => FixedPoints.addSubgroup M α
 @[simp]
 lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+@[simp]
+lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+  rfl
 
 end AddGroup
 
