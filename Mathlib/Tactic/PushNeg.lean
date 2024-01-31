@@ -131,7 +131,7 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
   | none => return Simp.Step.visit r₁
   | some _ => do
       let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
-      return Simp.Step.visit (← Simp.mkEqTrans r₁ r₂)
+      return Simp.Step.visit (← r₁.mkEqTrans r₂)
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
