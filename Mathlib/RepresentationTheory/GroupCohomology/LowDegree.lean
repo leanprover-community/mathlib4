@@ -396,7 +396,7 @@ end
 section
 variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
 
-@[simp] theorem map_one_of_isOneCocycle (f : G → A) (hf : IsOneCocycle f) :
+theorem map_one_of_isOneCocycle (f : G → A) (hf : IsOneCocycle f) :
     f 1 = 0 := by
   have := (isOneCocycle_iff f).1 hf 1 1
   simpa only [mul_one, one_smul, self_eq_add_right] using this
@@ -522,7 +522,7 @@ end
 section
 variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
 
-@[simp] theorem map_one_of_isMulOneCocycle (f : G → M) (hf : IsMulOneCocycle f) :
+theorem map_one_of_isMulOneCocycle (f : G → M) (hf : IsMulOneCocycle f) :
     f 1 = 1 := by
   have := (isMulOneCocycle_iff f).1 hf 1 1
   simpa only [mul_one, one_smul, self_eq_mul_right] using this
