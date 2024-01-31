@@ -583,28 +583,30 @@ theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
 /-- Continuity of the measure of translates of a compact set: Given a compact set `k` in a
 topological group, for `g` close enough to the origin, `μ (g • k \ k)` is arbitrarily small. -/
 @[to_additive]
-lemma exists_nhds_measure_smul_diff_lt [LocallyCompactSpace G]
+lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • k \ k) < ε := by
-  obtain ⟨δ, δpos, δε⟩ : ∃ δ, 0 < δ ∧ δ < ε := DenselyOrdered.dense 0 ε hε.bot_lt
-  obtain ⟨U, hUk, hU, hμUk⟩ : ∃ (U : Set G), k ⊆ U ∧ IsOpen U ∧ μ U < μ k + δ :=
-    hk.exists_isOpen_lt_add δpos.ne'
+    ∀ᶠ g in 𝓝 (1 : G), μ (g • k \ k) < ε := by
+  obtain ⟨U, hUk, hU, hμUk⟩ : ∃ (U : Set G), k ⊆ U ∧ IsOpen U ∧ μ U < μ k + ε :=
+    hk.exists_isOpen_lt_add hε
   obtain ⟨V, hV1, hVkU⟩ : ∃ V ∈ 𝓝 (1 : G), V * k ⊆ U := compact_open_separated_mul_left hk hU hUk
-  refine ⟨V, hV1, fun g hg ↦ ?_⟩
+  filter_upwards [hV1] with g hg
   calc
-  μ (g • k \ k)
-  _ ≤ μ (U \ k) := by
-    refine measure_mono (diff_subset_diff_left ?_)
-    exact (smul_set_subset_smul hg).trans hVkU
-  _ = μ U - μ k := by
-    rw [measure_diff _ h'k.measurableSet hk.measure_lt_top.ne]
-    calc k = (1 : G) • k := by simp
-      _ ⊆ V • k := smul_set_subset_smul (mem_of_mem_nhds hV1)
-      _ ⊆ U := hVkU
-  _ ≤ (μ k + δ ) - μ k := by gcongr
-  _ = δ := ENNReal.add_sub_cancel_left hk.measure_lt_top.ne
-  _ < ε := δε
+    μ (g • k \ k) ≤ μ (U \ k) := by
+      refine measure_mono (diff_subset_diff_left ?_)
+      exact (smul_set_subset_smul hg).trans hVkU
+    _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
+
+/-- Continuity of the measure of translates of a compact set:
+Given a closed compact set `k` in a topological group,
+the measure of `g • k \ k` tends to zero as `g` tends to `1`. -/
+@[to_additive]
+lemma tendsto_measure_smul_diff_isCompact_isClosed [LocallyCompactSpace G]
+    [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
+    (hk : IsCompact k) (h'k : IsClosed k) :
+    Tendsto (fun g : G ↦ μ (g • k \ k)) (𝓝 1) (𝓝 0) :=
+  ENNReal.nhds_zero_basis.tendsto_right_iff.mpr <| fun _ h ↦
+    eventually_nhds_one_measure_smul_diff_lt hk h'k h.ne'
 
 variable [IsMulLeftInvariant μ]
 

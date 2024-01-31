@@ -378,7 +378,7 @@ theorem addHaar_smul (r : ℝ) (s : Set E) :
       pow_zero, Subsingleton.eq_univ_of_nonempty (singleton_nonempty (0 : E))]
   · haveI : Nontrivial E := nontrivial_of_finrank_pos (bot_lt_iff_ne_bot.2 h)
     simp only [h, zero_mul, ENNReal.ofReal_zero, abs_zero, Ne.def, not_false_iff,
-      zero_pow', measure_singleton]
+      zero_pow, measure_singleton]
 #align measure_theory.measure.add_haar_smul MeasureTheory.Measure.addHaar_smul
 
 theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
@@ -448,7 +448,7 @@ theorem addHaar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
 theorem addHaar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
   rcases hr.eq_or_lt with (rfl | h)
-  · simp only [zero_pow (finrank_pos (R := ℝ) (M := E)), measure_empty, zero_mul,
+  · simp only [zero_pow (finrank_pos (R := ℝ) (M := E)).ne', measure_empty, zero_mul,
       ENNReal.ofReal_zero, ball_zero]
   · exact addHaar_ball_mul_of_pos μ x h s
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.addHaar_ball_mul
