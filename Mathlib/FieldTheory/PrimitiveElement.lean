@@ -279,7 +279,7 @@ theorem isAlgebraic_of_finite_intermediateField
   have ⟨_m, _n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite fun n ↦ F⟮α ^ n⟯
   isAlgebraic_of_adjoin_eq_adjoin F E hneq heq
 
-theorem finiteDimensional_of_finite_intermediateField
+theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
   haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
@@ -292,7 +292,7 @@ theorem finiteDimensional_of_finite_intermediateField
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
-  haveI := finiteDimensional_of_finite_intermediateField F E
+  haveI := FiniteDimensional.of_finite_intermediateField F E
   rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
     exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg lift h⟩
@@ -301,7 +301,7 @@ theorem exists_primitive_element_of_finite_intermediateField
     simp_rw [adjoin_simple_adjoin_simple, eq_comm]
     exact primitive_element_inf_aux_of_finite_intermediateField F α β
 
-theorem finiteDimensional_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
+theorem FiniteDimensional.of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
     (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by
   obtain ⟨α, hprim⟩ := h
   have hfin := adjoin.finiteDimensional (halg α).isIntegral
@@ -311,7 +311,7 @@ theorem finiteDimensional_of_exists_primitive_element (halg : Algebra.IsAlgebrai
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
     (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
-  haveI := finiteDimensional_of_exists_primitive_element F E halg h
+  haveI := FiniteDimensional.of_exists_primitive_element F E halg h
   obtain ⟨α, hprim⟩ := h
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
   let f : F[X] := minpoly F α
