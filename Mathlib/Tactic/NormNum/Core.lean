@@ -207,7 +207,7 @@ mutual
       post := Simp.postDefault #[] >> tryNormNum (post := true)
       discharge? := discharge
     } else {
-      pre :=  tryNormNum
+      pre := tryNormNum
       post := tryNormNum (post := true)
       discharge? := discharge
     }
