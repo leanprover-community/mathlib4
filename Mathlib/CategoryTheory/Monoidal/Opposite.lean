@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 #align_import category_theory.monoidal.opposite from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -30,6 +31,7 @@ def MonoidalOpposite (C : Type u₁) :=
 
 namespace MonoidalOpposite
 
+@[inherit_doc]
 notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 
 /-- Think of an object of `C` as an object of `Cᴹᵒᵖ`. -/
@@ -167,6 +169,8 @@ end Iso
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
+
+attribute [local simp] id_tensorHom tensorHom_id
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)

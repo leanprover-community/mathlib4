@@ -178,8 +178,8 @@ variable (R p)
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
-     FunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
-     FunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
+     DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
+     DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
 #align perfection.perfect_ring Perfection.perfectRing
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
