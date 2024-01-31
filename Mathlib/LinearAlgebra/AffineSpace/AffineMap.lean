@@ -785,9 +785,9 @@ variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i
  AffineSpace `P2 := φp i` can depend on the index `i : ι`.
 -/
 def pi (f : (i : ι) → (P1 →ᵃ[k] φp i)) : P1 →ᵃ[k] ((i : ι) → φp i) where
-  toFun := fun m a ↦ (f a).1 m
-  linear := LinearMap.pi (fun a ↦ (f a).2)
-  map_vadd' := fun _ _ ↦ funext fun a ↦ (f a).3 _ _
+  toFun m a := f a m
+  linear := LinearMap.pi (fun a ↦ (f a).linear)
+  map_vadd' _ _ := funext fun _ ↦ map_vadd _ _ _
 
 --fp for when the image is a dependent AffineSpace φp i, fv for when the
 --image is a Module φv i, f' for when the image isn't dependent.
