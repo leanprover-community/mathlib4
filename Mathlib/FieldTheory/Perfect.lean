@@ -233,23 +233,73 @@ theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Alge
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] {p n : ℕ} [Fact p.Prime] [CharP R p]
-  [PerfectRing R p] {f : R[X]}
+variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [Fact p.Prime] [CharP R p] (f : R[X])
 
 open Multiset
+
+theorem roots_expand_map_frobenius_le :
+    (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
+  classical
+  refine le_iff_count.2 fun r ↦ ?_
+  by_cases h : ∃ s, r = s ^ p
+  · obtain ⟨s, h⟩ := h
+    rw [h, count_nsmul, count_roots, ← rootMultiplicity_expand, ← count_roots, count_map,
+      count_eq_card_filter_eq]
+    exact card_le_card (monotone_filter_right _ fun _ h ↦ frobenius_inj R p h)
+  convert Nat.zero_le _
+  rw [count_map, card_eq_zero]
+  exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
+
+theorem roots_expand_pow_map_frobenius_le :
+    (expand R (p ^ n) f).roots.map (frobenius R p)^[n] ≤ p ^ n • f.roots := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n ih =>
+    rw [iterate_succ', ← Multiset.map_map, pow_succ', expand_mul]
+    refine (map_le_map (ih _)).trans ?_
+    rw [Multiset.map_nsmul, mul_nsmul']
+    exact nsmul_le_nsmul_right (roots_expand_map_frobenius_le p f) _
+
+open scoped Classical in
+/-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
+a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
+It's given by `x ↦ x ^ p`, see `rootsExpandToRoots_apply`. -/
+noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset → f.roots.toFinset :=
+  fun x ↦ ⟨x.1 ^ p, mem_toFinset.2 <| (mem_nsmul (NeZero.ne p)).1 <|
+    mem_of_le (roots_expand_map_frobenius_le p f) <| mem_map_of_mem _ <| mem_toFinset.1 x.2⟩
+
+@[simp]
+theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
+
+open scoped Classical in
+/-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
+a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
+It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
+noncomputable def rootsExpandPowToRoots : (expand R (p ^ n) f).roots.toFinset → f.roots.toFinset :=
+  fun x ↦ ⟨x.1 ^ p ^ n, iterate_frobenius p x.1 n ▸ (mem_toFinset.2 <|
+    (mem_nsmul (pow_ne_zero n (NeZero.ne p))).1 <| mem_of_le
+      (roots_expand_pow_map_frobenius_le p n f) <| mem_map_of_mem _ <| mem_toFinset.1 x.2)⟩
+
+@[simp]
+theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl
+
+variable {p n f}
+
+variable [PerfectRing R p]
 
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   classical
   refine ext' fun r ↦ ?_
   rw [count_roots, rootMultiplicity_expand, ← count_roots, count_nsmul, count_map,
-      count_eq_card_filter_eq]; congr; ext
+    count_eq_card_filter_eq]; congr; ext
   exact (frobeniusEquiv R p).eq_symm_apply.symm
 
 theorem roots_expand_pow :
     (expand R (p ^ n) f).roots = p ^ n • f.roots.map (frobeniusEquiv R p).symm ^[n] := by
-  induction' n with n ih generalizing f; · simp
-  rw [pow_succ', expand_mul, ih, mul_smul, roots_expand,
-      Multiset.map_nsmul, Multiset.map_map, iterate_succ]
+  induction n generalizing f with
+  | zero => simp
+  | succ n ih => rw [pow_succ', expand_mul, ih, mul_smul, roots_expand,
+    Multiset.map_nsmul, Multiset.map_map, iterate_succ]
 
 theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
   simp [roots_expand, Multiset.map_nsmul]
