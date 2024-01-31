@@ -180,10 +180,6 @@ example (X1 X2 X3 X4 X5 X6 X7 X8 X9 : C) :
     (X1 ⊗ (X2 ⊗ X3) ⊗ X4 ⊗ (X5 ⊗ (𝟙_ C ⊗ X6) ⊗ X7) ⊗ X8 ⊗ X9) :=
   monoidalIso _ _
 
-/-- Notation for identities up to unitors and associators. -/
-scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
-  Mathlib.Tactic.Coherence.MonoidalCoherence.hom -- type as \ot 𝟙
-
 /-- Compose two morphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
 def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
