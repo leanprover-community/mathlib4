@@ -961,7 +961,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   · exact norm_eq_zero.mp (by
       -- porting note: the symmetric difference of the `simpa only` sets:
       -- added `Nat.zero_eq, zero_add, pow_one`
-      -- removed `zero_pow', Ne.def, Nat.one_ne_zero, not_false_iff`
+      -- removed `zero_pow, Ne.def, Nat.one_ne_zero, not_false_iff`
       simpa only [Nat.zero_eq, fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine' Or.elim (Classical.em (y = 0))

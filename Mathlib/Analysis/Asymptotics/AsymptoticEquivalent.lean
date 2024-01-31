@@ -74,7 +74,7 @@ def IsEquivalent (l : Filter α) (u v : α → β) :=
   (u - v) =o[l] v
 #align asymptotics.is_equivalent Asymptotics.IsEquivalent
 
-scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 variable {u v w : α → β} {l : Filter α}
 
