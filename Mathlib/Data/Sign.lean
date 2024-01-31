@@ -339,13 +339,16 @@ theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
+  all_goals sorry
 #align sign_eq_one_iff sign_eq_one_iff
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
   refine' ⟨fun h => _, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
+  · sorry
   · assumption
+  · sorry
 #align sign_eq_neg_one_iff sign_eq_neg_one_iff
 
 end Preorder
@@ -359,6 +362,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
+  sorry
   cases' h
   exact (le_of_not_lt h_1).eq_of_not_lt h_2
 #align sign_eq_zero_iff sign_eq_zero_iff
@@ -373,6 +377,8 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   · simp [h, h.le]
   · simp [← h]
   · simp [h, h.not_le]
+    sorry
+
 #align sign_nonneg_iff sign_nonneg_iff
 
 @[simp]
