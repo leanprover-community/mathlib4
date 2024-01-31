@@ -191,8 +191,15 @@ lemma LieSubalgebra.isNilpotent_of_forall_le_engel [IsNoetherian R L]
       LieSubalgebra.coe_ad_pow, ZeroMemClass.coe_zero]
 
 lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
-    (Finsupp.cons y s).support = _ := by
-  sorry
+    (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmbedding n).toEmbedding s.support) := by
+  intro i hi
+  simp only [mem_support_iff] at hi
+  simp only [Finset.mem_insert, Finset.mem_map, mem_support_iff, ne_eq,
+    RelEmbedding.coe_toEmbedding, Fin.val_succEmbedding]
+  obtain (rfl|⟨i, rfl⟩) := Fin.eq_zero_or_eq_succ i
+  · exact Or.inl rfl
+  · refine Or.inr ⟨i, ?_⟩
+    simpa using hi
 
 namespace MvPolynomial -- move this
 
