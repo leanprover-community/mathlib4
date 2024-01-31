@@ -49,7 +49,7 @@ theorem toMeasurable_iff {s : Set E} :
   · simp [restrict_toMeasurable hnt]
 
 protected theorem toMeasurable {s : Set E} (hu : IsUniformVolume s m μ) :
-  IsUniformVolume (toMeasurable μ s) m μ := toMeasurable_iff.2 hu
+    IsUniformVolume (toMeasurable μ s) m μ := toMeasurable_iff.2 hu
 
 end IsUniformVolume
 
