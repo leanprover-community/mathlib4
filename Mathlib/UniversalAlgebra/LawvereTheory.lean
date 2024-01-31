@@ -3,7 +3,7 @@ import Mathlib.Data.FinEnum
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.Tactic
 
-universe u u' v v'
+universe v v' u u'
 
 inductive ProdWord (S : Type u) : Type u where
   | of : S → ProdWord S
@@ -95,8 +95,7 @@ def LawvereSetoid {S : Type u} {op : ProdWord S → S → Type v}
   r := LawvereRel rel
   iseqv := ⟨LawvereRel.rfl, LawvereRel.symm, LawvereRel.trans⟩
 
-structure LawvereTheory where
-  S : Type u
+structure LawvereTheory (S : Type u) where
   hom : ProdWord S → ProdWord S → Type v
   id (P : ProdWord S) : hom P P
   comp {P Q R : ProdWord S} : hom P Q → hom Q R → hom P R
@@ -120,27 +119,28 @@ structure LawvereTheory where
 
 namespace LawvereTheory
 
-@[ext]
-structure Morphism (L : LawvereTheory.{u,v}) (L' : LawvereTheory.{u',v'}) where
-  obj : ProdWord L.S → ProdWord L'.S
-  map {P Q : ProdWord L.S} : (L.hom P Q) → (L'.hom (obj P) (obj Q))
-  map_id (P : ProdWord L.S) : map (L.id P) = L'.id (obj P)
-  map_comp {P Q R : ProdWord L.S} (a : L.hom P Q) (b : L.hom Q R) :
+variable {S : Type u} {S' : Type u'}
+
+structure Morphism (L : LawvereTheory.{v} S) (L' : LawvereTheory.{v'} S') where
+  obj : ProdWord S → ProdWord S'
+  map {P Q : ProdWord S} : (L.hom P Q) → (L'.hom (obj P) (obj Q))
+  map_id (P : ProdWord S) : map (L.id P) = L'.id (obj P)
+  map_comp {P Q R : ProdWord S} (a : L.hom P Q) (b : L.hom Q R) :
     map (L.comp a b) = L'.comp (map a) (map b)
-  toNil (P : ProdWord L'.S) : L'.hom P (obj .nil)
-  toNil_unique {P : ProdWord L'.S} (f g : L'.hom P (obj .nil)) : f = g
-  fst (P Q : ProdWord L.S) : L'.hom (obj (P.prod Q)) (obj P)
-  snd (P Q : ProdWord L.S) : L'.hom (obj (P.prod Q)) (obj Q)
-  lift {T : ProdWord L'.S} {P Q : ProdWord L.S}
+  toNil (P : ProdWord S') : L'.hom P (obj .nil)
+  toNil_unique {P : ProdWord S'} (f g : L'.hom P (obj .nil)) : f = g
+  fst (P Q : ProdWord S) : L'.hom (obj (P.prod Q)) (obj P)
+  snd (P Q : ProdWord S) : L'.hom (obj (P.prod Q)) (obj Q)
+  lift {T : ProdWord S'} {P Q : ProdWord S}
     (a : L'.hom T (obj P)) (b : L'.hom T (obj Q)) :
     L'.hom T (obj (P.prod Q))
-  lift_fst {T : ProdWord L'.S} {P Q : ProdWord L.S}
+  lift_fst {T : ProdWord S'} {P Q : ProdWord S}
     (a : L'.hom T (obj P)) (b : L'.hom T (obj Q)) :
     L'.comp (lift a b) (fst P Q) = a
-  lift_snd {T : ProdWord L'.S} {P Q : ProdWord L.S}
+  lift_snd {T : ProdWord S'} {P Q : ProdWord S}
     (a : L'.hom T (obj P)) (b : L'.hom T (obj Q)) :
     L'.comp (lift a b) (snd P Q) = b
-  lift_unique {T : ProdWord L'.S} {P Q : ProdWord L.S} {a b : L'.hom T (obj (P.prod Q))} :
+  lift_unique {T : ProdWord S'} {P Q : ProdWord S} {a b : L'.hom T (obj (P.prod Q))} :
     L'.comp a (fst _ _) = L'.comp b (fst _ _) →
     L'.comp a (snd _ _) = L'.comp b (snd _ _) →
     a = b

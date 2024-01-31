@@ -16,8 +16,7 @@ namespace FiniteLawverePresentation
 
 variable (P : FiniteLawverePresentation)
 
-def lawvereTheory : LawvereTheory where
-  S := Fin P.numSort
+def lawvereTheory : LawvereTheory (Fin P.numSort) where
   hom X Y := Quotient (LawvereSetoid (fun f g => ∃ n, (n, f, g) ∈ P.rels) X Y)
   id X := Quotient.mk _ <| LawvereWord.id X
   comp := fun f g => Quotient.liftOn₂ f g
