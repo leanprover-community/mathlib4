@@ -30,7 +30,7 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 
 /-- A measure is a uniform measure for a set `s` if it is the rescaled restriction of the measure to
 this set.  -/
-def uniformMeasure (s : Set E) (μ : Measure E) : Measure E := (μ s)⁻¹ • μ.restrict s
+def uniformMeasure (s : Set E) (μ : Measure E := by volume_tac) : Measure E := (μ s)⁻¹ • μ.restrict s
 
 namespace UniformMeasure
 
@@ -73,7 +73,7 @@ variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
 `(μ s)⁻¹ • μ.restrict s`. -/
-def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E) :=
+def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :=
   (map X ℙ) = uniformMeasure s μ -- was `(μ s)⁻¹ • μ.restrict s
 #align measure_theory.pdf.is_uniform MeasureTheory.pdf.IsUniform
 
@@ -163,7 +163,7 @@ theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
 
 variable {X : Ω → ℝ} {s : Set ℝ}
 
-theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ volume) :
+theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
     Integrable fun x : ℝ => x * (pdf X ℙ volume x).toReal := by
   by_cases hnt : volume s = 0 ∨ volume s = ∞
   · have I : Integrable (fun x ↦ x * ENNReal.toReal (0)) := by simp
@@ -188,7 +188,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ volume) 
 
 /-- A real uniform random variable `X` with support `s` has expectation
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
-theorem integral_eq (huX : IsUniform X s ℙ volume) :
+theorem integral_eq (huX : IsUniform X s ℙ) :
     ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
   rw [← smul_eq_mul, ← integral_smul_measure]
   dsimp [IsUniform, uniformMeasure] at huX
