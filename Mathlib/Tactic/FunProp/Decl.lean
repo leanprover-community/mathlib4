@@ -127,7 +127,7 @@ def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
 open Elab Term in
 /-- -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
-  withTraceNode `Meta.Tactic.funProp
+  withTraceNode `Meta.Tactic.fun_prop
     (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
