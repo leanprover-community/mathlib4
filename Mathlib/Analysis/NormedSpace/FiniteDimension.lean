@@ -518,7 +518,7 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     let L : 𝕜 → E := fun t ↦ t • v
     have : ClosedEmbedding L := closedEmbedding_smul_left hv
     apply ClosedEmbedding.locallyCompactSpace this
-  exact .of_locallyCompactSpace 𝕜
+  .of_locallyCompactSpace 𝕜
 
 @[deprecated] -- Since 2024/01/31
 alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
