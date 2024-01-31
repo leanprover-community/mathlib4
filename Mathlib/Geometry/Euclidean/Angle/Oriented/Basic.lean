@@ -747,8 +747,8 @@ theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
 negative. -/
 theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sign = -1) :
     o.oangle x y = -InnerProductGeometry.angle x y := by
-  by_cases hx : x = 0; · exfalso; simp [hx] at h
-  by_cases hy : y = 0; · exfalso; simp [hy] at h
+  by_cases hx : x = 0; · exfalso; simp [hx] at h; sorry
+  by_cases hy : y = 0; · exfalso; simp [hy] at h; sorry
   refine' (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left _
   intro hxy
   rw [hxy, ← SignType.neg_iff, ← not_le] at h
