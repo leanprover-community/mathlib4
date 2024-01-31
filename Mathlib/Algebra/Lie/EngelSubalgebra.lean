@@ -238,8 +238,12 @@ lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
   specialize hφ hd
-  -- fix `Finsupp.cons_support` above
-  sorry
+  have aux : 0 ∉ Finset.map (Fin.succEmbedding N).toEmbedding d.support := by
+    simp [Fin.succ_ne_zero]
+  rw [Finset.sum_subset_zero_on_sdiff
+        (d.cons_support i) (g := d.cons i) (by simp) (fun _ _ ↦ rfl),
+      Finset.sum_insert aux] at hφ
+  simpa [← h] using hφ
 
 end MvPolynomial
 
