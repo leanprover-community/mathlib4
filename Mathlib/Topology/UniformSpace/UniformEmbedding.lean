@@ -43,6 +43,11 @@ protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : Uniform
   UniformSpace.ext hf.1
 #align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
+lemma uniformInducing_iff_uniformSpace {f : α → β} :
+    UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
+  rw [uniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
+  rfl
+
 lemma uniformInducing_iff' {f : α → β} :
     UniformInducing f ↔ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
   rw [uniformInducing_iff, UniformContinuous, tendsto_iff_comap, le_antisymm_iff, and_comm]; rfl
