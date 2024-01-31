@@ -212,6 +212,21 @@ theorem smooth_finsum_smul {g : ι → M → F}
   f.contMDiff_finsum_smul hg
 #align smooth_partition_of_unity.smooth_finsum_smul SmoothPartitionOfUnity.smooth_finsum_smul
 
+theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
+    (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
+    ContMDiffAt I 𝓘(ℝ, F) n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
+  refine _root_.contMDiffAt_finsum (f.locallyFinite.smul_left _) fun i ↦ ?_
+  by_cases hx : x₀ ∈ tsupport (f i)
+  · exact ContMDiffAt.smul ((f i).smooth.of_le le_top).contMDiffAt (hφ i hx)
+  · exact contMDiffAt_of_not_mem (compl_subset_compl.mpr
+      (tsupport_smul_subset_left (f i) (g i)) hx) n
+
+theorem contDiffAt_finsum {s : Set E} (f : SmoothPartitionOfUnity ι 𝓘(ℝ, E) E s) {x₀ : E}
+    {g : ι → E → F} (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContDiffAt ℝ n (g i) x₀) :
+    ContDiffAt ℝ n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
+  simp only [← contMDiffAt_iff_contDiffAt] at *
+  exact f.contMDiffAt_finsum hφ
+
 theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x ∈ s)
     (hg : ∀ i, f i x ≠ 0 → g i x ∈ t) (ht : Convex ℝ t) : ∑ᶠ i, f i x • g i x ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
