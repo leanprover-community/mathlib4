@@ -619,13 +619,9 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     rw [Subsingleton.elim a (0 ^ k)]
   by_cases ha : a = 0
   · use 0
-    rw [ha]
-    obtain rfl | hk := k.eq_zero_or_pos
-    · exfalso
-      revert h
-      rw [ha, zero_mul, pow_zero]
-      apply zero_ne_one
-    · rw [zero_pow hk]
+    obtain rfl | hk := eq_or_ne k 0
+    · simp [ha] at h
+    · rw [ha, zero_pow hk]
   by_cases hb : b = 0
   · use 1
     rw [one_pow]
