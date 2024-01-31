@@ -1,6 +1,7 @@
 import Mathlib.UniversalAlgebra.LawvereTheory
 
 structure FiniteLawverePresentation where
+  name : String
   sortNames : Array String
   opNames (P : Array (Fin sortNames.size)) (Q : Fin sortNames.size) :
     Array String
@@ -8,12 +9,13 @@ structure FiniteLawverePresentation where
     List (String × LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q ×
       LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q)
 
-syntax sortName := str
+syntax sortName := ident
 syntax sortDescr := sortName ";"
-syntax opName := str
+syntax opName := ident
 syntax opDescr := opName ":" sepBy(sortName,",") " → " sortName
 
 syntax (name := flpStx) "`[FLP|"
+  "NAME:" ident
   ("SORTS:" sepBy(sortName,","))?
   ("OPS:" sepBy(opDescr,","))?
 "]" : term
@@ -22,12 +24,12 @@ open Qq Lean Elab Term
 
 def elabSortName (nm : TSyntax `sortName) : TermElabM String :=
   match nm with
-  | `(sortName|$s:str) => return s.getString
+  | `(sortName|$s:ident) => return s.getId.toString
   | _ => throwUnsupportedSyntax
 
 def elabOpName (nm : TSyntax `opName) : TermElabM String :=
   match nm with
-  | `(opName|$s:str) => return s.getString
+  | `(opName|$s:ident) => return s.getId.toString
   | _ => throwUnsupportedSyntax
 
 def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String × String) :=
@@ -42,7 +44,7 @@ def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String �
 @[term_elab flpStx]
 def elabFlp : TermElab := fun stx tp =>
   match stx with
-  | `(`[FLP| $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
+  | `(`[FLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
     let sorts ← match sorts with
       | some sorts => sorts.getElems.mapM elabSortName
       | none => pure #[]
@@ -53,48 +55,35 @@ def elabFlp : TermElab := fun stx tp =>
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
       for nm in nms do
         unless nm ∈ sorts do throwError "{nm} appears in {d} is not a valid sort name"
+    logInfo m!"{nm}"
     logInfo m!"{sorts}"
     logInfo m!"{ops}"
     return q(0)
   | _ => throwUnsupportedSyntax
 
+declare_syntax_cat prod_word
+syntax term : prod_word
+syntax "⊥" : prod_word
+syntax prod_word "×" prod_word : prod_word
+syntax "[ProdWord|" prod_word "]" : term
+
+declare_syntax_cat lawvere_word
+syntax term : lawvere_word
+syntax "𝟙" prod_word : lawvere_word
+syntax lawvere_word "≫" lawvere_word : lawvere_word
+syntax "fst" prod_word prod_word : lawvere_word
+syntax "snd" prod_word prod_word : lawvere_word
+syntax "lift" lawvere_word lawvere_word : lawvere_word
+syntax "toNil" prod_word : lawvere_word
+
 #check `[FLP|
+  NAME:
+    Module
   SORTS:
-    "X", "Y" , "Z"
+    R, M
   OPS:
-    "m1" : "X", "Y" → "Z",
-    "c1" : → "Z"
+    add : M, M → M,
+    smul : R, M → M,
+    neg : M → M
+
 ]
-
-namespace FiniteLawverePresentation
-
-variable (P : FiniteLawverePresentation)
-
-/-
-def lawvereTheory : LawvereTheory (Fin P.numSort) where
-  hom X Y := Quotient (LawvereSetoid (fun f g => ∃ n, (n, f, g) ∈ P.rels) X Y)
-  id X := Quotient.mk _ <| LawvereWord.id X
-  comp := fun f g => Quotient.liftOn₂ f g
-    (fun F G => Quotient.mk _ (F.comp G))
-    (fun a₁ a₂ b₁ b₂ h₁ h₂ => Quotient.sound <| LawvereRel.comp_congr h₁ h₂)
-  id_comp {_ _} := by rintro ⟨f⟩ ; apply Quotient.sound ; apply LawvereRel.id_comp
-  comp_id {_ _} := by rintro ⟨f⟩ ; apply Quotient.sound ; apply LawvereRel.comp_id
-  assoc {_ _ _ _} := by rintro ⟨f⟩ ⟨g⟩ ⟨h⟩ ; apply Quotient.sound ; apply LawvereRel.assoc
-  fst _ _ := Quotient.mk _ <| .fst _ _
-  snd _ _ := Quotient.mk _ <| .snd _ _
-  lift := fun f g => Quotient.liftOn₂ f g
-    (fun F G => Quotient.mk _ <| .lift F G)
-    (fun a₁ a₂ b₁ b₂ h₁ h₂ => Quotient.sound <| LawvereRel.lift_congr h₁ h₂)
-  lift_fst {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_fst
-  lift_snd {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_snd
-  lift_unique {_ _ _} := by
-    rintro ⟨f⟩ ⟨g⟩ hfst hsnd
-    apply Quotient.sound
-    apply LawvereRel.lift_unique
-    · exact Quotient.exact hfst
-    · exact Quotient.exact hsnd
-  toNil _ := Quotient.mk _ <| .toNil _
-  toNil_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
--/
-
-end FiniteLawverePresentation
