@@ -86,9 +86,8 @@ theorem one_zpow : ∀ n : ℤ, (1 : M) ^ n = 1
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_ofNat, zero_pow]
-    refine' lt_of_le_of_ne n.zero_le (Ne.symm _)
-    simpa using h
-  | -[n+1], _ => by simp [zero_pow n.zero_lt_succ]
+    exact mod_cast h
+  | -[n+1], _ => by simp [zero_pow n.succ_ne_zero]
 #align matrix.zero_zpow Matrix.zero_zpow
 
 theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
@@ -254,7 +253,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
-      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', zero_mul]
+      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow $ Nat.succ_ne_zero _, zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
 set_option linter.deprecated false in
