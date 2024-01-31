@@ -675,7 +675,7 @@ variable {B : BilinForm R M}
 
 /-- A bilinear form gives a quadratic form by applying the argument twice. -/
 def toQuadraticForm (B : BilinForm R M) : QuadraticForm R M :=
-  LinearMap.toQuadraticForm (BilinForm.toLin B)
+  B.toLin.toQuadraticForm
 #align bilin_form.to_quadratic_form BilinForm.toQuadraticForm
 
 @[simp]
