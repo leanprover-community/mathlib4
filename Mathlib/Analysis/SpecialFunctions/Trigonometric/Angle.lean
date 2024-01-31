@@ -1005,13 +1005,11 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
         simp [he] at h
     · rw [← coe_toReal θ, heq] at h
       simp at h
-      sorry
     · rw [← sign_toReal hpi, _root_.sign_neg (hlt.trans (Left.neg_neg_iff.2 pi_div_two_pos)), ←
         sign_toReal] at h
       swap
       · intro he
         simp [he] at h
-        sorry
       rw [← neg_div] at hlt
       rw [two_nsmul_toReal_eq_two_mul_add_two_pi.2 hlt.le, sign_pos] at h
       · simp at h

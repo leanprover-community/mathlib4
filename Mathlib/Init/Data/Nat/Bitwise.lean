@@ -299,7 +299,6 @@ theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
     simp only [← Nat.mul_two]
     rw [Nat.add_mod]
     simp
-    sorry
 
 #align nat.test_bit_zero Nat.testBit_zero
 

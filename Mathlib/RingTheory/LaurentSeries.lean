@@ -209,7 +209,6 @@ theorem coeff_coe (i : ℤ) :
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
-    sorry
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
 -- Porting note: simp can prove this, and removed norm_cast attribute
