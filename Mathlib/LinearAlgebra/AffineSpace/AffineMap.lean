@@ -813,7 +813,7 @@ theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
 
 /-- An ι-indexed collection of AffineMaps `P1 →ᵃ P2` lifts to an AffineMap from P1 to the
   Module of functions, `ι → P2`. This module is `Pi.module`. This is the AffineMap analog
-  of `LinearMap.pi`. Actually defeq to `AffineMap.pi` but the type signature is
+  of `LinearMap.pi`. Actually defeq to `AffineMap.pi'` but the type signature is
   much easier to read.
 -/
 abbrev pi' : (ι → (P1 →ᵃ[k] P2)) → P1 →ᵃ[k] (ι → P2) := pi
