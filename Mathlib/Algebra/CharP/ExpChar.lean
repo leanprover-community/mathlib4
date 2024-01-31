@@ -257,14 +257,14 @@ variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →* S) (g : R →
 /-- The frobenius map that sends x to x^p -/
 def frobenius : R →+* R where
   __ := powMonoidHom p
-  map_zero' := zero_pow (expChar_pos R p)
+  map_zero' := zero_pow (expChar_pos R p).ne'
   map_add' := add_pow_expChar R
 #align frobenius frobenius
 
 /-- The iterated frobenius map sending x to x^p^n -/
 def iterateFrobenius : R →+* R where
   __ := powMonoidHom (p ^ n)
-  map_zero' := zero_pow (expChar_pow_pos R p n)
+  map_zero' := zero_pow (expChar_pow_pos R p n).ne'
   map_add' := add_pow_expChar_pow R
 
 variable {R}
