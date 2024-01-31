@@ -257,7 +257,9 @@ lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card_aux
   | zero =>
     refine ⟨fun _ ↦ 0, ?_⟩
     simp only [eval_zero']
-    sorry
+    contrapose! hF₀
+    ext d
+    simpa [hn₀.symm, Subsingleton.elim d.support ∅] using @hF d
   | succ N IH =>
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv _ _ F).coeff i ≠ 0 := by
       contrapose! hF₀
@@ -275,6 +277,14 @@ lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card_aux
       · norm_cast; omega
       rcases IH with ⟨r, hr⟩
       let φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F)
+      have hφ₀ : φ ≠ 0 := by
+        contrapose! hr with hφ₀
+        dsimp only at hφ₀
+        rw [← coeff_eval_eq_eval_coeff, hφ₀, Polynomial.coeff_zero]
+      let S := φ.roots
+      have hS := φ.card_roots hφ₀
+      replace hS := hS.trans (Polynomial.degree_map_le _ _)
+      rw [degree_finSuccEquiv hF₀, Nat.cast_le] at hS
       sorry
 
 open Cardinal in
