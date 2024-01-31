@@ -23,7 +23,6 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -59,7 +58,7 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
+-- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
@@ -100,7 +99,6 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
