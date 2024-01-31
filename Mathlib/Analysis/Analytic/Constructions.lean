@@ -243,7 +243,7 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
         ContinuousMultilinearMap.mkPiAlgebraFin_apply,
         List.prod_ofFn, Finset.prod_const,
         Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_1
+    apply hasSum_geometric_of_norm_lt_one
     simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
