@@ -503,7 +503,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
-  set s := {t | γ t = γ' t} ∩ Ioo a b with hs
+  set s := {t | γ t = γ' t} ∩ Ioo a b
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
   -- in the subtype toplogy (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
