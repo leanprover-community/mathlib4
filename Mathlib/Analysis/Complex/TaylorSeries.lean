@@ -14,6 +14,10 @@ see `Complex.hasSum_taylorSeries_on_ball` and `Complex.taylorSeries_eq_on_ball` 
 (in terms of `HasSum` and `tsum`, repsectively) for functions to a complete normed
 space over `ℂ`, and `Complex.taylorSeries_eq_on_ball'` for a variant when `f : ℂ → ℂ`.
 
+There are corresponding statements for `EMEtric.ball`s; see
+`Complex.hasSum_taylorSeries_on_emetric_ball`, `Complex.taylorSeries_eq_on_emetric_ball`
+and `Complex.taylorSeries_eq_on_ball'`.
+
 We also show that the Taylor series around some point `c : ℂ` of a function `f` that is complex
 differentiable on all of `ℂ` converges to `f` on `ℂ`;
 see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire` and
@@ -70,7 +74,7 @@ section emetric
 variable ⦃c : ℂ⦄ ⦃r : ENNReal⦄ (hf : DifferentiableOn ℂ f (EMetric.ball c r))
 variable ⦃z : ℂ⦄ (hz : z ∈ EMetric.ball c r)
 
-/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+/-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma hasSum_taylorSeries_on_emetric_ball :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
@@ -78,19 +82,18 @@ lemma hasSum_taylorSeries_on_emetric_ball :
   · obtain ⟨r', h₁, h₂⟩ := exists_between (EMetric.mem_ball'.mp hz)
     exact ⟨r', h₂, EMetric.mem_ball'.mpr h₁⟩
   lift r' to NNReal using ne_top_of_lt hr'
-  have hf' : DifferentiableOn ℂ f (Metric.ball c r')
-  · rw [← Metric.emetric_ball_nnreal]
-    exact hf.mono <| EMetric.ball_subset_ball hr'.le
   rw [Metric.emetric_ball_nnreal] at hzr'
-  exact hasSum_taylorSeries_on_ball hf' hzr'
+  refine hasSum_taylorSeries_on_ball ?_ hzr'
+  rw [← Metric.emetric_ball_nnreal]
+  exact hf.mono <| EMetric.ball_subset_ball hr'.le
 
-/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+/-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on theis open ball. -/
 lemma taylorSeries_eq_on_emetric_ball :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_on_emetric_ball hf hz).tsum_eq
 
-/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+/-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma taylorSeries_eq_on_emetric_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (EMetric.ball c r)) :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
