@@ -719,19 +719,12 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
     · exact K_comp.closure_subset_measurableSet hE KE
     · rwa [K_comp.measure_closure_eq_of_group]
-  obtain ⟨V, hV1, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • K \ K) < μ K :=
-    exists_nhds_measure_smul_diff_lt hK K_closed hKpos.ne'
-  have hv : ∀ v : G, v ∈ V → ¬Disjoint (v • K) K := by
-    intro v hv hKv
-    have Z := hV v hv
-    rw [hKv.symm.sdiff_eq_right, measure_smul] at Z
-    exact lt_irrefl _ Z
-  suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
-  intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ v • K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
-  refine ⟨x, hKE hxvK, v⁻¹ * x, hKE ?_, ?_⟩
-  · simpa [mem_smul_set_iff_inv_smul_mem] using hxK
-  · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
+  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  have : ¬Disjoint (g • K) K := fun hd ↦ by
+    rw [hd.symm.sdiff_eq_right, measure_smul] at hg
+    exact hg.false
+  rcases Set.not_disjoint_iff.1 this with ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩
+  simpa using div_mem_div (hKE hgxK) (hKE hxK)
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
 
