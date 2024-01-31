@@ -855,6 +855,10 @@ lemma norm_natCast_cpow_le_norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z 
   simp_rw [norm_natCast_cpow_of_pos hn]
   exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
 
+lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : ℂ} :
+    ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ ↔ w.re ≤ z.re := by
+  simp_rw [norm_natCast_cpow_of_pos (Nat.zero_lt_of_lt hn),
+    Real.rpow_le_rpow_left_iff (Nat.one_lt_cast.mpr hn)]
 end Complex
 
 /-!
