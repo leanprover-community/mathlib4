@@ -100,6 +100,18 @@ theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁
 
 end Zero
 
+section ContinuousAdd
+
+variable [SeminormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
+  [DistribSMul 𝕜 E] {s t : Set E}
+
+protected theorem IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
+    IsVonNBounded 𝕜 (s + t) := fun U hU ↦ by
+  rcases exists_open_nhds_zero_add_subset hU with ⟨V, hVo, hV, hVU⟩
+  exact ((hs <| hVo.mem_nhds hV).add (ht <| hVo.mem_nhds hV)).mono_left hVU
+
+end ContinuousAdd
+
 end SeminormedRing
 
 section MultipleTopologies
@@ -205,6 +217,16 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
   (absorbent_nhds_zero hV).absorbs
 #align bornology.is_vonN_bounded_singleton Bornology.isVonNBounded_singleton
+
+protected theorem IsVonNBounded.vadd [ContinuousAdd E] {s : Set E}
+    (hs : IsVonNBounded 𝕜 s) (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) := by
+  rw [← singleton_vadd]
+  exact IsVonNBounded.add (isVonNBounded_singleton x) hs
+
+@[simp]
+theorem isVonNBounded_vadd [ContinuousAdd E] {s : Set E} (x : E) :
+    IsVonNBounded 𝕜 (x +ᵥ s) ↔ IsVonNBounded 𝕜 s :=
+  ⟨fun h ↦ by simpa using h.vadd (-x), fun h ↦ h.vadd x⟩
 
 /-- The union of all bounded set is the whole space. -/
 theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
