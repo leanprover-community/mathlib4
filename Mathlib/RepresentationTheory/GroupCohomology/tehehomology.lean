@@ -75,10 +75,7 @@ spectral sequences in general).
 noncomputable section
 
 universe u
-
---variable {k G : Type u} [CommRing k] [Group G] {n : ℕ}
-
-open CategoryTheory
+open CategoryTheory CategoryTheory.Limits
 
 namespace Representation
 
@@ -105,6 +102,10 @@ def inv : Representation k Gᵐᵒᵖ A :=
   ρ.inv g x = ρ g.unop⁻¹ x := rfl
 
 abbrev coinvariantsKer := Submodule.span k (Set.range <| fun (x : G × A) => ρ x.1 x.2 - x.2)
+
+lemma mem_coinvariantsKer (g : G) (x a : A) (h : ρ g x - x = a) : a ∈ coinvariantsKer ρ :=
+Submodule.subset_span ⟨(g, x), h⟩
+
 abbrev coinvariants := A ⧸ coinvariantsKer ρ
 
 def coinvariantsLift (f : A →ₗ[k] B) (h : ∀ (x : G) (a : A), f (ρ x a) = f a) :
@@ -129,7 +130,21 @@ def coinvariantsMap (f : ρ.hom τ) :
 @[simp] theorem coinvariantsMap_mkQ (f : ρ.hom τ) :
   coinvariantsMap f ∘ₗ (coinvariantsKer ρ).mkQ = (coinvariantsKer τ).mkQ ∘ₗ f.hom := rfl
 
-variable {η ν}
+variable (B ρ)
+
+@[simp] def coinvariantsHomEquiv :
+    (ρ.coinvariants →ₗ[k] B) ≃ ρ.hom (Representation.trivial k (G := G) (V := B)) where
+      toFun := fun f => {
+        hom := f ∘ₗ ρ.coinvariantsKer.mkQ
+        comm := fun g => by
+          ext x
+          simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, apply_eq_self,
+            (Submodule.Quotient.eq ρ.coinvariantsKer).2 (mem_coinvariantsKer _ g x _ rfl)] }
+      invFun := fun f => coinvariantsLift' _ f
+      left_inv := fun x => Submodule.linearMap_qext _ rfl
+      right_inv := fun x => hom.ext _ _ rfl
+
+variable {B ρ η ν}
 
 @[simps] def tprodMap (f : ρ.hom τ) (g : η.hom ν) :
     (ρ.tprod η).hom (τ.tprod ν) where
@@ -173,29 +188,35 @@ def tensor2Hom : tensor2Obj ρ (ofMulAction k G G) →ₗ[k] A :=
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.comm_tmul,
     TensorProduct.lift.tmul, Finsupp.total_single, LinearMap.smul_apply]
 
+def tensor2Inv : A →ₗ[k] tensor2Obj ρ (ofMulAction k G G) :=
+  Submodule.mkQ _ ∘ₗ (TensorProduct.mk k A (G →₀ k)).flip (Finsupp.single 1 1)
+
 def tensor2Iso : (tensor2Obj ρ (ofMulAction k G G)) ≃ₗ[k] A where
   toFun := tensor2Hom ρ
   map_add' := map_add _
   map_smul' := map_smul _
-  invFun := fun x => Submodule.mkQ _ (x ⊗ₜ Finsupp.single 1 1)
-  left_inv := fun x => Quotient.inductionOn' x fun y => by
-    refine' TensorProduct.induction_on y _ _ _
-    · simp only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_zero, map_zero,
-      TensorProduct.zero_tmul]
-    sorry
-    sorry
-    /-rw [tensor2Hom_apply ρ]
-    simp only [coinvariantsLift, Submodule.Quotient.mk''_eq_mk, Submodule.liftQ_apply,
-      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Submodule.mkQ_apply,
-      Submodule.Quotient.eq]
-    refine' Submodule.subset_span _
-    rw [TensorProduct.comm_apply]-/
-  right_inv := sorry
-
-
+  invFun := tensor2Inv ρ
+  left_inv := LinearMap.congr_fun (f := (tensor2Inv ρ) ∘ₗ tensor2Hom ρ) (g := LinearMap.id) <|
+    Submodule.linearMap_qext _ <| TensorProduct.ext <| by
+      ext a g
+      simp only [tensor2Inv, LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
+        LinearMap.compr₂_apply, TensorProduct.mk_apply, Submodule.mkQ_apply, tensor2Hom_apply,
+        one_smul, LinearMap.flip_apply, LinearMap.id_comp]
+      rw [Submodule.Quotient.eq]
+      exact mem_coinvariantsKer _ g⁻¹ (a ⊗ₜ Finsupp.single g 1) _ (by
+        simp only [tprod_apply, TensorProduct.map_tmul, ofMulAction_single, smul_eq_mul,
+          mul_left_inv])
+  right_inv := fun x => by
+    simp only [tensor2Inv, LinearMap.coe_comp, Function.comp_apply, LinearMap.flip_apply,
+      TensorProduct.mk_apply, Submodule.mkQ_apply, tensor2Hom_apply, inv_one, map_one,
+      LinearMap.one_apply, one_smul]
+#check finsuppTensorFinsupp
+def ugh (α : Type*) : ((ρ.finsupp α).tprod τ).iso ((ρ.tprod τ).finsupp α) :=
+iso.mk' _ _ (LinearEquiv.symm _) _
 variable {α : Type*}
 
 #check @tensor2Obj k G _ _ A (α →₀ G →₀ k) _ _ Finsupp.addCommGroup (Finsupp.module α (G →₀ k)) ρ (free k G α)
+
 
 -- what the hell
 def ermmmmmmm (α : Type*) : @tensor2Obj _ _ _ _ _ _ _ _ Finsupp.addCommGroup _ ρ (free k G α)
@@ -204,6 +225,7 @@ def ermmmmmmm (α : Type*) : @tensor2Obj _ _ _ _ _ _ _ _ Finsupp.addCommGroup _ 
 end Representation
 namespace groupHomology
 
+variable {k G : Type u} [CommRing k] [Group G]
 open MonoidalCategory
 
 abbrev coinvariantsObj (A : Rep k G) := A.ρ.coinvariants
@@ -226,6 +248,19 @@ variable (k G)
 
 instance : (coinvariants k G).Additive where
   map_add := fun {_ _ _ _} => LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
+
+def coinvariantsAdjunction : coinvariants k G ⊣ Rep.trivialFunctor k G :=
+Adjunction.mkOfHomEquiv <| {
+  homEquiv := fun A B => (A.ρ.coinvariantsHomEquiv B).trans
+    (Rep.homLEquiv A (Rep.trivial k G B)).toEquiv.symm
+  homEquiv_naturality_left_symm := fun f g => Submodule.linearMap_qext _ rfl }
+
+instance : IsLeftAdjoint (coinvariants k G) where
+  right := Rep.trivialFunctor k G
+  adj := coinvariantsAdjunction k G
+#check ModuleCat.free
+instance : Limits.PreservesColimitsOfSize.{u, u} (coinvariants k G) :=
+  (coinvariantsAdjunction k G).leftAdjointPreservesColimits
 
 def ermmm (A : Rep k G) : (coinvariants k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
   A.ρ.tensor2Iso.toModuleIso

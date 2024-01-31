@@ -177,12 +177,28 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
+variable (k G)
+
+@[simps] def trivialFunctor : ModuleCat k ⥤ Rep k G where
+  obj := fun A => Rep.trivial k G A
+  map := fun f => Rep.mkHom f fun g => rfl
+
+def forget₂CompTrivialFunctorIso :
+   trivialFunctor k G ⋙ forget₂ (Rep k G) (ModuleCat.{u} k) ≅ 𝟭 (ModuleCat k) :=
+Iso.refl _
+
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesLimitsForget.{u} _ _
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesColimitsForget.{u} _ _
+
+instance : PreservesColimitsOfSize (trivialFunctor k G) :=
+  Action.preservesColimitsOfSizeOfPreserves (trivialFunctor k G) <|
+    show PreservesColimitsOfSize (𝟭 (ModuleCat k)) by infer_instance
+
+variable {k G}
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
 have removed `@[simp]`. -/
