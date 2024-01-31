@@ -545,7 +545,7 @@ theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 :=
   ⟨fun h => lt_of_not_le fun ha => h.not_le <| pow_nonneg ha _, hn.pow_neg⟩
 #align odd.pow_neg_iff Odd.pow_neg_iff
 
-theorem Even.pow_pos_iff (hn : Even n) (h₀ : 0 < n) : 0 < a ^ n ↔ a ≠ 0 :=
+theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
   ⟨fun h ha => by
     rw [ha, zero_pow h₀] at h
     exact lt_irrefl 0 h, hn.pow_pos⟩

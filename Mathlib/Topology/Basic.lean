@@ -1179,17 +1179,29 @@ theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f �
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
+theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
+    ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
+  simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
+
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
 of `map u F`. -/
 def MapClusterPt {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) : Prop :=
   ClusterPt x (map u F)
 #align map_cluster_pt MapClusterPt
 
+theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
+
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
+  simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
+    ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
 theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
     {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
@@ -1329,9 +1341,12 @@ theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm
 #align mem_closure_iff_cluster_pt mem_closure_iff_clusterPt
 
-theorem mem_closure_iff_nhds_neBot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
+theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
   mem_closure_iff_clusterPt.trans neBot_iff
-#align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_neBot
+#align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_ne_bot
+
+@[deprecated] -- 28 January 2024
+alias mem_closure_iff_nhds_neBot := mem_closure_iff_nhds_ne_bot
 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
@@ -1429,6 +1444,10 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
+theorem isClosed_iff_ultrafilter : IsClosed s ↔
+    ∀ x, ∀ u : Ultrafilter X, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
+  simp [isClosed_iff_clusterPt, ClusterPt, ← exists_ultrafilter_iff]
+
 theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by
   simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
@@ -1471,14 +1490,8 @@ theorem Dense.open_subset_closure_inter (hs : Dense s) (ht : IsOpen t) :
 
 theorem mem_closure_of_mem_closure_union (h : x ∈ closure (s₁ ∪ s₂))
     (h₁ : s₁ᶜ ∈ 𝓝 x) : x ∈ closure s₂ := by
-  rw [mem_closure_iff_nhds_neBot] at *
-  rwa [←
-    calc
-      𝓝 x ⊓ principal (s₁ ∪ s₂) = 𝓝 x ⊓ (principal s₁ ⊔ principal s₂) := by rw [sup_principal]
-      _ = 𝓝 x ⊓ principal s₁ ⊔ 𝓝 x ⊓ principal s₂ := inf_sup_left
-      _ = ⊥ ⊔ 𝓝 x ⊓ principal s₂ := by rw [inf_principal_eq_bot.mpr h₁]
-      _ = 𝓝 x ⊓ principal s₂ := bot_sup_eq
-      ]
+  rw [mem_closure_iff_nhds_ne_bot] at *
+  rwa [← sup_principal, inf_sup_left, inf_principal_eq_bot.mpr h₁, bot_sup_eq] at h
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/
