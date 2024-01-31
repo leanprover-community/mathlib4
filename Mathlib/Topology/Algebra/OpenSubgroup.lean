@@ -179,7 +179,7 @@ theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) :
 
 @[to_additive]
 theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
-  ⟨U.isOpen, U.isClosed⟩
+  ⟨U.isClosed, U.isOpen⟩
 #align open_subgroup.is_clopen OpenSubgroup.isClopen
 #align open_add_subgroup.is_clopen OpenAddSubgroup.isClopen
 

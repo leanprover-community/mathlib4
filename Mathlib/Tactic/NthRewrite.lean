@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 
 import Lean.Elab.Tactic.Rewrite
-import Lean.Elab.BuiltinTerm
 
 /-!
 # `nth_rewrite` tactic
