@@ -696,7 +696,7 @@ lemma baseChangeFixedPointsRestrict_surjective :
 
 lemma baseChange_range_eq_fixedPoints : (baseChange W F K).range = W⟮K⟯^+(K ≃ₐ[F] K) := by
   rw [← baseChangeFixedPointsRestrict_comp]
-  exact (baseChangeFixedPointsRestrict_surjective W F K).subtype_comp_range_eq
+  exact AddMonoidHom.subtype_comp_range_eq <| baseChangeFixedPointsRestrict_surjective W F K
 
 end Point
 
