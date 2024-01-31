@@ -675,11 +675,18 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .some r ← funProp e then
       return r
 
-  if let .some (f', g') ← fData.nontrivialDecomposition then
-    applyCompRule funPropDecl e f' g' funProp
+  -- if no theorems found try transition theorems
+  -- TODO: maybe count the number of theorems that actually unify
+  --       I'm worried that adding a theorem might prevent this branch from happening and break
+  --       previously working proof
+  if thms.size = 0 then
+    -- apply transition theorems only on functions that can't be decomposed
+    if let .some (f', g') ← fData.nontrivialDecomposition then
+      applyCompRule funPropDecl e f' g' funProp
+    else
+      return ← applyTransitionRules funPropDecl e funProp
   else
-    -- try transition rules as the last resolt
-    return ← applyTransitionRules funPropDecl e funProp
+    return none
 
 /-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is free variable. -/
 def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
