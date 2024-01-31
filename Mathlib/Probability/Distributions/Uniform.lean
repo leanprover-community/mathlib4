@@ -12,7 +12,7 @@ import Mathlib.Probability.Density
 Defines the uniform distribution for any set with finite volume.
 
 ## Main definitions
-* `IsUniformVolume s m μ` : A measure `m` on a space `E` is called a uniform volume on `s` if it is
+* `IsuniformVolume s m μ` : A measure `m` on a space `E` is called a uniform volume on `s` if it is
   the rescaled restricted volume measure `μ`.
 * `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
   push-forward measure agrees with the rescaled restricted volume measure `μ`.
@@ -28,41 +28,41 @@ namespace MeasureTheory
 
 variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 
-/-- Restrict and normalise a volume measure `μ` to a measure on `s`.
-Key ingredient for `IsUniform`. -/
-def IsUniformVolume (s : Set E) (m : Measure E) (μ : Measure E := by volume_tac) :=
-  m = (μ s)⁻¹ • μ.restrict s
+def uniformVolume (s : Set E) (μ : Measure E := by volume_tac) : Measure E := (μ s)⁻¹ • μ.restrict s
 
-namespace IsUniformVolume
+namespace UniformVolume
 
-theorem absolutelyContinuous {s : Set E} (hu : IsUniformVolume s m μ) :
-    m ≪ μ := by
+theorem absolutelyContinuous {s : Set E} :
+    uniformVolume s μ ≪ μ := by
   intro t ht
-  rw [hu, smul_apply, smul_eq_mul]
+  unfold uniformVolume
+  rw [smul_apply, smul_eq_mul]
   apply mul_eq_zero.mpr
   refine Or.inr (le_antisymm ?_ (zero_le _))
   exact ht ▸ restrict_apply_le s t
 
-theorem isProbabilityMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
-    (hu : IsUniformVolume s m μ) : IsProbabilityMeasure m :=
+theorem measure_preimage {s : Set E} {A : Set E}
+  (hA : MeasurableSet A) (hunif : m = uniformVolume s μ): m A = μ (s ∩ A) / μ s := by
+  rw [hunif]
+  unfold uniformVolume
+  rw [smul_apply, restrict_apply hA, ENNReal.div_eq_inv_mul, smul_eq_mul, Set.inter_comm]
+
+theorem isProbabilityMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞) :
+    IsProbabilityMeasure (uniformVolume s μ) :=
   ⟨by
-    dsimp [IsUniformVolume] at hu
-    rw [hu]
+    unfold uniformVolume
     simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
       restrict_apply, Set.univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hns hnt⟩
 
-theorem toMeasurable_iff {s : Set E} :
-    IsUniformVolume (toMeasurable μ s) m μ ↔ IsUniformVolume s m μ := by
-  dsimp [IsUniformVolume]
+theorem toMeasurable_eq {s : Set E} :
+    uniformVolume (toMeasurable μ s) μ = uniformVolume s μ:= by
+  unfold uniformVolume
   by_cases hnt : μ s = ∞
   · simp [hnt]
   · simp [restrict_toMeasurable hnt]
 
-protected theorem toMeasurable {s : Set E} (hu : IsUniformVolume s m μ) :
-    IsUniformVolume (toMeasurable μ s) m μ := toMeasurable_iff.2 hu
-
-end IsUniformVolume
+end UniformVolume
 
 namespace pdf
 
@@ -73,14 +73,14 @@ variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
 `(μ s)⁻¹ • μ.restrict s`. -/
 def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :=
-  IsUniformVolume s (map X ℙ) μ -- was `(μ s)⁻¹ • μ.restrict s
+  (map X ℙ) = uniformVolume s μ -- was `(μ s)⁻¹ • μ.restrict s
 #align measure_theory.pdf.is_uniform MeasureTheory.pdf.IsUniform
 
 namespace IsUniform
 
 theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : AEMeasurable X ℙ := by
-  dsimp [IsUniform, IsUniformVolume] at hu
+  dsimp [IsUniform, uniformVolume] at hu
   by_contra h
   rw [map_of_not_aemeasurable h] at hu
   apply zero_ne_one' ℝ≥0∞
@@ -89,14 +89,17 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
     _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
-theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ :=
-  IsUniformVolume.absolutelyContinuous hu
+theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
+  rw [hu]
+  exact UniformVolume.absolutelyContinuous
 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
     ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
   rw [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu,
-    smul_apply, restrict_apply hA, ENNReal.div_eq_inv_mul, smul_eq_mul, Set.inter_comm]
+    ← UniformVolume.measure_preimage]
+  · exact hA
+  · rfl
 #align measure_theory.pdf.is_uniform.measure_preimage MeasureTheory.pdf.IsUniform.measure_preimage
 
 theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
@@ -108,10 +111,14 @@ theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt 
 #align measure_theory.pdf.is_uniform.is_probability_measure MeasureTheory.pdf.IsUniform.isProbabilityMeasure
 
 theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
-    IsUniform X (toMeasurable μ s) ℙ μ ↔ IsUniform X s ℙ μ := IsUniformVolume.toMeasurable_iff
+    IsUniform X (toMeasurable μ s) ℙ μ ↔ IsUniform X s ℙ μ := by
+  unfold IsUniform
+  rw [UniformVolume.toMeasurable_eq]
 
 protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
-    IsUniform X (toMeasurable μ s) ℙ μ := IsUniformVolume.toMeasurable hu
+    IsUniform X (toMeasurable μ s) ℙ μ := by
+  unfold IsUniform at *
+  rwa [UniformVolume.toMeasurable_eq]
 
 theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
@@ -120,15 +127,16 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
     (measurable_one.aemeasurable.const_smul (μ t)⁻¹).indicator (measurableSet_toMeasurable μ s)
   rw [hu, withDensity_indicator (measurableSet_toMeasurable μ s), withDensity_smul _ measurable_one,
     withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable]
+  rfl
 #align measure_theory.pdf.is_uniform.has_pdf MeasureTheory.pdf.IsUniform.hasPDF
 
 theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
     (hu : IsUniform X s ℙ μ) (hμs : μ s = 0 ∨ μ s = ∞) : pdf X ℙ μ =ᵐ[μ] 0 := by
   rcases hμs with H|H
-  · simp only [IsUniform, IsUniformVolume, H, ENNReal.inv_zero, restrict_eq_zero.mpr H,
+  · simp only [IsUniform, uniformVolume, H, ENNReal.inv_zero, restrict_eq_zero.mpr H,
     smul_zero] at hu
     simp [pdf, hu]
-  · simp only [IsUniform, IsUniformVolume, H, ENNReal.inv_top, zero_smul] at hu
+  · simp only [IsUniform, uniformVolume, H, ENNReal.inv_top, zero_smul] at hu
     simp [pdf, hu]
 
 theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
@@ -144,6 +152,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   apply (eq_of_map_eq_withDensity _ _).mp
   · rw [hu, withDensity_indicator hms,
     withDensity_smul _ measurable_one, withDensity_one]
+    rfl
   · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
 
 theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
@@ -183,7 +192,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
 theorem integral_eq (huX : IsUniform X s ℙ) :
     ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
   rw [← smul_eq_mul, ← integral_smul_measure]
-  dsimp [IsUniform, IsUniformVolume] at huX
+  dsimp [IsUniform, uniformVolume] at huX
   rw [← huX]
   by_cases hX : AEMeasurable X ℙ
   · exact (integral_map hX aestronglyMeasurable_id).symm
