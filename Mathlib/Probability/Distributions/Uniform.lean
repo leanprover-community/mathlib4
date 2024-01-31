@@ -42,7 +42,7 @@ theorem absolutelyContinuous {s : Set E} :
   exact ht ▸ restrict_apply_le s t
 
 theorem measure_preimage {s : Set E} {A : Set E}
-  (hA : MeasurableSet A) (hunif : m = uniformVolume s μ): m A = μ (s ∩ A) / μ s := by
+    (hA : MeasurableSet A) (hunif : m = uniformVolume s μ): m A = μ (s ∩ A) / μ s := by
   rw [hunif]
   unfold uniformVolume
   rw [smul_apply, restrict_apply hA, ENNReal.div_eq_inv_mul, smul_eq_mul, Set.inter_comm]
