@@ -160,7 +160,8 @@ protected theorem congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x =
 #align affine_map.congr_fun AffineMap.congr_fun
 
 /-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
-theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.2 = g.2) {p : P1} (h₂ : f p = g p) : f = g := by
+theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1} (h₂ : f p = g p) :
+    f = g := by
   ext q
   have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
   have := f.map_vadd' q (q -ᵥ p)
@@ -169,9 +170,9 @@ theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.2 = g.2) {p : P1} (h₂ : f
   exact this
 
 /-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
-theorem ext_linear_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ (f.2 = g.2) ∧ (∃ p, f p = g p) :=
-  ⟨fun h ↦ ⟨congrArg _ h, ⟨by inhabit P1; exact default, by rw [h]⟩⟩
-  , fun h ↦ Exists.casesOn h.2 fun _ hp ↦ ext_linear h.1 hp⟩
+theorem ext_linear_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ (f.linear = g.linear) ∧ (∃ p, f p = g p) :=
+  ⟨fun h ↦ ⟨congrArg _ h, by inhabit P1; exact default, by rw [h]⟩,
+  fun h ↦ Exists.casesOn h.2 fun _ hp ↦ ext_linear h.1 hp⟩
 
 variable (k P1)
 
@@ -718,13 +719,13 @@ end AffineMap
 
 namespace AffineMap
 
-variable {R k V1 P1 V2 P2 : Type*}
+variable {R k V1 P1 V2 P2 V3 P3 : Type*}
 
 section Ring
 
 variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2] [AffineSpace V2 P2]
 
-variable [Module k V1] [Module k V2]
+variable [AddCommGroup V3] [AffineSpace V3 P3] [Module k V1] [Module k V2] [Module k V3]
 
 section DistribMulAction
 
@@ -797,8 +798,7 @@ variable (fp : (i : ι) → (P1 →ᵃ[k] φp i)) (fv : (i : ι) → (P1 →ᵃ[
 theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
   rfl
 
-theorem pi_comp {V3 P3 : Type*} [AddCommGroup V3] [Module k V3] [AffineSpace V3 P3]
-    (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
   rfl
 
 theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
@@ -816,7 +816,7 @@ theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
   of `LinearMap.pi`. Actually defeq to `AffineMap.pi` but the type signature is
   much easier to read.
 -/
-def pi' : (ι → (P1 →ᵃ[k] P2)) → P1 →ᵃ[k] (ι → P2) := pi
+abbrev pi' : (ι → (P1 →ᵃ[k] P2)) → P1 →ᵃ[k] (ι → P2) := pi
 
 @[simp]
 theorem pi'_apply (c : P1) (i : ι) : pi' f' c i = f' i c :=
@@ -834,24 +834,13 @@ theorem pi'_zero : pi' (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] V2) = 0 := by ex
 theorem proj_pi' (i : ι) : (proj i).comp (pi' f') = f' i :=
   ext fun _ => rfl
 
-/-- The `AffineMap` version of `LinearMap.single`, `AddMonoidHom.single` and `Pi.single`. -/
-def single [DecidableEq ι] (i : ι) : φv i →ᵃ[k] (j : ι) → φv j :=
-  { toFun := Pi.single i
-    linear := LinearMap.single i
-    map_vadd' := fun _ _ ↦ Pi.single_add i _ _
-  }
-
-@[simp]
-theorem coe_single [DecidableEq ι] (i : ι) :
-    ⇑(single i : φv i →ᵃ[k] (j : ι) → φv j) = Pi.single i :=
-  rfl
-
 section Ext
 
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
-/- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
-  operation on `Pi.single` and at zero. -/
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
+  which instead of agrement at zero requires `Nonempty ι`. -/
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
     f = g := by
   apply ext_linear
@@ -868,8 +857,9 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
   next =>
     exact h₂
 
-/- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
-  operation on `Pi.single` and `ι` is nonempty. -/
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
+  `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by
   apply pi_ext_zero h
@@ -879,9 +869,10 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
   exact default
 
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
-note [partially-applied ext lemmas]. -/
+note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
 @[ext]
-theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
+theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
+    g.comp (LinearMap.single i).toAffineMap) : f = g := by
   refine' pi_ext_nonempty fun i x => _
   convert AffineMap.congr_fun (h i) x
 
