@@ -1682,6 +1682,11 @@ lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
+lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (∀ i, π i)} :
+    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
+  simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
+
 /-- If `V : ι → Set X` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `X` is
@@ -1955,49 +1960,6 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
 #align exists_open_between_and_is_compact_closure exists_open_between_and_isCompact_closure
-
-@[simp]
-theorem exists_compact_superset_iff [T2OrLocallyCompactRegularSpace X] {s : Set X} :
-    (∃ K, IsCompact K ∧ s ⊆ K) ↔ IsCompact (closure s) :=
-  ⟨fun ⟨_K, hK, hsK⟩ => isCompact_closure_of_subset_compact hK hsK, fun h =>
-    ⟨closure s, h, subset_closure⟩⟩
-#align exists_compact_superset_iff exists_compact_superset_iff
-
-lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (∀ i, π i)} :
-    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
-  simp_rw [← exists_compact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
-
-/-- In a weakly locally compact space which is either T₂ or locally compact regular,
-every compact set has an open neighborhood with compact closure. -/
-theorem exists_open_superset_and_isCompact_closure
-    [WeaklyLocallyCompactSpace X] [T2OrLocallyCompactRegularSpace X]
-    {K : Set X} (hK : IsCompact K) : ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
-  rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
-  exact ⟨interior K', isOpen_interior, hKK',
-    isCompact_closure_of_subset_compact hK' interior_subset⟩
-#align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
-
-/-- In a weakly locally compact which is either T₂ or locally compact regular,
-every point has an open neighborhood with compact closure. -/
-theorem exists_open_with_compact_closure
-    [WeaklyLocallyCompactSpace X] [T2OrLocallyCompactRegularSpace X] (x : X) :
-    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
-  simpa only [singleton_subset_iff]
-    using exists_open_superset_and_isCompact_closure isCompact_singleton
-#align exists_open_with_compact_closure exists_open_with_compact_closure
-
--- see Note [lower instance priority]
-/-- A weakly locally compact Hausdorff space is locally compact. -/
-instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace
-    [WeaklyLocallyCompactSpace X] [hX : T2OrLocallyCompactRegularSpace X] :
-    LocallyCompactSpace X := by
-  rcases hX.out with h'X|⟨h'X, -⟩
-  · exact ⟨fun _ _ h =>
-      let ⟨K, hKx, hKc, hKs⟩ := exists_mem_nhds_isCompact_mapsTo continuous_id h
-      ⟨K, hKx, hKs, hKc⟩⟩
-  · exact h'X
-#align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
 @[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace] -- 3 Sep 2023
 theorem locally_compact_of_compact [T2Space X] [CompactSpace X] :
