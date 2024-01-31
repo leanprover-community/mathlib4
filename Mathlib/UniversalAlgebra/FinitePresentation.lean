@@ -14,10 +14,29 @@ syntax sortDescr := sortName ";"
 syntax opName := ident
 syntax opDescr := opName ":" sepBy(sortName,",") " → " sortName
 
-syntax (name := flpStx) "`[FLP|"
+declare_syntax_cat prod_word
+syntax sortName : prod_word
+syntax "⊥" : prod_word
+syntax prod_word "×" prod_word : prod_word
+syntax "[ProdWord|" prod_word "]" : term
+
+declare_syntax_cat lawvere_word
+syntax opName : lawvere_word
+syntax "id" prod_word : lawvere_word
+syntax lawvere_word "≫" lawvere_word : lawvere_word
+syntax "fst" prod_word prod_word : lawvere_word
+syntax "snd" prod_word prod_word : lawvere_word
+syntax "lift" lawvere_word lawvere_word : lawvere_word
+syntax "toNil" prod_word : lawvere_word
+
+syntax relName := ident
+syntax relDescr := relName ":" lawvere_word "=" lawvere_word
+
+syntax (name := flpStx) "[FLP|"
   "NAME:" ident
   ("SORTS:" sepBy(sortName,","))?
   ("OPS:" sepBy(opDescr,","))?
+  ("RELS:" sepBy(relDescr,","))?
 "]" : term
 
 open Qq Lean Elab Term
@@ -32,6 +51,11 @@ def elabOpName (nm : TSyntax `opName) : TermElabM String :=
   | `(opName|$s:ident) => return s.getId.toString
   | _ => throwUnsupportedSyntax
 
+def elabRelName (nm : TSyntax `relName) : TermElabM String :=
+  match nm with
+  | `(relName|$s:ident) => return s.getId.toString
+  | _ => throwUnsupportedSyntax
+
 def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String × String) :=
   match descr with
   | `(opDescr|$nm : $nms,* → $out) => do
@@ -41,15 +65,24 @@ def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String �
     return (nm, nms, out)
   | _ => throwUnsupportedSyntax
 
+def elabRelDescr (descr : TSyntax `relDescr) :
+    TermElabM (String × TSyntax `lawvere_word × TSyntax `lawvere_word) :=
+  match descr with
+  | `(relDescr|$nm : $lhs = $rhs) => return (← elabRelName nm, lhs, rhs)
+  | _ => throwUnsupportedSyntax
+
 @[term_elab flpStx]
 def elabFlp : TermElab := fun stx tp =>
   match stx with
-  | `(`[FLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
+  | `([FLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]? $[RELS: $rels,*]?]) => do
     let sorts ← match sorts with
       | some sorts => sorts.getElems.mapM elabSortName
       | none => pure #[]
     let ops ← match ops with
       | some ops => ops.getElems.mapM elabOpDescr
+      | none => pure #[]
+    let rels ← match rels with
+      | some rels => rels.getElems.mapM elabRelDescr
       | none => pure #[]
     for (d,nms,out) in ops do
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
@@ -58,25 +91,11 @@ def elabFlp : TermElab := fun stx tp =>
     logInfo m!"{nm}"
     logInfo m!"{sorts}"
     logInfo m!"{ops}"
+    logInfo m!"{rels}"
     return q(0)
   | _ => throwUnsupportedSyntax
 
-declare_syntax_cat prod_word
-syntax term : prod_word
-syntax "⊥" : prod_word
-syntax prod_word "×" prod_word : prod_word
-syntax "[ProdWord|" prod_word "]" : term
-
-declare_syntax_cat lawvere_word
-syntax term : lawvere_word
-syntax "𝟙" prod_word : lawvere_word
-syntax lawvere_word "≫" lawvere_word : lawvere_word
-syntax "fst" prod_word prod_word : lawvere_word
-syntax "snd" prod_word prod_word : lawvere_word
-syntax "lift" lawvere_word lawvere_word : lawvere_word
-syntax "toNil" prod_word : lawvere_word
-
-#check `[FLP|
+#check [FLP|
   NAME:
     Module
   SORTS:
@@ -85,5 +104,6 @@ syntax "toNil" prod_word : lawvere_word
     add : M, M → M,
     smul : R, M → M,
     neg : M → M
-
+  RELS:
+    a : lift id X fst X Y = lift id X id X
 ]
