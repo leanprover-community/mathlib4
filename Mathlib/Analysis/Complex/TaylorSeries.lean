@@ -55,7 +55,7 @@ lemma hasSum_taylorSeries_on_ball :
     using ((iteratedFDeriv ℂ n f c).map_smul_univ (fun _ ↦ z - c) (fun _ ↦ 1)).symm
 
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
-is given by evaluating its Taylor series at `c` on theis open ball. -/
+is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma taylorSeries_eq_on_ball :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
   (hasSum_taylorSeries_on_ball hf hz).tsum_eq
