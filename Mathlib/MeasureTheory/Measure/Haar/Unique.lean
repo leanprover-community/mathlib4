@@ -352,7 +352,7 @@ lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure 
 ### Uniqueness of measure of sets with compact closure
 
 Two left invariant measures give the same measure to sets with compact closure, up to the
-scalar `haarScalarFactor μ' μ `.
+scalar `haarScalarFactor μ' μ`.
 
 This is a tricky argument, typically not done in textbooks (the textbooks version all require one
 version of regularity or another). Here is a sketch, based on
@@ -711,7 +711,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         apply ne_of_gt (hρ (i : G) (mA.1 i.2) _ _)
         exact inter_mem_nhdsWithin s (by simpa using smul_mem_nhds (i : G) k_mem)
       rw [this] at C
-      have : Countable m := by exact countable_univ_iff.mp C
+      have : Countable m := countable_univ_iff.mp C
       exact to_countable m
     have Hν : IsEverywherePos ν s :=
       h's.smul_measure_nnreal (haarScalarFactor_pos_of_isHaarMeasure _ _).ne'
@@ -725,7 +725,10 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
 
 /-- **Uniqueness of Haar measures**: Given two Haar measures, they coincide in the following sense:
 they give the same value to open sets, up to the multiplicative constant `haarScalarFactor μ' μ`. -/
-@[to_additive measure_isAddHaarMeasure_eq_smul_of_isOpen]
+@[to_additive measure_isAddHaarMeasure_eq_smul_of_isOpen
+"**Uniqueness of Haar measures**: Given two additive Haar measures, they coincide in the following
+sense: they give the same value to open sets, up to the multiplicative
+constant `addHaarScalarFactor μ' μ`."]
 theorem measure_isHaarMeasure_eq_smul_of_isOpen [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] {s : Set G} (hs : IsOpen s) :
     μ' s = haarScalarFactor μ' μ • μ s :=
