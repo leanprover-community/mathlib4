@@ -513,7 +513,7 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
   have st : s ⊆ t := (IsClosed.closure_subset_iff t_closed).mp hf
   have A : ν (t \ s) ≤ μ' (t \ s) := by
     apply smul_measure_isMulInvariant_le_of_isCompact_closure _ _ (t_closed.measurableSet.diff hs)
-    exact isCompact_closure_of_subset_compact t_comp (diff_subset t s)
+    exact t_comp.closure_of_subset (diff_subset t s)
   have B : μ' t = ν t :=
     measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
   rwa [measure_diff st hs, measure_diff st hs, ← B, ENNReal.sub_le_sub_iff_left] at A
@@ -561,7 +561,7 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = ν ((toMeasurable ν s) ∩ (closure s)) := by
       apply measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _
       · exact (measurableSet_toMeasurable ν s).inter isClosed_closure.measurableSet
-      · exact isCompact_closure_of_subset_compact h's (inter_subset_right _ _)
+      · exact h's.closure_of_subset (inter_subset_right _ _)
     _ ≤ ν (toMeasurable ν s) := measure_mono (inter_subset_left _ _)
     _ = ν s := measure_toMeasurable s
   · calc
@@ -570,7 +570,7 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = μ' ((toMeasurable μ' s) ∩ (closure s)) := by
       apply (measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _).symm
       · exact (measurableSet_toMeasurable μ' s).inter isClosed_closure.measurableSet
-      · exact isCompact_closure_of_subset_compact h's (inter_subset_right _ _)
+      · exact h's.closure_of_subset (inter_subset_right _ _)
     _ ≤ μ' (toMeasurable μ' s) := measure_mono (inter_subset_left _ _)
     _ = μ' s := measure_toMeasurable s
 
@@ -692,8 +692,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     congr with n
     apply measure_isMulInvariant_eq_smul_of_isCompact_closure
     have : IsCompact (f n • (k * k⁻¹)) := IsCompact.smul (f n) (k_comp.mul k_comp.inv)
-    apply isCompact_closure_of_subset_compact this
-    exact (disjointed_subset _ _).trans (inter_subset_right _ _)
+    exact this.closure_of_subset <| (disjointed_subset _ _).trans (inter_subset_right _ _)
   · have H : ∀ (ρ : Measure G), IsEverywherePos ρ s → ρ s = ∞ := by
       intro ρ hρ
       have M : ∀ (i : ↑m), MeasurableSet (s ∩ (i : G) • k) :=
@@ -721,7 +720,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       obtain ⟨t, t_comp, t_mem⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x := exists_compact_mem_nhds x
       refine ⟨t, t_mem, fun u hu ↦ ?_⟩
       apply measure_isMulInvariant_eq_smul_of_isCompact_closure
-      exact isCompact_closure_of_subset_compact t_comp hu
+      exact t_comp.closure_of_subset hu
     rw [H ν Hν, H μ' Hμ']
 
 /-- **Uniqueness of Haar measures**: Given two Haar measures, they coincide in the following sense:
