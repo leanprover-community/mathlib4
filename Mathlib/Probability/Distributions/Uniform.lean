@@ -7,6 +7,17 @@ import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
 import Mathlib.Probability.Density
 
+/-! # Uniform distributions
+
+Defines the uniform distribution for any set with finite volume.
+
+## Main definitions
+* `IsUniformVolume s m μ` : A measure `m` on a space `E` is called a uniform volume on `s` if it is
+  the rescaled restricted volume measure `μ`.
+* `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
+  push-forward measure agrees with the rescaled restricted volume measure `μ`.
+-/
+
 open scoped Classical MeasureTheory NNReal ENNReal
 
 open TopologicalSpace MeasureTheory.Measure
