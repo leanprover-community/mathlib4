@@ -26,21 +26,21 @@ def lawvereTheory : LawvereTheory where
   id_comp {_ _} := by rintro ⟨f⟩ ; apply Quotient.sound ; apply LawvereRel.id_comp
   comp_id {_ _} := by rintro ⟨f⟩ ; apply Quotient.sound ; apply LawvereRel.comp_id
   assoc {_ _ _ _} := by rintro ⟨f⟩ ⟨g⟩ ⟨h⟩ ; apply Quotient.sound ; apply LawvereRel.assoc
-  fst' _ _ := Quotient.mk _ <| .fst _ _
-  snd' _ _ := Quotient.mk _ <| .snd _ _
-  lift' := fun f g => Quotient.liftOn₂ f g
+  fst _ _ := Quotient.mk _ <| .fst _ _
+  snd _ _ := Quotient.mk _ <| .snd _ _
+  lift := fun f g => Quotient.liftOn₂ f g
     (fun F G => Quotient.mk _ <| .lift F G)
     (fun a₁ a₂ b₁ b₂ h₁ h₂ => Quotient.sound <| LawvereRel.lift_congr h₁ h₂)
-  lift'_fst' {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_fst
-  lift'_snd' {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_snd
-  lift'_unique {_ _ _} := by
+  lift_fst {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_fst
+  lift_snd {_ _ _} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.lift_snd
+  lift_unique {_ _ _} := by
     rintro ⟨f⟩ ⟨g⟩ hfst hsnd
     apply Quotient.sound
     apply LawvereRel.lift_unique
     · exact Quotient.exact hfst
     · exact Quotient.exact hsnd
-  toNil' _ := Quotient.mk _ <| .toNil _
-  toNil'_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
+  toNil _ := Quotient.mk _ <| .toNil _
+  toNil_unique {_} := by rintro ⟨f⟩ ⟨g⟩ ; apply Quotient.sound ; apply LawvereRel.toNil_unique
 
 /-
 syntax sort := str
