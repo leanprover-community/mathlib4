@@ -50,7 +50,7 @@ section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-theorem nondenerate_dualProd :
+theorem separatingLeft_dualProd :
     (dualProd R M).SeparatingLeft ↔ Function.Injective (Module.Dual.eval R M) := by
   classical
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
