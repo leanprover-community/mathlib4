@@ -420,7 +420,7 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
       · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left hb hba _) hba
 
--- TODO: We have to wait until at least #9411 to actually state that using `Even`
+-- TODO: State using `Even`
 protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by
   obtain ⟨n, rfl⟩ := hn
