@@ -128,7 +128,7 @@ to handle e.g. triple negation. -/
 partial def transformNegation (e : Expr) : SimpM Simp.Step := do
   let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.continue
   match r₁.proof? with
-  | none => return Simp.Step.continue
+  | none => return Simp.Step.continue r₁
   | some _ => do
       let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
       return Simp.Step.visit (← r₁.mkEqTrans r₂)
