@@ -842,8 +842,9 @@ def single [DecidableEq ι] (i : ι) : φv i →ᵃ[k] (j : ι) → φv j :=
   }
 
 @[simp]
-theorem coe_single [DecidableEq ι] (i : ι) : ⇑(single i : φv i →ᵃ[k] (j : ι) → φv j) = Pi.single i
-    := rfl
+theorem coe_single [DecidableEq ι] (i : ι) :
+    ⇑(single i : φv i →ᵃ[k] (j : ι) → φv j) = Pi.single i :=
+  rfl
 
 section Ext
 
