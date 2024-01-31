@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Instances.ENNReal
