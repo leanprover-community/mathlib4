@@ -15,7 +15,7 @@ see `Complex.hasSum_taylorSeries_on_ball` and `Complex.taylorSeries_eq_on_ball` 
 space over `ℂ`, and `Complex.taylorSeries_eq_on_ball'` for a variant when `f : ℂ → ℂ`.
 
 We also show that the Taylor series around some point `c : ℂ` of a function `f` that is complex
-differentiable on all of `ℂ` converges to  `f` on `ℂ`;
+differentiable on all of `ℂ` converges to `f` on `ℂ`;
 see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire` and
 `Complex.taylorSeries_eq_of_entire'`.
 -/
@@ -28,7 +28,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E
 
 section ball
 
-variable ⦃c : ℂ⦄ ⦃r : NNReal⦄ (hf : DifferentiableOn ℂ f (Metric.ball c r))
+variable ⦃c : ℂ⦄ ⦃r : ℝ⦄ (hf : DifferentiableOn ℂ f (Metric.ball c r))
 variable ⦃z : ℂ⦄ (hz : z ∈ Metric.ball c r)
 
 /-- A function that is complex differentiable on the open ball of radius `r` around `c`
@@ -37,8 +37,8 @@ lemma hasSum_taylorSeries_on_ball :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
   obtain ⟨r', hr', hr'₀, hzr'⟩ : ∃ r' < r, 0 < r' ∧ z ∈ Metric.ball c r'
   · obtain ⟨r', h₁, h₂⟩ := exists_between (Metric.mem_ball'.mp hz)
-    lift r' to NNReal using dist_nonneg.trans h₁.le
-    exact ⟨r', h₂, pos_of_gt h₁, Metric.mem_ball'.mpr h₁⟩
+    exact ⟨r', h₂, Metric.pos_of_mem_ball h₁, Metric.mem_ball'.mpr h₁⟩
+  lift r' to NNReal using hr'₀.le
   have hz' : z - c ∈ EMetric.ball 0 r'
   · rw [Metric.emetric_ball_nnreal]
     exact mem_ball_zero_iff.mpr hzr'
@@ -65,6 +65,40 @@ lemma taylorSeries_eq_on_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (M
 
 end ball
 
+section emetric
+
+variable ⦃c : ℂ⦄ ⦃r : ENNReal⦄ (hf : DifferentiableOn ℂ f (EMetric.ball c r))
+variable ⦃z : ℂ⦄ (hz : z ∈ EMetric.ball c r)
+
+/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+is given by evaluating its Taylor series at `c` on this open ball. -/
+lemma hasSum_taylorSeries_on_emetric_ball :
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
+  obtain ⟨r', hr', hzr'⟩ : ∃ r' < r, z ∈ EMetric.ball c r'
+  · obtain ⟨r', h₁, h₂⟩ := exists_between (EMetric.mem_ball'.mp hz)
+    exact ⟨r', h₂, EMetric.mem_ball'.mpr h₁⟩
+  lift r' to NNReal using ne_top_of_lt hr'
+  have hf' : DifferentiableOn ℂ f (Metric.ball c r')
+  · rw [← Metric.emetric_ball_nnreal]
+    exact hf.mono <| EMetric.ball_subset_ball hr'.le
+  rw [Metric.emetric_ball_nnreal] at hzr'
+  exact hasSum_taylorSeries_on_ball hf' hzr'
+
+/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+is given by evaluating its Taylor series at `c` on theis open ball. -/
+lemma taylorSeries_eq_on_emetric_ball :
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
+  (hasSum_taylorSeries_on_emetric_ball hf hz).tsum_eq
+
+/-- A function that is complex differentiable on the open ball of radius `r` around `c`
+is given by evaluating its Taylor series at `c` on this open ball. -/
+lemma taylorSeries_eq_on_emetric_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (EMetric.ball c r)) :
+    ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
+  convert taylorSeries_eq_on_emetric_ball hf hz using 3 with n
+  rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
+
+end emetric
+
 section entire
 
 variable ⦃f : ℂ → E⦄ (hf : Differentiable ℂ f) (c z : ℂ)
@@ -72,13 +106,9 @@ variable ⦃f : ℂ → E⦄ (hf : Differentiable ℂ f) (c z : ℂ)
 /-- A function that is complex differentiable on the complex plane is given by evaluating
 its Taylor series at any point `c`. -/
 lemma hasSum_taylorSeries_of_entire :
-    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
-  have hf' : DifferentiableOn ℂ f
-      (Metric.ball c (⟨1 + ‖z - c‖, add_nonneg zero_le_one <| norm_nonneg _⟩ : NNReal)) :=
-    hf.differentiableOn
-  refine hasSum_taylorSeries_on_ball hf' ?_
-  rw [mem_ball_iff_norm, NNReal.coe_mk, lt_add_iff_pos_left]
-  exact zero_lt_one
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) :=
+  hasSum_taylorSeries_on_emetric_ball hf.differentiableOn <| EMetric.mem_ball.mpr <|
+    edist_lt_top ..
 
 /-- A function that is complex differentiable on the complex plane is given by evaluating
 its Taylor series at any point `c`. -/
