@@ -201,3 +201,9 @@ theorem integral_eq (huX : IsUniform X s ℙ) :
 #align measure_theory.pdf.is_uniform.integral_eq MeasureTheory.pdf.IsUniform.integral_eq
 
 end IsUniform
+
+lemma uniformVolume.IsUniform {s : Set E} : IsUniform (id : E → E) s (uniformVolume s μ) μ := by
+  unfold IsUniform
+  rw [map_id]
+
+end pdf
