@@ -49,6 +49,10 @@ def elabFlp : TermElab := fun stx tp =>
     let ops ← match ops with
       | some ops => ops.getElems.mapM elabOpDescr
       | none => pure #[]
+    for (d,nms,out) in ops do
+      unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
+      for nm in nms do
+        unless nm ∈ sorts do throwError "{nm} appears in {d} is not a valid sort name"
     logInfo m!"{sorts}"
     logInfo m!"{ops}"
     return q(0)
@@ -56,11 +60,10 @@ def elabFlp : TermElab := fun stx tp =>
 
 #check `[FLP|
   SORTS:
-    "a" ,
-    "b"
+    "X", "Y" , "Z"
   OPS:
-    "a" : "a", "b" → "c",
-    "a" : "b" → "c"
+    "m1" : "X", "Y" → "Z",
+    "c1" : → "Z"
 ]
 
 namespace FiniteLawverePresentation
