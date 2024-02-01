@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
 
