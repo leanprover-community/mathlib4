@@ -1748,7 +1748,7 @@ theorem succAbove_right_inj (x : Fin (n + 1)) : x.succAbove a = x.succAbove b �
   succAbove_right_injective.eq_iff
 #align fin.succ_above_right_inj Fin.succAbove_right_inj
 
-theorem succAbove_lt_succAbove_iff_le_castSucc (p : Fin (n + 1)) :
+theorem succAbove_lt_succAbove_iff (p : Fin (n + 1)) :
     succAbove p i < succAbove p j ↔ i < j := (strictMono_succAbove p).lt_iff_lt
 theorem succAbove_le_succAbove_iff (p : Fin (n + 1)) :
     succAbove p i ≤ succAbove p j ↔ i ≤ j := (strictMono_succAbove p).le_iff_le
