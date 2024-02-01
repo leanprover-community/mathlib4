@@ -27,13 +27,13 @@ namespace RelHomClass
 
 variable {F : Type*}
 
-theorem map_inf [SemilatticeInf α] [LinearOrder β] [NDFunLike F β α]
+theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
     [RelHomClass F (· < ·) (· < ·)] (a : F) (m n : β) :
     a (m ⊓ n) = a m ⊓ a n :=
   (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
 #align rel_hom_class.map_inf RelHomClass.map_inf
 
-theorem map_sup [SemilatticeSup α] [LinearOrder β] [NDFunLike F β α]
+theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
     [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
     a (m ⊔ n) = a m ⊔ a n :=
   map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _

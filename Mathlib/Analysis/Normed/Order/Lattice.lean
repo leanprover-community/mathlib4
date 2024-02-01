@@ -91,7 +91,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α :
 
 variable {α : Type*} [NormedLatticeAddCommGroup α]
 
-open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
+open HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
@@ -197,28 +197,23 @@ theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
     exact norm_sup_sub_sup_le_norm x y z
 #align lipschitz_with_sup_right lipschitzWith_sup_right
 
-theorem lipschitzWith_pos : LipschitzWith 1 (PosPart.pos : α → α) :=
+lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
   lipschitzWith_sup_right 0
-#align lipschitz_with_pos lipschitzWith_pos
+#align lipschitz_with_pos lipschitzWith_posPart
 
-theorem continuous_pos : Continuous (PosPart.pos : α → α) :=
-  LipschitzWith.continuous lipschitzWith_pos
-#align continuous_pos continuous_pos
+lemma lipschitzWith_negPart : LipschitzWith 1 (negPart : α → α) := by
+  simpa [Function.comp] using lipschitzWith_posPart.comp LipschitzWith.id.neg
 
-theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
-  refine continuous_pos.comp <| @continuous_neg _ _ _ TopologicalAddGroup.toContinuousNeg
-  -- porting note: see the [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/can't.20infer.20.60ContinuousNeg.60)
-#align continuous_neg' continuous_neg'
+lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_posPart.continuous
+#align continuous_pos continuous_posPart
 
-theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
-  suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)} by
-    rw [this]
-    exact IsClosed.preimage continuous_neg' isClosed_singleton
-  ext1 x
-  simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
-    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
-  -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
-  -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
+lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
+#align continuous_neg' continuous_negPart
+
+lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
+  have : {x : α | 0 ≤ x} = negPart ⁻¹' {0} := by ext; simp [negPart_eq_zero]
+  rw [this]
+  exact isClosed_singleton.preimage continuous_negPart
 #align is_closed_nonneg isClosed_nonneg
 
 theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]

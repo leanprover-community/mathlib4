@@ -136,8 +136,8 @@ section GCDMonoid
 instance : GCDMonoid ℤ where
   gcd a b := Int.gcd a b
   lcm a b := Int.lcm a b
-  gcd_dvd_left a b := Int.gcd_dvd_left _ _
-  gcd_dvd_right a b := Int.gcd_dvd_right _ _
+  gcd_dvd_left a b := Int.gcd_dvd_left
+  gcd_dvd_right a b := Int.gcd_dvd_right
   dvd_gcd := dvd_gcd
   gcd_mul_lcm a b := by
     rw [← Int.ofNat_mul, gcd_mul_lcm, coe_natAbs, abs_eq_normalize]
@@ -246,7 +246,7 @@ theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
   · rw [Int.natAbs_dvd]
     exact Int.dvd_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
   · rw [Int.dvd_natAbs]
-    exact EuclideanDomain.dvd_gcd (Int.gcd_dvd_left _ _) (Int.gcd_dvd_right _ _)
+    exact EuclideanDomain.dvd_gcd Int.gcd_dvd_left Int.gcd_dvd_right
 #align int.nat_abs_euclidean_domain_gcd Int.natAbs_euclideanDomain_gcd
 
 end Int

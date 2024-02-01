@@ -95,7 +95,7 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
         erw [← NatTrans.comp_app, f.one_hom]
         rfl
       app_μ := by
-        intro Z
+        intro z
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
         simp only [Category.assoc, NatTrans.naturality, ofMon_obj]

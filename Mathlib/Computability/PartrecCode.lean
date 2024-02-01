@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Partrec
+import Mathlib.Data.Option.Basic
 
 #align_import computability.partrec_code from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
@@ -695,7 +696,8 @@ theorem smn :
   ⟨curry, Primrec₂.to_comp curry_prim, eval_curry⟩
 #align nat.partrec.code.smn Nat.Partrec.Code.smn
 
-/-- A function is partial recursive if and only if there is a code implementing it. -/
+/-- A function is partial recursive if and only if there is a code implementing it. Therefore,
+`eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
   refine ⟨fun h => ?_, ?_⟩
   · induction h with
@@ -769,7 +771,7 @@ def evaln : ℕ → Code → ℕ → Option ℕ
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
   termination_by k c => (k, c)
-  decreasing_by all_goals { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
+  decreasing_by all_goals { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k

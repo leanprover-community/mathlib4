@@ -88,15 +88,15 @@ section Zero
 variable [Zero R]
 
 --  porting note: used to be `CoeFun`
-instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
-  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
+instance : FunLike (ArithmeticFunction R) ℕ R :=
+  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
 @[simp]
-theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
+theorem coe_mk (f : ℕ → R) (hf) : @DFunLike.coe (ArithmeticFunction R) _ _ _
     (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
@@ -105,7 +105,7 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 #align nat.arithmetic_function.map_zero Nat.ArithmeticFunction.map_zero
 
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align nat.arithmetic_function.coe_inj Nat.ArithmeticFunction.coe_inj
 
 @[simp]
@@ -119,7 +119,7 @@ theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
 #align nat.arithmetic_function.ext Nat.ArithmeticFunction.ext
 
 theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align nat.arithmetic_function.ext_iff Nat.ArithmeticFunction.ext_iff
 
 section One
@@ -513,13 +513,7 @@ variable [Semiring R]
 
 /-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
-  if h0 : k = 0 then ζ
-  else
-    ⟨fun x => f x ^ k, by
-      -- porting note: added next line
-      dsimp only
-      rw [map_zero]
-      exact zero_pow (Nat.pos_of_ne_zero h0)⟩
+  if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
 #align nat.arithmetic_function.ppow Nat.ArithmeticFunction.ppow
 
 @[simp]
@@ -632,7 +626,7 @@ theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
 theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f) (l : ℕ)
     (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
-     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
+    f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
@@ -764,7 +758,7 @@ theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
   rw [iff_ne_zero]
   refine ⟨prodPrimeFactors_apply one_ne_zero, ?_⟩
   intro x y hx hy hxy
-  have hxy₀: x*y ≠ 0 := by exact Nat.mul_ne_zero hx hy
+  have hxy₀ : x * y ≠ 0 := mul_ne_zero hx hy
   rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
     Nat.primeFactors_mul hx hy, ← Finset.prod_union hxy.disjoint_primeFactors]
 
@@ -778,7 +772,8 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
     factors_eq]
   apply Finset.sum_congr rfl
   intro t ht
-  erw [t.prod_val, ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
+  rw [t.prod_val, Function.id_def,
+    ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
     ← hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t)]
 

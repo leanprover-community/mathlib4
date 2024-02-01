@@ -33,7 +33,7 @@ equal at `x⁻¹`. -/
 @[to_additive
   "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
   additive unit `x`, then they are equal at `-x`."]
-theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [NDFunLike F G N]
+theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
     [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
     (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
@@ -44,7 +44,7 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [NDFunLike F G N]
 @[to_additive
     "If two homomorphism from an additive group to an additive monoid are equal at `x`,
     then they are equal at `-x`."]
-theorem eq_on_inv {F G M} [Group G] [Monoid M] [NDFunLike F G M] [MonoidHomClass F G M]
+theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F G M]
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
@@ -118,7 +118,7 @@ theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) =
 #align add_units.coe_zsmul AddUnits.val_zsmul_eq_zsmul_val
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type*} [NDFunLike F M α] [MonoidHomClass F M α]
+theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
     (f : F) (u : Units M) :
     f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
@@ -186,7 +186,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [NDFunLike F M N] [NDFunLike G N M]
+variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 

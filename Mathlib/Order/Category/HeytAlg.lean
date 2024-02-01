@@ -47,10 +47,10 @@ instance : Inhabited HeytAlg :=
   ⟨of PUnit⟩
 
 instance bundledHom : BundledHom HeytingHom where
-  toFun α β [HeytingAlgebra α] [HeytingAlgebra β] := (FunLike.coe : HeytingHom α β → α → β)
+  toFun α β [HeytingAlgebra α] [HeytingAlgebra β] := (DFunLike.coe : HeytingHom α β → α → β)
   id := @HeytingHom.id
   comp := @HeytingHom.comp
-  hom_ext α β [HeytingAlgebra α] [HeytingAlgebra β] := FunLike.coe_injective
+  hom_ext α β [HeytingAlgebra α] [HeytingAlgebra β] := DFunLike.coe_injective
 #align HeytAlg.bundled_hom HeytAlg.bundledHom
 
 deriving instance LargeCategory for HeytAlg
@@ -62,7 +62,7 @@ instance : ConcreteCategory HeytAlg := by
   infer_instance
 
 -- Porting note: No idea why it does not find this instance...
-instance {X Y : HeytAlg.{u}} : NDFunLike (X ⟶ Y) ↑X ↑Y :=
+instance {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y :=
   HeytingHom.instFunLike
 
 -- Porting note: No idea why it does not find this instance...

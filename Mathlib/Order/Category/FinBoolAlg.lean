@@ -78,7 +78,7 @@ instance concreteCategory : ConcreteCategory FinBoolAlg :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 #align FinBoolAlg.concrete_category FinBoolAlg.concreteCategory
 
-instance instFunLike {X Y : FinBoolAlg} : NDFunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
   BoundedLatticeHom.instFunLike
 
 -- Porting note: added
@@ -116,12 +116,12 @@ instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd)
   -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h
-  --   FunLike.coe_injective this⟩
+  --   DFunLike.coe_injective this⟩
   -- Porting note: the coercions to functions for the various bundled order categories
   -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
     dsimp at *
-    apply FunLike.coe_injective
+    apply DFunLike.coe_injective
     dsimp
     ext x
     apply_fun (fun f => f x) at h

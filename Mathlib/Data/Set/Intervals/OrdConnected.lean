@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.UnorderedInterval
+import Mathlib.Data.Set.Intervals.OrderEmbedding
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
 
@@ -21,8 +21,8 @@ In this file we prove that intersection of a family of `OrdConnected` sets is `O
 that all standard intervals are `OrdConnected`.
 -/
 
-open Interval
-
+open scoped Interval
+open Set
 open OrderDual (toDual ofDual)
 
 namespace Set
@@ -78,28 +78,60 @@ protected theorem Icc_subset (s : Set α) [hs : OrdConnected s] {x y} (hx : x �
   hs.out hx hy
 #align set.Icc_subset Set.Icc_subset
 
+end Preorder
+
+end Set
+
+namespace OrderEmbedding
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+theorem image_Icc (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
+    e '' Icc x y = Icc (e x) (e y) := by
+  rw [← e.preimage_Icc, image_preimage_eq_inter_range, inter_eq_left.2 (he.out ⟨_, rfl⟩ ⟨_, rfl⟩)]
+
+theorem image_Ico (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
+    e '' Ico x y = Ico (e x) (e y) := by
+  rw [← e.preimage_Ico, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| Ico_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+
+theorem image_Ioc (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
+    e '' Ioc x y = Ioc (e x) (e y) := by
+  rw [← e.preimage_Ioc, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| Ioc_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+
+theorem image_Ioo (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
+    e '' Ioo x y = Ioo (e x) (e y) := by
+  rw [← e.preimage_Ioo, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| Ioo_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+
+end OrderEmbedding
+
+namespace Set
+
+section Preorder
+
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
+
 @[simp]
 lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Icc x y = Icc x.1 y :=
-  (Subtype.image_preimage_val s (Icc x.1 y)).trans <| inter_eq_left.2 <| s.Icc_subset x.2 y.2
+  (OrderEmbedding.subtype (· ∈ s)).image_Icc (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ico {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ico x y = Ico x.1 y :=
-  (Subtype.image_preimage_val s (Ico x.1 y)).trans <| inter_eq_left.2 <|
-    Ico_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+  (OrderEmbedding.subtype (· ∈ s)).image_Ico (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ioc {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ioc x y = Ioc x.1 y :=
-  (Subtype.image_preimage_val s (Ioc x.1 y)).trans <| inter_eq_left.2 <|
-    Ioc_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+  (OrderEmbedding.subtype (· ∈ s)).image_Ioc (by simpa) x y
 
 @[simp]
 lemma image_subtype_val_Ioo {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ioo x y = Ioo x.1 y :=
-  (Subtype.image_preimage_val s (Ioo x.1 y)).trans <| inter_eq_left.2 <|
-    Ioo_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+  (OrderEmbedding.subtype (· ∈ s)).image_Ioo (by simpa) x y
 
 theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnected t) :
     OrdConnected (s ∩ t) :=
@@ -216,7 +248,7 @@ instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected 
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
-theorem ordConnected_preimage {F : Type*} [NDFunLike F α β] [OrderHomClass F α β] (f : F)
+theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α β] (f : F)
     {s : Set β} [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨OrderHomClass.mono _ hz.1, OrderHomClass.mono _ hz.2⟩⟩
 #align set.ord_connected_preimage Set.ordConnected_preimage

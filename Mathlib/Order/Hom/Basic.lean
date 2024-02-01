@@ -108,7 +108,7 @@ infixl:25 " ≃o " => OrderIso
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F α β : Type*) [LE α] [LE β] [NDFunLike F α β] :=
+abbrev OrderHomClass (F α β : Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 #align order_hom_class OrderHomClass
 
@@ -147,7 +147,7 @@ instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
 
 namespace OrderHomClass
 
-variable [Preorder α] [Preorder β] [NDFunLike F α β] [OrderHomClass F α β]
+variable [Preorder α] [Preorder β] [FunLike F α β] [OrderHomClass F α β]
 
 protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.monotone OrderHomClass.monotone
@@ -215,13 +215,12 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance : NDFunLike (α →o β) α β where
+instance : FunLike (α →o β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
-
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
 #align order_hom.coe_fun_mk OrderHom.coe_mk
@@ -238,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other FunLike classes use `apply` instead of `coe`
+/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -248,12 +247,12 @@ initialize_simps_projections OrderHom (toFun → coe)
 -- See library note [partially-applied ext lemmas]
 @[ext]
 theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
 @[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
 
-@[simp] theorem _root_.OrderHomClass.coe_coe {F} [NDFunLike F α β] [OrderHomClass F α β] (f : F) :
+@[simp] theorem _root_.OrderHomClass.coe_coe {F} [FunLike F α β] [OrderHomClass F α β] (f : F) :
     ⇑(f : α →o β) = f :=
   rfl
 
@@ -274,7 +273,7 @@ theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) 
 #align order_hom.coe_copy OrderHom.coe_copy
 
 theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_hom.copy_eq OrderHom.copy_eq
 
 /-- The identity function as bundled monotone function. -/
@@ -802,7 +801,7 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 -- See note [partially-applied ext lemmas]
 @[ext]
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align order_iso.ext OrderIso.ext
 
 /-- Reinterpret an order isomorphism as an order embedding. -/
@@ -1087,15 +1086,15 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
     that `g` is the inverse of `f`-/
-def ofHomInv {F G : Type*} [NDFunLike F α β] [OrderHomClass F α β] [NDFunLike G β α]
+def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
     [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
     (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
     α ≃o β where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₂
-  right_inv := FunLike.congr_fun h₁
+  left_inv := DFunLike.congr_fun h₂
+  right_inv := DFunLike.congr_fun h₁
   map_rel_iff' := @fun a b =>
     ⟨fun h => by
       replace h := map_rel g h

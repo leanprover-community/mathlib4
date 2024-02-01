@@ -7,7 +7,6 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Elementwise
 
 #align_import algebra.category.Semigroup.basic from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -51,7 +50,7 @@ namespace MagmaCat
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
     --Porting note : was `@MulHom.coe_inj` which is deprecated
-    by intros; apply @FunLike.coe_injective, by aesop_cat, by aesop_cat⟩
+    by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 #align Magma.bundled_hom MagmaCat.bundledHom
 #align AddMagma.bundled_hom AddMagmaCat.bundledHom
 
@@ -77,8 +76,8 @@ unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
 instance (X : MagmaCat) : Mul X := X.str
 
 @[to_additive]
-instance instFunLike (X Y : MagmaCat) : NDFunLike (X ⟶ Y) X Y :=
-  inferInstanceAs <| NDFunLike (X →ₙ* Y) X Y
+instance instFunLike (X Y : MagmaCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
@@ -102,8 +101,8 @@ theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
-    (@FunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
-      ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
@@ -166,8 +165,8 @@ unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where �
 instance (X : SemigroupCat) : Semigroup X := X.str
 
 @[to_additive]
-instance instFunLike (X Y : SemigroupCat) : NDFunLike (X ⟶ Y) X Y :=
-  inferInstanceAs <| NDFunLike (X →ₙ* Y) X Y
+instance instFunLike (X Y : SemigroupCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=
@@ -191,8 +190,8 @@ theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
-    (@FunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
-      ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+    (@DFunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
+      ConcreteCategory.instFunLike (e : X →ₙ* Y) : X → Y) = ↑e :=
   rfl
 
 /-- Typecheck a `MulHom` as a morphism in `SemigroupCat`. -/

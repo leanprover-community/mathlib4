@@ -140,7 +140,7 @@ instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_n
 
 section RingHomClass
 
-variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [NDFunLike F R S]
+variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=

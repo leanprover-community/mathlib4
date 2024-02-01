@@ -78,7 +78,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
-instance funLike : NDFunLike (RingSeminorm R) R ℝ where
+instance funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -101,7 +101,7 @@ theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) =
 
 @[ext]
 theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align ring_seminorm.ext RingSeminorm.ext
 
 instance : Zero (RingSeminorm R) :=
@@ -109,7 +109,7 @@ instance : Zero (RingSeminorm R) :=
     fun _ _ => (zero_mul _).ge }⟩
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align ring_seminorm.eq_zero_iff RingSeminorm.eq_zero_iff
 
 theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by simp [eq_zero_iff]
@@ -174,7 +174,7 @@ namespace RingNorm
 
 variable [NonUnitalRing R]
 
-instance funLike : NDFunLike (RingNorm R) R ℝ where
+instance funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -197,7 +197,7 @@ theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align ring_norm.ext RingNorm.ext
 
 variable (R)
@@ -221,7 +221,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
-instance funLike : NDFunLike (MulRingSeminorm R) R ℝ where
+instance funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -245,7 +245,7 @@ theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ
 
 @[ext]
 theorem ext {p q : MulRingSeminorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align mul_ring_seminorm.ext MulRingSeminorm.ext
 
 variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
@@ -276,7 +276,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
-instance funLike : NDFunLike (MulRingNorm R) R ℝ where
+instance funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -300,7 +300,7 @@ theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 
 @[ext]
 theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
-  FunLike.ext p q
+  DFunLike.ext p q
 #align mul_ring_norm.ext MulRingNorm.ext
 
 variable (R)

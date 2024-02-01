@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Basic
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
@@ -41,7 +43,7 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
 
 @[to_additive (attr := simp)]
 theorem iterate_map_mul {M F : Type*} [MulOneClass M]
-    (f : F) (n : ℕ) (x y : M) [NDFunLike F M M] [MulHomClass F M M] :
+    (f : F) (n : ℕ) (x y : M) [FunLike F M M] [MulHomClass F M M] :
     f^[n] (x * y) = f^[n] x * f^[n] y :=
   Function.Semiconj₂.iterate (map_mul f) n x y
 

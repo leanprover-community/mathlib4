@@ -75,7 +75,7 @@ theorem noncommFoldr_eq_foldr (s : Multiset α) (h : LeftCommutative f) (b : β)
 
 section assoc
 
-variable [assoc : IsAssociative α op]
+variable [assoc : Std.Associative op]
 
 /-- Fold of a `s : Multiset α` with an associative `op : α → α → α`, given a proofs that `op`
 is commutative on all elements `x ∈ s`. -/
@@ -100,8 +100,8 @@ theorem noncommFold_cons (s : Multiset α) (a : α) (h h') (x : α) :
   simp
 #align multiset.noncomm_fold_cons Multiset.noncommFold_cons
 
-theorem noncommFold_eq_fold (s : Multiset α) [IsCommutative α op] (a : α) :
-    noncommFold op s (fun x _ y _ _ => IsCommutative.comm x y) a = fold op a s := by
+theorem noncommFold_eq_fold (s : Multiset α) [Std.Commutative op] (a : α) :
+    noncommFold op s (fun x _ y _ _ => Std.Commutative.comm x y) a = fold op a s := by
   induction s using Quotient.inductionOn
   simp
 #align multiset.noncomm_fold_eq_fold Multiset.noncommFold_eq_fold
@@ -183,7 +183,7 @@ lemma noncommProd_induction (s : Multiset α) (comm)
   simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
-variable [NDFunLike F α β]
+variable [FunLike F α β]
 
 @[to_additive]
 protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
@@ -351,7 +351,7 @@ theorem noncommProd_singleton (a : α) (f : α → β) :
 #align finset.noncomm_prod_singleton Finset.noncommProd_singleton
 #align finset.noncomm_sum_singleton Finset.noncommSum_singleton
 
-variable [NDFunLike F β γ]
+variable [FunLike F β γ]
 
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :

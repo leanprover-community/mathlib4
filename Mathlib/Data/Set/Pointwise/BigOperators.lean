@@ -19,7 +19,7 @@ open BigOperators
 
 open Pointwise Function
 
-variable {ι α β F : Type*} [NDFunLike F α β]
+variable {ι α β F : Type*} [FunLike F α β]
 
 section Monoid
 

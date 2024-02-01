@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.GradedMonoid
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 #align_import number_theory.modular_forms.basic from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
@@ -62,7 +62,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and bounded
 at infinity. -/
 class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [NDFunLike F ℍ ℂ]
+    [FunLike F ℍ ℂ]
     extends SlashInvariantFormClass F Γ k : Prop where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   bdd_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsBoundedAtImInfty (f ∣[k] A)
@@ -72,16 +72,16 @@ class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k :
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and zero
 at infinity. -/
 class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [NDFunLike F ℍ ℂ]
+    [FunLike F ℍ ℂ]
     extends SlashInvariantFormClass F Γ k : Prop where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
 #align cusp_form_class CuspFormClass
 
 instance (priority := 100) ModularForm.funLike :
-    NDFunLike (ModularForm Γ k) ℍ ℂ where
+    FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) ModularFormClass.modularForm :
     ModularFormClass (ModularForm Γ k) Γ k where
@@ -90,9 +90,9 @@ instance (priority := 100) ModularFormClass.modularForm :
   bdd_at_infty := ModularForm.bdd_at_infty'
 #align modular_form_class.modular_form ModularFormClass.modularForm
 
-instance (priority := 100) CuspForm.funLike : NDFunLike (CuspForm Γ k) ℍ ℂ where
+instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
@@ -119,12 +119,12 @@ theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rf
 
 @[ext]
 theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align modular_form.ext ModularForm.ext
 
 @[ext]
 theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align cusp_form.ext CuspForm.ext
 
 /-- Copy of a `ModularForm` with a new `toFun` equal to the old one. Useful to fix
@@ -240,7 +240,7 @@ theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
 #align modular_form.sub_apply ModularForm.sub_apply
 
 instance : AddCommGroup (ModularForm Γ k) :=
-  FunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `ModularForm` to `ℍ → ℂ`. -/
 @[simps]
@@ -251,7 +251,7 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
 #align modular_form.coe_hom ModularForm.coeHom
 
 instance : Module ℂ (ModularForm Γ k) :=
-  Function.Injective.module ℂ coeHom FunLike.coe_injective fun _ _ => rfl
+  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (ModularForm Γ k) :=
   ⟨0⟩
@@ -408,7 +408,7 @@ theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
 #align cusp_form.sub_apply CuspForm.sub_apply
 
 instance : AddCommGroup (CuspForm Γ k) :=
-  FunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `CuspForm` to `ℍ → ℂ`. -/
 @[simps]
@@ -419,12 +419,12 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
 #align cusp_form.coe_hom CuspForm.coeHom
 
 instance : Module ℂ (CuspForm Γ k) :=
-  Function.Injective.module ℂ coeHom FunLike.coe_injective fun _ _ => rfl
+  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩
 
-instance (priority := 99) [NDFunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFormClass F Γ k where
+instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   slash_action_eq := SlashInvariantFormClass.slash_action_eq
   holo := CuspFormClass.holo
   bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter

@@ -5,16 +5,13 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Function.Indicator
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Set.Image
 
 #align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -209,7 +206,7 @@ theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val :=
 end Finset
 
 @[to_additive (attr := simp)]
-theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [NDFunLike G β γ] [MonoidHomClass G β γ]
+theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [FunLike G β γ] [MonoidHomClass G β γ]
     (g : G) (f : α → β) (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 #align map_prod map_prod

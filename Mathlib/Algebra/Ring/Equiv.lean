@@ -146,9 +146,9 @@ instance : EquivLike (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance : NDFunLike (R ≃+* S) R S where
+instance : FunLike (R ≃+* S) R S where
   coe f := f.toFun
-  coe_injective' := FunLike.coe_injective
+  coe_injective' := DFunLike.coe_injective
 
 instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
@@ -181,7 +181,7 @@ protected theorem map_add (e : R ≃+* S) (x y : R) : e (x + y) = e x + e y :=
     same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
 @[simp]
@@ -198,15 +198,15 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 #align ring_equiv.mk_coe RingEquiv.mk_coe
 
 protected theorem congr_arg {f : R ≃+* S} {x x' : R} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align ring_equiv.congr_arg RingEquiv.congr_arg
 
 protected theorem congr_fun {f g : R ≃+* S} (h : f = g) (x : R) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align ring_equiv.congr_fun RingEquiv.congr_fun
 
 protected theorem ext_iff {f g : R ≃+* S} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align ring_equiv.ext_iff RingEquiv.ext_iff
 
 @[simp]
@@ -460,7 +460,7 @@ theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
   AddEquivClass.map_ne_zero_iff f
 #align ring_equiv.map_ne_zero_iff RingEquiv.map_ne_zero_iff
 
-variable [NDFunLike F R S]
+variable [FunLike F R S]
 
 /-- Produce a ring isomorphism from a bijective ring homomorphism. -/
 noncomputable def ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
@@ -799,15 +799,15 @@ theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
 -/
 @[simps]
 def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [NDFunLike F R S] [NDFunLike G S R]
+    [FunLike F R S] [FunLike G S R]
     [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S R] (hom : F) (inv : G)
     (hom_inv_id : (inv : S →ₙ+* R).comp (hom : R →ₙ+* S) = NonUnitalRingHom.id R)
     (inv_hom_id : (hom : R →ₙ+* S).comp (inv : S →ₙ+* R) = NonUnitalRingHom.id S) :
     R ≃+* S where
   toFun := hom
   invFun := inv
-  left_inv := FunLike.congr_fun hom_inv_id
-  right_inv := FunLike.congr_fun inv_hom_id
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv' RingEquiv.ofHomInv'
@@ -819,15 +819,15 @@ Construct an equivalence of rings from unital homomorphisms in both directions, 
 -/
 @[simps]
 def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    [NDFunLike F R S] [NDFunLike G S R] [RingHomClass F R S]
+    [FunLike F R S] [FunLike G S R] [RingHomClass F R S]
     [RingHomClass G S R] (hom : F) (inv : G)
     (hom_inv_id : (inv : S →+* R).comp (hom : R →+* S) = RingHom.id R)
     (inv_hom_id : (hom : R →+* S).comp (inv : S →+* R) = RingHom.id S) :
     R ≃+* S where
   toFun := hom
   invFun := inv
-  left_inv := FunLike.congr_fun hom_inv_id
-  right_inv := FunLike.congr_fun inv_hom_id
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
   map_mul' := map_mul hom
   map_add' := map_add hom
 #align ring_equiv.of_hom_inv RingEquiv.ofHomInv

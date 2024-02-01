@@ -7,7 +7,6 @@ import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Logic.Lemmas
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
@@ -1368,12 +1367,12 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.toEquiv.left_inv
   right_inv e := e.toEquiv.right_inv
-  coe_injective' _ _ he _ := toEquiv_injective <| FunLike.ext' he
+  coe_injective' _ _ he _ := toEquiv_injective <| DFunLike.ext' he
 
 /-- Helper instance for when the `EquivLike` instance is too hard to find. -/
-instance instFunLike : NDFunLike (α ≃ᵐ β) α β where
+instance instFunLike : FunLike (α ≃ᵐ β) α β where
   coe e := e.toEquiv
-  coe_injective' := FunLike.coe_injective
+  coe_injective' := DFunLike.coe_injective
 
 @[simp]
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
@@ -1434,7 +1433,7 @@ def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
-@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
+@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := DFunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
 
 @[simp]

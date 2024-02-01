@@ -51,7 +51,7 @@ from `A` to `B`.  -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
   -- Marking these as `outParam` makes finding `AlgHomClass` instances faster.
   {_ : outParam <| CommSemiring R} {_ : outParam <| Semiring A} {_ : outParam <| Semiring B}
-  [Algebra R A] [Algebra R B] [NDFunLike F A B] extends RingHomClass F A B : Prop where
+  [Algebra R A] [Algebra R B] [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
@@ -64,7 +64,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 namespace AlgHomClass
 
 variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] [NDFunLike F A B]
+  [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -77,12 +77,12 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
   { (f : A →+* B) with
       toFun := f
       commutes' := AlgHomClass.commutes f }
 
-instance coeTC {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -98,10 +98,10 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+-- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
-instance funLike : NDFunLike (A →ₐ[R] B) A B where
+instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
@@ -124,7 +124,7 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] (f : F) :
+protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
@@ -196,11 +196,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
 variable (φ : A →ₐ[R] B)
 
 theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align alg_hom.coe_fn_injective AlgHom.coe_fn_injective
 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align alg_hom.coe_fn_inj AlgHom.coe_fn_inj
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
@@ -216,20 +216,20 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B)
 #align alg_hom.coe_add_monoid_hom_injective AlgHom.coe_addMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  FunLike.congr_fun H x
+  DFunLike.congr_fun H x
 #align alg_hom.congr_fun AlgHom.congr_fun
 
 protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  FunLike.congr_arg φ h
+  DFunLike.congr_arg φ h
 #align alg_hom.congr_arg AlgHom.congr_arg
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align alg_hom.ext AlgHom.ext
 
 theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align alg_hom.ext_iff AlgHom.ext_iff
 
 @[simp]
@@ -515,7 +515,7 @@ def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S
 
 lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
-  fun _ _ e ↦ FunLike.ext _ _ (fun x ↦ FunLike.congr_fun e x)
+  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/

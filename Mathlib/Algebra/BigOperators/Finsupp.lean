@@ -237,7 +237,7 @@ end Finsupp
 
 @[to_additive]
 theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
-    [NDFunLike H N P] [MonoidHomClass H N P]
+    [FunLike H N P] [MonoidHomClass H N P]
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 #align map_finsupp_prod map_finsupp_prod
@@ -481,7 +481,7 @@ theorem liftAddHom_singleAddHom [AddCommMonoid M] :
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  FunLike.congr_fun liftAddHom_singleAddHom f
+  DFunLike.congr_fun liftAddHom_singleAddHom f
 #align finsupp.sum_single Finsupp.sum_single
 
 /-- The `Finsupp` version of `Finset.univ_sum_single` -/
@@ -489,7 +489,7 @@ theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
 theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
   classical
-  refine FunLike.coe_injective ?_
+  refine DFunLike.coe_injective ?_
   simp_rw [coe_finset_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]

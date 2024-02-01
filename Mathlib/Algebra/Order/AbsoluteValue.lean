@@ -49,7 +49,7 @@ section Semiring
 
 variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance funLike : NDFunLike (AbsoluteValue R S) R S where
+instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
@@ -76,7 +76,7 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 
 @[ext]
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
 
 /-- See Note [custom simps projection]. -/
@@ -86,10 +86,10 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
 instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=

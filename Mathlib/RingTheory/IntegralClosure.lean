@@ -91,7 +91,7 @@ variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
-    [NDFunLike F B C] [AlgHomClass F A B C] (f : F)
+    [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   obtain ⟨P, hP⟩ := hb
   refine' ⟨P, hP.1, _⟩
@@ -140,7 +140,7 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
 #align is_integral_tower_top_of_is_integral IsIntegral.tower_top
 
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
-    [NDFunLike F B C] [RingHomClass F B C] (f : F)
+    [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
   hb.map (f : B →+* C).toIntAlgHom
 #align map_is_integral_int map_isIntegral_int

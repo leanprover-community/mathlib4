@@ -12,7 +12,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 
 This file defines bundled continuous open maps.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -43,7 +43,7 @@ section
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
+  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
 
@@ -51,7 +51,7 @@ end
 
 export ContinuousOpenMapClass (map_open)
 
-instance [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β]
+instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
     [ContinuousOpenMapClass F α β] :
     CoeTC F (α →CO β) :=
   ⟨fun f => ⟨f, map_open f⟩⟩
@@ -63,7 +63,7 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-instance : NDFunLike (α →CO β) α β where
+instance : FunLike (α →CO β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -83,7 +83,7 @@ theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) 
 
 @[ext]
 theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align continuous_open_map.ext ContinuousOpenMap.ext
 
 /-- Copy of a `ContinuousOpenMap` with a new `ContinuousMap` equal to the old one. Useful to fix
@@ -98,7 +98,7 @@ theorem coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f'
 #align continuous_open_map.coe_copy ContinuousOpenMap.coe_copy
 
 theorem copy_eq (f : α →CO β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align continuous_open_map.copy_eq ContinuousOpenMap.copy_eq
 
 variable (α)
@@ -157,7 +157,7 @@ theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
 @[simp]

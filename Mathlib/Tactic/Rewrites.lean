@@ -3,16 +3,16 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Mathlib.Data.MLList.Dedup
-import Mathlib.Lean.Meta.DiscrTree
-import Std.Util.Cache
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.TryThis
-import Mathlib.Control.Basic
 import Std.Tactic.SolveByElim
+import Std.Util.Pickle
+import Std.Util.Cache
+import Mathlib.Init.Core
+import Mathlib.Control.Basic
+import Mathlib.Data.MLList.Dedup
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.DiscrTree
 
 /-!
 # The `rewrites` tactic.
@@ -31,10 +31,10 @@ namespace Lean.Meta
 
 /-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
 -- This assumes that `r.eqProof` was constructed as:
--- `mkAppN (mkConst ``Eq.ndrec [u1, u2]) #[α, a, motive, h₁, b, h₂]`
--- and we want `h₂`.
+-- `mkApp6 (.const ``congrArg _) α eType lhs rhs motive heq`
+-- in `Lean.Meta.Tactic.Rewrite` and we want `heq`.
 def RewriteResult.by? (r : RewriteResult) : Option Expr :=
-  if r.eqProof.isAppOfArity ``Eq.ndrec 6 then
+  if r.eqProof.isAppOfArity ``congrArg 6 then
     r.eqProof.getArg! 5
   else
     none

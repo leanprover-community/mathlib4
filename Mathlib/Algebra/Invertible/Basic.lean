@@ -223,7 +223,7 @@ end GroupWithZero
 
 /-- Monoid homs preserve invertibility. -/
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
-    [NDFunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
+    [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
   invOf := f (⅟ r)
   invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
@@ -233,7 +233,7 @@ def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneCl
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
 theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
-    [NDFunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
+    [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
     [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
@@ -246,7 +246,7 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
 The inverse is computed as `g (⅟(f r))` -/
 @[simps! (config := .lemmasOnly)]
 def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
-    [NDFunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)
+    [FunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)
     (h : Function.LeftInverse g f) [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 #align invertible.of_left_inverse Invertible.ofLeftInverse
@@ -255,7 +255,7 @@ def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R]
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
 def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R] [Monoid S]
-    [NDFunLike F R S] [MonoidHomClass F R S] [NDFunLike G S R] [MonoidHomClass G S R]
+    [FunLike F R S] [MonoidHomClass F R S] [FunLike G S R] [MonoidHomClass G S R]
     (f : F) (g : G) (r : R) (h : Function.LeftInverse g f) :
     Invertible (f r) ≃
       Invertible r where

@@ -32,7 +32,7 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
-instance {α : Sort u} {β : Sort v} : NDFunLike (α ↪ β) α β where
+instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
   coe_injective' f g h := by { cases f; cases g; congr }
 
@@ -48,6 +48,9 @@ theorem exists_surjective_iff :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
+
+instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+  prf _ h := ⟨⟨_, h⟩, rfl⟩
 
 end Function
 
@@ -82,7 +85,7 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
 theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
-  fun _ _ h ↦ by rwa [FunLike.ext'_iff] at h ⊢
+  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
@@ -103,17 +106,17 @@ namespace Function
 namespace Embedding
 
 theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `FunLike.ext_iff.symm` works
+-- port note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (FunLike.ext_iff)
+  Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
@@ -212,10 +215,16 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     · exact h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
+@[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
+
+@[simp]
+theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
+  (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]

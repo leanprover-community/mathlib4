@@ -57,7 +57,7 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
-instance {M N : AlgebraCat.{v} R} : NDFunLike (M ⟶ N) M N :=
+instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
   AlgHom.funLike
 
 instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
@@ -228,8 +228,8 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
     simp only [inv_hom_id]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [id_apply]
-  map_add' := i.hom.map_add -- Porting note: was `by tidy`
-  map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
+  map_add' := by aesop
+  map_mul' := by aesop
   commutes' := i.hom.commutes -- Porting note: was `by tidy`
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 

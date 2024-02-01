@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Compactness.LocallyCompact
@@ -79,20 +80,20 @@ lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f
   isClosed_iUnion fun _ ↦ isClosed_iUnion <| hf _
 
 lemma isClopen_sInter (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋂₀ S) :=
-  ⟨isOpen_sInter fun s hs ↦ (hS s hs).1, isClosed_sInter fun s hs ↦ (hS s hs).2⟩
+  ⟨isClosed_sInter fun s hs ↦ (hS s hs).1, isOpen_sInter fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iInter (hf : ∀ i, IsClopen (f i)) : IsClopen (⋂ i, f i) :=
-  ⟨isOpen_iInter fun i ↦ (hf i).1, isClosed_iInter fun i ↦ (hf i).2⟩
+  ⟨isClosed_iInter fun i ↦ (hf i).1, isOpen_iInter fun i ↦ (hf i).2⟩
 
 lemma isClopen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋂ i, ⋂ j, f i j) :=
   isClopen_iInter fun _ ↦ isClopen_iInter <| hf _
 
 lemma isClopen_sUnion (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋃₀ S) :=
-  ⟨isOpen_sUnion fun s hs ↦ (hS s hs).1, isClosed_sUnion fun s hs ↦ (hS s hs).2⟩
+  ⟨isClosed_sUnion fun s hs ↦ (hS s hs).1, isOpen_sUnion fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
-  ⟨isOpen_iUnion fun i ↦ (hf i).1, isClosed_iUnion fun i ↦ (hf i).2⟩
+  ⟨isClosed_iUnion fun i ↦ (hf i).1, isOpen_iUnion fun i ↦ (hf i).2⟩
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋃ i, ⋃ j, f i j) :=

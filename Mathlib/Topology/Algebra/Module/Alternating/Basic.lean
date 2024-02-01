@@ -66,9 +66,9 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
-instance funLike : NDFunLike (M [Λ^ι]→L[R] N) (ι → M) N where
+instance funLike : FunLike (M [Λ^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| FunLike.ext' h
+  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
 instance continuousMapClass : ContinuousMapClass (M [Λ^ι]→L[R] N) (ι → M) N where
   map_continuous f := f.cont
@@ -92,20 +92,20 @@ theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
 
 @[ext]
 theorem ext {f g : M [Λ^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 
 theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [Λ^ι]→L[R] N) → (M [Λ^ι]→ₗ[R] N)) := fun f g h =>
-  FunLike.ext' <| by convert FunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
     Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → (M [Λ^ι]→ₗ[R] N)) =
       {f : M [Λ^ι]→ₗ[R] N | Continuous f} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, FunLike.ext' rfl⟩⟩
+  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
 theorem map_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :

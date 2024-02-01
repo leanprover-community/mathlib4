@@ -56,7 +56,7 @@ In the `DiscreteValuation` locale:
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `FunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
 
@@ -84,7 +84,7 @@ structure Valuation extends R →*₀ Γ₀ where
 
 You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
-  [NDFunLike F R Γ₀]
+  [FunLike F R Γ₀]
   extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
@@ -92,7 +92,7 @@ class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWi
 
 export ValuationClass (map_add_le_max)
 
-instance [NDFunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
+instance [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
   ⟨fun f =>
     { toFun := f
       map_one' := map_one f
@@ -118,7 +118,7 @@ section Monoid
 
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 
-instance : NDFunLike (Valuation R Γ₀) R Γ₀ where
+instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
@@ -139,7 +139,7 @@ theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align valuation.ext Valuation.ext
 
 variable (v : Valuation R Γ₀) {x y z : R}
@@ -210,10 +210,10 @@ theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
 
-/-- Deprecated. Use `FunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `FunLike.ext_iff` is not viable below for now
+/-- Deprecated. Use `DFunLike.ext_iff`. -/
+-- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
 theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align valuation.ext_iff Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
@@ -611,7 +611,7 @@ section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-    FunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
+    FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 

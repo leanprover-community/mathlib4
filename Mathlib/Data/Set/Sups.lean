@@ -56,7 +56,7 @@ infixl:75 " ⊼ " => HasInfs.infs
 namespace Set
 
 section Sups
-variable [SemilatticeSup α] [SemilatticeSup β] [NDFunLike F α β] [SupHomClass F α β]
+variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
@@ -224,7 +224,7 @@ end Sups
 
 section Infs
 
-variable [SemilatticeInf α] [SemilatticeInf β] [NDFunLike F α β] [InfHomClass F α β]
+variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/

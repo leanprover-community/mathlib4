@@ -33,9 +33,9 @@ instance : EquivLike (MyIso A B) A (λ _, B) :=
     coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
-instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
+instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
 
-@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -156,7 +156,7 @@ theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := 
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 #align equiv_like.inv_injective EquivLike.inv_injective
 
-instance (priority := 100) toFunLike : NDFunLike E α β where
+instance (priority := 100) toFunLike : FunLike E α β where
   coe := (coe : E → α → β)
   coe_injective' e g h :=
     coe_injective' e g h ((left_inv e).eq_rightInverse (h.symm ▸ right_inv g))
@@ -233,7 +233,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-  ⟨fun f g ↦ FunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
+  ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike

@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -103,7 +105,7 @@ theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
 #align even_zero even_zero
 
 @[to_additive]
-theorem IsSquare.map [MulOneClass α] [MulOneClass β] [NDFunLike F α β] [MonoidHomClass F α β]
+theorem IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
     {m : α} (f : F) :
     IsSquare m → IsSquare (f m) := by
   rintro ⟨m, rfl⟩
@@ -398,7 +400,7 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 @[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
-theorem Odd.map [NDFunLike F α β] [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
+theorem Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
@@ -544,7 +546,7 @@ theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 :=
   ⟨fun h => lt_of_not_le fun ha => h.not_le <| pow_nonneg ha _, hn.pow_neg⟩
 #align odd.pow_neg_iff Odd.pow_neg_iff
 
-theorem Even.pow_pos_iff (hn : Even n) (h₀ : 0 < n) : 0 < a ^ n ↔ a ≠ 0 :=
+theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
   ⟨fun h ha => by
     rw [ha, zero_pow h₀] at h
     exact lt_irrefl 0 h, hn.pow_pos⟩

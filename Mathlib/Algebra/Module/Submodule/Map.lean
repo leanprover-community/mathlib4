@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -44,7 +45,7 @@ variable {x : M}
 
 section
 
-variable [RingHomSurjective σ₁₂] {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable [RingHomSurjective σ₁₂] {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
@@ -142,7 +143,7 @@ end
 
 section SemilinearMap
 
-variable {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
 linearly equivalent to the original submodule. See also `LinearEquiv.submoduleMap` for a
@@ -166,6 +167,12 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
     (equivMapOfInjective f i p x : M₂) = f x :=
   rfl
 #align submodule.coe_equiv_map_of_injective_apply Submodule.coe_equivMapOfInjective_apply
+
+@[simp]
+theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submodule R M)
+    (x : p.map f) : f ((equivMapOfInjective f i p).symm x) = x := by
+  rw [← LinearEquiv.apply_symm_apply (equivMapOfInjective f i p) x, coe_equivMapOfInjective_apply,
+    i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
@@ -400,7 +407,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂ where
 
 end OrderIso
 
-variable {F : Type*} [NDFunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
@@ -443,6 +450,11 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
     ⟨fun ⟨x, hx, hy⟩ => hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ =>
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 #align submodule.map_neg Submodule.map_neg
+
+@[simp]
+lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
+    p.comap (-f) = p.comap f := by
+  ext; simp
 
 end AddCommGroup
 

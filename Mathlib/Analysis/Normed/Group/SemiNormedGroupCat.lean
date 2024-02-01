@@ -59,7 +59,7 @@ instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
 -- Porting Note: added
-instance funLike {V W : SemiNormedGroupCat} : NDFunLike (V ⟶ W) V W where
+instance funLike {V W : SemiNormedGroupCat} : FunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGroupCat).map
   coe_injective' := fun f g h => by cases f; cases g; congr
 
@@ -70,7 +70,7 @@ instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V �
 -- Porting note: added to ease automation
 @[ext]
 lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
@@ -149,7 +149,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 -- Porting Note: Added
-instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X (fun _ => Y) where
+instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 

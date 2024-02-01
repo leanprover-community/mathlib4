@@ -84,7 +84,7 @@ section
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
 class OrderAddMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β]
-  [AddZeroClass α] [AddZeroClass β] [NDFunLike F α β] extends AddMonoidHomClass F α β : Prop where
+  [AddZeroClass α] [AddZeroClass β] [FunLike F α β] extends AddMonoidHomClass F α β : Prop where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
@@ -121,14 +121,14 @@ section
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
 class OrderMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
-  [NDFunLike F α β] extends MonoidHomClass F α β : Prop where
+  [FunLike F α β] extends MonoidHomClass F α β : Prop where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
 
 end
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [NDFunLike F α β]
+variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidHomClass F α β` into an actual
 `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
@@ -184,13 +184,13 @@ ordered monoid with zero homomorphisms.
 
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
 class OrderMonoidWithZeroHomClass (F α β : Type*) [Preorder α] [Preorder β]
-  [MulZeroOneClass α] [MulZeroOneClass β] [NDFunLike F α β]
+  [MulZeroOneClass α] [MulZeroOneClass β] [FunLike F α β]
   extends MonoidWithZeroHomClass F α β : Prop where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
 
-variable [NDFunLike F α β]
+variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
 `OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/
@@ -201,7 +201,7 @@ def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderMonoidWithZeroHom
 
 end
 
-variable [NDFunLike F α β]
+variable [FunLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
@@ -217,7 +217,7 @@ end MonoidWithZero
 
 section OrderedAddCommMonoid
 
-variable [NDFunLike F α β]
+variable [FunLike F α β]
 variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [OrderAddMonoidHomClass F α β] (f : F)
   {a : α}
 
@@ -235,7 +235,7 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : NDFunLike F α β]
+variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : FunLike F α β]
 variable [iamhc : AddMonoidHomClass F α β] (f : F)
 
 theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
@@ -290,7 +290,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
 @[to_additive]
-instance : NDFunLike (α →*o β) α β where
+instance : FunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
@@ -306,7 +306,7 @@ instance : OrderMonoidHomClass (α →*o β) α β where
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_monoid_hom.ext OrderMonoidHom.ext
 #align order_add_monoid_hom.ext OrderAddMonoidHom.ext
 
@@ -350,13 +350,13 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_monoid_hom_injective OrderMonoidHom.toMonoidHom_injective
 #align order_add_monoid_hom.to_add_monoid_hom_injective OrderAddMonoidHom.toAddMonoidHom_injective
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 #align order_monoid_hom.to_order_hom_injective OrderMonoidHom.toOrderHom_injective
 #align order_add_monoid_hom.to_order_hom_injective OrderAddMonoidHom.toOrderHom_injective
 
@@ -377,7 +377,7 @@ theorem coe_copy (f : α →*o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f'
 
 @[to_additive]
 theorem copy_eq (f : α →*o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_monoid_hom.copy_eq OrderMonoidHom.copy_eq
 #align order_add_monoid_hom.copy_eq OrderAddMonoidHom.copy_eq
 
@@ -457,7 +457,7 @@ theorem id_comp (f : α →*o β) : (OrderMonoidHom.id β).comp f = f :=
 @[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : β →*o γ} {f : α →*o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
 #align order_monoid_hom.cancel_right OrderMonoidHom.cancel_right
 #align order_add_monoid_hom.cancel_right OrderAddMonoidHom.cancel_right
 
@@ -578,7 +578,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClass α] [MulZeroOneClass β]
   [MulZeroOneClass γ] [MulZeroOneClass δ] {f g : α →*₀o β}
 
-instance : NDFunLike (α →*₀o β) α β where
+instance : FunLike (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
@@ -594,7 +594,7 @@ instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
 -- Other lemmas should be accessed through the `FunLike` API
 @[ext]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_monoid_with_zero_hom.ext OrderMonoidWithZeroHom.ext
 
 theorem toFun_eq_coe (f : α →*₀o β) : f.toFun = (f : α → β) :=
@@ -626,11 +626,11 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
 #align order_monoid_with_zero_hom.coe_order_monoid_hom OrderMonoidWithZeroHom.coe_orderMonoidHom
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_order_monoid_hom_injective OrderMonoidWithZeroHom.toOrderMonoidHom_injective
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert FunLike.ext_iff.1 h using 0
+  fun f g h => ext <| by convert DFunLike.ext_iff.1 h using 0
 #align order_monoid_with_zero_hom.to_monoid_with_zero_hom_injective OrderMonoidWithZeroHom.toMonoidWithZeroHom_injective
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
@@ -645,7 +645,7 @@ theorem coe_copy (f : α →*₀o β) (f' : α → β) (h : f' = f) : ⇑(f.copy
 #align order_monoid_with_zero_hom.coe_copy OrderMonoidWithZeroHom.coe_copy
 
 theorem copy_eq (f : α →*₀o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_monoid_with_zero_hom.copy_eq OrderMonoidWithZeroHom.copy_eq
 
 variable (α)
@@ -707,7 +707,7 @@ theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f
 @[simp]
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun _ => by congr⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
 #align order_monoid_with_zero_hom.cancel_right OrderMonoidWithZeroHom.cancel_right
 
 @[simp]

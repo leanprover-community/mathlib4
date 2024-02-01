@@ -66,7 +66,7 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
-instance : NDFunLike (r ≼i s) α β where
+instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
   coe_injective' := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
@@ -77,7 +77,7 @@ instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]

@@ -48,7 +48,7 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-variable [NDFunLike 𝓕 E F]
+variable [FunLike 𝓕 E F]
 
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
@@ -396,11 +396,6 @@ theorem op_norm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ *
       exact h.le_op_norm_of_le (f.le_op_norm x)⟩
 #align continuous_linear_map.op_norm_comp_le ContinuousLinearMap.op_norm_comp_le
 
--- Porting note: restatement of `op_norm_comp_le` for linear maps.
-/-- The operator norm is submultiplicative. -/
-theorem op_norm_comp_le' (h : Eₗ →L[𝕜] Fₗ) (f : E →L[𝕜] Eₗ) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
-  op_norm_comp_le h f
-
 theorem op_nnnorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖₊ ≤ ‖h‖₊ * ‖f‖₊ :=
   op_norm_comp_le h f
 #align continuous_linear_map.op_nnnorm_comp_le ContinuousLinearMap.op_nnnorm_comp_le
@@ -411,12 +406,10 @@ instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
     norm_mul := fun f g => op_norm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
--- Porting FIXME: replacing `(algebra : Algebra 𝕜 (E →L[𝕜] E))` with
--- just `algebra` below causes a massive timeout.
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
-  { (algebra : Algebra 𝕜 (E →L[𝕜] E)) with
+  { algebra with
     norm_smul_le := by
       intro c f
       apply op_norm_smul_le c f}
@@ -684,12 +677,10 @@ def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃
     { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
       map_add' := fun x y => by
         ext z
-        rw [ContinuousLinearMap.add_apply, mkContinuousOfExistsBound_apply,
-          mkContinuousOfExistsBound_apply, mkContinuousOfExistsBound_apply, map_add, add_apply]
+        simp
       map_smul' := fun c x => by
         ext z
-        rw [ContinuousLinearMap.smul_apply, mkContinuousOfExistsBound_apply,
-          mkContinuousOfExistsBound_apply, map_smulₛₗ, smul_apply] } <|
+        simp } <|
     let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
@@ -736,10 +727,8 @@ def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL
     ‖f‖ fun y x => (f.le_op_norm₂ x y).trans_eq <| by simp only [mul_right_comm]
 #align continuous_linear_map.flip ContinuousLinearMap.flip
 
--- Porting note: in mathlib3, in the proof `norm_nonneg (flip f)` was just `norm_nonneg _`,
--- but this causes a defeq error now.
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  f.op_norm_le_bound₂ (norm_nonneg (flip f)) fun x y => by
+  f.op_norm_le_bound₂ (norm_nonneg _) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_op_norm₂ y x
 
@@ -982,22 +971,8 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
       apply funext
       rintro ⟨φ, ψ⟩
       refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
-      -- Porting note: mathport suggested:
-      -- ```
-      -- simp only [add_apply, coe_comp', coe_fst', Function.comp_apply, compL_apply, flip_apply,
-      --   coe_snd', inl_apply, inr_apply, Prod.mk_add_mk, add_zero, zero_add, coe_prodMap'
-      --   Prod_map, Prod.mk.inj_iff, eq_self_iff_true, and_self_iff]
-      -- rfl
-      -- ```
-      -- Frustratingly, in `mathlib3` we can use:
-      -- ```
-      -- dsimp   -- ⊢ (⇑φ x.fst, ⇑ψ x.snd) = (⇑φ x.fst + 0, 0 + ⇑ψ x.snd)
-      -- simp
-      -- ```
-      -- Here neither `dsimp` or `simp` seem to make progress.
-      repeat first | rw [add_apply] | rw [comp_apply] | rw [flip_apply] | rw [compL_apply]
-      simp only [coe_prodMap', Prod_map, coe_fst', inl_apply, coe_snd', inr_apply, Prod.mk_add_mk,
-        add_zero, zero_add])
+      dsimp
+      simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
 
 variable {M₁ M₂ M₃ M₄}
@@ -1577,7 +1552,7 @@ theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →S
     (hb : IsBounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
   have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x =>
     ((apply' F σ₁₂ x).lipschitz.isBounded_image hb).isCompact_closure
-  isCompact_closure_of_subset_compact (isCompact_pi_infinite this)
+  (isCompact_pi_infinite this).closure_of_subset
     (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
 #align continuous_linear_map.is_compact_closure_image_coe_of_bounded ContinuousLinearMap.isCompact_closure_image_coe_of_bounded
 
@@ -1831,7 +1806,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
       map_smul' := fun m c => by
         ext x
         dsimp
-        rw [Pi.smul_apply, smul_smul, Algebra.id.smul_eq_mul] }
+        rw [smul_smul] }
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]

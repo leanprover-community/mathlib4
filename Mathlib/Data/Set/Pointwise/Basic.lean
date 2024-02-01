@@ -1291,7 +1291,7 @@ end GroupWithZero
 
 section Mul
 
-variable [Mul α] [Mul β] [NDFunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
+variable [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_mul : m '' (s * t) = m '' s * m '' t :=
@@ -1301,7 +1301,7 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 
 @[to_additive]
 lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a * b, map_mul _ _ _⟩
@@ -1324,7 +1324,7 @@ end Mul
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [NDFunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_div : m '' (s / t) = m '' s / m '' t :=
@@ -1334,7 +1334,7 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div _ _ _⟩

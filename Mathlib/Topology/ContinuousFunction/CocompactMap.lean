@@ -42,7 +42,7 @@ section
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
 class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
+  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 #align cocompact_map_class CocompactMapClass
@@ -52,7 +52,7 @@ end
 namespace CocompactMapClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-variable [NDFunLike F α β] [CocompactMapClass F α β]
+variable [FunLike F α β] [CocompactMapClass F α β]
 
 /-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
 `CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
@@ -75,7 +75,7 @@ section Basics
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : NDFunLike (CocompactMap α β) α β where
+instance : FunLike (CocompactMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -93,7 +93,7 @@ theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α �
 
 @[ext]
 theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align cocompact_map.ext CocompactMap.ext
 
 /-- Copy of a `CocompactMap` with a new `toFun` equal to the old one. Useful
@@ -114,7 +114,7 @@ theorem coe_copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : ⇑(f.
 #align cocompact_map.coe_copy CocompactMap.coe_copy
 
 theorem copy_eq (f : CocompactMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align cocompact_map.copy_eq CocompactMap.copy_eq
 
 @[simp]

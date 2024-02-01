@@ -598,7 +598,7 @@ variable {K}
 section LiftHom
 
 variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
-variable [NDFunLike F R[X] S[X]]
+variable [FunLike F R[X] S[X]]
 
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
@@ -847,7 +847,7 @@ theorem algebraMap_apply {R : Type*} [CommSemiring R] [Algebra R K[X]] (x : R) :
 #align ratfunc.algebra_map_apply RatFunc.algebraMap_apply
 
 theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
-    [NDFunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]]
+    [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) (hq : q ≠ 0) :
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
@@ -858,7 +858,7 @@ theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
 
 @[simp]
 theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
-    [NDFunLike F K[X] R[X]] [MonoidWithZeroHomClass F K[X] R[X]]
+    [FunLike F K[X] R[X]] [MonoidWithZeroHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) :
     map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
@@ -1335,13 +1335,13 @@ theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y :=
   · exact algebraMap_ne_zero (denom_ne_zero y)
 #align ratfunc.denom_add_dvd RatFunc.denom_add_dvd
 
-theorem map_denom_ne_zero {L F : Type*} [Zero L] [NDFunLike F K[X] L] [ZeroHomClass F K[X] L]
+theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]
     (φ : F) (hφ : Function.Injective φ) (f : RatFunc K) : φ f.denom ≠ 0 := fun H =>
   (denom_ne_zero f) ((map_eq_zero_iff φ hφ).mp H)
 #align ratfunc.map_denom_ne_zero RatFunc.map_denom_ne_zero
 
 theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
-    [NDFunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]] (φ : F)
+    [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]] (φ : F)
     (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (f : RatFunc K) :
     map φ hφ f = algebraMap _ _ (φ f.num) / algebraMap _ _ (φ f.denom) := by
   rw [← num_div_denom f, map_apply_div_ne_zero, num_div_denom f]

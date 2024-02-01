@@ -207,8 +207,8 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring
 
-variable {F G : Type*} [NDFunLike F R S] [NonUnitalRingHomClass F R S]
-  [NDFunLike G S T] [NonUnitalRingHomClass G S T]
+variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+  [FunLike G S T] [NonUnitalRingHomClass G S T]
   (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
@@ -349,8 +349,8 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
-variable {F G : Type*} [NDFunLike F R S] [NonUnitalRingHomClass F R S]
-variable [NDFunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
+variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
 
 /-- The range of a non-unital ring homomorphism is a non-unital subsemiring.
 See note [range copy pattern]. -/
@@ -506,8 +506,7 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
       AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
       AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
   rw [Set.mem_center_iff, isMulCentral_iff]
-  simp_rw [FunLike.ext_iff]
-  rfl
+  simp [DFunLike.ext_iff]
 
 end NonUnitalNonAssocSemiring
 
@@ -736,7 +735,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 #align non_unital_subsemiring.gi NonUnitalSubsemiring.gi
 
 variable {R}
-variable {F : Type*} [NDFunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
@@ -882,7 +881,7 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
 
-variable {F : Type*} [NonUnitalNonAssocSemiring T] [NDFunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [NonUnitalNonAssocSemiring T] [FunLike F R S] [NonUnitalRingHomClass F R S]
   {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
@@ -943,7 +942,7 @@ theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R �
 
 theorem eq_of_eqOn_stop {f g : F}
     (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
-  FunLike.ext _ _ fun _ => h trivial
+  DFunLike.ext _ _ fun _ => h trivial
 #align non_unital_ring_hom.eq_of_eq_on_stop NonUnitalRingHom.eq_of_eqOn_stop
 
 theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}
@@ -1000,7 +999,7 @@ open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
 
-variable {F : Type*} [NDFunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

@@ -117,7 +117,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] [NDFunLike F M M₂]
+  [Module R M] [Module S M₂] [FunLike F M M₂]
   extends AddHomClass F M M₂ : Prop where
   /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   See also `_root_.map_smul` for the case where `σ` is the identity. -/
@@ -141,7 +141,7 @@ This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
-    [NDFunLike F M M₂] :=
+    [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
@@ -154,7 +154,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
-instance (priority := 100) addMonoidHomClass [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) addMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_zero := fun f ↦
@@ -162,12 +162,12 @@ instance (priority := 100) addMonoidHomClass [NDFunLike F M M₃] [SemilinearMap
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribMulActionHomClass [NDFunLike F M M₂] [LinearMapClass F R M M₂] :
+instance (priority := 100) distribMulActionHomClass [FunLike F M M₂] [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
-variable {F} (f : F) [i : NDFunLike F M M₃] [i : SemilinearMapClass F σ M M₃]
+variable {F} (f : F) [i : FunLike F M M₃] [i : SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
@@ -183,7 +183,7 @@ end SemilinearMapClass
 
 namespace LinearMapClass
 variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
-  (f : F) [NDFunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
+  (f : F) [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
@@ -206,13 +206,13 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 
 variable {σ : R →+* S}
 
-instance ndFunLike : NDFunLike (M →ₛₗ[σ] M₃) M M₃ where
+instance ndFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply DFunLike.coe_injective'
     exact h
 
 instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
@@ -220,7 +220,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+-- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign LinearMap.has_coe_to_fun
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
@@ -237,7 +237,7 @@ theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := 
 
 @[ext]
 theorem ext {f g : M →ₛₗ[σ] M₃} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align linear_map.ext LinearMap.ext
 
 /-- Copy of a `LinearMap` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -254,7 +254,7 @@ theorem coe_copy (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : 
 #align linear_map.coe_copy LinearMap.coe_copy
 
 theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align linear_map.copy_eq LinearMap.copy_eq
 
 initialize_simps_projections LinearMap (toFun → apply)
@@ -320,21 +320,21 @@ theorem isLinear : IsLinearMap R fₗ :=
 
 variable {fₗ gₗ f g σ}
 
-theorem coe_injective : Injective (FunLike.coe : (M →ₛₗ[σ] M₃) → _) :=
-  FunLike.coe_injective
+theorem coe_injective : Injective (DFunLike.coe : (M →ₛₗ[σ] M₃) → _) :=
+  DFunLike.coe_injective
 #align linear_map.coe_injective LinearMap.coe_injective
 
 protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align linear_map.congr_arg LinearMap.congr_arg
 
 /-- If two linear maps are equal, they are equal at each point. -/
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align linear_map.congr_fun LinearMap.congr_fun
 
 theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align linear_map.ext_iff LinearMap.ext_iff
 
 @[simp]
@@ -381,7 +381,7 @@ open Pointwise
 variable (M M₃ σ) {F : Type*} (h : F)
 
 -- This should be `@[simp]` but doesn't fire reliably due to `lean4#3701`.
-theorem _root_.image_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
+theorem _root_.image_smul_setₛₗ [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
     (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
   apply Set.Subset.antisymm
@@ -397,7 +397,7 @@ theorem _root_.LinearMap.image_smul_setₛₗ' (h : M →ₛₗ[σ] M₃)
     h '' (c • s) = σ c • h '' s :=
   image_smul_setₛₗ _ _ _ _ _ _
 
-theorem _root_.preimage_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃]
+theorem _root_.preimage_smul_setₛₗ [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
     {c : R} (hc : IsUnit c)
     (s : Set M₃) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
@@ -413,12 +413,12 @@ theorem _root_.preimage_smul_setₛₗ [NDFunLike F M M₃] [SemilinearMapClass 
 
 variable (R M₂)
 
-theorem _root_.image_smul_set [NDFunLike F M M₂] [LinearMapClass F R M M₂] (c : R) (s : Set M) :
+theorem _root_.image_smul_set [FunLike F M M₂] [LinearMapClass F R M M₂] (c : R) (s : Set M) :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
 #align image_smul_set image_smul_set
 
-theorem _root_.preimage_smul_set [NDFunLike F M M₂] [LinearMapClass F R M M₂]
+theorem _root_.preimage_smul_set [FunLike F M M₂] [LinearMapClass F R M M₂]
     {c : R} (hc : IsUnit c) (s : Set M₂) :
     h ⁻¹' (c • s) = c • h ⁻¹' s :=
   preimage_smul_setₛₗ _ _ _ h hc s
@@ -531,7 +531,7 @@ end RestrictScalars
 
 theorem toAddMonoidHom_injective :
     Function.Injective (toAddMonoidHom : (M →ₛₗ[σ] M₃) → M →+ M₃) := fun fₗ gₗ h ↦
-  ext <| (FunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
+  ext <| (DFunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
 #align linear_map.to_add_monoid_hom_injective LinearMap.toAddMonoidHom_injective
 
 /-- If two `σ`-linear maps from `R` are equal on `1`, then they are equal. -/
@@ -968,7 +968,7 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
-  FunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
@@ -1016,7 +1016,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 
 /-- The type of linear maps is an additive group. -/
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
-  FunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end Arithmetic
@@ -1457,7 +1457,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f g : M →ₗ[R] M₂)
 
 /-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
-to the space of linear maps `M₂ → M₃`. -/
+to the space of linear maps `M → M₃`. -/
 def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
   toFun := f.comp
   map_add' _ _ := LinearMap.ext fun _ => map_add f _ _

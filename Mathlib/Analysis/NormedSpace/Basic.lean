@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
@@ -86,6 +85,17 @@ theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : �
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
+
+theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
+    dist (r • x + (1 - r) • y) x ≤ dist y x :=
+  calc
+    dist (r • x + (1 - r) • y) x = ‖1 - r‖ * ‖x - y‖ := by
+      simp_rw [dist_eq_norm', ← norm_smul, sub_smul, one_smul, smul_sub, ← sub_sub, ← sub_add,
+        sub_right_comm]
+    _ = (1 - r) * dist y x := by
+      rw [Real.norm_eq_abs, abs_eq_self.mpr (sub_nonneg.mpr h.2), dist_eq_norm']
+    _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
+    _ = dist y x := by rw [sub_zero, one_mul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -221,7 +231,7 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 See note [reducible non-instances] -/
 @[reducible]
 def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddCommGroup β] [Module α β]
-    [SeminormedAddCommGroup γ] [NormedSpace α γ] [NDFunLike F β γ] [LinearMapClass F α β γ]
+    [SeminormedAddCommGroup γ] [NormedSpace α γ] [FunLike F β γ] [LinearMapClass F α β γ]
     (f : F) :
     @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
   -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
@@ -527,7 +537,7 @@ end NormedAlgebra
 See note [reducible non-instances] -/
 @[reducible]
 def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring β] [Algebra α β]
-    [SeminormedRing γ] [NormedAlgebra α γ] [NDFunLike F β γ] [NonUnitalAlgHomClass F α β γ]
+    [SeminormedRing γ] [NormedAlgebra α γ] [FunLike F β γ] [NonUnitalAlgHomClass F α β γ]
     (f : F) :
     @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
   -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm

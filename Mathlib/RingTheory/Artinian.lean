@@ -410,7 +410,7 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
 #align is_artinian_span_of_finite isArtinian_span_of_finite
 
 theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
-    [NDFunLike F R S] [RingHomClass F R S]
+    [FunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H ⊢
   exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H

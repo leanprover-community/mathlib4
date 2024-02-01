@@ -23,7 +23,7 @@ $$
 In mathlib we call elements of the centroid "centroid homomorphisms" (`CentroidHom`) in keeping
 with `AddMonoidHom` etc.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -61,7 +61,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [NDFunLike F α α] extends
+class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F α α] extends
   AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
@@ -72,7 +72,7 @@ class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [NDFunLike 
 
 export CentroidHomClass (map_mul_left map_mul_right)
 
-instance [NonUnitalNonAssocSemiring α] [NDFunLike F α α] [CentroidHomClass F α] :
+instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :
     CoeTC F (CentroidHom α) :=
   ⟨fun f ↦
     { (f : α →+ α) with
@@ -82,14 +82,13 @@ instance [NonUnitalNonAssocSemiring α] [NDFunLike F α α] [CentroidHomClass F 
 
 /-! ### Centroid homomorphisms -/
 
-
 namespace CentroidHom
 
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-instance : NDFunLike (CentroidHom α) α α where
+instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -104,9 +103,9 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_right f := f.map_mul_right'
 
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
 directly. -/
-/- Porting note: Lean gave me `unknown constant 'FunLike.CoeFun'` and says `CoeFun` is a type
+/- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
 mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
@@ -118,7 +117,7 @@ theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 
 @[ext]
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align centroid_hom.ext CentroidHom.ext
 
 @[simp, norm_cast]
@@ -133,7 +132,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
 
 theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
-    haveI := FunLike.congr_fun h a
+    haveI := DFunLike.congr_fun h a
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
@@ -161,7 +160,7 @@ theorem coe_copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : ⇑(f.copy
 #align centroid_hom.coe_copy CentroidHom.coe_copy
 
 theorem copy_eq (f : CentroidHom α) (f' : α → α) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align centroid_hom.copy_eq CentroidHom.copy_eq
 
 variable (α)
@@ -234,7 +233,7 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
 #align centroid_hom.cancel_right CentroidHom.cancel_right
 
 @[simp]
@@ -517,18 +516,19 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
-lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
+lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
-lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
-  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
+      ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
   · rintro ⟨hc, ⟨T, hT⟩⟩
     have e1 (d : α) : T d = a * d := congr($hT d)
-    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc.symm) d)
     constructor
-    case comm => exact (congr($hc ·))
+    case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
     case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
       (map_mul_right T b c).symm.trans <| map_mul_left T b c
@@ -536,12 +536,29 @@ lemma center_iff_op_centroid (a : α) :
 
 end NonUnitalNonAssocSemiring
 
+section NonUnitalNonAssocCommSemiring
+
+variable [NonUnitalNonAssocCommSemiring α]
+
+/-
+Left and right multiplication coincide as α is commutative
+-/
+local notation "L" => AddMonoid.End.mulLeft
+
+lemma _root_.NonUnitalNonAssocCommSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
+  rw [NonUnitalNonAssocSemiring.mem_center_iff, CentroidHom.centroid_eq_centralizer_mulLeftRight,
+    Subsemiring.mem_centralizer_iff, AddMonoid.End.mulRight_eq_mulLeft, Set.union_self]
+  aesop
+
+end NonUnitalNonAssocCommSemiring
+
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩

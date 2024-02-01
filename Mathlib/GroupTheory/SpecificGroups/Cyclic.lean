@@ -164,7 +164,7 @@ theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [
 
 @[to_additive]
 theorem isCyclic_of_surjective {H G F : Type*} [Group H] [Group G] [hH : IsCyclic H]
-    [NDFunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Function.Surjective f) :
+    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Function.Surjective f) :
     IsCyclic G := by
   obtain ⟨x, hx⟩ := hH
   refine ⟨f x, fun a ↦ ?_⟩

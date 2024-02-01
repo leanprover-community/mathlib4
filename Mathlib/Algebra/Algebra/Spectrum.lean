@@ -395,7 +395,7 @@ section CommSemiring
 
 variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [NDFunLike F A B] [AlgHomClass F R A B]
+variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
 
@@ -416,7 +416,7 @@ section CommRing
 
 variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [NDFunLike F A R] [AlgHomClass F R A R]
+variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R
 

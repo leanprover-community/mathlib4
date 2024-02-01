@@ -59,7 +59,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [NDFunLike F A B]
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends AddMonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
@@ -72,7 +72,7 @@ You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
 class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [NDFunLike F A B]
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends MonoidHomClass F A B : Prop where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
@@ -89,7 +89,7 @@ add_decl_doc ContinuousAddMonoidHom.toAddMonoidHom
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) ContinuousMonoidHomClass.toContinuousMapClass
-    [NDFunLike F A B] [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
+    [FunLike F A B] [ContinuousMonoidHomClass F A B] : ContinuousMapClass F A B :=
   { ‹ContinuousMonoidHomClass F A B› with }
 #align continuous_monoid_hom_class.to_continuous_map_class ContinuousMonoidHomClass.toContinuousMapClass
 #align continuous_add_monoid_hom_class.to_continuous_map_class ContinuousAddMonoidHomClass.toContinuousMapClass
@@ -100,7 +100,7 @@ variable {A B C D E}
 
 @[to_additive]
 instance ContinuousMonoidHom.funLike :
-    NDFunLike (ContinuousMonoidHom A B) A B where
+    FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -116,7 +116,7 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass :
 
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
 
@@ -129,7 +129,7 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 
@@ -413,7 +413,7 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-noncomputable instance : NDFunLike (PontryaginDual A) A circle :=
+noncomputable instance : FunLike (PontryaginDual A) A circle :=
   ContinuousMonoidHom.funLike
 
 noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=

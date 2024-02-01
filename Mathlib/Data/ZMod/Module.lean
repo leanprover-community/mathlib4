@@ -41,7 +41,7 @@ def AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n •
   | 0 => AddCommGroup.intModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
-variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [NDFunLike F M M₁]
+variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
   [AddSubgroupClass S M] {x : M} {K : S}
 
@@ -49,11 +49,11 @@ namespace ZMod
 
 theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   rw [← ZMod.int_cast_zmod_cast c]
-  exact map_int_cast_smul f _ _ c x
+  exact map_int_cast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
   rw [← ZMod.int_cast_zmod_cast c, ← zsmul_eq_smul_cast]
-  exact zsmul_mem hx c
+  exact zsmul_mem hx (cast c)
 
 end ZMod
 

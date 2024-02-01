@@ -9,12 +9,11 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
-import Mathlib.Data.Set.Basic
 
 #align_import data.list.big_operators.lemmas from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -158,7 +157,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-theorem unop_map_list_prod {F : Type*} [NDFunLike F M Nᵐᵒᵖ] [MonoidHomClass F M Nᵐᵒᵖ]
+theorem unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F M Nᵐᵒᵖ]
     (f : F) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
   rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
