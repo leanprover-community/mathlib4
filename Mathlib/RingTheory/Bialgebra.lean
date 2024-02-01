@@ -68,12 +68,35 @@ attribute [simp] counit_one comul_one counit_mul comul_mul
 variable (R A)
 
 /-- `counitAlgHom R A` is the counit of the `R`-bialgebra `A`, as an `R`-algebra map. -/
+@[simps!]
 def counitAlgHom : A →ₐ[R] R :=
   .ofLinearMap counit counit_one counit_mul
 
 /-- `comulAlgHom R A` is the comultiplication of the `R`-bialgebra `A`, as an `R`-algebra map. -/
+@[simps!]
 def comulAlgHom : A →ₐ[R] A ⊗[R] A :=
   .ofLinearMap comul comul_one comul_mul
+
+variable {R A}
+
+@[simp] lemma counit_algebraMap (r : R) : counit (R := R) (algebraMap R A r) = r :=
+  (counitAlgHom R A).commutes r
+
+@[simp] lemma comul_algebraMap (r : R) :
+    comul (R := R) (algebraMap R A r) = algebraMap R (A ⊗[R] A) r :=
+  (comulAlgHom R A).commutes r
+
+@[simp] lemma counit_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
+  map_natCast (counitAlgHom R A) _
+
+@[simp] lemma comul_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
+  map_natCast (counitAlgHom R A) _
+
+@[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
+  (counitAlgHom R A).map_pow a n
+
+@[simp] lemma comul_pow (a : A) (n : ℕ) : comul (R := R) (a ^ n) = comul a ^ n :=
+  (comulAlgHom R A).map_pow a n
 
 end Bialgebra
 
