@@ -179,15 +179,31 @@ variable {N : ℕ} (S : ComposableArrows 𝒞 N) (hS : S.Exact)
 local notation "ker_" m => kernel (S.map' m (m + 1))
 local notation "im_" m => image (S.map' m (m + 1))
 
-private noncomputable def im_eq_ker_succ (n : ℕ) (hn : n + 2 ≤ N) : (im_ n) ≅ ker_ (n + 1) :=
-  calc (im_ n)
-    _ ≅ imageSubobject (S.map' n (n + 1)) := imageSubobjectIso _ |>.symm
-    _ ≅ kernelSubobject (S.map' (n + 1) (n + 2)) := by
-      letI := imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
+@[simps!]
+private noncomputable def im_eq_ker_succ (n : ℕ) (hn : n + 2 ≤ N := by omega) :
+    (image (S.map' n (n + 1))) ≅ kernel (S.map' (n + 1) (n + 2)) :=
+  (imageSubobjectIso (S.map' n (n + 1))).symm ≪≫
+    @asIso (f := imageToKernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
+        hS.toIsComplex.zero n) _
+      (imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
         (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
-        (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _
-      exact asIso (imageToKernel _ _ _)
-    _ ≅ ker_ (n + 1) := kernelSubobjectIso _
+        (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _)
+  -- (let h1 : IsIso (imageToKernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <| hS.toIsComplex.zero n) :=
+      -- imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
+      --   (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
+      --   (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _
+  --   asIso (imageToKernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <| hS.toIsComplex.zero n))
+    ≪≫
+  kernelSubobjectIso (S.map' (n + 1) (n + 2))
+
+  -- calc (im_ n)
+  --   _ ≅ imageSubobject (S.map' n (n + 1)) := imageSubobjectIso _ |>.symm
+  --   _ ≅ kernelSubobject (S.map' (n + 1) (n + 2)) := by
+      -- letI := imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
+      --   (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
+      --   (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _
+  --     exact asIso (imageToKernel (S.map' (n + 1) (n + 2)) (S.map' n (n + 1)) _)
+  --   _ ≅ ker_ (n + 1) := kernelSubobjectIso _
 
 lemma apply_image_eq_apply_ker_succ (n : ℕ) (hn : n + 2 ≤ N) : μ (im_ n) = μ (ker_ (n + 1)) :=
   μ.eq_of_iso (im_eq_ker_succ S hS n hn)
@@ -200,7 +216,8 @@ lemma apply_sub_apply_succ (n : ℕ) (hn : n + 3 ≤ N) :
   rw [apply_image_eq_apply_ker_succ (hS := hS)] at eq0
   exact eq0
 
-lemma apply_eq_apply_image_add_apply_image (n : ℕ) (hn1 : 1 ≤ n) (hn2 : n + 1 ≤ N) :
+lemma apply_eq_apply_image_add_apply_image
+    (n : ℕ) (hn1 : 1 ≤ n := by omega) (hn2 : n + 1 ≤ N := by omega) :
     μ (S.obj' n) = μ (image (S.map' (n - 1) n)) + μ (image (S.map' n (n + 1))) := by
   let sc : ShortComplex 𝒞 :=
   { X₁ := image (S.map' (n - 1) n)
@@ -258,6 +275,38 @@ lemma apply_eq_apply_image_add_apply_image (n : ℕ) (hn1 : 1 ≤ n) (hn2 : n + 
 
   have sc_shortExact : sc.ShortExact
   · fconstructor; exact sc_exact
+
+  exact μ.additive _ sc_shortExact |>.symm
+
+lemma apply_eq_apply_kernel_add_apply_kernel
+    (n : ℕ) (hn : n + 2 ≤ N) :
+    μ (S.obj' n) = μ (kernel (S.map' n (n + 1))) + μ (kernel (S.map' (n + 1) (n + 2))) := by
+  let sc : ShortComplex 𝒞 :=
+  { X₁ := kernel (S.map' n (n + 1))
+    X₂ := S.obj' n
+    X₃ := kernel (S.map' (n + 1) (n + 2))
+    f := kernel.ι _
+    g := kernel.lift _ (S.map' _ _) <| hS.toIsComplex.zero n
+    zero := zero_of_comp_mono (kernel.ι _) <| by simp }
+
+  have sc_exact : sc.Exact
+  · rw [← exact_iff_shortComplex_exact]
+    change Exact (kernel.ι _) (kernel.lift _ _ _)
+    rw [← exact_comp_mono_iff (h := kernel.ι _), kernel.lift_ι]
+    exact exact_kernel_ι
+
+  have sc_shortExact : sc.ShortExact
+  · refine .mk' sc_exact equalizer.ι_mono ?_
+    change Epi (kernel.lift _ _ _)
+
+    suffices eq0 :
+      (kernel.lift _ (S.map' n (n + 1)) <| hS.toIsComplex.zero n) =
+      factorThruImage _ ≫ (im_eq_ker_succ S hS n).hom
+    · rw [eq0]; exact epi_comp _ _
+
+    ext
+    rw [im_eq_ker_succ_hom (n := n), kernel.lift_ι, Category.assoc, Category.assoc, Category.assoc,
+      kernelSubobject_arrow, imageToKernel_arrow, imageSubobject_arrow', image.fac]
 
   exact μ.additive _ sc_shortExact |>.symm
 
