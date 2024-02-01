@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ExactSequence
+import Mathlib.Tactic.Linarith
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -76,55 +77,68 @@ lemma eq_of_iso {x y : 𝒞} (e : x ≅ y) : μ x = μ y := by
   have : μ x + μ 0 = μ y := μ.additive s hs
   rwa [map_zero, add_zero] at this
 
+section
+
+variable {A B : 𝒞} (f : A ⟶ B)
+
+private noncomputable abbrev sc1 : ShortComplex 𝒞 where
+  X₁ := kernel f
+  X₂ := A
+  X₃ := image f
+  f := kernel.ι _
+  g := factorThruImage f
+  zero := zero_of_comp_mono (image.ι f) <| by
+    rw [Category.assoc, image.fac, kernel.condition]
+
+private lemma sc1_exact : sc1 f |>.Exact := by
+  rw [← exact_iff_shortComplex_exact]
+  dsimp
+  have e1 : Exact (kernel.ι f) f := by exact exact_kernel_ι
+  have e2 : Exact (kernel.ι f) (factorThruImage f ≫ image.ι f)
+  · aesop_cat
+  rwa [exact_comp_mono_iff] at e2
+
+private lemma sc1_shortExact : sc1 f |>.ShortExact := by
+  fconstructor; apply sc1_exact
+
+private noncomputable abbrev sc2 : ShortComplex 𝒞 where
+  X₁ := image f
+  X₂ := B
+  X₃ := cokernel f
+  f := image.ι _
+  g := cokernel.π _
+  zero := by aesop_cat
+
+private lemma sc2_exact : sc2 f |>.Exact := by
+  rw [← exact_iff_shortComplex_exact]
+  dsimp
+  have e1 : Exact f (cokernel.π f):= Abelian.exact_cokernel f
+  have e2 : Exact (factorThruImage f ≫ image.ι f) (cokernel.π f)
+  · aesop_cat
+  exact Abelian.exact_epi_comp_iff _ _ _ |>.mp e2
+
+private lemma sc2_shortExact : sc2 f |>.ShortExact := by
+  fconstructor
+  apply sc2_exact
+
+lemma eq_apply_kernel_add_apply_image : μ (kernel f) + μ (image f) = μ A :=
+  μ.additive _ <| sc1_shortExact f
+
+lemma eq_apply_image_add_apply_cokernel : μ (image f) + μ (cokernel f) = μ B :=
+  μ.additive _ <| sc2_shortExact f
+
+lemma apply_kernel_sub_apply_cokernel_eq_apply_src_sub_apply_tgt :
+    μ (kernel f) - μ (cokernel f) = μ A - μ B := by
+  have eq1 := congr_arg₂ (· - ·) (μ.eq_apply_kernel_add_apply_image f)
+    (μ.eq_apply_image_add_apply_cokernel f)
+  simp only at eq1
+  linarith
+
+end
+
 section ShortComplex
 
 variable (s : ShortComplex 𝒞) (hs : s.Exact)
-
-private noncomputable abbrev sc1 : ShortComplex 𝒞 where
-  X₁ := kernel s.f
-  X₂ := s.X₁
-  X₃ := image s.f
-  f := kernel.ι _
-  g := factorThruImage s.f
-  zero := zero_of_comp_mono (image.ι s.f) <| by
-    rw [Category.assoc, image.fac, kernel.condition]
-
-private lemma sc1_exact : sc1 s |>.Exact := by
-  rw [← exact_iff_shortComplex_exact] at hs ⊢
-  dsimp
-  have e1 : Exact (kernel.ι s.f) s.f := by exact exact_kernel_ι
-  have e2 : Exact (kernel.ι s.f) (factorThruImage s.f ≫ image.ι s.f)
-  · aesop_cat
-  rwa [exact_comp_mono_iff] at e2
-
-private lemma sc1_shortExact : sc1 s |>.ShortExact := by
-  fconstructor; apply sc1_exact
-
-private lemma apply_X₁ : μ (kernel s.f) + μ (image s.f) = μ s.X₁ :=
-  μ.additive _ <| sc1_shortExact s
-
-private noncomputable abbrev sc2 : ShortComplex 𝒞 where
-  X₁ := kernel s.g
-  X₂ := s.X₂
-  X₃ := image s.g
-  f := kernel.ι _
-  g := factorThruImage s.g
-  zero := zero_of_comp_mono (image.ι s.g) <| by
-    rw [Category.assoc, image.fac, kernel.condition]
-
-private lemma sc2_exact : sc2 s |>.Exact := by
-  rw [← exact_iff_shortComplex_exact] at hs ⊢
-  dsimp
-  have e1 : Exact (kernel.ι s.g) s.g := by exact exact_kernel_ι
-  have e2 : Exact (kernel.ι s.g) (factorThruImage s.g ≫ image.ι s.g)
-  · aesop_cat
-  rwa [exact_comp_mono_iff] at e2
-
-private lemma sc2_shortExact : sc2 s |>.ShortExact := by
-  fconstructor; apply sc2_exact
-
-private lemma apply_X₂ : μ (kernel s.g) + μ (image s.g) = μ s.X₂ :=
-  μ.additive _ <| sc2_shortExact s
 
 private noncomputable def imageIsoKernel : image s.f ≅ kernel s.g :=
   calc image s.f
@@ -137,41 +151,20 @@ private noncomputable def imageIsoKernel : image s.f ≅ kernel s.g :=
 
 lemma apply_shortComplex_of_exact : μ (kernel s.f) - μ (image s.g) = μ s.X₁ - μ s.X₂ := by
   have eq1 : μ (kernel s.f) + μ (image s.f) - (μ (kernel s.g) + μ (image s.g)) = μ s.X₁ - μ s.X₂ :=
-    congr_arg₂ (· - ·) (μ.apply_X₁ s) (μ.apply_X₂ s)
+    congr_arg₂ (· - ·)
+      (μ.eq_apply_kernel_add_apply_image s.f)
+      (μ.eq_apply_kernel_add_apply_image s.g)
   rw [μ.eq_of_iso (imageIsoKernel s hs)] at eq1
   rwa [add_comm (μ (kernel s.g)), add_sub_add_right_eq_sub] at eq1
 
-private noncomputable abbrev sc3 : ShortComplex 𝒞 where
-  X₁ := image s.g
-  X₂ := s.X₃
-  X₃ := cokernel s.g
-  f := image.ι _
-  g := cokernel.π _
-  zero := by aesop_cat
-
-private lemma sc3_exact : sc3 s |>.Exact := by
-  rw [← exact_iff_shortComplex_exact] at hs ⊢
-  dsimp
-  have e1 : Exact s.g (cokernel.π s.g):= Abelian.exact_cokernel s.g
-  have e2 : Exact (factorThruImage s.g ≫ image.ι s.g) (cokernel.π s.g)
-  · aesop_cat
-  exact Abelian.exact_epi_comp_iff _ _ _ |>.mp e2
-
-private lemma sc3_shortExact : sc3 s |>.ShortExact := by
-  fconstructor
-  apply sc3_exact
-
-private lemma apply_X₃ : μ (image s.g) + μ (cokernel s.g) = μ s.X₃ :=
-  μ.additive _ <| sc3_shortExact s
-
-lemma apply_shortComplex_of_exact' : μ (kernel s.g) - μ (cokernel s.g) = μ s.X₂ - μ s.X₃ := by
-  have eq1 : μ (kernel s.g) + μ (image s.g) - (μ (image s.g) + μ (cokernel s.g)) = μ s.X₂ - μ s.X₃ :=
-    congr_arg₂ (· - ·) (μ.apply_X₂ s) (μ.apply_X₃ s)
-  rwa [add_comm (μ (image s.g)), add_sub_add_right_eq_sub] at eq1
+lemma apply_shortComplex_of_exact' : μ (kernel s.g) - μ (cokernel s.g) = μ s.X₂ - μ s.X₃ :=
+  μ.apply_kernel_sub_apply_cokernel_eq_apply_src_sub_apply_tgt s.g
 
 end ShortComplex
 
 section ComposableArrows
+
+section arbitrary_length
 
 variable {N : ℕ} (S : ComposableArrows 𝒞 N) (hS : S.Exact)
 
@@ -198,6 +191,8 @@ lemma apply_sub_apply_succ (n : ℕ) (hn : n + 3 ≤ N) :
     μ.apply_shortComplex_of_exact (S.sc hS.toIsComplex n) (hS.exact _) |>.symm
   rw [apply_image_eq_apply_ker_succ (hS := hS)] at eq0
   exact eq0
+
+end arbitrary_length
 
 section length6
 
