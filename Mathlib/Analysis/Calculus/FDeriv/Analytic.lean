@@ -22,11 +22,13 @@ open Filter Asymptotics
 
 open scoped ENNReal
 
+universe u v
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
@@ -87,9 +89,7 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
 
 /-- If a function has a power series on a ball, then so does its derivative. -/
 theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x r := by
+    HasFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x r := by
   refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
     fun z hz ↦ ?_
   · refine continuousMultilinearCurryFin1 𝕜 E F
@@ -119,7 +119,7 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
     convert ContinuousLinearMap.comp_analyticOn ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
-    rfl
+    simp
 #align analytic_on.iterated_fderiv AnalyticOn.iteratedFDeriv
 
 /-- An analytic function is infinitely differentiable. -/
@@ -204,9 +204,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f
 /-- If a function has a finite power series on a ball, then so does its derivative. -/
 protected theorem HasFiniteFPowerSeriesOnBall.fderiv
     (h : HasFiniteFPowerSeriesOnBall f p x (n + 1) r) :
-    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x n r := by
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x n r := by
   refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
     fun z hz ↦ ?_
   · refine continuousMultilinearCurryFin1 𝕜 E F
@@ -221,9 +219,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
 and not `< n + 1`. -/
 theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p x n r) :
-    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
-      ((continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
-        |>.compFormalMultilinearSeries (p.changeOriginSeries 1)) x (n - 1) r := by
+    HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x (n - 1) r := by
   obtain rfl | hn := eq_or_ne n 0
   · rw [zero_tsub]
     refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_
@@ -254,7 +250,7 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   · rw [iteratedFDeriv_succ_eq_comp_left]
     convert ContinuousLinearMap.comp_cPolynomialOn ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
-    rfl
+    simp
 
 /-- A polynomial function is infinitely differentiable. -/
 theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
@@ -294,3 +290,65 @@ theorem CPolynomialOn.iterated_deriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
 end deriv
+
+namespace FormalMultilinearSeries
+
+variable (p : FormalMultilinearSeries 𝕜 E F)
+
+open Fintype ContinuousLinearMap in
+theorem derivSeries_apply_diag (n : ℕ) (x : E) :
+    derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
+  simp only [derivSeries, strongUniformity_topology_eq, compFormalMultilinearSeries_apply,
+    changeOriginSeries, compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
+    coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
+  convert Finset.sum_const _
+  · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
+  · erw [← card, card_subtype, ← Finset.powersetCard_eq_filter, Finset.card_powersetCard, ← card,
+      card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
+
+end FormalMultilinearSeries
+
+namespace HasFPowerSeriesOnBall
+
+open FormalMultilinearSeries ENNReal Nat
+
+variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ≥0∞}
+  (h : HasFPowerSeriesOnBall f p x r) (y : E)
+
+theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
+  ext
+  convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
+  · rw [iteratedFDeriv_zero_apply, add_zero]
+  · rw [tsum_eq_single 0 <| fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
+    exact congr(p 0 $(Subsingleton.elim _ _))
+
+open ContinuousLinearMap
+
+private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
+    {f : E → F}, HasFPowerSeriesOnBall f p x r →
+    n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
+  induction' n with n ih <;> intro F _ _ _ p f h
+  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
+      ih h.fderiv, iteratedFDeriv_succ_apply_right]
+    rfl
+
+variable [CompleteSpace F]
+
+theorem factorial_smul (n : ℕ) :
+    n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
+  cases n
+  · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
+  · erw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
+      factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
+    rfl
+
+theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
+    HasSum (fun n ↦ (n ! : 𝕜)⁻¹ • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
+  convert h.hasSum hy with n
+  rw [← h.factorial_smul y n, smul_comm, ← smul_assoc, nsmul_eq_mul,
+    mul_inv_cancel <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
+
+end HasFPowerSeriesOnBall

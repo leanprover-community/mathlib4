@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Data.Set.Image
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -23,12 +24,13 @@ open Set Function
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 structure Complex : Type where
+  /-- The real part of a complex number. -/
   re : ℝ
+  /-- The imaginary part of a complex number. -/
   im : ℝ
 #align complex Complex
 
-
-notation "ℂ" => Complex
+@[inherit_doc] notation "ℂ" => Complex
 
 namespace Complex
 
@@ -732,6 +734,9 @@ theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.I_sq Complex.I_sq
+
+@[simp]
+theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=

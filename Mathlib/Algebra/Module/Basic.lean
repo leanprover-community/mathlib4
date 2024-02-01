@@ -3,11 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.Abel
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
@@ -403,7 +403,7 @@ theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
-  FunLike.congr_fun this n
+  DFunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
 end
@@ -764,8 +764,15 @@ theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
-    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
+    support (f • g) ⊆ support f := fun x hfg hf ↦
+  hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
+
+-- Changed (2024-01-21): this lemma was generalised;
+-- the old version is now called `support_const_smul_subset`.
+lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g : α → M) :
+    support (f • g) ⊆ support g :=
+  fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
@@ -777,10 +784,9 @@ lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
   ext fun _ => smul_ne_zero_iff
 #align function.support_smul Function.support_smul
 
-lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
-    support (a • f) ⊆ support f := fun x hbf hf =>
-  hbf <| by rw [Pi.smul_apply, hf, smul_zero]
-#align function.support_smul_subset_right Function.support_smul_subset_right
+lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
+    support (a • f) ⊆ support f := support_smul_subset_right (fun _ ↦ a) f
+#align function.support_smul_subset_right Function.support_const_smul_subset
 
 end Function
 

@@ -107,7 +107,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply DFunLike.coe_injective'
     exact h
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
@@ -115,7 +115,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- instance : CoeFun (α →ₙ+* β) fun _ => α → β :=
 --   ⟨fun f => f.toFun⟩
@@ -159,7 +159,7 @@ theorem coe_copy (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy
 #align non_unital_ring_hom.coe_copy NonUnitalRingHom.coe_copy
 
 theorem copy_eq (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align non_unital_ring_hom.copy_eq NonUnitalRingHom.copy_eq
 
 end coe
@@ -171,11 +171,11 @@ variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align non_unital_ring_hom.ext NonUnitalRingHom.ext
 
 theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align non_unital_ring_hom.ext_iff NonUnitalRingHom.ext_iff
 
 @[simp]
@@ -184,7 +184,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
+  fun _ _ h => ext <| DFunLike.congr_fun (F := α →+ β) h
 #align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
@@ -419,7 +419,7 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply DFunLike.coe_injective'
     exact h
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
@@ -428,7 +428,7 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly.
 -- -/
 -- instance : CoeFun (α →+* β) fun _ => α → β :=
@@ -506,7 +506,7 @@ theorem coe_copy (f : α →+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy f'
 #align ring_hom.coe_copy RingHom.coe_copy
 
 theorem copy_eq (f : α →+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align ring_hom.copy_eq RingHom.copy_eq
 
 end coe
@@ -516,24 +516,24 @@ section
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
 
 theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align ring_hom.congr_fun RingHom.congr_fun
 
 theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+  DFunLike.congr_arg f h
 #align ring_hom.congr_arg RingHom.congr_arg
 
 theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align ring_hom.coe_inj RingHom.coe_inj
 
 @[ext]
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align ring_hom.ext RingHom.ext
 
 theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align ring_hom.ext_iff RingHom.ext_iff
 
 @[simp]
@@ -542,7 +542,7 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
 #align ring_hom.mk_coe RingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
-  ext <| FunLike.congr_fun (F := α →+ β) h
+  ext <| DFunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in

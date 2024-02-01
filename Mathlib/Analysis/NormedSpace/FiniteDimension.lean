@@ -8,6 +8,7 @@ import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.RieszLemma
+import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
@@ -494,39 +495,33 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
 
 /-- A locally compact normed vector space is proper. -/
-lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [LocallyCompactSpace E] : ProperSpace E := by
+lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
+    ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have M : ∀ n (x : E), IsCompact (closedBall x (‖c‖^n * r)) := by
-    intro n x
-    let f : E → E := fun y ↦ c^n • y + x
-    have Cf : Continuous f := (continuous_id.const_smul _).add continuous_const
-    have A : closedBall x (‖c‖^n * r) ⊆ f '' (closedBall 0 r) := by
-      rintro y hy
-      refine ⟨(c^n)⁻¹ • (y - x), ?_, ?_⟩
-      · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
-      · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
-        simp [smul_smul, mul_inv_cancel this]
-    exact (hr.image Cf).of_isClosed_subset isClosed_ball A
-  refine ⟨fun x s ↦ ?_⟩
-  have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
-    have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
-      Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
-    exact Tendsto.eventually_ge_atTop this s
-  rcases L.exists with ⟨n, hn⟩
-  exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
+  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖^n * r)) := fun n ↦ by
+    have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_lt] at hc
+    simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
+  have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+    Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
+  exact .of_seq_closedBall hTop (eventually_of_forall hC)
+
+@[deprecated] -- Since 2024/01/31
+alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
 
 variable (E)
-lemma properSpace_of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
-    ProperSpace 𝕜 := by
+lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
+    ProperSpace 𝕜 :=
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
     let L : 𝕜 → E := fun t ↦ t • v
     have : ClosedEmbedding L := closedEmbedding_smul_left hv
     apply ClosedEmbedding.locallyCompactSpace this
-  exact properSpace_of_locallyCompactSpace 𝕜
+  .of_locallyCompactSpace 𝕜
+
+@[deprecated] -- Since 2024/01/31
+alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
 
@@ -568,7 +563,7 @@ theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
   let e₁ : E ≃L[𝕜] Fin d → 𝕜 := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
     (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← Function.comp.left_id f, ← e₂.symm_comp_self]
+  rw [← f.id_comp, ← e₂.symm_comp_self]
   exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
 #align continuous_on_clm_apply continuousOn_clm_apply
 
@@ -589,7 +584,7 @@ We do not register this as an instance to avoid an instance loop when trying to 
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
-  have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
 #align finite_dimensional.proper FiniteDimensional.proper
@@ -609,7 +604,7 @@ instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by
   nontriviality E
-  have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+  have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
   have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
   exact FiniteDimensional.proper 𝕜 S
 

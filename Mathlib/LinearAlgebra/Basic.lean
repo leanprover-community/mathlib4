@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Map
@@ -213,6 +212,10 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGr
     [AddCommGroup M₂] (f : M →+ M₂) :
     LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
 
+lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂}
+    (h : p ≤ LinearMap.range f) : (p.comap f).map f = p :=
+  SetLike.coe_injective <| Set.image_preimage_eq_of_subset h
+
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -233,7 +236,7 @@ theorem eqLocus_toAddSubmonoid (f g : F) :
 
 @[simp]
 theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
-  simp [SetLike.ext_iff, FunLike.ext_iff]
+  simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
 theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
@@ -248,7 +251,7 @@ theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set
 
 theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
-  FunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
+  DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
 end
 
@@ -1346,6 +1349,19 @@ theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := b
   simp [conj_apply]
 #align linear_equiv.conj_id LinearEquiv.conj_id
 
+variable (M) in
+/-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
+isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an `R`-module and an
+`S`-module and their actions commute. -/
+def congrLeft {R} (S) [Semiring R] [Semiring S] [Module R M₂] [Module R M₃] [Module R M]
+    [Module S M] [SMulCommClass R S M] (e : M₂ ≃ₗ[R] M₃) : (M₂ →ₗ[R] M) ≃ₗ[S] (M₃ →ₗ[R] M) where
+  toFun f := f.comp e.symm.toLinearMap
+  invFun f := f.comp e.toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  left_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.left_inv ·)
+  right_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.right_inv ·)
+
 end CommSemiring
 
 section Field
@@ -1372,7 +1388,7 @@ namespace Submodule
 
 section Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 /-- Given `p` a submodule of the module `M` and `q` a submodule of `p`, `p.equivSubtypeMap q`
 is the natural `LinearEquiv` between `q` and `q.map p.subtype`. -/
@@ -1397,6 +1413,17 @@ theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : 
   cases x
   rfl
 #align submodule.equiv_subtype_map_symm_apply Submodule.equivSubtypeMap_symm_apply
+
+/-- A linear injection `M ↪ N` restricts to an equivalence `f⁻¹ p ≃ p` for any submodule `p`
+contained in its range. -/
+@[simps! apply]
+noncomputable def comap_equiv_self_of_inj_of_le {f : M →ₗ[R] N} {p : Submodule R N}
+    (hf : Injective f) (h : p ≤ LinearMap.range f) :
+    p.comap f ≃ₗ[R] p :=
+  LinearEquiv.ofBijective
+  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨x, hx⟩ ↦ mem_comap.mp hx)
+  (⟨fun x y hxy ↦ by simpa using hf (Subtype.ext_iff.mp hxy),
+    fun ⟨x, hx⟩ ↦ by obtain ⟨y, rfl⟩ := h hx; exact ⟨⟨y, hx⟩, by simp [Subtype.ext_iff]⟩⟩)
 
 end Module
 

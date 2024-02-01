@@ -6,11 +6,9 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
-import Mathlib.Order.Hom.Basic
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.FractionalIdeal
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.ChainOfDivisors
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.FractionalIdeal.Operations
 
 #align_import ring_theory.dedekind_domain.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -704,6 +702,17 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
+
+open UniqueFactorizationMonoid in
+nonrec theorem Ideal.mem_normalizedFactors_iff [DecidableEq (Ideal A)]
+    {p I : Ideal A} (hI : I ≠ ⊥) :
+    p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
+  rw [← Ideal.dvd_iff_le]
+  by_cases hp : p = 0
+  · rw [← zero_eq_bot] at hI
+    simp only [hp, zero_not_mem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
+      not_false_eq_true, implies_true]
+  · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=

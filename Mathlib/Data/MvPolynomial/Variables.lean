@@ -159,29 +159,18 @@ theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → Mv
 
 theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
   classical
-  refine' Finset.sup_le fun b hb => _
-  have := support_mul p q hb
-  simp only [Finset.mem_biUnion, Finset.mem_singleton] at this
-  rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
+  refine (Finset.sup_mono <| support_mul p q).trans <| Finset.sup_add_le.2 fun a ha b hb ↦ ?_
   rw [Finsupp.toMultiset_add]
-  exact add_le_add (Finset.le_sup h₁) (Finset.le_sup h₂)
+  exact add_le_add (Finset.le_sup ha) (Finset.le_sup hb)
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
 
 theorem degrees_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    (∏ i in s, f i).degrees ≤ ∑ i in s, (f i).degrees := by
-  classical
-  refine' s.induction _ _
-  · simp only [Finset.prod_empty, Finset.sum_empty, degrees_one, le_refl]
-  · intro i s his ih
-    rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact le_trans (degrees_mul _ _) (add_le_add_left ih _)
+    (∏ i in s, f i).degrees ≤ ∑ i in s, (f i).degrees :=
+  Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ degrees) degrees_one degrees_mul _ _
 #align mv_polynomial.degrees_prod MvPolynomial.degrees_prod
 
-theorem degrees_pow (p : MvPolynomial σ R) : ∀ n : ℕ, (p ^ n).degrees ≤ n • p.degrees
-  | 0 => by rw [pow_zero, degrees_one]; exact Multiset.zero_le _
-  | n + 1 => by
-    rw [pow_succ, add_smul, add_comm, one_smul]
-    exact le_trans (degrees_mul _ _) (add_le_add_left (degrees_pow _ n) _)
+theorem degrees_pow (p : MvPolynomial σ R) (n : ℕ) : (p ^ n).degrees ≤ n • p.degrees := by
+  simpa using degrees_prod (Finset.range n) fun _ ↦ p
 #align mv_polynomial.degrees_pow MvPolynomial.degrees_pow
 
 theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
@@ -813,7 +802,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       rintro rfl
       contradiction
     rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
-    rw [hp, zero_pow (Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)]
+    rw [hp, zero_pow (Finsupp.mem_support_iff.1 hi)]
     rw [mem_vars]
     exact ⟨d, hd, hi⟩
 #align mv_polynomial.eval₂_hom_eq_constant_coeff_of_vars MvPolynomial.eval₂Hom_eq_constantCoeff_of_vars
