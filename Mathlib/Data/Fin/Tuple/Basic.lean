@@ -773,7 +773,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff_castSucc_lt]
   split_ifs with hlt
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : castLT ((succAbove i) j) H₁ = k
+    generalize hk : castPred ((succAbove i) j) H₁ = k
     rw [castPred_succAbove _ _ hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
@@ -810,7 +810,7 @@ automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
     i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
-    (succAbove_castPred_of_lt _ _ h) (p <| j.castLT _) := by
+    (succAbove_castPred_of_lt _ _ h) (p <| j.castPred _) := by
   rw [insertNth, succAboveCases, dif_neg h.ne, dif_pos h]
 #align fin.insert_nth_apply_below Fin.insertNth_apply_below
 
