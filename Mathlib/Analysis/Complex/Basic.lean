@@ -491,7 +491,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
 #align complex.eq_coe_norm_of_nonneg Complex.eq_coe_norm_of_nonneg
 
-/-- We show that the partial order and the toppology on `ℂ` are compatible.
+/-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
 lemma orderClosedTopology : OrderClosedTopology ℂ where
   isClosed_le' := by
