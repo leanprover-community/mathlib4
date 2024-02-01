@@ -115,4 +115,8 @@ lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
 @[simp]
 lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
 
+lemma monotone_ofReal : Monotone ofReal' := by
+  intro x y hxy
+  simp only [ofReal_eq_coe, real_le_real, hxy]
+
 end Complex
