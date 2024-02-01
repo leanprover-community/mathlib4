@@ -68,22 +68,12 @@ attribute [simp] counit_one comul_one counit_mul comul_mul
 variable (R A)
 
 /-- `counitAlgHom R A` is the counit of the `R`-bialgebra `A`, as an `R`-algebra map. -/
-def counitAlgHom : A →ₐ[R] R where
-  toFun := counit
-  map_one' := counit_one
-  map_mul' := counit_mul
-  map_zero' := counit.map_zero
-  map_add' := counit.map_add
-  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+def counitAlgHom : A →ₐ[R] R :=
+  .ofLinearMap counit counit_one counit_mul
 
 /-- `comulAlgHom R A` is the comultiplication of the `R`-bialgebra `A`, as an `R`-algebra map. -/
-def comulAlgHom : A →ₐ[R] A ⊗[R] A where
-  toFun := comul
-  map_one' := comul_one
-  map_mul' := comul_mul
-  map_zero' := comul.map_zero
-  map_add' := comul.map_add
-  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+def comulAlgHom : A →ₐ[R] A ⊗[R] A :=
+  .ofLinearMap comul comul_one comul_mul
 
 end Bialgebra
 
