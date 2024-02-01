@@ -11,7 +11,7 @@ import Mathlib.Order.CompactlyGenerated
 # Results about compactness properties for intervals in complete lattices
 -/
 
-variable {α : Type*} [CompleteLattice α]
+variable {ι α : Type*} [CompleteLattice α]
 
 namespace Set.Iic
 
@@ -43,8 +43,8 @@ end Set.Iic
 open Set (Iic)
 
 theorem complementedLattice_of_complementedLattice_Iic
-    [CompleteLattice α] [IsModularLattice α] [IsCompactlyGenerated α]
-    {ι : Type*} {s : Set ι} {f : ι → α}
+    [IsModularLattice α] [IsCompactlyGenerated α]
+    {s : Set ι} {f : ι → α}
     (h : ∀ i ∈ s, ComplementedLattice <| Iic (f i))
     (h' : ⨆ i ∈ s, f i = ⊤) :
     ComplementedLattice α := by
