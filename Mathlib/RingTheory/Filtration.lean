@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
 
