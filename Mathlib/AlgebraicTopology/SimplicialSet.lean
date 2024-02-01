@@ -82,6 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
 -- mathport name: standard_simplex
+@[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=

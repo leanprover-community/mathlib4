@@ -271,7 +271,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
-    -- rw [zero_pow two_pos, zero_add, zero_mul, zero_add]
+    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
     -- exact one_pos
     -- but this relied on the exact output of `ring_nf`
     simp
