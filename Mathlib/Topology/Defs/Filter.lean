@@ -99,7 +99,6 @@ as well as other definitions that rely on `Filter`s.
 * `𝓝[>] x`: the filter `nhdsWithin x (Set.Ioi x)` of punctured right-neighborhoods of `x`;
 * `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`;
 * `𝓝ˢ s`: the filter `nhdsSet s` of neighborhoods of a set.
-  
 -/
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
