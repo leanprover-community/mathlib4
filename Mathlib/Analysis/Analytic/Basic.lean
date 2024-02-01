@@ -1295,6 +1295,13 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
 #align formal_multilinear_series.change_origin_radius FormalMultilinearSeries.changeOrigin_radius
 
+/-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
+see `HasFPowerSeriesOnBall.fderiv`. -/
+noncomputable
+def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
+  (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+    |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
+
 end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge

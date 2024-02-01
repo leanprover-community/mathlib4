@@ -26,9 +26,7 @@ We define the following properties for sets in a topological space:
   is compact.
 -/
 
-
 open Set Filter Topology TopologicalSpace Classical Function
-
 
 universe u v
 
@@ -1086,13 +1084,13 @@ instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
   Pi.compactSpace
 #align function.compact_space Function.compactSpace
 
-lemma Pi.isCompact_iff_of_isClosed {s : Set (∀ i, X i)} (hs : IsClosed s) :
+lemma Pi.isCompact_iff_of_isClosed {s : Set (Π i, X i)} (hs : IsClosed s) :
     IsCompact s ↔ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact fun i ↦ H.image <| continuous_apply i
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)
 
-protected lemma Pi.exists_compact_superset_iff {s : Set (∀ i, X i)} :
+protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
     (∃ K, IsCompact K ∧ s ⊆ K) ↔ ∀ i, ∃ Ki, IsCompact Ki ∧ s ⊆ eval i ⁻¹' Ki := by
   constructor
   · intro ⟨K, hK, hsK⟩ i
