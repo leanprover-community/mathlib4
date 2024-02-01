@@ -153,6 +153,14 @@ noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 #align category_theory.limits.types.is_initial_punit CategoryTheory.Limits.Types.isInitialPunit
 
+/-- An object in `Type u` is initial if and only if it is empty. -/
+lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
+  constructor
+  · intro ⟨h⟩
+    exact Function.isEmpty (IsInitial.to h PEmpty)
+  · intro h
+    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
+
 open CategoryTheory.Limits.WalkingPair
 
 -- We manually generate the other projection lemmas since the simp-normal form for the legs is
