@@ -1402,7 +1402,7 @@ theorem nhdsWithin_extChartAt_target_eq (x : M) :
   nhdsWithin_extChartAt_target_eq' I (mem_extChartAt_source I x)
 #align nhds_within_ext_chart_at_target_eq nhdsWithin_extChartAt_target_eq
 
-theorem continuousAt_extChartAt_symm'' (x : M) {y : E} (h : y ∈ (extChartAt I x).target) :
+theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     ContinuousAt (extChartAt I x).symm y :=
   continuousAt_extend_symm' _ _ h
 #align continuous_at_ext_chart_at_symm'' continuousAt_extChartAt_symm''
