@@ -1226,11 +1226,10 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
     rw [hd] at b
     refine' ⟨b, fun i j _ => rfl⟩
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
-  rw [← Submodule.finrank_add_eq_of_isCompl]
-  -- (isCompl_span_singleton_orthogonal hx).symm,
-  --  finrank_span_singleton (ne_zero_of_not_isOrtho_self x hx)] at hd
-  let B' := B.restrict (B.orthogonal <| K ∙ x)
-  obtain ⟨v', hv₁⟩ := ih (hB₂.restrict _ : B'.IsSymm) (Nat.succ.inj hd)
+  rw [← Submodule.finrank_add_eq_of_isCompl (LinearMap.isCompl_span_singleton_orthogonal hx).symm] at hd
+  rw [finrank_span_singleton (ne_zero_of_map hx)] at hd
+  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B ) (Submodule.orthogonalBilin (K ∙ x) B )
+  obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _  : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=
     Basis.mkFinCons x v'
@@ -1238,23 +1237,25 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc
         rw [← hc, Submodule.neg_mem_iff] at hy
-        have := (isCompl_span_singleton_orthogonal hx).disjoint
+        have := (LinearMap.isCompl_span_singleton_orthogonal hx).disjoint
         rw [Submodule.disjoint_def] at this
         have := this (c • x) (Submodule.smul_mem _ _ <| Submodule.mem_span_singleton_self _) hy
-        exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ zero_left _)
+        exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
       (by
         intro y
         refine' ⟨-B x y / B x x, fun z hz => _⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [IsOrtho, smul_left, add_right, smul_right, div_mul_cancel _ hx, add_neg_self,
-          mul_zero])
+        rw [LinearMap.IsOrtho, LinearMap.map_smul, LinearMap.map_add, LinearMap.map_smul]
+        sorry)
+        --, div_mul_cancel _ hx, add_neg_self,
+          --mul_zero])
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
-    · rw [IsOrtho, hB₂]
+    · rw [LinearMap.IsOrtho, ← hB₂]
       exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
     · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
     · exact hv₁ (ne_of_apply_ne _ hij)
