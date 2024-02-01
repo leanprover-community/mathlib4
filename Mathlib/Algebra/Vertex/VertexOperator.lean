@@ -12,10 +12,11 @@ import Mathlib.RingTheory.LaurentSeries
 # Vertex operators
 In this file we introduce vertex operators using Laurent series.
 ## Definitions
-* VertexOperator : This is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
-* HasseDerivative : This is a divided-power derivative.
-* Locality : This is a weak form of commutativity.
-* Residue products : This is a family of products on `VertexOperator R V` parametrized by integers.
+* HetVertexOperator : An `R`-linear map from an `R`-module `V` to `HahnSeries Γ W`.
+* VertexOperator : An `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
+* HasseDerivative : A divided-power derivative.
+* Locality : A weak form of commutativity.
+* Residue products : A family of products on `VertexOperator R V` parametrized by integers.
 ## Main results
 * Composition rule for Hasse derivatives.
 * Comparison between Hasse derivatives and iterated derivatives.
@@ -69,7 +70,7 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
   rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel']
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
-`A(n)`.  We choose a notation that looks a bit like the TeX input. -/
+`A(n)`. -/
 scoped[VertexAlg] notation A "_[" n "]" => ncoef A n
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)

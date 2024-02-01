@@ -148,8 +148,10 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
 def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ × Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
-  isPWO_support' := sorry
+  isPWO_support' := by
+    sorry
 -/
+
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
@@ -737,9 +739,6 @@ theorem add_smul' [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
     intro h
     rw [h.1, h.2, add_zero]
 
--- #find_home says this instance belongs in this file.  Should I trust it?
-instance instNameHere [NonUnitalNonAssocSemiring R] : DistribSMul R R where smul_add := mul_add
-
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
   { inferInstanceAs (Mul (HahnSeries Γ R)),
     inferInstanceAs (Add (HahnSeries Γ R)) with
@@ -753,8 +752,8 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
       exact add_mul
   }
 
-theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnSeries Γ V} {a : Γ}
-    {b : Γ} : (single b r • x).coeff (a + b) = r • x.coeff a := by
+theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnSeries Γ V}
+    {a : Γ} {b : Γ} : (single b r • x).coeff (a + b) = r • x.coeff a := by
   by_cases hr : r = 0
   · simp [hr, smul_coeff']
   simp only [hr, smul_coeff, smul_coeff', support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
