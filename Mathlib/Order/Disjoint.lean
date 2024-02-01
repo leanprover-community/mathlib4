@@ -29,9 +29,9 @@ variable {α : Type*}
 
 section Disjoint
 
-section PartialOrderBot
+section PreOrderBot
 
-variable [PartialOrder α] [OrderBot α] {a b c d : α}
+variable [Preorder α] [OrderBot α] {a b c d : α}
 
 /-- Two elements of a lattice are disjoint if their inf is the bottom element.
   (This generalizes disjoint sets, viewed as members of the subset lattice.)
@@ -80,11 +80,16 @@ theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl
 #align disjoint.mono_right Disjoint.mono_right
 
+end PreOrderBot
+
+section PartialOrderBot
+
+variable [PartialOrder α] [OrderBot α] {a b c d : α}
+
 @[simp]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
   ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
 #align disjoint_self disjoint_self
-
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
 alias ⟨Disjoint.eq_bot_of_self, _⟩ := disjoint_self
