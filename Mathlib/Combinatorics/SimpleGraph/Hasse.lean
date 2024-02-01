@@ -190,7 +190,6 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           simp [toFun]
         have hv' : v = toFun (Fin.last p.length) := by
           rw [htoFun]
-          simp
           exact hv.symm
         have ha : a.val < p.length + 1 ∨ a.val = p.length + 1 :=
           Nat.lt_or_eq_of_le (Nat.le_pred_of_lt a.is_lt)
@@ -221,7 +220,6 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
             rw [hlast]
             apply Fin.ext
             rw [ha']
-            simp
             exact (Nat.mod_eq_of_lt (Nat.lt_add_right_iff_pos.mpr Nat.two_pos)).symm
           have hb' : toFun b = u := by
             simp [toFun, hb]
@@ -239,13 +237,13 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
         have hhom' : ∀ (a : Fin (p.length + 2)), hom a = toFun a := fun a ↦ rfl
         simp only [length]
         rw [hhom' ⊥, hhom' ⊤]
-        simp [toFun]
         apply And.intro
         · have hbot : (⊥ : Fin (p.length + 2)).val < p.length + 1 := Nat.compare_eq_gt.mp rfl
           simp [hbot]
           simp_rw [← hw]
           exact congrArg hom' rfl
-        · intro h_
+        · simp [toFun]
+          intro h_
           have htop : (⊤ : Fin (p.length + 2)).val = p.length + 1 := rfl
           rw [htop] at h_
           apply (Nat.lt_irrefl (p.length + 1)).elim h_
@@ -329,7 +327,6 @@ theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph 
       rw [Nat.succ_sub (Nat.lt_succ.mp hi)]
       rw [← ofPathGraphHom_rec α G hom (n - i.val)]
       rw [ih (hom.comp (.pathGraph (n + 1).le_succ)) ⟨i.val, hi⟩]
-      simp
       exact congrArg hom rfl
     | Or.inr hi =>
       have hi' : i = ⊤ := Fin.ext hi
