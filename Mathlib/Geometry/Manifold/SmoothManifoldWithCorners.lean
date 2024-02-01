@@ -1409,7 +1409,7 @@ theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I 
 
 theorem continuousAt_extChartAt_symm' {x x' : M} (h : x' ∈ (extChartAt I x).source) :
     ContinuousAt (extChartAt I x).symm (extChartAt I x x') :=
-  continuousAt_extChartAt_symm'' I _ <| (extChartAt I x).map_source h
+  continuousAt_extChartAt_symm'' I <| (extChartAt I x).map_source h
 #align continuous_at_ext_chart_at_symm' continuousAt_extChartAt_symm'
 
 theorem continuousAt_extChartAt_symm (x : M) :
@@ -1419,7 +1419,7 @@ theorem continuousAt_extChartAt_symm (x : M) :
 
 theorem continuousOn_extChartAt_symm (x : M) :
     ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
-  fun _y hy => (continuousAt_extChartAt_symm'' _ _ hy).continuousWithinAt
+  fun _y hy => (continuousAt_extChartAt_symm'' _ hy).continuousWithinAt
 #align continuous_on_ext_chart_at_symm continuousOn_extChartAt_symm
 
 theorem isOpen_extChartAt_preimage' (x : M) {s : Set E} (hs : IsOpen s) :
