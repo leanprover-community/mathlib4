@@ -16,8 +16,9 @@ open unit disc with 1 on its boundary.
 
 ## Main theorems
 
-* `Complex.tendsto_tsum_power_nhdsWithin_stolzSet`: Abel's limit theorem for complex power series.
-* `Real.tendsto_tsum_power_nhdsWithin_lt`: Abel's limit theorem for real power series.
+* `Complex.tendsto_tsum_powerSeries_nhdsWithin_stolzSet`:
+  Abel's limit theorem for complex power series.
+* `Real.tendsto_tsum_powerSeries_nhdsWithin_lt`: Abel's limit theorem for real power series.
 
 ## References
 
@@ -72,7 +73,7 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
     Tendsto (fun n ↦ (1 - z) * ∑ i in range n, (l - ∑ j in range (i + 1), f j) * z ^ i)
       atTop (𝓝 (l - ∑' n, f n * z ^ n)) := by
   let s := fun n ↦ ∑ i in range n, f i
-  have k := h.sub (summable_power_of_norm_lt_one h.cauchySeq hz).hasSum.tendsto_sum_nat
+  have k := h.sub (summable_powerSeries_of_norm_lt_one h.cauchySeq hz).hasSum.tendsto_sum_nat
   simp_rw [← sum_sub_distrib, ← mul_one_sub, ← geom_sum_mul_neg, ← mul_assoc, ← sum_mul,
     mul_comm, mul_sum _ _ (f _), range_eq_Ico, ← sum_Ico_Ico_comm', ← range_eq_Ico,
     ← sum_mul] at k
@@ -101,7 +102,7 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
-theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} :
+theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
   cases' le_or_lt M 1 with hM hM
@@ -179,9 +180,9 @@ theorem tendsto_tsum_power_nhdsWithin_stolzSet {M : ℝ} :
   convert add_lt_add S₁ S₂ using 1
   linarith only
 
-theorem tendsto_tsum_power_nhdsWithin_lt :
+theorem tendsto_tsum_powerSeries_nhdsWithin_lt :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
-  (tendsto_tsum_power_nhdsWithin_stolzSet (M := 2) h).mono_left
+  (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left
     (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
 
 end Complex
@@ -194,12 +195,13 @@ variable {f : ℕ → ℝ} {l : ℝ} (h : Tendsto (fun n ↦ ∑ i in range n, f
 
 /-- **Abel's limit theorem**. Given a real power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 from the left. -/
-theorem tendsto_tsum_power_nhdsWithin_lt : Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
+theorem tendsto_tsum_powerSeries_nhdsWithin_lt :
+    Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
   have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m
   rw [Function.comp_def] at h
   push_cast at h
-  replace h := Complex.tendsto_tsum_power_nhdsWithin_lt h
+  replace h := Complex.tendsto_tsum_powerSeries_nhdsWithin_lt h
   rw [tendsto_map'_iff] at h
   rw [Metric.tendsto_nhdsWithin_nhds] at h ⊢
   convert h
