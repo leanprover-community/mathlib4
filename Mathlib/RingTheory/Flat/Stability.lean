@@ -56,10 +56,10 @@ private noncomputable abbrev auxRightMul (I : Ideal R) : M ⊗[R] I →ₗ[S] M 
   letI e' : M ⊗[R] R →ₗ[S] M := AlgebraTensorModule.rid R S M
   exact AlgebraTensorModule.rid R S M ∘ₗ i
 
-private noncomputable abbrev auxJ (I : Ideal R) : Ideal S := LinearMap.range (auxRightMul R S S I)
+private noncomputable abbrev J (I : Ideal R) : Ideal S := LinearMap.range (auxRightMul R S S I)
 
-private noncomputable abbrev auxIsoJ [Module.Flat R S] {I : Ideal R} :
-    S ⊗[R] I ≃ₗ[S] auxJ R S I := by
+private noncomputable abbrev auxIso [Module.Flat R S] {I : Ideal R} :
+    S ⊗[R] I ≃ₗ[S] J R S I := by
   apply LinearEquiv.ofInjective (auxRightMul R S S I)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
   exact (Module.Flat.iff_lTensor_injective' R S).mp inferInstance I
@@ -68,9 +68,9 @@ private noncomputable abbrev auxLTensor [Module.Flat R S] (I : Ideal R) :
     M ⊗[R] I →ₗ[S] M := by
   letI e1 : M ⊗[R] I ≃ₗ[S] M ⊗[S] (S ⊗[R] I) :=
     (AlgebraTensorModule.cancelBaseChange R S S M I).symm
-  letI e2 : M ⊗[S] (S ⊗[R] I) ≃ₗ[S] M ⊗[S] (auxJ R S I) :=
-    TensorProduct.congr (LinearEquiv.refl S M) (auxIsoJ R S)
-  letI e3 : M ⊗[S] (auxJ R S I) →ₗ[S] M ⊗[S] S := lTensor M (auxJ R S I).subtype
+  letI e2 : M ⊗[S] (S ⊗[R] I) ≃ₗ[S] M ⊗[S] (J R S I) :=
+    TensorProduct.congr (LinearEquiv.refl S M) (auxIso R S)
+  letI e3 : M ⊗[S] (J R S I) →ₗ[S] M ⊗[S] S := lTensor M (J R S I).subtype
   letI e4 : M ⊗[S] S →ₗ[S] M := TensorProduct.rid S M
   exact e4 ∘ₗ e3 ∘ₗ (e1 ≪≫ₗ e2)
 
