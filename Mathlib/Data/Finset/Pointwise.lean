@@ -951,7 +951,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
-@[to_additive (attr := simps!) "Lift an `add_monoid_hom` to `Finset` via `image`"]
+@[to_additive (attr := simps) "Lift an `add_monoid_hom` to `Finset` via `image`"]
 def imageMonoidHom [MulOneClass β] [NDFunLike F α β] [MonoidHomClass F α β] (f : F) :
     Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }

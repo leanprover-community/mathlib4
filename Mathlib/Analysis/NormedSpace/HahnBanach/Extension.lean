@@ -164,9 +164,7 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
   · calc
       g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
       _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
-      -- `Pi.smul_apply _` forces explicit binders and relaxes transparency to use non-reducibly
-      -- defeq instances see documentation for `Lean.Meta.Simp.synthesizeArgs`
-      _ = ‖x‖ := by simp [Pi.smul_apply _]
+      _ = ‖x‖ := by simp
 #align exists_dual_vector exists_dual_vector
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing

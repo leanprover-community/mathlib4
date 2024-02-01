@@ -295,7 +295,6 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] {X Y : C} {f : J → C}
       comp_dite] says
     simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
       comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
-
   apply w
 
 -- One might wonder how many iterated tensor products we need simp lemmas for.
@@ -327,7 +326,6 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J]
   simp? [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
     simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
       zero_comp, Finset.sum_dite_eq, Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.id_comp]
-
   apply w
 
 @[ext]
@@ -340,7 +338,6 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
       comp_dite] says
     simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
       comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
-
   apply w
 
 @[ext]
