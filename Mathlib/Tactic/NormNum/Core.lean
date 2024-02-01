@@ -189,7 +189,7 @@ initialize registerBuiltinAttribute {
     modifyEnv fun env => normNumExt.modifyState env fun _ => s
 }
 
-/-- A simplifier step for `norm_num`. -/
+/-- A simp plugin which calls `NormNum.eval`. -/
 def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
   try
     return .done (← eval e post)
