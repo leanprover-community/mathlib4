@@ -213,6 +213,7 @@ lemma uniformMeasure.IsUniform {s : Set E} : IsUniform (id : E → E) s (uniform
 away the choice of random variable and probability space. -/
 def uniformPDF {s : Set E} {x : E} : ℝ≥0∞ := s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
+/-- Alternative definition for `uniformPDF` based on if-then-else rather than Set.indicator. -/
 def uniformPDF_ite {s : Set E} {x : E} : ℝ≥0∞ := if x ∈ s then (μ s)⁻¹ else 0
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
