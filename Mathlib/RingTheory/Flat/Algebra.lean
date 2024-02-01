@@ -27,7 +27,7 @@ open LinearMap (lsmul rTensor lTensor)
 open TensorProduct
 
 /-- An `R`-algebra `S` is flat if it is flat as `R`-module. -/
-class Algebra.Flat (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] where
+class Algebra.Flat (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] : Prop where
   out : Module.Flat R S
 
 namespace Algebra.Flat
@@ -48,7 +48,7 @@ theorem comp [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 end Algebra.Flat
 
 /-- A `RingHom` is flat if `R` is flat as an `S` algebra. -/
-class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) where
+class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 
 namespace RingHom.Flat
@@ -62,7 +62,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommR
   (f : R →+* S) (g : S →+* T)
 
 /-- Composition of flat ring homomorphisms is flat. -/
-noncomputable instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
+instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
   out :=
     letI : Algebra R S := f.toAlgebra
     letI : Algebra S T := g.toAlgebra
