@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 
 import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # Results about compactness properties for intervals in complete lattices
