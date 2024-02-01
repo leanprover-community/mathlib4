@@ -607,11 +607,11 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
 
 theorem prime_mul_iff [CancelCommMonoidWithZero α] {x y : α} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rcases of_irreducible_mul h.irreducible with hx | hy
     · exact Or.inr ⟨hx, (associated_unit_mul_left y x hx).prime h⟩
     · exact Or.inl ⟨(associated_mul_unit_left x y hy).prime h, hy⟩
-  · rcases h with ⟨hx, hy⟩ | ⟨hx, hy⟩
+  · rintro ⟨hx, hy⟩ | ⟨hx, hy⟩
     · exact (associated_mul_unit_left x y hy).symm.prime hx
     · exact (associated_unit_mul_right y x hx).prime hy
 
