@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Pow
-import Mathlib.Tactic.Common
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Common
 
 #align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -498,8 +498,3 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat
-
-namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
-
-end Mathlib.Meta.Positivity
