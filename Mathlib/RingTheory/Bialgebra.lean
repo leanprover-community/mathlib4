@@ -31,34 +31,54 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   -- The counit is an algebra morphism
   /-- The counit on a bialgebra preserves 1. -/
   counit_one : counit 1 = 1
-  /-- The counit on a bialgebra preserves multiplication. -/
-  counit_mul : ∀ a₁ a₂ : A, counit (a₁ * a₂) = counit a₁ * counit a₂
+  /-- The counit on a bialgebra preserves multiplication. Note that this is written
+  in a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R]` are equal.
+  The two corresponding uncurried maps `A ⊗[R] A →ₗ[R]` which are hence also equal,
+  are the following: the first factors through `A` and is is multiplication on `A` followed
+  by `counit`. The second factors through `R ⊗[R] R` is `counit ⊗ counit` followed by
+  multiplication on `R`. -/
+  mul_compr₂_counit : (LinearMap.mul R A).compr₂ counit = (LinearMap.mul R R).compl₁₂ counit counit
   -- The comultiplication is an algebra morphism
   /-- The comultiplication on a bialgebra preserves `1`. -/
   comul_one : comul 1 = 1
-  /-- The comultiplication on a bialgebra preserves multiplication. -/
-  comul_mul : ∀ a₁ a₂ : A, comul (a₁ * a₂) = comul a₁ * comul a₂
+  /-- The comultiplication on a bialgebra preserves multiplication. This is written in
+  a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
+  are equal. The corresponding equal uncurried maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
+  are firstly multiplcation followed by `comul`, and secondly `comul ⊗ comul` followed
+  by multiplication on `A ⊗[R] A`. -/
+  mul_compr₂_comul :
+    (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
 
 namespace Bialgebra
+
 variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [Semiring A] [B : Bialgebra R A]
 
-attribute [simp] counit_one counit_mul comul_one comul_mul
+lemma counit_mul {a b : A} : B.counit (a * b) = B.counit a * B.counit b :=
+  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_counit) a) b
 
-/-- The counit of a bialgebra, as an R-algebra map. -/
+lemma comul_mul {a b : A} : B.comul (a * b) = B.comul a * B.comul b :=
+  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_comul) a) b
+
+-- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
+attribute [simp] counit_one comul_one counit_mul comul_mul
+
+variable (R A)
+
+/-- `counitAlgHom R A` is the counit of the `R`-bialgebra `A`, as an `R`-algebra map. -/
 def counitAlgHom : A →ₐ[R] R where
   toFun := B.counit
   map_one' := B.counit_one
-  map_mul' := B.counit_mul
+  map_mul' x y := counit_mul
   map_zero' := B.counit.map_zero
   map_add' := B.counit.map_add
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
 
-/-- The comultiplication of a bialgebra, as an R-algebra map. -/
+/-- `comulAlgHom R A` is the comultiplication of the `R`-bialgebra `A`, as an `R`-algebra map. -/
 def comulAlgHom : A →ₐ[R] A ⊗[R] A where
   toFun := B.comul
   map_one' := B.comul_one
-  map_mul' := B.comul_mul
+  map_mul' x y := comul_mul
   map_zero' := B.comul.map_zero
   map_add' := B.comul.map_add
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
@@ -75,9 +95,9 @@ namespace CommSemiring
 /-- Every commutative (semi)ring is a bialgebra over itself -/
 noncomputable
 instance toBialgebra : Bialgebra R R where
-  counit_mul := by simp
+  mul_compr₂_counit := by ext; simp
   counit_one := rfl
-  comul_mul := by simp
+  mul_compr₂_comul := by ext; simp
   comul_one := rfl
 
 end CommSemiring
