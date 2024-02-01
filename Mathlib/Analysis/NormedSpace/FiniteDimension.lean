@@ -33,7 +33,7 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
   resolution. It is however registered as an instance for `𝕜 = ℝ` and `𝕜 = ℂ`. As properness
   implies completeness, there is no need to also register `FiniteDimensional.complete` on `ℝ` or
   `ℂ`.
-* `finiteDimensional_of_isCompact_closedBall`: Riesz' theorem: if the closed unit ball is
+* `FiniteDimensional.of_isCompact_closedBall`: Riesz' theorem: if the closed unit ball is
   compact, then the space is finite-dimensional.
 
 ## Implementation notes
@@ -422,7 +422,7 @@ variable (𝕜)
 
 /-- **Riesz's theorem**: if a closed ball with center zero of positive radius is compact in a vector
 space, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
+theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     (h : IsCompact (Metric.closedBall (0 : E) r)) : FiniteDimensional 𝕜 E := by
   by_contra hfin
   obtain ⟨R, f, Rgt, fle, lef⟩ :
@@ -452,22 +452,21 @@ theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
       apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
-#align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closedBall₀
+#align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
 space is finite-dimensional. -/
-theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
-    (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 E := by
-  apply finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos
-  have : Continuous fun x => -c + x := continuous_const.add continuous_id
-  simpa using h.image this
-#align finite_dimensional_of_is_compact_closed_ball finiteDimensional_of_isCompact_closedBall
+theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
+    (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 E :=
+  .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
+#align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
 
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
-theorem finiteDimensional_of_locallyCompactSpace [LocallyCompactSpace E] :
-    FiniteDimensional 𝕜 E := by
-  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
-  exact finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos hr
+theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E :=
+  let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
+  .of_isCompact_closedBall₀ 𝕜 rpos hr
+
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/
@@ -605,7 +604,7 @@ instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     ProperSpace S := by
   nontriviality E
   have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   exact FiniteDimensional.proper 𝕜 S
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
@@ -635,7 +634,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
   · rw [mem_interior_iff_mem_nhds, Metric.nhds_basis_closedBall.mem_iff] at hx'
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
-      finiteDimensional_of_isCompact_closedBall ℝ hr₀
+      .of_isCompact_closedBall ℝ hr₀
         (hK.of_isClosed_subset Metric.isClosed_ball hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine' ⟨x, hx', _⟩
