@@ -14,8 +14,6 @@ TODO
 
 -/
 
-section LP_general
-
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
 structure LinearProgram (R V W M N : Type*) [OrderedRing R]
     [AddCommGroup V] [Module R V] [AddTorsor V M]
