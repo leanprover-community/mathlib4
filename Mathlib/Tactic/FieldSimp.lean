@@ -71,8 +71,8 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
     let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } (← Simp.getSimprocs) discharge
-        usedTheorems
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
+        discharge usedTheorems
     set {(← get) with usedTheorems := usedTheorems'}
     if simpResult.expr.isConstOf ``True then
       try

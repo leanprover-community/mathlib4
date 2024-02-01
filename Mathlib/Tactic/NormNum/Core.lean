@@ -189,10 +189,12 @@ initialize registerBuiltinAttribute {
     modifyEnv fun env => normNumExt.modifyState env fun _ => s
 }
 
-/-- A simp plugin which calls `NormNum.eval`. -/
-def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
-  try return some (.done (← eval e post))
-  catch _ => return none
+/-- A simplifier step for `norm_num`. -/
+def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
+  try
+    return .done (← eval e post)
+  catch _ =>
+    return .continue
 
 variable (ctx : Simp.Context) (useSimp := true) in
 mutual
@@ -202,14 +204,12 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e ↦ do
-        Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e ↦ do
-        Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
+      pre := Simp.preDefault #[] >> tryNormNum
+      post := Simp.postDefault #[] >> tryNormNum (post := true)
       discharge? := discharge
     } else {
-      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := tryNormNum
+      post := tryNormNum (post := true)
       discharge? := discharge
     }
 

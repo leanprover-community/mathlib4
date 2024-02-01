@@ -19,7 +19,7 @@ Main loop of the `simp_intro` tactic.
 * `more`: if true, we will keep introducing binders as long as we can
 * `ids`: the list of binder identifiers
 -/
-partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simprocs := {})
+partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simp.SimprocsArray := #[])
     (discharge? : Option Simp.Discharge) (more : Bool) (ids : List (TSyntax ``binderIdent)) :
     TermElabM (Option MVarId) := do
   let done := return (← simpTargetCore g ctx simprocs discharge?).1
@@ -72,5 +72,5 @@ elab "simp_intro" cfg:(config)? disch:(discharger)?
     let g ← getMainGoal
     g.checkNotAssigned `simp_intro
     g.withContext do
-      let g? ← simpIntroCore g ctx simprocs discharge? more.isSome ids.toList
+      let g? ← simpIntroCore g ctx (simprocs := simprocs) discharge? more.isSome ids.toList
       replaceMainGoal <| if let some g := g? then [g] else []

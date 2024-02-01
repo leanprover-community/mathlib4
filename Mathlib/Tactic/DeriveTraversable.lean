@@ -427,7 +427,7 @@ def traversableDeriveHandler : DerivingHandlerNoArgs :=
 initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 
 /-- Simplify the goal `m` using `functor_norm`. -/
-def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simprocs := {})
+def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArray := {})
     (discharge? : Option Simp.Discharge := none)
     (simplifyTarget : Bool := true) (fvarIdsToSimp : Array FVarId := #[])
     (usedSimps : Simp.UsedSimps := {}) :
