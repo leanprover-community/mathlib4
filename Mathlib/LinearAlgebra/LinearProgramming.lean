@@ -17,6 +17,8 @@ TODO
 
 -/
 
+section LP_general
+
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
 structure LinearProgram (R : Type*) (M : Type*) (N : Type*)
     [OrderedSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] where
@@ -74,6 +76,8 @@ theorem LinearProgram.empty_primal (LP : LinearProgram R M N)
     ∀ r : R, ∃ c ∈ LP.primal, r < LP.objective c :=
   sorry
 
+end LP_general
+
 /-
 -- If we assume `R = ℝ` and `Module.Finite M` and `Module.Finite N`, we can use something like...
 
@@ -97,3 +101,21 @@ lemma geometric_hahn_banach_point_closed' (ht₁ : Convex ℝ t) (disj : x ∉ t
   rw [ContinuousLinearMap.neg_apply, neg_le_neg_iff]
   sorry
 -/
+
+section LP_standard
+
+structure StandardLinearProgram (R V W : Type*)
+    [OrderedCommSemiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W] where
+  coneV : PointedCone R V
+  linmap : V →ₗ[R] W
+  coneW : PointedCone R W
+  objective : Module.Dual R W
+  target : W
+
+variable {R V W : Type*}
+    [OrderedCommSemiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
+
+def StandardLinearProgram.space (LP : StandardLinearProgram R V W) : Set V :=
+  { x ∈ LP.coneV | ∃ y ∈ LP.coneW, LP.linmap x + y = LP.target }
+
+end LP_standard
