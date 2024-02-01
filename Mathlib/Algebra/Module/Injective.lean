@@ -187,7 +187,6 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       -- porting note: this subgoal didn't exist before the reenableeta branch
       -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
       -- after the behavior of `refine'` changed.
-      exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
       symm

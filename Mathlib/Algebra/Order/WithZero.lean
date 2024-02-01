@@ -281,8 +281,10 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
+set_option synthInstance.maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
