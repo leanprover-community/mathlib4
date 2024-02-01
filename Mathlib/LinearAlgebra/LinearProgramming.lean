@@ -1,7 +1,18 @@
-
+/-
+Copyright (c) 2023 Martin Dvorak. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Martin Dvorak, Antoine Chambert-Loir
+-/
 import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Algebra.Order.Group.Defs
 
+/-!
+
+# Linear programming
+
+TODO
+
+-/
 
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
 structure LinearProgram (R V W M N : Type*) [OrderedRing R]
