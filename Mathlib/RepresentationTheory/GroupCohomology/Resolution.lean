@@ -400,8 +400,8 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
     (a : Fin (n + 1)) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
       = f (Fin.contractNth a (· * ·) g) := by
-  simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
-    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
+  simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succAbove_succ_zero,
+    Fin.partialProd_zero, map_one, Fin.succAbove_succ_succ, LinearMap.one_apply,
     Fin.partialProd_succ]
   congr
   ext
