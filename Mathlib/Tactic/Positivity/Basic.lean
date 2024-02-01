@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Qq
@@ -391,3 +392,15 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
 def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
   let ~q(Nat.succ $a) := e | throwError "not Nat.succ"
   pure (.positive (q(Nat.succ_pos $a) : Expr))
+
+/-- Extension for Nat.factorial. -/
+@[positivity Nat.factorial _]
+def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
+  let ~q(Nat.factorial $a) := e | throwError "failed to match Nat.factorial"
+  pure (.positive (q(Nat.factorial_pos $a) : Expr))
+
+/-- Extension for Nat.ascFactorial. -/
+@[positivity Nat.ascFactorial _ _]
+def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
+  let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
+  pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))

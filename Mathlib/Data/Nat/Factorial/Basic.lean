@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Positivity.Core
 
 #align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -502,17 +501,5 @@ end Nat
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
-
-/-- Extension for Nat.factorial. -/
-@[positivity Nat.factorial _]
-def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.factorial $a) := e | throwError "failed to match Nat.factorial"
-  pure (.positive (q(Nat.factorial_pos $a) : Expr))
-
-/-- Extension for Nat.ascFactorial. -/
-@[positivity Nat.ascFactorial _ _]
-def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
-  let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
-  pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))
 
 end Mathlib.Meta.Positivity
