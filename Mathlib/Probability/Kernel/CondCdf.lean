@@ -553,17 +553,20 @@ theorem mem_condCDFSet_ae (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
 
 end HasCondCDF
 
+-- 10:05, 10:10, 10:17, 10:22
+
 open scoped Classical
 
 /-- Conditional cdf of the measure given the value on `α`, restricted to the rationals.
 It is defined to be `pre_cdf` if `a ∈ condCDFSet`, and a default cdf-like function
 otherwise. This is an auxiliary definition used to define `cond_cdf`. -/
 noncomputable def condCDFRat (ρ : Measure (α × ℝ)) : α → ℚ → ℝ := fun a =>
-  if a ∈ condCDFSet ρ then fun r => (preCDF ρ r a).toReal else fun r => if r < 0 then 0 else 1
+  if a ∈ condCDFSet ρ then fun r => (preCDF ρ r a).toReal else defaultRatCDF
 #align probability_theory.cond_cdf_rat ProbabilityTheory.condCDFRat
 
 theorem condCDFRat_of_not_mem (ρ : Measure (α × ℝ)) (a : α) (h : a ∉ condCDFSet ρ) {r : ℚ} :
-    condCDFRat ρ a r = if r < 0 then 0 else 1 := by simp only [condCDFRat, h, if_false]
+    condCDFRat ρ a r = if r < 0 then 0 else 1 := by
+  simp only [condCDFRat, h, if_false, defaultRatCDF]
 #align probability_theory.cond_cdf_rat_of_not_mem ProbabilityTheory.condCDFRat_of_not_mem
 
 theorem condCDFRat_of_mem (ρ : Measure (α × ℝ)) (a : α) (h : a ∈ condCDFSet ρ) (r : ℚ) :
@@ -580,10 +583,7 @@ theorem monotone_condCDFRat (ρ : Measure (α × ℝ)) (a : α) : Monotone (cond
     rw [ENNReal.toReal_le_toReal (h_ne_top _) (h_ne_top _)]
     exact h'.1 hrr'
   · simp only [condCDFRat, h, if_false]
-    intro x y hxy
-    dsimp only
-    split_ifs with h_1 h_2 h_2
-    exacts [le_rfl, zero_le_one, absurd (hxy.trans_lt h_2) h_1, le_rfl]
+    exact monotone_defaultRatCDF
 #align probability_theory.monotone_cond_cdf_rat ProbabilityTheory.monotone_condCDFRat
 
 theorem measurable_condCDFRat (ρ : Measure (α × ℝ)) (q : ℚ) :
@@ -595,13 +595,10 @@ theorem measurable_condCDFRat (ρ : Measure (α × ℝ)) (q : ℚ) :
 #align probability_theory.measurable_cond_cdf_rat ProbabilityTheory.measurable_condCDFRat
 
 theorem condCDFRat_nonneg (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) : 0 ≤ condCDFRat ρ a r := by
-  -- Porting note: was
-  -- unfold condCDFRat; split_ifs; exacts [ENNReal.toReal_nonneg, le_rfl, zero_le_one]
-  unfold condCDFRat; split_ifs
-  · exact ENNReal.toReal_nonneg
-  dsimp only
+  unfold condCDFRat
   split_ifs
-  exacts [le_rfl, zero_le_one]
+  · exact ENNReal.toReal_nonneg
+  · exact defaultRatCDF_nonneg _
 #align probability_theory.cond_cdf_rat_nonneg ProbabilityTheory.condCDFRat_nonneg
 
 theorem condCDFRat_le_one (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) : condCDFRat ρ a r ≤ 1 := by
@@ -610,9 +607,7 @@ theorem condCDFRat_le_one (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) : condCD
   · refine' ENNReal.toReal_le_of_le_ofReal zero_le_one _
     rw [ENNReal.ofReal_one]
     exact (hasCondCDF_of_mem_condCDFSet h).le_one r
-  -- Porting note: added
-  dsimp only; split_ifs
-  exacts [zero_le_one, le_rfl]
+  · exact defaultRatCDF_le_one _
 #align probability_theory.cond_cdf_rat_le_one ProbabilityTheory.condCDFRat_le_one
 
 theorem tendsto_condCDFRat_atBot (ρ : Measure (α × ℝ)) (a : α) :
@@ -624,10 +619,7 @@ theorem tendsto_condCDFRat_atBot (ρ : Measure (α × ℝ)) (a : α) :
     · have h' := hasCondCDF_of_mem_condCDFSet h
       exact fun r => ((h'.le_one r).trans_lt ENNReal.one_lt_top).ne
     · exact ENNReal.zero_ne_top
-  · refine' (tendsto_congr' _).mp tendsto_const_nhds
-    rw [EventuallyEq, eventually_atBot]
-    refine' ⟨-1, fun q hq => (if_pos (hq.trans_lt _)).symm⟩
-    linarith
+  · exact tendsto_defaultRatCDF_atBot
 #align probability_theory.tendsto_cond_cdf_rat_at_bot ProbabilityTheory.tendsto_condCDFRat_atBot
 
 theorem tendsto_condCDFRat_atTop (ρ : Measure (α × ℝ)) (a : α) :
@@ -639,9 +631,7 @@ theorem tendsto_condCDFRat_atTop (ρ : Measure (α × ℝ)) (a : α) :
     · exact h'.tendsto_atTop_one
     · exact fun r => ((h'.le_one r).trans_lt ENNReal.one_lt_top).ne
     · exact ENNReal.one_ne_top
-  · refine' (tendsto_congr' _).mp tendsto_const_nhds
-    rw [EventuallyEq, eventually_atTop]
-    exact ⟨0, fun q hq => (if_neg (not_lt.mpr hq)).symm⟩
+  · exact tendsto_defaultRatCDF_atTop
 #align probability_theory.tendsto_cond_cdf_rat_at_top ProbabilityTheory.tendsto_condCDFRat_atTop
 
 theorem condCDFRat_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
@@ -666,31 +656,7 @@ theorem inf_gt_condCDFRat (ρ : Measure (α × ℝ)) (a : α) (t : ℚ) :
       rw [← ha'.iInf_rat_gt_eq]
     · exact fun r => ((ha'.le_one r).trans_lt ENNReal.one_lt_top).ne
   · simp_rw [condCDFRat_of_not_mem ρ a ha]
-    have h_bdd : BddBelow (range fun r : ↥(Ioi t) => ite ((r : ℚ) < 0) (0 : ℝ) 1) := by
-      refine' ⟨0, fun x hx => _⟩
-      obtain ⟨y, rfl⟩ := mem_range.mpr hx
-      dsimp only
-      split_ifs
-      exacts [le_rfl, zero_le_one]
-    split_ifs with h
-    · refine' le_antisymm _ (le_ciInf fun x => _)
-      · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := by
-          refine' ⟨t / 2, _, _⟩
-          · linarith
-          · linarith
-        refine' (ciInf_le h_bdd ⟨q, htq⟩).trans _
-        rw [if_pos]
-        rwa [Subtype.coe_mk]
-      · split_ifs
-        exacts [le_rfl, zero_le_one]
-    · refine' le_antisymm _ _
-      · refine' (ciInf_le h_bdd ⟨t + 1, lt_add_one t⟩).trans _
-        split_ifs
-        exacts [zero_le_one, le_rfl]
-      · refine' le_ciInf fun x => _
-        rw [if_neg]
-        rw [not_lt] at h ⊢
-        exact h.trans (mem_Ioi.mp x.prop).le
+    exact inf_gt_rat_defaultRatCDF _
 #align probability_theory.inf_gt_cond_cdf_rat ProbabilityTheory.inf_gt_condCDFRat
 
 lemma isCDFLike_condCDFRat (ρ : Measure (α × ℝ)) : IsCDFLike (condCDFRat ρ) where

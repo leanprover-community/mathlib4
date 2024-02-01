@@ -32,7 +32,93 @@ structure IsCDFLike (f : α → ℚ → ℝ) : Prop where
   iInf_rat_gt_eq : ∀ a, ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t
   measurable : ∀ q, Measurable (fun a ↦ f a q)
 
+lemma IsCDFLike.ite {s : Set α} (hs : MeasurableSet s) [DecidablePred (fun a ↦ a ∈ s)]
+    {f g : α → ℚ → ℝ} (hf : IsCDFLike f) (hg : IsCDFLike g) :
+    IsCDFLike (fun a q ↦ if a ∈ s then f a q else g a q) where
+  mono a := by split_ifs; exacts [hf.mono a, hg.mono a]
+  nonneg a := by split_ifs; exacts [hf.nonneg a, hg.nonneg a]
+  le_one a := by split_ifs; exacts [hf.le_one a, hg.le_one a]
+  tendsto_atTop_one a := by split_ifs; exacts [hf.tendsto_atTop_one a, hg.tendsto_atTop_one a]
+  tendsto_atBot_zero a := by split_ifs; exacts [hf.tendsto_atBot_zero a, hg.tendsto_atBot_zero a]
+  iInf_rat_gt_eq a := by split_ifs; exacts [hf.iInf_rat_gt_eq a, hg.iInf_rat_gt_eq a]
+  measurable q := Measurable.ite hs (hf.measurable q) (hg.measurable q)
+
 end IsCDFLike
+
+section DefaultRatCDF
+
+def defaultRatCDF (q : ℚ) := if q < 0 then (0 : ℝ) else 1
+
+lemma monotone_defaultRatCDF : Monotone defaultRatCDF := by
+  unfold defaultRatCDF
+  intro x y hxy
+  dsimp only
+  split_ifs with h_1 h_2 h_2
+  exacts [le_rfl, zero_le_one, absurd (hxy.trans_lt h_2) h_1, le_rfl]
+
+lemma defaultRatCDF_nonneg (q : ℚ) : 0 ≤ defaultRatCDF q := by
+  unfold defaultRatCDF
+  split_ifs
+  exacts [le_rfl, zero_le_one]
+
+lemma defaultRatCDF_le_one (q : ℚ) : defaultRatCDF q ≤ 1 := by
+  unfold defaultRatCDF
+  split_ifs <;> simp
+
+lemma tendsto_defaultRatCDF_atTop : Tendsto defaultRatCDF atTop (𝓝 1) := by
+  refine (tendsto_congr' ?_).mp tendsto_const_nhds
+  rw [EventuallyEq, eventually_atTop]
+  exact ⟨0, fun q hq => (if_neg (not_lt.mpr hq)).symm⟩
+
+lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
+  refine (tendsto_congr' ?_).mp tendsto_const_nhds
+  rw [EventuallyEq, eventually_atBot]
+  refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
+  linarith
+
+lemma inf_gt_rat_defaultRatCDF (t : ℚ) :
+    ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by
+  simp only [defaultRatCDF]
+  have h_bdd : BddBelow (range fun r : ↥(Ioi t) ↦ ite ((r : ℚ) < 0) (0 : ℝ) 1) := by
+    refine' ⟨0, fun x hx ↦ _⟩
+    obtain ⟨y, rfl⟩ := mem_range.mpr hx
+    dsimp only
+    split_ifs
+    exacts [le_rfl, zero_le_one]
+  split_ifs with h
+  · refine' le_antisymm _ (le_ciInf fun x ↦ _)
+    · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := by
+        refine' ⟨t / 2, _, _⟩
+        · linarith
+        · linarith
+      refine' (ciInf_le h_bdd ⟨q, htq⟩).trans _
+      rw [if_pos]
+      rwa [Subtype.coe_mk]
+    · split_ifs
+      exacts [le_rfl, zero_le_one]
+  · refine' le_antisymm _ _
+    · refine' (ciInf_le h_bdd ⟨t + 1, lt_add_one t⟩).trans _
+      split_ifs
+      exacts [zero_le_one, le_rfl]
+    · refine' le_ciInf fun x ↦ _
+      rw [if_neg]
+      rw [not_lt] at h ⊢
+      exact h.trans (mem_Ioi.mp x.prop).le
+
+lemma measurable_defaultRatCDF (α : Type*) [MeasurableSpace α] (q : ℚ) :
+  Measurable (fun (_ : α) ↦ defaultRatCDF q) := measurable_const
+
+lemma isCDFLike_defaultRatCDF (α : Type*) [MeasurableSpace α] :
+    IsCDFLike (fun (_ : α) (q : ℚ) ↦ defaultRatCDF q) where
+  mono _ := monotone_defaultRatCDF
+  nonneg _ := defaultRatCDF_nonneg
+  le_one _ := defaultRatCDF_le_one
+  tendsto_atBot_zero _ := tendsto_defaultRatCDF_atBot
+  tendsto_atTop_one _ := tendsto_defaultRatCDF_atTop
+  iInf_rat_gt_eq _ := inf_gt_rat_defaultRatCDF
+  measurable := measurable_defaultRatCDF α
+
+end DefaultRatCDF
 
 variable {f : α → ℚ → ℝ} (hf : IsCDFLike f)
 

@@ -508,11 +508,13 @@ lemma measurable_mLimsup (κ : kernel α (ℝ × β)) {s : Set β} (hs : Measura
 
 lemma measurable_mLimsup_left (κ : kernel α (ℝ × β)) {s : Set β} (hs : MeasurableSet s) (t : ℝ) :
     Measurable (fun a ↦ MLimsup κ a s t) := by
-  sorry
+  change Measurable ((fun (p : α × ℝ) ↦ MLimsup κ p.1 s p.2) ∘ (fun a ↦ (a, t)))
+  exact (measurable_mLimsup κ hs).comp (measurable_id.prod_mk measurable_const)
 
 lemma measurable_mLimsup_right (κ : kernel α (ℝ × β)) {s : Set β} (hs : MeasurableSet s) (a : α) :
     Measurable (MLimsup κ a s) := by
-  sorry
+  change Measurable ((fun (p : α × ℝ) ↦ MLimsup κ p.1 s p.2) ∘ (fun t ↦ (a, t)))
+  exact (measurable_mLimsup κ hs).comp (measurable_const.prod_mk measurable_id)
 
 lemma mLimsup_mono_set (κ : kernel α (ℝ × β)) (a : α) {s s' : Set β} (h : s ⊆ s') (t : ℝ) :
     MLimsup κ a s t ≤ MLimsup κ a s' t := by
@@ -557,35 +559,35 @@ lemma tendsto_mLimsup_atTop_of_antitone (κ : kernel α (ℝ × β)) [IsFiniteKe
 section Iic_Q
 
 noncomputable
-def todo1' (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : ℝ := MLimsup κ a (Set.Iic q) t
+def mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : ℝ := MLimsup κ a (Set.Iic q) t
 
-lemma measurable_todo1' (κ : kernel α (ℝ × ℝ)) (q : ℚ) :
-    Measurable (fun p : α × ℝ ↦ todo1' κ p.1 p.2 q) := by
+lemma measurable_mLimsupIic (κ : kernel α (ℝ × ℝ)) (q : ℚ) :
+    Measurable (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2 q) := by
   sorry
 
-lemma monotone_todo1' (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) : Monotone (todo1' κ a t) := by
+lemma monotone_mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) : Monotone (mLimsupIic κ a t) := by
   intro q r hqr
-  rw [todo1', todo1']
+  rw [mLimsupIic, mLimsupIic]
   refine mLimsup_mono_set κ a ?_ t
   refine Iic_subset_Iic.mpr ?_
   exact_mod_cast hqr
 
-lemma todo1'_nonneg (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : 0 ≤ todo1' κ a t q :=
+lemma mLimsupIic_nonneg (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : 0 ≤ mLimsupIic κ a t q :=
   mLimsup_nonneg κ a _ t
 
-lemma todo1'_le_one (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : todo1' κ a t q ≤ 1 :=
+lemma mLimsupIic_le_one (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : mLimsupIic κ a t q ≤ 1 :=
   mLimsup_le_one κ a _ t
 
-lemma tendsto_atTop_todo1' (κ : kernel α (ℝ × ℝ)) (a : α) :
-    ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ todo1' κ a t q) atTop (𝓝 1) := by
+lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) :
+    ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atTop (𝓝 1) := by
   sorry
 
-lemma tendsto_atBot_todo1' (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) :
-    Tendsto (fun q ↦ todo1' κ a t q) atBot (𝓝 0) := by
+lemma tendsto_atBot_mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) :
+    Tendsto (fun q ↦ mLimsupIic κ a t q) atBot (𝓝 0) := by
   sorry
 
-lemma iInf_rat_gt_todo1'_eq (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) :
-    ⨅ r : Ioi q, todo1' κ a t r = todo1' κ a t q := by
+lemma iInf_rat_gt_mLimsupIic_eq (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) :
+    ⨅ r : Ioi q, mLimsupIic κ a t r = mLimsupIic κ a t q := by
   sorry
 
 end Iic_Q
@@ -593,100 +595,64 @@ end Iic_Q
 section Rat
 
 lemma measurableSet_tendstoAtTopSet (κ : kernel α (ℝ × ℝ)) :
-    MeasurableSet {p : α × ℝ | Tendsto (fun q ↦ todo1' κ p.1 p.2 q) atTop (𝓝 1)} :=
-  measurableSet_tendsto_nhds (fun q ↦ measurable_todo1' κ q) 1
+    MeasurableSet {p : α × ℝ | Tendsto (fun q ↦ mLimsupIic κ p.1 p.2 q) atTop (𝓝 1)} :=
+  measurableSet_tendsto_nhds (fun q ↦ measurable_mLimsupIic κ q) 1
 
 open Classical in
 noncomputable
 def todo2' (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) : ℚ → ℝ :=
-  if Tendsto (fun q ↦ todo1' κ p.1 p.2 q) atTop (𝓝 1)
-    then fun q ↦ todo1' κ p.1 p.2 q
-    else fun q ↦ if q < 0 then 0 else 1
+  if Tendsto (fun q ↦ mLimsupIic κ p.1 p.2 q) atTop (𝓝 1)
+    then fun q ↦ mLimsupIic κ p.1 p.2 q
+    else defaultRatCDF
 
 lemma measurable_todo2' (κ : kernel α (ℝ × ℝ)) (q : ℚ) :
     Measurable (fun p ↦ todo2' κ p q) := by
   classical
   simp only [todo2', ite_apply]
-  exact Measurable.ite (measurableSet_tendstoAtTopSet κ) (measurable_todo1' κ q) measurable_const
+  exact Measurable.ite (measurableSet_tendstoAtTopSet κ) (measurable_mLimsupIic κ q)
+    measurable_const
 
 lemma monotone_todo2' (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) :
     Monotone (todo2' κ p) := by
   unfold todo2'
   split_ifs with h
-  · exact monotone_todo1' κ p.1 p.2
-  · intro x y hxy
-    dsimp only
-    split_ifs with h_1 h_2 h_2
-    exacts [le_rfl, zero_le_one, absurd (hxy.trans_lt h_2) h_1, le_rfl]
+  · exact monotone_mLimsupIic κ p.1 p.2
+  · exact monotone_defaultRatCDF
 
 lemma todo2'_nonneg (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) :
     0 ≤ todo2' κ p := by
   unfold todo2'
   split_ifs with h
-  · exact todo1'_nonneg κ p.1 p.2
-  · intro q
-    simp only [Pi.one_apply]
-    split_ifs <;> simp
+  · exact mLimsupIic_nonneg κ p.1 p.2
+  · exact defaultRatCDF_nonneg
 
 lemma todo2'_le_one (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) :
     todo2' κ p ≤ 1 := by
   unfold todo2'
   split_ifs with h
-  · exact todo1'_le_one κ p.1 p.2
-  · intro q
-    simp only [Pi.one_apply]
-    split_ifs <;> simp
+  · exact mLimsupIic_le_one κ p.1 p.2
+  · exact defaultRatCDF_le_one
 
 lemma tendsto_atTop_todo2' (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) :
     Tendsto (todo2' κ p) atTop (𝓝 1) := by
   unfold todo2'
   split_ifs with h
   · exact h
-  · refine' (tendsto_congr' _).mp tendsto_const_nhds
-    rw [EventuallyEq, eventually_atTop]
-    exact ⟨0, fun q hq ↦ (if_neg (not_lt.mpr hq)).symm⟩
+  · exact tendsto_defaultRatCDF_atTop
 
 lemma tendsto_atBot_todo2' (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) :
     Tendsto (todo2' κ p) atBot (𝓝 0) := by
   unfold todo2'
   split_ifs with h
-  · exact tendsto_atBot_todo1' κ p.1 p.2
-  · refine' (tendsto_congr' _).mp tendsto_const_nhds
-    rw [EventuallyEq, eventually_atBot]
-    refine' ⟨-1, fun q hq ↦ (if_pos (hq.trans_lt _)).symm⟩
-    linarith
+  · exact tendsto_atBot_mLimsupIic κ p.1 p.2
+  · exact tendsto_defaultRatCDF_atBot
 
 theorem inf_gt_todo2' (κ : kernel α (ℝ × ℝ)) (p : α × ℝ) (t : ℚ) :
     ⨅ r : Ioi t, todo2' κ p r = todo2' κ p t := by
-  rw [todo2']
+  unfold todo2'
   split_ifs with hp
-  · simp_rw [iInf_rat_gt_todo1'_eq]
-  · simp only
-    have h_bdd : BddBelow (range fun r : ↥(Ioi t) ↦ ite ((r : ℚ) < 0) (0 : ℝ) 1) := by
-      refine' ⟨0, fun x hx ↦ _⟩
-      obtain ⟨y, rfl⟩ := mem_range.mpr hx
-      dsimp only
-      split_ifs
-      exacts [le_rfl, zero_le_one]
-    split_ifs with h
-    · refine' le_antisymm _ (le_ciInf fun x ↦ _)
-      · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := by
-          refine' ⟨t / 2, _, _⟩
-          · linarith
-          · linarith
-        refine' (ciInf_le h_bdd ⟨q, htq⟩).trans _
-        rw [if_pos]
-        rwa [Subtype.coe_mk]
-      · split_ifs
-        exacts [le_rfl, zero_le_one]
-    · refine' le_antisymm _ _
-      · refine' (ciInf_le h_bdd ⟨t + 1, lt_add_one t⟩).trans _
-        split_ifs
-        exacts [zero_le_one, le_rfl]
-      · refine' le_ciInf fun x ↦ _
-        rw [if_neg]
-        rw [not_lt] at h ⊢
-        exact h.trans (mem_Ioi.mp x.prop).le
+  · simp_rw [iInf_rat_gt_mLimsupIic_eq]
+  · exact inf_gt_rat_defaultRatCDF t
 
 lemma isCDFLike_todo2' (κ : kernel α (ℝ × ℝ)) : IsCDFLike (todo2' κ) where
   mono := monotone_todo2' κ
