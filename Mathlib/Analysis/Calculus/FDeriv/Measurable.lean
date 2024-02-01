@@ -849,7 +849,7 @@ open Uniformity
 
 lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
-  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace E := .of_locallyCompactSpace 𝕜
   simp only [A, half_lt_self_iff, not_lt, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
@@ -945,7 +945,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete_with_param
   refine MeasurableSet.iInter (fun _ ↦ ?_)
   refine MeasurableSet.iInter (fun _ ↦ ?_)
   refine MeasurableSet.iInter (fun _ ↦ ?_)
-  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace E := .of_locallyCompactSpace 𝕜
   exact (isOpen_B_with_param hf K).measurableSet
 
 variable (𝕜)
@@ -991,7 +991,7 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
   rcases h.out with hα|hF
-  · have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+  · have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
     apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
         ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by

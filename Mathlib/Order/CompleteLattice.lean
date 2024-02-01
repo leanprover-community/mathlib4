@@ -697,6 +697,11 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
   iSup_congr fun i ↦ iSup_congr (h i)
 
+theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
+    (h : ∀ i (hi : p i), f i hi = g i hi) :
+    ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
+  congr; ext i; congr; ext hi; exact h i hi
+
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
   simp only [iSup._eq_1]
@@ -765,6 +770,11 @@ theorem iInf_congr (h : ∀ i, f i = g i) : ⨅ i, f i = ⨅ i, g i :=
 theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨅ (i) (_ : p i), f i = ⨅ (i) (_ : p i), g i :=
   biSup_congr (α := αᵒᵈ) h
+
+theorem biInf_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
+    (h : ∀ i (hi : p i), f i hi = g i hi) :
+    ⨅ i, ⨅ (hi : p i), f i hi = ⨅ i, ⨅ (hi : p i), g i hi := by
+  congr; ext i; congr; ext hi; exact h i hi
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=
@@ -1306,6 +1316,14 @@ theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
 theorem iInf_inf_eq : ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ ⨅ x, g x :=
   @iSup_sup_eq αᵒᵈ _ _ _ _
 #align infi_inf_eq iInf_inf_eq
+
+lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
+    ⨅ i ∈ s, f i ≤ f i := by
+  simpa only [iInf_subtype'] using iInf_le (ι := s) (f := f ∘ (↑)) ⟨i, hi⟩
+
+lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
+    f i ≤ ⨆ i ∈ s, f i :=
+  biInf_le (α := αᵒᵈ) f hi
 
 /- TODO: here is another example where more flexible pattern matching
    might help.
