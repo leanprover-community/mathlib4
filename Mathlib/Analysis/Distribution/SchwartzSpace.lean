@@ -11,7 +11,6 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Fourier.FourierTransformDeriv
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
@@ -608,7 +607,6 @@ section TemperateGrowth
 
 /-! ### Functions of temperate growth -/
 
-
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
@@ -633,22 +631,35 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
 
-lemma ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) : Function.HasTemperateGrowth f := by
-  refine ⟨f.contDiff, fun n ↦ ?_⟩
+lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
+    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
+    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
+    Function.HasTemperateGrowth f := by
+  refine ⟨contDiff_top_iff_fderiv.2 ⟨hf, h'f.1⟩ , fun n ↦ ?_⟩
   rcases n with rfl|m
-  · refine ⟨1, ‖f‖, fun x ↦ ?_⟩
-    simp only [Nat.zero_eq, norm_iteratedFDeriv_zero, pow_one]
-    exact (f.le_op_norm x).trans (by simp [mul_add])
-  rcases m with rfl|p
-  · refine ⟨1, ‖f‖, fun x ↦ ?_⟩
-    rw [← norm_fderiv_iteratedFDeriv]
-    have Z := iteratedFDeriv_zero
-    have : iteratedFDeriv ℝ 0 (f : E → F) = f := by simp
+  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
+  · rcases h'f.2 m with ⟨k', C', h'⟩
+    refine ⟨k', C', fun x ↦ ?_⟩
+    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
+      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
 
+lemma _root_.Function.HasTemperateGrowth.zero :
+    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
+  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  positivity
 
+lemma _root_.Function.HasTemperateGrowth.const (c : F) :
+    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
+  .of_fderiv (by simpa using Function.HasTemperateGrowth.zero)
+    (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
-
-#exit
+lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
+    Function.HasTemperateGrowth f := by
+  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
+  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
+    simpa [this] using .const _
+  · exact (f.le_op_norm x).trans (by simp [mul_add])
 
 end TemperateGrowth
 
@@ -798,47 +809,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       simp only [zero_le_one, le_add_iff_nonneg_left])
 #align schwartz_map.bilin_left_clm SchwartzMap.bilinLeftCLM
 
-
-#check VectorFourier.mul_L
--- def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
-
-#check ContinuousLinearMap.smulRightL
--- (E →L[𝕜] 𝕜) →L[𝕜] (F →L[𝕜] E →L[𝕜] F)
-
-/-
-def bilinLeftCLM (B : ℂ →L[ℝ] F →L[ℝ] (E →L[ℝ] ℂ))
-    {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, ℂ) →L[ℝ] 𝓢(D, E →L[ℝ] ℂ) :=
--/
-
-#where
-
-open Real Complex MeasureTheory Filter TopologicalSpace
-
-variable (L : D →L[ℝ] E →L[ℝ] ℝ)
-
-lemma foo : Function.HasTemperateGrowth (fun v ↦ L v) := by
-  exact?
-
-
-#exit
-
-def glou : 𝓢(D, ℂ) →L[ℝ] 𝓢(D, E →L[ℝ] ℂ) := by
-  let B := (ContinuousLinearMap.smulRightL ℝ E ℂ).flip
-  --let g : D →
-  exact -(2 * π * I) • bilinLeftCLM B (g := fun v ↦ L v) sorry
-
-lemma foo (f : 𝓢(D, ℂ)) (x : D) : glou L f x = -(2 * π * I) • (L x).smulRight (f x) := by
-  rfl
-
-
-#exit
-
-  sorry
-
 end Multiplication
-
-#exit
 
 section Comp
 

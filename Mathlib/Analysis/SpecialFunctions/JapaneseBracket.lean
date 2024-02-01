@@ -95,25 +95,25 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
 #align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux
 
-theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
-    [(volume : Measure E).IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
-    (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r))) < ∞ := by
+theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
+    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
   have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) :=
     -- porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
-  rw [lintegral_eq_lintegral_meas_le volume (eventually_of_forall h_pos) h_meas.aemeasurable]
-  have h_int : ∀ t, 0 < t → volume {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
-      volume (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
+  rw [lintegral_eq_lintegral_meas_le μ (eventually_of_forall h_pos) h_meas.aemeasurable]
+  have h_int : ∀ t, 0 < t → μ {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
+      μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
     congr 1
     ext x
     simp only [mem_setOf_eq, mem_closedBall_zero_iff]
     exact le_rpow_one_add_norm_iff_norm_le hr (mem_Ioi.mp ht) x
   rw [set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall h_int)]
-  set f := fun t : ℝ ↦ volume (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1))
-  set mB := volume (Metric.ball (0 : E) 1)
+  set f := fun t : ℝ ↦ μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1))
+  set mB := μ (Metric.ball (0 : E) 1)
   -- the next two inequalities are in fact equalities but we don't need that
   calc
     ∫⁻ t in Ioi 0, f t ≤ ∫⁻ t in Ioc 0 1 ∪ Ioi 1, f t := lintegral_mono_set Ioi_subset_Ioc_union_Ioi
@@ -122,7 +122,7 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
   · -- We use estimates from auxiliary lemmas to deal with integral from `0` to `1`
     have h_int' : ∀ t ∈ Ioc (0 : ℝ) 1,
         f t = ENNReal.ofReal ((t ^ (-r⁻¹) - 1) ^ finrank ℝ E) * mB := fun t ht ↦ by
-      refine' volume.addHaar_closedBall (0 : E) _
+      refine' μ.addHaar_closedBall (0 : E) _
       rw [sub_nonneg]
       exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos ht.1 ht.2 (by simp [hr.le])
     rw [set_lintegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
@@ -138,20 +138,21 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
     exact WithTop.zero_lt_top
 #align finite_integral_one_add_norm finite_integral_one_add_norm
 
-theorem integrable_one_add_norm [MeasureSpace E] [BorelSpace E] [(@volume E _).IsAddHaarMeasure]
-    {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) : Integrable fun x : E => (1 + ‖x‖) ^ (-r) := by
+theorem integrable_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
+    [μ.IsAddHaarMeasure]
+    {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) : Integrable (fun x : E => (1 + ‖x‖) ^ (-r)) μ := by
   constructor
   · measurability
   -- Lower Lebesgue integral
-  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) :=
+  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
     lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
   rw [HasFiniteIntegral, this]
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
 
-theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
-    [(@volume E _).IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
-    Integrable fun x : E => ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) := by
+theorem integrable_rpow_neg_one_add_norm_sq [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
+    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    Integrable (fun x : E => ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)
