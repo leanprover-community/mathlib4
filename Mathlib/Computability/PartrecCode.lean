@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Partrec
+import Mathlib.Data.Option.Basic
 
 #align_import computability.partrec_code from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
@@ -769,8 +770,8 @@ def evaln : ℕ → Code → ℕ → Option ℕ
         pure m
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
-  termination_by evaln k c => (k, c)
-  decreasing_by { decreasing_with (dsimp; omega) }
+  termination_by k c => (k, c)
+  decreasing_by all_goals { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k

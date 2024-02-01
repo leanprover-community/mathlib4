@@ -53,6 +53,7 @@ structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
 
 variable {𝕜 P P₂}
 
+@[inherit_doc]
 notation:25 -- `→ᵃᵢ` would be more consistent with the linear isometry notation, but it is uglier
 P " →ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometry 𝕜 P P₂
 
@@ -71,7 +72,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : DFunLike (P →ᵃⁱ[𝕜] P₂) P fun _ => P₂ :=
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
 

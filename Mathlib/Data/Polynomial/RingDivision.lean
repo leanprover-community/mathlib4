@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Div
@@ -156,12 +155,10 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
 @[simp]
 theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
   classical
-  exact if hp0 : p = 0 then
-    if hn0 : n = 0 then by simp [hp0, hn0]
-    else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
-  else
-    natDegree_pow'
-      (by rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp0)
+  obtain rfl | hp := eq_or_ne p 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  exact natDegree_pow' $ by
+    rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 #align polynomial.nat_degree_pow Polynomial.natDegree_pow
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
@@ -599,7 +596,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _), by
         intro a
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
-termination_by _ p _ => natDegree p
+termination_by p => natDegree p
 decreasing_by {
   simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
@@ -812,7 +809,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction' n with n ihn
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
-    · rw [zero_pow n.succ_pos, roots_zero, smul_zero]
+    · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
     · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
@@ -958,7 +955,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
   | zero =>
     simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
   | succ n =>
-    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact zero_ne_one hη
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
@@ -1073,8 +1070,8 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
 
 @[simp]
 theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
-    (-p).aroots S = p.aroots S :=
-  by rw [aroots, Polynomial.map_neg, roots_neg]
+    (-p).aroots S = p.aroots S := by
+  rw [aroots, Polynomial.map_neg, roots_neg]
 
 @[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
@@ -1258,7 +1255,7 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
   cases' hp.lt_or_lt with hd hd
-  · rw [degree_eq_bot.mp <| (Nat.WithBot.lt_zero_iff _).mp hd, zero_divByMonic]
+  · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine' leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) _
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
 set_option linter.uppercaseLean3 false in

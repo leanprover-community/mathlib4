@@ -5,7 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -277,7 +278,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
 
 section
 
-variable {op : α → α → α} [IA : IsAssociative α op] [IC : IsCommutative α op]
+variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
 -- mathport name: op
 local notation a " * " b => op a b

@@ -76,7 +76,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : IsAssociative α (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
 #align semigroup.to_is_associative Semigroup.to_isAssociative
 #align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
@@ -105,7 +105,7 @@ theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
 end Semigroup
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : IsCommutative G (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 #align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
 #align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
@@ -410,7 +410,7 @@ end DivInvOneMonoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {a b c : α}
+variable [DivisionMonoid α] {a b c d : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
 
@@ -470,6 +470,10 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 #align one_div_one_div one_div_one_div
 #align zero_sub_zero_sub zero_sub_zero_sub
+
+@[to_additive]
+theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
+  inv_inj.symm.trans <| by simp only [inv_div]
 
 @[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=

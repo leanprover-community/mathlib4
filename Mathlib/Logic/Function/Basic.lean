@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Set
+import Mathlib.Logic.Basic
 
 #align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
@@ -853,7 +854,7 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
-notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩

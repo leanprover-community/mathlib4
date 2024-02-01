@@ -6,7 +6,7 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 import Lean.Elab.PreDefinition.Basic
 import Lean.Util.Paths
 import Std.Tactic.Simpa
-import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 
 /-!
 #
@@ -63,7 +63,8 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
     modifiers := mods
     declName := newNm
     type := newType
-    value := newValue }
+    value := newValue
+    termination := .none }
   return predef
 
 /-- Make `nm` protected. -/
