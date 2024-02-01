@@ -18,8 +18,8 @@ We show that flatness is stable under composition and base change. The latter is
 
 ## TODO
 
-* Show that flatness is stable under base change, i.e. if `S` is any `R`-algebra and `M` is a flat `R`-module,
-  then `M ⊗[R] S` is a flat `S`-module.
+* Show that flatness is stable under base change, i.e. if `S` is any `R`-algebra and `M` is a flat
+  `R`-module, then `M ⊗[R] S` is a flat `S`-module.
 
 -/
 
