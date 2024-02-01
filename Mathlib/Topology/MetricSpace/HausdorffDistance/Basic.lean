@@ -39,6 +39,9 @@ This files introduces:
 * `hausdorffEdist_triangle`: the Hausdorff edistance satisfies the triangle inequality
 * ``hausdorffEdist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
   iff their closures coincide.
+* in particular, closed sets in an emetric space are an emetric space
+  (this is shown in `EMetricSpace.closeds.emetricspace`)
+
 * `hausdorffEdist_closure`: replacing a set by its closure does not change the Hausdorff edistance
 
 * versions of these notions on metric spaces

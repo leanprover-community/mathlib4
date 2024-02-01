@@ -8,7 +8,7 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
 #align_import topology.metric_space.hausdorff_distance from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
-# Thickening in pseudo-metric spaces
+# Thickenings in pseudo-metric spaces
 
 ## Main definitions
 * `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
@@ -40,7 +40,6 @@ variable {ι : Sort*} {α : Type u} {β : Type v}
 
 namespace Metric
 
---section
 section Thickening
 
 variable [PseudoEMetricSpace α] {δ : ℝ} {s : Set α} {x : α}
@@ -169,7 +168,6 @@ protected theorem _root_.Bornology.IsBounded.thickening {δ : ℝ} {E : Set X} (
 
 end Thickening
 
---section
 section Cthickening
 
 variable [PseudoEMetricSpace α] {δ ε : ℝ} {s t : Set α} {x : α}
