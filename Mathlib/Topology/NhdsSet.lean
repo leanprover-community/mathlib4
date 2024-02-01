@@ -86,6 +86,14 @@ theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U => IsOpen U �
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
 
+@[simp]
+lemma lift'_interior_nhdsSet (s : Set X) : (𝓝ˢ s).lift' interior = 𝓝ˢ s :=
+  (hasBasis_nhdsSet s).lift'_interior_eq_self fun _ ↦ And.left
+
+lemma Filter.HasBasis.nhdsSet_interior {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {t : Set X}
+    (h : (𝓝ˢ t).HasBasis p s) : (𝓝ˢ t).HasBasis p (interior <| s ·) :=
+  lift'_interior_nhdsSet t ▸ h.lift'_interior
+
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet

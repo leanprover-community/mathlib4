@@ -425,6 +425,18 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
     _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 #align interior_sInter_subset interior_sInter_subset
 
+theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
+  h.lift' fun _ _ ↦ interior_mono
+
+theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
+  mem_of_superset (mem_lift' hs) interior_subset
+
+theorem Filter.HasBasis.lift'_interior_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+    (h : l.HasBasis p s) (ho : ∀ i, p i → IsOpen (s i)) : l.lift' interior = l :=
+  le_antisymm l.lift'_interior_le <| h.lift'_interior.ge_iff.2 fun i hi ↦ by
+    simpa only [(ho i hi).interior_eq] using h.mem_of_mem hi
+
 /-!
 ### Closure of a set
 -/
@@ -901,6 +913,14 @@ theorem nhds_basis_closeds (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∉ s
   ⟨fun t => (nhds_basis_opens x).mem_iff.trans <|
     compl_surjective.exists.trans <| by simp only [isOpen_compl_iff, mem_compl_iff]⟩
 #align nhds_basis_closeds nhds_basis_closeds
+
+@[simp]
+theorem lift'_interior_nhds (x : X) : (𝓝 x).lift' interior = 𝓝 x :=
+  (nhds_basis_opens x).lift'_interior_eq_self fun _ ↦ And.right
+
+theorem Filter.HasBasis.nhds_interior {x : X} {p : ι → Prop} {s : ι → Set X}
+    (h : (𝓝 x).HasBasis p s) : (𝓝 x).HasBasis p (interior <| s ·) :=
+  lift'_interior_nhds x ▸ h.lift'_interior
 
 /-- A filter lies below the neighborhood filter at `x` iff it contains every open set around `x`. -/
 theorem le_nhds_iff {f} : f ≤ 𝓝 x ↔ ∀ s : Set X, x ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
