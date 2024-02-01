@@ -69,9 +69,10 @@ instance instZero [Zero C] : Zero (FormalSeries Γ C) where
 instance instOne [One C] [Zero C] [One Γ] : One (FormalSeries Γ C) where
   one := const 1
 
-/-- The coefficients of the formal series 1 are zeroes unless the index is zero where the coefficient is one -/
+/-- The coefficients of the formal series 1 are zeroes unless the index is zero where the
+coefficient is one -/
 lemma one_coef [One C] [Zero C] [One Γ] (m : Γ) :
-  (1 : FormalSeries Γ C).coef m = if m = 1 then 1 else 0 := rfl
+    (1 : FormalSeries Γ C).coef m = if m = 1 then 1 else 0 := rfl
 
 /-- The constant zero is equal to the zero series -/
 @[simp] lemma const_zero [One Γ] [AddCommMonoid C] :

@@ -33,25 +33,26 @@ In this file we introduce vertex operators using Laurent series.
 * H. Li's paper on local systems?
 -/
 
-variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R] [AddCommGroup V]
+  [Module R V] [AddCommGroup W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
-`R`-module `V` to Hahn series with coefficients in an `R`-module `W`.-/
+`R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`.-/
 abbrev HetVertexOperator (Γ : Type*) (R : Type*) (V : Type*) (W : Type*) [PartialOrder Γ]
 [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] := V →ₗ[R] HahnSeries Γ W
 
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`. -/
-
 abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
     [Module R V] := V →ₗ[R] LaurentSeries V
 
 namespace VertexAlg
 
-/-- The coefficient of a vertex operator, viewed as a formal power series with coefficients in
-linear endomorphisms.  Refactor to heterogeneous case!!! -/
-def coeff [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
-    Module.End R V :=
+/-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
+coefficients in linear maps. -/
+@[simps]
+def coeff (A : HetVertexOperator Γ R V W) (n : Γ) :
+    V →ₗ[R] W :=
   {
     toFun := fun (x : V) => (A x).coeff n
     map_add' := by simp only [map_add, HahnSeries.add_coeff', Pi.add_apply, forall_const]
@@ -59,7 +60,7 @@ def coeff [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n
   }
 
 /-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
-Alternative suggestions welcome.  Change this to ℤ case only. -/
+Alternative suggestions welcome. -/
 def ncoef [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n - 1)
 
@@ -69,7 +70,7 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
 `A(n)`.  We choose a notation that looks a bit like the TeX input. -/
-scoped[VertexAlg] notation A "_{" n "}_" => ncoef A n
+scoped[VertexAlg] notation A "_[" n "]" => ncoef A n
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : ncoef A n x = 0 := by
@@ -86,6 +87,23 @@ theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀(m : ℤ), n < 
   intro m' hm'
   have h' : n < (-m' - 1) := by omega
   apply h (-m' - 1) h'
+
+/-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
+condition, we produce a heterogeneous vertex operator. -/
+noncomputable def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
+    (hf : ∀(x : V), (Function.support (fun g => f g x)).IsPWO) : HetVertexOperator Γ R V W where
+  toFun := fun x => {
+    coeff := fun g => f g x
+    isPWO_support' := hf x
+  }
+  map_add' := by
+    intros
+    simp only [map_add]
+    exact rfl
+  map_smul' := by
+    intros
+    simp only [map_smul, RingHom.id_apply]
+    exact rfl
 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
@@ -110,18 +128,28 @@ noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexO
 theorem one : (1 : VertexOperator R V) = HahnSeries.single.linearMap 0 := by
   exact rfl
 
-theorem one_coeff_ite (x : V) (n : ℤ) : @coeff R V _ _ _ 1 n x = if n = 0 then x else 0 := by
+theorem one_ncoef_neg_one (x : V) : @ncoef R V _ _ _ 1 (-1) x = x := by
   rw [one]
-  unfold HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single Pi.single
-    Function.update
+  unfold ncoef HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single
+    Pi.single Function.update
   simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite]
   exact rfl
 
-theorem one_coeff_zero' (x : V) : @coeff R V _ _ _ 1 0 x = x := by
-  rw [one_coeff_ite, if_pos rfl]
+theorem one_ncoef_ne_neg_one (x : V) (n : ℤ) (hn : n ≠ -1): @ncoef R V _ _ _ 1 n x = 0 := by
+  rw [one]
+  unfold ncoef HahnSeries.single.linearMap HahnSeries.single.addMonoidHom HahnSeries.single
+    Pi.single Function.update
+  simp_all only [ne_eq, eq_rec_constant, Pi.zero_apply, dite_eq_ite, coeff_apply, LinearMap.coe_mk]
+  simp_all only [AddHom.coe_mk, ite_eq_right_iff]
+  have h' : ¬ -n-1 = 0 := by omega
+  exact fun a ↦ (h' a).elim
 
-theorem one_coeff_ne (x : V) (n : ℤ) (hn : n ≠ 0): @coeff R V _ _ _ 1 n x = 0 := by
-  rw [one_coeff_ite, if_neg hn]
+theorem one_ncoef_ite (x : V) (n : ℤ) : @ncoef R V _ _ _ 1 n x = if n = (-1) then x else 0 := by
+  by_cases h : n = -1
+  · simp_all only [ite_true]
+    exact one_ncoef_neg_one x
+  · simp_all only [ite_false]
+    exact one_ncoef_ne_neg_one x n h
 
 section HasseDerivative
 

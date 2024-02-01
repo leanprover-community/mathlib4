@@ -44,6 +44,7 @@ in the file `RingTheory/LaurentSeries`.
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
     `X : R[X]` and `X : PowerSeries R`
+  * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -143,6 +144,12 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
   support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
+/-!
+def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+    HahnSeries (Γ × Γ') R where
+  coeff := fun g => coeff (coeff x g.1) g.2
+  isPWO_support' := sorry
+-/
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
 def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
@@ -622,11 +629,9 @@ theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
 
-section SMul
-
 variable {V : Type*} [AddCommMonoid V]
 
-instance instSMulHahnHahn [MulZeroClass R] [SMul R V] : SMul (HahnSeries Γ R)
+instance instSMulHahn [Zero R] [SMul R V] : SMul (HahnSeries Γ R)
     (HahnSeries Γ V) where
   smul x y := {
     coeff := fun a =>
@@ -643,14 +648,18 @@ instance instSMulHahnHahn [MulZeroClass R] [SMul R V] : SMul (HahnSeries Γ R)
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_addAntidiagonal.mono h }
 
-theorem smul_coeff' [MulZeroClass R] [SMul R V] {x : HahnSeries Γ R}
+theorem smul_coeff' [Zero R] [SMul R V] {x : HahnSeries Γ R}
     {y : HahnSeries Γ V} {a : Γ} : (x • y).coeff a = ∑ ij in addAntidiagonal x.isPWO_support
     y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd := rfl
 
-end SMul
+instance instSMulZeroClass [Zero R] [SMulZeroClass R V] : SMulZeroClass (HahnSeries Γ R)
+    (HahnSeries Γ V) where
+  smul_zero := fun _ => by
+    ext
+    simp [smul_coeff']
 
 instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
-  mul x y := instSMulHahnHahn.smul x y
+  mul x y := instSMulHahn.smul x y
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
 failures elsewhere-/
@@ -660,61 +669,97 @@ theorem mul_coeff [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ}
   rfl
 #align hahn_series.mul_coeff HahnSeries.mul_coeff
 
+theorem smul_coeff_right' [Zero R] [SMulZeroClass R V] {x : HahnSeries Γ R}
+    {y : HahnSeries Γ V} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : y.support ⊆ s) :
+    (x • y).coeff a =
+      ∑ ij in addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst • y.coeff ij.snd := by
+  rw [smul_coeff']
+  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_right hys) _ fun _ _ => rfl
+  intro b hb
+  simp only [not_and, mem_sdiff, mem_addAntidiagonal, mem_support, not_imp_not] at hb
+  rw [hb.2 hb.1.1 hb.1.2.2, smul_zero]
+
 theorem mul_coeff_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hys : y.support ⊆ s) :
     (x * y).coeff a =
       ∑ ij in addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd := by
-  rw [mul_coeff]
-  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_right hys) _ fun _ _ => rfl
-  intro b hb
-  simp only [not_and, mem_sdiff, mem_addAntidiagonal, mem_support, not_imp_not] at hb
-  rw [hb.2 hb.1.1 hb.1.2.2, mul_zero]
+  simp only [← smul_eq_mul]
+  exact @smul_coeff_right' Γ R _ R _ _ _ x y a s hs hys
 #align hahn_series.mul_coeff_right' HahnSeries.mul_coeff_right'
+
+theorem smul_coeff_left' [Zero R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnSeries Γ V} {a : Γ} {s : Set Γ}
+    (hs : s.IsPWO) (hxs : x.support ⊆ s) :
+    (x • y).coeff a =
+      ∑ ij in addAntidiagonal hs y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd := by
+  rw [smul_coeff']
+  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
+  intro b hb
+  simp only [not_and', mem_sdiff, mem_addAntidiagonal, mem_support, not_ne_iff] at hb
+  rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_smul]
 
 theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     (x * y).coeff a =
       ∑ ij in addAntidiagonal hs y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd := by
-  rw [mul_coeff]
-  apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
-  intro b hb
-  simp only [not_and', mem_sdiff, mem_addAntidiagonal, mem_support, not_ne_iff] at hb
-  rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_mul]
+  simp only [← smul_eq_mul]
+  exact @smul_coeff_left' Γ R _ R _ _ _ x y a s hs hxs
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
+
+theorem smul_add' [Zero R] [DistribSMul R V] (x : HahnSeries Γ R) (y z : HahnSeries Γ V) :
+    x • (y + z) = x • y + x • z := by
+  ext k
+  have hwf := y.isPWO_support.union z.isPWO_support
+  rw [smul_coeff_right' hwf, add_coeff, smul_coeff_right' hwf (Set.subset_union_right _ _),
+      smul_coeff_right' hwf (Set.subset_union_left _ _)]
+  · simp only [add_coeff, smul_add, sum_add_distrib]
+  · intro b
+    simp only [add_coeff, Ne.def, Set.mem_union, Set.mem_setOf_eq, mem_support]
+    contrapose!
+    intro h
+    rw [h.1, h.2, add_zero]
+
+instance instDistribSMul [MonoidWithZero R] [DistribSMul R V] : DistribSMul (HahnSeries Γ R)
+    (HahnSeries Γ V) where
+  smul_add := smul_add'
+
+theorem add_smul' [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
+    {z : HahnSeries Γ V} (h : ∀(r s : R) (u : V), (r + s) • u = r • u + s • u) :
+    (x + y) • z = x • z + y • z := by
+  ext a
+  have hwf := x.isPWO_support.union y.isPWO_support
+  rw [smul_coeff_left' hwf, add_coeff, smul_coeff_left' hwf (Set.subset_union_right _ _),
+    smul_coeff_left' hwf (Set.subset_union_left _ _)]
+  · simp only [add_coeff, h, sum_add_distrib]
+  · intro b
+    simp only [add_coeff, Ne.def, Set.mem_union, Set.mem_setOf_eq, mem_support]
+    contrapose!
+    intro h
+    rw [h.1, h.2, add_zero]
+
+-- #find_home says this instance belongs in this file.  Should I trust it?
+instance instNameHere [NonUnitalNonAssocSemiring R] : DistribSMul R R where smul_add := mul_add
 
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
   { inferInstanceAs (Mul (HahnSeries Γ R)),
     inferInstanceAs (Add (HahnSeries Γ R)) with
     left_distrib := fun x y z => by
-      ext a
-      have hwf := y.isPWO_support.union z.isPWO_support
-      rw [mul_coeff_right' hwf, add_coeff, mul_coeff_right' hwf (Set.subset_union_right _ _),
-        mul_coeff_right' hwf (Set.subset_union_left _ _)]
-      · simp only [add_coeff, mul_add, sum_add_distrib]
-      · intro b
-        simp only [add_coeff, Ne.def, Set.mem_union, Set.mem_setOf_eq, mem_support]
-        contrapose!
-        intro h
-        rw [h.1, h.2, add_zero]
+      simp only [← smul_eq_mul]
+      exact smul_add' x y z
     right_distrib := fun x y z => by
-      ext a
-      have hwf := x.isPWO_support.union y.isPWO_support
-      rw [mul_coeff_left' hwf, add_coeff, mul_coeff_left' hwf (Set.subset_union_right _ _),
-        mul_coeff_left' hwf (Set.subset_union_left _ _)]
-      · simp only [add_coeff, add_mul, sum_add_distrib]
-      · intro b
-        simp only [add_coeff, Ne.def, Set.mem_union, Set.mem_setOf_eq, mem_support]
-        contrapose!
-        intro h
-        rw [h.1, h.2, add_zero] }
+      simp only [← smul_eq_mul]
+      refine add_smul' ?_
+      simp only [smul_eq_mul]
+      exact add_mul
+  }
 
-theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
-    {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
+theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnSeries Γ V} {a : Γ}
+    {b : Γ} : (single b r • x).coeff (a + b) = r • x.coeff a := by
   by_cases hr : r = 0
-  · simp [hr, mul_coeff]
-  simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
+  · simp [hr, smul_coeff']
+  simp only [hr, smul_coeff, smul_coeff', support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
-  · simp only [hx, mul_zero]
+  · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
@@ -723,7 +768,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [add_comm] at h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
-  trans ∑ ij : Γ × Γ in {(b, a)}, (single b r).coeff ij.fst * x.coeff ij.snd
+  trans ∑ ij : Γ × Γ in {(b, a)}, (single b r).coeff ij.fst • x.coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
     simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,
@@ -735,6 +780,11 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     · rintro ⟨rfl, rfl⟩
       exact ⟨rfl, by simp [hx], add_comm _ _⟩
   · simp
+
+theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
+    {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
+  simp only [← smul_eq_mul]
+  exact single_smul_coeff_add
 #align hahn_series.single_mul_coeff_add HahnSeries.single_mul_coeff_add
 
 theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
@@ -769,6 +819,22 @@ theorem mul_single_zero_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSer
     (x * single 0 r).coeff a = x.coeff a * r := by rw [← add_zero a, mul_single_coeff_add, add_zero]
 #align hahn_series.mul_single_zero_coeff HahnSeries.mul_single_zero_coeff
 
+theorem single_zero_smul_coeff [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnSeries Γ V}
+    {a : Γ} : ((single 0 r : HahnSeries Γ R) • x).coeff a = r • x.coeff a := by
+  rw [← add_zero a, single_smul_coeff_add, add_zero]
+
+@[simp]
+theorem zero_smul' [Zero R] [SMulWithZero R V] {x : HahnSeries Γ V} :
+    (0 : HahnSeries Γ R) • x = 0 := by
+  ext
+  simp [smul_coeff']
+
+@[simp]
+theorem one_smul' [MonoidWithZero R] [MulActionWithZero R V] {x : HahnSeries Γ V} :
+    (1 : HahnSeries Γ R) • x = x := by
+  ext g
+  exact single_zero_smul_coeff.trans (one_smul R (@coeff Γ V _ _ x g))
+
 theorem single_zero_mul_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
     ((single 0 r : HahnSeries Γ R) * x).coeff a = r * x.coeff a := by
   rw [← add_zero a, single_mul_coeff_add, add_zero]
@@ -781,16 +847,29 @@ theorem single_zero_mul_eq_smul [Semiring R] {r : R} {x : HahnSeries Γ R} :
   exact single_zero_mul_coeff
 #align hahn_series.single_zero_mul_eq_smul HahnSeries.single_zero_mul_eq_smul
 
-theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
-    support (x * y) ⊆ support x + support y := by
+theorem support_smul_subset_add_support [MulZeroClass R] [SMulWithZero R V]
+    {x : HahnSeries Γ R} {y : HahnSeries Γ V} : support (x • y) ⊆ support x + support y := by
   apply Set.Subset.trans (fun x hx => _) support_addAntidiagonal_subset_add
   · exact x.isPWO_support
   · exact y.isPWO_support
   intro x hx
   contrapose! hx
   simp only [not_nonempty_iff_eq_empty, Ne.def, Set.mem_setOf_eq] at hx
-  simp [hx, mul_coeff]
+  simp [hx, smul_coeff']
+
+theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
+    support (x * y) ⊆ support x + support y := by
+  rw [← smul_eq_mul]
+  exact support_smul_subset_add_support
 #align hahn_series.support_mul_subset_add_support HahnSeries.support_mul_subset_add_support
+
+theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Zero R] [SMulWithZero R V] (x : HahnSeries Γ R) (y : HahnSeries Γ V) :
+    (x • y).coeff (x.order + y.order) = x.coeff x.order • y.coeff y.order := by
+  by_cases hx : x = (0 : HahnSeries Γ R); · simp [zero_coeff, smul_coeff', hx]
+  by_cases hy : y = 0; · simp [hy, smul_coeff', zero_smul]
+  rw [order_of_ne hx, order_of_ne hy, smul_coeff', Finset.addAntidiagonal_min_add_min,
+    Finset.sum_singleton]
 
 theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
@@ -800,6 +879,18 @@ theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
   rw [order_of_ne hx, order_of_ne hy, mul_coeff, Finset.addAntidiagonal_min_add_min,
     Finset.sum_singleton]
 #align hahn_series.mul_coeff_order_add_order HahnSeries.mul_coeff_order_add_order
+
+/-- We can weaken `Semiring R` and `Module R V` hypotheses to `NonUnitalNonAssocSemiring R` and
+`DistribSMul R V` if we assume `sum_smul` and `mul_smul` for the `R`-action on `V`. -/
+private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
+    (z : HahnSeries Γ V) : (x * y) • z = x • (y • z) := by
+  ext b
+  rw [smul_coeff_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset_add_support,
+    smul_coeff_right' (y.isPWO_support.add z.isPWO_support) support_smul_subset_add_support]
+  simp only [mul_coeff, smul_coeff', add_coeff, sum_smul, smul_sum, sum_sigma']
+  apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
+    (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
+    aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_smul])
 
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
@@ -839,6 +930,17 @@ instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
+instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
+    (HahnSeries Γ V) := {
+  inferInstanceAs (DistribSMul (HahnSeries Γ R) (HahnSeries Γ V)) with
+  mul_smul := fun x y z => mul_smul' x y z
+  one_smul := fun x => @one_smul' Γ R _ V _ _ _ x
+  add_smul := fun x y z => add_smul' add_smul
+  zero_smul := fun x => by
+    ext
+    simp [smul_coeff']
+  }
+
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
   __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance
   mul_comm x y := by
@@ -873,6 +975,15 @@ instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
 instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
+
+instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R] [SMulWithZero R V]
+    [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ V) where
+  eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
+    contrapose! hxy
+    rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
+    refine' ⟨x.order + y.order, _⟩
+    rw [smul_coeff_order_add_order x y, zero_coeff, smul_eq_zero]
+    simp [coeff_order_ne_zero, hxy]
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
