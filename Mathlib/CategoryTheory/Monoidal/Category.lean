@@ -472,6 +472,7 @@ theorem leftUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
 theorem leftUnitor_inv_naturality' {X Y : C} (f : X ⟶ Y) :
     f ≫ (λ_ Y).inv = (λ_ X).inv ≫ _ ◁ f := by simp
 
+@[reassoc]
 theorem id_whiskerLeft_symm {X X' : C} (f : X ⟶ X') :
     f = (λ_ X).inv ≫ 𝟙_ C ◁ f ≫ (λ_ X').hom := by
   simp only [id_whiskerLeft, assoc, inv_hom_id, comp_id, inv_hom_id_assoc]
@@ -485,6 +486,7 @@ theorem rightUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
 theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
     f ≫ (ρ_ X').inv = (ρ_ X).inv ≫ f ▷ _ := by simp
 
+@[reassoc]
 theorem whiskerRight_id_symm {X Y : C} (f : X ⟶ Y) :
     f = (ρ_ X).inv ≫ f ▷ 𝟙_ C ≫ (ρ_ Y).hom := by
   simp
