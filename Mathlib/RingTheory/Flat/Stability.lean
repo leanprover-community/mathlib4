@@ -23,7 +23,7 @@ We show that flatness is stable under composition and base change. The latter is
 
 -/
 
-universe u v w t
+universe u v w
 
 open Function (Injective Surjective)
 
@@ -33,7 +33,21 @@ open TensorProduct
 
 namespace Module.Flat
 
-variable (R : Type u) (S : Type v) (M : Type w) (N : Type t)
+/-! ### Composition
+
+Let `R` be a ring, `S` a flat `R`-algebra and `M` a flat `S`-module. To show that `M` is flat
+as an `R`-module, we show that the inclusion of an `R`-ideal `I` into `R` tensored on the left with
+`M` is injective. For this consider the composition of natural maps
+
+`M ⊗[R] I ≃ M ⊗[S] (S ⊗[R] I) ≃ M ⊗[S] J → M ⊗[S] S → M ≃ M ⊗[R] R`
+
+where `J` is the image of `S ⊗[R] I` under the (by flatness of `S`) injective map
+`S ⊗[R] I → S`. One checks that this composition is precisely `I → R` tensored on the left
+with `M` and the former is injective as a composition of injective maps (note that
+`M ⊗[S] S → M` is injective because `M` is `S`-flat).
+-/
+
+variable (R : Type u) (S : Type v) (M : Type w)
   [CommRing R] [CommRing S] [Algebra R S]
   [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
