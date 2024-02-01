@@ -509,6 +509,12 @@ theorem snoc_comp_castSucc {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 #align fin.snoc_last Fin.snoc_last
 
+lemma snoc_zero {α : Type*} (p : Fin 0 → α) (x : α) :
+    Fin.snoc p x = fun _ ↦ x := by
+  ext y
+  have : Subsingleton (Fin (0 + 1)) := Fin.subsingleton_one
+  simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
+
 @[simp]
 theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
