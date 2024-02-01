@@ -553,8 +553,6 @@ theorem mem_condCDFSet_ae (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
 
 end HasCondCDF
 
--- 10:05, 10:10, 10:17, 10:22
-
 open scoped Classical
 
 /-- Conditional cdf of the measure given the value on `α`, restricted to the rationals.
