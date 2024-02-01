@@ -1013,7 +1013,6 @@ end
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
-
 section LinearOrderedSemifield
 variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
 
