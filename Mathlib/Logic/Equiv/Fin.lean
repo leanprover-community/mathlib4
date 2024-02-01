@@ -146,12 +146,12 @@ theorem finSuccEquiv'_succAbove (i : Fin (n + 1)) (j : Fin n) :
 
 theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i) (Fin.castSucc m) = m := by
-  rw [← Fin.succAbove_below _ _ h, finSuccEquiv'_succAbove]
+  rw [← Fin.succAbove_of_castSucc_lt _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_below finSuccEquiv'_below
 
 theorem finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i) m.succ = some m := by
-  rw [← Fin.succAbove_above _ _ h, finSuccEquiv'_succAbove]
+  rw [← Fin.succAbove_of_le_castSucc _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_above finSuccEquiv'_above
 
 @[simp]
@@ -167,12 +167,12 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
 
 theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
-  Fin.succAbove_below i m h
+  Fin.succAbove_of_castSucc_lt i m h
 #align fin_succ_equiv'_symm_some_below finSuccEquiv'_symm_some_below
 
 theorem finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i).symm (some m) = m.succ :=
-  Fin.succAbove_above i m h
+  Fin.succAbove_of_le_castSucc i m h
 #align fin_succ_equiv'_symm_some_above finSuccEquiv'_symm_some_above
 
 theorem finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
