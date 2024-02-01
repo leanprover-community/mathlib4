@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Functor.KanExtension
+/-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 namespace CategoryTheory
 
@@ -92,3 +92,4 @@ instance (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
 end Functor
 
 end CategoryTheory
+-/

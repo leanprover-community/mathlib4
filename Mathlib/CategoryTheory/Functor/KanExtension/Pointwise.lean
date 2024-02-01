@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Functor.KanExtension
+import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 namespace CategoryTheory
 
