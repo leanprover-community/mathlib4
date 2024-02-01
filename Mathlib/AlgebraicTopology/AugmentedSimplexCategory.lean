@@ -20,9 +20,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 We construct a skeletal model of the augmented simplex category, with objects `ℕ` and the
 morphism `n ⟶ m` being the monotone maps from `Fin n` to `Fin m`.
 
-We show that this category is equivalent to `FinLinOrd`.
+We show the following:
+* This category is equivalent to `FinLinOrd`.
+* This category has a strict initial object given by `0`.
 
-
+We define the following:
+* The obvious functor of `SimplexCategory` into `AugmentedSimplexCategory`.
+* The preimage of the above functor.
 -/
 
 
@@ -207,7 +211,6 @@ lemma isInitial_len_zero {Z: AugmentedSimplexCategory}  (h : IsInitial Z) :Z.len
   have ft: IsIso f := IsIso.of_iso heq
   exact iso_len f
 
-
 def strict_initial' {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ : Z.len≠ 0):
     Y.len≠ 0:= by
       let f': Fin (Z.len) →o Fin (Y.len) := f.toOrderHom
@@ -215,23 +218,30 @@ def strict_initial' {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ : Z.len≠ 
       rw [hYn] at f'
       exact ((fun a ↦ IsEmpty.false a) ∘ f') (⟨ 0 ,Nat.pos_of_ne_zero hZ⟩:Fin (Z.len) )
 
+lemma map_into_initial_eq {Z I : AugmentedSimplexCategory} (h:IsInitial I) (f : Z ⟶ I) : Z=I := by
+  have hI2: I.len =0 :=isInitial_len_zero h
+  by_cases hZ: Z.len=0
+  · apply ext
+    rw [hZ, hI2]
+  · have hI: I.len ≠ 0 := strict_initial' f hZ
+    exact (hI hI2).elim
+
+lemma map_into_initial_eqToHom {Z I : AugmentedSimplexCategory} (h : IsInitial I) (f : Z ⟶ I) :
+    f = eqToHom (map_into_initial_eq h f):= by
+    have hZ: IsInitial Z := by
+      rw [map_into_initial_eq h f]
+      exact h
+    apply IsInitial.hom_ext hZ
+
 instance : HasStrictInitialObjects AugmentedSimplexCategory := by
   fconstructor
   intro I A f hIf
-  have hI2: I.len =0 :=isInitial_len_zero hIf
-  by_cases h: A.len=0
-  · have heq: I=A := by
-      apply ext
-      rw [h, hI2]
-    have hf: f=eqToHom heq.symm := by
-      apply IsInitial.hom_ext (AugmentedSimplexCategory.len_zero_isInitial h)
-    rw [hf]
-    exact instIsIsoEqToHom heq.symm
-  · have hI: I.len ≠ 0 := strict_initial' f h
-    exact (hI hI2).elim
+  rw [map_into_initial_eqToHom hIf f]
+  exact instIsIsoEqToHom (map_into_initial_eq hIf f)
 
 
 def map_from_initial (n: ℕ ): [0]ₐ ⟶  [n]ₐ :=(@OrderEmbedding.ofIsEmpty (Fin 0) (Fin n)).toOrderHom
+
 
 section InitialSegements
 

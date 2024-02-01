@@ -16,6 +16,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 This defines `FinLinOrd`, the category of  finite linear
 orders with monotone maps.
+
+The skelton of `FinLinOrd` is `AugmentedSimplexCategory`.
 -/
 
 universe u v
@@ -83,13 +85,6 @@ instance  : IsInitial (of (Fin 0)) := by
     refine (@IsInitial.ofUnique FinLinOrd (?_) (of (Fin 0)) (?_))
     intro Y
     infer_instance
-
-
-
-
-
-
-
 
 
 
