@@ -402,13 +402,6 @@ abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M 
     p →ₗ[R] p →ₗ[R] R :=
   f.compl₁₂ p.subtype p.subtype
 
-/-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
-def linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R :=
-  LinearMap.mk₂ R (fun x y => f x * g y) (fun x y z => by simp only [map_add, add_mul])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
-  (fun _ _ _ => by simp only [map_add, mul_add])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
-
 end CommSemiring
 
 section CommRing

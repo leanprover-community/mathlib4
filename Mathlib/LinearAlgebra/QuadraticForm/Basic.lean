@@ -595,9 +595,9 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     simp only [smul_eq_mul, RingHom.id_apply, Pi.mul_apply, LinearMap.map_smulₛₗ]
     ring
   exists_companion' :=
-    ⟨LinearMap.linMulLin f g + LinearMap.linMulLin g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply,
-        LinearMap.mk₂_apply]
+    ⟨(LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f, fun x y => by
+      simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply,
+        LinearMap.add_apply]
       ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
