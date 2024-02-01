@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Squarefree
+import Mathlib.Algebra.SquareFree.Basic
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Algebra.GCDMonoid.Basic
 
