@@ -373,7 +373,6 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   · simp [h, h.le]
   · simp [← h]
   · simp [h, h.not_le]
-
 #align sign_nonneg_iff sign_nonneg_iff
 
 @[simp]

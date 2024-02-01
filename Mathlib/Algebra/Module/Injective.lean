@@ -184,9 +184,6 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine' le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-      -- porting note: this subgoal didn't exist before the reenableeta branch
-      -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
-      -- after the behavior of `refine'` changed.
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
       symm
