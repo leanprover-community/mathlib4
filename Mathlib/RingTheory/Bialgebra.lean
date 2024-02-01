@@ -51,14 +51,16 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
 
 namespace Bialgebra
 
+open Coalgebra
+
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Semiring A] [B : Bialgebra R A]
+variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-lemma counit_mul {a b : A} : B.counit (a * b) = B.counit a * B.counit b :=
-  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_counit) a) b
+lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
+  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_counit a) b
 
-lemma comul_mul {a b : A} : B.comul (a * b) = B.comul a * B.comul b :=
-  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_comul) a) b
+lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
+  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_comul a) b
 
 -- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
 attribute [simp] counit_one comul_one counit_mul comul_mul
@@ -67,20 +69,20 @@ variable (R A)
 
 /-- `counitAlgHom R A` is the counit of the `R`-bialgebra `A`, as an `R`-algebra map. -/
 def counitAlgHom : A →ₐ[R] R where
-  toFun := B.counit
-  map_one' := B.counit_one
-  map_mul' x y := counit_mul
-  map_zero' := B.counit.map_zero
-  map_add' := B.counit.map_add
+  toFun := counit
+  map_one' := counit_one
+  map_mul' := counit_mul
+  map_zero' := counit.map_zero
+  map_add' := counit.map_add
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
 
 /-- `comulAlgHom R A` is the comultiplication of the `R`-bialgebra `A`, as an `R`-algebra map. -/
 def comulAlgHom : A →ₐ[R] A ⊗[R] A where
-  toFun := B.comul
-  map_one' := B.comul_one
-  map_mul' x y := comul_mul
-  map_zero' := B.comul.map_zero
-  map_add' := B.comul.map_add
+  toFun := comul
+  map_one' := comul_one
+  map_mul' := comul_mul
+  map_zero' := comul.map_zero
+  map_add' := comul.map_add
   commutes' := by simp [Algebra.algebraMap_eq_smul_one]
 
 end Bialgebra
