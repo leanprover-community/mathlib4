@@ -259,7 +259,7 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
 
 /-- We can convert a multiplicative character into a homomorphism of monoids with zero when
 the source has a zero and another element. -/
-@[coe]
+@[coe, simps]
 def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
       toFun := χ.toFun
