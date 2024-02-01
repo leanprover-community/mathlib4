@@ -31,6 +31,7 @@ def MonoidalOpposite (C : Type u₁) :=
 
 namespace MonoidalOpposite
 
+@[inherit_doc]
 notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 
 /-- Think of an object of `C` as an object of `Cᴹᵒᵖ`. -/
@@ -168,6 +169,8 @@ end Iso
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
+
+attribute [local simp] id_tensorHom tensorHom_id
 
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
