@@ -17,6 +17,7 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 
 - `Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical`: a monic polynomial over
   an irreducible ring is irreducible if it is irreducible after mapping into an integral domain.
+  A generalization to `Polynomial.Monic.irreducible_of_irreducible_map`.
 
 ## Tags
 
@@ -31,7 +32,8 @@ open Polynomial
 noncomputable section
 
 /-- A polynomial over an irreducible ring `R` is irreducible if it is monic and irreducible after
-mapping into an integral domain `S`. -/
+mapping into an integral domain `S` (https://math.stackexchange.com/a/4843432/235999).
+A generalization to `Polynomial.Monic.irreducible_of_irreducible_map`. -/
 theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
     {R S : Type*} [CommRing R] [(nilradical R).IsPrime] [CommRing S] [IsDomain S]
     (φ : R →+* S) (f : R[X]) (hm : f.Monic) (hi : Irreducible (f.map φ)) : Irreducible f := by
