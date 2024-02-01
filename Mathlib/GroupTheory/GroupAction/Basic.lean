@@ -224,7 +224,7 @@ variable [Monoid α] [MulDistribMulAction M α] [Monoid β] [MulDistribMulAction
 def FixedPoints.submonoid : Submonoid α where
   carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
-  mul_mem' := fun ha hb _ => by rw [MulDistribMulAction.smul_mul, ha, hb]
+  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
 @[simp]
 lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
@@ -251,7 +251,7 @@ variable [Group α] [MulDistribMulAction M α] [Group β] [MulDistribMulAction M
 /-- The subgroup of elements fixed under the whole action. -/
 def FixedPoints.subgroup : Subgroup α where
   __ := submonoid M α
-  inv_mem' := fun ha m => by rw [smul_inv', ha]
+  inv_mem' ha _ := by rw [smul_inv', ha]
 
 /-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
 notation α "^*" M:51 => FixedPoints.subgroup M α
@@ -259,6 +259,10 @@ notation α "^*" M:51 => FixedPoints.subgroup M α
 @[simp]
 lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+@[simp]
+lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+  rfl
 
 variable {M α}
 
@@ -281,7 +285,7 @@ variable [AddMonoid α] [DistribMulAction M α] [AddMonoid β] [DistribMulAction
 def FixedPoints.addSubmonoid : AddSubmonoid α where
   carrier := MulAction.fixedPoints M α
   zero_mem' := smul_zero
-  add_mem' := fun ha hb _ => by rw [smul_add, ha, hb]
+  add_mem' ha hb _ := by rw [smul_add, ha, hb]
 
 @[simp]
 lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
@@ -308,7 +312,7 @@ variable [AddGroup α] [DistribMulAction M α] [AddGroup β] [DistribMulAction M
 /-- The additive subgroup of elements fixed under the whole action. -/
 def FixedPoints.addSubgroup : AddSubgroup α where
   __ := addSubmonoid M α
-  neg_mem' := fun ha _ => by rw [smul_neg, ha]
+  neg_mem' ha _ := by rw [smul_neg, ha]
 
 /-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
 notation α "^+" M:51 => FixedPoints.addSubgroup M α
@@ -316,6 +320,10 @@ notation α "^+" M:51 => FixedPoints.addSubgroup M α
 @[simp]
 lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
+
+@[simp]
+lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+  rfl
 
 variable {M α}
 
