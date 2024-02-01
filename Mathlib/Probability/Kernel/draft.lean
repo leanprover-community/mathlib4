@@ -545,9 +545,13 @@ lemma mLimsup_univ (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) :
   simp_rw [ht]
   rw [limsup_const] -- should be simp
 
-lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
+lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) (n : ℕ) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 1) := by
+  have h1 := tendsto_m_atTop_ae_of_monotone κ a s hs hs_iUnion
+  have h2 := fun (n : ℕ) ↦ tendsto_m_mLimsup κ a (s n)
+  rw [← ae_all_iff] at h1 h2
+  filter_upwards [h1, h2] with t h_tendsto_set h_tendsto_nat
   sorry
 
 lemma tendsto_mLimsup_atTop_of_antitone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
@@ -578,7 +582,7 @@ lemma mLimsupIic_nonneg (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : �
 lemma mLimsupIic_le_one (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : mLimsupIic κ a t q ≤ 1 :=
   mLimsup_le_one κ a _ t
 
-lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) :
+lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atTop (𝓝 1) := by
   sorry
 
