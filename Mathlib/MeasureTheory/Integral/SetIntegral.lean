@@ -658,7 +658,7 @@ theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico a b, f t ∂μ = ∫ t in Io
   integral_Ico_eq_integral_Ioo' <| measure_singleton a
 #align measure_theory.integral_Ico_eq_integral_Ioo MeasureTheory.integral_Ico_eq_integral_Ioo
 
-theorem integral_Icc_eq_integral_Ico : ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ := by
+theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
 #align measure_theory.integral_Icc_eq_integral_Ioo MeasureTheory.integral_Icc_eq_integral_Ioo
 
