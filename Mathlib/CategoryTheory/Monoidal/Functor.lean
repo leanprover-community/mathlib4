@@ -115,11 +115,11 @@ section
 variable {C D}
 
 @[reassoc (attr := simp)]
-theorem  LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
+theorem LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
     (f : X ⟶ Y) (g : X' ⟶ Y') :
       (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
-  rw [← tensor_id_comp_id_tensor_assoc]
-  rw [F.μ_natural_right, F.μ_natural_left_assoc]
+  rw [tensorHom_def, ← id_tensorHom, ← tensorHom_id]
+  simp only [assoc, μ_natural_right, μ_natural_left_assoc]
   rw [← F.map_comp, tensor_id_comp_id_tensor]
 
 /--
@@ -260,6 +260,14 @@ theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     F.map (f ⊗ g) = inv (F.μ X X') ≫ (F.map f ⊗ F.map g) ≫ F.μ Y Y' := by simp
 #align category_theory.monoidal_functor.map_tensor CategoryTheory.MonoidalFunctor.map_tensor
 
+-- Note: `𝟙 X ⊗ f` will be replaced by `X ◁ f` in #6307.
+theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    F.map (𝟙 X ⊗ f) = inv (F.μ X Y) ≫ (𝟙 (F.obj X) ⊗ F.map f) ≫ F.μ X Z := by simp
+
+-- Note: `f ⊗ 𝟙 Z` will be replaced by `f ▷ Z` in #6307.
+theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
+    F.map (f ⊗ 𝟙 Z) = inv (F.μ X Z) ≫ (F.map f ⊗ 𝟙 (F.obj Z)) ≫ F.μ Y Z := by simp
+
 theorem map_leftUnitor (X : C) :
     F.map (λ_ X).hom = inv (F.μ (𝟙_ C) X) ≫ (inv F.ε ⊗ 𝟙 (F.obj X)) ≫ (λ_ (F.obj X)).hom := by
   simp only [LaxMonoidalFunctor.left_unitality]
@@ -326,18 +334,14 @@ theorem ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
 @[simps!]
 noncomputable def commTensorLeft (X : C) :
     F.toFunctor ⋙ tensorLeft (F.toFunctor.obj X) ≅ tensorLeft X ⋙ F.toFunctor :=
-  NatIso.ofComponents (fun Y => F.μIso X Y) @fun Y Z f => by
-    convert F.μ_natural (𝟙 X) f using 2
-    simp
+  NatIso.ofComponents (fun Y => F.μIso X Y) fun f => F.μ_natural_right X f
 #align category_theory.monoidal_functor.comm_tensor_left CategoryTheory.MonoidalFunctor.commTensorLeft
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
 @[simps!]
 noncomputable def commTensorRight (X : C) :
     F.toFunctor ⋙ tensorRight (F.toFunctor.obj X) ≅ tensorRight X ⋙ F.toFunctor :=
-  NatIso.ofComponents (fun Y => F.μIso Y X) @fun Y Z f => by
-    convert F.μ_natural f (𝟙 X) using 2
-    simp
+  NatIso.ofComponents (fun Y => F.μIso Y X) fun f => F.μ_natural_left f X
 #align category_theory.monoidal_functor.comm_tensor_right CategoryTheory.MonoidalFunctor.commTensorRight
 
 end
@@ -393,19 +397,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
       slice_lhs 2 3 => rw [← G.toFunctor.map_id, G.μ_natural]
       rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, Category.assoc, ←
         G.toFunctor.map_comp, ← G.toFunctor.map_comp, ← G.toFunctor.map_comp, ←
-        G.toFunctor.map_comp, F.associativity]
-    left_unitality := fun X => by
-      dsimp
-      rw [G.left_unitality, comp_tensor_id, Category.assoc, Category.assoc]
-      apply congr_arg
-      rw [F.left_unitality, map_comp, ← NatTrans.id_app, ← Category.assoc, ←
-        LaxMonoidalFunctor.μ_natural, NatTrans.id_app, map_id, ← Category.assoc, map_comp]
-    right_unitality := fun X => by
-      dsimp
-      rw [G.right_unitality, id_tensor_comp, Category.assoc, Category.assoc]
-      apply congr_arg
-      rw [F.right_unitality, map_comp, ← NatTrans.id_app, ← Category.assoc, ←
-        LaxMonoidalFunctor.μ_natural, NatTrans.id_app, map_id, ← Category.assoc, map_comp] }
+        G.toFunctor.map_comp, F.associativity] }
 #align category_theory.lax_monoidal_functor.comp CategoryTheory.LaxMonoidalFunctor.comp
 
 @[inherit_doc]

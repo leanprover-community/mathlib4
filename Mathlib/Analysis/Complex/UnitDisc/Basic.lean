@@ -29,7 +29,7 @@ def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 #align complex.unit_disc Complex.UnitDisc
 
-scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
+@[inherit_doc] scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
 open UnitDisc
 
 namespace UnitDisc
