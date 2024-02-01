@@ -97,7 +97,7 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
       enter [1, n]
       rw [geom_sum_eq (by contrapose! hz; simp [hz]), sub_div, sub_eq_add_neg, ← neg_div]
     rw [← zero_add (-1 / (z - 1)), ← zero_div (z - 1)]
-    apply Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hz) (z - 1))
+    apply Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hz) (z - 1))
     simp only [zero_div, zero_add, tendsto_const_nhds_iff]
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
@@ -170,9 +170,9 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet {M : ℝ} :
       _ ≤ ‖1 - z‖ * (ε / 4 / M) * ∑' i, ‖z‖ ^ i := by
         gcongr
         exact sum_le_tsum _ (fun _ _ ↦ by positivity)
-          (summable_geometric_of_lt_1 (by positivity) zn)
+          (summable_geometric_of_lt_one (by positivity) zn)
       _ = ‖1 - z‖ * (ε / 4 / M) / (1 - ‖z‖) := by
-        rw [tsum_geometric_of_lt_1 (by positivity) zn, ← div_eq_mul_inv]
+        rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]
       _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr; linarith only [zn]
       _ = _ := by
         rw [← mul_rotate, mul_div_cancel _ (by linarith only [zn]),
