@@ -129,6 +129,7 @@ see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
 @[ext, aesop safe constructors (rule_sets [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
+  /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
