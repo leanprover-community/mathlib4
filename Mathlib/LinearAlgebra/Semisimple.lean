@@ -28,13 +28,15 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
    submodules.
  * `Module.End.eq_zero_of_isNilpotent_isSemisimple`: the zero endomorphism is the only endomorphism
    that is both nilpotent and semisimple.
+ * `Module.End.isSemisimple_of_squarefree_aeval_eq_zero`: an endomorphism that is a root of a
+   square-free polynomial is semisimple (in finite dimensions over a field).
 
 ## TODO
 
 In finite dimensions over a field:
  * Sum / difference / product of commuting semisimple endomorphisms is semisimple
  * If semisimple then generalized eigenspace is eigenspace
- * Semisimple iff minpoly is squarefree
+ * Converse of `Module.End.isSemisimple_of_squarefree_aeval_eq_zero`
  * Restriction of semisimple endomorphism is semisimple
  * Triangularizable iff diagonalisable for semisimple endomorphisms
 
@@ -127,7 +129,7 @@ theorem isSemisimple_of_squarefree_aeval_eq_zero [FiniteDimensional K M]
     AEval.isTorsion_of_finiteDimensional K M f).submodule_iSup_eq_top
   rw [AEval.annihilator_top_eq_ker_aeval, minpoly.ker_aeval_eq_span_minpoly,
     Ideal.submodule_span_eq, factors_eq_normalizedFactors] at this
-  refine isSemisimpleModule_of_IsSemisimpleModule_submodule'
+  refine isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun ⟨q, hq₁⟩ ↦ Submodule.isSemisimple_torsionBy_of_irreducible <| Prime.irreducible ?_) this
   simp only [Multiset.mem_toFinset] at hq₁
   simp only [prime_pow_iff]

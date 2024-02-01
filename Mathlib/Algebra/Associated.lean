@@ -611,7 +611,7 @@ theorem prime_mul_iff [CancelCommMonoidWithZero α] {x y : α} :
   · rcases of_irreducible_mul h.irreducible with hx | hy
     · exact Or.inr ⟨hx, (associated_unit_mul_left y x hx).prime h⟩
     · exact Or.inl ⟨(associated_mul_unit_left x y hy).prime h, hy⟩
-  · rintro ⟨hx, hy⟩ | ⟨hx, hy⟩
+  · rintro (⟨hx, hy⟩ | ⟨hx, hy⟩)
     · exact (associated_mul_unit_left x y hy).symm.prime hx
     · exact (associated_unit_mul_right y x hx).prime hy
 
