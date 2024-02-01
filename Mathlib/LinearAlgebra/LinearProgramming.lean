@@ -1,18 +1,7 @@
-/-
-Copyright (c) 2023 Martin Dvorak. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Martin Dvorak, Antoine Chambert-Loir
--/
+
 import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Algebra.Order.Group.Defs
 
-/-!
-
-# Linear programming
-
-TODO
-
--/
 
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
 structure LinearProgram (R V W M N : Type*) [OrderedRing R]
@@ -45,8 +34,8 @@ def LinearProgram.dual (LP : LinearProgram R V W M N) :=
 
 theorem LinearProgram.weakDuality (LP : LinearProgram R V W M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ᵃ[R] R} (hd : d ∈ LP.dual) :
-    LP.objective c ≤ d LP.upper :=
-  sorry
+    LP.objective c ≤ d LP.upper := by
+  simp_all [LinearProgram.primal, LinearProgram.dual]
 
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
 theorem LinearProgram.strongDuality (LP : LinearProgram R V W M N)
