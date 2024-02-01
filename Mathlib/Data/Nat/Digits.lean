@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Log
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.IntervalCases
