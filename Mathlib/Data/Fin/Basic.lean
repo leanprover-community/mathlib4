@@ -49,7 +49,7 @@ This file expands on the development in the core library.
 * `Fin.orderIsoSubtype` : coercion to `{ i // i < n }` as an `OrderIso`;
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.valOrderEmbedding` : coercion to natural numbers as an `OrderEmbedding`;
-* `Fin.succEmbedding` : `Fin.succ` as an `OrderEmbedding`;
+* `Fin.succEmb` : `Fin.succ` as an `OrderEmbedding`;
 * `Fin.castLEEmb h` : `Fin.castLE` as an `OrderEmbedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
 * `Fin.castIso` : `Fin.cast` as an `OrderIso`, order isomorphism between `Fin n` and `Fin m`
   provided that `n = m`, see also `Equiv.finCongr`;
@@ -716,21 +716,20 @@ section Succ
 #align fin.coe_succ Fin.val_succ
 #align fin.succ_pos Fin.succ_pos
 
+lemma strictMono_succ {n : ℕ} : StrictMono (succ : Fin n → Fin (n + 1)) := fun _ _ => succ_lt_succ
+
 /-- `Fin.succ` as an `OrderEmbedding` -/
-def succEmbedding (n : ℕ) : Fin n ↪o Fin (n + 1) :=
-  (OrderEmbedding.ofStrictMono Fin.succ) fun _ _ h => succ_lt_succ h
-#align fin.succ_embedding Fin.succEmbedding
+def succEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := OrderEmbedding.ofStrictMono succ strictMono_succ
+#align fin.succ_embedding Fin.succEmb
 
 @[simp]
-theorem val_succEmbedding : ⇑(succEmbedding n) = Fin.succ :=
-  rfl
-#align fin.coe_succ_embedding Fin.val_succEmbedding
+theorem val_succEmb : ⇑(succEmb n) = Fin.succ := rfl
+#align fin.coe_succ_embedding Fin.val_succEmb
 
 #align fin.succ_le_succ_iff Fin.succ_le_succ_iff
 #align fin.succ_lt_succ_iff Fin.succ_lt_succ_iff
 
-theorem succ_injective (n : ℕ) : Injective (@Fin.succ n) :=
-  (succEmbedding n).injective
+theorem succ_injective (n : ℕ) : Injective (@Fin.succ n) := (succEmb n).injective
 #align fin.succ_injective Fin.succ_injective
 
 #align fin.succ_inj Fin.succ_inj
@@ -1114,6 +1113,14 @@ section Pred
 #align fin.add_nat_sub_nat Fin.addNat_subNat
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
+theorem strictMono_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
+    (hf₂ : StrictMono f) : StrictMono (fun a => pred (f a) (hf a)) :=
+    fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
+
+theorem monotone_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
+    (hf₂ : Monotone f) : Monotone (fun a => pred (f a) (hf a)) :=
+    fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
+
 #align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castₓ
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm):
@@ -1142,19 +1149,23 @@ theorem le_pred_castSucc_iff {a b : Fin (n + 1)} (ha : castSucc a ≠ 0) :
     b ≤ (castSucc a).pred ha ↔ b < a := by
   rw [le_pred_iff, succ_le_castSucc_iff]
 
+theorem pred_castSucc_lt_iff {a b : Fin (n + 1)} (ha : castSucc a ≠ 0) :
+    (castSucc a).pred ha < b ↔ a ≤ b := by
+  rw [pred_lt_iff, castSucc_lt_succ_iff]
+
 theorem pred_castSucc_lt {a : Fin (n + 1)} (ha : castSucc a ≠ 0) :
-    (castSucc a).pred ha < a := by
-  rw [pred_lt_iff]
-  exact castSucc_lt_succ _
+    (castSucc a).pred ha < a := by rw [pred_castSucc_lt_iff]
 
 theorem le_castSucc_pred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) :
     b ≤ castSucc (a.pred ha) ↔ b < a := by
   rw [castSucc_pred_eq_pred_castSucc, le_pred_castSucc_iff]
 
+theorem castSucc_pred_lt_iff {a b : Fin (n + 1)} (ha : a ≠ 0) :
+    castSucc (a.pred ha) < b ↔ a ≤ b := by
+  rw [castSucc_pred_eq_pred_castSucc, pred_castSucc_lt_iff]
+
 theorem castSucc_pred_lt {a : Fin (n + 1)} (ha : a ≠ 0) :
-    castSucc (a.pred ha) < a := by
-  rw [lt_iff_not_le, le_castSucc_pred_iff]
-  exact lt_irrefl _
+    castSucc (a.pred ha) < a := by rw [castSucc_pred_lt_iff]
 
 end Pred
 
@@ -1200,6 +1211,14 @@ theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j
 theorem castPred_lt_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi < castPred j hj ↔ i < j := Iff.rfl
 
+theorem strictMono_castPred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
+    (hf₂ : StrictMono f) : StrictMono (fun a => castPred (f a) (hf a)) :=
+    fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
+
+theorem monotone_castPred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ last n)
+    (hf₂ : Monotone f) : Monotone (fun a => castPred (f a) (hf a)) :=
+    fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
+
 theorem castPred_lt_iff {i : Fin (n + 1)} (hi : i ≠ last n) :
     castPred i hi < j ↔ i < castSucc j := by
   rw [← castSucc_lt_castSucc_iff, castSucc_castPred]
@@ -1234,9 +1253,6 @@ theorem castPred_one [NeZero n] (h := one_lt_last.ne) : castPred (1 : Fin (n + 2
   · rfl
 #align fin.cast_pred_one Fin.castPred_one
 
-theorem pred_lt_castPred (h₁ : i ≠ 0) (h₂ : i ≠ last n) : pred i h₁ < castPred i h₂ := by
-  rw [← castSucc_lt_castSucc_iff, castSucc_castPred, castSucc_lt_iff_succ_le, succ_pred]
-
 theorem rev_pred (h : i ≠ 0) (h' := rev_ne_iff.mpr ((rev_last _).symm ▸ h)) :
     rev (pred i h) = castPred (rev i) h' := by
   rw [← castSucc_inj, castSucc_castPred, ← rev_succ, succ_pred]
@@ -1249,23 +1265,38 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
     (ha' := a.succ_ne_last_iff.mpr ha) :
     succ (a.castPred ha) = (succ a).castPred ha' := rfl
 
-theorem le_castPred_succ_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
+theorem castpred_succ_le_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
     (succ a).castPred ha ≤ b ↔ a < b := by
   rw [castPred_le_iff, succ_le_castSucc_iff]
 
+theorem lt_castPred_succ_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
+    b < (succ a).castPred ha ↔ b ≤ a := by
+  rw [lt_castPred_iff, castSucc_lt_succ_iff]
+
 theorem lt_castPred_succ {a : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
-    a < (succ a).castPred ha := by
-  rw [lt_castPred_iff]
-  exact castSucc_lt_succ _
+    a < (succ a).castPred ha := by rw [lt_castPred_succ_iff]
 
 theorem succ_castPred_le_iff {a b : Fin (n + 1)} (ha : a ≠ last n) :
     succ (a.castPred ha) ≤ b ↔ a < b := by
-  rw [succ_castPred_eq_castPred_succ ha, le_castPred_succ_iff]
+  rw [succ_castPred_eq_castPred_succ ha, castpred_succ_le_iff]
+
+theorem lt_succ_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ last n) :
+    b < succ (a.castPred ha) ↔ b ≤ a := by
+  rw [succ_castPred_eq_castPred_succ ha, lt_castPred_succ_iff]
 
 theorem lt_succ_castPred {a : Fin (n + 1)} (ha : a ≠ last n) :
-    a < succ (a.castPred ha) := by
-  rw [lt_iff_not_le, succ_castPred_le_iff]
-  exact lt_irrefl _
+    a < succ (a.castPred ha) := by rw [lt_succ_castPred_iff]
+
+theorem castPred_le_pred_iff {a b : Fin (n + 1)} (ha : a ≠ last n) (hb : b ≠ 0) :
+    castPred a ha ≤ pred b hb ↔ a < b := by
+  rw [le_pred_iff, succ_castPred_le_iff]
+
+theorem pred_lt_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ last n) :
+    pred a ha < castPred b hb ↔ a ≤ b := by
+  rw [lt_castPred_iff, castSucc_pred_lt_iff ha]
+
+theorem pred_lt_castPred (h₁ : a ≠ 0) (h₂ : a ≠ last n) : pred a h₁ < castPred a h₂ := by
+  rw [pred_lt_castPred_iff]
 
 end CastPred
 
@@ -1570,29 +1601,6 @@ section SuccAbove
 def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
   if castSucc i < p then i.castSucc else i.succ
 
-theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
-  (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
-    (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
-    (castSucc_lt_succ i).le
-#align fin.succ_above_aux Fin.strictMono_succAbove
-
-/--  `Fin.succAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
-with a hole around `p`. -/
-@[simps! apply toEmbedding]
-def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
-  OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
-#align fin.succ_above Fin.succAboveEmb
-
-/-- Given a fixed pivot `x : Fin (n + 1)`, `x.succAbove` is injective -/
-theorem succAbove_right_injective {x : Fin (n + 1)} : Injective (succAbove x) :=
-  (strictMono_succAbove x).injective
-#align fin.succ_above_right_injective Fin.succAbove_right_injective
-
-/-- Given a fixed pivot `x : Fin (n + 1)`, `x.succAbove` is injective -/
-theorem succAbove_right_inj (x : Fin (n + 1)) : x.succAbove a = x.succAbove b ↔ a = b :=
-  succAbove_right_injective.eq_iff
-#align fin.succ_above_right_inj Fin.succAbove_right_inj
-
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `castSucc` when the resulting `i.castSucc < p`. -/
 theorem succAbove_below (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
@@ -1616,6 +1624,34 @@ theorem succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
 #align fin.succ_above_ne Fin.succAbove_ne
 theorem ne_succAbove (p : Fin (n + 1)) (i : Fin n) : p ≠ p.succAbove i :=
 (succAbove_ne _ _).symm
+
+theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
+  strictMono_castSucc.ite strictMono_succ
+    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i =>
+    (castSucc_lt_succ i).le
+#align fin.succ_above_aux Fin.strictMono_succAbove
+
+/-- Given a fixed pivot `x : Fin (n + 1)`, `x.succAbove` is injective -/
+theorem succAbove_right_injective {x : Fin (n + 1)} : Injective (succAbove x) :=
+  (strictMono_succAbove x).injective
+#align fin.succ_above_right_injective Fin.succAbove_right_injective
+
+/-- Given a fixed pivot `x : Fin (n + 1)`, `x.succAbove` is injective -/
+theorem succAbove_right_inj (x : Fin (n + 1)) : x.succAbove a = x.succAbove b ↔ a = b :=
+  succAbove_right_injective.eq_iff
+#align fin.succ_above_right_inj Fin.succAbove_right_inj
+
+theorem succAbove_lt_succAbove_iff (p : Fin (n + 1)) :
+    succAbove p i < succAbove p j ↔ i < j := (strictMono_succAbove p).lt_iff_lt
+theorem succAbove_le_succAbove_iff (p : Fin (n + 1)) :
+    succAbove p i ≤ succAbove p j ↔ i ≤ j := (strictMono_succAbove p).le_iff_le
+
+/--  `Fin.succAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
+with a hole around `p`. -/
+@[simps! apply toEmbedding]
+def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
+  OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
+#align fin.succ_above Fin.succAboveEmb
 
 @[simp]
 theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
