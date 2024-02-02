@@ -187,7 +187,7 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
   constructor
   · rintro ⟨x, y, h⟩
     by_cases hxy : x = 0 ∧ y = 0
-    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow zero_lt_two, add_zero, zero_mul],
+    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow two_ne_zero, add_zero, zero_mul],
         ⟨0, by rw [zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩⟩
     · have hg := Nat.pos_of_ne_zero (mt Nat.gcd_eq_zero_iff.mp hxy)
       obtain ⟨g, x₁, y₁, _, h₂, h₃, h₄⟩ := Nat.exists_coprime' hg

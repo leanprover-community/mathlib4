@@ -285,7 +285,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_1 _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 #align spectrum.has_fpower_series_on_ball_inverse_one_sub_smul spectrum.hasFPowerSeriesOnBall_inverse_one_sub_smul
 
