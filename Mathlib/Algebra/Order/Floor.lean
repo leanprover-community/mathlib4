@@ -1776,16 +1776,18 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊ _ ⌋]
-def evalIntFloor : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
-  let ~q(@Int.floor $α' $i $j $a) := e | throwError "failed to match on Int.floor application"
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg_of_pos (α := $α') $pa)
-      pure (.nonnegative ret)
-  | .nonnegative pa =>
-      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg (α := $α') $pa)
-      pure (.nonnegative ret)
-  | _ => pure .none
+def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.floor $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.floor application"
 
 private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
@@ -1793,30 +1795,34 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈ _ ⌉₊]
-def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
-  let ~q(@Nat.ceil $α' $i $j $a) := e | throwError "failed to match on Nat.ceil application"
-  let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
-  assertInstancesCommute
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-    letI ret : Q(0 < $e) := q(nat_ceil_pos (α := $α') $pa)
-    pure (.positive ret)
-  | _ => pure .none
+def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $j $a) =>
+    let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Nat.ceil application"
 
 private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈ _ ⌉]
-def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
-  let ~q(@Int.ceil $α' $i $j $a) := e | throwError "failed to match on Int.ceil application"
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-      letI ret : Q(0 < $e) := q(int_ceil_pos (α := $α') $pa)
-      pure (.positive ret)
-  | .nonnegative pa =>
-      letI ret : Q(0 ≤ $e) := q(Int.ceil_nonneg (α := $α') $pa)
-      pure (.nonnegative ret)
-  | _ => pure .none
+def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.ceil $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.positive q(int_ceil_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.ceil application"
 
 end Mathlib.Meta.Positivity
