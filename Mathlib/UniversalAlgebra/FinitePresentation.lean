@@ -83,11 +83,8 @@ def elabFlp : TermElab := fun stx tp =>
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
       for nm in nms do
         unless nm ∈ sorts do throwError "{nm} appears in {d} is not a valid sort name"
-    logInfo m!"{nm}"
-    logInfo m!"{sorts}"
-    logInfo m!"{ops}"
-    --return q(RawFiniteLawverePresentation.mk $nm $sorts $ops)
-    return q(0)
+    return Lean.mkAppN (.const ``RawFiniteLawverePresentation.mk [])
+      #[toExpr nm, toExpr sorts, toExpr ops]
   | _ => throwUnsupportedSyntax
 
 #check [RFLP|
