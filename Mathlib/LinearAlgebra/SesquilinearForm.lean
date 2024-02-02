@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
