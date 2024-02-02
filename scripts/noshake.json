@@ -4,6 +4,7 @@
   "Lean",
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
+  "Lean.Meta.Tactic.Simp.RegisterCommand",
   "Mathlib.Algebra.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
@@ -248,6 +249,8 @@
   "Mathlib.Probability.Notation":
   ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
+  "Mathlib.Order.Filter.ListTraverse":
+  ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Filter.Basic": ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.MeasureTheory.Measure.Regular":
   ["Mathlib.Topology.Metrizable.Urysohn"],
@@ -276,6 +279,7 @@
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
   "Mathlib.Algebra.Order.Ring.Defs":
   ["Mathlib.Algebra.Order.Monoid.WithZero.Defs"],
+  "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
