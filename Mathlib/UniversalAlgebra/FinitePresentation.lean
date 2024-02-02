@@ -1,12 +1,41 @@
 import Std.Data.List.Basic
 import Mathlib.UniversalAlgebra.LawvereTheory
 
-structure RawFiniteLawverePresentation where
+structure RFLP where
   name : String
   sortNames : List String
   opNames : List (String × List (Fin sortNames.length) × Fin sortNames.length)
 
-structure FiniteLawverePresentation extends RawFiniteLawverePresentation where
+instance : Lean.ToExpr RFLP where
+  toExpr := fun ⟨nm, sorts, ops⟩ =>
+    Lean.mkAppN (.const ``RFLP.mk []) #[Lean.toExpr nm, Lean.toExpr sorts, Lean.toExpr ops]
+  toTypeExpr := .const ``RFLP []
+
+namespace RFLP
+
+variable (R : RFLP)
+
+def numSorts := R.sortNames.length
+
+abbrev Srt := Fin R.numSorts
+
+def ops (L : List (Fin R.numSorts)) (X : R.Srt) :
+    List String :=
+  R.opNames.filterMap fun (nm,l,x) =>
+    if L = l ∧ X = x then some nm else none
+
+def numOps (L : List R.Srt) (X : R.Srt) :=
+  R.ops L X |>.length
+
+abbrev Op (L : List R.Srt) (X : R.Srt) : Type :=
+  Fin (R.numOps L X)
+
+abbrev Word (A B : List R.Srt) := _root_.LawvereWord R.Op A B
+
+end RFLP
+
+structure FiniteLawverePresentation extends RFLP where
+  relNames : List (String × (A B : List toRFLP.Srt) × toRFLP.Word A B × toRFLP.Word A B)
 
 syntax sortName := ident
 syntax sortDescr := sortName ";"
@@ -86,16 +115,16 @@ def elabFlp : TermElab := fun stx tp =>
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
       for nm in nms do
         unless nm ∈ sorts do throwError "{nm} appears in {d} is not a valid sort name"
-    let numSort := sorts.length
-    let actualOps : List (String × List (Fin numSort) × Fin numSort) :=
-      match numSort with
+    let actualOps : List (String × List (Fin sorts.length) × Fin sorts.length) :=
+      match sorts.length with
       | 0 => []
       | _+1 => ops.map fun (opnm, ins, out) =>
         (opnm, ins.map fun s => sorts.indexOf s, sorts.indexOf out)
-    return mkAppN (.const `RawFiniteLawverePresentation.mk [])
-      #[toExpr nm, toExpr sorts, toExpr actualOps]
+    let rflp : RFLP := .mk nm sorts actualOps
+    return toExpr rflp
   | _ => throwUnsupportedSyntax
 
+#check FiniteLawverePresentation.mk
 #check [RFLP|
   NAME:
     Module
