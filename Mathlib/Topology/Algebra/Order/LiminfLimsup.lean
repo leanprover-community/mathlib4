@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
@@ -183,7 +183,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
   csInf_eq_of_forall_ge_of_forall_gt_exists_lt (isBounded_le_nhds a)
-    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α _ a _ h)
+    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α a _ _ h)
     fun b (hba : a < b) ↦
     show ∃ c, { n : α | n ≤ c } ∈ 𝓝 a ∧ c < b from
       match dense_or_discrete a b with

@@ -3,7 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 #align_import topology.metric_space.isometric_smul from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
@@ -89,7 +91,7 @@ theorem ediam_smul [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
 
 @[to_additive]
 theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a : M) :
-    Isometry ((· * ·) a) :=
+    Isometry (a * ·) :=
   isometry_smul M a
 #align isometry_mul_left isometry_mul_left
 #align isometry_add_left isometry_add_left
@@ -277,7 +279,7 @@ theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c �
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) :
-    (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+    (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
   rw [preimage_smul, smul_ball]
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
@@ -290,7 +292,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r 
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
-    (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
   rw [preimage_smul, smul_closedBall]
 #align emetric.preimage_smul_closed_ball EMetric.preimage_smul_closedBall
 #align emetric.preimage_vadd_closed_ball EMetric.preimage_vadd_closedBall
@@ -299,7 +301,7 @@ variable [PseudoEMetricSpace G]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (· * ·) a ⁻¹' ball b r = ball (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' ball b r = ball (a⁻¹ * b) r :=
   preimage_smul_ball a b r
 #align emetric.preimage_mul_left_ball EMetric.preimage_mul_left_ball
 #align emetric.preimage_add_left_ball EMetric.preimage_add_left_ball
@@ -314,7 +316,7 @@ theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ�
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (· * ·) a ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
   preimage_smul_closedBall a b r
 #align emetric.preimage_mul_left_closed_ball EMetric.preimage_mul_left_closedBall
 #align emetric.preimage_add_left_closed_ball EMetric.preimage_add_left_closedBall
@@ -441,7 +443,7 @@ theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r 
 #align metric.vadd_ball Metric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
   rw [preimage_smul, smul_ball]
 #align metric.preimage_smul_ball Metric.preimage_smul_ball
 #align metric.preimage_vadd_ball Metric.preimage_vadd_ball
@@ -454,7 +456,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = close
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
-    (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
 #align metric.preimage_smul_closed_ball Metric.preimage_smul_closedBall
 #align metric.preimage_vadd_closed_ball Metric.preimage_vadd_closedBall
 
@@ -466,7 +468,7 @@ theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c •
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
-    (· • ·) c ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
+    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
 #align metric.preimage_smul_sphere Metric.preimage_smul_sphere
 #align metric.preimage_vadd_sphere Metric.preimage_vadd_sphere
 
@@ -474,7 +476,7 @@ variable [PseudoMetricSpace G]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ) :
-    (· * ·) a ⁻¹' ball b r = ball (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' ball b r = ball (a⁻¹ * b) r :=
   preimage_smul_ball a b r
 #align metric.preimage_mul_left_ball Metric.preimage_mul_left_ball
 #align metric.preimage_add_left_ball Metric.preimage_add_left_ball
@@ -489,7 +491,7 @@ theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ)
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ) :
-    (· * ·) a ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
   preimage_smul_closedBall a b r
 #align metric.preimage_mul_left_closed_ball Metric.preimage_mul_left_closedBall
 #align metric.preimage_add_left_closed_ball Metric.preimage_add_left_closedBall

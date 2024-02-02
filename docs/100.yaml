@@ -335,7 +335,8 @@
   title  : Divergence of the Prime Reciprocal Series
   links  :
     mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/SumOfPrimeReciprocalsDiverges.lean
-  author : Manuel Candales
+  decl   : not_summable_one_div_on_primes
+  author : Manuel Candales (archive), Michael Stoll (Mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   links :
@@ -412,3 +413,6 @@
   title  : Buffon Needle Problem
 100:
   title  : Descartes Rule of Signs
+  links  :
+    github : https://github.com/Timeroot/lean-descartes-signs/
+  author : Alex Meiburg

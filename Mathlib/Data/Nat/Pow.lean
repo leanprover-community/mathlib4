@@ -14,26 +14,29 @@ Results on the power operation on natural numbers.
 
 
 namespace Nat
+variable {m n x y : ℕ}
 
 /-! ### `pow` -/
 
 -- Porting note: the next two lemmas have moved into `Std`.
+-- TODO: Rename `Nat.pow_le_pow_of_le_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
+-- TODO: Rename `Nat.pow_le_pow_of_le_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
 
--- The global `pow_le_pow_of_le_left` needs an extra hypothesis `0 ≤ x`.
-#align nat.pow_le_pow_of_le_left Nat.pow_le_pow_of_le_left
-#align nat.pow_le_pow_of_le_right Nat.pow_le_pow_of_le_right
+-- The global `pow_le_pow_left` needs an extra hypothesis `0 ≤ x`.
 
+protected alias pow_le_pow_left := pow_le_pow_of_le_left
+protected alias pow_le_pow_right := pow_le_pow_of_le_right
+#align nat.pow_le_pow_of_le_left Nat.pow_le_pow_left
+#align nat.pow_le_pow_of_le_right Nat.pow_le_pow_right
 
-theorem pow_lt_pow_of_lt_left {x y : ℕ} (H : x < y) {i} (h : 0 < i) : x ^ i < y ^ i :=
-  _root_.pow_lt_pow_of_lt_left H (zero_le _) h
-#align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_of_lt_left
+protected theorem pow_lt_pow_left (h : x < y) (hn : n ≠ 0) : x ^ n < y ^ n :=
+  pow_lt_pow_left h (zero_le _) hn
+#align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_left
 
-theorem pow_lt_pow_of_lt_right {x : ℕ} (H : 1 < x) {i j : ℕ} (h : i < j) : x ^ i < x ^ j :=
-  pow_lt_pow H h
-#align nat.pow_lt_pow_of_lt_right Nat.pow_lt_pow_of_lt_right
+#align nat.pow_lt_pow_of_lt_right pow_lt_pow_right
 
 theorem pow_lt_pow_succ {p : ℕ} (h : 1 < p) (n : ℕ) : p ^ n < p ^ (n + 1) :=
-  pow_lt_pow_of_lt_right h n.lt_succ_self
+  pow_lt_pow_right h n.lt_succ_self
 #align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
 
 theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
@@ -66,9 +69,9 @@ theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
   one_le_pow n 2 (by decide)
 #align nat.one_le_two_pow Nat.one_le_two_pow
 
-theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
+theorem one_lt_pow (n m : ℕ) (h₀ : n ≠ 0) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
-  exact pow_lt_pow_of_lt_left h₁ h₀
+  exact Nat.pow_lt_pow_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
 
 theorem two_pow_pos (n : ℕ) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
@@ -76,50 +79,32 @@ theorem two_pow_pos (n : ℕ) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
 theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
 
 theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
-  one_lt_pow (n + 1) (m + 2) (succ_pos n) (Nat.lt_of_sub_eq_succ rfl)
+  one_lt_pow (n + 1) (m + 2) n.succ_ne_zero (Nat.lt_of_sub_eq_succ rfl)
 #align nat.one_lt_pow' Nat.one_lt_pow'
 
 @[simp]
-theorem one_lt_pow_iff {k n : ℕ} (h : 0 ≠ k) : 1 < n ^ k ↔ 1 < n := by
-  rcases n with (rfl | n)
-  · cases k <;> simp [zero_pow_eq]
-  rcases n with (rfl | n)
-  · rw [← Nat.one_eq_succ_zero, one_pow]
-  refine' ⟨fun _ => one_lt_succ_succ n, fun _ => _⟩
-  induction' k with k hk
-  · exact absurd rfl h
-  rcases k with (rfl | k)
-  · simp [← Nat.one_eq_succ_zero]
-  rw [pow_succ']
-  exact one_lt_mul (one_lt_succ_succ _).le (hk (succ_ne_zero k).symm)
+theorem one_lt_pow_iff {k n : ℕ} (h : k ≠ 0) : 1 < n ^ k ↔ 1 < n :=
+  one_lt_pow_iff_of_nonneg (zero_le _) h
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
-theorem one_lt_two_pow (n : ℕ) (h₀ : 0 < n) : 1 < 2 ^ n :=
-  one_lt_pow n 2 h₀ (by decide)
+theorem one_lt_two_pow (n : ℕ) (h₀ : n ≠ 0) : 1 < 2 ^ n := one_lt_pow n 2 h₀ (by decide)
 #align nat.one_lt_two_pow Nat.one_lt_two_pow
 
 theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
-  one_lt_pow (n + 1) 2 (succ_pos n) (by decide)
+  one_lt_pow (n + 1) 2 n.succ_ne_zero (by decide)
 #align nat.one_lt_two_pow' Nat.one_lt_two_pow'
 
-theorem pow_right_strictMono {x : ℕ} (k : 2 ≤ x) : StrictMono fun n : ℕ => x ^ n := fun _ _ =>
-  pow_lt_pow_of_lt_right k
-#align nat.pow_right_strict_mono Nat.pow_right_strictMono
+#align nat.pow_right_strict_mono pow_right_strictMono
+#align nat.pow_le_iff_lt_right pow_le_pow_iff_right
+#align nat.pow_lt_iff_lt_right pow_lt_pow_iff_right
 
-theorem pow_le_iff_le_right {x m n : ℕ} (k : 2 ≤ x) : x ^ m ≤ x ^ n ↔ m ≤ n :=
-  StrictMono.le_iff_le (pow_right_strictMono k)
-#align nat.pow_le_iff_le_right Nat.pow_le_iff_le_right
-
-theorem pow_lt_iff_lt_right {x m n : ℕ} (k : 2 ≤ x) : x ^ m < x ^ n ↔ m < n :=
-  StrictMono.lt_iff_lt (pow_right_strictMono k)
-#align nat.pow_lt_iff_lt_right Nat.pow_lt_iff_lt_right
-
-theorem pow_right_injective {x : ℕ} (k : 2 ≤ x) : Function.Injective fun n : ℕ => x ^ n :=
-  StrictMono.injective (pow_right_strictMono k)
+protected lemma pow_right_injective (hx : 2 ≤ x) : Function.Injective (x ^ ·) :=
+  StrictMono.injective (pow_right_strictMono hx)
 #align nat.pow_right_injective Nat.pow_right_injective
 
-theorem pow_left_strictMono {m : ℕ} (k : 1 ≤ m) : StrictMono fun x : ℕ => x ^ m := fun _ _ h =>
-  pow_lt_pow_of_lt_left h k
+/-- See also `pow_left_strictMonoOn`. -/
+protected theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (. ^ n : ℕ → ℕ) :=
+  fun _ _ h ↦ Nat.pow_lt_pow_left h hn
 #align nat.pow_left_strict_mono Nat.pow_left_strictMono
 
 theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a * q ^ (n + 1) := by
@@ -127,25 +112,21 @@ theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a 
   exact lt_mul_of_one_le_of_lt (Nat.succ_le_iff.mpr a0) (Nat.lt_pow_self q1 n)
 #align nat.mul_lt_mul_pow_succ Nat.mul_lt_mul_pow_succ
 
-end Nat
-
-theorem StrictMono.nat_pow {n : ℕ} (hn : 1 ≤ n) {f : ℕ → ℕ} (hf : StrictMono f) :
+theorem _root_.StrictMono.nat_pow {n : ℕ} (hn : n ≠ 0) {f : ℕ → ℕ} (hf : StrictMono f) :
     StrictMono fun m => f m ^ n :=
   (Nat.pow_left_strictMono hn).comp hf
 #align strict_mono.nat_pow StrictMono.nat_pow
 
-namespace Nat
+protected theorem pow_le_pow_iff_left (hm : m ≠ 0) : x ^ m ≤ y ^ m ↔ x ≤ y :=
+  pow_le_pow_iff_left (zero_le _) (zero_le _) hm
+#align nat.pow_le_iff_le_left Nat.pow_le_pow_iff_left
 
-theorem pow_le_iff_le_left {m x y : ℕ} (k : 1 ≤ m) : x ^ m ≤ y ^ m ↔ x ≤ y :=
-  StrictMono.le_iff_le (pow_left_strictMono k)
-#align nat.pow_le_iff_le_left Nat.pow_le_iff_le_left
+protected theorem pow_lt_pow_iff_left (hm : m ≠ 0) : x ^ m < y ^ m ↔ x < y :=
+  pow_lt_pow_iff_left (zero_le _) (zero_le _) hm
+#align nat.pow_lt_iff_lt_left Nat.pow_lt_pow_iff_left
 
-theorem pow_lt_iff_lt_left {m x y : ℕ} (k : 1 ≤ m) : x ^ m < y ^ m ↔ x < y :=
-  StrictMono.lt_iff_lt (pow_left_strictMono k)
-#align nat.pow_lt_iff_lt_left Nat.pow_lt_iff_lt_left
-
-theorem pow_left_injective {m : ℕ} (k : 1 ≤ m) : Function.Injective fun x : ℕ => x ^ m :=
-  StrictMono.injective (pow_left_strictMono k)
+theorem pow_left_injective (hm : m ≠ 0) : Function.Injective fun x : ℕ => x ^ m :=
+  (Nat.pow_left_strictMono hm).injective
 #align nat.pow_left_injective Nat.pow_left_injective
 
 theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
@@ -195,7 +176,7 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
         rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
-theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
+theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ}, 0 < x → (x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l)
   | x + 1, w => by
     constructor
     · intro a
@@ -203,14 +184,14 @@ theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ 
     · intro a
       cases' x with x
       · simp
-      · have le := (pow_le_iff_le_right (Nat.le_add_left _ _)).mp a
+      · have le := (pow_le_pow_iff_right <| by simp).mp a
         use (x + 2) ^ (l - k)
         rw [← pow_add, add_comm k, tsub_add_cancel_of_le le]
 #align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
 
 /-- If `1 < x`, then `x^k` divides `x^l` if and only if `k` is at most `l`. -/
 theorem pow_dvd_pow_iff_le_right {x k l : ℕ} (w : 1 < x) : x ^ k ∣ x ^ l ↔ k ≤ l := by
-  rw [pow_dvd_pow_iff_pow_le_pow (lt_of_succ_lt w), pow_le_iff_le_right w]
+  rw [pow_dvd_pow_iff_pow_le_pow (lt_of_succ_lt w), pow_le_pow_iff_right w]
 #align nat.pow_dvd_pow_iff_le_right Nat.pow_dvd_pow_iff_le_right
 
 theorem pow_dvd_pow_iff_le_right' {b k l : ℕ} : (b + 2) ^ k ∣ (b + 2) ^ l ↔ k ≤ l :=
@@ -242,8 +223,23 @@ theorem pow_div {x m n : ℕ} (h : n ≤ m) (hx : 0 < x) : x ^ m / x ^ n = x ^ (
 #align nat.pow_div Nat.pow_div
 
 theorem lt_of_pow_dvd_right {p i n : ℕ} (hn : n ≠ 0) (hp : 2 ≤ p) (h : p ^ i ∣ n) : i < n := by
-  rw [← pow_lt_iff_lt_right hp]
+  rw [← pow_lt_pow_iff_right (succ_le_iff.1 hp)]
   exact lt_of_le_of_lt (le_of_dvd hn.bot_lt h) (lt_pow_self (succ_le_iff.mp hp) n)
 #align nat.lt_of_pow_dvd_right Nat.lt_of_pow_dvd_right
 
 end Nat
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+@[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
+@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
+
+assert_not_exists Set.range

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Dist
+import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
 
@@ -1173,7 +1174,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
   · rw [hm.2.size_eq, Nat.succ_inj', add_eq_zero_iff] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
       [decide; decide; (intro r0; unfold BalancedSz delta; linarith)]
-  · cases' Nat.eq_zero_or_pos (size r) with r0 r0
+  · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
     · rw [r0] at mr₂; cases not_le_of_lt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
     by_cases mm : size ml + size mr ≤ 1
@@ -1193,7 +1194,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       · rcases mm with (_ | ⟨⟨⟩⟩); decide
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
     rcases hm.3.1.resolve_left mm with ⟨mm₁, mm₂⟩
-    cases' Nat.eq_zero_or_pos (size ml) with ml0 ml0
+    rcases Nat.eq_zero_or_pos (size ml) with ml0 | ml0
     · rw [ml0, mul_zero, le_zero_iff] at mm₂
       rw [ml0, mm₂] at mm; cases mm (by decide)
     have : 2 * size l ≤ size ml + size mr + 1 := by
@@ -1252,10 +1253,10 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
       exact hl.node3L hr.left hr.right this.1 this.2
-    cases' Nat.eq_zero_or_pos (size l) with l0 l0
+    rcases Nat.eq_zero_or_pos (size l) with l0 | l0
     · rw [l0]; replace H3 := H3_0 l0
       have := hr.3.1
-      cases' Nat.eq_zero_or_pos (size rl) with rl0 rl0
+      rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
       · rw [rl0] at this ⊢
         rw [le_antisymm (balancedSz_zero.1 this.symm) rr0]
         decide
@@ -1272,16 +1273,16 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     · exact
         le_trans hb₂
           (Nat.mul_le_mul_left _ <| le_trans (Nat.le_add_left _ _) (Nat.le_add_right _ _))
-  · cases' Nat.eq_zero_or_pos (size rl) with rl0 rl0
+  · rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
     · rw [rl0, not_lt, le_zero_iff, Nat.mul_eq_zero] at h
       replace h := h.resolve_left (by decide)
       erw [rl0, h, le_zero_iff, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1
       cases H1 (by decide)
     refine' hl.node4L hr.left hr.right rl0 _
-    cases' Nat.eq_zero_or_pos (size l) with l0 l0
+    rcases Nat.eq_zero_or_pos (size l) with l0 | l0
     · replace H3 := H3_0 l0
-      cases' Nat.eq_zero_or_pos (size rr) with rr0 rr0
+      rcases Nat.eq_zero_or_pos (size rr) with rr0 | rr0
       · have := hr.3.1
         rw [rr0] at this
         exact Or.inl ⟨l0, le_antisymm (balancedSz_zero.1 this) rl0, rr0.symm ▸ zero_le_one⟩
@@ -1315,7 +1316,7 @@ theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
     (H2 : Nat.dist (@size α l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l') :
     2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3 := by
   suffices @size α r ≤ 3 * (size l + 1) by
-    cases' Nat.eq_zero_or_pos (size l) with l0 l0
+    rcases Nat.eq_zero_or_pos (size l) with l0 | l0
     · apply Or.inr; rwa [l0] at this
     change 1 ≤ _ at l0; apply Or.inl; linarith
   rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
@@ -1350,9 +1351,9 @@ theorem Valid'.balanceL_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
     (H₃ : 2 * @size α l ≤ 9 * size r + 5 ∨ size l ≤ 3) : Valid' o₁ (@balanceL α l x r) o₂ := by
   rw [balanceL_eq_balance hl.2 hr.2 H₁ H₂, balance_eq_balance' hl.3 hr.3 hl.2 hr.2]
   refine' hl.balance'_aux hr (Or.inl _) H₃
-  cases' Nat.eq_zero_or_pos (size r) with r0 r0
+  rcases Nat.eq_zero_or_pos (size r) with r0 | r0
   · rw [r0]; exact Nat.zero_le _
-  cases' Nat.eq_zero_or_pos (size l) with l0 l0
+  rcases Nat.eq_zero_or_pos (size l) with l0 | l0
   · rw [l0]; exact le_trans (Nat.mul_le_mul_left _ (H₁ l0)) (by decide)
   replace H₂ : _ ≤ 3 * _ := H₂ l0 r0; linarith
 #align ordnode.valid'.balance_l_aux Ordnode.Valid'.balanceL_aux
@@ -1774,7 +1775,8 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
 #align ordset.mem.decidable Ordset.mem.decidable
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp [Membership.mem, mem] at h_mem
+  simp? [Membership.mem, mem] at h_mem says
+    simp only [Membership.mem, mem, Bool.decide_coe] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 #align ordset.pos_size_of_mem Ordset.pos_size_of_mem
 

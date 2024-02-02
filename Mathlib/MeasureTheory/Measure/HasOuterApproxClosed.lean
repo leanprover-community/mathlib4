@@ -194,7 +194,7 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
     · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
     · have key := thickenedIndicator_tendsto_indicator_closure
                 (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
-                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_0_nat F
+                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
       rw [tendsto_pi_nhds] at *
       intro x
       nth_rw 2 [← IsClosed.closure_eq hF]
@@ -210,10 +210,11 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
     (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) {F : Set Ω} (F_closed : IsClosed F) :
     μ F = ν F := by
   have ν_finite : IsFiniteMeasure ν := by
+    constructor
     have whole := h 1
     simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, coe_one, lintegral_const, one_mul]
       at whole
-    refine ⟨by simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top⟩
+    simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν
   simp_rw [h] at obs_μ
@@ -231,7 +232,6 @@ theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
   · exact fun F F_closed ↦ key F_closed
   · exact key isClosed_univ
   · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
-    rfl
 
 end MeasureTheory -- namespace
 

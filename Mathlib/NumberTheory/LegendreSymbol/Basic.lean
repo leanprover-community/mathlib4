@@ -112,10 +112,10 @@ namespace legendreSym
 
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
-  cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
+  rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
-        zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1))]
+        zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1)).ne']
       norm_cast
     · have := (ringChar_zmod_n p).symm.trans hc
       -- p = 2
@@ -241,8 +241,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha 
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   haveI hy : y ≠ 0 := by
     rintro rfl
-    rw [zero_pow' 2 (by norm_num), mul_zero, sub_zero, pow_eq_zero_iff
-        (by norm_num : 0 < 2)] at hxy
+    rw [zero_pow two_ne_zero, mul_zero, sub_zero, sq_eq_zero_iff] at hxy
     exact hx hxy
   exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy
 #align legendre_sym.eq_one_of_sq_sub_mul_sq_eq_zero' legendreSym.eq_one_of_sq_sub_mul_sq_eq_zero'

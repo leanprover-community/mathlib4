@@ -74,11 +74,15 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
-lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
+lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  fact_finiteDimensional_of_finrank_eq_succ 1
+  .of_fact_finrank_eq_succ 1
 
-attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
+@[deprecated] -- Since 2024/02/02
+alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
+  FiniteDimensional.of_fact_finrank_eq_two
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
@@ -448,7 +452,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     suffices ↑0 ≤ a * ‖x‖ ^ 2 ∧ b * ‖x‖ ^ 2 = 0 → SameRay ℝ x (a • x + b • J x) by
       rw [← (o.basisRightAngleRotation x hx).sum_repr y]
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
-        Fin.succ_zero_eq_one', Fintype.univ_of_isEmpty, Finset.sum_empty, areaForm_apply_self,
+        Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
         Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
@@ -458,7 +462,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     have hx' : 0 < ‖x‖ := by simpa using hx
     have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
     have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    simpa [hb'] using SameRay.sameRay_nonneg_smul_right x ha'
+    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right $ by simp [hb']
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
@@ -472,7 +476,7 @@ real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
 On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`. -/
 def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
-  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealClm ∘ₗ innerₛₗ ℝ +
+  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealCLM ∘ₗ innerₛₗ ℝ +
     LinearMap.llcomp ℝ E ℝ ℂ ((LinearMap.lsmul ℝ ℂ).flip Complex.I) ∘ₗ ω
 #align orientation.kahler Orientation.kahler
 
@@ -526,7 +530,7 @@ theorem kahler_neg_orientation (x y : E) : (-o).kahler x y = conj (o.kahler x y)
 
 theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.kahler x y := by
   trans ((‖a‖ ^ 2 :) : ℂ) * o.kahler x y
-  · ext
+  · apply Complex.ext
     · simp only [o.kahler_apply_apply, Complex.add_im, Complex.add_re, Complex.I_im, Complex.I_re,
         Complex.mul_im, Complex.mul_re, Complex.ofReal_im, Complex.ofReal_re, Complex.real_smul]
       rw [real_inner_comm a x, o.areaForm_swap x a]
@@ -622,7 +626,7 @@ protected theorem rightAngleRotation (z : ℂ) :
 @[simp]
 protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = conj w * z := by
   rw [Orientation.kahler_apply_apply]
-  ext1 <;> simp
+  apply Complex.ext <;> simp
 #align complex.kahler Complex.kahler
 
 end Complex

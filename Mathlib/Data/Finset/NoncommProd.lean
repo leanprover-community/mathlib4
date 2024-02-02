@@ -75,7 +75,7 @@ theorem noncommFoldr_eq_foldr (s : Multiset α) (h : LeftCommutative f) (b : β)
 
 section assoc
 
-variable [assoc : IsAssociative α op]
+variable [assoc : Std.Associative op]
 
 /-- Fold of a `s : Multiset α` with an associative `op : α → α → α`, given a proofs that `op`
 is commutative on all elements `x ∈ s`. -/
@@ -100,8 +100,8 @@ theorem noncommFold_cons (s : Multiset α) (a : α) (h h') (x : α) :
   simp
 #align multiset.noncomm_fold_cons Multiset.noncommFold_cons
 
-theorem noncommFold_eq_fold (s : Multiset α) [IsCommutative α op] (a : α) :
-    noncommFold op s (fun x _ y _ _ => IsCommutative.comm x y) a = fold op a s := by
+theorem noncommFold_eq_fold (s : Multiset α) [Std.Commutative op] (a : α) :
+    noncommFold op s (fun x _ y _ _ => Std.Commutative.comm x y) a = fold op a s := by
   induction s using Quotient.inductionOn
   simp
 #align multiset.noncomm_fold_eq_fold Multiset.noncommFold_eq_fold
@@ -478,7 +478,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
-      simp at hj
+      simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
       simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
         ne_eq, dite_eq_right_iff]
       intro h

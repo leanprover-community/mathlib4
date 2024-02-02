@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
@@ -128,12 +129,10 @@ theorem xor_bit : ∀ a m b n, bit a m ^^^ bit b n = bit (bne a b) (m ^^^ n) :=
 attribute [simp] Nat.testBit_bitwise
 #align nat.test_bit_bitwise Nat.testBit_bitwise
 
-@[simp]
 theorem testBit_lor : ∀ m n k, testBit (m ||| n) k = (testBit m k || testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_lor Nat.testBit_lor
 
-@[simp]
 theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_land Nat.testBit_land
@@ -263,7 +262,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
     · exact this'
-    · exact Nat.lt_add_right (2 * n) (2 * m) 1 this'
+    · exact Nat.lt_add_right 1 this'
     · calc
         2 * n + 1 < 2 * n + 2 := lt.base _
         _ ≤ 2 * m := mul_le_mul_left 2 this
@@ -281,7 +280,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   cases' hm.lt_or_lt with hm hm
   · rw [Nat.div_eq_of_lt]
     · simp
-    · exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
+    · exact pow_lt_pow_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
@@ -490,6 +489,6 @@ lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
-  · apply lt_of_lt_of_le hx <| pow_le_pow (le_succ _) (le_add_right _ _)
+  · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
 
 end Nat

@@ -3,7 +3,6 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Abs
 
 /-!
@@ -97,7 +96,7 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
 theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  ext
+  apply Complex.ext
   rfl
   simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
 #align complex.eq_re_of_real_le Complex.eq_re_of_ofReal_le
@@ -115,5 +114,9 @@ lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
 
 @[simp]
 lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
+
+lemma monotone_ofReal : Monotone ofReal' := by
+  intro x y hxy
+  simp only [ofReal_eq_coe, real_le_real, hxy]
 
 end Complex

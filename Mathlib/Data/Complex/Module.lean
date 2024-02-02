@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
@@ -50,6 +50,8 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+attribute [local ext] Complex.ext
+
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
@@ -73,7 +75,7 @@ instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance [Semiring R] [Module R ℝ] : Module R ℂ where
+instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
@@ -177,10 +179,20 @@ instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Mo
   RestrictScalars.module ℝ ℂ E
 #align module.complex_to_real Module.complexToReal
 
-instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    IsScalarTower ℝ ℂ E :=
-  RestrictScalars.isScalarTower ℝ ℂ E
-#align module.real_complex_tower Module.real_complex_tower
+/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+algebra. -/
+instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
+    Algebra ℝ A :=
+  RestrictScalars.algebra ℝ ℂ A
+
+-- try to make sure we're not introducing diamonds.
+example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+example {ι : Type*} [Fintype ι] :
+    Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
+  rfl
+example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
+  rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -194,6 +206,16 @@ instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGro
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
   smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
+
+/-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
+another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
+instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+    [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
+  smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+#align module.real_complex_tower IsScalarTower.complexToReal
+
+-- check that the following instance is implied by the one above.
+example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
@@ -450,7 +472,7 @@ theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
   -- Porting note: was
   -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-  rw [realPart_apply_coe, AddSubgroupClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
+  rw [realPart_apply_coe, NegMemClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
     smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align real_part_I_smul realPart_I_smul

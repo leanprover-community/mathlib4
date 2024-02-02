@@ -148,7 +148,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   obtain ⟨q, hq⟩ := hl
   replace hq := (ext_iff.1 hq) n
   have hcoeff : f (q.coeff n) = s := by
-    simp [coeff_monomial] at hq
+    simp? [coeff_monomial] at hq says simp only [coeff_map, coeff_monomial, ↓reduceIte] at hq
     exact hq
   use monomial n (q.coeff n)
   constructor

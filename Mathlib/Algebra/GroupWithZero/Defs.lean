@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.SplitIfs
 
 #align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
@@ -49,7 +51,7 @@ theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 #align mul_left_cancel₀ mul_left_cancel₀
 
-theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
+theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
   fun _ _ => mul_left_cancel₀ ha
 #align mul_right_injective₀ mul_right_injective₀
 

@@ -69,7 +69,7 @@ instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
 variable (R)
 
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff isPrincipalIdealRing_iff]
+@[mk_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
@@ -103,6 +103,7 @@ theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {g
   Eq.symm (Classical.choose_spec (principal S))
 #align submodule.is_principal.span_singleton_generator Submodule.IsPrincipal.span_singleton_generator
 
+@[simp]
 theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
     Ideal.span ({generator I} : Set R) = I :=
   Eq.symm (Classical.choose_spec (principal I))
@@ -128,6 +129,11 @@ end Ring
 section CommRing
 
 variable [CommRing R] [Module R M]
+
+theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
+    Associated (generator <| Ideal.span {r}) r := by
+  rw [← Ideal.span_singleton_eq_span_singleton]
+  exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
   (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
@@ -173,12 +179,12 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
-      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S)
-      case inl h =>
+      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
+      | inl h =>
         have hTS : T ≤ S
         rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
-      case inr h =>
+      | inr h =>
         cases' (mem_iff_generator_dvd _).1 h with y hy
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz

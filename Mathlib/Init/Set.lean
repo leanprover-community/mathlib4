@@ -62,6 +62,10 @@ instance : Membership α (Set α) :=
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
 
+
+/-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
+
+Note that you should **not** use this definition directly, but instead write `s ⊆ t`. -/
 protected def Subset (s₁ s₂ : Set α) :=
   ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
 
@@ -140,42 +144,69 @@ def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
         throw ()
   | _ => throw ()
 
+/-- The universal set on a type `α` is the set containing all elements of `α`.
+
+This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory
+makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
+itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
 def univ : Set α := {_a | True}
 #align set.univ Set.univ
 
+/-- `Set.insert a s` is the set `{a} ∪ s`.
+
+Note that you should **not** use this definition directly, but instead write `insert a s` (which is
+mediated by the `Insert` typeclass). -/
 protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
 instance : Insert α (Set α) := ⟨Set.insert⟩
 
+/-- The singleton of an element `a` is the set with `a` as a single element.
+
+Note that you should **not** use this definition directly, but instead write `{a}`. -/
 protected def singleton (a : α) : Set α := {b | b = a}
 
 instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
+/-- The union of two sets `s` and `t` is the set of elements contained in either `s` or `t`.
+
+Note that you should **not** use this definition directly, but instead write `s ∪ t`. -/
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
 instance : Union (Set α) := ⟨Set.union⟩
 
+/-- The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
+
+Note that you should **not** use this definition directly, but instead write `s ∩ t`. -/
 protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
 instance : Inter (Set α) := ⟨Set.inter⟩
 
+/-- The complement of a set `s` is the set of elements not contained in `s`.
+
+Note that you should **not** use this definition directly, but instead write `sᶜ`. -/
 protected def compl (s : Set α) : Set α := {a | a ∉ s}
 
+/-- The difference of two sets `s` and `t` is the set of elements contained in `s` but not in `t`.
+
+Note that you should **not** use this definition directly, but instead write `s \ t`. -/
 protected def diff (s t : Set α) : Set α := {a ∈ s | a ∉ t}
 
 instance : SDiff (Set α) := ⟨Set.diff⟩
 
+/-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-prefix:100 "𝒫" => powerset
+@[inherit_doc] prefix:100 "𝒫" => powerset
 
+/-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
+`f a = b` for some `a ∈ s`. -/
 def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
   id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext $ λ c => propext
+  comp_map g h _ := funext <| λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl

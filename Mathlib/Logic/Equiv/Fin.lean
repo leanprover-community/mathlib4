@@ -288,28 +288,28 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 
 /-- Equivalence between `Π j : Fin (n + 1), α j` and `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 @[simps (config := .asFn)]
-def Equiv.piFinSuccAboveEquiv (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
+def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
   toFun f := (f i, fun j => f (i.succAbove j))
   invFun f := i.insertNth f.1 f.2
   left_inv f := by simp [Fin.insertNth_eq_iff]
   right_inv f := by simp
-#align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAboveEquiv
-#align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAboveEquiv_apply
-#align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAboveEquiv_symm_apply
+#align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
+#align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
+#align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAbove_symm_apply
 
 /-- Order isomorphism between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := Equiv.piFinSuccAboveEquiv α i
+  toEquiv := Equiv.piFinSuccAbove α i
   map_rel_iff' := Iff.symm i.forall_iff_succAbove
 #align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
 @[simps! (config := .asFn)]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAboveEquiv (fun _ => β) 0
+  Equiv.piFinSuccAbove (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
@@ -368,7 +368,7 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 #align fin_add_flip_apply_nat_add finAddFlip_apply_natAdd
 
 @[simp]
-theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right k m n h)
+theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
     (hnk : n + k < n + m := add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
   convert finAddFlip_apply_castAdd ⟨k, h⟩ n

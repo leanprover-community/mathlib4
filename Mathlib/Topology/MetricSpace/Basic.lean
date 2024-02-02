@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -371,7 +371,7 @@ end Metric
 section EqRel
 
 instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist <| fun x y x' y' hx hy => by
+  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
     rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
       ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
 

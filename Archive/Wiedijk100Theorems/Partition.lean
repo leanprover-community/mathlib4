@@ -384,19 +384,11 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
         α) =
       coeff α n (partialOddGF m) := by
   rw [partialOddGF]
-  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
-  --               is improved.
-  refine Eq.trans ?_
-    (Eq.trans (partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial)
-      (Eq.symm ?_))
+  convert partialGF_prop α n
+    ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
   · congr
     simp only [true_and_iff, forall_const, Set.mem_univ]
-  · intro i
-    rw [mem_map]
-    rintro ⟨a, -, rfl⟩
-    exact Nat.succ_pos _
-  · congr 1
-    rw [Finset.prod_map]
+  · rw [Finset.prod_map]
     simp_rw [num_series']
     congr! 2 with x
     ext k
@@ -406,6 +398,10 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
+  · intro i
+    rw [mem_map]
+    rintro ⟨a, -, rfl⟩
+    exact Nat.succ_pos _
 #align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
@@ -438,23 +434,20 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
         α) =
       coeff α n (partialDistinctGF m) := by
   rw [partialDistinctGF]
-  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
-  --               is improved.
-  refine Eq.trans ?_
-    (Eq.trans (partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
-      (fun _ => {0, 1}) fun _ _ => Or.inl rfl) (Eq.symm ?_))
+  convert partialGF_prop α n
+    ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
+    using 2
   · congr
     congr! with p
     rw [Multiset.nodup_iff_count_le_one]
     congr! with i
     rcases Multiset.count i p.parts with (_ | _ | ms) <;> simp
+  · simp_rw [Finset.prod_map, two_series]
+    congr with i
+    simp [Set.image_pair]
   · simp only [mem_map, Function.Embedding.coeFn_mk]
     rintro i ⟨_, _, rfl⟩
     apply Nat.succ_pos
-  · congr 1
-    simp_rw [Finset.prod_map, two_series]
-    congr with i
-    simp [Set.image_pair]
 #align theorems_100.partial_distinct_gf_prop Theorems100.partialDistinctGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
@@ -491,7 +484,7 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [← hπ₃] at ih
   have h : constantCoeff α (1 - X ^ (2 * m + 1)) ≠ 0 := by
     rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
-      zero_pow (2 * m).succ_pos, sub_zero]
+      zero_pow (2 * m).succ_ne_zero, sub_zero]
     exact one_ne_zero
   calc
     (∏ i in range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *

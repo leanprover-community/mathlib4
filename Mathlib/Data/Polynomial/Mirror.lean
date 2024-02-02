@@ -107,10 +107,10 @@ theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
     rw [revAt_le (hn.trans (Nat.le_add_right _ _))]
     rw [tsub_le_iff_tsub_le, add_comm, add_tsub_cancel_right, ← mirror_natTrailingDegree]
     exact natTrailingDegree_le_of_ne_zero hp
-  · exact fun n₁ n₂ _ _ _ _ h => by rw [← @revAt_invol _ n₁, h, revAt_invol]
+  · exact fun n₁ _ _ _ _ _ h => by rw [← @revAt_invol _ n₁, h, revAt_invol]
   · intro n hn hp
     use revAt (p.natDegree + p.natTrailingDegree) n
-    refine' ⟨_, _, revAt_invol.symm⟩
+    refine' ⟨_, _, revAt_invol⟩
     · rw [Finset.mem_range_succ_iff] at *
       rw [revAt_le (hn.trans (Nat.le_add_right _ _))]
       rw [tsub_le_iff_tsub_le, add_comm, add_tsub_cancel_right]
@@ -163,7 +163,7 @@ theorem coeff_mul_mirror :
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine'
     (Finset.sum_congr rfl fun n hn => _).trans
-      (p.sum_eq_of_subset (fun _ => (· ^ 2)) (fun _ => zero_pow zero_lt_two) fun n hn =>
+      (p.sum_eq_of_subset (fun _ ↦ (· ^ 2)) (fun _ ↦ zero_pow two_ne_zero) fun n hn ↦
           Finset.mem_range_succ_iff.mpr
             ((le_natDegree_of_mem_supp n hn).trans (Nat.le_add_right _ _))).symm
   rw [coeff_mirror, ← revAt_le (Finset.mem_range_succ_iff.mp hn), revAt_invol, ← sq]

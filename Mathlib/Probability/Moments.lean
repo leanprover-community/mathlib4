@@ -60,14 +60,14 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
-  simp only [moment, hp, zero_pow', Ne.def, not_false_iff, Pi.zero_apply, integral_const,
+  simp only [moment, hp, zero_pow, Ne.def, not_false_iff, Pi.zero_apply, integral_const,
     smul_eq_mul, mul_zero]
 #align probability_theory.moment_zero ProbabilityTheory.moment_zero
 
 @[simp]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
-    mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow', Ne.def, not_false_iff]
+    mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne.def, not_false_iff]
 #align probability_theory.central_moment_zero ProbabilityTheory.centralMoment_zero
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
@@ -329,7 +329,7 @@ set_option linter.uppercaseLean3 false in
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε) * mgf X μ t := by
-  cases' ht.eq_or_lt with ht_zero_eq ht_pos
+  rcases ht.eq_or_lt with ht_zero_eq | ht_pos
   · rw [ht_zero_eq.symm]
     simp only [neg_zero, zero_mul, exp_zero, mgf_zero', one_mul]
     rw [ENNReal.toReal_le_toReal (measure_ne_top μ _) (measure_ne_top μ _)]

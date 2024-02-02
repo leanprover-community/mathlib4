@@ -67,13 +67,13 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
-/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
-infixl:100 " ∆ " => symmDiff
+scoped[symmDiff] infixl:100 " ∆ " => symmDiff
 
 /-- Notation for bihimp -/
-infixl:100 " ⇔ " => bihimp
+scoped[symmDiff] infixl:100 " ⇔ " => bihimp
+
+open scoped symmDiff
 
 theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
@@ -113,7 +113,7 @@ theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual 
 theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symmDiff_comm
 
-instance symmDiff_isCommutative : IsCommutative α (· ∆ ·) :=
+instance symmDiff_isCommutative : Std.Commutative (α := α) (· ∆ ·) :=
   ⟨symmDiff_comm⟩
 #align symm_diff_is_comm symmDiff_isCommutative
 
@@ -234,7 +234,7 @@ theorem ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDua
 theorem bihimp_comm : a ⇔ b = b ⇔ a := by simp only [(· ⇔ ·), inf_comm]
 #align bihimp_comm bihimp_comm
 
-instance bihimp_isCommutative : IsCommutative α (· ⇔ ·) :=
+instance bihimp_isCommutative : Std.Commutative (α := α) (· ⇔ ·) :=
   ⟨bihimp_comm⟩
 #align bihimp_is_comm bihimp_isCommutative
 
@@ -474,7 +474,7 @@ theorem symmDiff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
   rw [symmDiff_symmDiff_left, symmDiff_symmDiff_right]
 #align symm_diff_assoc symmDiff_assoc
 
-instance symmDiff_isAssociative : IsAssociative α (· ∆ ·) :=
+instance symmDiff_isAssociative : Std.Associative (α := α)  (· ∆ ·) :=
   ⟨symmDiff_assoc⟩
 #align symm_diff_is_assoc symmDiff_isAssociative
 
@@ -506,7 +506,7 @@ theorem symmDiff_left_involutive (a : α) : Involutive (· ∆ a) :=
   symmDiff_symmDiff_cancel_right _
 #align symm_diff_left_involutive symmDiff_left_involutive
 
-theorem symmDiff_right_involutive (a : α) : Involutive ((· ∆ ·) a) :=
+theorem symmDiff_right_involutive (a : α) : Involutive (a ∆ ·) :=
   symmDiff_symmDiff_cancel_left _
 #align symm_diff_right_involutive symmDiff_right_involutive
 
@@ -514,7 +514,7 @@ theorem symmDiff_left_injective (a : α) : Injective (· ∆ a) :=
   Function.Involutive.injective (symmDiff_left_involutive a)
 #align symm_diff_left_injective symmDiff_left_injective
 
-theorem symmDiff_right_injective (a : α) : Injective ((· ∆ ·) a) :=
+theorem symmDiff_right_injective (a : α) : Injective (a ∆ ·) :=
   Function.Involutive.injective (symmDiff_right_involutive _)
 #align symm_diff_right_injective symmDiff_right_injective
 
@@ -522,7 +522,7 @@ theorem symmDiff_left_surjective (a : α) : Surjective (· ∆ a) :=
   Function.Involutive.surjective (symmDiff_left_involutive _)
 #align symm_diff_left_surjective symmDiff_left_surjective
 
-theorem symmDiff_right_surjective (a : α) : Surjective ((· ∆ ·) a) :=
+theorem symmDiff_right_surjective (a : α) : Surjective (a ∆ ·) :=
   Function.Involutive.surjective (symmDiff_right_involutive _)
 #align symm_diff_right_surjective symmDiff_right_surjective
 
@@ -623,7 +623,7 @@ theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
   @symmDiff_assoc αᵒᵈ _ _ _ _
 #align bihimp_assoc bihimp_assoc
 
-instance bihimp_isAssociative : IsAssociative α (· ⇔ ·) :=
+instance bihimp_isAssociative : Std.Associative (α := α) (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
 #align bihimp_is_assoc bihimp_isAssociative
 
@@ -653,7 +653,7 @@ theorem bihimp_left_involutive (a : α) : Involutive (· ⇔ a) :=
   bihimp_bihimp_cancel_right _
 #align bihimp_left_involutive bihimp_left_involutive
 
-theorem bihimp_right_involutive (a : α) : Involutive ((· ⇔ ·) a) :=
+theorem bihimp_right_involutive (a : α) : Involutive (a ⇔ ·) :=
   bihimp_bihimp_cancel_left _
 #align bihimp_right_involutive bihimp_right_involutive
 
@@ -661,7 +661,7 @@ theorem bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
   @symmDiff_left_injective αᵒᵈ _ _
 #align bihimp_left_injective bihimp_left_injective
 
-theorem bihimp_right_injective (a : α) : Injective ((· ⇔ ·) a) :=
+theorem bihimp_right_injective (a : α) : Injective (a ⇔ ·) :=
   @symmDiff_right_injective αᵒᵈ _ _
 #align bihimp_right_injective bihimp_right_injective
 
@@ -669,7 +669,7 @@ theorem bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
   @symmDiff_left_surjective αᵒᵈ _ _
 #align bihimp_left_surjective bihimp_left_surjective
 
-theorem bihimp_right_surjective (a : α) : Surjective ((· ⇔ ·) a) :=
+theorem bihimp_right_surjective (a : α) : Surjective (a ⇔ ·) :=
   @symmDiff_right_surjective αᵒᵈ _ _
 #align bihimp_right_surjective bihimp_right_surjective
 

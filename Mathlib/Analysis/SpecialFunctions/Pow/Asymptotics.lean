@@ -40,7 +40,7 @@ theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ 
   exact
     le_of_max_le_left
       (by
-        convert rpow_le_rpow (rpow_nonneg_of_nonneg (le_max_right b 0) (1 / y)) hx (le_of_lt hy)
+        convert rpow_le_rpow (rpow_nonneg (le_max_right b 0) (1 / y)) hx (le_of_lt hy)
           using 1
         rw [← rpow_mul (le_max_right b 0), (eq_div_iff (ne_of_gt hy)).mp rfl, Real.rpow_one])
 #align tendsto_rpow_at_top tendsto_rpow_atTop
@@ -105,10 +105,10 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ (a / (b * x + c))) atTop (𝓝 1) := by
   refine'
     Tendsto.congr' _
-      ((tendsto_exp_nhds_0_nhds_1.comp
+      ((tendsto_exp_nhds_zero_nhds_one.comp
             (by
               simpa only [mul_zero, pow_one] using
-                (@tendsto_const_nhds _ _ _ a _).mul
+                (tendsto_const_nhds (x := a)).mul
                   (tendsto_div_pow_mul_exp_add_atTop b c 1 hb))).comp
         tendsto_log_atTop)
   apply eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ))
@@ -148,16 +148,18 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop := by
   refine' ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' _
   filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx₀
-  simp [Real.div_rpow, (exp_pos x).le, rpow_nonneg_of_nonneg, ← Real.rpow_mul, ← exp_mul,
+  simp [Real.div_rpow, (exp_pos x).le, rpow_nonneg, ← Real.rpow_mul, ← exp_mul,
     mul_comm x, hb.ne', *]
 #align tendsto_exp_mul_div_rpow_at_top tendsto_exp_mul_div_rpow_atTop
 
 /-- The function `x ^ s * exp (-b * x)` tends to `0` at `+∞`, for any real `s` and `b > 0`. -/
-theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 (s : ℝ) (b : ℝ) (hb : 0 < b) :
+theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
-#align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0
+#align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+@[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
+  tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
@@ -280,7 +282,7 @@ theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r :=
   IsLittleO.of_isBigOWith fun c hc =>
-    ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg_of_nonneg hc.le _) hr.le
+    ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg hc.le _) hr.le
           hg).congr_const
       (by rw [← rpow_mul hc.le, inv_mul_cancel hr.ne', Real.rpow_one])
 #align asymptotics.is_o.rpow Asymptotics.IsLittleO.rpow
@@ -294,7 +296,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ s) =o[atTop] fun x => exp (b * x) :=
   Iff.mpr (isLittleO_iff_tendsto fun x h => absurd h (exp_pos _).ne') <| by
     simpa only [div_eq_mul_inv, exp_neg, neg_mul] using
-      tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 s b hb
+      tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero s b hb
 #align is_o_rpow_exp_pos_mul_at_top isLittleO_rpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
@@ -380,3 +382,17 @@ theorem tendsto_log_mul_rpow_nhds_zero {r : ℝ} (hr : 0 < r) :
   (tendsto_log_div_rpow_nhds_zero <| neg_lt_zero.2 hr).congr' <|
     eventually_mem_nhdsWithin.mono fun x hx => by rw [rpow_neg hx.out.le, div_inv_eq_mul]
 #align tendsto_log_mul_rpow_nhds_zero tendsto_log_mul_rpow_nhds_zero
+
+lemma tendsto_log_mul_self_nhds_zero_left : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
+  have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  simp only [Real.rpow_one] at h
+  have h_eq : ∀ x ∈ Set.Iio 0, (- (fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
+    simp only [Set.mem_Iio, Pi.neg_apply, Function.comp_apply, log_abs]
+    intro x hx
+    simp only [abs_of_nonpos hx.le, mul_neg, neg_neg]
+  refine tendsto_nhdsWithin_congr h_eq ?_
+  nth_rewrite 3 [← neg_zero]
+  refine (h.comp (tendsto_abs_nhdsWithin_zero.mono_left ?_)).neg
+  refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
+  simp only [Set.mem_Iio] at hx
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

@@ -101,7 +101,7 @@ theorem eqOn_source : EqOn f (f.toContDiffBump ∘ extChartAt I c) (chartAt H c)
 
 theorem eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
     f =ᶠ[𝓝 x] f.toContDiffBump ∘ extChartAt I c :=
-  f.eqOn_source.eventuallyEq_of_mem <| IsOpen.mem_nhds (chartAt H c).open_source hx
+  f.eqOn_source.eventuallyEq_of_mem <| (chartAt H c).open_source.mem_nhds hx
 #align smooth_bump_function.eventually_eq_of_mem_source SmoothBumpFunction.eventuallyEq_of_mem_source
 
 theorem one_of_dist_le (hs : x ∈ (chartAt H c).source)
@@ -314,10 +314,10 @@ variable [SmoothManifoldWithCorners I M] {I}
 
 /-- A smooth bump function is infinitely smooth. -/
 protected theorem smooth : Smooth I 𝓘(ℝ) f := by
-  refine' contMDiff_of_support fun x hx => _
+  refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
-  refine' ContMDiffAt.congr_of_eventuallyEq _ <| f.eqOn_source.eventuallyEq_of_mem <|
-    IsOpen.mem_nhds (chartAt H c).open_source this
+  refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
+    (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 #align smooth_bump_function.smooth SmoothBumpFunction.smooth
 
@@ -333,7 +333,7 @@ protected theorem continuous : Continuous f :=
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : SmoothOn I 𝓘(ℝ, G) g (chartAt H c).source) : Smooth I 𝓘(ℝ, G) fun x => f x • g x := by
-  refine contMDiff_of_support fun x hx => ?_
+  refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source
   -- porting note: was a more readable `calc`
   -- calc
@@ -341,7 +341,7 @@ theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
   --   _ ⊆ tsupport f := (tsupport_smul_subset_left _ _)
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
   · exact f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
-  exact f.smoothAt.smul ((hg _ this).contMDiffAt <| IsOpen.mem_nhds (chartAt _ _).open_source this)
+  exact f.smoothAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
 #align smooth_bump_function.smooth_smul SmoothBumpFunction.smooth_smul
 
 end SmoothBumpFunction

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Pow
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
@@ -140,9 +141,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     rw [not_and_or, not_lt, Ne.def, not_not] at hbn
     rcases hbn with (hb | rfl)
     · simpa only [log_of_left_le_one hb, hm.symm, false_iff_iff, not_and, not_lt] using
-        le_trans (pow_le_pow_of_le_one' hb m.le_succ)
-    · simpa only [log_zero_right, hm.symm, nonpos_iff_eq_zero, false_iff, not_and, not_lt,
-        add_pos_iff, zero_lt_one, or_true, pow_eq_zero_iff] using pow_eq_zero
+        le_trans (pow_le_pow_right_of_le_one' hb m.le_succ)
+    · simp [@eq_comm _ 0, hm]
 #align nat.log_eq_iff Nat.log_eq_iff
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -154,7 +154,7 @@ theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n 
 #align nat.log_eq_of_pow_le_of_lt_pow Nat.log_eq_of_pow_le_of_lt_pow
 
 theorem log_pow {b : ℕ} (hb : 1 < b) (x : ℕ) : log b (b ^ x) = x :=
-  log_eq_of_pow_le_of_lt_pow le_rfl (pow_lt_pow hb x.lt_succ_self)
+  log_eq_of_pow_le_of_lt_pow le_rfl (pow_lt_pow_right hb x.lt_succ_self)
 #align nat.log_pow Nat.log_pow
 
 theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := by
@@ -179,7 +179,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
   refine' monotone_nat_of_le_succ fun n => _
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
   · exact le_log_of_pow_le hb (pow_log_le_add_one _ _)
@@ -195,7 +195,7 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
   apply le_log_of_pow_le hc
   calc
-    c ^ log b n ≤ b ^ log b n := pow_le_pow_of_le_left' hb _
+    c ^ log b n ≤ b ^ log b n := pow_le_pow_left' hb _
     _ ≤ n := pow_log_le_self _ hn
 #align nat.log_anti_left Nat.log_anti_left
 
@@ -205,7 +205,7 @@ theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) 
 
 @[simp]
 theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb, Nat.zero_sub]
   cases' lt_or_le n b with h h
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
@@ -214,7 +214,7 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
 
 @[simp]
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   cases' lt_or_le n b with h h
   · rw [div_eq_of_lt h, zero_mul, log_zero_right, log_of_lt h]
@@ -328,7 +328,7 @@ theorem le_pow_clog {b : ℕ} (hb : 1 < b) (x : ℕ) : x ≤ b ^ clog b x :=
 
 @[mono]
 theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog b m := by
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rw [clog_of_left_le_one hb]
     exact zero_le _
   · rw [← le_pow_iff_clog_le hb]
@@ -340,7 +340,7 @@ theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ 
   rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
   calc
     n ≤ c ^ clog c n := le_pow_clog hc _
-    _ ≤ b ^ clog c n := pow_le_pow_of_le_left hb _
+    _ ≤ b ^ clog c n := Nat.pow_le_pow_left hb _
 #align nat.clog_anti_left Nat.clog_anti_left
 
 theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _

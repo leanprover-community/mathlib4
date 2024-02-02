@@ -168,7 +168,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     rw [mul_max_of_nonneg _ _ hM.le, mul_zero]
     exact max_le_max (le_refl 0) hi
   simp_rw [← cthickening_max_zero (r₁ _), ← cthickening_max_zero (r₂ _)]
-  cases' le_or_lt 1 M with hM' hM'
+  rcases le_or_lt 1 M with hM' | hM'
   · apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
     refine' mono_blimsup' (hMr.mono fun i hi _ => cthickening_mono _ (s i))
@@ -209,7 +209,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
   let r' : ℕ → ℝ := fun i => if 0 < r i then r i else 1 / ((i : ℝ) + 1)
   have hr' : Tendsto r' atTop (𝓝[>] 0) := by
     refine' tendsto_nhdsWithin_iff.mpr
-      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_0_nat, eventually_of_forall fun i => _⟩
+      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => _⟩
     by_cases hi : 0 < r i
     · simp [hi]
     · simp only [hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
@@ -282,7 +282,8 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
       blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
     refine' blimsup_congr' (eventually_of_forall fun i h => _)
-    replace h : 0 < r i; · rw [← zero_lt_mul_left hM]; contrapose! h; apply thickening_of_nonpos h
+    replace h : 0 < r i
+    · rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
     simp only [h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (eventually_of_forall fun i hi => hi.2)

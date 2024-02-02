@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Data.Prod.Lex
+import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel
@@ -52,7 +54,7 @@ variable {ι α β : Type*}
 /-! ### Scalar multiplication versions -/
 
 
-section Smul
+section SMul
 
 variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [OrderedSMul α β]
   {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
@@ -167,10 +169,10 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     rw [σ.sum_comp' s (fun i j ↦ f i • g j) hσ]
     congr
   · convert h.comp_right σ
-    · rw [comp.assoc, inv_def, symm_comp_self, comp.right_id]
+    · rw [comp.assoc, inv_def, symm_comp_self, comp_id]
     · rw [σ.eq_preimage_iff_image_eq, Set.image_perm hσ]
   · convert h.comp_right σ.symm
-    · rw [comp.assoc, self_comp_symm, comp.right_id]
+    · rw [comp.assoc, self_comp_symm, comp_id]
     · rw [σ.symm.eq_preimage_iff_image_eq]
       exact Set.image_perm hσinv
 #align monovary_on.sum_comp_perm_smul_eq_sum_smul_iff MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff
@@ -331,7 +333,7 @@ theorem Antivary.sum_smul_lt_sum_comp_perm_smul_iff (hfg : Antivary f g) :
   simp [(hfg.antivaryOn _).sum_smul_lt_sum_comp_perm_smul_iff fun _ _ ↦ mem_univ _]
 #align antivary.sum_smul_lt_sum_comp_perm_smul_iff Antivary.sum_smul_lt_sum_comp_perm_smul_iff
 
-end Smul
+end SMul
 
 /-!
 ### Multiplication versions

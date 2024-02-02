@@ -30,7 +30,7 @@ The main definitions are
    topology of weak convergence.
  * `MeasureTheory.FiniteMeasure.map`: The push-forward `f* μ` of a finite measure `μ` on `Ω`
    along a measurable function `f : Ω → Ω'`.
- * `MeasureTheory.FiniteMeasure.mapClm`: The push-forward along a given continuous `f : Ω → Ω'`
+ * `MeasureTheory.FiniteMeasure.mapCLM`: The push-forward along a given continuous `f : Ω → Ω'`
    as a continuous linear map `f* : FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω'`.
 
 ## Main results
@@ -571,7 +571,7 @@ lemma injective_toWeakDualBCNN :
   intro μ ν hμν
   apply ext_of_forall_lintegral_eq
   intro f
-  have key := congr_fun (congrArg FunLike.coe hμν) f
+  have key := congr_fun (congrArg DFunLike.coe hμν) f
   apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne
@@ -809,7 +809,7 @@ lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
 
 /-- The push-forward of a finite measure by a continuous function between Borel spaces as
 a continuous linear map. -/
-noncomputable def mapClm {f : Ω → Ω'} (f_cont : Continuous f) :
+noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable

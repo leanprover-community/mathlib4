@@ -284,7 +284,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
   calc
     (univ.filter fun a : α => a ^ n = 1).card ≤
         (zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset.card :=
-      card_le_of_subset fun x hx =>
+      card_le_card fun x hx =>
         let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
         Set.mem_toFinset.2
           ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
@@ -650,5 +650,33 @@ protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := b
   cases n
   · rw [IsAddCyclic.exponent_eq_zero_of_infinite]
   · rw [IsAddCyclic.exponent_eq_card, card]
+
+/-- A group of order `p ^ 2` is not cyclic if and only if its exponent is `p`. -/
+@[to_additive]
+lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
+    (hα : Nat.card α = p ^ 2) : ¬ IsCyclic α ↔ Monoid.exponent α = p := by
+  -- G is a nontrivial fintype of cardinality `p ^ 2`
+  let _inst : Fintype α := @Fintype.ofFinite α <| Nat.finite_of_card_ne_zero <| by aesop
+  have hα' : Fintype.card α = p ^ 2 := by simpa using hα
+  have := (Fintype.one_lt_card_iff_nontrivial (α := α)).mp <|
+    hα' ▸ one_lt_pow hp.one_lt two_ne_zero
+  /- in the forward direction, we apply `exponent_eq_prime_iff`, and the reverse direction follows
+  immediately because if `α` has exponent `p`, it has no element of order `p ^ 2`. -/
+  refine ⟨fun h_cyc ↦ (Monoid.exponent_eq_prime_iff hp).mpr fun g hg ↦ ?_, fun h_exp h_cyc ↦ by
+    obtain (rfl|rfl) := eq_zero_or_one_of_sq_eq_self <| hα' ▸ h_exp ▸ (h_cyc.exponent_eq_card).symm
+    · exact Nat.not_prime_zero hp
+    · exact Nat.not_prime_one hp⟩
+  /- we must show every non-identity element has order `p`. By Lagrange's theorem, the only possible
+  orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
+  the latter because the group isn't cyclic. -/
+  have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα' ▸ orderOf_dvd_card (x := g), by aesop⟩
+  simp? [Nat.divisors_prime_pow hp 2]  at this says
+    simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
+      Function.Embedding.coeFn_mk] at this
+  obtain ⟨a, ha, ha'⟩ := this
+  interval_cases a
+  · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by aesop
+  · aesop
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by aesop
 
 end Exponent

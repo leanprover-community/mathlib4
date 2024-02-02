@@ -8,9 +8,7 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Splits
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.FieldTheory.RatFunc
-import Mathlib.FieldTheory.Separable
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -133,14 +131,14 @@ varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
     X ^ n - 1 = ∏ ζ in nthRootsFinset n R, (X - C ζ) := by
   classical
-  rw [nthRootsFinset, ← Multiset.toFinset_eq (IsPrimitiveRoot.nthRoots_nodup h)]
+  rw [nthRootsFinset, ← Multiset.toFinset_eq (IsPrimitiveRoot.nthRoots_one_nodup h)]
   simp only [Finset.prod_mk, RingHom.map_one]
   rw [nthRoots]
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
   apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
   rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
-  exact IsPrimitiveRoot.card_nthRoots h
+  exact IsPrimitiveRoot.card_nthRoots_one h
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_eq_prod Polynomial.X_pow_sub_one_eq_prod
 
@@ -160,7 +158,7 @@ theorem cyclotomic'_splits (n : ℕ) : Splits (RingHom.id K) (cyclotomic' n K) :
 /-- If there is a primitive `n`-th root of unity in `K`, then `X ^ n - 1` splits. -/
 theorem X_pow_sub_one_splits {ζ : K} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Splits (RingHom.id K) (X ^ n - C (1 : K)) := by
-  rw [splits_iff_card_roots, ← nthRoots, IsPrimitiveRoot.card_nthRoots h, natDegree_X_pow_sub_C]
+  rw [splits_iff_card_roots, ← nthRoots, IsPrimitiveRoot.card_nthRoots_one h, natDegree_X_pow_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_splits Polynomial.X_pow_sub_one_splits
 
@@ -608,8 +606,7 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
       hprod, mul_neg, mul_one]
   have hzero : (X ^ n - 1 : R[X]).coeff 0 = (-1 : R) := by
     rw [coeff_zero_eq_eval_zero _]
-    simp only [zero_pow (lt_of_lt_of_le zero_lt_two hn), eval_X, eval_one, zero_sub, eval_pow,
-      eval_sub]
+    simp only [zero_pow (by positivity : n ≠ 0), eval_X, eval_one, zero_sub, eval_pow, eval_sub]
   rw [hzero] at heq
   exact neg_inj.mp (Eq.symm heq)
 #align polynomial.cyclotomic_coeff_zero Polynomial.cyclotomic_coeff_zero

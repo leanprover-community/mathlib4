@@ -96,17 +96,17 @@ open Function
 
 section Coercions
 
-instance funLike : FunLike (M [Λ^ι]→ₗ[R] N) (ι → M) (fun _ => N) where
+instance instFunLike : FunLike (M [Λ^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective' := fun f g h ↦ by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
-#align alternating_map.fun_like AlternatingMap.funLike
+#align alternating_map.fun_like AlternatingMap.instFunLike
 
 -- shortcut instance
 instance coeFun : CoeFun (M [Λ^ι]→ₗ[R] N) fun _ => (ι → M) → N :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 #align alternating_map.has_coe_to_fun AlternatingMap.coeFun
 
 initialize_simps_projections AlternatingMap (toFun → apply)
@@ -132,7 +132,7 @@ theorem congr_arg (f : M [Λ^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x 
 #align alternating_map.congr_arg AlternatingMap.congr_arg
 
 theorem coe_injective : Injective ((↑) : M [Λ^ι]→ₗ[R] N → (ι → M) → N) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align alternating_map.coe_injective AlternatingMap.coe_injective
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
@@ -142,7 +142,7 @@ theorem coe_inj {f g : M [Λ^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f 
 
 @[ext]
 theorem ext {f f' : M [Λ^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align alternating_map.ext AlternatingMap.ext
 
 theorem ext_iff {f g : M [Λ^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
@@ -546,7 +546,7 @@ def compLinearMap (f : M [Λ^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) : M₂ [Λ^�
 #align alternating_map.comp_linear_map AlternatingMap.compLinearMap
 
 theorem coe_compLinearMap (f : M [Λ^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) :
-    ⇑(f.compLinearMap g) = f ∘ (· ∘ ·) g :=
+    ⇑(f.compLinearMap g) = f ∘ (g ∘ ·) :=
   rfl
 #align alternating_map.coe_comp_linear_map AlternatingMap.coe_compLinearMap
 

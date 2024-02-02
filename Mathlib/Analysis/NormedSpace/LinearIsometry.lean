@@ -47,10 +47,13 @@ structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedA
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
 #align linear_isometry LinearIsometry
 
+@[inherit_doc]
 notation:25 E " →ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometry σ₁₂ E E₂
 
+/-- A linear isometric embedding of a normed `R`-module into another one. -/
 notation:25 E " →ₗᵢ[" R:25 "] " E₂:0 => LinearIsometry (RingHom.id R) E E₂
 
+/-- An antilinear isometric embedding of a normed `R`-module into another one. -/
 notation:25 E " →ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometry (starRingEnd R) E E₂
 
 /-- `SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
@@ -144,13 +147,13 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
 
 instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toLinearMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
 
 -- porting note: These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 -- directly.
 -- -/
 -- instance : CoeFun (E →ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
@@ -485,10 +488,13 @@ structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R
   norm_map' : ∀ x, ‖toLinearEquiv x‖ = ‖x‖
 #align linear_isometry_equiv LinearIsometryEquiv
 
+@[inherit_doc]
 notation:25 E " ≃ₛₗᵢ[" σ₁₂:25 "] " E₂:0 => LinearIsometryEquiv σ₁₂ E E₂
 
+/-- A linear isometric equivalence between two normed vector spaces. -/
 notation:25 E " ≃ₗᵢ[" R:25 "] " E₂:0 => LinearIsometryEquiv (RingHom.id R) E E₂
 
+/-- An antilinear isometric equivalence between two normed vector spaces. -/
 notation:25 E " ≃ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometryEquiv (starRingEnd R) E E₂
 
 /-- `SemilinearIsometryEquivClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear
@@ -526,7 +532,7 @@ instance (priority := 100) [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E�
     SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with
     coe := ((↑) : 𝓕 → E → E₂)
-    coe_injective' := @FunLike.coe_injective 𝓕 _ _ _ }
+    coe_injective' := @DFunLike.coe_injective 𝓕 _ _ _ }
 
 end SemilinearIsometryEquivClass
 
@@ -551,7 +557,7 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
     cases' g with g' _
     cases f'
     cases g'
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, FunLike.coe_fn_eq] at h₁
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, DFunLike.coe_fn_eq] at h₁
     congr
   left_inv e := e.left_inv
   right_inv e := e.right_inv
@@ -559,14 +565,14 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly.
 -/
 instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
-  ⟨FunLike.coe⟩
+  ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align linear_isometry_equiv.coe_injective LinearIsometryEquiv.coe_injective
 
 @[simp]

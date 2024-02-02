@@ -62,18 +62,45 @@ namespace MeasureTheory
 section ENNReal
 variable (μ) {f g : α → ℝ≥0∞}
 
-/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. a measure `μ`, notation: `⨍⁻ x, f x ∂μ`.
-It is defined as `μ univ⁻¹ * ∫⁻ x, f x ∂μ`, so it is equal to zero if `μ` is an infinite measure. If
+/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. a measure `μ`, denoted `⨍⁻ x, f x ∂μ`.
+
+It is equal to `(μ univ)⁻¹ * ∫⁻ x, f x ∂μ`, so it takes value zero if `μ` is an infinite measure. If
 `μ` is a probability measure, then the average of any function is equal to its integral.
 
-For the average on a set, use `⨍⁻ x in s, f x ∂μ` (defined as `⨍⁻ x, f x ∂(μ.restrict s)`). For
+For the average on a set, use `⨍⁻ x in s, f x ∂μ`, defined as `⨍⁻ x, f x ∂(μ.restrict s)`. For the
 average w.r.t. the volume, one can omit `∂volume`. -/
 noncomputable def laverage (f : α → ℝ≥0∞) := ∫⁻ x, f x ∂(μ univ)⁻¹ • μ
 #align measure_theory.laverage MeasureTheory.laverage
 
-notation3"⨍⁻ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => laverage μ r
-notation3"⨍⁻ "(...)", "r:60:(scoped f => laverage volume f) => r
-notation3"⨍⁻ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => laverage (Measure.restrict μ s) r
+/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. a measure `μ`.
+
+It is equal to `(μ univ)⁻¹ * ∫⁻ x, f x ∂μ`, so it takes value zero if `μ` is an infinite measure. If
+`μ` is a probability measure, then the average of any function is equal to its integral.
+
+For the average on a set, use `⨍⁻ x in s, f x ∂μ`, defined as `⨍⁻ x, f x ∂(μ.restrict s)`. For the
+average w.r.t. the volume, one can omit `∂volume`. -/
+notation3 "⨍⁻ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => laverage μ r
+
+/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. to the standard measure.
+
+It is equal to `(volume univ)⁻¹ * ∫⁻ x, f x`, so it takes value zero if the space has infinite
+measure. In a probability space, the average of any function is equal to its integral.
+
+For the average on a set, use `⨍⁻ x in s, f x`, defined as `⨍⁻ x, f x ∂(volume.restrict s)`. -/
+notation3 "⨍⁻ "(...)", "r:60:(scoped f => laverage volume f) => r
+
+/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. a measure `μ` on a set `s`.
+
+It is equal to `(μ s)⁻¹ * ∫⁻ x, f x ∂μ`, so it takes value zero if `s` has infinite measure. If `s`
+has measure `1`, then the average of any function is equal to its integral.
+
+For the average w.r.t. the volume, one can omit `∂volume`. -/
+notation3 "⨍⁻ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => laverage (Measure.restrict μ s) r
+
+/-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. to the standard measure on a set `s`.
+
+It is equal to `(volume s)⁻¹ * ∫⁻ x, f x`, so it takes value zero if `s` has infinite measure. If
+`s` has measure `1`, then the average of any function is equal to its integral. -/
 notation3 (prettyPrint := false)
   "⨍⁻ "(...)" in "s", "r:60:(scoped f => laverage Measure.restrict volume s f) => r
 
@@ -99,7 +126,7 @@ theorem laverage_eq_lintegral [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) 
 @[simp]
 theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     μ univ * ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by
-  cases' eq_or_ne μ 0 with hμ hμ
+  rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, lintegral_zero_measure, laverage_zero_measure, mul_zero]
   · rw [laverage_eq, ENNReal.mul_div_cancel' (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
 #align measure_theory.measure_mul_laverage MeasureTheory.measure_mul_laverage
@@ -237,27 +264,51 @@ section NormedAddCommGroup
 variable (μ)
 variable {f g : α → E}
 
-/-- Average value of a function `f` w.r.t. a measure `μ`, notation: `⨍ x, f x ∂μ`. It is defined as
-`(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it is equal to zero if `f` is not integrable or if `μ` is an
-infinite measure. If `μ` is a probability measure, then the average of any function is equal to its
-integral.
+/-- Average value of a function `f` w.r.t. a measure `μ`, denoted `⨍ x, f x ∂μ`.
 
-For the average on a set, use `⨍ x in s, f x ∂μ` (defined as `⨍ x, f x ∂(μ.restrict s)`). For
+It is equal to `(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
+if `μ` is an infinite measure. If `μ` is a probability measure, then the average of any function is
+equal to its integral.
+
+For the average on a set, use `⨍ x in s, f x ∂μ`, defined as `⨍ x, f x ∂(μ.restrict s)`. For the
 average w.r.t. the volume, one can omit `∂volume`. -/
 noncomputable def average (f : α → E) :=
   ∫ x, f x ∂(μ univ)⁻¹ • μ
 #align measure_theory.average MeasureTheory.average
 
-@[inherit_doc average]
+/-- Average value of a function `f` w.r.t. a measure `μ`.
+
+It is equal to `(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
+if `μ` is an infinite measure. If `μ` is a probability measure, then the average of any function is
+equal to its integral.
+
+For the average on a set, use `⨍ x in s, f x ∂μ`, defined as `⨍ x, f x ∂(μ.restrict s)`. For the
+average w.r.t. the volume, one can omit `∂volume`. -/
 notation3 "⨍ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => average μ r
 
-@[inherit_doc average]
+/-- Average value of a function `f` w.r.t. to the standard measure.
+
+It is equal to `(volume univ).toReal⁻¹ * ∫ x, f x`, so it takes value zero if `f` is not integrable
+or if the space has infinite measure. In a probability space, the average of any function is equal
+to its integral.
+
+For the average on a set, use `⨍ x in s, f x`, defined as `⨍ x, f x ∂(volume.restrict s)`. -/
 notation3 "⨍ "(...)", "r:60:(scoped f => average volume f) => r
 
-@[inherit_doc average]
+/-- Average value of a function `f` w.r.t. a measure `μ` on a set `s`.
+
+It is equal to `(μ s).toReal⁻¹ * ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable on
+`s` or if `s` has infinite measure. If `s` has measure `1`, then the average of any function is
+equal to its integral.
+
+For the average w.r.t. the volume, one can omit `∂volume`. -/
 notation3 "⨍ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => average (Measure.restrict μ s) r
 
-@[inherit_doc average]
+/-- Average value of a function `f` w.r.t. to the standard measure on a set `s`.
+
+It is equal to `(volume s).toReal⁻¹ * ∫ x, f x`, so it takes value zero `f` is not integrable on `s`
+or if `s` has infinite measure. If `s` has measure `1`, then the average of any function is equal to
+its integral. -/
 notation3 "⨍ "(...)" in "s", "r:60:(scoped f => average (Measure.restrict volume s) f) => r
 
 @[simp]
@@ -289,7 +340,7 @@ theorem average_eq_integral [IsProbabilityMeasure μ] (f : α → E) : ⨍ x, f 
 @[simp]
 theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
     (μ univ).toReal • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
-  cases' eq_or_ne μ 0 with hμ hμ
+  rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
     refine' (ENNReal.toReal_pos _ <| measure_ne_top _ _).ne'

@@ -129,13 +129,13 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
           funext i
           rw [norm_sq_eq_inner (𝕜 := 𝕜)]
           -- porting note: `simp` couldn't do this anymore
-        _ = re (∑' i, ⟪f i, f i⟫) := (IsROrC.reClm.map_tsum ?_).symm
+        _ = re (∑' i, ⟪f i, f i⟫) := (IsROrC.reCLM.map_tsum ?_).symm
       · norm_num
       · exact summable_inner f f
     conj_symm := fun f g => by
       calc
         conj _ = conj (∑' i, ⟪g i, f i⟫) := by congr
-        _ = ∑' i, conj ⟪g i, f i⟫ := IsROrC.conjCle.map_tsum
+        _ = ∑' i, conj ⟪g i, f i⟫ := IsROrC.conjCLE.map_tsum
         _ = ∑' i, ⟪f i, g i⟫ := by simp only [inner_conj_symm]
         _ = _ := by congr
     add_left := fun f₁ f₂ g => by
@@ -415,16 +415,15 @@ instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
 instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
-@[simp]
+-- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
 protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i :=
   rfl
 #align hilbert_basis.repr_symm_single HilbertBasis.repr_symm_single
 
--- porting note: removed `@[simp]` because `simp` can prove this
 protected theorem repr_self (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp
+  simp only [LinearIsometryEquiv.apply_symm_apply]
 #align hilbert_basis.repr_self HilbertBasis.repr_self
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
@@ -584,7 +583,8 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
   ⟨w, HilbertBasis.mkOfOrthogonalEqBot hw_ortho
-    (by simpa [maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
+    (by simpa only [Subtype.range_coe_subtype, Set.setOf_mem_eq,
+      maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
     hws, HilbertBasis.coe_mkOfOrthogonalEqBot _ _⟩
 #align orthonormal.exists_hilbert_basis_extension Orthonormal.exists_hilbertBasis_extension
 

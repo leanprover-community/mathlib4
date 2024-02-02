@@ -138,7 +138,7 @@ lemma YClass_ne_zero [Nontrivial R] (y : R[X]) : YClass W y ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_class_ne_zero WeierstrassCurve.Affine.CoordinateRing.YClass_ne_zero
 
-lemma C_addPolynomial (x y L : R) : mk W (C (W.addPolynomial x y L)) =
+lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
     mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
   AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel', mul_one]⟩
 set_option linter.uppercaseLean3 false in
@@ -207,7 +207,7 @@ lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁)
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
     · rcases hx, Yeq_of_Yne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
-      field_simp [linePolynomial, sub_ne_zero_of_ne (hxy rfl)]
+      field_simp [linePolynomial, sub_ne_zero_of_ne <| hxy rfl]
     · field_simp [linePolynomial, slope_of_Xne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
@@ -223,14 +223,14 @@ set_option linter.uppercaseLean3 false in
 
 lemma XYIdeal_neg_mul {x y : F} (h : W.nonsingular x y) :
     XYIdeal W x (C <| W.negY x y) * XYIdeal W x (C y) = XIdeal W x := by
-  have Y_rw : (Y - C (C y)) * (Y - C (C (W.negY x y))) -
+  have Y_rw : (Y - C (C y)) * (Y - C (C <| W.negY x y)) -
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
       congr_arg C (congr_arg C ((W.equation_iff _ _).mp h.left).symm)
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
-    ← span_singleton_mul_span_singleton, ← mul_sup, ← span_insert]
+    ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
   simp_rw [← @Set.image_singleton _ _ <| mk W, ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
@@ -239,13 +239,13 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.nonsingular x y) :
   rcases ((W.nonsingular_iff' _ _).mp h).right with hx | hy
   · let W_X := W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)
     refine
-      ⟨C (C W_X⁻¹ * -(X + C (2 * x + W.a₂))), C (C <| W_X⁻¹ * W.a₁), 0, C (C <| W_X⁻¹ * -1), ?_⟩
+      ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hx]
     C_simp
     ring1
   · let W_Y := 2 * y + W.a₁ * x + W.a₃
-    refine ⟨0, C (C W_Y⁻¹), C (C <| W_Y⁻¹ * -1), 0, ?_⟩
+    refine ⟨0, C <| C W_Y⁻¹, C <| C <| W_Y⁻¹ * -1, 0, ?_⟩
     rw [negY, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hy]
     C_simp
@@ -269,28 +269,27 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
-  simp_rw [span_insert, sup_rw, sup_mul, span_singleton_mul_span_singleton]
+  simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
   rw [← neg_eq_iff_eq_neg.mpr <| C_addPolynomial_slope h₁ h₂ hxy, span_singleton_neg,
     C_addPolynomial, _root_.map_mul, YClass]
-  simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← mul_sup]
+  simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← Ideal.mul_sup]
   rw [span_singleton_mul_span_singleton, ← span_insert,
     ← span_pair_add_mul_right <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
-    ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right,
-    span_insert, ← span_singleton_mul_span_singleton, ← sup_rw, ← sup_mul, ← sup_mul]
+    ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
+    ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
-  simp_rw [XClass, ← @Set.image_singleton _ _ <| mk W, ← map_span, ← Ideal.map_sup,
-    eq_top_iff_one, mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert,
-    mem_span_insert', mem_span_singleton']
+  simp_rw [XClass, ← @Set.image_singleton _ _ <| mk W, ← map_span, ← Ideal.map_sup, eq_top_iff_one,
+    mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
+    mem_span_singleton']
   by_cases hx : x₁ = x₂
   · rcases hx, Yeq_of_Yne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
-    replace hxy := pow_ne_zero 2 (sub_ne_zero_of_ne <| hxy rfl)
+    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
-      rw [map_add, map_one, _root_.map_mul <| mk W, AdjoinRoot.mk_self, mul_zero,
-        add_zero]⟩
+      rw [map_add, map_one, _root_.map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
@@ -467,7 +466,7 @@ lemma norm_smul_basis (p q : R[X]) :
 #align weierstrass_curve.coordinate_ring.norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.norm_smul_basis
 
 lemma coe_norm_smul_basis (p q : R[X]) :
-    ↑(Algebra.norm R[X] <| p • (1 : W.CoordinateRing) + q • mk W Y) =
+    Algebra.norm R[X] (p • (1 : W.CoordinateRing) + q • mk W Y) =
       mk W ((C p + C q * X) * (C p + C q * (-Y - C (C W.a₁ * X + C W.a₃)))) :=
   AdjoinRoot.mk_eq_mk.mpr
     ⟨C q ^ 2, by simp only [norm_smul_basis, polynomial]; C_simp; ring1⟩
@@ -484,10 +483,10 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
   rw [norm_smul_basis]
   by_cases hp : p = 0
-  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow zero_lt_two, degree_neg] using
+  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow two_ne_zero, degree_neg] using
       (max_bot_left _).symm
   · by_cases hq : q = 0
-    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow zero_lt_two] using
+    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow two_ne_zero] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
       -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
@@ -632,9 +631,6 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
-  zero := zero
-  neg := neg
-  add := add
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg

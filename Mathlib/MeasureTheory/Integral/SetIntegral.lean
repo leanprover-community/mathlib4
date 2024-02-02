@@ -403,36 +403,6 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
 
-lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem {E : Type*} [MeasurableSpace E]
-    [MeasurableSingletonClass E] {f : α → E} (c : E) {s : Set α}
-    (f_mble : NullMeasurable f (μ.restrict s)) :
-    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply₀]
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · apply NullMeasurableSet.compl
-    convert f_mble (MeasurableSet.singleton c)
-
-lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem' {E : Type*} (c : E) (f : α → E) {s : Set α}
-    (s_mble : MeasurableSet s) :
-    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
-  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
-             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
-  rw [Measure.restrict_apply_eq_zero']
-  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
-  · exact s_mble
-
-/-- If a function equals zero almost everywhere w.r.t. restriction of the measure to `sᶜ`, then its
-integral on `s` coincides with its integral on the whole space. -/
-lemma set_integral_eq_integral_of_ae_restrict_eq_zero (hs : f =ᵐ[μ.restrict sᶜ] 0) :
-    ∫ ω in s, f ω ∂μ = ∫ ω, f ω ∂μ := by
-  borelize E
-  refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
-  have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
-    NullMeasurable.congr measurable_const.nullMeasurable hs.symm
-  simpa only [mem_compl_iff] using (ae_restrict_eq_const_iff_ae_eq_const_of_mem 0 f_mble).mp hs
-
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
@@ -688,7 +658,7 @@ theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico a b, f t ∂μ = ∫ t in Io
   integral_Ico_eq_integral_Ioo' <| measure_singleton a
 #align measure_theory.integral_Ico_eq_integral_Ioo MeasureTheory.integral_Ico_eq_integral_Ioo
 
-theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ := by
+theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
 #align measure_theory.integral_Icc_eq_integral_Ioo MeasureTheory.integral_Icc_eq_integral_Ioo
 
@@ -1220,21 +1190,21 @@ end ContinuousLinearEquiv
 
 @[norm_cast]
 theorem integral_ofReal {f : α → ℝ} : (∫ a, (f a : 𝕜) ∂μ) = ↑(∫ a, f a ∂μ) :=
-  (@IsROrC.ofRealLi 𝕜 _).integral_comp_comm f
+  (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
 theorem integral_re {f : α → 𝕜} (hf : Integrable f μ) :
     (∫ a, IsROrC.re (f a) ∂μ) = IsROrC.re (∫ a, f a ∂μ) :=
-  (@IsROrC.reClm 𝕜 _).integral_comp_comm hf
+  (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
 theorem integral_im {f : α → 𝕜} (hf : Integrable f μ) :
     (∫ a, IsROrC.im (f a) ∂μ) = IsROrC.im (∫ a, f a ∂μ) :=
-  (@IsROrC.imClm 𝕜 _).integral_comp_comm hf
+  (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
 theorem integral_conj {f : α → 𝕜} : (∫ a, conj (f a) ∂μ) = conj (∫ a, f a ∂μ) :=
-  (@IsROrC.conjLie 𝕜 _).toLinearIsometry.integral_comp_comm f
+  (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
