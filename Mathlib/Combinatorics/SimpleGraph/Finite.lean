@@ -10,13 +10,12 @@ import Mathlib.Data.Sym.Card
 # Definitions for finite and locally finite graphs
 
 This file defines finite versions of `edgeSet`, `neighborSet` and `incidenceSet` and proves some
-of their basic properties.
-It also defines the notion of a locally finite graph, which is one whose vertices have finite degree.
+of their basic properties. It also defines the notion of a locally finite graph, which is one
+whose vertices have finite degree.
 
-The design for finiteness is that each definition takes the smallest
-finiteness assumption necessary.
-For example, `SimpleGraph.neighborFinset v` only requires that `v`
-have finitely many neighbors.
+The design for finiteness is that each definition takes the smallest finiteness assumption
+necessary. For example, `SimpleGraph.neighborFinset v` only requires that `v` have
+finitely many neighbors.
 
 ## Main definitions
 
@@ -25,6 +24,11 @@ have finitely many neighbors.
    if `neighborSet` is finite
 * `SimpleGraph.incidenceFinset` is the `Finset` of edges containing a given vertex,
    if `incidenceSet` is finite
+
+## Naming conventions
+
+If the vertex type of a graph is finite, we refer to its cardinality as `CardVerts`
+or `card_verts`.
 
 ## Implementation notes
 
