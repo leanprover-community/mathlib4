@@ -3,7 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -23,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Polynomial BigOperators
+open Set Function Polynomial BigOperators
 
 namespace Module
 /--
@@ -87,6 +88,14 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
+@[simp]
+lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
+    (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by
+  ext p
+  simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
+  change (∀ m : M, aeval a p • m = 0) ↔ _
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+
 section Submodule
 
 variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
@@ -130,6 +139,18 @@ def mapSubmodule : Submodule R[X] <| AEval R M a :=
 @[simp] lemma comapSubmodule_mapSubmodule :
     comapSubmodule R M a (mapSubmodule a hp) = p := by
   ext; simp
+
+variable (R M)
+
+lemma injective_comapSubmodule : Injective (comapSubmodule R M a) := by
+  intro q₁ q₂ hq
+  rw [← mapSubmodule_comapSubmodule (q := q₁), ← mapSubmodule_comapSubmodule (q := q₂)]
+  simp_rw [hq]
+
+lemma range_comapSubmodule :
+    range (comapSubmodule R M a) = {p | p ≤ p.comap (Algebra.lsmul R R M a)} :=
+  le_antisymm (fun _ ⟨_, hq⟩ ↦ hq ▸ comapSubmodule_le_comap a)
+    (fun _ hp ↦ ⟨mapSubmodule a hp, comapSubmodule_mapSubmodule a hp⟩)
 
 end Submodule
 
@@ -202,8 +223,8 @@ namespace PolynomialModule
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
-instance instDFunLike : DFunLike (PolynomialModule R M) ℕ fun _ => M :=
-  Finsupp.instDFunLike
+instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
+  Finsupp.instFunLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
   Finsupp.coeFun

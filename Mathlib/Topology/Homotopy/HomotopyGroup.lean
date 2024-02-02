@@ -104,7 +104,7 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
-scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+@[inherit_doc] scoped[Topology.Homotopy] notation "Ω^" => GenLoop
 
 open Topology.Homotopy
 
@@ -112,10 +112,10 @@ variable {N X x}
 
 namespace GenLoop
 
-instance instDFunLike : DFunLike (Ω^ N X x) (I^N) fun _ => X where
+instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
   coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ => by congr
-#align gen_loop.fun_like GenLoop.instDFunLike
+#align gen_loop.fun_like GenLoop.instFunLike
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
@@ -133,7 +133,7 @@ def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
   ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
 #align gen_loop.copy GenLoop.copy
 
-/- porting note: this now requires the `instDFunLike` instance,
+/- porting note: this now requires the `instFunLike` instance,
   so the instance is now put before `copy`. -/
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl

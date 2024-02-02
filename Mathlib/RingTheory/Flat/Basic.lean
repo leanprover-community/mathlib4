@@ -3,12 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.Noetherian
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
+import Mathlib.RingTheory.Finiteness
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -127,6 +127,30 @@ theorem iff_rTensor_injective' :
   rewrite [← rTensor_comp_apply] at hx₀
   letI : AddCommGroup (J ⊗[R] M) := inferInstance -- Type class reminder
   rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, _root_.map_zero]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is injective if and only if `M ⊗ f` is injective. -/
+lemma lTensor_inj_iff_rTensor_inj {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N]
+    [Module R P] (f : N →ₗ[R] P) :
+    Injective (lTensor M f) ↔ Injective (rTensor M f) := by
+  haveI h1 : rTensor M f ∘ₗ TensorProduct.comm R M N =
+    TensorProduct.comm R M P ∘ₗ lTensor M f := ext rfl
+  haveI h2 : ⇑(TensorProduct.comm R M P) ∘ ⇑(lTensor M f) =
+    (TensorProduct.comm R M P) ∘ₗ (lTensor M f) := rfl
+  simp only [← EquivLike.injective_comp (TensorProduct.comm R M N),
+    ← EquivLike.comp_injective _ (TensorProduct.comm R M P), h2, ← h1]
+  trivial
+
+/-- The `lTensor`-variant of `iff_rTensor_injective`. .-/
+theorem iff_lTensor_injective :
+    Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (lTensor M I.subtype) := by
+  simp only [lTensor_inj_iff_rTensor_inj]
+  exact Module.Flat.iff_rTensor_injective R M
+
+/-- The `lTensor`-variant of `iff_rTensor_injective'`. .-/
+theorem iff_lTensor_injective' :
+    Module.Flat R M ↔ ∀ (I : Ideal R), Injective (lTensor M I.subtype) := by
+  simp only [lTensor_inj_iff_rTensor_inj]
+  exact Module.Flat.iff_rTensor_injective' R M
 
 variable (N : Type w) [AddCommGroup N] [Module R N]
 

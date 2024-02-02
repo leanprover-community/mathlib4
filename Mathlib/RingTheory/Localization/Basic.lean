@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
@@ -172,6 +173,10 @@ theorem toLocalizationMap_toMap : (toLocalizationMap M S).toMap = (algebraMap R 
 theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = algebraMap R S x :=
   rfl
 #align is_localization.to_localization_map_to_map_apply IsLocalization.toLocalizationMap_toMap_apply
+
+theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
+    (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
+  (toLocalizationMap M S).surj₂
 
 end
 
@@ -786,6 +791,17 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
 
 end at_units
 
+section
+
+variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
+
+/-- Injectivity of a map descends to the map induced on localizations. -/
+theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
+    Function.Injective (map Q g M.le_comap_map : S → Q) :=
+  (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
+
+end
+
 end IsLocalization
 
 section
@@ -1247,25 +1263,7 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-variable (S M) (Q : Type*) [CommRing Q] {g : R →+* P} [Algebra P Q]
-
-/-- Injectivity of a map descends to the map induced on localizations. -/
-theorem map_injective_of_injective (hg : Function.Injective g)
-    [i : IsLocalization (M.map g : Submonoid P) Q] :
-    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) := by
-  rw [injective_iff_map_eq_zero]
-  intro z hz
-  obtain ⟨a, b, rfl⟩ := mk'_surjective M z
-  rw [map_mk', mk'_eq_zero_iff] at hz
-  obtain ⟨⟨m', hm'⟩, hm⟩ := hz
-  rw [Submonoid.mem_map] at hm'
-  obtain ⟨n, hn, hnm⟩ := hm'
-  rw [Subtype.coe_mk, ← hnm, ← map_mul, ← map_zero g] at hm
-  rw [mk'_eq_zero_iff]
-  exact ⟨⟨n, hn⟩, hg hm⟩
-#align is_localization.map_injective_of_injective IsLocalization.map_injective_of_injective
-
-variable {S Q M}
+variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 
 variable (A : Type*) [CommRing A] [IsDomain A]
 
@@ -1434,7 +1432,8 @@ variable (Rₘ Sₘ)
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  IsLocalization.map_injective_of_injective (M := M) _ hRS (i := i)
+  have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
+  IsLocalization.map_injective_of_injective _ _ _ hRS
 #align localization_algebra_injective localizationAlgebra_injective
 
 end Algebra

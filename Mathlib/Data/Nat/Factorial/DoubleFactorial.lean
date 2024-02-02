@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Positivity.Core
 
 #align_import data.nat.factorial.double_factorial from "leanprover-community/mathlib"@"7daeaf3072304c498b653628add84a88d0e78767"
 
@@ -34,7 +35,7 @@ def doubleFactorial : ℕ → ℕ
 #align nat.double_factorial Nat.doubleFactorial
 
 -- This notation is `\!!` not two !'s
-scoped notation:10000 n "‼" => Nat.doubleFactorial n
+@[inherit_doc] scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
 lemma doubleFactorial_pos : ∀ n, 0 < n‼
   | 0 | 1 => zero_lt_one

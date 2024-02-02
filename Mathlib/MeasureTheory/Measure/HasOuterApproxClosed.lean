@@ -194,7 +194,7 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
     · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
     · have key := thickenedIndicator_tendsto_indicator_closure
                 (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
-                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_0_nat F
+                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
       rw [tendsto_pi_nhds] at *
       intro x
       nth_rw 2 [← IsClosed.closure_eq hF]

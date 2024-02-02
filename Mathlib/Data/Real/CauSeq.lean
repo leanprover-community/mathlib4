@@ -1001,3 +1001,5 @@ protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c 
 end Abs
 
 end CauSeq
+
+assert_not_exists Module

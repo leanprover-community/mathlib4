@@ -66,7 +66,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 #align polynomial.to_finsupp Polynomial.toFinsupp
 
 -- mathport name: polynomial
-scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
 open AddMonoidAlgebra
 open Finsupp hiding single
@@ -823,11 +823,10 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 #align polynomial.forall_eq_iff_forall_eq Polynomial.forall_eq_iff_forall_eq
 
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
-  rcases p with ⟨⟩
-  rcases q with ⟨⟩
+  rcases p with ⟨f : ℕ →₀ R⟩
+  rcases q with ⟨g : ℕ →₀ R⟩
   -- Porting note: Was `simp [coeff, DFunLike.ext_iff]`
-  simp only [ofFinsupp.injEq, coeff._eq_1]
-  exact DFunLike.ext_iff (F := ℕ →₀ R)
+  simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 #align polynomial.ext_iff Polynomial.ext_iff
 
 @[ext]
