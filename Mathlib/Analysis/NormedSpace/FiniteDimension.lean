@@ -454,6 +454,9 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
+
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
 space is finite-dimensional. -/
 theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
@@ -461,12 +464,17 @@ theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 #align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
 
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompact_closedBall
+
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
 theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
     FiniteDimensional 𝕜 E :=
   let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
   .of_isCompact_closedBall₀ 𝕜 rpos hr
 
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/

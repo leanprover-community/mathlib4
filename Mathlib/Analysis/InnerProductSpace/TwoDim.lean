@@ -80,6 +80,10 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
+@[deprecated] -- Since 2024/02/02
+alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
+  FiniteDimensional.of_fact_finrank_eq_two
+
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
