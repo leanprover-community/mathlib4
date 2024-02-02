@@ -172,6 +172,17 @@ theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
 #align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 #align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 
+theorem _root_.Bornology.IsCobounded.closedBall_compl_subset {s : Set α} (hs : IsCobounded s)
+    (c : α) : ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s := by
+  rw [← isBounded_compl_iff] at hs
+  rcases hs.subset_closedBall c with ⟨r, hr⟩
+  use r
+  rwa [compl_subset_comm]
+
+theorem closedBall_compl_subset_of_mem_cocompact {s : Set α} (hs : s ∈ cocompact α) (c : α) :
+    ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s :=
+  IsCobounded.closedBall_compl_subset (cobounded_le_cocompact hs) c
+
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
   isBounded_iff.trans <| by simp only [forall_range_iff]
