@@ -124,7 +124,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
     -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
-    rw [id_apply]
+    erw [id_apply]
   mul_one := by
     -- Porting note : `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
@@ -138,7 +138,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
-    rw [id_apply]
+    erw [id_apply]
   mul_assoc := by
     -- Porting note : `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
@@ -151,7 +151,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
-    rw [id_apply]
+    erw [id_apply]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, id_apply, LinearMap.mul'_apply,
       LinearMap.mul'_apply]
     simp only [LinearMap.mul'_apply, mul_assoc]
