@@ -23,8 +23,6 @@ of fields.
   `F`, where `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal
   purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
 
-  This file only contains very basic results of the relative perfect closure.
-
 ## Main results
 
 - `IsPurelyInseparable.surjective_algebraMap_of_isSeparable`,
@@ -670,7 +668,7 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable (q : ℕ) [hF : Exp
   rw [← h] at hy
   erw [Finsupp.mem_span_range_iff_exists_finsupp] at hy ⊢
   obtain ⟨c, hy⟩ := hy
-  use c.mapRange (· ^ q ^ n) (zero_pow (expChar_pow_pos F q n))
+  use c.mapRange (· ^ q ^ n) (zero_pow (expChar_pow_pos F q n).ne')
   rw [Finsupp.sum_mapRange_index (fun _ ↦ by exact zero_smul _ _)]
   simp_rw [← hy, Finsupp.sum, sum_pow_char_pow, Algebra.smul_def, mul_pow, map_pow]
 
@@ -890,7 +888,8 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     · obtain ⟨y, hy⟩ := hf i
       exact ⟨y ^ q ^ (n - f i), by rw [map_pow, hy, ← pow_mul, ← pow_add,
         Nat.add_sub_of_le (hn (f i) (Finset.mem_image.2 ⟨i, hs, rfl⟩))]⟩
-    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]⟩
+    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs,
+      zero_pow (expChar_pow_pos F q n).ne']⟩
   obtain ⟨lF, hlF⟩ := Classical.axiom_of_choice hf
   let lF' (i : ι) : F := if i ∈ l.support then lF i else 0
   let lF₀ := Finsupp.onFinset l.support lF' fun i ↦ by
@@ -899,8 +898,8 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     simp only [hs, ite_false]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_expChar_pow,
-      zero_pow (expChar_pow_pos F q n)] at hl
+    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow,
+      zero_pow (expChar_pow_pos F q n).ne'] at hl
     rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl ?_
     intro i hs
@@ -910,13 +909,13 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     by_cases hs : i ∈ l.support
     · simp only [hs, ite_true, hlF i]
     simp only [hs, ite_false, map_zero, Finsupp.not_mem_support_iff.1 hs,
-      zero_pow (expChar_pow_pos F q n)]
+      zero_pow (expChar_pow_pos F q n).ne']
   ext i
   by_cases hs : i ∈ l.support
   · replace h := congr($h i)
     rw [Finsupp.onFinset_apply] at h
     have := (hlF i).symm
-    erw [h, map_zero, pow_eq_zero_iff (expChar_pow_pos F q n)] at this
+    erw [h, map_zero, pow_eq_zero_iff (expChar_pow_pos F q n).ne'] at this
     exact this
   rw [Finsupp.not_mem_support_iff.1 hs]
   rfl
