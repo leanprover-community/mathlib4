@@ -2405,7 +2405,7 @@ end Centralizer
 /-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
-  is_comm : IsCommutative H (· * ·)
+  is_comm : Std.Commutative (α := H) (· * ·)
 #align subgroup.is_commutative Subgroup.IsCommutative
 
 attribute [class] IsCommutative
@@ -2413,7 +2413,7 @@ attribute [class] IsCommutative
 /-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
-  is_comm : _root_.IsCommutative H (· + ·)
+  is_comm : Std.Commutative (α := H) (· + ·)
 #align add_subgroup.is_commutative AddSubgroup.IsCommutative
 
 attribute [to_additive] Subgroup.IsCommutative
