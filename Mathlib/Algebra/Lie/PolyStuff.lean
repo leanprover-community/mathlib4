@@ -7,6 +7,7 @@ open BigOperators
 
 variable {R σ : Type*} [CommRing R]
 
+-- Mathlib.Data.Finsupp.Fin
 lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
     (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmbedding n).toEmbedding s.support) := by
   intro i hi
@@ -21,14 +22,17 @@ namespace MvPolynomial -- move this
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 variable (f : R →+* S) (k : σ → τ) (g : τ → R) (p : MvPolynomial σ R)
 
+-- Mathlib.Data.MvPolynomial.Rename
 theorem eval_rename : eval g (rename k p) = eval (g ∘ k) p :=
   eval₂_rename _ _ _ _
 
+-- Mathlib.Data.MvPolynomial.Rename
 @[simp]
 theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
     (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
   rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
 
+-- Mathlib.RingTheory.MvPolynomial.Homogeneous
 theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
   obtain ⟨f, rfl⟩ : ∃ f' : σ ↪ τ, f = f' := ⟨⟨f, hf⟩, rfl⟩
@@ -43,6 +47,7 @@ theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) 
     obtain ⟨d', rfl, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
     rw [← Finsupp.embDomain_eq_mapDomain, ← h hd', aux]
 
+-- move later??
 lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
     (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
@@ -55,6 +60,7 @@ lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
 
 end MvPolynomial
 
+-- Mathlib.Data.Polynomial.RingDivision
 open Cardinal in
 lemma Polynomial.exists_eval_ne_zero_of_natDegree_lt_card [IsDomain R]
     (f : Polynomial R) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
@@ -66,10 +72,12 @@ lemma Polynomial.exists_eval_ne_zero_of_natDegree_lt_card [IsDomain R]
     aesop
   · exact Polynomial.funext <| by simpa using hf
 
+-- Mathlib.Data.MvPolynomial.Variables
 lemma MvPolynomial.degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
     degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
   simp only [← Nat.lt_succ_iff, degreeOf_lt_iff (Nat.succ_pos _)]
 
+-- Mathlib.Data.MvPolynomial.Variables
 lemma MvPolynomial.degreeOf_le_totalDegree {σ : Type*} (φ : MvPolynomial σ R) (i : σ) :
     φ.degreeOf i ≤ φ.totalDegree := by
   rw [degreeOf_le_iff]
