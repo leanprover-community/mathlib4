@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.RingTheory.Nilpotent
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
@@ -19,7 +19,7 @@ open BigOperators
 
 section
 
-variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [Fact p.Prime] [CharP R p]
+variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
 
 theorem pow_char_pow_inj : (fun r : R ↦ r ^ p ^ n).Injective := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
@@ -42,16 +42,14 @@ theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
 #align is_square_of_char_two' isSquare_of_charTwo'
 
-namespace CharP
-
 variable {R : Type*} [CommRing R] [IsReduced R]
 
 @[simp]
-theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [Fact p.Prime] [CharP R p] (x : R) :
+theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
   rw [pow_mul']
   convert (pow_char_pow_inj R p k).eq_iff
   rw [one_pow]
-#align char_p.pow_prime_pow_mul_eq_one_iff CharP.pow_prime_pow_mul_eq_one_iff
+#align char_p.pow_prime_pow_mul_eq_one_iff ExpChar.pow_prime_pow_mul_eq_one_iff
 
-end CharP
+@[deprecated] alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff

@@ -82,13 +82,14 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else
     getSimpTheorems
+  let simprocs := #[if simpOnly then {} else ← Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
     config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
   else
     let mut simpTheorems := ctx.simpTheorems
     let hs ← getPropHyps
@@ -96,7 +97,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
     let ctx := { ctx with simpTheorems }
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
 
 /-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.
 Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`

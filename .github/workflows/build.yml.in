@@ -242,11 +242,6 @@ jobs:
           lake exe graph
           rm import_graph.dot
 
-      - name: verify `lake exe shake` works
-        # Later, we may want to make output from `shake` a CI error?
-        run: |
-          lake exe shake
-
       - name: test mathlib
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
@@ -257,6 +252,13 @@ jobs:
             # Ensure everything has been built.
             lake build ProofWidgets
             make -j 8 test"
+
+      - name: check for unused imports
+        id: shake
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         id: lint
@@ -270,7 +272,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.5.0-rc1
+          git checkout toolchain/v4.6.0-rc1
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
