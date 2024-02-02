@@ -668,6 +668,17 @@ noncomputable def definedAtRight
         Substructure.closure_le, singleton_subset_iff, le_sup_left]
       exact f_le_g
 
+theorem back_iff_symm_of_forth :
+    (∀ f : (M ≃ₚ[L] N), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ n ∈ g.sub_cod) ↔
+    ∀ f : (N ≃ₚ[L] M), ∀ _ : f.sub_dom.FG, ∀ n : N, ∃ g : (N ≃ₚ[L] M), f ≤ g ∧ n ∈ g.sub_dom := by
+  constructor <;>
+  · intro H f fg x
+    let ⟨g, g_prop⟩ := H f.symm (f.fg_iff.1 fg) x
+    use g.symm
+    convert g_prop
+    exact (symm_le_iff f g).symm
+
+
 /-- For a countably generated structure `M` and a structure `N`, if any subequivalence
 between finitely generated substructures can be extended to any element in the domain,
 then there exists an embedding of `M` in `N`. -/

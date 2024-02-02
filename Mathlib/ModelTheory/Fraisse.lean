@@ -304,6 +304,32 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   simp only [Equiv.apply_symm_apply]
   rfl
 
+/-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
+finitely generated substructures can be extended to any element in the domain.-/
+theorem isUltrahomogeneous_iff_extend_finite_equiv (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
+    ∀ f : (M ≃ₚ[L] M), ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] M), f ≤ g ∧ m ∈ g.sub_dom := by
+  constructor
+  · intro M_homog f f_FG m
+    let S := closure L (f.sub_dom ∪ {m})
+    have dom_le_S : f.sub_dom ≤ S := by
+      simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
+    let ⟨f', eq_f'⟩ := M_homog.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
+      ((subtype _).comp f.equiv.toEmbedding) (inclusion dom_le_S) (h := ⟨subtype _⟩)
+    use ⟨S, f'.toHom.range, f'.equivRange⟩
+    refine ⟨⟨dom_le_S, ?_⟩, by
+      simp only [union_singleton]
+      exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m⟩
+    simp only
+    rw [← Embedding.comp_assoc, Embedding.subtype_equivRange f', ← eq_f']
+  · intro h S S_FG f
+    let ⟨g, ⟨le_dom, eq⟩⟩ := BackAndForth.equiv_between_cg M_CG M_CG
+      ⟨S, f.toHom.range, f.equivRange⟩ S_FG h (BackAndForth.back_iff_symm_of_forth.2 h)
+    use g
+    simp only [Embedding.subtype_equivRange] at eq
+    rw [← eq]
+    ext
+    rfl
+
 theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Amalgamation (L.age M) := by
   rintro N P Q NP NQ ⟨Nfg, ⟨-⟩⟩ ⟨Pfg, ⟨PM⟩⟩ ⟨Qfg, ⟨QM⟩⟩
@@ -343,7 +369,6 @@ theorem isFraisse [Countable (Σ l, L.Functions l)] [Countable M] (h : IsFraisse
     IsFraisse K :=
   (congr rfl h.age).mp h.ultrahomogeneous.age_isFraisse
 #align first_order.language.is_fraisse_limit.is_fraisse FirstOrder.Language.IsFraisseLimit.isFraisse
-
 
 variable {K} {N : Type w} [L.Structure N]
 variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
@@ -387,14 +412,11 @@ theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
     sub_cod := emb_S.toHom.range
     equiv := emb_S.equivRange
   }
-  have ⟨g, _⟩ := BackAndForth.equiv_between_cg (cg_if_countable) (cg_if_countable) v
-    ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN) <| by
-      intro f fg m
-      let ⟨g, g_prop⟩ := extend_finite_SubEquiv hN hM f.symm (f.fg_iff.1 fg) m
-      use g.symm
-      convert g_prop
-      exact (SubEquivalence.symm_le_iff f g).symm
-  exact ⟨g⟩
+  exact ⟨Exists.choose (BackAndForth.equiv_between_cg (cg_if_countable) (cg_if_countable) v
+    ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN)
+      (BackAndForth.back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
+
+
 
 end IsFraisseLimit
 
