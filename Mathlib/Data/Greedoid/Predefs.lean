@@ -6,16 +6,18 @@ Authors: Jihoon Hyun
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 
+namespace Greedoid
+
 /-- The exchange property of greedoid.
     Note that the exchange property also hold for matroids. -/
-def Greedoid.ExchangeProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) :=
+def ExchangeProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) :=
   {s₁ : Finset α} → s₁ ∈ Sys →
   {s₂ : Finset α} → s₂ ∈ Sys →
   s₂.card < s₁.card →
   ∃ x ∈ s₁ \ s₂, insert x s₂ ∈ Sys
 
 instance {α : Type _} [DecidableEq α] :
-    @DecidablePred (Finset (Finset α)) Greedoid.ExchangeProperty :=
+    @DecidablePred (Finset (Finset α)) ExchangeProperty :=
   fun Sys =>
     if h : ∃ s₁ ∈ Sys, ∃ s₂ ∈ Sys, s₂.card < s₁.card ∧ ∀ x ∈ s₁ \ s₂, insert x s₂ ∉ Sys
     then isFalse (fun h' => by
@@ -28,8 +30,8 @@ instance {α : Type _} [DecidableEq α] :
       have ⟨a, ha⟩ := h _ hs₁ _ hs₂ hs
       exists a; simp only [Finset.mem_sdiff, ha, not_false_eq_true, and_self])
 
-theorem Greedoid.exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq α]
-    {Sys : Finset (Finset α)} (hSys : Greedoid.ExchangeProperty Sys)
+theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq α]
+    {Sys : Finset (Finset α)} (hSys : ExchangeProperty Sys)
     {s₁ : Finset α} (hs₁ : s₁ ∈ Sys)
     {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
     (hs : s₂.card ≤ s₁.card)
@@ -45,7 +47,7 @@ theorem Greedoid.exchangeProperty_exists_superset_of_card_le {α : Type _} [Deci
       exact h₁ ▸ hn₁⟩)
     have h₁ : (insert x s₂).card = s₂.card + 1 :=
       Finset.card_insert_of_not_mem (Finset.mem_sdiff.mp hx₁).2
-    have ⟨b, hb⟩ := Greedoid.exchangeProperty_exists_superset_of_card_le hSys hs₁ hx₂ (by
+    have ⟨b, hb⟩ := exchangeProperty_exists_superset_of_card_le hSys hs₁ hx₂ (by
       rw [h₁, Nat.succ_le, Nat.lt_iff_le_and_ne]
       apply And.intro hs
       intro h₂
@@ -76,9 +78,9 @@ decreasing_by
   exact le_antisymm hn₂ (h₂ ▸ hn₁)
 
 -- TODO: Fix name.
-theorem Greedoid.exchangeProperty_exists_feasible_superset_add_element_feasible
+theorem exchangeProperty_exists_feasible_superset_add_element_feasible
     {α : Type _} [DecidableEq α]
-    {Sys : Finset (Finset α)} (hSys : Greedoid.ExchangeProperty Sys)
+    {Sys : Finset (Finset α)} (hSys : ExchangeProperty Sys)
     {s₁ : Finset α} (hs₁ : s₁ ∈ Sys)
     {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
     (hs : s₂ ⊆ s₁)
@@ -91,7 +93,7 @@ theorem Greedoid.exchangeProperty_exists_feasible_superset_add_element_feasible
     exact ha₂ (h ha₁)
   by_cases h : Insert.insert a s₂ ∈ Sys
   · exists s₂
-  · let ⟨t, ht₁, ht₂, ht₃, ht₄⟩ := Greedoid.exchangeProperty_exists_superset_of_card_le hSys hs₁ hs₂
+  · let ⟨t, ht₁, ht₂, ht₃, ht₄⟩ := exchangeProperty_exists_superset_of_card_le hSys hs₁ hs₂
       (Finset.card_le_card hs) h₁ (Nat.le_succ _)
     have ht₅ : a ∉ t := by
       intro h'
@@ -104,7 +106,7 @@ theorem Greedoid.exchangeProperty_exists_feasible_superset_add_element_feasible
         · rw [ht₄, Finset.card_insert_of_not_mem ha₂]
       exact h ▸ ht₁
     let ⟨s', hs'₁, hs'₂, hs'₃, hs'₄, hs'₅⟩ :=
-      Greedoid.exchangeProperty_exists_feasible_superset_add_element_feasible hSys hs₁ ht₁
+      exchangeProperty_exists_feasible_superset_add_element_feasible hSys hs₁ ht₁
         (Finset.union_eq_left.mpr hs ▸ ht₃) ha₁ ht₅
     exists s'
     exact ⟨hs'₁, subset_trans ht₂ hs'₂, hs'₃, hs'₄, hs'₅⟩
@@ -115,21 +117,21 @@ decreasing_by
   exact Nat.sub_succ_lt_self _ _ h₁
 
 /-- The accessible property of greedoid -/
-def Greedoid.AccessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
+def AccessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
   {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
 
 /-- A set system is accessible if there is some element `x` in `s` which `s \ {x}` is also in the
     set system, for each nonempty set `s` of the set system.
     This automatically implies that nonempty accessible set systems contain an empty set. -/
-class Greedoid.Accessible {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop where
+class Accessible {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop where
   accessible : {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
 
-theorem Greedoid.accessible_accessibleProperty {α : Type _} [DecidableEq α]
-  {Sys : Finset (Finset α)} [Greedoid.Accessible Sys] :
-    Greedoid.AccessibleProperty Sys := Greedoid.Accessible.accessible
+theorem accessible_accessibleProperty {α : Type _} [DecidableEq α]
+    {Sys : Finset (Finset α)} [Accessible Sys] :
+    AccessibleProperty Sys := Accessible.accessible
 
-theorem Greedoid.induction_on_accessible {α : Type _} [DecidableEq α]
-    {Sys : Finset (Finset α)} [Greedoid.Accessible Sys]
+theorem induction_on_accessible {α : Type _} [DecidableEq α]
+    {Sys : Finset (Finset α)} [Accessible Sys]
     {s : Finset α} (hs₀ : s ∈ Sys)
     {p : Finset α → Prop}
     (empty : p ∅)
@@ -137,7 +139,7 @@ theorem Greedoid.induction_on_accessible {α : Type _} [DecidableEq α]
     p (Insert.insert a s)) :
     p s := by
   by_cases h : s = ∅ <;> try exact h ▸ empty
-  have ⟨x, hx₁, hx₂⟩ := Greedoid.Accessible.accessible hs₀ h
+  have ⟨x, hx₁, hx₂⟩ := Accessible.accessible hs₀ h
   have h' := Finset.sdiff_insert_insert_of_mem_of_not_mem hx₁ (Finset.not_mem_empty x)
   simp only [insert_emptyc_eq, Finset.mem_sdiff, Finset.mem_singleton, Finset.sdiff_empty] at h'
   have : p (Insert.insert x (s \ {x})) := insert (by
@@ -152,11 +154,11 @@ decreasing_by
   rw [Finset.card_sdiff (Finset.singleton_subset_iff.mpr hx₁), Finset.card_singleton]
   simp only [zero_lt_one, Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
 
-theorem Greedoid.construction_of_accessible {α : Type _} [DecidableEq α]
-    {Sys : Finset (Finset α)} [Greedoid.Accessible Sys] (hSys : ∅ ∈ Sys)
+theorem construction_of_accessible {α : Type _} [DecidableEq α]
+    {Sys : Finset (Finset α)} [Accessible Sys] (hSys : ∅ ∈ Sys)
     {s : Finset α} (hs₀ : s ∈ Sys) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s ∧ ∀ l', l' <:+ l → l'.toFinset ∈ Sys := by
-  apply Greedoid.induction_on_accessible hs₀
+  apply induction_on_accessible hs₀
   · exists []; simp only [List.nodup_nil, List.toFinset_nil, List.suffix_nil, forall_eq, hSys,
     and_self]
   · simp only [List.mem_tails, forall_exists_index, and_imp]
@@ -170,3 +172,5 @@ theorem Greedoid.construction_of_accessible {α : Type _} [DecidableEq α]
     apply hl'.elim <;> intro hl'
     · simp only [hl', List.toFinset_cons, hl₂, hs]
     · exact hl₃ _ hl'
+
+end Greedoid
