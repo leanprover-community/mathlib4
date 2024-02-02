@@ -258,6 +258,14 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
+/-- We can regard an injective map preserving binary infima as an order embedding. -/
+@[simps! apply]
+def orderEmbeddingOfInjective [SemilatticeInf α] [SemilatticeInf β] (f : F) [InfHomClass F α β]
+    (hf : Injective f) : α ↪o β :=
+  OrderEmbedding.ofMapLEIff f (fun x y ↦ by
+    refine ⟨fun h ↦ ?_, fun h ↦ OrderHomClass.mono f h⟩
+    rwa [← inf_eq_left, ← hf.eq_iff, map_inf, inf_eq_left])
+
 section BoundedLattice
 
 variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [BoundedLatticeHomClass F α β]
@@ -291,6 +299,7 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 #align map_sdiff' map_sdiff'
 
+open scoped symmDiff in
 /-- Special case of `map_symmDiff` for boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
@@ -341,8 +350,8 @@ instance : SupHomClass (SupHom α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
--- porting note: replaced `CoeFun` with `DFunLike` so that we use `DFunLike.coe` instead of `toFun`
-instance : DFunLike (SupHom α β) α fun _ => β :=
+-- porting note: replaced `CoeFun` with `FunLike` so that we use `DFunLike.coe` instead of `toFun`
+instance : FunLike (SupHom α β) α β :=
   SupHomClass.toDFunLike
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
@@ -529,7 +538,7 @@ instance : InfHomClass (InfHom α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
-instance : DFunLike (InfHom α β) α fun _ => β :=
+instance : FunLike (InfHom α β) α β :=
   InfHomClass.toDFunLike
 
 @[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
@@ -725,7 +734,7 @@ instance : SupBotHomClass (SupBotHom α β) α β
   map_bot f := f.map_bot'
 
 -- porting note: replaced `CoeFun` instance with `DFunLike` instance
-instance : DFunLike (SupBotHom α β) α fun _ => β :=
+instance : FunLike (SupBotHom α β) α β :=
   SupHomClass.toDFunLike
 
 lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
@@ -881,7 +890,7 @@ instance : InfTopHomClass (InfTopHom α β) α β
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
-instance : DFunLike (InfTopHom α β) α fun _ => β :=
+instance : FunLike (InfTopHom α β) α β :=
   InfHomClass.toDFunLike
 
 theorem toFun_eq_coe (f : InfTopHom α β) : f.toFun = f := rfl
@@ -1030,7 +1039,7 @@ instance : LatticeHomClass (LatticeHom α β) α β
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
-instance : DFunLike (LatticeHom α β) α fun _ => β :=
+instance : FunLike (LatticeHom α β) α β :=
   SupHomClass.toDFunLike
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl

@@ -92,7 +92,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
     have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
-      convert h.add tendsto_one_div_add_atTop_nhds_0_nat
+      convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
@@ -172,14 +172,14 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       convert this
       exact sqrt_zero.symm
     have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert (tendsto_const_nhds (x := 8 * δ)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert (tendsto_const_nhds (x := 4)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     have eq₂ :
         Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert this.mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]

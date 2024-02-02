@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
 import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.FunLike.Fintype
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Card
@@ -96,7 +95,7 @@ to standard `aesop`:
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (options := { introsTransparency? := some .default, terminal := true })
+      (config := { introsTransparency? := some .default, terminal := true })
       (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
@@ -105,7 +104,7 @@ Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph
 macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (options := { introsTransparency? := some .default, terminal := true })
+      (config := { introsTransparency? := some .default, terminal := true })
       (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
@@ -116,7 +115,7 @@ nonterminal `simp`.
 macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (options := { introsTransparency? := some .default, warnOnNonterminal := false })
+      (config := { introsTransparency? := some .default, warnOnNonterminal := false })
       (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
@@ -130,6 +129,7 @@ see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
 @[ext, aesop safe constructors (rule_sets [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
+  /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph

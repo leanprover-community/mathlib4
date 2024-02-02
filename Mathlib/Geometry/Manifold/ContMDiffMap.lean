@@ -37,8 +37,10 @@ def SmoothMap :=
   ContMDiffMap I I' M M' ⊤
 #align smooth_map SmoothMap
 
+@[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
 
+@[inherit_doc]
 scoped[Manifold]
   notation "C^" n "⟮" I ", " M "; " k "⟯" => ContMDiffMap I (modelWithCornersSelf k k) M k n
 
@@ -48,10 +50,10 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance instDFunLike : DFunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
+instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
-#align cont_mdiff_map.fun_like ContMDiffMap.instDFunLike
+#align cont_mdiff_map.fun_like ContMDiffMap.instFunLike
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
@@ -65,7 +67,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instDFunLike
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 

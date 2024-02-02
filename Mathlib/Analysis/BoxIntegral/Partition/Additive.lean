@@ -48,8 +48,12 @@ structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι))
     ∑ Ji in π.boxes, toFun Ji = toFun J
 #align box_integral.box_additive_map BoxIntegral.BoxAdditiveMap
 
+
+/-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
+we have `f J = ∑ Ji in π.boxes, f Ji`. -/
 scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
-scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
+
+@[inherit_doc] scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
 
 namespace BoxAdditiveMap
 
@@ -58,7 +62,7 @@ open Box Prepartition Finset
 variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : DFunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
+instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 

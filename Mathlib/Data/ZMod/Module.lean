@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -48,11 +48,11 @@ namespace ZMod
 
 theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   rw [← ZMod.int_cast_zmod_cast c]
-  exact map_int_cast_smul f _ _ c x
+  exact map_int_cast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
   rw [← ZMod.int_cast_zmod_cast c, ← zsmul_eq_smul_cast]
-  exact zsmul_mem hx c
+  exact zsmul_mem hx (cast c)
 
 end ZMod
 

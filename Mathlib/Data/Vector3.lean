@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Align
+import Mathlib.Init.Logic
 import Mathlib.Mathport.Notation
 import Mathlib.Tactic.TypeStar
 
@@ -69,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]
