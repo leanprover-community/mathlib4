@@ -1261,6 +1261,53 @@ theorem dom_cod_top_toEquiv_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.sub_dom =
   cases h_cod
   rfl
 
+/-- Map of a self-subEquivalence through an embedding. -/
+noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
+  sub_dom := g.sub_dom.map f.toHom
+  sub_cod := g.sub_cod.map f.toHom
+  equiv := (f.substructureEquivMap g.sub_cod).comp <|
+    g.equiv.comp (f.substructureEquivMap g.sub_dom).symm
+
+theorem map_commutes (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
+    (g.map f).equiv.comp (f.substructureEquivMap g.sub_dom) =
+      (f.substructureEquivMap g.sub_cod).comp g.equiv := by
+  unfold map
+  ext
+  simp only [Equiv.comp_apply, Equiv.symm_apply_apply, Embedding.substructureEquivMap_apply]
+
+theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.sub_dom) :
+    (g.map f).equiv ⟨f m, g.sub_dom.apply_coe_mem_map _ _⟩ =
+      ⟨f (g.equiv m), g.sub_cod.apply_coe_mem_map _ _⟩ := by
+  exact congr_fun (congr_arg DFunLike.coe (g.map_commutes f)) m
+
+theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.map f) := by
+  intro g g' h
+  rw [le_iff]
+  use Substructure.monotone_map (le_dom h)
+  use Substructure.monotone_map (le_cod h)
+  rintro ⟨x, hx⟩
+  unfold map
+  let ⟨u, u_mem, eq_u_x⟩ := mem_map.2 hx
+  cases eq_u_x
+  apply Subtype.coe_injective
+  simp only [Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, map_coe, Set.coe_inclusion,
+    Embedding.substructureEquivMap_apply, Set.inclusion_mk, EmbeddingLike.apply_eq_iff_eq]
+  let ⟨_, _, eq⟩ := le_iff.1 h
+  have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.sub_dom))
+    { val := f u, property := (g.sub_dom.mem_map).2 ⟨u, u_mem, rfl⟩}))
+  simp only [coe_inclusion, Set.coe_inclusion] at eq
+  rw [← coe_inclusion] at eq
+  rw [eq, Subtype.coe_inj]
+  apply congr_arg g'.equiv
+  apply Subtype.coe_injective
+  change subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g.sub_dom))
+    (f.substructureEquivMap g.sub_dom ⟨u, u_mem⟩)) =
+    subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.sub_dom))
+      (f.substructureEquivMap g'.sub_dom ⟨u, le_dom h u_mem⟩))
+  simp only [Equiv.symm_apply_apply, coeSubtype]
+
+
+
 end SubEquivalence
 
 end Substructure
