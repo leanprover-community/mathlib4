@@ -67,9 +67,7 @@ add_decl_doc NonUnitalStarAlgHom.toNonUnitalAlgHom
 /-- `NonUnitalStarAlgHomClass F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
 homomorphisms from `A` to `B`. -/
 class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
-  -- These instances are `outParam`s for efficiency.
-  {_ : outParam <| Monoid R} [Star A] [Star B]
-  {_ : outParam <| NonUnitalNonAssocSemiring A} {_ : outParam <| NonUnitalNonAssocSemiring B}
+  [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
   [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
   extends StarHomClass F A B : Prop
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
@@ -319,10 +317,8 @@ add_decl_doc StarAlgHom.toAlgHom
 
 You should also extend this typeclass when you extend `StarAlgHom`. -/
 class StarAlgHomClass (F : Type*) (R A B : outParam Type*)
-    {_ : outParam <| CommSemiring R} {_ : outParam <| Semiring A} [Algebra R A] [Star A]
-    {_ : outParam <| Semiring B} [Algebra R B] [Star B]
-    [FunLike F A B] [AlgHomClass F R A B]
-    extends StarHomClass F A B : Prop
+    [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
+    [FunLike F A B] [AlgHomClass F R A B] extends StarHomClass F A B : Prop
 #align star_alg_hom_class StarAlgHomClass
 
 -- Porting note: no longer needed

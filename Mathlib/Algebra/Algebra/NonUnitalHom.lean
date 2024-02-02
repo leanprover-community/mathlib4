@@ -67,8 +67,7 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
 class NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
-  {_ : outParam <| Monoid R} {_ : outParam <| NonUnitalNonAssocSemiring A}
-  {_ : outParam <| NonUnitalNonAssocSemiring B}
+  [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
   [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B]
   extends DistribMulActionHomClass F R A B, MulHomClass F A B : Prop
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
