@@ -6,6 +6,7 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
