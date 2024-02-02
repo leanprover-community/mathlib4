@@ -209,8 +209,6 @@ section Order
 #align fin.is_le Fin.is_le
 #align fin.is_le' Fin.is_le'
 
-theorem lt_iff_val_lt_val {a b : Fin n} : a < b ↔ (a : ℕ) < b :=
-  Iff.rfl
 #align fin.lt_iff_coe_lt_coe Fin.lt_iff_val_lt_val
 
 theorem le_iff_val_le_val {a b : Fin n} : a ≤ b ↔ (a : ℕ) ≤ b :=
