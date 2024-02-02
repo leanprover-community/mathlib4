@@ -70,8 +70,6 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 -- Since the statement is awkward and `Std.BitVec` has no comparable API, we just drop it.
 #noalign bitvec.to_nat_eq_foldr_reverse
 
-theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
-  exact v.toFin.2
 #align bitvec.to_nat_lt Std.BitVec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
@@ -132,8 +130,8 @@ variable (x y : Fin (2^w))
   simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
   exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
 
-@[simp] lemma ofFin_add : ofFin (x + y)   = ofFin x + ofFin y   := rfl
-@[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
+@[simp] lemma ofFin_add' : ofFin (x + y)   = ofFin x + ofFin y   := rfl
+@[simp] lemma ofFin_sub' : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
