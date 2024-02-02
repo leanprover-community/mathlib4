@@ -1565,7 +1565,7 @@ theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
   iUnion_subset_iff
 #align set.maps_to_Union Set.mapsTo_iUnion
 
-@[simp]
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
   iUnion₂_subset_iff
