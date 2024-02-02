@@ -1,18 +1,5 @@
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.List.Infix
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.Tactic.TFAE
-import Mathlib.Tactic.WLOG
-import Mathlib.Order.WithBot
 
 /-- The exchange property of greedoid.
     Note that the exchange property also hold for matroids. -/
