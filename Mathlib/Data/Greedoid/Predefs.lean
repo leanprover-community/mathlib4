@@ -13,7 +13,7 @@ an empty set and satisfies both exchange and accessible properties.
 If a set system `S` satisfies the exchange property, then there is some element `x ∈ s₂ \ s₁`
 which `s₁ ∪ {x} ∈ S`, for every set `s₁, s₂ ∈ S` satisfying `s₁.card < s₂.card`.
 If a set system `S` satisfies the accessible property, then there is some element `x ∈ s`
-which `s \ {x} ∈ G` for every nonempty set `s ∈ S`.
+which `s \ {x} ∈ S` for every nonempty set `s ∈ S`.
 These two properties are defined in this file as `ExchangeProperty` and `AccessibleProperty`.
 
 While it is sufficient to define a greedoid using only the definitions of the properties, it turned
