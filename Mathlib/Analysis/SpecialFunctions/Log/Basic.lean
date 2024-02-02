@@ -541,59 +541,64 @@ lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-def evalLogNatCast : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℕ))) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  pure (.nonnegative (q(Real.log_nat_cast_nonneg $a) : Lean.Expr))
+def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Real.log_nat_cast_nonneg $a))
+  | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℤ))) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  pure (.nonnegative (q(Real.log_int_cast_nonneg $a) : Lean.Expr))
+def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Real.log_int_cast_nonneg $a))
+  | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ← NormNum.derive a with
-  | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
-    assumeInstancesCommute
-    have p : Q(NormNum.IsNat $a $lit) := p
-    if 1 < lit.natLit! then
-      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isNat $p $p') : Lean.Expr))
-    else
-      pure (.nonnegative (q(log_nonneg_of_isNat $p) : Lean.Expr))
-  | .isNegNat _ lit p =>
-    assumeInstancesCommute
-    have p : Q(NormNum.IsInt $a (Int.negOfNat $lit)) := p
-    if 1 < lit.natLit! then
-      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isNegNat $p $p') : Lean.Expr))
-    else
-      pure (.nonnegative (q(log_nonneg_of_isNegNat $p) : Lean.Expr))
-  | .isRat (i : Q(DivisionRing ℝ)) q n d p =>
-    assumeInstancesCommute
-    have p : Q(by clear! «$i»; exact NormNum.IsRat $a $n $d) := p
-    if 0 < q ∧ q < 1 then
-      let w₁ : Q(decide ((0 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      let w₂ : Q(decide ($n / $d < (1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.nonzero (q(log_nz_of_isRat $p $w₁ $w₂) : Lean.Expr))
-    else if 1 < q then
-      let w : Q(decide ((1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isRat $p $w) : Lean.Expr))
-    else if -1 < q ∧ q < 0 then
-      let w₁ : Q(decide ($n / $d < (0 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      let w₂ : Q(decide ((-1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.nonzero (q(log_nz_of_isRat_neg $p $w₁ $w₂) : Lean.Expr))
-    else if q < -1 then
-      let w : Q(decide ($n / $d < (-1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isRat_neg $p $w) : Lean.Expr))
-    else
-      failure
-  | _ => failure
+def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log $a) =>
+    match ← NormNum.derive a with
+    | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
+      assumeInstancesCommute
+      have p : Q(NormNum.IsNat $a $lit) := p
+      if 1 < lit.natLit! then
+        let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isNat $p $p'))
+      else
+        pure (.nonnegative q(log_nonneg_of_isNat $p))
+    | .isNegNat _ lit p =>
+      assumeInstancesCommute
+      have p : Q(NormNum.IsInt $a (Int.negOfNat $lit)) := p
+      if 1 < lit.natLit! then
+        let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isNegNat $p $p'))
+      else
+        pure (.nonnegative q(log_nonneg_of_isNegNat $p))
+    | .isRat (i : Q(DivisionRing ℝ)) q n d p =>
+      assumeInstancesCommute
+      have p : Q(by clear! «$i»; exact NormNum.IsRat $a $n $d) := p
+      if 0 < q ∧ q < 1 then
+        let w₁ : Q(decide ((0 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        let w₂ : Q(decide ($n / $d < (1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.nonzero q(log_nz_of_isRat $p $w₁ $w₂))
+      else if 1 < q then
+        let w : Q(decide ((1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isRat $p $w))
+      else if -1 < q ∧ q < 0 then
+        let w₁ : Q(decide ($n / $d < (0 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        let w₂ : Q(decide ((-1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.nonzero q(log_nz_of_isRat_neg $p $w₁ $w₂))
+      else if q < -1 then
+        let w : Q(decide ($n / $d < (-1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isRat_neg $p $w))
+      else
+        failure
+    | _ => failure
+  | _, _, _ => throwError "not Real.log"
 
 end Mathlib.Meta.Positivity
