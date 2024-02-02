@@ -915,12 +915,12 @@ theorem nhds_basis_closeds (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∉ s
 #align nhds_basis_closeds nhds_basis_closeds
 
 @[simp]
-theorem lift'_interior_nhds (x : X) : (𝓝 x).lift' interior = 𝓝 x :=
+theorem lift'_nhds_interior (x : X) : (𝓝 x).lift' interior = 𝓝 x :=
   (nhds_basis_opens x).lift'_interior_eq_self fun _ ↦ And.right
 
 theorem Filter.HasBasis.nhds_interior {x : X} {p : ι → Prop} {s : ι → Set X}
     (h : (𝓝 x).HasBasis p s) : (𝓝 x).HasBasis p (interior <| s ·) :=
-  lift'_interior_nhds x ▸ h.lift'_interior
+  lift'_nhds_interior x ▸ h.lift'_interior
 
 /-- A filter lies below the neighborhood filter at `x` iff it contains every open set around `x`. -/
 theorem le_nhds_iff {f} : f ≤ 𝓝 x ↔ ∀ s : Set X, x ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
