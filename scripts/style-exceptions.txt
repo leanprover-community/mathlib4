@@ -32,7 +32,7 @@ Mathlib/Data/ByteArray.lean : line 5 : ERR_COP : Malformed or missing copyright 
 Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2046 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2395 lines, try to split it up
-Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2010 lines, try to split it up
+Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2228 lines, try to split it up
 Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 4100 file contains 3992 lines, try to split it up
 Mathlib/Data/Finset/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2240 lines, try to split it up
 Mathlib/Data/Finset/Pointwise.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2550 lines, try to split it up
