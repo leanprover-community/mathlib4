@@ -58,7 +58,7 @@ def engel (x : L) : LieSubalgebra R L :=
       apply Finset.sum_eq_zero
       intro ij hij
       obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; omega
-      all_goals simp [LinearMap.iterate_apply_eq_zero_of_le h, hm, hn] }
+      all_goals simp [LinearMap.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
     y ∈ engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
@@ -142,7 +142,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   case mono =>
     intro y hy
     rw [LinearMap.mem_ker] at hy ⊢
-    exact LinearMap.iterate_apply_eq_zero_of_le hmn hy
+    exact LinearMap.pow_map_zero_of_le hmn hy
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr inferInstance K
   use n
   ext y
@@ -151,7 +151,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   rw [mem_engel_iff] at h
   obtain ⟨m, hm⟩ := h
   obtain (hmn|hmn) : m ≤ n ∨ n ≤ m := le_total m n
-  · exact LinearMap.iterate_apply_eq_zero_of_le hmn hm
+  · exact LinearMap.pow_map_zero_of_le hmn hm
   · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by simp [Subtype.ext_iff, coe_ad_pow]
     rwa [this, ← hn m hmn, ← this] at hm
 

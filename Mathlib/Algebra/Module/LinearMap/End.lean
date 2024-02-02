@@ -203,11 +203,6 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
   exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
-lemma iterate_apply_eq_zero_of_le {m n : ℕ} {x : M} (hmn : m ≤ n) (hf : (f' ^ m) x = 0) :
-    (f' ^ n) x = 0 := by
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
-  rw [add_comm _ k, pow_add, LinearMap.mul_apply, hf, map_zero]
-
 end
 
 /-! ## Action by a module endomorphism. -/
