@@ -17,12 +17,20 @@ open Finset
 
 open BigOperators
 
-theorem frobenius_inj (R : Type*) [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
-    Function.Injective (frobenius R p) := fun x h H => by
+section
+
+variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [Fact p.Prime] [CharP R p]
+
+theorem pow_char_pow_inj : (fun r : R ↦ r ^ p ^ n).Injective := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
-  rw [← frobenius_sub] at H
+  rw [← sub_pow_char_pow] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
+
+theorem frobenius_inj : Function.Injective (frobenius R p) := by
+  convert pow_char_pow_inj R p 1; rw [pow_one]; rfl
 #align frobenius_inj frobenius_inj
+
+end
 
 /-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
@@ -41,12 +49,9 @@ variable {R : Type*} [CommRing R] [IsReduced R]
 @[simp]
 theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [Fact p.Prime] [CharP R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
-  induction' k with k hk
-  · rw [pow_zero, one_mul]
-  · refine' ⟨fun h => _, fun h => _⟩
-    · rw [pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at h
-      exact hk.1 (frobenius_inj R p h)
-    · rw [pow_mul', h, one_pow]
+  rw [pow_mul']
+  convert (pow_char_pow_inj R p k).eq_iff
+  rw [one_pow]
 #align char_p.pow_prime_pow_mul_eq_one_iff CharP.pow_prime_pow_mul_eq_one_iff
 
 end CharP
