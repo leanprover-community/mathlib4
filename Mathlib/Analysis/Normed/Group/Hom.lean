@@ -210,11 +210,11 @@ theorem SurjectiveOnWith.surjOn {f : NormedAddGroupHom V₁ V₂} {K : AddSubgro
 /-- The operator norm of a seminormed group homomorphism is the inf of all its bounds. -/
 def opNorm (f : NormedAddGroupHom V₁ V₂) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
-#align normed_add_group_hom.opNorm NormedAddGroupHom.opNorm
+#align normed_add_group_hom.op_norm NormedAddGroupHom.opNorm
 
 instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
   ⟨opNorm⟩
-#align normed_add_group_hom.has_opNorm NormedAddGroupHom.hasOpNorm
+#align normed_add_group_hom.has_op_norm NormedAddGroupHom.hasOpNorm
 
 theorem norm_def : ‖f‖ = sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
   rfl
@@ -235,7 +235,7 @@ theorem bounds_bddBelow {f : NormedAddGroupHom V₁ V₂} :
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
   le_csInf bounds_nonempty fun _ ⟨hx, _⟩ => hx
-#align normed_add_group_hom.opNorm_nonneg NormedAddGroupHom.opNorm_nonneg
+#align normed_add_group_hom.op_norm_nonneg NormedAddGroupHom.opNorm_nonneg
 
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
 theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
@@ -247,15 +247,15 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   exact
     (div_le_iff hlt).mp
       (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
-#align normed_add_group_hom.le_opNorm NormedAddGroupHom.le_opNorm
+#align normed_add_group_hom.le_op_norm NormedAddGroupHom.le_opNorm
 
 theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
   le_trans (f.le_opNorm x) (by gcongr; exact f.opNorm_nonneg)
-#align normed_add_group_hom.le_opNorm_of_le NormedAddGroupHom.le_opNorm_of_le
+#align normed_add_group_hom.le_op_norm_of_le NormedAddGroupHom.le_opNorm_of_le
 
 theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤ c * ‖x‖ :=
   (f.le_opNorm x).trans (by gcongr)
-#align normed_add_group_hom.le_of_opNorm_le NormedAddGroupHom.le_of_opNorm_le
+#align normed_add_group_hom.le_of_op_norm_le NormedAddGroupHom.le_of_opNorm_le
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
@@ -275,24 +275,24 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_nonneg_of_le_mul (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
-#align normed_add_group_hom.ratio_le_opNorm NormedAddGroupHom.ratio_le_opNorm
+#align normed_add_group_hom.ratio_le_op_norm NormedAddGroupHom.ratio_le_opNorm
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `f`. -/
 theorem opNorm_le_bound {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ x, ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   csInf_le bounds_bddBelow ⟨hMp, hM⟩
-#align normed_add_group_hom.opNorm_le_bound NormedAddGroupHom.opNorm_le_bound
+#align normed_add_group_hom.op_norm_le_bound NormedAddGroupHom.opNorm_le_bound
 
 theorem opNorm_eq_of_bounds {M : ℝ} (M_nonneg : 0 ≤ M) (h_above : ∀ x, ‖f x‖ ≤ M * ‖x‖)
     (h_below : ∀ N ≥ 0, (∀ x, ‖f x‖ ≤ N * ‖x‖) → M ≤ N) : ‖f‖ = M :=
   le_antisymm (f.opNorm_le_bound M_nonneg h_above)
     ((le_csInf_iff NormedAddGroupHom.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
       fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
-#align normed_add_group_hom.opNorm_eq_of_bounds NormedAddGroupHom.opNorm_eq_of_bounds
+#align normed_add_group_hom.op_norm_eq_of_bounds NormedAddGroupHom.opNorm_eq_of_bounds
 
 theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖ ≤ K :=
   f.opNorm_le_bound K.2 fun x => by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
-#align normed_add_group_hom.opNorm_le_of_lipschitz NormedAddGroupHom.opNorm_le_of_lipschitz
+#align normed_add_group_hom.op_norm_le_of_lipschitz NormedAddGroupHom.opNorm_le_of_lipschitz
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
@@ -339,7 +339,7 @@ instance add : Add (NormedAddGroupHom V₁ V₂) :=
 /-- The operator norm satisfies the triangle inequality. -/
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   mkNormedAddGroupHom_norm_le _ (add_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
-#align normed_add_group_hom.opNorm_add_le NormedAddGroupHom.opNorm_add_le
+#align normed_add_group_hom.op_norm_add_le NormedAddGroupHom.opNorm_add_le
 
 -- porting note: this library note doesn't seem to apply anymore
 /-
@@ -381,7 +381,7 @@ theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
             rw [zero_mul]
             exact norm_zero)⟩)
     (opNorm_nonneg _)
-#align normed_add_group_hom.opNorm_zero NormedAddGroupHom.opNorm_zero
+#align normed_add_group_hom.op_norm_zero NormedAddGroupHom.opNorm_zero
 
 /-- For normed groups, an operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
@@ -395,7 +395,7 @@ theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAdd
             _ = _ := by rw [hn, zero_mul]
             ))
     fun hf => by rw [hf, opNorm_zero]
-#align normed_add_group_hom.opNorm_zero_iff NormedAddGroupHom.opNorm_zero_iff
+#align normed_add_group_hom.op_norm_zero_iff NormedAddGroupHom.opNorm_zero_iff
 
 @[simp]
 theorem coe_zero : ⇑(0 : NormedAddGroupHom V₁ V₂) = 0 :=
@@ -467,7 +467,7 @@ theorem neg_apply (f : NormedAddGroupHom V₁ V₂) (v : V₁) :
 
 theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
   simp only [norm_def, coe_neg, norm_neg, Pi.neg_apply]
-#align normed_add_group_hom.opNorm_neg NormedAddGroupHom.opNorm_neg
+#align normed_add_group_hom.op_norm_neg NormedAddGroupHom.opNorm_neg
 
 /-! ### Subtraction of normed group homs -/
 

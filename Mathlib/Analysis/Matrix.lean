@@ -244,7 +244,7 @@ matrix. -/
 protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : NormedAddCommGroup (m → PiLp 1 fun j : n => α))
-#align matrix.linfty_opNormed_add_comm_group Matrix.linftyOpNormedAddCommGroup
+#align matrix.linfty_op_normed_add_comm_group Matrix.linftyOpNormedAddCommGroup
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
@@ -260,7 +260,7 @@ matrix. -/
 protected def linftyOpNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   (by infer_instance : NormedSpace R (m → PiLp 1 fun j : n => α))
-#align matrix.linfty_opNormed_space Matrix.linftyOpNormedSpace
+#align matrix.linfty_op_normed_space Matrix.linftyOpNormedSpace
 
 section SeminormedAddCommGroup
 
@@ -271,7 +271,7 @@ theorem linfty_opNorm_def (A : Matrix m n α) :
   -- porting note: added
   change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
-#align matrix.linfty_opNorm_def Matrix.linfty_opNorm_def
+#align matrix.linfty_op_norm_def Matrix.linfty_opNorm_def
 
 theorem linfty_opNnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
@@ -287,7 +287,7 @@ theorem linfty_opNnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
 @[simp]
 theorem linfty_opNorm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNnnorm_col v
-#align matrix.linfty_opNorm_col Matrix.linfty_opNorm_col
+#align matrix.linfty_op_norm_col Matrix.linfty_opNorm_col
 
 @[simp]
 theorem linfty_opNnnorm_row (v : n → α) : ‖row v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_opNnnorm_def]
@@ -296,7 +296,7 @@ theorem linfty_opNnnorm_row (v : n → α) : ‖row v‖₊ = ∑ i, ‖v i‖�
 @[simp]
 theorem linfty_opNorm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNnnorm_row v).trans <| by simp [NNReal.coe_sum]
-#align matrix.linfty_opNorm_row Matrix.linfty_opNorm_row
+#align matrix.linfty_op_norm_row Matrix.linfty_opNorm_row
 
 @[simp]
 theorem linfty_opNnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -310,7 +310,7 @@ theorem linfty_opNnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v�
 @[simp]
 theorem linfty_opNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNnnorm_diagonal v
-#align matrix.linfty_opNorm_diagonal Matrix.linfty_opNorm_diagonal
+#align matrix.linfty_op_norm_diagonal Matrix.linfty_opNorm_diagonal
 
 end SeminormedAddCommGroup
 
@@ -339,7 +339,7 @@ theorem linfty_opNnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 
 theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_opNnnorm_mul _ _
-#align matrix.linfty_opNorm_mul Matrix.linfty_opNorm_mul
+#align matrix.linfty_op_norm_mul Matrix.linfty_opNorm_mul
 
 theorem linfty_opNnnorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A.mulVec v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
   rw [← linfty_opNnnorm_col (A.mulVec v), ← linfty_opNnnorm_col v]
@@ -348,7 +348,7 @@ theorem linfty_opNnnorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A.mulVec 
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖Matrix.mulVec A v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNnnorm_mulVec _ _
-#align matrix.linfty_opNorm_mul_vec Matrix.linfty_opNorm_mulVec
+#align matrix.linfty_op_norm_mul_vec Matrix.linfty_opNorm_mulVec
 
 end NonUnitalSeminormedRing
 
@@ -366,7 +366,7 @@ protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
 carries no data. -/
 instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one
-#align matrix.linfty_opNorm_one_class Matrix.linfty_opNormOneClass
+#align matrix.linfty_op_norm_one_class Matrix.linfty_opNormOneClass
 
 /-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a semi normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -394,7 +394,7 @@ matrix. -/
 protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
   { Matrix.linftyOpSemiNormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-#align matrix.linfty_opNormed_ring Matrix.linftyOpNormedRing
+#align matrix.linfty_op_normed_ring Matrix.linftyOpNormedRing
 
 /-- Normed algebra instance (using sup norm of L1 norm) for matrices over a normed algebra. Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -403,7 +403,7 @@ matrix. -/
 protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
-#align matrix.linfty_opNormed_algebra Matrix.linftyOpNormedAlgebra
+#align matrix.linfty_op_normed_algebra Matrix.linftyOpNormedAlgebra
 
 
 section

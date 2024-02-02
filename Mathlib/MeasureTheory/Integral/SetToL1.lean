@@ -571,7 +571,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
     ‖∑ x in f.range, T (f ⁻¹' {x}) x‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x}) x‖ := norm_sum_le _ _
     _ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
       refine' Finset.sum_le_sum fun b _ => _; simp_rw [ContinuousLinearMap.le_opNorm]
-#align measure_theory.simple_func.norm_set_to_simple_func_le_sum_opNorm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
+#align measure_theory.simple_func.norm_set_to_simple_func_le_sum_op_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
 
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :

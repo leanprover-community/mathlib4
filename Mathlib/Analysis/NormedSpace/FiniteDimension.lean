@@ -292,7 +292,7 @@ theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E �
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
   simpa using NNReal.coe_le_coe.mpr (v.opNnnorm_le ⟨M, hM⟩ hu)
-#align basis.opNorm_le Basis.opNorm_le
+#align basis.op_norm_le Basis.opNorm_le
 
 /-- A weaker version of `Basis.opNnnorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNnnorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -312,7 +312,7 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   refine ⟨C, hC, ?_⟩
   intro u M hM H
   simpa using h ⟨M, hM⟩ H
-#align basis.exists_opNorm_le Basis.exists_opNorm_le
+#align basis.exists_op_norm_le Basis.exists_opNorm_le
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
