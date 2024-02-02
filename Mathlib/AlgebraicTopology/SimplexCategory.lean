@@ -583,8 +583,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     -- This was not needed before leanprover/lean4#2644
     dsimp
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [len_mk, Fin.coe_eq_castSucc]
-    rfl
+    simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
     -- This was not needed before leanprover/lean4#2644
     dsimp
@@ -666,9 +665,8 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     rw [Fin.predAbove_below i x h']
     dsimp [δ]
     erw [Fin.succAbove_below _ _ _]
-    swap
+    · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
-    rfl
   · simp only [not_le] at h'
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
@@ -735,18 +733,17 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       -- This was not needed before leanprover/lean4#2644
       dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [Fin.predAbove_below _ _ (by exact h')]
+      erw [Fin.predAbove_below _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
       erw [Fin.succAbove_below i]
-      swap
+      · rw [Fin.castSucc_castPred]
       · rw [(hi x).le_iff_lt] at h'
         exact h'
-      rfl
     · simp only [not_le] at h'
       -- The next three tactics used to be a simp only call before leanprover/lean4#2644
       rw [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, OrderHom.coe_mk]
       erw [OrderHom.coe_mk]
-      erw [Fin.predAbove_above _ _ (by exact h')]
+      erw [Fin.predAbove_above _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
       rw [Fin.succAbove_above i _]
       -- This was not needed before leanprover/lean4#2644
@@ -759,9 +756,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     ext x : 3
     dsimp [δ, σ]
     simp_rw [Fin.succAbove_last, Fin.predAbove_last_apply]
-    split_ifs with h
-    · exact ((hi x) h).elim
-    · rfl
+    erw [dif_neg (hi x)]
+    rw [Fin.castSucc_castPred]
 #align simplex_category.eq_comp_δ_of_not_surjective' SimplexCategory.eq_comp_δ_of_not_surjective'
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))

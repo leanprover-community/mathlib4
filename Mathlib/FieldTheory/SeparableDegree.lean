@@ -334,8 +334,7 @@ theorem natSepDegree_eq_of_splits (h : f.Splits (algebraMap F E)) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
     roots_map _ ((splits_id_iff_splits _).mpr <| SplittingField.splits f),
-    Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _)]
-  rfl
+    Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
 /-- The separable degree of a polynomial is equal to
@@ -522,8 +521,9 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic 
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
   have : finSepDegree F F⟮α⟯ = _ := Nat.card_congr
     (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral)
-  rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯)]
-  exact Eq.trans (by simp only [Multiset.mem_toFinset]) (Fintype.card_coe _)
+  rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯),
+    ← Fintype.card_coe]
+  simp_rw [Multiset.mem_toFinset]
 
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
 -- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.

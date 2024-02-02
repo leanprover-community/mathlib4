@@ -1528,9 +1528,8 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [← b.total_repr x, Finsupp.span_image_eq_map_total, Submodule.mem_map]
     use b.repr x
     simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
-    change (b.repr x).support ≤ S
-    convert Finset.le_sup (α := Finset ι) (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
-    rfl
+    rw [Finset.coe_subset, ← Finset.le_iff_subset]
+    exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.
   have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
   -- Now there is some `x : ι` not in `S`, since `ι` is infinite.
@@ -1563,7 +1562,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   have r : range v ⊆ range v' := by
     rintro - ⟨k, rfl⟩
     use some k
-    rfl
+    simp only [Option.elim_some]
   have r' : b b' ∉ range v := by
     rintro ⟨k, p⟩
     simpa [w] using congr_arg (fun m => (b.repr m) b') p
@@ -1571,7 +1570,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     intro e
     have p : b b' ∈ range v' := by
       use none
-      rfl
+      simp only [Option.elim_none]
     rw [← e] at p
     exact r' p
   -- The key step in the proof is checking that this strictly larger family is linearly independent.

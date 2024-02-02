@@ -579,7 +579,7 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
     let ⟨B, h⟩ := Q.exists_companion
     ⟨(LinearMap.restrictScalars S (LinearMap.restrictScalars S B.flip).flip).compr₂ f, fun x y => by
       simp_rw [h, f.map_add]
-      rfl⟩
+      simp only [LinearMap.compr₂_apply, LinearMap.coe_restrictScalars, LinearMap.flip_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
 end Comp
