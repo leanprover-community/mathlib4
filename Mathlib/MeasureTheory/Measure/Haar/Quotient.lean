@@ -67,13 +67,12 @@ end
 section smulInvariantMeasure
 
 variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] [PolishSpace G] (ν : Measure G := by volume_tac) {Γ : Subgroup G} [Countable Γ]
+  [BorelSpace G] [PolishSpace G] (ν : Measure G) {Γ : Subgroup G} [Countable Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
   [QuotientMeasureEqMeasurePreimage ν μ]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
--- lost `instance` `instSigmaFiniteQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace`
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
   invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/
 @[to_additive]
@@ -85,22 +84,21 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν :=
       h𝓕.smul_of_comm g
-    have : MeasurableSet ((fun x ↦ g • x) ⁻¹' A) := by sorry
-    rw [projection_respects_measure (ν := ν) (μ := μ) h𝓕, measureRestrictMap_apply (meas_U := hA),
-      measureRestrictMap_apply (meas_U := this)]
+    rw [h𝓕.projection_respects_measure_apply (μ := μ)
+      (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
+      h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
     set π_preA := π ⁻¹' A
-    have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g • ·) ⁻¹' π_preA := by ext1; simp
+    have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by ext1; simp
     rw [this]
-    have : ν ((g • ·) ⁻¹' π_preA ∩ 𝓕) = ν (π_preA ∩ (g⁻¹ • ·) ⁻¹' 𝓕)
+    have : ν ((g * ·) ⁻¹' π_preA ∩ 𝓕) = ν (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕)
     · trans ν ((g * ·) ⁻¹' (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕))
       · rw [preimage_inter]
         congr 2
         simp [Set.preimage]
-      rw [measure_preimage_mul]; rfl
-    rw [this]
-    rw [preimage_smul_inv]
-    sorry
+      rw [measure_preimage_mul]
+    rw [this, ← preimage_smul_inv]; rfl
+
 
 -- -- We restate the `SigmaFinite` instance. For some reason, this is needed for typeclass inference
 -- @[to_additive] instance [SigmaFinite ν]
@@ -125,13 +123,13 @@ section normal
 
 section additive
 variable {G : Type*} [AddGroup G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalAddGroup G]
-  [BorelSpace G] [PolishSpace G] (ν : Measure G := by volume_tac) {Γ : AddSubgroup G} [Countable Γ]
+  [BorelSpace G] [PolishSpace G] (ν : Measure G) {Γ : AddSubgroup G} [Countable Γ]
   [AddSubgroup.Normal Γ] [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
   [IsAddLeftInvariant ν] [IsAddRightInvariant ν] [SigmaFinite ν]
 
 /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both left- and
 right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant measure.-/
-instance MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient
+lemma MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient
     [hasFun : HasAddFundamentalDomain Γ.op G ν]
     [AddQuotientMeasureEqMeasurePreimage ν μ] : μ.IsAddLeftInvariant where
   map_add_left_eq_self x := by
@@ -141,6 +139,7 @@ instance MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_q
     convert measure_preimage_vadd x₁ μ A using 1
     rw [← h, Measure.map_apply (measurable_const_add _) hA]
     rfl
+    exact vaddInvariantMeasure_quotient ν
 
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
 
@@ -152,22 +151,23 @@ set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the sca
 `μ` satisfies `AddQuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
 left invariant measures, if normalized by a single positive finite-measured set. -/
 theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set
-    {s : Set G} (fund_dom_s : IsAddFundamentalDomain Γ.op s) {V : Set (G ⧸ Γ)}
+    {s : Set G} (fund_dom_s : IsAddFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
     (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
-    (neTopV : μ V ≠ ⊤) : AddQuotientMeasureEqMeasurePreimage μ := by
+    (neTopV : μ V ≠ ⊤) : AddQuotientMeasureEqMeasurePreimage ν μ := by
   apply fund_dom_s.addQuotientMeasureEqMeasurePreimage
-  intro U meas_U
+  ext U _
   have meas_π : Measurable (QuotientAddGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
   let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
-  haveI has_fund : HasAddFundamentalDomain Γ.op G := ⟨⟨s, fund_dom_s⟩⟩
-  have : AddQuotientMeasureEqMeasurePreimage μ' :=
+  haveI has_fund : HasAddFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
+  have i : AddQuotientMeasureEqMeasurePreimage ν μ' :=
     fund_dom_s.addQuotientMeasureEqMeasurePreimage_addQuotientMeasure
   have : μ'.IsAddLeftInvariant :=
-    MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient
+    MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient ν
   suffices : μ = μ'
-  · rw [this, Measure.map_apply meas_π meas_U, Measure.restrict_apply]; rfl
-    exact measurableSet_quotient.mp meas_U
-  · rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
+  · rw [this]
+    rfl
+  · have : SigmaFinite μ' := i.sigmaFiniteQuotient
+    rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
     symm
     convert one_smul ENNReal μ
     rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
