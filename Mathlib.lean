@@ -1520,7 +1520,7 @@ import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENat.Defs
+import Mathlib.Data.ENat.Card.Defs
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
