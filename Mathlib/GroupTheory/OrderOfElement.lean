@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
@@ -1224,7 +1225,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
-  · simp; decide
+  · simp
   apply orderOf_le_of_pow_eq_one <;> norm_num
 #align linear_ordered_ring.order_of_le_two LinearOrderedRing.orderOf_le_two
 

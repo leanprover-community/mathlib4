@@ -270,7 +270,7 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
 
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
-termination_by _ => (B₂ \ B₁).encard
+termination_by (B₂ \ B₁).encard
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
@@ -293,7 +293,7 @@ section aesop
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { terminal := true })
+  aesop $c* (config := { terminal := true })
   (rule_sets [$(Lean.mkIdent `Matroid):ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the

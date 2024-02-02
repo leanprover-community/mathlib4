@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
 
@@ -66,7 +67,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 #align polynomial.to_finsupp Polynomial.toFinsupp
 
 -- mathport name: polynomial
-scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
 open AddMonoidAlgebra
 open Finsupp hiding single

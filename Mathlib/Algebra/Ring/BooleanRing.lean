@@ -40,6 +40,7 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+open scoped symmDiff
 
 variable {α β γ : Type*}
 
@@ -53,7 +54,7 @@ section BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
-instance : IsIdempotent α (· * ·) :=
+instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[simp]

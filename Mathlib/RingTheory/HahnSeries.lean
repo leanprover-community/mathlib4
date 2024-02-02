@@ -389,7 +389,7 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
-@[simps]
+@[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
     map_add' := fun x y => by
@@ -490,7 +490,7 @@ variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulActio
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
     { coeff := r • x.coeff
-      isPWO_support' := x.isPWO_support.mono (Function.support_smul_subset_right r x.coeff) }⟩
+      isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
 
 @[simp]
 theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=

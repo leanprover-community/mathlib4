@@ -258,6 +258,14 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
+/-- We can regard an injective map preserving binary infima as an order embedding. -/
+@[simps! apply]
+def orderEmbeddingOfInjective [SemilatticeInf α] [SemilatticeInf β] (f : F) [InfHomClass F α β]
+    (hf : Injective f) : α ↪o β :=
+  OrderEmbedding.ofMapLEIff f (fun x y ↦ by
+    refine ⟨fun h ↦ ?_, fun h ↦ OrderHomClass.mono f h⟩
+    rwa [← inf_eq_left, ← hf.eq_iff, map_inf, inf_eq_left])
+
 section BoundedLattice
 
 variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [BoundedLatticeHomClass F α β]
@@ -291,6 +299,7 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 #align map_sdiff' map_sdiff'
 
+open scoped symmDiff in
 /-- Special case of `map_symmDiff` for boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
