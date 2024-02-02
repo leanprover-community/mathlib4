@@ -1,13 +1,11 @@
 import Mathlib.UniversalAlgebra.LawvereTheory
 
-structure FiniteLawverePresentation where
+structure RawFiniteLawverePresentation where
   name : String
   sortNames : Array String
-  opNames (P : Array (Fin sortNames.size)) (Q : Fin sortNames.size) :
-    Array String
-  rels {P Q : ProdWord (Fin sortNames.size)} :
-    List (String × LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q ×
-      LawvereWord (fun a b => Fin ((opNames a.unpack b).size)) P Q)
+  opNames : Array (String × Array String × String)
+
+structure FiniteLawverePresentation extends RawFiniteLawverePresentation where
 
 syntax sortName := ident
 syntax sortDescr := sortName ";"
@@ -22,21 +20,20 @@ syntax "[ProdWord|" prod_word "]" : term
 
 declare_syntax_cat lawvere_word
 syntax opName : lawvere_word
-syntax "id" prod_word : lawvere_word
-syntax lawvere_word "≫" lawvere_word : lawvere_word
-syntax "fst" prod_word prod_word : lawvere_word
-syntax "snd" prod_word prod_word : lawvere_word
-syntax "lift" lawvere_word lawvere_word : lawvere_word
-syntax "toNil" prod_word : lawvere_word
+syntax "[id" prod_word "]" : lawvere_word
+syntax "[comp" lawvere_word "," lawvere_word "]" : lawvere_word
+syntax "[fst" prod_word "," prod_word "]" : lawvere_word
+syntax "[snd" prod_word "," prod_word "]" : lawvere_word
+syntax "[lift" lawvere_word "," lawvere_word "]" : lawvere_word
+syntax "[toNil" prod_word "]" : lawvere_word
 
 syntax relName := ident
 syntax relDescr := relName ":" lawvere_word "=" lawvere_word
 
-syntax (name := flpStx) "[FLP|"
+syntax (name := flpStx) "[RFLP|"
   "NAME:" ident
   ("SORTS:" sepBy(sortName,","))?
   ("OPS:" sepBy(opDescr,","))?
-  ("RELS:" sepBy(relDescr,","))?
 "]" : term
 
 open Qq Lean Elab Term
@@ -74,15 +71,13 @@ def elabRelDescr (descr : TSyntax `relDescr) :
 @[term_elab flpStx]
 def elabFlp : TermElab := fun stx tp =>
   match stx with
-  | `([FLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]? $[RELS: $rels,*]?]) => do
+  | `([RFLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
+    let nm := nm.getId.toString
     let sorts ← match sorts with
       | some sorts => sorts.getElems.mapM elabSortName
       | none => pure #[]
     let ops ← match ops with
       | some ops => ops.getElems.mapM elabOpDescr
-      | none => pure #[]
-    let rels ← match rels with
-      | some rels => rels.getElems.mapM elabRelDescr
       | none => pure #[]
     for (d,nms,out) in ops do
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
@@ -91,11 +86,11 @@ def elabFlp : TermElab := fun stx tp =>
     logInfo m!"{nm}"
     logInfo m!"{sorts}"
     logInfo m!"{ops}"
-    logInfo m!"{rels}"
+    --return q(RawFiniteLawverePresentation.mk $nm $sorts $ops)
     return q(0)
   | _ => throwUnsupportedSyntax
 
-#check [FLP|
+#check [RFLP|
   NAME:
     Module
   SORTS:
@@ -104,6 +99,4 @@ def elabFlp : TermElab := fun stx tp =>
     add : M, M → M,
     smul : R, M → M,
     neg : M → M
-  RELS:
-    a : lift id X fst X Y = lift id X id X
 ]
