@@ -25,35 +25,48 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 -/
 
 
-open BigOperators Finset Matrix SimpleGraph
+open BigOperators Finset Matrix
 
-variable {V α : Type*} (α) [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+namespace SimpleGraph
+
+variable {V : Type*} (α : Type*)
+variable [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
 
 /-- The diagonal matrix consisting of the degrees of the vertices in the graph. -/
-def SimpleGraph.degMatrix [AddMonoidWithOne α] : Matrix V V α := Matrix.diagonal (G.degree ·)
+def degMatrix [AddMonoidWithOne α] : Matrix V V α := Matrix.diagonal (G.degree ·)
 
 /-- `lapMatrix G R` is the matrix `L = D - A` where `D`is the degree
 and `A` the adjacency matrix of `G`. -/
-def SimpleGraph.lapMatrix [AddGroupWithOne α] : Matrix V V α := G.degMatrix α - G.adjMatrix α
+def lapMatrix [AddGroupWithOne α] : Matrix V V α := G.degMatrix α - G.adjMatrix α
 
 variable {α}
 
-theorem isSymm_lapMatrix [AddGroupWithOne α] : (G.lapMatrix α).IsSymm := by
-  rw [Matrix.IsSymm, lapMatrix, degMatrix, transpose_sub, diagonal_transpose, transpose_adjMatrix]
+theorem isSymm_degMatrix [AddMonoidWithOne α] : (G.degMatrix α).IsSymm :=
+  isSymm_diagonal _
+
+theorem isSymm_lapMatrix [AddGroupWithOne α] : (G.lapMatrix α).IsSymm :=
+  (isSymm_degMatrix _).sub (isSymm_adjMatrix _)
+
+theorem degMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
+    (G.degMatrix α).mulVec vec v = G.degree v * vec v := by
+  rw [degMatrix, mulVec_diagonal]
+
+theorem lapMatrix_mulVec_apply [NonAssocRing α] (v : V) (vec : V → α) :
+    (G.lapMatrix α).mulVec vec v = G.degree v * vec v - ∑ u in G.neighborFinset v, vec u := by
+  simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
 theorem lapMatrix_mulVec_const_eq_zero [Ring α] : mulVec (G.lapMatrix α) (fun _ ↦ 1) = 0 := by
   ext1 i
-  simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, adjMatrix_mulVec_apply, degMatrix, mulVec,
-    dotProduct, diagonal]
+  rw [lapMatrix_mulVec_apply]
   simp
 
 theorem dotProduct_mulVec_adjMatrix [Ring α] (x : V → α) :
-    x ⬝ᵥ mulVec (G.adjMatrix α) x = ∑ i : V, ∑ j : V, if G.Adj i j then x i * x j else 0 := by
+    x ⬝ᵥ (G.adjMatrix α).mulVec x = ∑ i : V, ∑ j : V, if G.Adj i j then x i * x j else 0 := by
   unfold mulVec dotProduct
   simp [mul_sum]
 
 theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
-    x ⬝ᵥ mulVec (G.degMatrix α) x = ∑ i : V, G.degree i * x i * x i := by
+    x ⬝ᵥ (G.degMatrix α).mulVec x = ∑ i : V, G.degree i * x i * x i := by
   unfold dotProduct degMatrix
   simp only [mulVec_diagonal, ← mul_assoc, mul_comm (x _)]
 
@@ -65,7 +78,7 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
   rw [sum_boole, Set.toFinset_setOf]
 
 /-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
-$$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$
+$$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
     toLinearMap₂' (G.lapMatrix α) x x =
@@ -78,8 +91,8 @@ theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
   simp only [degree_eq_sum_if_adj, sum_mul, ← sum_sub_distrib, ite_mul, one_mul,
              zero_mul, ite_sub_ite, sub_zero]
   rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
-  conv_lhs => arg 1; arg 2; arg 2; intro i; arg 2; intro j; rw [if_congr (adj_comm G i j) rfl rfl]
-  conv_lhs => arg 1; arg 2; rw [Finset.sum_comm]
+  conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
+  conv_lhs => enter [1,2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
   congr 2 with i
   congr 2 with j
@@ -189,7 +202,7 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
   intro x _
   rw [mem_span_range_iff_exists_fun]
   use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
-   LinearMap.map_coe_ker])
+    LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux, AddSubmonoid.coe_finset_sum, Submodule.coe_toAddSubmonoid,
     SetLike.val_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
@@ -200,10 +213,12 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given
 connected component and `0` elsewhere. -/
 noncomputable def lapMatrix_ker_basis :=
-    Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
-     (top_le_span_range_lapMatrix_ker_basis_aux G)
+  Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
+    (top_le_span_range_lapMatrix_ker_basis_aux G)
 
 /-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
 theorem rank_ker_lapMatrix_eq_card_ConnectedComponent : Fintype.card G.ConnectedComponent =
     FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+
+end SimpleGraph
