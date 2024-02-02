@@ -69,7 +69,7 @@ def ringOfIntegers :=
   integralClosure ℤ K
 #align number_field.ring_of_integers NumberField.ringOfIntegers
 
-scoped notation "𝓞" => NumberField.ringOfIntegers
+@[inherit_doc] scoped notation "𝓞" => NumberField.ringOfIntegers
 
 theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
   Iff.rfl

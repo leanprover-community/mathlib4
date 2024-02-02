@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Hom.Ring
 
 In this file we define a coercion `Cardinal.ofENat : ℕ∞ → Cardinal`
 and a projection `Cardinal.toENat : Cardinal →+*o ℕ∞`.
-We also prove basic theorems about these definitons.
+We also prove basic theorems about these definitions.
 
 ## Implementation notes
 

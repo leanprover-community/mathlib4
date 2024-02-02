@@ -24,12 +24,13 @@ open Set Function
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 structure Complex : Type where
+  /-- The real part of a complex number. -/
   re : ℝ
+  /-- The imaginary part of a complex number. -/
   im : ℝ
 #align complex Complex
 
-
-notation "ℂ" => Complex
+@[inherit_doc] notation "ℂ" => Complex
 
 namespace Complex
 

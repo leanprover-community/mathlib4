@@ -1155,6 +1155,10 @@ def subtypeEquiv {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a,
   right_inv b := Subtype.ext <| by simp
 #align equiv.subtype_equiv Equiv.subtypeEquiv
 
+lemma coe_subtypeEquiv_eq_map {X Y : Type*} {p : X → Prop} {q : Y → Prop} (e : X ≃ Y)
+    (h : ∀ x, p x ↔ q (e x)) : ⇑(e.subtypeEquiv h) = Subtype.map e (h · |>.mp) :=
+  rfl
+
 @[simp]
 theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ a) := fun a => Iff.rfl) :
     (Equiv.refl α).subtypeEquiv h = Equiv.refl { a : α // p a } := by
@@ -1958,10 +1962,10 @@ theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x =
 theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 #align equiv.semiconj₂_conj Equiv.semiconj₂_conj
 
-instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isAssociative_right e.surjective
 
-instance [IsIdempotent α₁ f] : IsIdempotent β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
