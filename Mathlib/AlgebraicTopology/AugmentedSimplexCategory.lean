@@ -288,8 +288,7 @@ end unaugment
 
 lemma unaugment_augment_map {X Z : AugmentedSimplexCategory  } (f: Z ⟶ X ) (hZ :Z.len ≠ 0):
     eqToHom (unaugment_augment_obj hZ).symm≫ SimplexCategory.augment.map (unaugment.map f hZ)
-    ≫ eqToHom (unaugment_augment_obj (strict_initial' f hZ)) =  f
-    := by
+    ≫ eqToHom (unaugment_augment_obj (strict_initial' f hZ)) =  f := by
       rw [eqToHom_comp_iff,comp_eqToHom_iff]
       rfl
 
