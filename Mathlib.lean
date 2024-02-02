@@ -3648,6 +3648,7 @@ import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.Topology.Algebra.Group.OpenMapping
 import Mathlib.Topology.Algebra.Group.Rubin
 import Mathlib.Topology.Algebra.Group.Rubin.Disjoint
+import Mathlib.Topology.Algebra.Group.Rubin.Isomorphism
 import Mathlib.Topology.Algebra.Group.Rubin.RegularSupport
 import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 import Mathlib.Topology.Algebra.GroupCompletion

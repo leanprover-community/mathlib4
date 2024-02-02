@@ -76,15 +76,13 @@ theorem smul (g h : G) : h • RegularSupport α g = RegularSupport α (h * g * 
 end RegularSupport
 
 variable (G α) in
-def RegularSupportBasis :=
+/--
+The regular support basis contains finite intersections of `RegularSupport α g`.
+It is a bounded join-semilattice, that is also isomorphic to `Rubin.AlgSupportBasis`
+(`Rubin.supportBasis_orderIso`) and is a topological basis (`RegularSupportBasis.isBasis`).
+-/
+def RegularSupportBasis: Set (Set α) :=
   { s : Set α | ∃ t : Set G, t.Finite ∧ (s : Set α) = ⋂ g ∈ t, RegularSupport α g }
-
--- instance RegularSupportBasis.setLike : SetLike (RegularSupportBasis G α) α where
---   coe := fun b => b.val
---   coe_injective' := Subtype.val_injective
-
--- theorem RegularSupportBasis.exists_finite_generator (b : RegularSupportBasis G α) :
---     ∃ t : Set G, t.Finite ∧ (b : Set α) = ⋂ g ∈ t, RegularSupport α g := b.prop
 
 instance RegularSupportBasis.semiLatticeInf : SemilatticeInf (RegularSupportBasis G α) where
   inf := fun b₁ b₂ => ⟨

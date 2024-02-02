@@ -175,9 +175,6 @@ instance : PartialOrder (RegularOpens α) where
     rw [← eq_iff]
     exact subset_antisymm h₁ h₂
 
-@[simp]
-theorem subset_iff_le {r s : RegularOpens α} : (↑r : Set α) ⊆ ↑s ↔ r ≤ s := Iff.rfl
-
 instance : OrderBot (RegularOpens α) where
   bot := ⟨∅, IsRegularOpen.empty α⟩
   bot_le := fun r => Set.empty_subset r.carrier
@@ -358,13 +355,13 @@ theorem t2_separation_regularOpen [T2Space α] {x y : α} (x_ne_y : x ≠ y) :
 theorem subset_closure_iff_le {r s : RegularOpens α} :
     (↑r : Set α) ⊆ closure (↑s) ↔ r ≤ s := by
   refine ⟨fun ss_cl => ?ss, fun ss => _root_.subset_trans ss subset_closure⟩
-  rw [← subset_iff_le, ← IsOpen.interior_eq r.regularOpen.isOpen, ← s.regularOpen]
+  rw [← SetLike.coe_subset_coe, ← IsOpen.interior_eq r.regularOpen.isOpen, ← s.regularOpen]
   exact interior_mono ss_cl
 
 theorem closure_subset_closure_iff_le {r s : RegularOpens α} :
     closure (↑r : Set α) ⊆ closure (↑s) ↔ r ≤ s := by
   refine ⟨fun cl_ss => ?ss, fun ss => closure_mono ss⟩
-  rw [← subset_iff_le, ← r.regularOpen, ← s.regularOpen]
+  rw [← SetLike.coe_subset_coe, ← r.regularOpen, ← s.regularOpen]
   exact interior_mono cl_ss
 
 end TopologicalSpace.RegularOpens

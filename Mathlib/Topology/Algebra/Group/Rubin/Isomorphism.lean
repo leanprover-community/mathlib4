@@ -101,13 +101,6 @@ def supportBasis_orderIso_aux (b : RegularSupportBasis G α) : AlgSupportBasis G
     simp_rw [Set.compl_iInter, fixingSubgroup_iUnion,
       movingSubgroup_regularSupport_eq_algSupport]⟩
 
-lemma _root_.OrderEmbedding.injective {α β : Type*} [PartialOrder α] [Preorder β] (f : α ↪o β) :
-    Function.Injective f := by
-  intro a b eq
-  apply le_antisymm <;> rw [← f.map_rel_iff]
-  · exact eq.le
-  · exact eq.ge
-
 variable (G) in
 theorem supportBasis_orderIso_aux_bijective :
     Function.Bijective (supportBasis_orderIso_aux G α) := by
