@@ -176,7 +176,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAddCommGroup
 lemma l2_opNorm_def (A : Matrix m n 𝕜) :
     ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl
 
-lemma l2_opNnnorm_def (A : Matrix m n 𝕜) :
+lemma l2_opNNNorm_def (A : Matrix m n 𝕜) :
     ‖A‖₊ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖₊ := rfl
 
 lemma l2_opNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
@@ -184,7 +184,7 @@ lemma l2_opNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
     toLin_conjTranspose, adjoint_toContinuousLinearMap]
   exact ContinuousLinearMap.adjoint.norm_map _
 
-lemma l2_opNnnorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
+lemma l2_opNNNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose _
 
 lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
@@ -192,7 +192,7 @@ lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = 
     Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
   exact ContinuousLinearMap.norm_adjoint_comp_self _
 
-lemma l2_opNnnorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
+lemma l2_opNNNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose_mul_self _
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
@@ -200,7 +200,7 @@ lemma l2_opNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_opNorm x
 
-lemma l2_opNnnorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
+lemma l2_opNNNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_opNorm_mulVec x
 
@@ -213,7 +213,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   ext1 x
   exact congr($(Matrix.toLin'_mul A B) x)
 
-lemma l2_opNnnorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
+lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
@@ -236,7 +236,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 /-- This is the same as `Matrix.l2_opNorm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ := rfl
 
-/-- This is the same as `Matrix.l2_opNnnorm_def`, but with a more bundled RHS for square
+/-- This is the same as `Matrix.l2_opNNNorm_def`, but with a more bundled RHS for square
 matrices. -/
 lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 

@@ -1147,8 +1147,8 @@ theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k +
     ‖p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y‖₊ ≤
       ‖p (k + l)‖₊ * ‖x‖₊ ^ l * ‖y‖₊ ^ k := by
   rw [← p.nnnorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
-  apply ContinuousMultilinearMap.le_of_opNnnorm_le
-  apply ContinuousMultilinearMap.le_opNnnorm
+  apply ContinuousMultilinearMap.le_of_opNNNorm_le
+  apply ContinuousMultilinearMap.le_opNNNorm
 #align formal_multilinear_series.nnnorm_change_origin_series_term_apply_le FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm_apply_le
 
 /-- The power series for `f.changeOrigin k`.
@@ -1172,7 +1172,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_opNnnorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
+  exact (p.changeOriginSeries k l).le_of_opNNNorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
 #align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum
 
 /-- Changing the origin of a formal multilinear series `p`, so that
@@ -1344,7 +1344,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
         apply hasSum_fintype
       · refine' .of_nnnorm_bounded _
           (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k) fun s => _
-        refine' (ContinuousMultilinearMap.le_opNnnorm _ _).trans_eq _
+        refine' (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq _
         simp
   refine' hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 _)
   refine' HasSum.sigma_of_hasSum
