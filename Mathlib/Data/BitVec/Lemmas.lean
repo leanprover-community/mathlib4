@@ -201,17 +201,29 @@ end
 ### `IntCast`
 -/
 
--- Either of these follows trivially from the other. Which one to
--- prove is not yet clear.
-proof_wanted ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z
+theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  cases z
+  case ofNat n => rfl
+  case negSucc n =>
+    ext
+    change (1 <<< w) - 1 ^^^ (n % 2 ^ w) = (2 ^ w - (n + 1) % 2 ^ w) % (2 ^ w)
+    rw [one_shiftLeft, ←tsub_eq_of_eq_add_rev (add_pow_two_sub_one_xor_eq_pow_two_sub_one
+      (mod_lt _ (two_pow_pos w))).symm, ←mod_add_mod]
+    by_cases h : n % 2 ^ w = 2 ^ w - 1
+    · rw [h, Nat.sub_add_cancel (one_le_two_pow _)]; simp
+    · have h₁ := add_lt_of_lt_sub (lt_of_le_of_ne (le_sub_one_of_lt ((mod_lt _ (two_pow_pos w)))) h)
+      have h₂ := Nat.sub_lt_of_pos_le (Nat.add_pos_right (n % 2 ^ w) le.refl) (le_of_lt h₁)
+      rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂, add_comm, sub_add_eq]
 
-proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := by
+  apply toFin_inj.mp
+  rw [toFin_intCast]
 
 /-!
 ## Ring
 -/
 
--- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
+-- TODO: generalize to `CommRing`
 instance : CommSemiring (BitVec w) :=
   toFin_injective.commSemiring _
     toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)

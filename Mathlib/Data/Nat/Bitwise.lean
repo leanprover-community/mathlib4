@@ -493,4 +493,42 @@ lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
 
+theorem add_eq_or_of_and_eq_zero {x y} (h : x &&& y = 0) : x + y = x ||| y := by
+  induction y using Nat.binaryRec' generalizing x with
+  | z => simp
+  | @f b y h₀ ih =>
+    cases x using Nat.bitCasesOn with
+    | h b' x =>
+    simp_all only [land_bit, bit_eq_zero, Bool.and_eq_false_eq_eq_false_or_eq_false, lor_bit]
+    rw [←ih h.1]
+    cases b <;> cases b' <;> simp_arith [bit0, bit1] at h ⊢
+
+lemma and_pow_two_sub_one_xor_eq_zero {x n} (h : x < 2 ^ n) : x &&& ((2 ^ n - 1) ^^^ x) = 0 := by
+  apply eq_of_testBit_eq
+  intro i
+  simp only [testBit_land, testBit_xor, testBit_two_pow_sub_one, zero_testBit,
+    Bool.and_eq_false_eq_eq_false_or_eq_false]
+  by_cases h' : (i < n)
+  · simp only [h', decide_True, Bool.true_xor, Bool.not_eq_false', Bool.dichotomy]
+  · simp only [h', decide_False, Bool.false_xor, or_self];
+    exact testBit_lt_two (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
+
+lemma or_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) : x ||| ((2 ^ n - 1) ^^^ x) = 2 ^ n - 1 := by
+  apply eq_of_testBit_eq
+  intro i
+  simp only [testBit_lor, testBit_xor, testBit_two_pow_sub_one]
+  by_cases h' : (i < n)
+  · simp only [h', decide_True, Bool.true_xor, Bool.or_not_self]
+  · simp only [h', decide_False, Bool.false_xor, Bool.or_self];
+    exact testBit_lt_two (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
+
+lemma add_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) : x + ((2 ^ n - 1) ^^^ x) = 2 ^ n - 1 := by
+  rw [add_eq_or_of_and_eq_zero (and_pow_two_sub_one_xor_eq_zero h), or_pow_two_sub_one_xor_eq_pow_two_sub_one h]
+
+/-- For `x < 2 ^ n`, `((2 ^ n - 1) ^^^ x) + 1` is the additive inverse of `x` modulo `2 ^ n`. -/
+theorem two's_complement {x n} (h : x < 2 ^ n) : (x + (((2 ^ n - 1) ^^^ x) + 1)) % 2 ^ n = 0 := by
+  have h' : x + (((2 ^ n - 1) ^^^ x) + 1) = 2 ^ n := by
+    rw [←add_assoc, add_pow_two_sub_one_xor_eq_pow_two_sub_one h, Nat.sub_add_cancel]; exact one_le_two_pow n
+  rw [h', Nat.mod_self]
+
 end Nat
