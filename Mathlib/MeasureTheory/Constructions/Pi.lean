@@ -167,7 +167,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
   rcases (pi univ s).eq_empty_or_nonempty with h | h
   · rcases univ_pi_eq_empty_iff.mp h with ⟨i, hi⟩
     have : ∃ i, m i (s i) = 0 := ⟨i, by simp [hi]⟩
-    simpa [h, Finset.card_univ, zero_pow (Fintype.card_pos_iff.mpr ‹_›), @eq_comm _ (0 : ℝ≥0∞),
+    simpa [h, Finset.card_univ, zero_pow Fintype.card_ne_zero, @eq_comm _ (0 : ℝ≥0∞),
       Finset.prod_eq_zero_iff, piPremeasure]
   · simp [h, piPremeasure]
 #align measure_theory.pi_premeasure_pi' MeasureTheory.piPremeasure_pi'

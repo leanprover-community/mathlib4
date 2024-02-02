@@ -105,7 +105,7 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ (a / (b * x + c))) atTop (𝓝 1) := by
   refine'
     Tendsto.congr' _
-      ((tendsto_exp_nhds_0_nhds_1.comp
+      ((tendsto_exp_nhds_zero_nhds_one.comp
             (by
               simpa only [mul_zero, pow_one] using
                 (tendsto_const_nhds (x := a)).mul
@@ -153,11 +153,13 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
 #align tendsto_exp_mul_div_rpow_at_top tendsto_exp_mul_div_rpow_atTop
 
 /-- The function `x ^ s * exp (-b * x)` tends to `0` at `+∞`, for any real `s` and `b > 0`. -/
-theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 (s : ℝ) (b : ℝ) (hb : 0 < b) :
+theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
-#align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0
+#align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+@[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
+  tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
@@ -294,7 +296,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ s) =o[atTop] fun x => exp (b * x) :=
   Iff.mpr (isLittleO_iff_tendsto fun x h => absurd h (exp_pos _).ne') <| by
     simpa only [div_eq_mul_inv, exp_neg, neg_mul] using
-      tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 s b hb
+      tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero s b hb
 #align is_o_rpow_exp_pos_mul_at_top isLittleO_rpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/

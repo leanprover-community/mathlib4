@@ -13,7 +13,6 @@ import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.TryThis
 
 /-!
 # The `rewrites` tactic.

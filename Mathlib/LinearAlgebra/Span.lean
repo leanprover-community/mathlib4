@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
 
 #align_import linear_algebra.span from "leanprover-community/mathlib"@"10878f6bf1dab863445907ab23fbfcefcb5845d0"
@@ -92,20 +92,24 @@ theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScal
   span_eq (p.restrictScalars S)
 #align submodule.span_coe_eq_restrict_scalars Submodule.span_coe_eq_restrictScalars
 
+/-- A version of `Submodule.map_span_le` that does not require the `RingHomSurjective`
+assumption. -/
+theorem image_span_subset (f : F) (s : Set M) (N : Submodule R₂ M₂) :
+    f '' span R s ⊆ N ↔ ∀ m ∈ s, f m ∈ N := image_subset_iff.trans <| span_le (p := N.comap f)
+
+theorem image_span_subset_span (f : F) (s : Set M) : f '' span R s ⊆ span R₂ (f '' s) :=
+  (image_span_subset f s _).2 fun x hx ↦ subset_span ⟨x, hx, rfl⟩
+
 theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
     (span R s).map f = span R₂ (f '' s) :=
-  Eq.symm <|
-    span_eq_of_le _ (Set.image_subset f subset_span) <|
-      map_le_iff_le_comap.2 <| span_le.2 fun x hx => subset_span ⟨x, hx, rfl⟩
+  Eq.symm <| span_eq_of_le _ (Set.image_subset f subset_span) (image_span_subset_span f s)
 #align submodule.map_span Submodule.map_span
 
 alias _root_.LinearMap.map_span := Submodule.map_span
 #align linear_map.map_span LinearMap.map_span
 
 theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submodule R₂ M₂) :
-    map f (span R s) ≤ N ↔ ∀ m ∈ s, f m ∈ N := by
-  rw [map_span, span_le, Set.image_subset_iff]
-  exact Iff.rfl
+    map f (span R s) ≤ N ↔ ∀ m ∈ s, f m ∈ N := image_span_subset f s N
 #align submodule.map_span_le Submodule.map_span_le
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
