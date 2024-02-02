@@ -411,7 +411,7 @@ def coinvariantsTensorFreeIso (A : Rep k G) (α : Type u) :
 
 variable (k G)
 
-@[simps] def ok : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
+@[simps] def tensorG : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
 { obj := fun A => MonoidalCategory.tensorLeft A ⋙ coinvariants k G
   map := fun f => {
     app := fun A => coinvariantsMap (f ⊗ 𝟙 A)
@@ -427,38 +427,42 @@ variable (k G)
     rw [MonoidalCategory.comp_tensor_id]
     exact (coinvariants k G).map_comp _ _ }
 
-instance (A : Rep k G) : ((ok k G).obj A).Additive := by
-  unfold ok
+instance (A : Rep k G) : ((tensorG k G).obj A).Additive := by
+  unfold tensorG
   infer_instance
 
 def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
-  obj X := Functor.leftDerived ((ok k G).obj X) n
-  map f := NatTrans.leftDerived ((ok k G).map f) n
+  obj X := Functor.leftDerived ((tensorG k G).obj X) n
+  map f := NatTrans.leftDerived ((tensorG k G).map f) n
 
 variable {k G}
 variable (A : Rep k G)
 
-def okChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] :
+def tensorGChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] :
   ChainComplex (Rep k G) α ⥤ ChainComplex (ModuleCat k) α :=
-Functor.mapHomologicalComplex ((ok k G).obj A) _
+Functor.mapHomologicalComplex ((tensorG k G).obj A) _
 
-def okBarResolution := (okChainComplex A ℕ).obj (Rep.barResolution k G)
+def torIso (B : Rep k G) (P : ProjectiveResolution B) (n : ℕ) :
+    ((Tor k G n).obj A).obj B ≅ ((tensorGChainComplex A ℕ).obj P.complex).homology n :=
+  ProjectiveResolution.isoLeftDerivedObj P ((tensorG k G).obj A) n
 
-def okStdResolution := (okChainComplex A ℕ).obj (groupCohomology.resolution k G)
+def tensorGBarResolution := (tensorGChainComplex A ℕ).obj (Rep.barResolution k G)
+
+def tensorGStdResolution := (tensorGChainComplex A ℕ).obj (groupCohomology.resolution k G)
 
 @[nolint checkType] theorem d_eq (n : ℕ) :
     A.ρ.d n =
       (coinvariantsTensorFreeIso A (Fin (n + 1) → G)).inv ≫
-        (okBarResolution A).d (n + 1) n ≫
+        (tensorGBarResolution A).d (n + 1) n ≫
           (coinvariantsTensorFreeIso A (Fin n → G)).hom := by
   ext g a : 2
   simp only [ModuleCat.comp_def, LinearMap.comp_apply,
     coinvariantsTensorFreeIso, LinearEquiv.toModuleIso_inv,
     LinearEquiv.toModuleIso_hom]
-  show _ = A.ρ.coinvariantsTprodFreeToFinsupp (Fin n → G) ((okBarResolution A).d _ _
+  show _ = A.ρ.coinvariantsTprodFreeToFinsupp (Fin n → G) ((tensorGBarResolution A).d _ _
     (A.ρ.finsuppToCoinvariantsTprodFree _ _))
   simp only [Finsupp.lsingle_apply, Representation.finsuppToCoinvariantsTprodFree_apply]
-  simp only [okBarResolution, okChainComplex, ok_obj, Functor.mapHomologicalComplex_obj_X,
+  simp only [tensorGBarResolution, tensorGChainComplex, tensorG_obj, Functor.mapHomologicalComplex_obj_X,
     ChainComplex.of_x, Functor.comp_obj, tensorLeft_obj, Monoidal.transportStruct_tensorObj,
     Equivalence.symm_functor, Action.functorCategoryEquivalence_inverse, Equivalence.symm_inverse,
     Action.functorCategoryEquivalence_functor, coinvariants_obj,
@@ -493,7 +497,7 @@ noncomputable abbrev inhomogeneousChains :
     (fun n => A.ρ.d n) fun n => by
     simp only [d_eq, d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, (okBarResolution A).d_comp_d] }
+    slice_lhs 2 4 => { rw [Category.id_comp, (tensorGBarResolution A).d_comp_d] }
 
 @[simp]
 theorem inhomogeneousChains.d_def (n : ℕ) :
@@ -502,8 +506,8 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
 
 set_option profiler true
 
-def inhomogeneousChainsIsoOkBar  :
-    inhomogeneousChains A ≅ okBarResolution A := by
+def inhomogeneousChainsIsoTensorGBar  :
+    inhomogeneousChains A ≅ tensorGBarResolution A := by
   refine' HomologicalComplex.Hom.isoOfComponents _ _
   · intro i
     apply (coinvariantsTensorFreeIso A (Fin i → G)).symm
@@ -512,8 +516,8 @@ def inhomogeneousChainsIsoOkBar  :
   simp only [Iso.symm_hom, inhomogeneousChains.d_def, d_eq, Category.assoc]
   slice_rhs 2 4 => { rw [Iso.hom_inv_id, Category.comp_id] }
 
-def inhomogeneousChainsIsoOkStd  : inhomogeneousChains A ≅ okStdResolution A :=
-  inhomogeneousChainsIsoOkBar A ≪≫ (okChainComplex A ℕ).mapIso (Rep.barResolutionIso k G)
+def inhomogeneousChainsIsoTensorGStd  : inhomogeneousChains A ≅ tensorGStdResolution A :=
+  inhomogeneousChainsIsoTensorGBar A ≪≫ (tensorGChainComplex A ℕ).mapIso (Rep.barResolutionIso k G)
 
 abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
@@ -529,3 +533,8 @@ def groupHomology (n : ℕ) : ModuleCat k :=
 abbrev groupHomologyπ (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
+
+def groupHomologyIsoTor [Group G] (A : Rep k G) (n : ℕ) :
+    groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIsoTensorGStd A)).hom n ≪≫
+    (torIso A (Rep.trivial k G k) (groupCohomology.projectiveResolution k G) n).symm
