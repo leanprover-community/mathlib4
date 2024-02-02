@@ -168,9 +168,7 @@ def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
   functor_unitIso_comp F := by
     ext Y
     dsimp
-    rw [← F.map_id, ← F.map_comp]
-    congr 1
-    simp
+    rw [← F.map_id, ← F.map_comp, counitInv_functor_comp]
 
 end Equivalence
 
