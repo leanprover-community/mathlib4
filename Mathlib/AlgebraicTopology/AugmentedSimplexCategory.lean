@@ -166,7 +166,7 @@ lemma zero_isInitial : IsInitial [0]ₐ := by
   exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
 
 lemma len_zero_isInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
- IsInitial Z:= by
+    IsInitial Z:= by
    rw  [show Z = [0]ₐ from hZ]
    exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
 
@@ -259,7 +259,7 @@ def unaugment.obj (Z : AugmentedSimplexCategory)  : SimplexCategory :=
    SimplexCategory.mk (Z.len-1)
 
 lemma unaugment_augment_obj {Z : AugmentedSimplexCategory} (hZ: Z.len ≠ 0) :
-   SimplexCategory.augment.obj (unaugment.obj Z) = Z:= by
+    SimplexCategory.augment.obj (unaugment.obj Z) = Z:= by
       unfold SimplexCategory.augment
       dsimp
       apply AugmentedSimplexCategory.ext
@@ -281,13 +281,13 @@ lemma map_id { Z: AugmentedSimplexCategory}  (hZ :Z.len≠ 0) :
 lemma map_comp { Y Z  W: AugmentedSimplexCategory}  (hW :W.len≠ 0) (f: Z ⟶ Y) (g : W ⟶ Z):
     map (g ≫ f) hW = (map g hW) ≫  (map f (strict_initial' g hW))   := by
        nth_rewrite 1 [← Category.comp_id g ]
-       rw [← eqToHom_refl,←eqToHom_trans]
+       rw [← eqToHom_refl,← eqToHom_trans]
        rfl
 
 end unaugment
 
 lemma unaugment_augment_map {X Z : AugmentedSimplexCategory  } (f: Z ⟶ X ) (hZ :Z.len ≠ 0):
-   eqToHom (unaugment_augment_obj hZ).symm≫ SimplexCategory.augment.map (unaugment.map f hZ)
+    eqToHom (unaugment_augment_obj hZ).symm≫ SimplexCategory.augment.map (unaugment.map f hZ)
     ≫ eqToHom (unaugment_augment_obj (strict_initial' f hZ)) =  f
     := by
       rw [eqToHom_comp_iff,comp_eqToHom_iff]
@@ -296,7 +296,7 @@ lemma unaugment_augment_map {X Z : AugmentedSimplexCategory  } (f: Z ⟶ X ) (hZ
 end AugmentedSimplexCategory
 
 lemma SimplexCategory.augment_unaugment_map {X Z : SimplexCategory  } (f: Z ⟶ X):
- AugmentedSimplexCategory.unaugment.map (SimplexCategory.augment.map f)
+    AugmentedSimplexCategory.unaugment.map (SimplexCategory.augment.map f)
   (SimplexCategory.augment_len Z) = f := by
     change _= SimplexCategory.Hom.mk (f.toOrderHom)
     apply congrArg SimplexCategory.Hom.mk
