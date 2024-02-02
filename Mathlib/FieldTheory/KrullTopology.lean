@@ -86,7 +86,7 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 /-- For a field extension `L/K`, the intermediate field `K` is finite-dimensional over `K` -/
 theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     FiniteDimensional K (⊥ : IntermediateField K L) :=
-  finiteDimensional_of_rank_eq_one IntermediateField.rank_bot
+  .of_rank_eq_one IntermediateField.rank_bot
 #align intermediate_field.finite_dimensional_bot IntermediateField.finiteDimensional_bot
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
