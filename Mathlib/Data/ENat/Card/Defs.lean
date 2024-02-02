@@ -7,7 +7,7 @@ import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Finite.Defs
 
 /-!
-# Definition and basic properties of `ℕ∞`-valued cardinality
+# Definition of `ℕ∞`-valued cardinality
 -/
 
 open Classical
@@ -20,7 +20,13 @@ noncomputable def card (α : Sort*) : ℕ∞ :=
 
 notation "#ₑ" => ENat.card
 
-@[simp] theorem card_eq_top_iff {α : Sort*} : #ₑ α = ⊤ ↔ Infinite α := by simp [card]
-@[simp] theorem card_infinite (α : Type*) [Infinite α] : #ₑ α = ⊤ := by simpa
+lemma card_eq_top_iff {α : Sort*} : #ₑ α = ⊤ ↔ Infinite α := by simp [card]
+@[simp] lemma card_infinite (α : Type*) [Infinite α] : #ₑ α = ⊤ := by rwa [card_eq_top_iff]
+
+lemma card_lt_top_iff {α : Sort*} : #ₑ α < ⊤ ↔ Finite α := by
+  simp [lt_top_iff_ne_top, card_eq_top_iff.not]
+
+@[simp] lemma card_lt_top (α : Sort*) [Finite α] : #ₑ α < ⊤ := card_lt_top_iff.2 ‹_›
+@[simp] lemma card_ne_top (α : Sort*) [Finite α] : #ₑ α ≠ ⊤ := (card_lt_top α).ne
 
 end ENat
