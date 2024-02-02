@@ -286,7 +286,7 @@ theorem Basis.opNnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
           ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
           _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_opNnnorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
-#align basis.opNnnorm_le Basis.opNnnorm_le
+#align basis.op_nnnorm_le Basis.opNnnorm_le
 
 theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
@@ -302,7 +302,7 @@ theorem Basis.exists_opNnnorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) 
     ⟨max (Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊) 1,
       zero_lt_one.trans_le (le_max_right _ _), fun {u} M hu =>
       (v.opNnnorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
-#align basis.exists_opNnnorm_le Basis.exists_opNnnorm_le
+#align basis.exists_op_nnnorm_le Basis.exists_opNnnorm_le
 
 /-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :

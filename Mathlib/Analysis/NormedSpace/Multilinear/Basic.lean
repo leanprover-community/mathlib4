@@ -476,11 +476,11 @@ theorem le_opNnnorm : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     exact f.le_opNorm m
-#align continuous_multilinear_map.le_opNnnorm ContinuousMultilinearMap.le_opNnnorm
+#align continuous_multilinear_map.le_op_nnnorm ContinuousMultilinearMap.le_opNnnorm
 
 theorem le_of_opNnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
   (f.le_opNnnorm m).trans <| mul_le_mul' h le_rfl
-#align continuous_multilinear_map.le_of_opNnnorm_le ContinuousMultilinearMap.le_of_opNnnorm_le
+#align continuous_multilinear_map.le_of_op_nnnorm_le ContinuousMultilinearMap.le_of_opNnnorm_le
 
 theorem opNnnorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
   simp only [← NNReal.coe_le_coe]; simp [opNorm_le_iff _ C.coe_nonneg, NNReal.coe_prod]

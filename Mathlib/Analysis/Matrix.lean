@@ -276,13 +276,13 @@ theorem linfty_opNorm_def (A : Matrix m n α) :
 theorem linfty_opNnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
   Subtype.ext <| linfty_opNorm_def A
-#align matrix.linfty_opNnnorm_def Matrix.linfty_opNnnorm_def
+#align matrix.linfty_op_nnnorm_def Matrix.linfty_opNnnorm_def
 
 @[simp, nolint simpNF] -- Porting note: linter times out
 theorem linfty_opNnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
   rw [linfty_opNnnorm_def, Pi.nnnorm_def]
   simp
-#align matrix.linfty_opNnnorm_col Matrix.linfty_opNnnorm_col
+#align matrix.linfty_op_nnnorm_col Matrix.linfty_opNnnorm_col
 
 @[simp]
 theorem linfty_opNorm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
@@ -291,7 +291,7 @@ theorem linfty_opNorm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
 
 @[simp]
 theorem linfty_opNnnorm_row (v : n → α) : ‖row v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_opNnnorm_def]
-#align matrix.linfty_opNnnorm_row Matrix.linfty_opNnnorm_row
+#align matrix.linfty_op_nnnorm_row Matrix.linfty_opNnnorm_row
 
 @[simp]
 theorem linfty_opNorm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
@@ -305,7 +305,7 @@ theorem linfty_opNnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v�
   refine' (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => _).trans _
   · rw [diagonal_apply_ne' _ hij, nnnorm_zero]
   · rw [diagonal_apply_eq]
-#align matrix.linfty_opNnnorm_diagonal Matrix.linfty_opNnnorm_diagonal
+#align matrix.linfty_op_nnnorm_diagonal Matrix.linfty_opNnnorm_diagonal
 
 @[simp]
 theorem linfty_opNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
@@ -335,7 +335,7 @@ theorem linfty_opNnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
     _ ≤ (Finset.univ.sup fun i => ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
       rfl
-#align matrix.linfty_opNnnorm_mul Matrix.linfty_opNnnorm_mul
+#align matrix.linfty_op_nnnorm_mul Matrix.linfty_opNnnorm_mul
 
 theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   linfty_opNnnorm_mul _ _
@@ -344,7 +344,7 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
 theorem linfty_opNnnorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A.mulVec v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
   rw [← linfty_opNnnorm_col (A.mulVec v), ← linfty_opNnnorm_col v]
   exact linfty_opNnnorm_mul A (col v)
-#align matrix.linfty_opNnnorm_mul_vec Matrix.linfty_opNnnorm_mulVec
+#align matrix.linfty_op_nnnorm_mul_vec Matrix.linfty_opNnnorm_mulVec
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖Matrix.mulVec A v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNnnorm_mulVec _ _
