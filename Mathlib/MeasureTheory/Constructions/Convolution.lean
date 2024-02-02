@@ -82,8 +82,6 @@ theorem sfinite_convolution_of_sfinite {M : Type*} [Monoid M] [MeasurableSpace M
     (ν : Measure M) [SFinite μ] [SFinite ν] : SFinite (μ.conv ν) :=
   instSFiniteMap (Measure.prod μ ν) fun x ↦ x.1 * x.2
 
--- Additional results if we add commutativity to M
-
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
 theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] : μ.conv ν = ν.conv μ := by
@@ -98,10 +96,3 @@ have h : (μ.conv ν) Set.univ < ⊤ := by
   unfold conv
   exact IsFiniteMeasure.measure_univ_lt_top
 exact { measure_univ_lt_top := h}
-
-lemma convolution_eq_lintegral {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
-    [MeasurableSpace G] [BorelSpace G] (μ ν : Measure G) [SFinite μ] [SFinite ν]
-    (B : Set G) (hB : MeasurableSet B): (μ.conv ν) B
-    = ∫⁻ x, ∫⁻ y, B.indicator (fun _ ↦ 1) (x*y) ∂μ ∂ν := by
-  rw [conv]
-  sorry
