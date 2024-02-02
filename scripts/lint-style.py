@@ -367,6 +367,7 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
 
 def lint(path, fix=False):
+    global new_exceptions
     with path.open(encoding="utf-8", newline="") as f:
         # We enumerate the lines so that we can report line numbers in the error messages correctly
         # we will modify lines as we go, so we need to keep track of the original line numbers
