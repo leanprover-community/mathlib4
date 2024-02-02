@@ -42,7 +42,7 @@ class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p] : Prop wh
 
 section PerfectRing
 
-variable (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+variable (R : Type*) (p n : ℕ) [CommSemiring R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
@@ -60,6 +60,9 @@ variable [PerfectRing R p]
 @[simp]
 theorem bijective_frobenius : Bijective (frobenius R p) := PerfectRing.bijective_frobenius
 
+theorem bijective_iterateFrobenius : Bijective (iterateFrobenius R p n) :=
+  coe_iterateFrobenius R p n ▸ (bijective_frobenius R p).iterate n
+
 @[simp]
 theorem injective_frobenius : Injective (frobenius R p) := (bijective_frobenius R p).1
 
@@ -75,6 +78,14 @@ noncomputable def frobeniusEquiv : R ≃+* R :=
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 #align coe_frobenius_equiv coe_frobeniusEquiv
+
+/-- The iterated Frobenius automorphism for a perfect ring. -/
+@[simps! apply]
+noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
+  RingEquiv.ofBijective (iterateFrobenius R p n) (bijective_iterateFrobenius R p n)
+
+@[simp]
+theorem coe_iterateFrobeniusEquiv : ⇑(iterateFrobeniusEquiv R p n) = iterateFrobenius R p n := rfl
 
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :

@@ -284,6 +284,8 @@ theorem iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 theorem iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
 #align iterate_frobenius iterate_frobenius
 
+variable (R)
+
 theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm
 
@@ -303,6 +305,8 @@ theorem iterateFrobenius_add :
 
 theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
   simp_rw [coe_iterateFrobenius, Function.iterate_mul]
+
+variable {R}
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
   (frobenius R p).map_mul x y
