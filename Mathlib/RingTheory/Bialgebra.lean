@@ -71,6 +71,11 @@ lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
 -- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
 attribute [simp] counit_one comul_one counit_mul comul_mul
 
+/-- If `R` is a field (or even a commutative semiring) and `A`
+is an `R`-algebra with a coalgebra structure, then `Bialgebra.mk'`
+consumes proofs that the counit and comultiplication preserve
+the identity and multiplication, and produces a bialgebra
+structure on `A`. -/
 def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
     (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)
@@ -106,8 +111,8 @@ variable {R A}
 @[simp] lemma counit_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
   map_natCast (counitAlgHom R A) _
 
-@[simp] lemma comul_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
-  map_natCast (counitAlgHom R A) _
+@[simp] lemma comul_natCast (n : ℕ) : comul (R := R) (n : A) = n :=
+  map_natCast (comulAlgHom R A) _
 
 @[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
   (counitAlgHom R A).map_pow a n
@@ -133,3 +138,4 @@ instance toBialgebra : Bialgebra R R where
   comul_one := rfl
 
 end CommSemiring
+#lint
