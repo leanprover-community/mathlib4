@@ -10,13 +10,11 @@ variable {R σ : Type*} [CommRing R]
 lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
     (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmbedding n).toEmbedding s.support) := by
   intro i hi
-  simp only [mem_support_iff] at hi
   simp only [Finset.mem_insert, Finset.mem_map, mem_support_iff, ne_eq,
     RelEmbedding.coe_toEmbedding, Fin.val_succEmbedding]
-  obtain (rfl|⟨i, rfl⟩) := Fin.eq_zero_or_eq_succ i
-  · exact Or.inl rfl
-  · refine Or.inr ⟨i, ?_⟩
-    simpa using hi
+  apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
+  rintro i rfl
+  simpa [Finsupp.mem_support_iff] using hi
 
 namespace MvPolynomial -- move this
 
@@ -40,27 +38,20 @@ theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) 
     simp only [Finsupp.support_embDomain, Finset.sum_map, Finsupp.embDomain_apply]
   constructor
   · intro h d hd
-    specialize @h (d.embDomain f) ?aux
-    case aux => erw [coeff_rename_embDomain]; exact hd
-    rw [← h, aux]
+    rw [← (@h (d.embDomain f) (by rwa [coeff_rename_embDomain])), aux]
   · intro h d hd
-    obtain ⟨d', hd'₀, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
-    rw [← Finsupp.embDomain_eq_mapDomain] at hd'₀; cases hd'₀
-    specialize @h d' hd'
-    rw [← h, aux]
+    obtain ⟨d', rfl, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
+    rw [← Finsupp.embDomain_eq_mapDomain, ← h hd', aux]
 
 lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
     (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
-  specialize hφ hd
   have aux : 0 ∉ Finset.map (Fin.succEmbedding N).toEmbedding d.support := by
     simp [Fin.succ_ne_zero]
-  rw [Finset.sum_subset_zero_on_sdiff
-        (d.cons_support i) (g := d.cons i) (by simp) (fun _ _ ↦ rfl),
-      Finset.sum_insert aux] at hφ
-  simpa [← h] using hφ
+  simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
+    (d.cons_support i) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
 
 end MvPolynomial
 
@@ -73,8 +64,7 @@ lemma Polynomial.exists_eval_ne_zero_of_natDegree_lt_card [IsDomain R]
   · have := Fintype.ofFinite R
     apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
     aesop
-  · apply Polynomial.funext
-    simpa using hf
+  · exact Polynomial.funext <| by simpa using hf
 
 lemma MvPolynomial.degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
     degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
@@ -86,11 +76,8 @@ lemma MvPolynomial.degreeOf_le_totalDegree {σ : Type*} (φ : MvPolynomial σ R)
   intro d hd
   refine le_trans ?_ (le_totalDegree hd)
   if hi : i ∈ d.support
-  then
-    exact Finset.single_le_sum (fun _ _ ↦ zero_le') hi
-  else
-    rw [Finsupp.not_mem_support_iff] at hi
-    simp only [hi, zero_le]
+  then exact Finset.single_le_sum (fun _ _ ↦ zero_le') hi
+  else rw [Finsupp.not_mem_support_iff] at hi; simp only [hi, zero_le]
 
 namespace MvPolynomial.IsHomogeneous
 
