@@ -90,7 +90,6 @@ theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredi
   H.2 _ (by linarith [lt_1000 ppn]) ppn
 #align imo1960_q1.search_up_to_end Imo1960Q1.searchUpTo_end
 
-set_option maxHeartbeats 800000 in
 theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n := by
   have := searchUpTo_start
   iterate 82
