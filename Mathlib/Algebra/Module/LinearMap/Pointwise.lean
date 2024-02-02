@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise actions of linear maps

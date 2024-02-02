@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Dist
+import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
 

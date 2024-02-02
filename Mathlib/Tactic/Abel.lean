@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Util.AtomM
-import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic

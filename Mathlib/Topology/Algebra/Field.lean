@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.LocalExtr
