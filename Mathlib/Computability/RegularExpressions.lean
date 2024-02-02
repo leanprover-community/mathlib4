@@ -354,8 +354,7 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     rw [zero_def, zero_rmatch]
     tauto
   | epsilon =>
-    rw [one_def, one_rmatch_iff]
-    rfl
+    rw [one_def, one_rmatch_iff, matches'_epsilon, Language.mem_one]
   | char =>
     rw [char_rmatch_iff]
     rfl

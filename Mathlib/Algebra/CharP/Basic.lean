@@ -346,140 +346,6 @@ theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Non
   simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, f.map_zero]
 #align ring_hom.char_p_iff_char_p RingHom.charP_iff_charP
 
-section frobenius
-
-section CommSemiring
-
-variable [CommSemiring R] {S : Type v} [CommSemiring S] (f : R →* S) (g : R →+* S) (p : ℕ)
-  [Fact p.Prime] [CharP R p] [CharP S p] (x y : R)
-
-/-- The frobenius map that sends x to x^p -/
-def frobenius : R →+* R where
-  toFun x := x ^ p
-  map_one' := one_pow p
-  map_mul' x y := mul_pow x y p
-  map_zero' := zero_pow (Fact.out (p := Nat.Prime p)).ne_zero
-  map_add' := add_pow_char R
-#align frobenius frobenius
-
-variable {R}
-
-theorem frobenius_def : frobenius R p x = x ^ p :=
-  rfl
-#align frobenius_def frobenius_def
-
-theorem iterate_frobenius (n : ℕ) : (frobenius R p)^[n] x = x ^ p ^ n := by
-  induction n with
-  | zero => simp
-  | succ n n_ih =>
-      rw [Function.iterate_succ', pow_succ', pow_mul, Function.comp_apply, frobenius_def, n_ih]
-#align iterate_frobenius iterate_frobenius
-
-theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
-  (frobenius R p).map_mul x y
-#align frobenius_mul frobenius_mul
-
-theorem frobenius_one : frobenius R p 1 = 1 :=
-  one_pow _
-#align frobenius_one frobenius_one
-
-theorem MonoidHom.map_frobenius : f (frobenius R p x) = frobenius S p (f x) :=
-  f.map_pow x p
-#align monoid_hom.map_frobenius MonoidHom.map_frobenius
-
-theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
-  g.map_pow x p
-#align ring_hom.map_frobenius RingHom.map_frobenius
-
-theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
-    f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
-  Function.Semiconj.iterate_right (f.map_frobenius p) n x
-#align monoid_hom.map_iterate_frobenius MonoidHom.map_iterate_frobenius
-
-theorem RingHom.map_iterate_frobenius (n : ℕ) :
-    g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
-  g.toMonoidHom.map_iterate_frobenius p x n
-#align ring_hom.map_iterate_frobenius RingHom.map_iterate_frobenius
-
-theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
-#align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
-
-theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
-#align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
-
-variable (R)
-
-theorem frobenius_zero : frobenius R p 0 = 0 :=
-  (frobenius R p).map_zero
-#align frobenius_zero frobenius_zero
-
-theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p y :=
-  (frobenius R p).map_add x y
-#align frobenius_add frobenius_add
-
-theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
-  map_natCast (frobenius R p) n
-#align frobenius_nat_cast frobenius_nat_cast
-
-open BigOperators
-
-variable {R}
-
-theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_list_sum _
-#align list_sum_pow_char list_sum_pow_char
-
-theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_multiset_sum _
-#align multiset_sum_pow_char multiset_sum_pow_char
-
-theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
-  (frobenius R p).map_sum _ _
-#align sum_pow_char sum_pow_char
-
-variable (n : ℕ)
-
-theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum := by
-  induction n with
-  | zero => simp_rw [pow_zero, pow_one, List.map_id']
-  | succ n ih => simp_rw [pow_succ', pow_mul, ih, list_sum_pow_char, List.map_map]; rfl
-
-theorem multiset_sum_pow_char_pow (s : Multiset R) :
-    s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum := by
-  induction n with
-  | zero => simp_rw [pow_zero, pow_one, Multiset.map_id']
-  | succ n ih => simp_rw [pow_succ', pow_mul, ih, multiset_sum_pow_char, Multiset.map_map]; rfl
-
-theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n := by
-  induction n with
-  | zero => simp_rw [pow_zero, pow_one]
-  | succ n ih => simp_rw [pow_succ', pow_mul, ih, sum_pow_char]
-
-end CommSemiring
-
-section CommRing
-
-variable [CommRing R] {S : Type v} [CommRing S] (f : R →* S) (g : R →+* S) (p : ℕ) [Fact p.Prime]
-  [CharP R p] [CharP S p] (x y : R)
-
-theorem frobenius_neg : frobenius R p (-x) = -frobenius R p x :=
-  (frobenius R p).map_neg x
-#align frobenius_neg frobenius_neg
-
-theorem frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y :=
-  (frobenius R p).map_sub x y
-#align frobenius_sub frobenius_sub
-
-end CommRing
-
-end frobenius
-
 namespace CharP
 
 section
@@ -709,6 +575,12 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 instance Prod.charP [CharP S p] : CharP (R × S) p := by
   convert Nat.lcm.charP R S p p; simp
 #align prod.char_p Prod.charP
+
+instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
+
+instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
 
 end Prod
 

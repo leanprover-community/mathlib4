@@ -132,8 +132,8 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i) := by
   have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, r.Countable ∧ t ⊆ ⋃ i ∈ r, U i)
       → (∃ r : Set ι, r.Countable ∧ s ⊆ ⋃ i ∈ r, U i) := by
-    intro _ _ hst ⟨r, ⟨hrcountable,hsub⟩⟩
-    exact ⟨r,hrcountable,Subset.trans hst hsub⟩
+    intro _ _ hst ⟨r, ⟨hrcountable, hsub⟩⟩
+    exact ⟨r, hrcountable, Subset.trans hst hsub⟩
   have hcountable_union : ∀ (S : Set (Set X)), S.Countable
       → (∀ s ∈ S, ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i))
       → ∃ r : Set ι, r.Countable ∧ (⋃₀ S ⊆ ⋃ i ∈ r, U i) := by
@@ -146,7 +146,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
   have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
     intro x hx
     let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
-    refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi),{i}, by simp, ?_⟩
+    refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi), {i}, by simp, ?_⟩
     simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
     exact Subset.refl _
   exact hs.induction_on hmono hcountable_union h_nhds
@@ -157,7 +157,7 @@ theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set
   have := hs.elim_countable_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)
     fun x hx ↦
       mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩
-  rcases this with ⟨r,⟨hr,hs⟩⟩
+  rcases this with ⟨r, ⟨hr, hs⟩⟩
   use r, hr
   apply Subset.trans hs
   apply iUnion₂_subset
@@ -168,13 +168,14 @@ theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set
 theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
-  let ⟨t, ⟨htc,htsub⟩⟩ := hs.elim_nhds_subcover' (fun x _ ↦ U x) hU
-  refine ⟨↑t, Countable.image htc Subtype.val,?_⟩
+  let ⟨t, ⟨htc, htsub⟩⟩ := hs.elim_nhds_subcover' (fun x _ ↦ U x) hU
+  refine ⟨↑t, Countable.image htc Subtype.val, ?_⟩
   constructor
-  · intro _; simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    forall_exists_index]; tauto
+  · intro _
+    simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, forall_exists_index]
+    tauto
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
-    rw [← this]; assumption
+    rwa [← this]
 
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
 intersection property if and only if the neighborhood filter of each point of this set
@@ -203,20 +204,20 @@ there exists a countable subfamily whose intersection avoids this Lindelöf set.
 theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelof s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
     ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ := by
-    let U := tᶜ
-    have hUo : ∀ i, IsOpen (U i) := by simp only [Pi.compl_apply, isOpen_compl_iff]; exact htc
-    have hsU : s ⊆ ⋃ i, U i := by
-      simp only [Pi.compl_apply]
-      rw [← compl_iInter]
-      apply disjoint_compl_left_iff_subset.mp
-      simp only [compl_iInter, compl_iUnion, compl_compl]
-      apply Disjoint.symm
-      exact disjoint_iff_inter_eq_empty.mpr hst
-    rcases hs.elim_countable_subcover U hUo hsU with ⟨u, ⟨hucount, husub⟩⟩
-    use u, hucount
-    rw [← disjoint_compl_left_iff_subset] at husub
-    simp only [Pi.compl_apply, compl_iUnion, compl_compl] at husub
-    exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
+  let U := tᶜ
+  have hUo : ∀ i, IsOpen (U i) := by simp only [Pi.compl_apply, isOpen_compl_iff]; exact htc
+  have hsU : s ⊆ ⋃ i, U i := by
+    simp only [Pi.compl_apply]
+    rw [← compl_iInter]
+    apply disjoint_compl_left_iff_subset.mp
+    simp only [compl_iInter, compl_iUnion, compl_compl]
+    apply Disjoint.symm
+    exact disjoint_iff_inter_eq_empty.mpr hst
+  rcases hs.elim_countable_subcover U hUo hsU with ⟨u, ⟨hucount, husub⟩⟩
+  use u, hucount
+  rw [← disjoint_compl_left_iff_subset] at husub
+  simp only [Pi.compl_apply, compl_iUnion, compl_compl] at husub
+  exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
 /--To show that a Lindelöf set intersects the intersection of a family of closed sets,
   it is sufficient to show that it intersects every countable subfamily. -/
@@ -225,8 +226,7 @@ theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : 
     (s ∩ ⋂ i, t i).Nonempty := by
   contrapose! hst
   rcases hs.elim_countable_subfamily_closed t htc hst with ⟨u, ⟨_, husub⟩⟩
-  use u
-  apply fun _ ↦ husub
+  exact ⟨u, fun _ ↦ husub⟩
 
 /-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsLindelof s)
@@ -235,8 +235,8 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_countable_subcover (fun i ↦ c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
   refine ⟨Subtype.val '' d, by simp, Countable.image hd.1 Subtype.val, ?_⟩
-  · rw [biUnion_image]
-    apply hd.2
+  rw [biUnion_image]
+  exact hd.2
 
 
 /-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
@@ -260,8 +260,9 @@ theorem isLindelof_of_countable_subcover
 /-- A set `s` is Lindelöf if for every family of closed sets whose intersection avoids `s`,
 there exists a countable subfamily whose intersection avoids `s`. -/
 theorem isLindelof_of_countable_subfamily_closed
-    (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
-    ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
+    (h :
+      ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
+        ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
     IsLindelof s :=
   isLindelof_of_countable_subcover fun U hUo hsU ↦ by
     rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
@@ -287,7 +288,7 @@ theorem isLindelof_iff_countable_subfamily_closed :
 
 /-- The empty set is a Lindelof set. -/
 @[simp]
-theorem isLindelof_empty : IsLindelof (∅ : Set X) := fun _f hnf _ hsf↦
+theorem isLindelof_empty : IsLindelof (∅ : Set X) := fun _f hnf _ hsf ↦
   Not.elim hnf.ne <| empty_mem_iff_bot.1 <| le_principal_iff.1 hsf
 
 /-- A singleton set is a Lindelof set. -/
@@ -301,24 +302,25 @@ theorem Set.Subsingleton.isLindelof (hs : s.Subsingleton) : IsLindelof s :=
 
 theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Countable)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) := by
-    apply isLindelof_of_countable_subcover
-    intro i U hU hUcover
-    have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i := fun _ is ↦ subset_trans (subset_biUnion_of_mem is) hUcover
-    have iSets := fun i is ↦ (hf i is).elim_countable_subcover U hU (hiU i is)
-    choose! r hr using iSets
-    use ⋃ i ∈ s, r i
-    constructor
-    · refine (Countable.biUnion_iff hs).mpr ?h.left.a
-      exact fun s hs ↦ (hr s hs).1
-    · refine iUnion₂_subset ?h.right.h
-      intro i
-      simp
-      exact fun is x hx ↦ mem_biUnion is ((hr i is).2 hx)
+  apply isLindelof_of_countable_subcover
+  intro i U hU hUcover
+  have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i := fun _ is ↦ subset_trans (subset_biUnion_of_mem is) hUcover
+  have iSets := fun i is ↦ (hf i is).elim_countable_subcover U hU (hiU i is)
+  choose! r hr using iSets
+  use ⋃ i ∈ s, r i
+  constructor
+  · refine (Countable.biUnion_iff hs).mpr ?h.left.a
+    exact fun s hs ↦ (hr s hs).1
+  · refine iUnion₂_subset ?h.right.h
+    intro i is
+    simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
+    intro x hx
+    exact mem_biUnion is ((hr i is).2 hx)
 
 
 theorem Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
-    (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) := by
-    apply Set.Countable.isLindelof_biUnion (countable hs) hf
+    (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) :=
+  Set.Countable.isLindelof_biUnion (countable hs) hf
 
 theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i ∈ s, IsLindelof (f i)) :
     IsLindelof (⋃ i ∈ s, f i) :=
@@ -348,10 +350,9 @@ theorem Set.Finite.isLindelof (hs : s.Finite) : IsLindelof s :=
 theorem IsLindelof.countable_of_discrete [DiscreteTopology X] (hs : IsLindelof s) :
     s.Countable := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, _, _, hssubt⟩
-  simp only [biUnion_of_singleton] at hssubt
-  apply Countable.mono hssubt
-  assumption
+  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, ht, _, hssubt⟩
+  rw [biUnion_of_singleton] at hssubt
+  exact ht.mono hssubt
 
 theorem isLindelof_iff_countable [DiscreteTopology X] : IsLindelof s ↔ s.Countable :=
   ⟨fun h => h.countable_of_discrete, fun h => h.isLindelof⟩
@@ -369,23 +370,21 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     IsLindelof U ∧ IsOpen U ↔ ∃ s : Set ι, s.Countable ∧ U = ⋃ i ∈ s, b i := by
   constructor
   · rintro ⟨h₁, h₂⟩
-    obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion h₂
+    obtain ⟨Y, f, rfl, hf⟩ := hb.open_eq_iUnion h₂
     choose f' hf' using hf
     have : b ∘ f' = f := funext hf'
     subst this
     obtain ⟨t, ht⟩ :=
-      h₁.elim_countable_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+      h₁.elim_countable_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) Subset.rfl
     refine ⟨t.image f', Countable.image (ht.1) f', le_antisymm ?_ ?_⟩
     · refine' Set.Subset.trans ht.2 _
       simp only [Set.iUnion_subset_iff]
       intro i hi
-      erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
       exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, mem_image_of_mem _ hi⟩
     · apply Set.iUnion₂_subset
       rintro i hi
-      have : ∃ j ∈ t, f' j = i := by exact hi
-      obtain ⟨j, -, rfl⟩ := this
-      rw [e]
+      obtain ⟨j, -, rfl⟩ := (mem_image ..).mp hi
       exact Set.subset_iUnion (b ∘ f') j
   · rintro ⟨s, hs, rfl⟩
     constructor
@@ -476,12 +475,12 @@ theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
   h.isLindelof_univ
 
 theorem cluster_point_of_Lindelof [LindelofSpace X] (f : Filter X) [NeBot f]
-    [CountableInterFilter f] : ∃ x, ClusterPt x f :=
-  by simpa using isLindelof_univ (show f ≤ 𝓟 univ by simp)
+    [CountableInterFilter f] : ∃ x, ClusterPt x f := by
+  simpa using isLindelof_univ (show f ≤ 𝓟 univ by simp)
 
 theorem LindelofSpace.elim_nhds_subcover [LindelofSpace X] (U : X → Set X) (hU : ∀ x, U x ∈ 𝓝 x) :
-    ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, U x = ⊤ := by
-  obtain ⟨t, tc, -,s⟩ := IsLindelof.elim_nhds_subcover isLindelof_univ U fun x _ => hU x
+    ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, U x = univ := by
+  obtain ⟨t, tc, -, s⟩ := IsLindelof.elim_nhds_subcover isLindelof_univ U fun x _ => hU x
   use t, tc
   apply top_unique s
 
@@ -516,9 +515,11 @@ theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ
   nonLindelof_univ X (h ▸ hs)
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
-  refine' hasBasis_coLindelof.neBot_iff.2 fun hs => _
-  contrapose hs; rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
-  rw [hs]; exact nonLindelof_univ X
+  refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
+  contrapose hs
+  rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
+  rw [hs]
+  exact nonLindelof_univ X
 
 @[simp]
 theorem Filter.coLindelof_eq_bot [LindelofSpace X] : Filter.coLindelof X = ⊥ :=
@@ -634,31 +635,31 @@ instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace
   isLindelof_univ := countable_univ.isLindelof
 
 /-- The disjoint union of two Lindelöf spaces is Lindelöf. -/
-instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) :=
-  ⟨by
+instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
+  isLindelof_univ := by
     rw [← range_inl_union_range_inr]
-    exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)⟩
+    exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)
 
 instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
-    LindelofSpace (Σi, X i) := by
-  refine' ⟨_⟩
-  rw [Sigma.univ]
-  exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
+    LindelofSpace (Σi, X i) where
+  isLindelof_univ := by
+    rw [Sigma.univ]
+    exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
 
-instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) :=
-  ⟨by
+instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
+  isLindelof_univ := by
     rw [← range_quot_mk]
-    exact isLindelof_range continuous_quot_mk⟩
+    exact isLindelof_range continuous_quot_mk
 
 instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.LindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
-    (hsur : Function.Surjective f) : LindelofSpace Y := by
-  refine { isLindelof_univ := ?isLindelof_univ }
-  rw [← Set.image_univ_of_surjective hsur]
-  exact IsLindelof.image (isLindelof_univ_iff.mpr ‹_›) hf
+    (hsur : Function.Surjective f) : LindelofSpace Y where
+  isLindelof_univ := by
+    rw [← Set.image_univ_of_surjective hsur]
+    exact IsLindelof.image (isLindelof_univ_iff.mpr ‹_›) hf
 
 /-- A set `s` is Hereditarily Lindelöf if every subset is a Lindelof set. We require this only
 for open sets in the definition, and then conclude that this holds for all sets by ADD. -/
@@ -687,18 +688,18 @@ theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set
 
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where
-  isHereditarilyLindelof_univ := fun t _ _ ↦ by
+  isHereditarilyLindelof_univ t _ _ := by
     apply isLindelof_iff_countable_subcover.mpr
     intro ι U hι hcover
     have := @isOpen_iUnion_countable X _ _ ι U hι
-    rcases this with ⟨t,⟨htc, htu⟩⟩
+    rcases this with ⟨t, ⟨htc, htu⟩⟩
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
-  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t,⟨htc, htu⟩⟩
+  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
 
