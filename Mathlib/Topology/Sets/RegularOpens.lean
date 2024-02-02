@@ -30,8 +30,6 @@ It should be possible to show that the above choice for `⊓` and `ᶜ` leads to
   Chapter 3.6
 -/
 
-namespace TopologicalSpace
-
 variable {α : Type*} [TopologicalSpace α]
 
 /--
@@ -80,6 +78,23 @@ theorem inter {s t : Set α} (s_reg : IsRegularOpen s) (t_reg : IsRegularOpen t)
   · apply IsOpen.subset_interior_closure
     exact s_reg.isOpen.inter t_reg.isOpen
 
+theorem iInter_of_finite {ι : Sort*} [Finite ι] {f : ι → Set α}
+    (regular : ∀ i : ι, IsRegularOpen (f i)) : IsRegularOpen (⋂ i : ι, f i) := by
+  rw [isRegularOpen_iff]
+  apply subset_antisymm
+  · simp_rw [Set.subset_iInter_iff]
+    intro i
+    rw [← regular i]
+    exact interior_mono (closure_mono (Set.iInter_subset _ i))
+  · apply IsOpen.subset_interior_closure
+    exact isOpen_iInter_of_finite fun i => (regular i).isOpen
+
+theorem biInter_of_finite {ι : Type*} {f : ι → Set α} {s : Set ι} (finite : s.Finite)
+    (regular : ∀ i ∈ s, IsRegularOpen (f i)) : IsRegularOpen (⋂ i ∈ s, f i) := by
+  have fin : Finite { i // i ∈ s } := Set.finite_coe_iff.mpr finite
+  rw [← Set.iInter_subtype (fun i => i ∈ s) (fun i => f i.val)]
+  exact iInter_of_finite fun i => regular i.val i.prop
+
 end IsRegularOpen
 
 lemma IsOpen.interior_closure_inter {s t : Set α} (s_open : IsOpen s) :
@@ -97,6 +112,25 @@ lemma IsOpen.interior_closure_inter {s t : Set α} (s_open : IsOpen s) :
     apply closure_mono
     exact IsOpen.inter_interior_closure s_open
 
+theorem subset_of_subset_closure_of_regularOpen {s t : Set α} (s_open : IsOpen s)
+    (t_regular : IsRegularOpen t) (subset_closure : s ⊆ closure t) : s ⊆ t := by
+  rw [← s_open.interior_eq, ← t_regular]
+  exact interior_mono subset_closure
+
+theorem disjoint_open_subset_of_not_subset_regularOpen {s t : Set α} (s_open : IsOpen s)
+    (t_regular : IsRegularOpen t) (not_subset : ¬s ⊆ t) :
+    ∃ u, IsOpen u ∧ u.Nonempty ∧ u ⊆ s ∧ Disjoint u t := by
+  refine ⟨
+    s ∩ (closure t)ᶜ,
+    s_open.inter <| isOpen_compl_iff.mpr isClosed_closure,
+    ?nonempty,
+    Set.inter_subset_left _ _,
+    Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
+      <| Set.disjoint_of_subset_right subset_closure
+      <| disjoint_compl_left⟩
+  rw [Set.inter_compl_nonempty_iff]
+  exact mt (subset_of_subset_closure_of_regularOpen s_open t_regular) not_subset
+
 variable (α) in
 /--
 The type of sets that are regular open in α.
@@ -104,13 +138,13 @@ The type of sets that are regular open in α.
 The regular open sets in a topology form a boolean algebra, with as complement operator
 `s ↦ (closure s)ᶜ` and as infimum `s ∩ t`.
 -/
-structure RegularOpens :=
+structure TopologicalSpace.RegularOpens :=
   /-- The underlying set that is regular open -/
   carrier : Set α
   /-- The statement that `carrier` is regular open -/
   regularOpen' : IsRegularOpen carrier
 
-namespace RegularOpens
+namespace TopologicalSpace.RegularOpens
 
 @[simp]
 theorem eq_iff {r s : RegularOpens α} : r.carrier = s.carrier ↔ r = s := by
@@ -131,12 +165,15 @@ instance : CanLift (Set α) (RegularOpens α) RegularOpens.carrier IsRegularOpen
   fun s s_reg => ⟨⟨s, s_reg⟩, rfl⟩⟩
 
 instance : PartialOrder (RegularOpens α) where
-  le := fun r s => r.carrier ⊆ s.carrier
+  le := fun r s => (↑r : Set α) ⊆ (↑s : Set α)
   le_refl := fun r => subset_refl r.carrier
   le_trans := fun _ _ _ h₁ h₂ => _root_.subset_trans h₁ h₂
   le_antisymm := fun r s h₁ h₂ => by
     rw [← eq_iff]
     exact subset_antisymm h₁ h₂
+
+@[simp]
+theorem subset_iff_le {r s : RegularOpens α} : (↑r : Set α) ⊆ ↑s ↔ r ≤ s := Iff.rfl
 
 instance : OrderBot (RegularOpens α) where
   bot := ⟨∅, IsRegularOpen.empty α⟩
@@ -262,6 +299,10 @@ instance : BooleanAlgebra (RegularOpens α) where
     rw [top_le_iff, RegularOpens.sup_def, RegularOpens.compl_compl, ← RegularOpens.compl_bot,
       RegularOpens.compl_inj, inf_comm, RegularOpens.inf_compl_eq_bot]
 
+-- /--
+-- Like regular open sets
+-- -/
+
 /--
 The canonical way to turn a `Set α` into a regular open set is to simply take the interior of its
 closure. This operation yields the smallest regular open superset of `s` and is monotone.
@@ -311,7 +352,19 @@ theorem t2_separation_regularOpen [T2Space α] {x y : α} (x_ne_y : x ≠ y) :
     subset_fromSet_of_isOpen t_open y_in_t
   ⟩
 
-end RegularOpens
+theorem subset_closure_iff_le {r s : RegularOpens α} :
+    (↑r : Set α) ⊆ closure (↑s) ↔ r ≤ s := by
+  refine ⟨fun ss_cl => ?ss, fun ss => _root_.subset_trans ss subset_closure⟩
+  rw [← subset_iff_le, ← IsOpen.interior_eq r.regularOpen.isOpen, ← s.regularOpen]
+  exact interior_mono ss_cl
+
+theorem closure_subset_closure_iff_le {r s : RegularOpens α} :
+    closure (↑r : Set α) ⊆ closure (↑s) ↔ r ≤ s := by
+  refine ⟨fun cl_ss => ?ss, fun ss => closure_mono ss⟩
+  rw [← subset_iff_le, ← r.regularOpen, ← s.regularOpen]
+  exact interior_mono cl_ss
+
+end TopologicalSpace.RegularOpens
 
 section ContinuousConstSMul
 
@@ -324,10 +377,12 @@ theorem smul_isRegularOpen (g : G) {s : Set α} (s_reg : IsRegularOpen s) :
     IsRegularOpen (g • s) := by
   rw [isRegularOpen_iff, closure_smul, interior_smul, s_reg]
 
+namespace TopologicalSpace.RegularOpens
+
 /--
 The action on `G` implies a pointwise action on regular open sets.
 -/
-protected def RegularOpens.pointwiseMulAction : MulAction G (RegularOpens α) where
+protected def pointwiseMulAction : MulAction G (RegularOpens α) where
   smul := fun g r => ⟨g • r.carrier, smul_isRegularOpen g r.regularOpen'⟩
   one_smul := by
     intro r
@@ -343,35 +398,35 @@ protected def RegularOpens.pointwiseMulAction : MulAction G (RegularOpens α) wh
 scoped[Pointwise] attribute [instance] TopologicalSpace.RegularOpens.pointwiseMulAction
 
 @[simp]
-theorem RegularOpens.coe_smul (g : G) (r : RegularOpens α) : (↑(g • r) : Set α) = g • ↑r := rfl
+theorem coe_smul (g : G) (r : RegularOpens α) : (↑(g • r) : Set α) = g • ↑r := rfl
 
-theorem RegularOpens.smul_fromSet (g : G) (s : Set α) : g • fromSet s = fromSet (g • s) := by
+theorem smul_fromSet (g : G) (s : Set α) : g • fromSet s = fromSet (g • s) := by
   rw [← SetLike.coe_set_eq, coe_smul, coe_fromSet, coe_fromSet, closure_smul, interior_smul]
 
-theorem RegularOpens.inf_smul (g : G) (r s : RegularOpens α) : (g • r) ⊓ (g • s) = g • (r ⊓ s) := by
+theorem inf_smul (g : G) (r s : RegularOpens α) : (g • r) ⊓ (g • s) = g • (r ⊓ s) := by
   rw [← SetLike.coe_set_eq]
   simp only [coe_smul, coe_inf, Set.smul_set_inter]
 
-theorem RegularOpens.compl_smul (g : G) (r : RegularOpens α) : (g • r)ᶜ = g • rᶜ := by
+theorem compl_smul (g : G) (r : RegularOpens α) : (g • r)ᶜ = g • rᶜ := by
   rw [← SetLike.coe_set_eq, coe_smul, coe_compl, coe_smul, closure_smul, ← Set.smul_set_compl]
   rfl
 
-theorem RegularOpens.sup_smul (g : G) (r s : RegularOpens α) : (g • r) ⊔ (g • s) = g • (r ⊔ s) := by
+theorem sup_smul (g : G) (r s : RegularOpens α) : (g • r) ⊔ (g • s) = g • (r ⊔ s) := by
   repeat rw [sup_def]
   simp only [inf_smul, compl_smul]
 
-theorem RegularOpens.mem_smul_iff_inv_mem {g : G} {r : RegularOpens α} {x : α} :
+theorem mem_smul_iff_inv_mem {g : G} {r : RegularOpens α} {x : α} :
     x ∈ g • r ↔ g⁻¹ • x ∈ r := by
   rw [← SetLike.mem_coe, coe_smul, Set.mem_smul_set_iff_inv_smul_mem]
   rfl
 
 @[simp]
-theorem RegularOpens.disjoint_coe {r s : RegularOpens α} :
+theorem disjoint_coe {r s : RegularOpens α} :
     Disjoint (r : Set α) (s : Set α) ↔ Disjoint r s := by
   rw [Set.disjoint_iff_inter_eq_empty, disjoint_iff, ← SetLike.coe_set_eq (q := ⊥),
     coe_inf, coe_bot]
 
-theorem RegularOpens.disjoint_smul {r s : RegularOpens α} (disj : Disjoint r s) (g : G) :
+theorem disjoint_smul {r s : RegularOpens α} (disj : Disjoint r s) (g : G) :
     Disjoint (g • r) (g • s) := by
   rwa [← disjoint_coe, coe_smul, coe_smul, ← Set.smul_set_disjoint g, disjoint_coe]
 
@@ -380,7 +435,7 @@ theorem RegularOpens.disjoint_smul {r s : RegularOpens α} (disj : Disjoint r s)
 If the topological space `α` is Hausdorff and the group action of `G` on `α` is faithful and
 continuous, then this action is also faithful on the regular open sets.
 -/
-instance RegularOpens.pointwiseMulAction_faithful_of_t2space [FaithfulSMul G α] [T2Space α] :
+instance pointwiseMulAction_faithful_of_t2space [FaithfulSMul G α] [T2Space α] :
     FaithfulSMul G (RegularOpens α) := by
   constructor
   intro g h img_eq
@@ -396,6 +451,25 @@ instance RegularOpens.pointwiseMulAction_faithful_of_t2space [FaithfulSMul G α]
 
   exact disj_img x_in_gu x_in_hv rfl
 
+end TopologicalSpace.RegularOpens
+
 end ContinuousConstSMul
 
-end TopologicalSpace
+section FiniteInter
+
+namespace TopologicalSpace.RegularOpens
+
+/--
+Constructs the `RegularOpens` set made up of finite intersections of `s`.
+-/
+def finiteInter (s : Set (RegularOpens α)) (s_finite : s.Finite) : RegularOpens α where
+  carrier := ⋂ t ∈ s, (t : Set α)
+  regularOpen' := IsRegularOpen.biInter_of_finite s_finite fun i _ => i.regularOpen
+
+@[simp]
+theorem coe_finiteInter {s : Set (RegularOpens α)} (s_finite : s.Finite) :
+    (finiteInter s s_finite : Set α) = ⋂ t ∈ s, (t : Set α) := rfl
+
+end TopologicalSpace.RegularOpens
+
+end FiniteInter

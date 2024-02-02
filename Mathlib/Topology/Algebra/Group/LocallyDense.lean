@@ -305,18 +305,51 @@ section FixingSubgroup
 section FixingSubgroup
 
 open TopologicalSpace (RegularOpens)
+variable [LocallyMovingSMul G α] [FaithfulSMul G α]
 
-variable [LocallyMovingSMul G α] [T2Space α]
-
-/-
 theorem fixingSubgroup_compl_le_iff_le_of_regularOpen (s t : RegularOpens α) :
     G•[(↑s : Set α)ᶜ] ≤ G•[(↑t : Set α)ᶜ] ↔ s ≤ t := by
   refine ⟨fun fixing_le => ?le, fun le => (fixingSubgroup_antitone G α).comp
     (compl_antitone (Set α)) le⟩
+  by_contra not_le
 
-  sorry
+  let u := (↑s : Set α) \ closure t
+  have u_nonempty : u.Nonempty := by
+    refine Set.nonempty_iff_ne_empty.mpr <| mt (fun eq_empty => ?subset) not_le
+    unfold_let at eq_empty
+    rwa [Set.diff_eq, ← Set.disjoint_iff_inter_eq_empty, ← Set.subset_compl_iff_disjoint_right,
+      compl_compl, RegularOpens.subset_closure_iff_le] at eq_empty
+  have u_open : IsOpen u := by
+    unfold_let
+    rw [Set.diff_eq]
+    exact IsOpen.inter s.regularOpen.isOpen <| isOpen_compl_iff.mpr isClosed_closure
+
+  let ⟨f, f_in_fixing, f_ne_one⟩ := LocallyMovingSMul.nontrivial_elem_of_nonempty
+    G u_open u_nonempty
+  apply f_ne_one
+  apply Subgroup.disjoint_def.mp <| fixingSubgroup_compl_disjoint G (↑t : Set α)
+  · apply fixingSubgroup_antitone _ _ ?ss f_in_fixing
+    unfold_let
+    rw [Set.diff_eq, Set.compl_inter, compl_compl]
+    exact Set.subset_union_of_subset_right subset_closure _
+  · apply fixing_le
+    exact fixingSubgroup_antitone _ _
+      (Set.compl_subset_compl.mpr <| Set.diff_subset _ _)
+      f_in_fixing
+
+variable (G α) in
+/--
+The moving subgroup (the fixing subgroup of the complement) forms an order embedding on the
+regular open sets when the action is faithful and locally moving.
 -/
-
-end FixingSubgroup
+def LocallyMovingSMul.movingSubgroup_orderEmbedding : RegularOpens α ↪o Subgroup G where
+  toFun := fun r => G•[(↑r : Set α)ᶜ]
+  map_rel_iff' := fun {r s} => by exact fixingSubgroup_compl_le_iff_le_of_regularOpen r s
+  inj' := by
+    intro r s eq
+    simp only at eq
+    apply le_antisymm <;> rw [← fixingSubgroup_compl_le_iff_le_of_regularOpen (G := G)]
+    · exact eq.le
+    · exact eq.ge
 
 end FixingSubgroup

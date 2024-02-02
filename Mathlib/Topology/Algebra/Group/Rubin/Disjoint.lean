@@ -16,12 +16,14 @@ import Mathlib.Topology.Algebra.Group.InjectiveAction
 # Group-theoretical condition for the disjointness of `(fixedBy α g)ᶜ` sets
 
 This module describes a somewhat mysterious condition for two group elements to have disjoint
-`(fixedBy α g)ᶜ` sets, assuming the group action is locally dense.
-
-TODO: link to locally dense
+`(fixedBy α g)ᶜ` sets, assuming the group action is a `LocallyDenseSMul`.
 
 This is a key construction in the proof of Rubin's theorem, as the `(fixedBy α g)ᶜ` sets can be used
 to describe a topological basis of the acted-upon topological space.
+
+## References
+
+* [J. Belk, L. Elliott, F. Matucci, *A short proof of Rubin's theorem*][belk2023short]
 -/
 
 namespace Rubin
@@ -142,6 +144,11 @@ theorem IsAlgDisjoint.conj {f g : G} (disj : IsAlgDisjoint f g) (h : G) :
   have res := elem.conj h
   group at res
   rwa [zpow_neg_one] at res
+
+@[simp]
+theorem isAlgDisjoint_one (g : G) : IsAlgDisjoint 1 g := by
+  intro h ff
+  simp only [Commute.one_left, not_true_eq_false] at ff
 
 section Disjoint
 
@@ -435,7 +442,7 @@ It has a close relationship with the `(fixedBy α g)ᶜ` set,
 and an order-preserving isomorphism between the two using `fixingSubgroup` can be constructed.
 -/
 def AlgSupport (g : G) : Subgroup G :=
-  Subgroup.centralizer ((fun f' => f' ^ 12) '' { f : G | IsAlgDisjoint f g })
+  Subgroup.centralizer ((fun f' => f' ^ 12) '' { h : G | IsAlgDisjoint g h })
 
 theorem AlgSupport.conj (g h : G) : MulAut.conj h • AlgSupport g = AlgSupport (h * g * h⁻¹) := by
   unfold AlgSupport
@@ -455,18 +462,16 @@ theorem AlgSupport.conj (g h : G) : MulAut.conj h • AlgSupport g = AlgSupport 
     simp only [mul_right_inv, one_mul, mul_inv_cancel_right]
   · intro disj
     convert disj.conj h⁻¹ using 1
-    · rw [inv_inv]
     · repeat rw [← mul_assoc]
       simp only [mul_left_inv, one_mul, inv_inv, inv_mul_cancel_right]
+    · rw [inv_inv]
 
 /--
 The algebraic support basis is made up of all the subgroups of `G` that can be obtained by taking
 finite intersections of `AlgSupport`.
 
-TODO: link to paper
-
-Unlike the original paper, the bottom subgroup is allowed to be in this bases, which makes proofs
-around ultrafilters easier.
+Unlike the [original paper][belk2023short], the bottom subgroup is allowed to be in this basis,
+as it makes proofs around ultrafilters easier.
 -/
 def AlgSupportBasis (G : Type*) [Group G] :=
   {H : Subgroup G // ∃ s : Set G, s.Finite ∧ H = ⨅ g ∈ s, AlgSupport g}

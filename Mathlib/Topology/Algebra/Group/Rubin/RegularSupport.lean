@@ -72,4 +72,58 @@ theorem smul (g h : G) : h • RegularSupport α g = RegularSupport α (h * g * 
 
 end RegularSupport
 
+-- Note: there does not seem to be any benefit in requiring `t` to be finite
+variable (G) in
+def RegularSupportBasis :=
+  { s : RegularOpens α // ∃ t : Set G, t.Finite ∧ (s : Set α) = ⋂ g ∈ t, RegularSupport α g }
+
+-- Note: this seems to cause issues
+instance RegularSupportBasis.setLike : SetLike (RegularSupportBasis G α) α where
+  coe := fun b => ↑b.val
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+
+instance RegularSupportBasis.semiLatticeInf : SemilatticeInf (RegularSupportBasis G α) where
+  inf := fun b₁ b₂ => ⟨
+    b₁.val ⊓ b₂.val,
+    by
+      let ⟨s₁, s₁_finite, b₁_eq⟩ := b₁.prop
+      let ⟨s₂, s₂_finite, b₂_eq⟩ := b₂.prop
+      refine ⟨s₁ ∪ s₂, s₁_finite.union s₂_finite, ?iInf_eq⟩
+      rw [RegularOpens.coe_inf, b₁_eq, b₂_eq, Set.biInter_union]
+  ⟩
+  inf_le_left := fun b₁ b₂ => (inf_le_left : b₁.val ⊓ b₂.val ≤ b₁.val)
+  inf_le_right := fun b₁ b₂ => (inf_le_right : b₁.val ⊓ b₂.val ≤ b₂.val)
+  le_inf := fun b₁ b₂ b₃ h₁₂ h₁₃ => (le_inf h₁₂ h₁₃ : b₁.val ≤ b₂.val ⊓ b₃.val)
+
+instance RegularSupportBasis.orderTop : OrderTop (RegularSupportBasis G α) where
+  top := ⟨
+    ⊤,
+    by
+      use ∅
+      simp
+  ⟩
+  le_top := fun b => (le_top : b.val ≤ ⊤)
+
+instance RegularSupportBasis.orderBot : OrderBot (RegularSupportBasis G α) where
+  bot := ⟨
+    ⊥,
+    by
+      use {1}
+      simp [RegularSupport]
+  ⟩
+  bot_le := fun b => (bot_le : ⊥ ≤ b.val)
+
+/--
+The element of the regular support basis constructed from the finite set `s`.
+-/
+def RegularSupportBasis.ofFinite (s : Set G) (s_finite : s.Finite) : RegularSupportBasis G α :=
+  ⟨⟨
+    ⋂ g ∈ s, RegularSupport α g,
+    IsRegularOpen.biInter_of_finite s_finite fun _ _ => RegularOpens.regularOpen _
+  ⟩, ⟨s, ⟨s_finite, rfl⟩⟩⟩
+
+@[simp]
+theorem RegularSupportBasis.coe_ofFinite {s : Set G} (s_finite : s.Finite) :
+    (↑(RegularSupportBasis.ofFinite α s s_finite) : Set α) = ⋂ g ∈ s, RegularSupport α g := rfl
+
 end Rubin
