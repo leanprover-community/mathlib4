@@ -4,10 +4,14 @@
  [{"url": "https://github.com/leanprover/std4",
    "type": "git",
    "subDir": null,
+<<<<<<< HEAD
    "rev": "ae757d051ea3aeb5b84eeb613f34cfe7b04646ea",
+=======
+   "rev": "276953b13323ca151939eafaaec9129bf7970306",
+>>>>>>> bump/v4.6.0
    "name": "std",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "bump/v4.6.0",
+   "inputRev": "main",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/quote4",
@@ -22,19 +26,30 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
+<<<<<<< HEAD
    "rev": "44df62ce4802a08a0bbc9b76920f1ecdeff3c4eb",
+=======
+   "rev": "6beed82dcfbb7731d173cd517675df27d62ad0f4",
+>>>>>>> bump/v4.6.0
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "bump/v4.6.0",
+   "inputRev": "master",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/ProofWidgets4",
    "type": "git",
    "subDir": null,
+<<<<<<< HEAD
    "rev": "3aa86fa8ac4736ab111abba6edb07852612985e5",
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
    "inputRev": "v0.0.27-pre2",
+=======
+   "rev": "af1e86cf7a37389632a02f4a111e6b501b2b818f",
+   "name": "proofwidgets",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "v0.0.27",
+>>>>>>> bump/v4.6.0
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover/lean4-cli",
