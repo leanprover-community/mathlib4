@@ -10,6 +10,7 @@ import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Set.Basic
 
 /-!
 # The four functions theorem and corollaries

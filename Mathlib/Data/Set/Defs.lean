@@ -68,6 +68,9 @@ compile_def% EmptyCollection.emptyCollection
 compile_def% Insert.insert
 compile_def% Singleton.singleton
 
+attribute [ext] Set.ext
+#align set.ext Set.ext
+
 universe u v w
 
 namespace Set
