@@ -431,7 +431,7 @@ def obj' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) :
           Functor.comp_map, Functor.op_map, ← X.map_comp, ← op_comp, smallCategory_comp, Hom.comp,
           Functor.const_obj_map, Category.comp_id]
         apply congrArg X.map ∘ congrArg op
-        apply IsInitial.hom_ext (zero_isInitial)
+        apply IsInitial.hom_ext zeroIsInitial
     }
 /--The morphism map for the functor
  `(AugmentedSimplexCategoryᵒᵖ ⥤ C) ⥤ Augmented C` -/
@@ -593,14 +593,14 @@ lemma app' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) : (functor' ⋙ inverse' )
         rw [dif_pos hZ]
         by_cases hY : Y.unop.len =0
         · let hx:= congrArg X.map
-            (congrArg Quiver.Hom.op (map_into_initial_eqToHom (len_zero_isInitial hY) f.unop))
+            (congrArg Quiver.Hom.op (map_into_initial_eqToHom (lenZeroIsInitial hY) f.unop))
           rw [eqToHom_op,eqToHom_map X,Quiver.Hom.op_unop] at hx
           simp only [dif_pos hY,eqToHom_trans, hx, op_unop]
         · unfold functor' functor'.obj'
           simp only [dif_neg hY,Functor.id_obj,Functor.op_obj, Functor.comp_obj, unop_op]
           rw [show map_from_initial (SimplexCategory.augment.obj [Y.unop.len-1]).len
            =(eqToHom (congrArg op (unaugment_augment_obj hY)) ≫f≫eqToHom (congrArg op hZ)).unop by
-           apply IsInitial.hom_ext zero_isInitial,Quiver.Hom.op_unop,X.map_comp,X.map_comp,
+           apply IsInitial.hom_ext zeroIsInitial,Quiver.Hom.op_unop,X.map_comp,X.map_comp,
            eqToHom_map X,eqToHom_map X,eqToHom_trans_assoc,Category.assoc,Category.assoc,
            eqToHom_trans]
       · nth_rewrite 2 [← (Quiver.Hom.op_unop f)]

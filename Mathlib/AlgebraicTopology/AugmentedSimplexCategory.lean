@@ -154,21 +154,15 @@ noncomputable def skeletalEquivalence : AugmentedSimplexCategory ≌ FinLinOrd :
 
 end Skeleton
 
-noncomputable instance  : IsInitial [0]ₐ := by
-  have h : ReflectsColimit (Functor.empty AugmentedSimplexCategory) skeletalFunctor:=
-   CreatesColimit.toReflectsColimit
-  apply h.reflects
-  exact
-    isColimitChangeEmptyCocone FinLinOrd (IsInitial.ofUnique (FinLinOrd.of (Fin 0)))
-    (skeletalFunctor.mapCocone (asEmptyCocone [0]ₐ)) (eqToIso (by rfl))
 
-lemma zero_isInitial : IsInitial [0]ₐ := by
-  exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
+noncomputable def zeroIsInitial : IsInitial [0]ₐ := CreatesColimit.toReflectsColimit.reflects
+    (isColimitChangeEmptyCocone FinLinOrd (IsInitial.ofUnique (FinLinOrd.of (Fin 0)))
+    (skeletalFunctor.mapCocone (asEmptyCocone [0]ₐ)) (eqToIso (by rfl)))
 
-lemma len_zero_isInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
+noncomputable def lenZeroIsInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
     IsInitial Z:= by
    rw  [show Z = [0]ₐ from hZ]
-   exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
+   exact zeroIsInitial
 
 /-- An isomorphism in `AugmentedSimplexCategory` induces an `OrderIso`. -/
 @[simp]
@@ -191,7 +185,7 @@ lemma iso_len {X Y : AugmentedSimplexCategory} ( f: X⟶ Y ) [IsIso f]: X.len =Y
 
 lemma isInitial_len_zero {Z: AugmentedSimplexCategory}  (h : IsInitial Z) :Z.len = 0 := by
   refine iso_len (?_ : Z ≅ [0]ₐ).hom
-  apply IsInitial.uniqueUpToIso h zero_isInitial
+  apply IsInitial.uniqueUpToIso h zeroIsInitial
 
 
 lemma strict_initial' {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ : Z.len≠ 0): Y.len≠ 0:= by
