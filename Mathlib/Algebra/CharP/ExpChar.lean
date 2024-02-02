@@ -49,6 +49,13 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_zero [CharZero R] : ExpChar R 1 := ExpChar.zero
 
+instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
+  obtain hp | ⟨hp⟩ := ‹ExpChar R p›
+  · have := Prod.charZero_of_left R S; exact .zero
+  obtain _ | _ := ‹ExpChar S p›
+  · exact (Nat.not_prime_one hp).elim
+  · have := Prod.charP R S p; exact .prime hp
+
 variable {R} in
 /-- The exponential characteristic is unique. -/
 theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
