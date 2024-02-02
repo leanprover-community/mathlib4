@@ -448,7 +448,7 @@ Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled 
 `positivity` tactic.
 -/
 @[positivity Int.natAbs _]
-def evalNatAbs : PositivityExt where eval {u α} _zα _pα (e : Q(ℕ)) := do
+def evalNatAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.natAbs $a) =>
     let zα' : Q(Zero Int) := q(inferInstance)
@@ -543,14 +543,14 @@ def evalFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.factorial $a) =>
     assertInstancesCommute
-    pure (.positive (q(Nat.factorial_pos $a)))
+    pure (.positive q(Nat.factorial_pos $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
 
 /-- Extension for Nat.ascFactorial. -/
 @[positivity Nat.ascFactorial _ _]
-def evalAscFactorial : PositivityExt where eval {u α} _ _ (e : Q(ℕ)) := do
+def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.ascFactorial ($n + 1) $k) =>
     assertInstancesCommute
     pure (.positive q(Nat.ascFactorial_pos $n $k))
-  | _, _, _ =>  throwError "failed to match Nat.ascFactorial"
+  | _, _, _ => throwError "failed to match Nat.ascFactorial"
