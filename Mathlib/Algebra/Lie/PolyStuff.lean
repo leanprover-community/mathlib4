@@ -132,15 +132,15 @@ open Cardinal Polynomial
 private
 lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
     [IsDomain R] {N : ℕ} (F : MvPolynomial (Fin N) R) (n : ℕ)
-    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hn₀ : n ≠ 0) (hnR : n ≤ #R) :
+    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hnR : n ≤ #R) :
     ∃ r, eval r F ≠ 0 := by
   induction N generalizing n with
   | zero =>
-    refine ⟨fun _ ↦ 0, ?_⟩
-    simp only [eval_zero']
+    use 0
     contrapose! hF₀
     ext d
-    simpa [hn₀.symm, Subsingleton.elim d.support ∅] using @hF d
+    obtain rfl : d = 0 := Subsingleton.elim _ _
+    simpa only [eval_zero, coeff_zero] using hF₀
   | succ N IH =>
     have aux :=
       calc natDegree ((finSuccEquiv R N) F)
@@ -166,8 +166,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
       exact hFn
     obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_lt hin
     rw [add_assoc] at hj
-    specialize IH _ _ hi (hF.finSuccEquiv_coeff_isHomogeneous _ _ _ _ hj.symm)
-      (Nat.succ_ne_zero _) (le_trans _ hnR)
+    specialize IH _ _ hi (hF.finSuccEquiv_coeff_isHomogeneous _ _ _ _ hj.symm) (le_trans _ hnR)
     · norm_cast; omega
     rcases IH with ⟨r, hr⟩
     let φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F)
@@ -191,13 +190,13 @@ open Cardinal in
 lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
     {σ : Type*} [IsDomain R]
     (F : MvPolynomial σ R) (n : ℕ)
-    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hn₀ : n ≠ 0) (h : n ≤ #R) :
+    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (h : n ≤ #R) :
     ∃ r : σ → R, eval r F ≠ 0 := by
   -- reduce to the case where σ is finite
   obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
   have hF₀ : F ≠ 0 := by rintro rfl; simp at hF₀
   have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous _ _ _ hf] at hF
-  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux F n hF₀ hF hn₀ h
+  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux F n hF₀ hF h
   obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
   use r
   rwa [eval_rename]
