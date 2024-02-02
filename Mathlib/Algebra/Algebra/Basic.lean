@@ -420,7 +420,7 @@ end
 
 variable (R A)
 
-/-- The canonical ring homomorphism `algebraMap R A : R →* A` for any `R`-algebra `A`,
+/-- The canonical ring homomorphism `algebraMap R A : R →+* A` for any `R`-algebra `A`,
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
@@ -721,6 +721,10 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   toRingHom := Rat.castHom α
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
+
+/-- The rational numbers are an algebra over the non-negative rationals. -/
+instance : Algebra NNRat ℚ :=
+  NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
 example : algebraRat = Algebra.id ℚ :=

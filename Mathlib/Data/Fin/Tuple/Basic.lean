@@ -444,8 +444,13 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
-proof_wanted repeat_comp_rev {α} (a : Fin n → α) :
-  (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev)
+theorem repeat_rev {α : Type*} (a : Fin n → α) (k : Fin (m * n)) :
+    Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=
+  congr_arg a k.modNat_rev
+
+theorem repeat_comp_rev {α} (a : Fin n → α) :
+    Fin.repeat m a ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) :=
+  funext <| repeat_rev a
 
 end Repeat
 
@@ -503,6 +508,12 @@ theorem snoc_comp_castSucc {n : ℕ} {α : Sort _} {a : α} {f : Fin n → α} :
 @[simp]
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 #align fin.snoc_last Fin.snoc_last
+
+lemma snoc_zero {α : Type*} (p : Fin 0 → α) (x : α) :
+    Fin.snoc p x = fun _ ↦ x := by
+  ext y
+  have : Subsingleton (Fin (0 + 1)) := Fin.subsingleton_one
+  simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
 
 @[simp]
 theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a : α) :
