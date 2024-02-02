@@ -462,7 +462,6 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
 
 section
 
-set_option maxHeartbeats 300000 in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/
@@ -737,7 +736,6 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
@@ -1176,7 +1174,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option maxHeartbeats 500000 in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
