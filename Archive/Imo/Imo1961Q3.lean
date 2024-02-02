@@ -21,16 +21,14 @@ website.
 
 open Real
 
-#check sin_int_mul_pi
-
 theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
     (cos x) ^ n - (sin x) ^ n = 1 ↔
-      (∃ k : ℤ, x = k * π) ∧ Even n ∨ (∃ k : ℤ, x = k * (2 * π)) ∧ Odd n ∨
-        (∃ k : ℤ, x =  -(π / 2) + k * (2 * π)) ∧ Odd n := by
+      (∃ k : ℤ, k * π = x) ∧ Even n ∨ (∃ k : ℤ, k * (2 * π) = x) ∧ Odd n ∨
+        (∃ k : ℤ, -(π / 2) + k * (2 * π) = x) ∧ Odd n := by
   constructor
   · intro h
     rcases eq_or_ne (sin x) 0 with hsinx | hsinx
-    · rw [hsinx, zero_pow' _ h₀, sub_zero, pow_eq_one_iff_of_ne_zero h₀, cos_eq_one_iff,
+    · rw [hsinx, zero_pow h₀, sub_zero, pow_eq_one_iff_of_ne_zero h₀, cos_eq_one_iff,
         cos_eq_neg_one_iff] at h
       rcases h with ⟨k, rfl⟩ | ⟨⟨k, rfl⟩, hn⟩
       · cases n.even_or_odd with
@@ -39,7 +37,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
       · exact .inl ⟨⟨2 * k + 1, by push_cast; ring⟩, hn⟩
     · rcases eq_or_ne (cos x) 0 with hcosx | hcosx
       · right; right
-        rw [hcosx, zero_pow' _ h₀, zero_sub, ← neg_inj, neg_neg, pow_eq_neg_one_iff,
+        rw [hcosx, zero_pow h₀, zero_sub, ← neg_inj, neg_neg, pow_eq_neg_one_iff,
           sin_eq_neg_one_iff] at h
         simpa only [eq_comm] using h
       · have hcos1 : |cos x| < 1 := by
@@ -70,7 +68,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
             _ < 1 ^ m * cos x ^ 2 + 1 ^ m * sin x ^ 2 := by gcongr
             _ = 1 := by simp
   · rintro (⟨⟨k, rfl⟩, hn⟩ | ⟨⟨k, rfl⟩, -⟩ | ⟨⟨k, rfl⟩, hn⟩)
-    · rw [sin_int_mul_pi, zero_pow' _ h₀, sub_zero, ← hn.pow_abs, abs_cos_int_mul_pi, one_pow]
+    · rw [sin_int_mul_pi, zero_pow h₀, sub_zero, ← hn.pow_abs, abs_cos_int_mul_pi, one_pow]
     · have : sin (k * (2 * π)) = 0 := by simpa [mul_assoc] using sin_int_mul_pi (k * 2)
       simp [h₀, this]
     · simp [hn.neg_pow, h₀]
