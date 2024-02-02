@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
 

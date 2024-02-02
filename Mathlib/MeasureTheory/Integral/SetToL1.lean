@@ -638,7 +638,7 @@ theorem setToSimpleFunc_const' [Nonempty α] (T : Set α → F →L[ℝ] F') (x 
 
 theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0) (x : F)
     {m : MeasurableSpace α} : SimpleFunc.setToSimpleFunc T (SimpleFunc.const α x) = T univ x := by
-  cases hα : isEmpty_or_nonempty α
+  cases isEmpty_or_nonempty α
   · have h_univ_empty : (univ : Set α) = ∅ := Subsingleton.elim _ _
     rw [h_univ_empty, hT_empty]
     simp only [setToSimpleFunc, ContinuousLinearMap.zero_apply, sum_empty,
