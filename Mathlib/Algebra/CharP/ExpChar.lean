@@ -49,6 +49,13 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_zero [CharZero R] : ExpChar R 1 := ExpChar.zero
 
+instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
+  obtain hp | ⟨hp⟩ := ‹ExpChar R p›
+  · have := Prod.charZero_of_left R S; exact .zero
+  obtain _ | _ := ‹ExpChar S p›
+  · exact (Nat.not_prime_one hp).elim
+  · have := Prod.charP R S p; exact .prime hp
+
 variable {R} in
 /-- The exponential characteristic is unique. -/
 theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
@@ -277,6 +284,8 @@ theorem iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 theorem iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
 #align iterate_frobenius iterate_frobenius
 
+variable (R)
+
 theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm
 
@@ -296,6 +305,8 @@ theorem iterateFrobenius_add :
 
 theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
   simp_rw [coe_iterateFrobenius, Function.iterate_mul]
+
+variable {R}
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
   (frobenius R p).map_mul x y

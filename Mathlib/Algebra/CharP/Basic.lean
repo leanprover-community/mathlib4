@@ -576,6 +576,12 @@ instance Prod.charP [CharP S p] : CharP (R × S) p := by
   convert Nat.lcm.charP R S p p; simp
 #align prod.char_p Prod.charP
 
+instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
+
+instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
+  cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
+
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p where
