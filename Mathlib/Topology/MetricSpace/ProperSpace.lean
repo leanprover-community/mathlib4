@@ -153,6 +153,12 @@ theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < 
   · exact (exists_pos_lt_subset_ball hr hs h).imp fun r' hr' => ⟨hr'.1.2, hr'.2⟩
 #align exists_lt_subset_ball exists_lt_subset_ball
 
+theorem mem_cocompact_of_exists_closedBall_compl_subset (h : ∃ r, (closedBall x r)ᶜ ⊆ s) :
+    s ∈ cocompact α := by
+  rcases h with ⟨r, h⟩
+  rw [Filter.mem_cocompact]
+  exact ⟨closedBall x r, isCompact_closedBall x r, h⟩
+
 end ProperSpace
 
 theorem Metric.exists_isLocalMin_mem_ball [PseudoMetricSpace α] [ProperSpace α] [TopologicalSpace β]
