@@ -154,11 +154,15 @@ noncomputable def skeletalEquivalence : AugmentedSimplexCategory ≌ FinLinOrd :
 
 end Skeleton
 
-
+/--The object `[0]ₐ` is initial in the category `AugmentedSimplexCategory`.
+-/
 noncomputable def zeroIsInitial : IsInitial [0]ₐ := CreatesColimit.toReflectsColimit.reflects
     (isColimitChangeEmptyCocone FinLinOrd (IsInitial.ofUnique (FinLinOrd.of (Fin 0)))
     (skeletalFunctor.mapCocone (asEmptyCocone [0]ₐ)) (eqToIso (by rfl)))
 
+/--Any object `Z` with `Z.len=0` initial in the category `AugmentedSimplexCategory` (indeed any
+such object is `[0]ₐ`).
+-/
 noncomputable def lenZeroIsInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
     IsInitial Z:= by
    rw  [show Z = [0]ₐ from hZ]
