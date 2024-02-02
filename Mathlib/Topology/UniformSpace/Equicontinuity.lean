@@ -793,8 +793,13 @@ theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S ∪ {x₀}` is continuous. Since
 this will be applied to `DFunLike` types, we state it for any topological space whith a map
-to `X → α` satisfying the right continuity conditions. See also `EquicontinuousWithinAt.closure`
-for a more familiar (but weaker) statement. -/
+to `X → α` satisfying the right continuity conditions. See also `Set.EquicontinuousWithinAt.closure`
+for a more familiar (but weaker) statement.
+
+Note: This could *technically* be called `EquicontinuousWithinAt.closure` without name clashes
+with `Set.EquicontinuousWithinAt.closure`, but we don't do it because, even with a `protected`
+marker, it would introduce ambiguities while working in namespace `Set` (e.g, in the proof of
+any theorem called `Set.something`). -/
 theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
     (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀) (hu₁ : Continuous (S.restrict ∘ u))
     (hu₂ : Continuous (eval x₀ ∘ u)) :
@@ -810,7 +815,7 @@ theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Se
 /-- If a set of functions is equicontinuous at some `x₀`, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
 `DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
-continuity conditions. See also `EquicontinuousAt.closure` for a more familiar statement. -/
+continuity conditions. See also `Set.EquicontinuousAt.closure` for a more familiar statement. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
     EquicontinuousAt (u ∘ (↑) : closure A → X → α) x₀ := by
@@ -820,15 +825,15 @@ theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
 
 /-- If a set of functions is equicontinuous at some `x₀`, its closure for the product topology is
 also equicontinuous at `x₀`. -/
-protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA : A.EquicontinuousAt x₀) :
-    (closure A).EquicontinuousAt x₀ :=
+protected theorem Set.EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X}
+    (hA : A.EquicontinuousAt x₀) : (closure A).EquicontinuousAt x₀ :=
   hA.closure' (u := id) continuous_id
-#align equicontinuous_at.closure EquicontinuousAt.closure
+#align equicontinuous_at.closure Set.EquicontinuousAt.closure
 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, its closure for the
 product topology is also equicontinuous at `x₀` within `S`. This would also be true for the coarser
-topology of pointwise convergence on `S ∪ {x₀}`, see `EquicontinuousWithinAt.closure'`. -/
-protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
+topology of pointwise convergence on `S ∪ {x₀}`, see `Set.EquicontinuousWithinAt.closure'`. -/
+protected theorem Set.EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
     (hA : A.EquicontinuousWithinAt S x₀) :
     (closure A).EquicontinuousWithinAt S x₀ :=
   hA.closure' (u := id) (Pi.continuous_restrict _) (continuous_apply _)
@@ -836,7 +841,7 @@ protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X
 /-- If a set of functions is equicontinuous, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
 `DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
-continuity conditions. See also `Equicontinuous.closure` for a more familiar statement. -/
+continuity conditions. See also `Set.Equicontinuous.closure` for a more familiar statement. -/
 theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     (hA : Equicontinuous (u ∘ (↑) : A → X → α)) (hu : Continuous u) :
     Equicontinuous (u ∘ (↑) : closure A → X → α) := fun x ↦ (hA x).closure' hu
@@ -845,7 +850,7 @@ theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
 /-- If a set of functions is equicontinuous on a set `S`, the same is true for its closure in *any*
 topology for which evaluation at any `x ∈ S` is continuous. Since this will be applied to
 `DFunLike` types, we state it for any topological space whith a map to `X → α` satisfying the right
-continuity conditions. See also `EquicontinuousOn.closure` for a more familiar
+continuity conditions. See also `Set.EquicontinuousOn.closure` for a more familiar
 (but weaker) statement. -/
 theorem EquicontinuousOn.closure' {A : Set Y} {u : Y → X → α} {S : Set X}
     (hA : EquicontinuousOn (u ∘ (↑) : A → X → α) S) (hu : Continuous (S.restrict ∘ u)) :
@@ -854,21 +859,21 @@ theorem EquicontinuousOn.closure' {A : Set Y} {u : Y → X → α} {S : Set X}
 
 /-- If a set of functions is equicontinuous, its closure for the product topology is also
 equicontinuous. -/
-protected theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
-    (closure A).Equicontinuous := fun x ↦ (hA x).closure
-#align equicontinuous.closure Equicontinuous.closure
+protected theorem Set.Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
+    (closure A).Equicontinuous := fun x ↦ Set.EquicontinuousAt.closure (hA x)
+#align equicontinuous.closure Set.Equicontinuous.closure
 
 /-- If a set of functions is equicontinuous, its closure for the product topology is also
 equicontinuous. This would also be true for the coarser topology of pointwise convergence on `S`,
 see `EquicontinuousOn.closure'`. -/
-protected theorem EquicontinuousOn.closure {A : Set <| X → α} {S : Set X}
+protected theorem Set.EquicontinuousOn.closure {A : Set <| X → α} {S : Set X}
     (hA : A.EquicontinuousOn S) : (closure A).EquicontinuousOn S :=
-  fun x hx ↦ (hA x hx).closure
+  fun x hx ↦ Set.EquicontinuousWithinAt.closure (hA x hx)
 
 /-- If a set of functions is uniformly equicontinuous on a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S` i continuous. Since this will be
 applied to `DFunLike` types, we state it for any topological space whith a map to `β → α` satisfying
-the right continuity conditions. See also `UniformEquicontinuousOn.closure` for a more familiar
+the right continuity conditions. See also `Set.UniformEquicontinuousOn.closure` for a more familiar
 (but weaker) statement. -/
 theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : Set β}
     (hA : UniformEquicontinuousOn (u ∘ (↑) : A → β → α) S) (hu : Continuous (S.restrict ∘ u)) :
@@ -886,7 +891,8 @@ theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : 
 /-- If a set of functions is uniformly equicontinuous, the same is true for its closure in *any*
 topology for which evaluation at any point is continuous. Since this will be applied to
 `DFunLike` types, we state it for any topological space whith a map to `β → α` satisfying the right
-continuity conditions. See also `UniformEquicontinuous.closure` for a more familiar statement. -/
+continuity conditions. See also `Set.UniformEquicontinuous.closure` for a more familiar statement.
+-/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :
     UniformEquicontinuous (u ∘ (↑) : closure A → β → α) := by
@@ -896,15 +902,15 @@ theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
 
 /-- If a set of functions is uniformly equicontinuous, its closure for the product topology is also
 uniformly equicontinuous. -/
-protected theorem UniformEquicontinuous.closure {A : Set <| β → α} (hA : A.UniformEquicontinuous) :
-    (closure A).UniformEquicontinuous :=
+protected theorem Set.UniformEquicontinuous.closure {A : Set <| β → α}
+    (hA : A.UniformEquicontinuous) : (closure A).UniformEquicontinuous :=
   UniformEquicontinuous.closure' (u := id) hA continuous_id
-#align uniform_equicontinuous.closure UniformEquicontinuous.closure
+#align uniform_equicontinuous.closure Set.UniformEquicontinuous.closure
 
 /-- If a set of functions is uniformly equicontinuous on a set `S`, its closure for the product
 topology is also uniformly equicontinuous. This would also be true for the coarser topology of
 pointwise convergence on `S`, see `UniformEquicontinuousOn.closure'`.-/
-protected theorem UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Set β}
+protected theorem Set.UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Set β}
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
   UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)
 
