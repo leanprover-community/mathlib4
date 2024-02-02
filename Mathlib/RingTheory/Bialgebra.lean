@@ -36,7 +36,10 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   The two corresponding uncurried maps `A ⊗[R] A →ₗ[R]` (also equal)
   are the following: the first factors through `A` and is is multiplication on `A` followed
   by `counit`. The second factors through `R ⊗[R] R` is `counit ⊗ counit` followed by
-  multiplication on `R`. -/
+  multiplication on `R`.
+
+  See `Bialgebra.mk'` for a constructor for bialgebras which uses
+  the more familiar `counit (a * b) = counit a * counit b`. -/
   mul_compr₂_counit : (LinearMap.mul R A).compr₂ counit = (LinearMap.mul R R).compl₁₂ counit counit
   -- The comultiplication is an algebra morphism
   /-- The comultiplication on a bialgebra preserves `1`. -/
@@ -45,7 +48,10 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
   are equal. The corresponding equal uncurried maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
   are firstly multiplcation followed by `comul`, and secondly `comul ⊗ comul` followed
-  by multiplication on `A ⊗[R] A`. -/
+  by multiplication on `A ⊗[R] A`.
+
+  See `Bialgebra.mk'` for a constructor for bialgebras which uses
+  the more familiar `comul (a * b) = comul a * comul b`. -/
   mul_compr₂_comul :
     (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
 
@@ -62,6 +68,17 @@ lemma comul_mul {a b : A} : B.comul (a * b) = B.comul a * B.comul b :=
 
 -- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
 attribute [simp] counit_one comul_one counit_mul comul_mul
+
+def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
+    [Algebra R A] [C : Coalgebra R A] (counit_one : C.counit 1 = 1)
+    (counit_mul : ∀ {a b}, C.counit (a * b) = C.counit a * C.counit b)
+    (comul_one : C.comul 1 = 1)
+    (comul_mul : ∀ {a b}, C.comul (a * b) = C.comul a * C.comul b) :
+    Bialgebra R A where
+      counit_one := counit_one
+      mul_compr₂_counit := by ext; exact counit_mul
+      comul_one := comul_one
+      mul_compr₂_comul := by ext; exact comul_mul
 
 variable (R A)
 
