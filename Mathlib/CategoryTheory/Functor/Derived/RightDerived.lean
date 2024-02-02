@@ -65,7 +65,7 @@ lemma rightDerived_fac_app (G : H ⥤ D) (β : F ⟶ L ⋙ G) (X : C):
 lemma rightDerived_ext (G : H ⥤ D) (γ₁ γ₂ : RF ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
-  RF.leftKanExtension_ext α γ₁ γ₂ hγ
+  Functor.IsLeftKanExtension.hom_ext RF α γ₁ γ₂ hγ
 
 noncomputable def rightDerivedNatTrans (τ : F ⟶ F') : RF ⟶ RF' :=
   RF.rightDerivedDesc α W RF' (τ ≫ α')

@@ -73,7 +73,7 @@ lemma leftKanExtension_fac_app (G : H ⥤ D) (β : F ⟶ L ⋙ G) (X : C) :
     α.app X ≫ (F'.leftKanExtensionDesc α G β).app (L.obj X) = β.app X :=
   NatTrans.congr_app (F'.leftKanExtension_fac α G β) X
 
-lemma leftKanExtension_ext {G : H ⥤ D} (γ₁ γ₂ : F' ⟶ G)
+lemma IsLeftKanExtension.hom_ext {G : H ⥤ D} (γ₁ γ₂ : F' ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   (F'.leftKanExtensionUniversal α).hom_ext hγ
 
@@ -151,6 +151,12 @@ instance : (L.leftKanExtension F).IsLeftKanExtension (L.leftKanExtensionUnit F) 
   nonempty_isUniversal := ⟨by
     have : HasInitial (LeftExtension L F) := HasLeftKanExtension.hasInitial
     apply initialIsInitial⟩
+
+@[ext]
+lemma leftKanExtension_hom_ext {G : H ⥤ D} (γ₁ γ₂ : leftKanExtension L F ⟶ G)
+    (hγ : leftKanExtensionUnit L F ≫ whiskerLeft L γ₁ =
+      leftKanExtensionUnit L F ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
+  IsLeftKanExtension.hom_ext _ (leftKanExtensionUnit L F) _ _ hγ
 
 end
 
