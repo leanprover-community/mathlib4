@@ -269,15 +269,15 @@ lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
 
 lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
-    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y := by
-  induction n generalizing y with
-  | zero => rfl
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubalgebra.coe_ad]
+    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y :=
+  LieSubmodule.coe_toEndomorphism_pow R H L H.toLieSubmodule x y n
 
 variable {L M}
 
+local notation "φ" => LieModule.toEndomorphism R L M
+
 lemma LieModule.toEndomorphism_lie (x y : L) (z : M) :
-    (toEndomorphism R L M x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, toEndomorphism R L M x z⁆ := by
+    (φ x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, φ x z⁆ := by
   simp
 
 lemma LieAlgebra.ad_lie (x y z : L) :
@@ -286,20 +286,19 @@ lemma LieAlgebra.ad_lie (x y z : L) :
 
 open Finset in
 lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
-    ((toEndomorphism R L M x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 •
-        ⁅((ad R L x) ^ ij.1) y, ((toEndomorphism R L M x) ^ ij.2) z⁆ := by
+    ((φ x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
   induction n with
   | zero => simp
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
-      (fun i j ↦ ⁅((ad R L x) ^ i) y, ((toEndomorphism R L M x) ^ j) z⁆) n]
-    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul,
-      toEndomorphism_lie, nsmul_add, sum_add_distrib]
-    convert add_comm _ _ using 4
-    rename_i ij hij
-    rw [mem_antidiagonal, add_comm] at hij
-    exact Nat.choose_symm_of_eq_add hij.symm
+      (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
+    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
+      sum_add_distrib]
+    rw [add_comm, add_left_cancel_iff, sum_congr rfl]
+    rintro ⟨i, j⟩ hij
+    rw [mem_antidiagonal] at hij
+    rw [Nat.choose_symm_of_eq_add hij.symm]
 
 open Finset in
 lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :

@@ -25,9 +25,9 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
 
 * `LieSubalgebra.normalizer_eq_self_of_engel_le`:
   Lie subalgebras containing an Engel subalgebra are self-normalizing,
-  provided the ambient Lie algebra is artinian.
+  provided the ambient Lie algebra is Artinian.
 * `LieSubalgebra.isNilpotent_of_forall_le_engel`:
-  A Lie subalgebra of a noetherian Lie algebra is nilpotent
+  A Lie subalgebra of a Noetherian Lie algebra is nilpotent
   if it is contained in the Engel subalgebra of all its elements.
 -/
 
@@ -46,7 +46,7 @@ all `y : L` such that `(ad R L x)^n` kills `y` for some `n`.
 Engel subalgebras are self-normalizing (`LieSubalgebra.normalizer_engel`),
 and minimal ones are nilpotent, hence Cartan subalgebras. -/
 @[simps!]
-def Engel (x : L) : LieSubalgebra R L :=
+def engel (x : L) : LieSubalgebra R L :=
   { (ad R L x).maximalGeneralizedEigenspace 0 with
     lie_mem' := by
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
@@ -61,10 +61,10 @@ def Engel (x : L) : LieSubalgebra R L :=
       all_goals simp [LinearMap.iterate_apply_eq_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
-    y ∈ Engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
+    y ∈ engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
   (Module.End.mem_maximalGeneralizedEigenspace _ _ _).trans <| by simp only [zero_smul, sub_zero]
 
-lemma self_mem_engel (x : L) : x ∈ Engel R x := by
+lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
 
@@ -73,7 +73,7 @@ See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgeb
 containing an Engel subalgebra are also self-normalizing,
 provided that the ambient Lie algebra is artinina. -/
 @[simp]
-lemma normalizer_engel (x : L) : normalizer (Engel R x) = Engel R x := by
+lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   apply le_antisymm _ (le_normalizer _)
   intro y hy
   rw [mem_normalizer_iff] at hy
@@ -88,16 +88,16 @@ lemma normalizer_engel (x : L) : normalizer (Engel R x) = Engel R x := by
 variable {R}
 
 open Filter in
-/-- A Lie-subalgebra of an artinian Lie algebra is self-normalizing
+/-- A Lie-subalgebra of an Artinian Lie algebra is self-normalizing
 if it contains an Engel subalgebra.
 See `LieSubalgebra.normalizer_engel` for a proof that Engel subalgebras are self-normalizing,
-avoiding the artinian condition. -/
+avoiding the Artinian condition. -/
 lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
-    (H : LieSubalgebra R L) (x : L) (h : Engel R x ≤ H) :
+    (H : LieSubalgebra R L) (x : L) (h : engel R x ≤ H) :
     normalizer H = H := by
   set N := normalizer H
   apply le_antisymm _ (le_normalizer H)
-  calc N.toSubmodule ≤ (Engel R x).toSubmodule ⊔ H.toSubmodule := ?_
+  calc N.toSubmodule ≤ (engel R x).toSubmodule ⊔ H.toSubmodule := ?_
        _ = H := by rwa [sup_eq_right]
   have aux₁ : ∀ n ∈ N, ⁅x, n⁆ ∈ H := by
     intro n hn
@@ -130,10 +130,10 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply aux₁
     simp only [Submodule.coeSubtype, SetLike.coe_mem]
 
-/-- A Lie subalgebra of a noetherian Lie algebra is nilpotent
+/-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
-    (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ Engel R x) :
+    (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ engel R x) :
     LieAlgebra.IsNilpotent R H := by
   rw [LieAlgebra.isNilpotent_iff_forall]
   intro x
