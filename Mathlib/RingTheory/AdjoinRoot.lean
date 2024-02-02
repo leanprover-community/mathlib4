@@ -266,6 +266,38 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     rwa [degree_C h_contra, zero_le_degree_iff]
 #align adjoin_root.of.injective_of_degree_ne_zero AdjoinRoot.of.injective_of_degree_ne_zero
 
+lemma root_X_pow_sub_C_pow (n : ℕ) (a : R) :
+    (AdjoinRoot.root (X ^ n - C a)) ^ n = AdjoinRoot.of _ a := by
+  rw [← sub_eq_zero, ← AdjoinRoot.eval₂_root, eval₂_sub, eval₂_C, eval₂_pow, eval₂_X]
+
+lemma root_X_pow_sub_C_ne_zero [Nontrivial R] {n : ℕ} (hn : 1 < n) (a : R) :
+    (AdjoinRoot.root (X ^ n - C a)) ≠ 0 :=
+  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.not_eq_zero_of_lt hn))
+    X_ne_zero <| by rwa [natDegree_X_pow_sub_C, natDegree_X]
+
+lemma root_X_pow_sub_C_ne_zero' [Nontrivial R] {n : ℕ} {a : R} (hn : 0 < n) (ha : a ≠ 0) :
+    (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
+  obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
+  · rw [← Nat.one_eq_succ_zero, pow_one]
+    intro e
+    refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
+    trans AdjoinRoot.mk (X - C a) (X - (X - C a))
+    · rw [sub_sub_cancel]
+    · rw [map_sub, mk_self, sub_zero, mk_X, e]
+  · exact root_X_pow_sub_C_ne_zero hn a
+
+lemma root_X_pow_sub_C_eq_zero_iff [Field K] {n : ℕ} {a : K} (H : Irreducible (X ^ n - C a)) :
+    (AdjoinRoot.root (X ^ n - C a)) = 0 ↔ a = 0 := by
+  have hn := (Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H))
+  refine ⟨not_imp_not.mp (root_X_pow_sub_C_ne_zero' hn), ?_⟩
+  rintro rfl
+  have := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) rfl
+  rw [this, pow_one, map_zero, sub_zero, ← mk_X, mk_self]
+
+lemma root_X_pow_sub_C_ne_zero_iff [Field K] {n : ℕ} {a : K} (H : Irreducible (X ^ n - C a)) :
+    (AdjoinRoot.root (X ^ n - C a)) ≠ 0 ↔ a ≠ 0 :=
+  (root_X_pow_sub_C_eq_zero_iff H).not
+
 variable [CommRing S]
 
 /-- Lift a ring homomorphism `i : R →+* S` to `AdjoinRoot f →+* S`. -/
