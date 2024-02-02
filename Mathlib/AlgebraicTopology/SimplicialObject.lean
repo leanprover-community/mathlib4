@@ -439,7 +439,7 @@ def map' {X  Y : AugmentedSimplexCategoryᵒᵖ ⥤ C} (f : X⟶ Y) : obj' X ⟶
     left := whiskerLeft SimplexCategory.augment.op f
     right := f.app  (op [0]ₐ)
     w := by
-       ext d
+       ext
        rw [Functor.id_map,NatTrans.comp_app,NatTrans.comp_app]
        simp only [Functor.id_obj, Functor.const_obj_obj, whiskerLeft_app, Functor.op_obj,
          Functor.const_map_app,obj',Functor.id_obj, Functor.op_obj, Functor.comp_obj,
@@ -456,20 +456,20 @@ namespace inverse'
 namespace obj'
 /--The object map for the functor which is the image of `X ∈ Augmented C` under the functor
 `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
-def obj' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  ):
-    C := if Y.unop.len=0 then X.right else X.left.obj (op [Y.unop.len-1])
+def obj' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  ): C :=
+    if Y.unop.len=0 then X.right else X.left.obj (op [Y.unop.len-1])
 /--Part of the morphism map for the functor which is the image of `X ∈ Augmented C`
  under the functor  `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
-def map'' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  )
-    : obj'.obj' X Y ⟶ X.right :=  by
+def map'' (X: SimplicialObject.Augmented C) (Y : AugmentedSimplexCategoryᵒᵖ  ) :
+    obj' X Y ⟶ X.right :=  by
     by_cases hY : Y.unop.len=0
     · exact eqToHom (if_pos hY )
     · exact (eqToHom (if_neg hY )) ≫  X.hom.app (op [Y.unop.len-1])
 
 /--The morphism map for the functor which is the image of `X ∈ Augmented C`
  under the functor  `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
-def map' (X: SimplicialObject.Augmented C) {Y Z: AugmentedSimplexCategoryᵒᵖ}
-    (f: Y ⟶ Z): obj'.obj' X Y ⟶ obj'.obj' X Z :=  by
+def map' (X: SimplicialObject.Augmented C) {Y Z: AugmentedSimplexCategoryᵒᵖ} (f: Y ⟶ Z) :
+    obj' X Y ⟶ obj' X Z :=  by
     by_cases hZ : Z.unop.len =0
     · exact  (obj'.map'' X Y)≫ (eqToHom (if_pos hZ).symm)
     · exact eqToHom (if_neg (strict_initial' f.unop hZ))
@@ -478,8 +478,7 @@ def map' (X: SimplicialObject.Augmented C) {Y Z: AugmentedSimplexCategoryᵒᵖ}
 end obj'
 /--The object map for the functor
 `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
-def obj' (X: SimplicialObject.Augmented C) :
-  (AugmentedSimplexCategoryᵒᵖ ⥤ C) where
+def obj' (X: SimplicialObject.Augmented C) : (AugmentedSimplexCategoryᵒᵖ ⥤ C) where
    obj := obj'.obj' X
    map := obj'.map' X
    map_id := by
@@ -516,8 +515,7 @@ def obj' (X: SimplicialObject.Augmented C) :
         Category.id_comp]
 /--The morphism map for the functor
 `Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ ⥤ C)`-/
-def map'  {X1 X2: SimplicialObject.Augmented C}  (f :X1 ⟶ X2):
-    obj' X1 ⟶ obj' X2 where
+def map'  {X1 X2: SimplicialObject.Augmented C}  (f :X1 ⟶ X2): obj' X1 ⟶ obj' X2 where
     app Y :=by
       by_cases  hY: Y.unop.len=0
       · exact eqToHom (if_pos hY) ≫ f.right ≫ eqToHom (if_pos hY).symm
@@ -574,8 +572,7 @@ def inverse' : SimplicialObject.Augmented C ⥤ (AugmentedSimplexCategoryᵒᵖ 
 
 namespace unitIso'
 
-lemma app' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) : (functor' ⋙ inverse' ).obj X =X
-  :=by
+lemma app' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) : (functor' ⋙ inverse' ).obj X =X :=by
     rw [Functor.comp_obj]
     apply Functor.ext
     case h_obj =>
@@ -613,8 +610,8 @@ lemma app' (X : AugmentedSimplexCategoryᵒᵖ ⥤ C) : (functor' ⋙ inverse' )
 
 
 lemma nat' (X1 X2 : AugmentedSimplexCategoryᵒᵖ ⥤ C)  (F :X1⟶ X2):
-(𝟭 (AugmentedSimplexCategoryᵒᵖ ⥤ C)).map F ≫ eqToHom (app' X2).symm
-= eqToHom (app' X1).symm  ≫ (functor' ⋙ inverse').map F:= by
+    (𝟭 (AugmentedSimplexCategoryᵒᵖ ⥤ C)).map F ≫ eqToHom (app' X2).symm
+    = eqToHom (app' X1).symm  ≫ (functor' ⋙ inverse').map F:= by
   simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, Functor.comp_map]
   apply NatTrans.ext
   funext d

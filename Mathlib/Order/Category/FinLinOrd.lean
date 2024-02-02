@@ -70,7 +70,8 @@ instance {A B : FinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
     exact congr_fun h x
   map_rel f _ _ h := f.monotone h
 
-instance (X : FinLinOrd): Inhabited (Fin 0 ⟶ X) := ⟨ (@OrderEmbedding.ofIsEmpty (Fin 0) (X)).toOrderHom⟩
+instance (X : FinLinOrd): Inhabited (Fin 0 ⟶ X) :=
+   ⟨(@OrderEmbedding.ofIsEmpty (Fin 0) (X)).toOrderHom⟩
 
 
 instance (X : FinLinOrd) : Unique ((of (Fin 0)) ⟶ X) where

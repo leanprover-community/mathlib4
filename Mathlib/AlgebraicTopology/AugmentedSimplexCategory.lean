@@ -167,11 +167,9 @@ lemma zero_isInitial : IsInitial [0]ₐ := by
 
 lemma len_zero_isInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
  IsInitial Z:= by
-   have h : Z= [0]ₐ := by
-    ext
-    exact hZ
-   rw  [h]
+   rw  [show Z = [0]ₐ from hZ]
    exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
+
 /-- An isomorphism in `AugmentedSimplexCategory` induces an `OrderIso`. -/
 @[simp]
 def orderIsoOfIso {x y : AugmentedSimplexCategory} (e : x ≅ y) : Fin x.len ≃o Fin y.len :=
@@ -184,54 +182,35 @@ def orderIsoOfIso {x y : AugmentedSimplexCategory} (e : x ≅ y) : Fin x.len ≃
         simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 
+open Finset in
 lemma iso_len {X Y : AugmentedSimplexCategory} ( f: X⟶ Y ) [IsIso f]: X.len =Y.len := by
-    rename_i iso
-    let isot: X≅ Y := asIso f
-    let ioh:= orderIsoOfIso isot
-    have hii:= ioh.toEquiv
-    have hx:(Finset.univ :Finset (Fin (X.len))).card
-    = Finset.card (Finset.image (⇑hii) (Finset.univ :Finset (Fin (X.len)))) := by
-        symm
-        apply Finset.card_image_of_injOn
-        exact Set.injOn_of_injective (Equiv.injective hii) (Finset.univ :Finset (Fin (X.len)))
-    have hx2 :Finset.card (Finset.image (⇑hii) (Finset.univ :Finset (Fin (X.len))))
-     =  (Finset.univ :Finset (Fin (Y.len))).card := by
-        congr
-        exact Finset.image_univ_equiv hii
-    rw [Finset.card_fin X.len] at hx
-    rw [Finset.card_fin Y.len] at hx2
-    rw [hx, hx2]
+    rw [← card_fin X.len,← card_fin Y.len,← card_image_of_injOn (Set.injOn_of_injective
+    (Equiv.injective ((orderIsoOfIso (asIso f)).toEquiv)) (univ :Finset (Fin (X.len)))),
+      congrArg card (image_univ_equiv ((orderIsoOfIso (asIso f)).toEquiv))]
+
 
 lemma isInitial_len_zero {Z: AugmentedSimplexCategory}  (h : IsInitial Z) :Z.len = 0 := by
-  have heq: Z ≅ [0]ₐ := by
-    apply IsInitial.uniqueUpToIso
-    exact h
-    exact zero_isInitial
-  let f:= heq.hom
-  have ft: IsIso f := IsIso.of_iso heq
-  exact iso_len f
+  refine iso_len (?_ : Z ≅ [0]ₐ).hom
+  apply IsInitial.uniqueUpToIso h zero_isInitial
 
-def strict_initial' {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ : Z.len≠ 0):
-    Y.len≠ 0:= by
-      let f': Fin (Z.len) →o Fin (Y.len) := f.toOrderHom
+
+lemma strict_initial' {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ : Z.len≠ 0): Y.len≠ 0:= by
       by_contra  hYn
+      let f':= f.toOrderHom
       rw [hYn] at f'
       exact ((fun a ↦ IsEmpty.false a) ∘ f') (⟨ 0 ,Nat.pos_of_ne_zero hZ⟩:Fin (Z.len) )
 
 lemma map_into_initial_eq {Z I : AugmentedSimplexCategory} (h:IsInitial I) (f : Z ⟶ I) : Z=I := by
-  have hI2: I.len =0 :=isInitial_len_zero h
   by_cases hZ: Z.len=0
-  · apply ext
-    rw [hZ, hI2]
-  · have hI: I.len ≠ 0 := strict_initial' f hZ
-    exact (hI hI2).elim
+  · ext
+    rw [hZ, isInitial_len_zero h]
+  · exact ((strict_initial' f hZ) (isInitial_len_zero h)).elim
 
 lemma map_into_initial_eqToHom {Z I : AugmentedSimplexCategory} (h : IsInitial I) (f : Z ⟶ I) :
     f = eqToHom (map_into_initial_eq h f):= by
-    have hZ: IsInitial Z := by
-      rw [map_into_initial_eq h f]
-      exact h
-    apply IsInitial.hom_ext hZ
+    refine IsInitial.hom_ext ?_ f (eqToHom (map_into_initial_eq h f))
+    rw [map_into_initial_eq h f]
+    exact h
 
 instance : HasStrictInitialObjects AugmentedSimplexCategory := by
   fconstructor
@@ -239,25 +218,22 @@ instance : HasStrictInitialObjects AugmentedSimplexCategory := by
   rw [map_into_initial_eqToHom hIf f]
   exact instIsIsoEqToHom (map_into_initial_eq hIf f)
 
-
+/--The unique morphism from `[0]ₐ` to `[n]ₐ`-/
 def map_from_initial (n: ℕ ): [0]ₐ ⟶  [n]ₐ :=(@OrderEmbedding.ofIsEmpty (Fin 0) (Fin n)).toOrderHom
 
 
 section InitialSegements
 
-def InitialSeg' {n:ℕ} (i : Fin (n+1)) : Fin (i.val) →o Fin (n):=
- OrderHom.comp (@Fin.castIso (i.val+(n-i.val)) n (add_tsub_cancel_of_le  (Fin.is_le i) ))
- (@Fin.castAddEmb i.val (n-i.val)).toOrderHom
+/--The morphism from `[i]ₐ` into `[n]ₐ` with `i≤n` embedding into the first i-factors.-/
+def InitialSeg {n:ℕ} (i : Fin (n+1)) : [i.val]ₐ ⟶  [n]ₐ :=
+  Hom.mk (Fin.castAddEmb (n-i.val)).toOrderHom ≫ eqToHom (add_tsub_cancel_of_le  (Fin.is_le i))
 
+/--The morphism from `[n-i]ₐ` into `[n]ₐ` with `i≤n` embedding into the last (n-i)-factors.-/
+def InitialSegComp {n:ℕ} (i : Fin (n+1)) : [n-i.val]ₐ ⟶ [n]ₐ  :=
+ Hom.mk (Fin.addNatEmb i.val).toOrderHom ≫ eqToHom (tsub_add_cancel_of_le  (Fin.is_le i))
 
-def InitialSeg_comp' {n:ℕ} (i : Fin (n+1)) : Fin (n-i.val) →o Fin (n):=
-OrderHom.comp (@Fin.castIso ((n-i.val)+i.val) n (tsub_add_cancel_of_le (Fin.is_le i)))
-   (@Fin.addNatEmb (n-i.val) i.val).toOrderHom
-
-def InitialSeg {n:ℕ} (i : Fin (n+1)) : [i.val]ₐ ⟶  [n]ₐ := InitialSeg' i
-
-def InitialSeg_comp {n:ℕ} (i : Fin (n+1)) : [n-i.val]ₐ ⟶ [n]ₐ  := InitialSeg_comp' i
-
+/--Given a morphism `f : [m]ₐ ⟶ [n]ₐ` and a `i<n`, the `j≤m` such that `∀ a< j, f a < i`
+and `∀ a≥j, f a ≥ i`.-/
 def preimage {m n : ℕ} (f : [m]ₐ ⟶ [n]ₐ) (i: Fin (n+1)) : Fin (m+1) :=
   ⟨ Finset.card  (Set.toFinset {a | (f.toOrderHom a).val < i.val}),by {
     rw [Nat.lt_succ]
@@ -266,7 +242,7 @@ def preimage {m n : ℕ} (f : [m]ₐ ⟶ [n]ₐ) (i: Fin (n+1)) : Fin (m+1) :=
 
 end InitialSegements
 end AugmentedSimplexCategory
-
+/--The functor including the simplex category into the augmented simplex category.-/
 def SimplexCategory.augment : SimplexCategory ⥤ AugmentedSimplexCategory where
   obj X := (X.len+1)
   map f :=  f.toOrderHom
@@ -277,7 +253,8 @@ lemma SimplexCategory.augment_len (Z : SimplexCategory ):
       exact Nat.succ_ne_zero (SimplexCategory.len Z)
 
 namespace AugmentedSimplexCategory
-
+/--Given a `Z ∈ AugmentedSimplexCategory` with `Z.len>0` the object in `SimplexCategory` which maps
+ to  `Z` under `SimplexCategory.augment`.-/
 def unaugment.obj (Z : AugmentedSimplexCategory)  : SimplexCategory :=
    SimplexCategory.mk (Z.len-1)
 
@@ -289,9 +266,11 @@ lemma unaugment_augment_obj {Z : AugmentedSimplexCategory} (hZ: Z.len ≠ 0) :
       exact Nat.succ_pred hZ
 
 namespace unaugment
-def map {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y)
-    (hZ :Z.len≠ 0) : (obj Z) ⟶ (obj Y) := SimplexCategory.Hom.mk ((eqToHom (unaugment_augment_obj (hZ))) ≫  f≫
-    (eqToHom (unaugment_augment_obj (strict_initial' f hZ)).symm) )
+/--Given a `f: Z ⟶ Y ∈ Mor AugmentedSimplexCategory` with `Z.len>0`
+the morphism in `SimplexCategory` which maps to  `f` under `SimplexCategory.augment`.-/
+def map {Y Z: AugmentedSimplexCategory} (f: Z ⟶ Y) (hZ :Z.len≠ 0) : (obj Z) ⟶ (obj Y) :=
+ SimplexCategory.Hom.mk (eqToHom (unaugment_augment_obj hZ) ≫ f≫
+  eqToHom (unaugment_augment_obj (strict_initial' f hZ)).symm )
 
 lemma map_id { Z: AugmentedSimplexCategory}  (hZ :Z.len≠ 0) :
     map (𝟙 Z) hZ = 𝟙 (SimplexCategory.mk (Z.len-1)) := by
@@ -299,35 +278,27 @@ lemma map_id { Z: AugmentedSimplexCategory}  (hZ :Z.len≠ 0) :
        rw [← eqToHom_refl,← eqToHom_refl,eqToHom_trans,eqToHom_trans]
        all_goals rfl
 
-lemma map_comp { Y Z  W: AugmentedSimplexCategory}  (hW :W.len≠ 0)
-    (f: Z ⟶ Y) (g : W ⟶ Z) :
-     map (g ≫ f) hW = (map g hW) ≫  (map f (strict_initial' g hW))   := by
-       have ht: (map g hW) ≫  (map f (strict_initial' g hW)) =
-       SimplexCategory.Hom.mk ( (eqToHom (unaugment_augment_obj (hW)))≫ g
-       ≫  ((eqToHom (unaugment_augment_obj (strict_initial' g hW)).symm) ≫
-      (eqToHom (unaugment_augment_obj (strict_initial' g hW)))) ≫ f ≫
-      (eqToHom (unaugment_augment_obj (strict_initial' f (strict_initial' g hW))).symm)
-      ) := rfl
-       rw [ht,eqToHom_trans,eqToHom_refl]
+lemma map_comp { Y Z  W: AugmentedSimplexCategory}  (hW :W.len≠ 0) (f: Z ⟶ Y) (g : W ⟶ Z):
+    map (g ≫ f) hW = (map g hW) ≫  (map f (strict_initial' g hW))   := by
+       nth_rewrite 1 [← Category.comp_id g ]
+       rw [← eqToHom_refl,←eqToHom_trans]
        rfl
+
 end unaugment
 
 lemma unaugment_augment_map {X Z : AugmentedSimplexCategory  } (f: Z ⟶ X ) (hZ :Z.len ≠ 0):
-   eqToHom (AugmentedSimplexCategory.unaugment_augment_obj hZ).symm≫ SimplexCategory.augment.map (AugmentedSimplexCategory.unaugment.map f hZ)
-    ≫ eqToHom (AugmentedSimplexCategory.unaugment_augment_obj (AugmentedSimplexCategory.strict_initial' f hZ)) =  f
+   eqToHom (unaugment_augment_obj hZ).symm≫ SimplexCategory.augment.map (unaugment.map f hZ)
+    ≫ eqToHom (unaugment_augment_obj (strict_initial' f hZ)) =  f
     := by
       rw [eqToHom_comp_iff,comp_eqToHom_iff]
       rfl
-
 
 end AugmentedSimplexCategory
 
 lemma SimplexCategory.augment_unaugment_map {X Z : SimplexCategory  } (f: Z ⟶ X):
  AugmentedSimplexCategory.unaugment.map (SimplexCategory.augment.map f)
   (SimplexCategory.augment_len Z) = f := by
-    unfold SimplexCategory.augment AugmentedSimplexCategory.unaugment.map
-    dsimp
     change _= SimplexCategory.Hom.mk (f.toOrderHom)
-    congr
+    apply congrArg SimplexCategory.Hom.mk
     apply OrderHom.ext
     rfl
