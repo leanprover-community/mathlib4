@@ -876,7 +876,7 @@ namespace AffineSubspace
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
-@[simps]
+@[simps linear, simps! toFun]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
   { Equiv.Set.image _ (E : Set P₁) hφ with

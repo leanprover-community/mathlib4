@@ -270,7 +270,7 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
 
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
-termination_by _ => (B₂ \ B₁).encard
+termination_by (B₂ \ B₁).encard
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/

@@ -1370,7 +1370,7 @@ theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
 members of `x` are all `Hereditarily p`. -/
 def Hereditarily (p : ZFSet → Prop) (x : ZFSet) : Prop :=
   p x ∧ ∀ y ∈ x, Hereditarily p y
-termination_by _ => x
+termination_by x
 #align Set.hereditarily ZFSet.Hereditarily
 
 section Hereditarily

@@ -186,20 +186,15 @@ theorem coeff_hermite_explicit :
       rw [(by ring : 2 * (n + 1) + (k + 1) = 2 * n + 1 + (k + 1) + 1),
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
-      rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
-        Int.negSucc_eq]
-      -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring_nf
-      simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
-      norm_cast
-      simp only [← add_assoc, add_comm]
+      rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel]
+      ring
     change _ = hermite_explicit _ _
     rw [← add_assoc, coeff_hermite_succ_succ, hermite_explicit_recur]
     congr
     · rw [coeff_hermite_explicit (n + 1) k]
     · rw [(by ring : 2 * (n + 1) + k = 2 * n + (k + 2)), coeff_hermite_explicit n (k + 2)]
 -- porting note: Lean 3 worked this out automatically
-termination_by _ n k => (n, k)
+termination_by n k => (n, k)
 #align polynomial.coeff_hermite_explicit Polynomial.coeff_hermite_explicit
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :

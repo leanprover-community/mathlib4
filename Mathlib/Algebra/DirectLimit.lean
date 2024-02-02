@@ -719,7 +719,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
         rw [this]
         exact sub_self _
-        exacts [Or.inr rfl, Or.inl rfl]
+        exacts [Or.inl rfl, Or.inr rfl]
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl

@@ -229,7 +229,7 @@ variable (x : ℕ × ℕ)
 
 variable (p : (ℕ → ℕ) × (ℕ → ℕ))
 
-/-- info: p.1 22 : ℕ -/
+/-- info: p.fst 22 : ℕ -/
 #guard_msgs in
 #check p.1 22
 

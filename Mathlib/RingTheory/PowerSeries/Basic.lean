@@ -831,7 +831,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     else
       -a *
         ∑ x in antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
-termination_by _ n => n
+termination_by n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :

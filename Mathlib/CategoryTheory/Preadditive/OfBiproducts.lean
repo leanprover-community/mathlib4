@@ -64,8 +64,10 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     ext
     · aesop_cat
     · simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
-  exact ⟨⟨fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc]⟩,
-    ⟨fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]⟩⟩
+  exact {
+    left_id := fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
+    right_id := fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]
+  }
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_left_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_leftAdd
 
 theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
@@ -79,8 +81,10 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
     ext
     · aesop_cat
     · simp only [biprod.inr_desc, BinaryBicone.inr_fst_assoc, zero_comp]
-  exact ⟨⟨fun f => by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp]⟩,
-    ⟨fun f => by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]⟩⟩
+  exact {
+    left_id := fun f => by simp [h₂ f, rightAdd, biprod.lift_snd_assoc, Category.id_comp],
+    right_id := fun f => by simp [h₁ f, rightAdd, biprod.lift_fst_assoc, Category.id_comp]
+  }
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_right_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_rightAdd
 
 theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by

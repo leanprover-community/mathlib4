@@ -1215,7 +1215,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
       refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
       exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
     exact .tail h₁ h₂
-termination_by _ => (Icc x y).card
+termination_by (Icc x y).card
 
 /-- In a locally finite preorder, `≤` is the transitive closure of `⩿`. -/
 lemma le_iff_transGen_wcovBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
@@ -1253,7 +1253,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
   · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
-termination_by _ => (Ico x y).card
+termination_by (Ico x y).card
 
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
 lemma lt_iff_transGen_covBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :

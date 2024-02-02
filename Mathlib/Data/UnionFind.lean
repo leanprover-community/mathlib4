@@ -240,7 +240,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       ⟨root.2, ?_⟩, le_of_lt this⟩
     have : x.1 ≠ root := mt (congrArg _) (ne_of_lt this); dsimp only at this
     simp [UFModel.setParent, this, hr]
-termination_by _ α self x => self.rankMax - self.rank x
+termination_by self.rankMax - self.rank x
 
 def find (self : UnionFind α) (x : Fin self.size) :
     (s : UnionFind α) × (root : Fin s.size) ×'

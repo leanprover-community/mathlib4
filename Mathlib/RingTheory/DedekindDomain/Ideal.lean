@@ -596,11 +596,11 @@ Although this instance is a direct consequence of the instance
 a computable alternative.
 -/
 -- Porting note: added noncomputable because otherwise it fails, so it seems that the goal
--- is not achieved...
+-- is not achieved... Previous attempt was
+-- { @FractionalIdeal.commSemiring A _ A⁰ K _ _,  -- Project out the computable fields first.
+--   (by infer_instance : CancelCommMonoidWithZero (FractionalIdeal A⁰ K)) with }
 noncomputable instance FractionalIdeal.cancelCommMonoidWithZero :
-    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) :=
-  { @FractionalIdeal.commSemiring A _ A⁰ K _ _,  -- Project out the computable fields first.
-    (by infer_instance : CancelCommMonoidWithZero (FractionalIdeal A⁰ K)) with }
+    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) := inferInstance
 #align fractional_ideal.cancel_comm_monoid_with_zero FractionalIdeal.cancelCommMonoidWithZero
 
 instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=

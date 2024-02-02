@@ -184,8 +184,8 @@ attribute [elab_as_elim] WithZero.cases_on
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := (Option.liftOrGet_isLeftId _).1
-  mul_one := (Option.liftOrGet_isRightId _).1
+  one_mul := (Option.liftOrGet_isId _).left_id
+  mul_one := (Option.liftOrGet_isId _).right_id
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
