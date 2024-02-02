@@ -1675,6 +1675,18 @@ theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
 
+lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
+  constructor <;> intro H
+  · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
+  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
+
+lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
+  simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
+
 /-- If `V : ι → Set X` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `X` is
