@@ -259,7 +259,7 @@ noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H)
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
   LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
     (IsColimit.coconePointUniqueUpToIso (F.pointwiseLeftKanExtensionIsUniversal L)
-      (F'.leftKanExtensionUniversal α))
+      (F'.isUniversalOfIsLeftKanExtension α))
     (F.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L)
 
 end

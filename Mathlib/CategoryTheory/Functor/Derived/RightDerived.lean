@@ -37,7 +37,7 @@ lemma isRightDerivedFunctor_iff_of_iso (α' : F ⟶ L ⋙ RF') (W : MorphismProp
     RF.IsRightDerivedFunctor α W ↔
       RF'.IsRightDerivedFunctor α' W := by
     simp only [isRightDerivedFunctor_iff_isLeftKanExtension]
-    exact isLeftKanExtension_iff_iso e _ _ comm
+    exact isLeftKanExtension_iff_of_iso e _ _ comm
 
 end
 
@@ -48,24 +48,24 @@ variable [L.IsLocalization W] [RF.IsRightDerivedFunctor α W]
 
 noncomputable def rightDerivedDesc (G : H ⥤ D) (β : F ⟶ L ⋙ G) : RF ⟶ G :=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
-  RF.leftKanExtensionDesc α G β
+  RF.descOfIsLeftKanExtension α G β
 
 @[reassoc (attr := simp)]
 lemma rightDerived_fac (G : H ⥤ D) (β : F ⟶ L ⋙ G) :
     α ≫ whiskerLeft L (RF.rightDerivedDesc α W G β) = β :=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
-  RF.leftKanExtension_fac α G β
+  RF.descOfIsLeftKanExtension_fac α G β
 
 @[reassoc (attr := simp)]
 lemma rightDerived_fac_app (G : H ⥤ D) (β : F ⟶ L ⋙ G) (X : C):
     α.app X ≫ (RF.rightDerivedDesc α W G β).app (L.obj X) = β.app X:=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
-  RF.leftKanExtension_fac_app α G β X
+  RF.descOfIsLeftKanExtension_fac_app α G β X
 
 lemma rightDerived_ext (G : H ⥤ D) (γ₁ γ₂ : RF ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   have := IsRightDerivedFunctor.isLeftKanExtension RF α W
-  Functor.IsLeftKanExtension.hom_ext RF α γ₁ γ₂ hγ
+  RF.hom_ext_of_isLeftKanExtension α γ₁ γ₂ hγ
 
 noncomputable def rightDerivedNatTrans (τ : F ⟶ F') : RF ⟶ RF' :=
   RF.rightDerivedDesc α W RF' (τ ≫ α')

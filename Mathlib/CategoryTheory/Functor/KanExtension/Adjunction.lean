@@ -27,7 +27,7 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
 noncomputable def lan : (C ⥤ E) ⥤ (D ⥤ E) where
   obj G := leftKanExtension F G
-  map {G₁ G₂} φ := leftKanExtensionDesc _ (leftKanExtensionUnit F G₁) _
+  map {G₁ G₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit F G₁) _
     (φ ≫ leftKanExtensionUnit F G₂)
 
 noncomputable def lanUnit : (𝟭 (C ⥤ E)) ⟶ lan F ⋙ (whiskeringLeft C D E).obj F where
@@ -46,10 +46,11 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
     infer_instance
   exact isPointwiseLeftKanExtensionOfIsLeftKanExtension _ ((lanUnit F).app G)
 
+-- this may be slightly generalized
 noncomputable def Lan.homEquiv (G : C ⥤ E) (H : D ⥤ E) :
     ((lan F).obj G ⟶ H) ≃ (G ⟶ F ⋙ H) where
   toFun α := (lanUnit F).app G ≫ whiskerLeft _ α
-  invFun β := leftKanExtensionDesc _ ((lanUnit F).app G) _ β
+  invFun β := descOfIsLeftKanExtension _ ((lanUnit F).app G) _ β
   left_inv α := by
     dsimp [lan, lanUnit]
     aesop_cat
@@ -59,13 +60,13 @@ noncomputable def Lan.adjunction : lan F ⊣ (whiskeringLeft _ _ E).obj F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := Lan.homEquiv F
       homEquiv_naturality_left_symm := fun {G₁ G₂ H} f α =>
-        IsLeftKanExtension.hom_ext _  ((lanUnit F).app G₁) _ _ (by
+        hom_ext_of_isLeftKanExtension _  ((lanUnit F).app G₁) _ _ (by
           ext X
           dsimp [homEquiv]
-          rw [leftKanExtension_fac_app, NatTrans.comp_app, ← assoc]
+          rw [descOfIsLeftKanExtension_fac_app, NatTrans.comp_app, ← assoc]
           have h := congr_app ((lanUnit F).naturality f) X
           dsimp at h ⊢
-          rw [← h, assoc, leftKanExtension_fac_app] )
+          rw [← h, assoc, descOfIsLeftKanExtension_fac_app] )
       homEquiv_naturality_right := fun {G H₁ H₂} β f => by simp [homEquiv] }
 
 @[simp]

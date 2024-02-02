@@ -26,24 +26,24 @@ variable [L.IsLocalization W] [LF.IsLeftDerivedFunctor α W]
 
 noncomputable def leftDerivedLift (G : H ⥤ D) (β : L ⋙ G ⟶ F) : G ⟶ LF :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
-  LF.rightKanExtensionLift α G β
+  LF.liftOfIsRightKanExtension α G β
 
 @[reassoc (attr := simp)]
 lemma leftDerived_fac (G : H ⥤ D) (β : L ⋙ G ⟶ F) :
     whiskerLeft L (LF.leftDerivedLift α W G β) ≫ α = β :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
-  LF.rightKanExtension_fac α G β
+  LF.liftOfIsRightKanExtension_fac α G β
 
 @[reassoc (attr := simp)]
 lemma leftDerived_fac_app (G : H ⥤ D) (β : L ⋙ G ⟶ F) (X : C):
     (LF.leftDerivedLift α W G β).app (L.obj X) ≫ α.app X = β.app X:=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
-  LF.rightKanExtension_fac_app α G β X
+  LF.liftOfIsRightKanExtension_fac_app α G β X
 
 lemma leftDerived_ext (G : H ⥤ D) (γ₁ γ₂ : G ⟶ LF)
     (hγ : whiskerLeft L γ₁ ≫ α = whiskerLeft L γ₂ ≫ α) : γ₁ = γ₂ :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
-  LF.rightKanExtension_ext α γ₁ γ₂ hγ
+  LF.hom_ext_of_isRightKanExtension α γ₁ γ₂ hγ
 
 noncomputable def leftDerivedNatTrans (τ : F ⟶ F') : LF ⟶ LF' :=
   LF'.leftDerivedLift α' W LF (α ≫ τ)
