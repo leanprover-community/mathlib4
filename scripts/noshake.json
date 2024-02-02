@@ -251,9 +251,6 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
-  "Mathlib.Order.Filter.Basic": ["Mathlib.Control.Traversable.Instances"],
-  "Mathlib.MeasureTheory.Measure.Regular":
-  ["Mathlib.Topology.Metrizable.Urysohn"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],

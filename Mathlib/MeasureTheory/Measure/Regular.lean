@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Metrizable.Urysohn
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -1041,11 +1040,11 @@ instance (priority := 100) {X : Type*}
 
 /- Check that typeclass inference works to guarantee regularity and inner regularity in
 interesting situations. -/
-example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : Regular μ := by infer_instance
+example [LocallyCompactSpace α] [MetrizableSpace α] [BorelSpace α] [SecondCountableTopology α]
+    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : Regular μ := inferInstance
 
-example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by infer_instance
+example [LocallyCompactSpace α] [MetrizableSpace α] [BorelSpace α] [SecondCountableTopology α]
+    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := inferInstance
 
 end Measure
 
