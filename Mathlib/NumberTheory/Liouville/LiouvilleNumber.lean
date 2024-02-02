@@ -131,7 +131,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     -- factor the constant `(1 / m ^ (n + 1)!)` out of the series
     _ = (∑' i, (1 / m) ^ i) * (1 / m ^ (n + 1)!) := tsum_mul_right
     -- the series is the geometric series
-    _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_1 (by positivity) mi]
+    _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_one (by positivity) mi]
 #align liouville_number.remainder_lt' LiouvilleNumber.remainder_lt'
 
 theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :

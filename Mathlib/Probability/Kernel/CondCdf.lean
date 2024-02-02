@@ -87,52 +87,6 @@ theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [O
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
--- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
-    Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
-#align tendsto_of_antitone tendsto_of_antitone
-
--- todo: move to measure_theory/measurable_space
-/-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
-theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
-    {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
-    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
-    ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
-  cases nonempty_encodable β
-  cases isEmpty_or_nonempty β
-  · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
-    -- simp only [WithTop.iInf_empty, lintegral_const]
-    conv =>
-      lhs
-      congr
-      · skip
-      · ext x
-        rw [WithTop.iInf_empty]
-    rw [WithTop.iInf_empty, lintegral_const]
-    rw [ENNReal.top_mul', if_neg]
-    simp only [Measure.measure_univ_eq_zero, hμ, not_false_iff]
-  inhabit β
-  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
-    refine' fun a =>
-      le_antisymm (le_iInf fun n => iInf_le _ _)
-        (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) _)
-    exact h_directed.sequence_le b a
-  -- Porting note: used `∘` below to deal with its reduced reducibility
-  calc
-    ∫⁻ a, ⨅ b, f b a ∂μ
-    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
-    _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
-      rw [lintegral_iInf ?_ h_directed.sequence_anti]
-      · exact hf_int _
-      · exact (fun n => hf _)
-    _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
-      refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
-      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
-      · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
-#align lintegral_infi_directed_of_measurable lintegral_iInf_directed_of_measurable
-
 end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
