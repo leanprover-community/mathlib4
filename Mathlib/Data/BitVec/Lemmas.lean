@@ -130,8 +130,6 @@ variable (x y : Fin (2^w))
   simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
   exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
 
-lemma ofFin_add' : ofFin (x + y)   = ofFin x + ofFin y   := rfl
-lemma ofFin_sub' : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
