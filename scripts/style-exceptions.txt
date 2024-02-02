@@ -82,7 +82,6 @@ Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or to
 Mathlib/Lean/Expr/ReplaceRec.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1900 lines, try to split it up
-Mathlib/LinearAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1522 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1646 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up

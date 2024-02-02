@@ -26,7 +26,6 @@ submodule, subspace, linear map, pushforward, pullback
 open Function BigOperators Pointwise Set
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {S : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 
 namespace Submodule
@@ -434,6 +433,11 @@ theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} [RingHomSurjective σ] 
   exact le_iInf fun i => (Submodule.map_mono (iInf_le p i)).trans (this i)
 #align linear_map.infi_invariant LinearMap.iInf_invariant
 
+theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
+  rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,
+    map_comap_subtype, map_bot, disjoint_iff]
+#align submodule.disjoint_iff_comap_eq_bot Submodule.disjoint_iff_comap_eq_bot
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -650,4 +654,82 @@ theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p
 theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
 
+variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₂₁ : R₂ →+* R}
+
+open Submodule
+
+theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
+    Submodule.map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
+  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff_val]
+#align linear_map.map_cod_restrict LinearMap.map_codRestrict
+
+theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
+    Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
+  Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
+#align linear_map.comap_cod_restrict LinearMap.comap_codRestrict
+
 end LinearMap
+
+/-! ### Linear equivalences -/
+
+namespace LinearEquiv
+
+section AddCommMonoid
+
+section
+
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
+variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+variable (e : M ≃ₛₗ[σ₁₂] M₂)
+
+theorem map_eq_comap {p : Submodule R M} :
+    (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
+  SetLike.coe_injective <| by simp [e.image_eq_preimage]
+#align linear_equiv.map_eq_comap LinearEquiv.map_eq_comap
+
+/-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
+`p` of the domain onto the image of that submodule.
+
+This is the linear version of `AddEquiv.submonoidMap` and `AddEquiv.subgroupMap`.
+
+This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left. -/
+def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
+  { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
+      ⟨x, by
+        simp only [LinearMap.domRestrict_apply, eq_self_iff_true, and_true_iff, SetLike.coe_mem,
+          SetLike.mem_coe]⟩ with
+    invFun := fun y =>
+      ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
+        rcases y with ⟨y', hy⟩
+        rw [Submodule.mem_map] at hy
+        rcases hy with ⟨x, hx, hxy⟩
+        subst hxy
+        simp only [symm_apply_apply, Submodule.coe_mk, coe_coe, hx]⟩
+    left_inv := fun x => by
+      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
+        LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
+    right_inv := fun y => by
+      apply SetCoe.ext
+      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
+        LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }
+#align linear_equiv.submodule_map LinearEquiv.submoduleMap
+
+@[simp]
+theorem submoduleMap_apply (p : Submodule R M) (x : p) : ↑(e.submoduleMap p x) = e x :=
+  rfl
+#align linear_equiv.submodule_map_apply LinearEquiv.submoduleMap_apply
+
+@[simp]
+theorem submoduleMap_symm_apply (p : Submodule R M)
+    (x : (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂)) : ↑((e.submoduleMap p).symm x) = e.symm x :=
+  rfl
+#align linear_equiv.submodule_map_symm_apply LinearEquiv.submoduleMap_symm_apply
+
+end
+
+end AddCommMonoid
+
+end LinearEquiv
