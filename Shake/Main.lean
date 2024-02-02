@@ -410,54 +410,60 @@ def main (args : List String) : IO Unit := do
 
   -- Apply the edits to existing files
   if !args.fix then return
-  edits.forM fun mod (remove, add) => do
+  let count ← edits.foldM (fun count mod (remove, add) => do
     -- Only edit files in the current package
-    if pkg.isPrefixOf mod then
-      -- Compute the transitive reduction of `add` and convert to a list of names
-      let add := if add == 0 then #[] else Id.run do
-        let mut val := add
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
-        let mut out := #[]
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            out := out.push s.modNames[i]!
-        out.qsort Name.lt
+    if !pkg.isPrefixOf mod then
+      return count
+    -- Compute the transitive reduction of `add` and convert to a list of names
+    let add := if add == 0 then #[] else Id.run do
+      let mut val := add
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
+      let mut out := #[]
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          out := out.push s.modNames[i]!
+      out.qsort Name.lt
 
-      -- Parse the input file
-      let some path ← srcSearchPath.findModuleWithExt "lean" mod
-        | println! "error: failed to find source file for {mod}"
-      let text ← IO.FS.readFile path
-      let inputCtx := Parser.mkInputContext text path.toString
-      let (header, parserState, msgs) ← Parser.parseHeader inputCtx
-      if !msgs.isEmpty then -- skip this file if there are parse errors
-        msgs.forM fun msg => msg.toString >>= IO.println
-        return
+    -- Parse the input file
+    let some path ← srcSearchPath.findModuleWithExt "lean" mod
+      | println! "error: failed to find source file for {mod}"; return 0
+    let text ← IO.FS.readFile path
+    let inputCtx := Parser.mkInputContext text path.toString
+    let (header, parserState, msgs) ← Parser.parseHeader inputCtx
+    if !msgs.isEmpty then -- skip this file if there are parse errors
+      msgs.forM fun msg => msg.toString >>= IO.println
+      return count
 
-      -- Calculate the edit result
-      let mut pos : String.Pos := 0
-      let mut out : String := ""
-      let mut seen : NameSet := {}
-      for stx in header[1].getArgs do
-        let mod := stx[2].getId
-        if remove.contains mod || seen.contains mod then
-          out := out ++ text.extract pos stx.getPos?.get!
-          -- We use the end position of the syntax, but include whitespace up to the first newline
-          pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+    -- Calculate the edit result
+    let mut pos : String.Pos := 0
+    let mut out : String := ""
+    let mut seen : NameSet := {}
+    for stx in header[1].getArgs do
+      let mod := stx[2].getId
+      if remove.contains mod || seen.contains mod then
+        out := out ++ text.extract pos stx.getPos?.get!
+        -- We use the end position of the syntax, but include whitespace up to the first newline
+        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + (⟨1⟩ : String.Pos)
+      seen := seen.insert mod
+    -- the insertion point for `add` is the first newline after the imports
+    let insertion := header.getTailPos?.getD parserState.pos
+    let insertion := text.findAux (· == '\n') text.endPos insertion + (⟨1⟩ : String.Pos)
+    out := out ++ text.extract pos insertion
+    for mod in add do
+      if !seen.contains mod then
         seen := seen.insert mod
-      -- the insertion point for `add` is the first newline after the imports
-      let insertion := header.getTailPos?.getD parserState.pos
-      let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
-      out := out ++ text.extract pos insertion
-      for mod in add do
-        if !seen.contains mod then
-          seen := seen.insert mod
-          out := out ++ s!"import {mod}\n"
-      out := out ++ text.extract insertion text.endPos
+        out := out ++ s!"import {mod}\n"
+    out := out ++ text.extract insertion text.endPos
 
-      IO.FS.writeFile path out
+    IO.FS.writeFile path out
+    return count + 1)
+    0
 
   -- Since we throw an error upon encountering issues, we can be sure that everything worked
   -- if we reach this point of the script.
-  println!"All suggestions applied successfully."
+  if count > 0 then
+    println!"Successfully applied {count} suggestions."
+  else
+    println!"No edits required."
