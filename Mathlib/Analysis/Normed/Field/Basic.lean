@@ -1102,7 +1102,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [SemilatticeSup α] [NoM
 #align normed_add_comm_group.tendsto_at_top' NormedAddCommGroup.tendsto_atTop'
 
 instance Int.normedCommRing : NormedCommRing ℤ :=
-  { Int.normedAddCommGroup, Int.instRingInt with
+  { Int.normedAddCommGroup, Int.instRing with
     norm_mul := fun m n => le_of_eq <| by simp only [norm, Int.cast_mul, abs_mul]
     mul_comm := mul_comm }
 

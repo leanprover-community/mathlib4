@@ -249,7 +249,7 @@ example :
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 
-example : ZMod.commRing 0 = Int.instCommRingInt := by
+example : ZMod.commRing 0 = Int.instCommRing := by
   with_reducible_and_instances rfl
 
 end ZMod

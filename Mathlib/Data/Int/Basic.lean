@@ -20,7 +20,7 @@ open Nat
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
+instance instCommRing : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
@@ -94,7 +94,7 @@ instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
+instance instRing : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
