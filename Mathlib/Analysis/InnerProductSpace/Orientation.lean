@@ -157,7 +157,7 @@ open OrthonormalBasis
 protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orientation ℝ E (Fin n)) :
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
-  haveI : FiniteDimensional ℝ E := .of_finrank <| h.symm ▸ hn
+  haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
   exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
 #align orientation.fin_orthonormal_basis Orientation.finOrthonormalBasis
 
@@ -166,7 +166,7 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
 theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
   haveI := Fin.pos_iff_nonempty.1 hn
-  haveI := FiniteDimensional.of_finrank (h.symm ▸ hn : 0 < finrank ℝ E)
+  haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
   exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <|
     finCongr h).orientation_adjustToOrientation x
 #align orientation.fin_orthonormal_basis_orientation Orientation.finOrthonormalBasis_orientation
