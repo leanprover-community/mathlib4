@@ -10,7 +10,7 @@ import Mathlib.Mathport.Rename
 /-! # Function types of a given arity
 
 This provides `FunctionOfArity`, such that `OfArity α β 2 = α → α → β`.
-Note that it is often preferrable to use `(Fin n → α) → β` in place of `OfArity n α β`.
+Note that it is often preferable to use `(Fin n → α) → β` in place of `OfArity n α β`.
 
 ## Main definitions
 
