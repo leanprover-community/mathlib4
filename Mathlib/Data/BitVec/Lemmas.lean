@@ -207,7 +207,7 @@ theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   case negSucc n =>
     ext
     change (1 <<< w) - 1 ^^^ (n % 2 ^ w) = (2 ^ w - (n + 1) % 2 ^ w) % (2 ^ w)
-    rw [one_shiftLeft, ←tsub_eq_of_eq_add_rev (add_pow_two_sub_one_xor_eq_pow_two_sub_one
+    rw [one_shiftLeft, ← tsub_eq_of_eq_add_rev (add_pow_two_sub_one_xor_eq_pow_two_sub_one
       (mod_lt _ (two_pow_pos w))).symm, ←mod_add_mod]
     by_cases h : n % 2 ^ w = 2 ^ w - 1
     · rw [h, Nat.sub_add_cancel (one_le_two_pow _)]; simp
