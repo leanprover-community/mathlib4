@@ -23,7 +23,7 @@ variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
 
 theorem pow_char_pow_inj : (fun r : R ↦ r ^ p ^ n).Injective := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
-  rw [← sub_pow_char_pow] at H
+  rw [← sub_pow_expChar_pow] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 
 theorem frobenius_inj : Function.Injective (frobenius R p) := by
