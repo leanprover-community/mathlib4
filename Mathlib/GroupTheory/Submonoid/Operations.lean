@@ -789,6 +789,10 @@ theorem coe_subtype : ⇑S.subtype = Subtype.val :=
 #align submonoid.coe_subtype Submonoid.coe_subtype
 #align add_submonoid.coe_subtype AddSubmonoid.coe_subtype
 
+@[to_additive]
+lemma subtype_injective : Function.Injective <| S.subtype :=
+  Subtype.coe_injective
+
 /-- The top submonoid is isomorphic to the monoid. -/
 @[to_additive (attr := simps) "The top additive submonoid is isomorphic to the additive monoid."]
 def topEquiv : (⊤ : Submonoid M) ≃* M where
@@ -1491,7 +1495,6 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 `s • m` as an alias for `↑s * m`.
 -/
 
-
 namespace Submonoid
 
 variable {M' : Type*} {α β : Type*}
@@ -1559,3 +1562,68 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submon
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+
+/-! ### Actions on `Submonoid`s -/
+
+variable [Monoid α] {S : Submonoid α}
+
+/-- The induced `VAdd` on a submonoid `S` of a monoid `α`. -/
+def vadd' [VAdd M α] (h : ∀ m : M, ∀ a ∈ S, m +ᵥ a ∈ S) : VAdd M S where
+  vadd m a := ⟨m +ᵥ a.val, h m a.val a.property⟩
+
+/-- The induced `AddAction` on a submonoid `S` of a monoid `α`. -/
+def addAction' [AddMonoid M] [AddAction M α] (h : ∀ m : M, ∀ a ∈ S, m +ᵥ a ∈ S) : AddAction M S :=
+  @Function.Injective.addAction _ _ _ _ _ (vadd' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `SMul` on a submonoid `S` of a monoid `α`. -/
+def smul' [SMul M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : SMul M S where
+  smul m a := ⟨m • a.val, h m a.val a.property⟩
+
+/-- The induced `MulAction` on a submonoid `S` of a monoid `α`. -/
+def mulAction' [Monoid M] [MulAction M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : MulAction M S :=
+  @Function.Injective.mulAction _ _ _ _ _ (smul' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `MulDistribMulAction` on a submonoid `S` of a monoid `α`. -/
+def mulDistribMulAction' [Monoid M] [MulDistribMulAction M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) :
+    MulDistribMulAction M S :=
+  @Function.Injective.mulDistribMulAction _ _ _ _ _ _ _ (smul' h) _ S.subtype_injective
+    fun _ _ => rfl
+
+end Submonoid
+
+/-! ### Actions on `AddSubmonoid`s -/
+
+namespace AddSubmonoid
+
+variable {α : Type*} [AddMonoid α] {S : AddSubmonoid α}
+
+/-- The induced `VAdd` on an additive submonoid `S` of an additive monoid `α`. -/
+def vadd' [VAdd M α] (h : ∀ m : M, ∀ a ∈ S, m +ᵥ a ∈ S) : VAdd M S where
+  vadd m a := ⟨m +ᵥ a.val, h m a.val a.property⟩
+
+/-- The induced `AddAction` on an additive submonoid `S` of an additive monoid `α`. -/
+def addAction' [AddMonoid M] [AddAction M α] (h : ∀ m : M, ∀ a ∈ S, m +ᵥ a ∈ S) : AddAction M S :=
+  @Function.Injective.addAction _ _ _ _ _ (vadd' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `SMul` on an additive submonoid `S` of an additive monoid `α`. -/
+def smul' [SMul M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : SMul M S where
+  smul m a := ⟨m • a.val, h m a.val a.property⟩
+
+/-- The induced `SMulZeroClass` on an additive submonoid `S` of an additive monoid `α`. -/
+def smulZeroClass' [SMulZeroClass M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : SMulZeroClass M S :=
+  @Function.Injective.smulZeroClass _ _ _ _ _ _ (smul' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `DistribSMul` on an additive submonoid `S` of an additive monoid `α`. -/
+def distribSMul' [DistribSMul M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : DistribSMul M S :=
+  @Function.Injective.distribSMul _ _ _ _ _ _ (smul' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `MulAction` on an additive submonoid `S` of an additive monoid `α`. -/
+def mulAction' [Monoid M] [MulAction M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) : MulAction M S :=
+  @Function.Injective.mulAction _ _ _ _ _ (smul' h) _ S.subtype_injective fun _ _ => rfl
+
+/-- The induced `DistribMulAction` on an additive submonoid `S` of an additive monoid `α`. -/
+def distribMulAction' [Monoid M] [DistribMulAction M α] (h : ∀ m : M, ∀ a ∈ S, m • a ∈ S) :
+    DistribMulAction M S :=
+  @Function.Injective.distribMulAction _ _ _ _ _ _ _ (smul' h) _ S.subtype_injective fun _ _ => rfl
+
+end AddSubmonoid
