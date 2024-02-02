@@ -175,19 +175,19 @@ class PerfectField (K : Type*) [Field K] : Prop where
   /-- A field is perfect if every irreducible polynomial is separable. -/
   separable_of_irreducible : ∀ {f : K[X]}, Irreducible f → f.Separable
 
+lemma PerfectRing.toPerfectField (p : ℕ) [ExpChar K p] [PerfectRing K p] : PerfectField K := by
+  obtain hp | ⟨hp⟩ := ‹ExpChar K p›
+  · exact ⟨Irreducible.separable⟩
+  refine PerfectField.mk fun hf ↦ ?_
+  rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
+  · assumption
+  · exfalso; revert hf; haveI := Fact.mk hp; simp
+
 namespace PerfectField
 
 variable (K : Type*) [Field K]
 
 instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
-
-lemma PerfectRing.toPerfectField (p : ℕ) [ExpChar K p] [PerfectRing K p] : PerfectField K := by
-  obtain hp | ⟨hp⟩ := ‹ExpChar K p›
-  · infer_instance
-  refine PerfectField.mk fun hf ↦ ?_
-  rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
-  · assumption
-  · exfalso; revert hf; haveI := Fact.mk hp; simp
 
 instance ofFinite [Finite K] : PerfectField K := by
   obtain ⟨p, _instP⟩ := CharP.exists K
