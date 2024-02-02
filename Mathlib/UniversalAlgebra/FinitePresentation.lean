@@ -1,9 +1,10 @@
+import Std.Data.List.Basic
 import Mathlib.UniversalAlgebra.LawvereTheory
 
 structure RawFiniteLawverePresentation where
   name : String
-  sortNames : Array String
-  opNames : Array (String × Array String × String)
+  sortNames : List String
+  opNames : List (String × List (Fin sortNames.length) × Fin sortNames.length)
 
 structure FiniteLawverePresentation extends RawFiniteLawverePresentation where
 
@@ -53,13 +54,13 @@ def elabRelName (nm : TSyntax `relName) : TermElabM String :=
   | `(relName|$s:ident) => return s.getId.toString
   | _ => throwUnsupportedSyntax
 
-def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × Array String × String) :=
+def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × List String × String) :=
   match descr with
   | `(opDescr|$nm : $nms,* → $out) => do
     let nm ← elabOpName nm
     let nms ← nms.getElems.mapM elabSortName
     let out ← elabSortName out
-    return (nm, nms, out)
+    return (nm, nms.toList, out)
   | _ => throwUnsupportedSyntax
 
 def elabRelDescr (descr : TSyntax `relDescr) :
@@ -74,26 +75,33 @@ def elabFlp : TermElab := fun stx tp =>
   | `([RFLP| NAME: $nm:ident $[SORTS: $sorts,*]? $[OPS: $ops,*]?]) => do
     let nm := nm.getId.toString
     let sorts ← match sorts with
-      | some sorts => sorts.getElems.mapM elabSortName
-      | none => pure #[]
+      | some sorts => sorts.getElems.toList.mapM elabSortName
+      | none => pure []
     let ops ← match ops with
-      | some ops => ops.getElems.mapM elabOpDescr
-      | none => pure #[]
+      | some ops => ops.getElems.toList.mapM elabOpDescr
+      | none => pure []
+    unless sorts.Nodup do throwError "Sorts must have unique names."
+    unless ops.map (fun (nm,_) => nm) |>.Nodup do throwError "Operations must have unique names."
     for (d,nms,out) in ops do
       unless out ∈ sorts do throwError m!"{out} appears in {d} and is not a valid sort name."
       for nm in nms do
         unless nm ∈ sorts do throwError "{nm} appears in {d} is not a valid sort name"
-    return Lean.mkAppN (.const ``RawFiniteLawverePresentation.mk [])
-      #[toExpr nm, toExpr sorts, toExpr ops]
+    let numSort := sorts.length
+    let actualOps : List (String × List (Fin numSort) × Fin numSort) :=
+      match numSort with
+      | 0 => []
+      | _+1 => ops.map fun (opnm, ins, out) =>
+        (opnm, ins.map fun s => sorts.indexOf s, sorts.indexOf out)
+    return mkAppN (.const `RawFiniteLawverePresentation.mk [])
+      #[toExpr nm, toExpr sorts, toExpr actualOps]
   | _ => throwUnsupportedSyntax
 
 #check [RFLP|
   NAME:
     Module
   SORTS:
-    R, M
+    A, B, C, M, R
   OPS:
-    add : M, M → M,
-    smul : R, M → M,
-    neg : M → M
+   add : M, M → M,
+   mul : R, M, R, M → R
 ]
