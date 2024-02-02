@@ -1160,6 +1160,10 @@ section Pred
 #align fin.add_nat_sub_nat Fin.addNat_subNat
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
+theorem eq_pred_iff_succ_eq (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin n) :
+    j = pred i hi ↔ succ j = i := by
+  rw [eq_comm, pred_eq_iff_eq_succ, eq_comm]
+
 theorem strictMono_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
     (hf₂ : StrictMono f) : StrictMono (fun a => pred (f a) (hf a)) :=
     fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
@@ -1251,6 +1255,10 @@ theorem castSucc_castPred (i : Fin (n + 1)) (h : i ≠ last n) :
 theorem castPred_eq_iff_eq_castSucc (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
     castPred i hi = j ↔ i = castSucc j :=
   ⟨fun h => by rw [← h, castSucc_castPred], fun h => by simp_rw [h, castPred_castSucc]⟩
+
+theorem eq_castPred_iff_castSucc_eq (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
+    j = castPred i hi ↔ castSucc j = i := by
+  rw [eq_comm, castPred_eq_iff_eq_castSucc, eq_comm]
 
 @[simp]
 theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_self _))
