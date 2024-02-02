@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Algebra.SquareFree.UniqueFactorizationDomain
+import Mathlib.Algebra.Squarefree.UniqueFactorizationDomain
 
 /-!
 
@@ -233,10 +233,12 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
     rcases hpn.eq_zero_or_one_of_pow_of_not_isUnit hp.not_unit with rfl | rfl; · simp
     exact (pow_one p).symm ▸ PerfectField.separable_of_irreducible hp.irreducible
   · intro hpq'
-    classical
-    have := EuclideanDomain.gcdMonoid K[X]
     obtain ⟨h, hp, hq⟩ := squarefree_mul_iff.mp hpq'
-    exact (ihp hp).mul (ihq hq) h
+    apply (ihp hp).mul (ihq hq)
+    classical
+    apply EuclideanDomain.isCoprime_of_dvd
+    · rintro ⟨rfl, rfl⟩; simp at hp
+    · exact fun d hd _ hdp hdq ↦ mem_nonunits_iff.mpr hd <| h d hdp hdq
 
 end PerfectField
 
