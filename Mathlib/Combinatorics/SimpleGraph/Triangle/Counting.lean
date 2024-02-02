@@ -43,7 +43,7 @@ private lemma card_interedges_badVertices_le :
     (Rel.interedges G.Adj (badVertices G ε s t) t).card ≤
       (badVertices G ε s t).card * t.card * (G.edgeDensity s t - ε) := by
   classical
-  refine (Nat.cast_le.2 $ (card_le_of_subset $ subset_of_eq G.interedges_badVertices).trans
+  refine (Nat.cast_le.2 $ (card_le_card $ subset_of_eq G.interedges_badVertices).trans
     card_biUnion_le).trans ?_
   simp_rw [Nat.cast_sum, card_image_of_injective _ (Prod.mk.inj_left _), ← nsmul_eq_mul,
     smul_mul_assoc, mul_comm (t.card : ℝ)]
@@ -119,7 +119,7 @@ lemma triangle_counting'
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
   have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c
   · apply triangle_split_helper
-  refine le_trans ?_ (Nat.cast_le.2 $ card_le_of_subset this)
+  refine le_trans ?_ (Nat.cast_le.2 $ card_le_card this)
   rw [card_biUnion, Nat.cast_sum]
   · apply le_trans _ (card_nsmul_le_sum X' _ _ $ G.good_vertices_triangle_card dst dsu dtu utu)
     rw [nsmul_eq_mul]
@@ -128,7 +128,7 @@ lemma triangle_counting'
     · exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' $ by positivity)
     have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s
     · apply union_subset (filter_subset _ _) (filter_subset _ _)
-    rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_of_subset i), sub_le_sub_iff_left,
+    rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
       mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 $ card_union_le _ _).trans ?_
     rw [Nat.cast_add]

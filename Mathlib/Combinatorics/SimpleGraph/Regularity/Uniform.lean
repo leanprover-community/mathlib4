@@ -304,7 +304,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ ∑ UV in P.sparsePairs G ε, ((G.interedges UV.1 UV.2).card : 𝕜) := mod_cast card_biUnion_le
     _ ≤ ∑ UV in P.sparsePairs G ε, ε * (UV.1.card * UV.2.card) := ?_
     _ ≤ _ := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun i _ _ ↦ by positivity
-    _ = _ := mul_sum.symm
+    _ = _ := (mul_sum _ _ _).symm
     _ ≤ _ := mul_le_mul_of_nonneg_left ?_ hε
   · gcongr with UV hUV
     obtain ⟨U, V⟩ := UV
