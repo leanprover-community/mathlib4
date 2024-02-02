@@ -25,8 +25,8 @@ We define the following properties for sets in a topological space:
 * `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets
   is compact.
 -/
-open Set Filter Topology TopologicalSpace Classical
 
+open Set Filter Topology TopologicalSpace Classical Function
 
 universe u v
 
@@ -1053,6 +1053,21 @@ instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i)
 instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
   Pi.compactSpace
 #align function.compact_space Function.compactSpace
+
+lemma Pi.isCompact_iff_of_isClosed {s : Set (Π i, X i)} (hs : IsClosed s) :
+    IsCompact s ↔ ∀ i, IsCompact (eval i '' s) := by
+  constructor <;> intro H
+  · exact fun i ↦ H.image <| continuous_apply i
+  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)
+
+protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
+    (∃ K, IsCompact K ∧ s ⊆ K) ↔ ∀ i, ∃ Ki, IsCompact Ki ∧ s ⊆ eval i ⁻¹' Ki := by
+  constructor
+  · intro ⟨K, hK, hsK⟩ i
+    exact ⟨eval i '' K, hK.image <| continuous_apply i, hsK.trans <| K.subset_preimage_image _⟩
+  · intro H
+    choose K hK hsK using H
+    exact ⟨pi univ K, isCompact_univ_pi hK, fun _ hx i _ ↦ hsK i hx⟩
 
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
