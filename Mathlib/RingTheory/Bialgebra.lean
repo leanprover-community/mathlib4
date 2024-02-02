@@ -57,14 +57,16 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
 
 namespace Bialgebra
 
+open Coalgebra
+
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [Semiring A] [B : Bialgebra R A]
+variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-lemma counit_mul {a b : A} : B.counit (a * b) = B.counit a * B.counit b :=
-  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_counit) a) b
+lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
+  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_counit a) b
 
-lemma comul_mul {a b : A} : B.comul (a * b) = B.comul a * B.comul b :=
-  DFunLike.congr_fun (DFunLike.congr_fun (B.mul_compr₂_comul) a) b
+lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
+  DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_comul a) b
 
 -- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
 attribute [simp] counit_one comul_one counit_mul comul_mul
@@ -83,22 +85,35 @@ def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
 variable (R A)
 
 /-- `counitAlgHom R A` is the counit of the `R`-bialgebra `A`, as an `R`-algebra map. -/
-def counitAlgHom : A →ₐ[R] R where
-  toFun := B.counit
-  map_one' := B.counit_one
-  map_mul' x y := counit_mul
-  map_zero' := B.counit.map_zero
-  map_add' := B.counit.map_add
-  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+@[simps!]
+def counitAlgHom : A →ₐ[R] R :=
+  .ofLinearMap counit counit_one counit_mul
 
 /-- `comulAlgHom R A` is the comultiplication of the `R`-bialgebra `A`, as an `R`-algebra map. -/
-def comulAlgHom : A →ₐ[R] A ⊗[R] A where
-  toFun := B.comul
-  map_one' := B.comul_one
-  map_mul' x y := comul_mul
-  map_zero' := B.comul.map_zero
-  map_add' := B.comul.map_add
-  commutes' := by simp [Algebra.algebraMap_eq_smul_one]
+@[simps!]
+def comulAlgHom : A →ₐ[R] A ⊗[R] A :=
+  .ofLinearMap comul comul_one comul_mul
+
+variable {R A}
+
+@[simp] lemma counit_algebraMap (r : R) : counit (R := R) (algebraMap R A r) = r :=
+  (counitAlgHom R A).commutes r
+
+@[simp] lemma comul_algebraMap (r : R) :
+    comul (R := R) (algebraMap R A r) = algebraMap R (A ⊗[R] A) r :=
+  (comulAlgHom R A).commutes r
+
+@[simp] lemma counit_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
+  map_natCast (counitAlgHom R A) _
+
+@[simp] lemma comul_natCast (n : ℕ) : counit (R := R) (n : A) = n :=
+  map_natCast (counitAlgHom R A) _
+
+@[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
+  (counitAlgHom R A).map_pow a n
+
+@[simp] lemma comul_pow (a : A) (n : ℕ) : comul (R := R) (a ^ n) = comul a ^ n :=
+  (comulAlgHom R A).map_pow a n
 
 end Bialgebra
 
