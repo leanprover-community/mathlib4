@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
