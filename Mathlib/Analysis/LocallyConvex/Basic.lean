@@ -207,6 +207,9 @@ theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 #align balanced.mem_smul_iff Balanced.smul_mem_iff
 
+@[deprecated] -- Since 2024/02/02
+alias Balanced.mem_smul_iff := Balanced.smul_mem_iff
+
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
@@ -227,6 +230,10 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
 #align balanced_zero_union_interior Balanced.zero_insert_interior
 
+@[deprecated Balanced.zero_insert_interior]
+theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 : Set E) ∪ interior A) :=
+  hA.zero_insert_interior
+
 /-- The interior of a balanced set is balanced if it contains the origin. -/
 protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
     Balanced 𝕜 (interior A) := by
@@ -234,7 +241,7 @@ protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ inte
   exact hA.zero_insert_interior
 #align balanced.interior Balanced.interior
 
-theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
+protected theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
   (image_closure_subset_closure_image <| continuous_const_smul _).trans <|
     closure_mono <| hA _ ha
 #align balanced.closure Balanced.closure
@@ -244,6 +251,10 @@ end NormedField
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+
+@[deprecated Absorbent.zero_mem] -- Since 2024/02/02
+theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
+
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
@@ -255,6 +266,9 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 #align balanced_convex_hull_of_balanced Balanced.convexHull
+
+@[deprecated] -- Since 2024/02/02
+alias balanced_convexHull_of_balanced := Balanced.convexHull
 
 end NontriviallyNormedField
 
