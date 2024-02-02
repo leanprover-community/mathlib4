@@ -528,11 +528,4 @@ lemma add_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) :
   rw [add_eq_or_of_and_eq_zero (and_pow_two_sub_one_xor_eq_zero h),
     or_pow_two_sub_one_xor_eq_pow_two_sub_one h]
 
-/-- For `x < 2 ^ n`, `((2 ^ n - 1) ^^^ x) + 1` is the additive inverse of `x` modulo `2 ^ n`. -/
-theorem two's_complement {x n} (h : x < 2 ^ n) : (x + (((2 ^ n - 1) ^^^ x) + 1)) % 2 ^ n = 0 := by
-  have h' : x + (((2 ^ n - 1) ^^^ x) + 1) = 2 ^ n := by
-    rw [← add_assoc, add_pow_two_sub_one_xor_eq_pow_two_sub_one h, Nat.sub_add_cancel];
-    exact one_le_two_pow n
-  rw [h', Nat.mod_self]
-
 end Nat
