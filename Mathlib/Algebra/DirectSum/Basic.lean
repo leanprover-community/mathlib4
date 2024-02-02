@@ -309,7 +309,7 @@ variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
 -- include dec_ι
 
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`.-/
-@[simps]
+@[simps!]
 noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, α (some i) :=
   { DFinsupp.equivProdDFinsupp with map_add' := DFinsupp.equivProdDFinsupp_add }
 #align direct_sum.add_equiv_prod_direct_sum DirectSum.addEquivProdDirectSum

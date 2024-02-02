@@ -257,6 +257,16 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
+/-- We can convert a multiplicative character into a homomorphism of monoids with zero when
+the source has a zero and another element. -/
+@[coe, simps]
+def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+    R →*₀ R' where
+      toFun := χ.toFun
+      map_zero' := χ.map_zero
+      map_one' := χ.map_one'
+      map_mul' := χ.map_mul'
+
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
@@ -274,6 +284,9 @@ noncomputable instance inhabited : Inhabited (MulChar R R') :=
 @[simp]
 theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by classical exact dif_pos a.isUnit
 #align mul_char.one_apply_coe MulChar.one_apply_coe
+
+/-- Evaluation of the trivial character -/
+lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_coe hx.unit
 
 /-- Multiplication of multiplicative characters. (This needs the target to be commutative.) -/
 def mul (χ χ' : MulChar R R') : MulChar R R' :=
