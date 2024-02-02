@@ -819,7 +819,8 @@ theorem transferTransversal_apply (q : G ⧸ H) :
 
 theorem transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (period g q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) = g ^ (cast k : ℤ) * q.out'.out' := by
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
+      g ^ (cast k : ℤ) * q.out'.out' := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 #align subgroup.transfer_transversal_apply' Subgroup.transferTransversal_apply'
