@@ -12,9 +12,15 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
 
+# Main definitions
+
+* `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
+* `HopfAlgebra.antipode R A` : The `R`-linear map `A →ₗ[R] A`
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
+
 -/
 
 suppress_compilation
@@ -45,6 +51,9 @@ theorem midS_apply (a : A) : LinearMap.mul' R A (S.lTensor A (H.comul a)) =
     Algebra.linearMap R A (H.counit a) :=
   LinearMap.congr_fun midS a
 
+variable (R A)
+
+def antipode : A →ₗ[R] A := HopfAlgebra.S
 end HopfAlgebra
 
 section CommSemiring
@@ -62,6 +71,6 @@ instance toHopfAlgebra : HopfAlgebra R R where
   midS := by ext; simp
 
 @[simp]
-theorem S_apply (r : R) : S (R := R) r = r := rfl
+theorem antipode_apply (r : R) : antipode R R r = r := rfl
 
 end CommSemiring
