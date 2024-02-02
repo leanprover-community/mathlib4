@@ -102,6 +102,7 @@ noncomputable instance hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) whe
     refine' Additive.toMul.bijective.1 _
     show Units.map g β⁻¹ / β⁻¹ = Additive.toMul (x.1 g)
     rw [map_inv, div_inv_eq_mul, mul_comm]
+    -- TODO this used to be `exact` prior to leanprover/lean4#2478
     apply mul_inv_eq_iff_eq_mul.2 (hβ g).symm
 
 end groupCohomology
