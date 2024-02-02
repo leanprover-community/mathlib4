@@ -16,7 +16,7 @@ number whose `p`-adic valuation is the floor/ceil of the `p`-adic valuation of `
 For example the `2`-nd flooring and ceiling roots of `2^3 * 3^2 * 5` are `2 * 3` and `2^2 * 3 * 5`
 respectively. Note this is **not** the `n`-th root of `a` as a real number, rounded up or down.
 
-Those operations are respectively the right and left adjoints to the map `a ↦ a ^ n` where `ℕ` is
+These operations are respectively the right and left adjoints to the map `a ↦ a ^ n` where `ℕ` is
 ordered by divisibility. This is useful because it lets us characterise the numbers `a` whose `n`-th
 power divide `n` as the divisors of some fixed number (aka `floorRoot n b`). See
 `Nat.pow_dvd_iff_dvd_floorRoot`. Similarly, it lets us characterise the `b` whose `n`-th power is a
