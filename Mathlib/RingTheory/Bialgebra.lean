@@ -82,10 +82,10 @@ def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     (comul_one : C.comul 1 = 1)
     (comul_mul : ∀ {a b}, C.comul (a * b) = C.comul a * C.comul b) :
     Bialgebra R A where
-      counit_one := counit_one
-      mul_compr₂_counit := by ext; exact counit_mul
-      comul_one := comul_one
-      mul_compr₂_comul := by ext; exact comul_mul
+  counit_one := counit_one
+  mul_compr₂_counit := by ext; exact counit_mul
+  comul_one := comul_one
+  mul_compr₂_comul := by ext; exact comul_mul
 
 variable (R A)
 
