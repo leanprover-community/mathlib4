@@ -493,7 +493,7 @@ theorem degreeOf_lt_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} (h : 0 < d) :
   rwa [degreeOf_eq_sup n f, Finset.sup_lt_iff]
 #align mv_polynomial.degree_of_lt_iff MvPolynomial.degreeOf_lt_iff
 
-lemma MvPolynomial.degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
+lemma degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
     degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
   simp only [← Nat.lt_succ_iff, degreeOf_lt_iff (Nat.succ_pos _)]
 
@@ -733,8 +733,7 @@ theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
 #align mv_polynomial.total_degree_finset_sum MvPolynomial.totalDegree_finset_sum
 
-lemma MvPolynomial.degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) :
-    f.degreeOf i ≤ f.totalDegree := by
+lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree := by
   rw [degreeOf_le_iff]
   intro d hd
   refine le_trans ?_ (le_totalDegree hd)
