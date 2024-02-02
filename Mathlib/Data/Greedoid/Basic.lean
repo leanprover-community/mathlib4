@@ -70,7 +70,7 @@ theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq �
       intro h
       simp only [← h, Finset.mem_sdiff] at hx₁
       simp only [hx₁, or_false], hb.2.2.2⟩
-termination_by exchangeProperty_exists_superset_of_card_le => s₁.card - s₂.card
+termination_by s₁.card - s₂.card
 decreasing_by
   simp_wf
   rw [h₁, Nat.sub_add_eq]
@@ -113,7 +113,7 @@ theorem exchangeProperty_exists_feasible_superset_add_element_feasible {α : Typ
         (Finset.union_eq_left.mpr hs ▸ ht₃) ha₁ ht₅
     exists s'
     exact ⟨hs'₁, subset_trans ht₂ hs'₂, hs'₃, hs'₄, hs'₅⟩
-termination_by exchangeProperty_exists_feasible_superset_add_element_feasible => s₁.card - s₂.card
+termination_by s₁.card - s₂.card
 decreasing_by
   simp_wf
   rw [ht₄]
@@ -148,7 +148,7 @@ theorem induction_on_accessible {α : Type _} [DecidableEq α]
       simp only [Finset.mem_sdiff, Finset.mem_singleton, h', hs₀])
     (induction_on_accessible hx₂ empty insert)
   exact h' ▸ this
-termination_by induction_on_accessible => s.card
+termination_by s.card
 decreasing_by
   simp_wf
   rw [Finset.card_sdiff (Finset.singleton_subset_iff.mpr hx₁), Finset.card_singleton]
@@ -356,7 +356,7 @@ theorem exists_basis_containing_feasible_set {s' : Finset α} (hs'₁ : s' ∈ G
     apply And.intro hb₁
     intro y hy
     exact hb₂ (mem_insert.mpr (Or.inr hy))
-termination_by exists_basis_containing_feasible_set => s.card - s'.card
+termination_by s.card - s'.card
 decreasing_by
   simp_wf
   have hx₃ := ‹x ∉ s'›
@@ -585,7 +585,7 @@ theorem exists_subset_basis_of_subset_bases
     exists b₂
     simp only [hb₂, true_and]
     exact subset_trans (subset_insert x b₁) hb₂.2
-termination_by exists_subset_basis_of_subset_bases => s₂.card - b₁.card
+termination_by s₂.card - b₁.card
 decreasing_by
   simp_wf
   simp_all only [PSigma.forall, mem_sdiff, system_feasible_set_mem_mem,
@@ -1021,7 +1021,7 @@ theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.ran
       rw [hy] at h₄
       exact le_antisymm h₄ h₃
     · rw [local_submodularity hy.symm hx.1.symm, hx.1]
-termination_by rank_closure_eq_rank_self => (@univ α _).card - s.card
+termination_by (@univ α _).card - s.card
 decreasing_by
   simp_wf
   rw [mem_sdiff] at hx
