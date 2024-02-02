@@ -1132,6 +1132,33 @@ theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 𝕜') = mul 𝕜 𝕜' :=
 
 end NonUnital
 
+section RingEquiv
+
+variable (𝕜 E)
+
+/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
+to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
+def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
+  toFun := fun f ↦ f 1
+  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
+  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
+  map_add' := fun f g ↦ by simp only [add_apply]
+  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', id.def, one_smul]
+  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
+
+/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
+equivalent to `M`. -/
+def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
+  toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
+  norm_map' := by
+    refine fun f ↦ le_antisymm ?_ ?_
+    · simpa only [norm_one, mul_one] using le_op_norm f 1
+    · refine op_norm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
+      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), ContinuousLinearMap.map_smul,
+        norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
+
+end RingEquiv
+
 end MultiplicationLinear
 
 section SMulLinear
@@ -1550,7 +1577,7 @@ theorem isCompact_closure_image_coe_of_bounded [ProperSpace F] {s : Set (E' →S
     (hb : IsBounded s) : IsCompact (closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) :=
   have : ∀ x, IsCompact (closure (apply' F σ₁₂ x '' s)) := fun x =>
     ((apply' F σ₁₂ x).lipschitz.isBounded_image hb).isCompact_closure
-  isCompact_closure_of_subset_compact (isCompact_pi_infinite this)
+  (isCompact_pi_infinite this).closure_of_subset
     (image_subset_iff.2 fun _ hg _ => subset_closure <| mem_image_of_mem _ hg)
 #align continuous_linear_map.is_compact_closure_image_coe_of_bounded ContinuousLinearMap.isCompact_closure_image_coe_of_bounded
 
