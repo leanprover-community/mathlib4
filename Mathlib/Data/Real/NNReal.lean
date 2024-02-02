@@ -1192,14 +1192,14 @@ private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.toReal"
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(nnreal_coe_pos $pa) : Expr))
-  | _ => pure (.nonnegative (q(NNReal.coe_nonneg $a) : Expr))
+def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
+    | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
+  | _, _, _ => throwError "not NNReal.toReal"
 
 end Mathlib.Meta.Positivity

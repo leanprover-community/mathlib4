@@ -1995,20 +1995,21 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : PositivityExt where eval {_ _} _ _ e := do
-  let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
-  pure (.positive (q(Real.exp_pos $a) : Lean.Expr))
+def evalExp : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.exp $a) =>
+    assertInstancesCommute
+    pure (.positive q(Real.exp_pos $a))
+  | _, _, _ => throwError "not Real.exp"
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
 def evalCosh : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℝ), ~q(Real.cosh $a) =>
-      assumeInstancesCommute
-      return .positive q(Real.cosh_pos $a)
-    | _, _ => throwError "not Real.cosh"
-  else throwError "not Real.cosh"
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.cosh $a) =>
+    assertInstancesCommute
+    return .positive q(Real.cosh_pos $a)
+  | _, _, _ => throwError "not Real.cosh"
 
 example (x : ℝ) : 0 < x.cosh := by positivity
 

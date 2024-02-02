@@ -839,23 +839,24 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(ENNReal → Real)) (a : Q(ENNReal))) ← whnfR e | throwError "not ENNReal.toReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.toReal)
-  pure (.nonnegative (q(@ENNReal.toReal_nonneg $a) : Expr))
+def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(ENNReal.toReal_nonneg))
+  | _, _, _ => throwError "not ENNReal.toReal"
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.ofNNReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofNNReal)
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.coe_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
 
