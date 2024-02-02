@@ -176,7 +176,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FunctorCategoryEquivalence
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
@@ -190,7 +190,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.functor Action.FunctorCategoryEquivalence.functor
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
@@ -205,14 +205,14 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.inverse Action.FunctorCategoryEquivalence.inverse
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.unit_iso Action.FunctorCategoryEquivalence.unitIso
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
   NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _

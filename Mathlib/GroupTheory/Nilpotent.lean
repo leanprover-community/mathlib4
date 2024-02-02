@@ -53,7 +53,7 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * `nilpotent_iff_finite_descending_central_series` : `G` is nilpotent iff some descending central
     series reaches `⊥`.
 * `nilpotent_iff_lower` : `G` is nilpotent iff the lower central series reaches `⊥`.
-* The `nilpotency_class` can likeways be obtained from these equivalent
+* The `nilpotency_class` can likewise be obtained from these equivalent
   definitions, see `least_ascending_central_series_length_eq_nilpotencyClass`,
   `least_descending_central_series_length_eq_nilpotencyClass` and
   `lowerCentralSeries_length_eq_nilpotencyClass`.
@@ -887,7 +887,7 @@ theorem isNilpotent_of_product_of_sylow_group
 #align is_nilpotent_of_product_of_sylow_group isNilpotent_of_product_of_sylow_group
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
-normal and iff all sylow groups are normal and iff the group is the direct product of its sylow
+normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
 groups. -/
 theorem isNilpotent_of_finite_tFAE :
     List.TFAE
