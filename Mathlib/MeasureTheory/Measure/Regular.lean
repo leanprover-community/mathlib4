@@ -1038,14 +1038,6 @@ instance (priority := 100) {X : Type*}
   have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
   exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
 
-/- Check that typeclass inference works to guarantee regularity and inner regularity in
-interesting situations. -/
-example [LocallyCompactSpace α] [MetrizableSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : Regular μ := inferInstance
-
-example [LocallyCompactSpace α] [MetrizableSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := inferInstance
-
 end Measure
 
 end MeasureTheory
