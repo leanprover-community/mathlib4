@@ -81,8 +81,8 @@ instance (X : FinLinOrd) : Unique ((of (Fin 0)) ⟶ X) where
     apply OrderHom.ext
     exact List.ofFn_inj.mp rfl
   }
-
-instance  : IsInitial (of (Fin 0)) := by
+/-- The object `Fin 0` is initial in `FinLinOrd`-/
+def finZeroIsInitial  : IsInitial (of (Fin 0)) := by
     refine (@IsInitial.ofUnique FinLinOrd (?_) (of (Fin 0)) (?_))
     intro Y
     infer_instance
