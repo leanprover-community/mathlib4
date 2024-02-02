@@ -119,7 +119,16 @@ def fixingSubgroup (s : Set α) : Subgroup M :=
 #align fixing_subgroup fixingSubgroup
 #align fixing_add_subgroup fixingAddSubgroup
 
+/--
+`G•[s]` is notation for `fixingSubgroup G s`; this notation is only available if the `MulAction`
+scope is opened.
+-/
 scoped[MulAction] notation:max G "•[" s "]" => fixingSubgroup G s
+
+/--
+`G+ᵥ[s]` is notation for `fixingAddSubgroup G s`; this notation is only available if the `AddAction`
+scope is opened.
+-/
 scoped[AddAction] notation:max G "+ᵥ[" s "]" => fixingAddSubgroup G s
 
 @[to_additive]
