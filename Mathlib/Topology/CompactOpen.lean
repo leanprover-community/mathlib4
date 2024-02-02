@@ -106,11 +106,13 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
-  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff]; rfl
+  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff,
+    mem_setOf, preimage_setOf_eq, eventually_iff]
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
-  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo',
+    CompactOpen.gen, image_subset_iff, preimage_setOf_eq, mem_setOf]
 
 section Functorial
 
@@ -122,8 +124,9 @@ theorem continuous_comp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
 theorem inducing_comp (g : C(Y, Z)) (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by simp only [compactOpen_eq_mapsTo, induced_generateFrom_eq, image_image2,
-    hg.setOf_isOpen, image2_image_right]; rfl
+  induced := by
+    simp only [compactOpen_eq_mapsTo, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
+      image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
