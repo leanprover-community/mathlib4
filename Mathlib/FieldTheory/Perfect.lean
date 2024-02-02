@@ -233,34 +233,46 @@ theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Alge
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [Fact p.Prime] [CharP R p] (f : R[X])
+variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [ExpChar R p] (f : R[X])
 
 open Multiset
 
-theorem roots_expand_pow_map_frobenius_le :
-    (expand R (p ^ n) f).roots.map (frobenius R p)^[n] ≤ p ^ n • f.roots := by
+theorem roots_expand_pow_map_iterateFrobenius_le :
+    (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) ≤ p ^ n • f.roots := by
   classical
   refine le_iff_count.2 fun r ↦ ?_
   by_cases h : ∃ s, r = s ^ p ^ n
   · obtain ⟨s, rfl⟩ := h
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
-      count_eq_card_filter_eq, iterate_frobenius]
-    exact card_le_card (monotone_filter_right _ fun _ h ↦ pow_char_pow_inj R p n h)
+      count_eq_card_filter_eq]
+    exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
   convert Nat.zero_le _
-  simp_rw [count_map, card_eq_zero, iterate_frobenius]
+  simp_rw [count_map, card_eq_zero]
   exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
 
 theorem roots_expand_map_frobenius_le :
     (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
-  convert ← roots_expand_pow_map_frobenius_le p 1 f <;> apply pow_one
+  rw [← iterateFrobenius_one]
+  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+
+theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
+    (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
+  rw [Finset.image_toFinset, ← (roots f).toFinset_nsmul _ (expChar_pow_pos R p n).ne',
+    toFinset_subset]
+  exact subset_of_le (roots_expand_pow_map_iterateFrobenius_le p n f)
+
+theorem roots_expand_image_frobenius_subset [DecidableEq R] :
+    (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
+  rw [← iterateFrobenius_one]
+  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  apply pow_one
 
 open scoped Classical in
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandToRoots_apply`. -/
 noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots.toFinset where
-  toFun x := ⟨x.1 ^ p, mem_toFinset.2 <| (mem_nsmul (NeZero.ne p)).1 <|
-    mem_of_le (roots_expand_map_frobenius_le p f) <| mem_map_of_mem _ <| mem_toFinset.1 x.2⟩
+  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.2)⟩
   inj' _ _ h := Subtype.ext (frobenius_inj R p <| Subtype.ext_iff.1 h)
 
 @[simp]
@@ -272,10 +284,9 @@ a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roo
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
 noncomputable def rootsExpandPowToRoots :
     (expand R (p ^ n) f).roots.toFinset ↪ f.roots.toFinset where
-  toFun x := ⟨x.1 ^ p ^ n, iterate_frobenius p x.1 n ▸ (mem_toFinset.2 <|
-    (mem_nsmul (pow_ne_zero n (NeZero.ne p))).1 <| mem_of_le
-      (roots_expand_pow_map_frobenius_le p n f) <| mem_map_of_mem _ <| mem_toFinset.1 x.2)⟩
-  inj' _ _ h := Subtype.ext (pow_char_pow_inj R p n <| Subtype.ext_iff.1 h)
+  toFun x := ⟨x ^ p ^ n,
+    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.2)⟩
+  inj' _ _ h := Subtype.ext (iterateFrobenius_inj R p n <| Subtype.ext_iff.1 h)
 
 @[simp]
 theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl

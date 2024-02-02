@@ -19,15 +19,15 @@ open BigOperators
 
 section
 
-variable(R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
+variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]
 
-theorem pow_char_pow_inj : (fun r : R ↦ r ^ p ^ n).Injective := fun x y H ↦ by
+theorem iterateFrobenius_inj : Function.Injective (iterateFrobenius R p n) := fun x y H ↦ by
   rw [← sub_eq_zero] at H ⊢
-  rw [← sub_pow_char_pow] at H
+  simp_rw [iterateFrobenius_def, ← sub_pow_expChar_pow] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 
-theorem frobenius_inj : Function.Injective (frobenius R p) := by
-  convert pow_char_pow_inj R p 1; rw [pow_one]; rfl
+theorem frobenius_inj : Function.Injective (frobenius R p) :=
+  iterateFrobenius_one (R := R) p ▸ iterateFrobenius_inj R p 1
 #align frobenius_inj frobenius_inj
 
 end
@@ -48,8 +48,8 @@ variable {R : Type*} [CommRing R] [IsReduced R]
 theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R) :
     x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
   rw [pow_mul']
-  convert (pow_char_pow_inj R p k).eq_iff
-  rw [one_pow]
+  convert ← (iterateFrobenius_inj R p k).eq_iff
+  apply map_one
 #align char_p.pow_prime_pow_mul_eq_one_iff ExpChar.pow_prime_pow_mul_eq_one_iff
 
 @[deprecated] alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff
