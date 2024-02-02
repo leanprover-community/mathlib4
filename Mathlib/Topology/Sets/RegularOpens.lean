@@ -159,6 +159,9 @@ instance : Coe (RegularOpens α) (TopologicalSpace.Opens α) where
   coe := fun r => ⟨r.carrier, r.regularOpen'.isOpen⟩
 
 @[simp]
+theorem coe_mk {s : Set α} {s_regular : IsRegularOpen s} :
+    (↑(⟨s, s_regular⟩ : RegularOpens α) : Set α) = s := rfl
+
 theorem regularOpen (r : RegularOpens α) : IsRegularOpen (r : Set α) := r.regularOpen'
 
 instance : CanLift (Set α) (RegularOpens α) RegularOpens.carrier IsRegularOpen := ⟨

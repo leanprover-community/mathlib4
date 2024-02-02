@@ -88,14 +88,16 @@ theorem movingSubgroup_regularSupport_eq_algSupport (g : G) :
 variable (G) in
 /--
 Applying `G•[·ᶜ]` to a `RegularSupportBasis` element yields an `AlgSupportBasis` element.
+
+This is an auxiliary function, later used in `supportBasis_orderIso`
 -/
-private def supportBasis_movingSubgroup (b : RegularSupportBasis G α) : AlgSupportBasis G := ⟨
-  LocallyMovingSMul.movingSubgroup_orderEmbedding G α b.val,
+def supportBasis_orderIso_aux (b : RegularSupportBasis G α) : AlgSupportBasis G := ⟨
+  LocallyMovingSMul.movingSubgroup_orderEmbedding G α ⟨b.val, RegularSupportBasis.regularOpen b⟩,
   by
     let ⟨s, s_finite, s_eq⟩ := b.prop
     refine ⟨s, s_finite, ?eq⟩
     rw [LocallyMovingSMul.movingSubgroup_orderEmbedding, RelEmbedding.coe_mk,
-      Function.Embedding.coeFn_mk, s_eq]
+      Function.Embedding.coeFn_mk, RegularOpens.coe_mk, s_eq]
     simp_rw [Set.compl_iInter, fixingSubgroup_iUnion,
       movingSubgroup_regularSupport_eq_algSupport]⟩
 
@@ -107,17 +109,18 @@ lemma _root_.OrderEmbedding.injective {α β : Type*} [PartialOrder α] [Preorde
   · exact eq.ge
 
 variable (G) in
-private theorem supportBasis_movingSubgroup_bijective :
-    Function.Bijective (supportBasis_movingSubgroup G α) := by
+theorem supportBasis_orderIso_aux_bijective :
+    Function.Bijective (supportBasis_orderIso_aux G α) := by
   constructor
   · intro b₁ b₂ eq
-    rw [supportBasis_movingSubgroup, supportBasis_movingSubgroup, Subtype.mk_eq_mk] at eq
-    exact Subtype.val_inj.mp <| (LocallyMovingSMul.movingSubgroup_orderEmbedding G α).injective eq
+    rw [supportBasis_orderIso_aux, supportBasis_orderIso_aux, Subtype.mk_eq_mk] at eq
+    convert (LocallyMovingSMul.movingSubgroup_orderEmbedding G α).injective eq using 1
+    simp only [RegularOpens.mk.injEq, Subtype.val_inj]
   · intro b
     let ⟨s, s_finite, s_eq⟩ := b.prop
     use RegularSupportBasis.ofFinite α s s_finite
     rw [← Subtype.val_inj]
-    simp_rw [s_eq, supportBasis_movingSubgroup, LocallyMovingSMul.movingSubgroup_orderEmbedding]
+    simp_rw [s_eq, supportBasis_orderIso_aux, LocallyMovingSMul.movingSubgroup_orderEmbedding]
     simp only [RelEmbedding.coe_mk, Function.Embedding.coeFn_mk]
     change G•[(RegularSupportBasis.ofFinite α s s_finite : Set α)ᶜ] = _
     simp_rw [RegularSupportBasis.coe_ofFinite, Set.compl_iInter, fixingSubgroup_iUnion,
@@ -130,17 +133,21 @@ isomorphism between elements of the regular support basis (which forms a topolog
 and the algebraic support basis (which is purely defined in terms of `G`).
 -/
 noncomputable def supportBasis_orderIso : RegularSupportBasis G α ≃o AlgSupportBasis G where
-  toEquiv := Equiv.ofBijective _ <| supportBasis_movingSubgroup_bijective G α
+  toEquiv := Equiv.ofBijective _ <| supportBasis_orderIso_aux_bijective G α
   map_rel_iff' := by
     intro b₁ b₂
-    simp_rw [Equiv.ofBijective_apply, supportBasis_movingSubgroup]
+    simp_rw [Equiv.ofBijective_apply, supportBasis_orderIso_aux]
     rw [Subtype.mk_le_mk, (LocallyMovingSMul.movingSubgroup_orderEmbedding G α).map_rel_iff]
     rfl
 
 theorem supportBasis_orderIso_apply {b : RegularSupportBasis G α} :
     (supportBasis_orderIso b).val = G•[(b : Set α)ᶜ] := rfl
 
-theorem AlgSupportBasis.orderBot : OrderBot (AlgSupportBasis G) where
+/--
+The rubin action induces that the `AlgSupportBasis G` must contain a bottom element.
+Note that the requirements for this instance could be weakened.
+-/
+def AlgSupportBasis.orderBot : OrderBot (AlgSupportBasis G) where
   bot := ⟨
     ⊥,
     by
