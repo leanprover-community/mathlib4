@@ -172,7 +172,7 @@ lemma len_zero_isInitial {Z: AugmentedSimplexCategory} (hZ : Z.len=0):
     exact hZ
    rw  [h]
    exact instIsInitialAugmentedSimplexCategorySmallCategoryMkOfNatNatInstOfNatNat
--- An isomorphism in `SimplexCategory` induces an `OrderIso`. -/
+/-- An isomorphism in `AugmentedSimplexCategory` induces an `OrderIso`. -/
 @[simp]
 def orderIsoOfIso {x y : AugmentedSimplexCategory} (e : x ≅ y) : Fin x.len ≃o Fin y.len :=
   Equiv.toOrderIso
