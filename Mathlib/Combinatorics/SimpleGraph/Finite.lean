@@ -7,10 +7,16 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Sym.Card
 
 /-!
-# Finsets of edges, neighbor vertices and incident edges
+# Definitions for finite and locally finite graphs
 
 This file defines finite versions of `edgeSet`, `neighborSet` and `incidenceSet` and proves some
 of their basic properties.
+It also defines the notion of a locally finite graph, which is one whose vertices have finite degree.
+
+The design for finiteness is that each definition takes the smallest
+finiteness assumption necessary.
+For example, `SimpleGraph.neighborFinset v` only requires that `v`
+have finitely many neighbors.
 
 ## Main definitions
 
