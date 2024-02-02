@@ -5,7 +5,7 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 open BigOperators
 
-variable {R : Type*} [CommRing R]
+variable {R σ : Type*} [CommRing R]
 
 lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
     (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmbedding n).toEmbedding s.support) := by
@@ -68,9 +68,29 @@ open Cardinal in
 lemma Polynomial.exists_eval_ne_zero_of_natDegree_lt_card [IsDomain R]
     (f : Polynomial R) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
     ∃ r, f.eval r ≠ 0 := by
-  let S := f.roots
-  have hS := f.card_roots hf
-  sorry
+  contrapose! hf
+  obtain hR|hR := finite_or_infinite R
+  · have := Fintype.ofFinite R
+    apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
+    aesop
+  · apply Polynomial.funext
+    simpa using hf
+
+lemma MvPolynomial.degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
+    degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
+  simp only [← Nat.lt_succ_iff, degreeOf_lt_iff (Nat.succ_pos _)]
+
+lemma MvPolynomial.degreeOf_le_totalDegree {σ : Type*} (φ : MvPolynomial σ R) (i : σ) :
+    φ.degreeOf i ≤ φ.totalDegree := by
+  rw [degreeOf_le_iff]
+  intro d hd
+  refine le_trans ?_ (le_totalDegree hd)
+  if hi : i ∈ d.support
+  then
+    exact Finset.single_le_sum (fun _ _ ↦ zero_le') hi
+  else
+    rw [Finsupp.not_mem_support_iff] at hi
+    simp only [hi, zero_le]
 
 namespace MvPolynomial.IsHomogeneous
 
@@ -122,10 +142,12 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
     ext d
     simpa [hn₀.symm, Subsingleton.elim d.support ∅] using @hF d
   | succ N IH =>
-    have aux : natDegree ((finSuccEquiv R N) F) < n+1 := by
-      rw [natDegree_finSuccEquiv]
-      -- use `hF`
-      sorry
+    have aux :=
+      calc natDegree ((finSuccEquiv R N) F)
+          = degreeOf 0 F  := natDegree_finSuccEquiv _
+        _ ≤ F.totalDegree := degreeOf_le_totalDegree _ _
+        _ = n             := hF.totalDegree hF₀
+        _ < n + 1         := Nat.lt_succ_self n
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv _ _ F).coeff i ≠ 0 := by
       contrapose! hF₀
       apply (finSuccEquiv _ _).injective
@@ -154,10 +176,16 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
       dsimp only at hφ₀
       rw [← coeff_eval_eq_eval_coeff, hφ₀, Polynomial.coeff_zero]
     have hφR : φ.natDegree < #R := by
-      sorry
+      refine lt_of_lt_of_le ?_ hnR
+      norm_cast
+      refine lt_of_le_of_lt (natDegree_map_le _ _) ?_
+      suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
+      rintro rfl
+      refine leadingCoeff_ne_zero.mpr ?_ hFn
+      simpa using (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ := φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r
-    sorry
+    rwa [eval_eq_eval_mv_eval']
 
 open Cardinal in
 lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
