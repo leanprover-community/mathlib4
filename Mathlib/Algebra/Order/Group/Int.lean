@@ -39,7 +39,7 @@ theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.of
 
 @[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
 
-instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
+instance instLinearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
   __ := instLinearOrder
   __ := instAddCommGroup
   add_le_add_left _ _ := Int.add_le_add_left
