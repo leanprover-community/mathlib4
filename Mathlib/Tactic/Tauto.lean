@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Std.Tactic.SolveByElim
 import Mathlib.Lean.Elab.Tactic.Basic

@@ -161,9 +161,9 @@ most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_e
 It is satisfied in two cases:
 
 - if `X` is a locally compact topological space, for obvious reasons;
-- if `X` is a weakly locally compact topological space and `Y` is a Hausdorff space;
+- if `X` is a weakly locally compact topological space and `Y` is an R₁ space;
   this fact is a simple generalization of the theorem
-  saying that a weakly locally compact Hausdorff topological space is locally compact.
+  saying that a weakly locally compact R₁ topological space is locally compact.
 -/
 class LocallyCompactPair (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] : Prop where
   /-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces
@@ -201,7 +201,7 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
   choose! V hxV hVc hVU using fun x (hx : x ∈ K) ↦
     exists_mem_nhds_isCompact_mapsTo hf (hU.mem_nhds (hKU hx))
   rcases hK.elim_nhds_subcover_nhdsSet hxV with ⟨s, hsK, hKs⟩
-  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂ fun x hx ↦
+  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂.2 fun x hx ↦
     hVU x (hsK x hx)⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open

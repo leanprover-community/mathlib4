@@ -134,7 +134,7 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }

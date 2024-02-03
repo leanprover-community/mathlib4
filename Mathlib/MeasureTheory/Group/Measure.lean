@@ -580,6 +580,34 @@ theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular :=
 theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
   InnerRegular.map_iff (Homeomorph.inv G)
 
+/-- Continuity of the measure of translates of a compact set: Given a compact set `k` in a
+topological group, for `g` close enough to the origin, `μ (g • k \ k)` is arbitrarily small. -/
+@[to_additive]
+lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
+    [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
+    (hk : IsCompact k) (h'k : IsClosed k) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∀ᶠ g in 𝓝 (1 : G), μ (g • k \ k) < ε := by
+  obtain ⟨U, hUk, hU, hμUk⟩ : ∃ (U : Set G), k ⊆ U ∧ IsOpen U ∧ μ U < μ k + ε :=
+    hk.exists_isOpen_lt_add hε
+  obtain ⟨V, hV1, hVkU⟩ : ∃ V ∈ 𝓝 (1 : G), V * k ⊆ U := compact_open_separated_mul_left hk hU hUk
+  filter_upwards [hV1] with g hg
+  calc
+    μ (g • k \ k) ≤ μ (U \ k) := by
+      refine measure_mono (diff_subset_diff_left ?_)
+      exact (smul_set_subset_smul hg).trans hVkU
+    _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
+
+/-- Continuity of the measure of translates of a compact set:
+Given a closed compact set `k` in a topological group,
+the measure of `g • k \ k` tends to zero as `g` tends to `1`. -/
+@[to_additive]
+lemma tendsto_measure_smul_diff_isCompact_isClosed [LocallyCompactSpace G]
+    [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
+    (hk : IsCompact k) (h'k : IsClosed k) :
+    Tendsto (fun g : G ↦ μ (g • k \ k)) (𝓝 1) (𝓝 0) :=
+  ENNReal.nhds_zero_basis.tendsto_right_iff.mpr <| fun _ h ↦
+    eventually_nhds_one_measure_smul_diff_lt hk h'k h.ne'
+
 variable [IsMulLeftInvariant μ]
 
 /-- If a left-invariant measure gives positive mass to a compact set, then it gives positive mass to
@@ -683,9 +711,9 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     find `g = g (L)` such that `L` is disjoint from `g • K`. Iterating this, one finds
     infinitely many translates of `K` which are disjoint from each other. As they all have the
     same positive mass, it follows that the space has infinite measure. -/
-  obtain ⟨K, hK, Kclosed, K1⟩ : ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
-    exists_isCompact_isClosed_nhds_one G
-  have K_pos : 0 < μ K := measure_pos_of_nonempty_interior _ ⟨_, mem_interior_iff_mem_nhds.2 K1⟩
+  obtain ⟨K, K1, hK, Kclosed⟩ : ∃ K ∈ 𝓝 (1 : G), IsCompact K ∧ IsClosed K :=
+    exists_mem_nhds_isCompact_isClosed 1
+  have K_pos : 0 < μ K := measure_pos_of_mem_nhds μ K1
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
@@ -734,11 +762,10 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
     simp only [iUnion_smul, h''f]
 
 /-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
-    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s := by
-  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_closure_one_eq]
-  exact mul_subset_mul_right h
+    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
+  hk.closure_subset_measurableSet hs h
 
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
@@ -751,10 +778,19 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.measure_closure)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k := by
-  rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
+    μ (closure k) = μ k :=
+  hk.measure_closure μ
+
+@[to_additive]
+lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegularCompactLTTop μ] :
+    InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
+  intro s ⟨s_meas, μs⟩ r hr
+  rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
+  refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
+  · exact IsCompact.closure_subset_measurableSet K_comp s_meas Ks
+  · rwa [K_comp.measure_closure]
 
 end TopologicalGroup
 
@@ -812,15 +848,6 @@ class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace 
 #noalign measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
-
-/-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
-topological group is automatically regular and inner regular. -/
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    Regular μ := by infer_instance
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
