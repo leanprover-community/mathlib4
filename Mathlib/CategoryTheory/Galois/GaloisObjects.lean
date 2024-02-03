@@ -73,7 +73,7 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient [GaloisCategory C]
     Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
   letI J : SingleObj (Aut X) ⥤ C := SingleObj.functor (autToEnd X)
   letI e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
-    preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫ 
+    preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
     (Equiv.toIso <| SingleObj.Types.colimitEquivQuotient (J ⋙ F ⋙ FintypeCat.incl))
   apply Equiv.trans
   apply (IsTerminal.isTerminalIffObj (F ⋙ FintypeCat.incl) _).trans
