@@ -36,18 +36,13 @@ open scoped Topology BigOperators
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
---  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
--- automatically included as a hypothesis
 
 namespace HasSum
 
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert hasSum_single (α := E) 0 fun b h => _ <;>
-    first
-    | simp [Nat.pos_of_ne_zero h]
-    | simp
+  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 #align has_sum.has_sum_at_zero HasSum.hasSum_at_zero
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
@@ -56,7 +51,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   · simpa
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
-    exact ⟨a n, by simp [h, hn, this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
+    exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
   · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], ?_⟩
     have h1 : ∑ i in Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
@@ -171,7 +166,7 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
     exact pow_ne_zero _ <| sub_ne_zero.mpr hz
   rw [frequently_eq_iff_eventually_eq hj_an] at this
   rw [EventuallyEq.eq_of_nhds this, sub_self, zero_pow, zero_smul]
-  · apply Nat.zero_lt_sub_of_lt (Nat.lt_of_le_of_ne h_le hj_ne.symm)
+  · apply Nat.sub_ne_zero_of_lt (h_le.lt_of_ne' hj_ne)
   · exact (((analyticAt_id 𝕜 _).sub analyticAt_const).pow _).smul hg_an
 
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either

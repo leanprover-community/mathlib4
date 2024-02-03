@@ -23,7 +23,7 @@ C⋆-algebras.
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the
 correct topology on the space. We then define `WeakDual.CharacterSpace.toAlgHom` which provides the
-algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toClm`
+algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toCLM`
 which provides the element as a continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of
 `A →L[𝕜] 𝕜`, this is often more convenient.)
 
@@ -75,14 +75,14 @@ theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
 /-- An element of the character space, as a continuous linear map. -/
-def toClm (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
+def toCLM (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
   (φ : WeakDual 𝕜 A)
-#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toClm
+#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toCLM
 
 @[simp]
-theorem coe_toClm (φ : characterSpace 𝕜 A) : ⇑(toClm φ) = φ :=
+theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
   rfl
-#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toClm
+#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=

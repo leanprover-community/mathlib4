@@ -320,8 +320,8 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
   neg_mem' := Memℓp.neg
 #align lp lp
 
-scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
-scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
+@[inherit_doc] scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
+@[inherit_doc] scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
 
 namespace lp
 
@@ -433,7 +433,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   · simp [lp.norm_eq_card_dsupport f]
   · cases' isEmpty_or_nonempty α with _i _i
     · rw [lp.norm_eq_ciSup]
-      simp [Real.ciSup_empty]
+      simp [Real.iSup_of_isEmpty]
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]

@@ -69,14 +69,14 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
   /-- The partition is supremum-independent -/
   supIndep : parts.SupIndep id
   /-- The supremum of the partition is `a` -/
-  supParts : parts.sup id = a
+  sup_parts : parts.sup id = a
   /-- No element of the partition is bottom-/
   not_bot_mem : ⊥ ∉ parts
   deriving DecidableEq
 #align finpartition Finpartition
 #align finpartition.parts Finpartition.parts
 #align finpartition.sup_indep Finpartition.supIndep
-#align finpartition.sup_parts Finpartition.supParts
+#align finpartition.sup_parts Finpartition.sup_parts
 #align finpartition.not_bot_mem Finpartition.not_bot_mem
 
 -- Porting note: attribute [protected] doesn't work
@@ -95,7 +95,7 @@ def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.Sup
     where
   parts := parts.erase ⊥
   supIndep := sup_indep.subset (erase_subset _ _)
-  supParts := (sup_erase_bot _).trans sup_parts
+  sup_parts := (sup_erase_bot _).trans sup_parts
   not_bot_mem := not_mem_erase _ _
 #align finpartition.of_erase Finpartition.ofErase
 
@@ -105,7 +105,7 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     (sup_parts : parts.sup id = b) : Finpartition b :=
   { parts := parts
     supIndep := P.supIndep.subset subset
-    supParts := sup_parts
+    sup_parts := sup_parts
     not_bot_mem := fun h ↦ P.not_bot_mem (subset h) }
 #align finpartition.of_subset Finpartition.ofSubset
 
@@ -115,7 +115,7 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
     where
   parts := P.parts
   supIndep := P.supIndep
-  supParts := h ▸ P.supParts
+  sup_parts := h ▸ P.sup_parts
   not_bot_mem := P.not_bot_mem
 #align finpartition.copy Finpartition.copy
 
@@ -146,7 +146,7 @@ protected def empty : Finpartition (⊥ : α)
     where
   parts := ∅
   supIndep := supIndep_empty _
-  supParts := Finset.sup_empty
+  sup_parts := Finset.sup_empty
   not_bot_mem := not_mem_empty ⊥
 #align finpartition.empty Finpartition.empty
 
@@ -166,14 +166,14 @@ def indiscrete (ha : a ≠ ⊥) : Finpartition a
     where
   parts := {a}
   supIndep := supIndep_singleton _ _
-  supParts := Finset.sup_singleton
+  sup_parts := Finset.sup_singleton
   not_bot_mem h := ha (mem_singleton.1 h).symm
 #align finpartition.indiscrete Finpartition.indiscrete
 
 variable (P : Finpartition a)
 
 protected theorem le {b : α} (hb : b ∈ P.parts) : b ≤ a :=
-  (le_sup hb).trans P.supParts.le
+  (le_sup hb).trans P.sup_parts.le
 #align finpartition.le Finpartition.le
 
 theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
@@ -190,7 +190,7 @@ protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
 variable {P}
 
 theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
-  simp_rw [← P.supParts]
+  simp_rw [← P.sup_parts]
   refine' ⟨fun h ↦ _, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem _⟩
   · rw [h]
     exact Finset.sup_empty
@@ -317,7 +317,7 @@ instance : Inf (Finpartition a) :=
         trans P.parts.sup id ⊓ Q.parts.sup id
         · simp_rw [Finset.sup_inf_distrib_right, Finset.sup_inf_distrib_left]
           rfl
-        · rw [P.supParts, Q.supParts, inf_idem])⟩
+        · rw [P.sup_parts, Q.sup_parts, inf_idem])⟩
 
 @[simp]
 theorem parts_inf (P Q : Finpartition a) :
@@ -352,7 +352,7 @@ theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b 
     ∃ c ∈ P.parts, c ≤ b := by
   by_contra H
   refine' Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) _)
-  rw [← P.supParts, Finset.disjoint_sup_right]
+  rw [← P.sup_parts, Finset.disjoint_sup_right]
   rintro c hc
   obtain ⟨d, hd, hcd⟩ := h hc
   refine' (Q.disjoint hb hd _).mono_right hcd
@@ -394,12 +394,12 @@ def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finparti
     obtain rfl | hAB := eq_or_ne A B
     · exact (Q A hA).disjoint ha hb h
     · exact (P.disjoint hA hB hAB).mono ((Q A hA).le ha) ((Q B hB).le hb)
-  supParts := by
+  sup_parts := by
     simp_rw [sup_biUnion]
     trans (sup P.parts id)
     · rw [eq_comm, ← Finset.sup_attach]
-      exact sup_congr rfl fun b _hb ↦ (Q b.1 b.2).supParts.symm
-    · exact P.supParts
+      exact sup_congr rfl fun b _hb ↦ (Q b.1 b.2).sup_parts.symm
+    · exact P.sup_parts
   not_bot_mem h := by
     rw [Finset.mem_biUnion] at h
     obtain ⟨⟨A, hA⟩, -, h⟩ := h
@@ -438,7 +438,7 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
   supIndep := by
     rw [supIndep_iff_pairwiseDisjoint, coe_insert]
     exact P.disjoint.insert fun d hd _ ↦ hab.symm.mono_right <| P.le hd
-  supParts := by rwa [sup_insert, P.supParts, id, _root_.sup_comm]
+  sup_parts := by rwa [sup_insert, P.sup_parts, id, _root_.sup_comm]
   not_bot_mem h := (mem_insert.1 h).elim hb.symm P.not_bot_mem
 #align finpartition.extend Finpartition.extend
 
@@ -459,7 +459,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
     (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
-    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← id_def, P.supParts])
+    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← id_def, P.sup_parts])
 #align finpartition.avoid Finpartition.avoid
 
 @[simp]
@@ -490,7 +490,7 @@ lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) 
   P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
 theorem exists_mem (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
-  simp_rw [← P.supParts] at ha
+  simp_rw [← P.sup_parts] at ha
   exact mem_sup.1 ha
 #align finpartition.exists_mem Finpartition.exists_mem
 
@@ -508,7 +508,7 @@ theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
 theorem mem_part (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
-  (sup_eq_biUnion _ _).symm.trans P.supParts
+  (sup_eq_biUnion _ _).symm.trans P.sup_parts
 #align finpartition.bUnion_parts Finpartition.biUnion_parts
 
 theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
@@ -525,7 +525,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
           (by
             rw [Finset.coe_map]
             exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _))
-      supParts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton']
+      sup_parts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton']
       not_bot_mem := by simp }⟩
 
 @[simp]

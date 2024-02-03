@@ -42,6 +42,7 @@ def PointedSmoothMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 #align pointed_smooth_map PointedSmoothMap
 
+@[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedSmoothMap 𝕜 I M n x
 
 variable {𝕜 M}

@@ -216,9 +216,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s
 instance : Inhabited (Set α) :=
   ⟨∅⟩
 
-attribute [ext] Set.ext
-#align set.ext Set.ext
-
 theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
   ⟨fun h x => by rw [h], ext⟩
 #align set.ext_iff Set.ext_iff
@@ -757,11 +754,11 @@ theorem union_assoc (a b c : Set α) : a ∪ b ∪ c = a ∪ (b ∪ c) :=
   ext fun _ => or_assoc
 #align set.union_assoc Set.union_assoc
 
-instance union_isAssoc : IsAssociative (Set α) (· ∪ ·) :=
+instance union_isAssoc : Std.Associative (α := Set α) (· ∪ ·) :=
   ⟨union_assoc⟩
 #align set.union_is_assoc Set.union_isAssoc
 
-instance union_isComm : IsCommutative (Set α) (· ∪ ·) :=
+instance union_isComm : Std.Commutative (α := Set α) (· ∪ ·) :=
   ⟨union_comm⟩
 #align set.union_is_comm Set.union_isComm
 
@@ -911,11 +908,11 @@ theorem inter_assoc (a b c : Set α) : a ∩ b ∩ c = a ∩ (b ∩ c) :=
   ext fun _ => and_assoc
 #align set.inter_assoc Set.inter_assoc
 
-instance inter_isAssoc : IsAssociative (Set α) (· ∩ ·) :=
+instance inter_isAssoc : Std.Associative (α := Set α) (· ∩ ·) :=
   ⟨inter_assoc⟩
 #align set.inter_is_assoc Set.inter_isAssoc
 
-instance inter_isComm : IsCommutative (Set α) (· ∩ ·) :=
+instance inter_isComm : Std.Commutative (α := Set α) (· ∩ ·) :=
   ⟨inter_comm⟩
 #align set.inter_is_comm Set.inter_isComm
 

@@ -302,6 +302,9 @@ instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
 instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
   charP_of_injective_algebraMap (algebraMap K _).injective p
 
+instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
+  expChar_of_injective_algebraMap (algebraMap K _).injective p
+
 -- The algebra instance deriving from `K` should be definitionally equal to that
 -- deriving from the field structure on `SplittingField f`.
 example :
