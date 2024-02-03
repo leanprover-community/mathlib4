@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.NormedSpace.FiniteDimension
-import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.calculus.bump_function_inner from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
