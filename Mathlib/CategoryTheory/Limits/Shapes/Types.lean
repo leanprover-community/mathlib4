@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.limits.shapes.types from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
@@ -152,6 +153,14 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
 noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 #align category_theory.limits.types.is_initial_punit CategoryTheory.Limits.Types.isInitialPunit
+
+/-- An object in `Type u` is initial if and only if it is empty. -/
+lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
+  constructor
+  · intro ⟨h⟩
+    exact Function.isEmpty (IsInitial.to h PEmpty)
+  · intro h
+    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
 open CategoryTheory.Limits.WalkingPair
 

@@ -321,7 +321,9 @@ import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Module.LinearMap.Pointwise
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposites
@@ -976,7 +978,7 @@ import Mathlib.CategoryTheory.Bicategory.Extension
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory
-import Mathlib.CategoryTheory.Bicategory.IsKan
+import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation
 import Mathlib.CategoryTheory.Bicategory.SingleObj
@@ -1396,6 +1398,7 @@ import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Girth
 import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -1803,6 +1806,7 @@ import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
@@ -1891,7 +1895,8 @@ import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.Laurent
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Mirror
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.Basic
+import Mathlib.Data.Polynomial.Module.FiniteDimensional
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.PartialFractions
@@ -2906,7 +2911,8 @@ import Mathlib.Order.Category.Semilat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
+import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
@@ -3133,7 +3139,9 @@ import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.FractionalIdeal.Norm
 import Mathlib.RingTheory.FractionalIdeal.Operations
@@ -3222,6 +3230,7 @@ import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.Polynomial.IrreducibleRing
 import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer

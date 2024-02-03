@@ -568,7 +568,7 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
   | m, 0 => Ha0 m
   | 0, n => H0b n
   | Nat.succ m, Nat.succ n => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
-termination_by pincerRecursion Ha0 Hab H n m => n + m
+termination_by n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.

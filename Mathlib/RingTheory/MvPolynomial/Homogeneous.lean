@@ -217,6 +217,19 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
     exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, (⇑s) x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
+theorem rename_isHomogeneous {f : σ → τ} (hf : f.Injective) :
+    (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
+  obtain ⟨f, rfl⟩ : ∃ f' : σ ↪ τ, f = f' := ⟨⟨f, hf⟩, rfl⟩
+  have aux : ∀ d : σ →₀ ℕ,
+    ∑ i in (d.embDomain f).support, (d.embDomain f) i = ∑ i in d.support, d i := fun d ↦ by
+    simp only [Finsupp.support_embDomain, Finset.sum_map, Finsupp.embDomain_apply]
+  constructor
+  · intro h d hd
+    rw [← (@h (d.embDomain f) (by rwa [coeff_rename_embDomain])), aux]
+  · intro h d hd
+    obtain ⟨d', rfl, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
+    rw [← Finsupp.embDomain_eq_mapDomain, ← h hd', aux]
+
 /-- The homogeneous submodules form a graded ring. This instance is used by `DirectSum.commSemiring`
 and `DirectSum.algebra`. -/
 instance HomogeneousSubmodule.gcommSemiring : SetLike.GradedMonoid (homogeneousSubmodule σ R) where
