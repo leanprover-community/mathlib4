@@ -1,8 +1,21 @@
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+import Mathlib.Data.MvPolynomial.Equiv
 
 /-!
 # The coeffients of the characteristic polynomial are polynomial in the matrix entries
 -/
+
+-- namespace MvPolynomial
+
+-- variable {σ R : Type*} [CommSemiring R]
+
+-- lemma rename_finSuccEquiv :
+--   let F := optionEquivLeft R σ
+--   _ := by
+
+
+
+-- end MvPolynomial
 
 namespace Matrix.charpoly
 
