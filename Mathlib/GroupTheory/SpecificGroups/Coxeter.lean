@@ -3,9 +3,7 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Matrix.Notation
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
@@ -20,10 +18,10 @@ by a Coxeter matrix `M = (mᵢⱼ)`.  The Coxeter matrix is a symmetric matrix w
 `mᵢⱼ` representing the order of the product `sᵢsⱼ` for `i ≠ j` and `mᵢᵢ = 1`.
 
 When `(W, S)` is a Coxeter system, one also says, by abuse of language, that `W` is a
-Coxeter group.  Coxeter group `W` is defined by the presentation
+Coxeter group.  A Coxeter group `W` is determined by the presentation
 `W = ⟨s₁,s₂,...,sₙ | ∀ i j, (sᵢsⱼ)^mᵢⱼ = 1⟩`, where `1` is the identity element of `W`.
 
-The finite Coxeter groups are classified as the four infinite families:
+The finite Coxeter groups are classified (TODO) as the four infinite families:
 
 * `Aₙ, Bₙ, Dₙ, I₂ₘ`
 
@@ -116,8 +114,8 @@ end CoxeterGroup
 /-- The group presentation corresponding to a Coxeter matrix. -/
 def Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
 
-instance : Group (Matrix.CoxeterGroup M) := by
-  exact QuotientGroup.Quotient.group _
+instance : Group (Matrix.CoxeterGroup M) :=
+  QuotientGroup.Quotient.group _
 
 namespace CoxeterGroup
 
@@ -132,8 +130,8 @@ theorem of_apply (b : B) : of M b = PresentedGroup.of (rels := Relations.toSet M
 end CoxeterGroup
 
 /-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
-a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this can
-be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
+a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this
+can be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
 structure CoxeterSystem (W : Type*) [Group W]  where
   /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given an equivalence with the group
@@ -143,12 +141,7 @@ structure CoxeterSystem (W : Type*) [Group W]  where
     corresponding to a Coxeter matrix `M`. -/
     mulEquiv : W ≃* Matrix.CoxeterGroup M
 
-/-- Coxeter system of matrix `M` on the group `M.CoxeterGroup`. -/
-def Matrix.coxeterSystemCoxeterGroup : CoxeterSystem M M.CoxeterGroup :=
-  CoxeterSystem.ofMulEquiv (MulEquiv.refl _)
-
-/-- A group is a Coxeter group if it is registered in a Coxeter system
- for some Coxeter matrix `M`. -/
+/-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
 class IsCoxeterGroup (W : Type u) [Group W] : Prop where
   nonempty_system : ∃ (B : Type u), ∃ (M : Matrix B B ℕ),
     M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
@@ -174,9 +167,8 @@ instance funLike : FunLike (CoxeterSystem M W) B (fun _ => W) where
     rw [ofMulEquiv.injEq, ← MulEquiv.symm_symm cs, ← MulEquiv.symm_symm cs', this]
 
 @[simp]
-theorem mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) :
-    cs.mulEquiv (cs b) = .of b :=
-  (MulEquiv.eq_symm_apply cs.mulEquiv).mp rfl
+theorem mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) : cs.mulEquiv (cs b) = .of b :=
+  cs.mulEquiv.eq_symm_apply.mp rfl
 
 /-- The map sending a Coxeter system to its associated map `B → W`. -/
 theorem ext' {c d : CoxeterSystem M W} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
@@ -186,8 +178,8 @@ theorem ext {c d : CoxeterSystem M W} (H : ∀ x, c x = d x) : c = d :=
   ext' <| by ext; apply H
 
 /-- The canonical Coxeter system of the Coxeter group over `X`. -/
-def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGroup D) :=
-  ofMulEquiv (MulEquiv.refl _)
+def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGroup D) where
+  mulEquiv := .refl _
 
 @[simp]
 theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
@@ -230,6 +222,7 @@ theorem equivCoxeterGroup_symm_apply_of (b' : B') (M : Matrix B B ℕ) (e : B �
   rfl
 
 /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
+@[simps]
 protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
     CoxeterSystem (reindex e e M) W :=
   ofMulEquiv (cs.mulEquiv.trans (equivCoxeterGroup e))
@@ -240,6 +233,7 @@ theorem reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
   rfl
 
 /-- Pushing a Coxeter system through a group isomorphism. -/
+@[simps]
 protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
   ofMulEquiv (e.symm.trans cs.mulEquiv)
 
