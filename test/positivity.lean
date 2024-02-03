@@ -171,6 +171,16 @@ example {a b : ℚ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
 
+section
+variable {q : ℚ}
+
+example (hq : q ≠ 0) : q.num ≠ 0 := by positivity
+example : 0 < q.den := by positivity
+example (hq : 0 < q) : 0 < q := by positivity
+example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
+
+end
+
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity

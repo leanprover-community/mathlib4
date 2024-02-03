@@ -322,13 +322,13 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
     have ifp_fr_num_le_q_fr_num_sub_n : ifp.fr.num ≤ fract_q_num - n :=
       stream_nth_fr_num_le_fr_num_sub_n_rat stream_nth_eq
     have : fract_q_num - n = -1 := by
-      have : 0 ≤ fract_q_num := Rat.num_nonneg_iff_zero_le.mpr (Int.fract_nonneg q)
+      have : 0 ≤ fract_q_num := Rat.num_nonneg.mpr (Int.fract_nonneg q)
       -- Porting note: was
       -- simp [Int.natAbs_of_nonneg this, sub_add_eq_sub_sub_swap, sub_right_comm]
       simp only [Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one, sub_add_eq_sub_sub_swap,
         sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
-    have : 0 ≤ ifp.fr.num := Rat.num_nonneg_iff_zero_le.mpr this
+    have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this
     linarith
 #align generalized_continued_fraction.int_fract_pair.exists_nth_stream_eq_none_of_rat GeneralizedContinuedFraction.IntFractPair.exists_nth_stream_eq_none_of_rat
 

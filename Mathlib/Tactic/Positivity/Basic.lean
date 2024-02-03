@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
@@ -539,3 +540,40 @@ def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
 def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
   let ~q(Nat.ascFactorial ($n + 1) $k) := e | throwError "failed to match Nat.ascFactorial"
   pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))
+
+open Rat
+
+private alias ⟨_, num_pos_of_pos⟩ := num_pos
+private alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
+private alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.num a`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity Rat.num _]
+def evalRatNum : PositivityExt where eval {u α} _ _ e := do
+  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
+    match α, e with
+    | ~q(ℤ), ~q(Rat.num $a) =>
+      let zα : Q(Zero ℚ) := q(inferInstance)
+      let pα : Q(PartialOrder ℚ) := q(inferInstance)
+      assumeInstancesCommute
+      match ← core zα pα a with
+      | .positive pa =>
+        Lean.logInfo "tetrteer"
+        return .positive q(num_pos_of_pos $pa)
+      | .nonnegative pa => return .nonnegative q(num_nonneg_of_nonneg $pa)
+      | .nonzero pa => return .nonzero q(num_ne_zero_of_ne_zero $pa)
+      | .none => return .none
+    | _, _ => throwError "not Rat.num"
+  else throwError "not Rat.num"
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
+@[positivity Rat.den _]
+def evalRatDen : PositivityExt where eval {u α} _ _ e := do
+  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
+    match α, e with
+    | ~q(ℕ), ~q(Rat.den $a) =>
+      assumeInstancesCommute
+      return .positive q(den_pos $a)
+    | _, _ => throwError "not Rat.num"
+  else throwError "not Rat.num"

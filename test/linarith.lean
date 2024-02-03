@@ -165,7 +165,7 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
 section term_arguments
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
-  linarith [Rat.num_pos_iff_pos.mpr hx, h]
+  linarith [Rat.num_pos.mpr hx, h]
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   fail_if_success
@@ -173,8 +173,8 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   fail_if_success
     linarith only [h]
   fail_if_success
-    linarith only [Rat.num_pos_iff_pos.mpr hx]
-  linarith only [Rat.num_pos_iff_pos.mpr hx, h]
+    linarith only [Rat.num_pos.mpr hx]
+  linarith only [Rat.num_pos.mpr hx, h]
 
 end term_arguments
 
