@@ -621,11 +621,11 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
   swap; · rw [Finset.mem_singleton]; exact hx0
   rw [sum_singleton, (T _).map_zero, add_zero]
   congr
-  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Pi.const_zero,
+  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Function.const_zero,
     piecewise_eq_indicator]
   rw [indicator_preimage, ← Function.const_def, preimage_const_of_mem]
   swap; · exact Set.mem_singleton x
-  rw [← Pi.const_zero, ← Function.const_def, preimage_const_of_not_mem]
+  rw [← Function.const_zero, ← Function.const_def, preimage_const_of_not_mem]
   swap; · rw [Set.mem_singleton_iff]; exact Ne.symm hx0
   simp
 #align measure_theory.simple_func.set_to_simple_func_indicator MeasureTheory.SimpleFunc.setToSimpleFunc_indicator
