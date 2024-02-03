@@ -1245,10 +1245,9 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
         intro y
         refine' ⟨-B x y / B x x, fun z hz => _⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [LinearMap.IsOrtho, LinearMap.map_smul, LinearMap.map_add, LinearMap.map_smul]
-        sorry)
-        --, div_mul_cancel _ hx, add_neg_self,
-          --mul_zero])
+        rw [LinearMap.IsOrtho, LinearMap.map_smul, LinearMap.smul_apply, LinearMap.map_add,
+          LinearMap.map_smul, smul_eq_mul, smul_eq_mul, div_mul_cancel _ hx, add_neg_self,
+          mul_zero])
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
