@@ -7,7 +7,6 @@ import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
