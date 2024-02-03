@@ -162,6 +162,20 @@ theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 #align real.arctan_zero Real.arctan_zero
 
+@[mono]
+theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
+
+theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
+
+theorem arctan_ne_zero {x : ℝ} (hx : x ≠ 0) : arctan x ≠ 0 :=
+  fun h ↦ hx <| arctan_injective (h.trans arctan_zero.symm)
+
+theorem arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
+  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+
+theorem arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
+  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+
 theorem arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
   injOn_tan (arctan_mem_Ioo _) hx (by rw [tan_arctan, h])
