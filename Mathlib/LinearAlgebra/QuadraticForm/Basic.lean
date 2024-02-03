@@ -568,7 +568,7 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(LinearMap.restrictScalars S (LinearMap.restrictScalars S B.flip).flip).compr₂ f, fun x y => by
+    ⟨(B.restrictScalars₂ S).compr₂ f, fun x y => by
       simp_rw [h, f.map_add]
       rfl⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
@@ -796,7 +796,7 @@ theorem compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y
 
 theorem compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
     (f.compQuadraticForm Q).polarLinearMap₂ =
-    (restrictScalars S (restrictScalars S Q.polarLinearMap₂.flip).flip).compr₂ f :=
+    (Q.polarLinearMap₂.restrictScalars₂ S).compr₂ f :=
   ext₂ <| compQuadraticForm_polar _ _
 
 end Ring
