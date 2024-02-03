@@ -58,8 +58,7 @@ where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y =
 noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X where
   dist x y := ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0)
-  dist_self x :=
-    (NNReal.coe_eq_zero _).2 <|
+  dist_self x := NNReal.coe_eq_zero.2 <|
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
   dist_comm x y :=
     NNReal.coe_inj.2 <| by

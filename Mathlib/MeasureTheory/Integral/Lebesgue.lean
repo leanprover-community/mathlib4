@@ -1792,7 +1792,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
     obtain ⟨t, ht, ts, mlt, t_top⟩ :
       ∃ t : Set α, MeasurableSet t ∧ t ⊆ s ∧ L / ↑c < μ t ∧ μ t < ∞ :=
@@ -1807,7 +1807,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]
       rwa [mul_comm, ← ENNReal.div_lt_iff]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
   · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ
     · rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
