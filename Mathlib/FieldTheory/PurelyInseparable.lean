@@ -307,16 +307,15 @@ theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F
 if and only if it is purely inseparable over `F`. -/
 theorem le_perfectClosure_iff (L : IntermediateField F E) :
     L ≤ perfectClosure F E ↔ IsPurelyInseparable F L := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ le_perfectClosure F E L⟩
-  rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
-  intro x
+  refine ⟨fun h ↦ (isPurelyInseparable_iff_pow_mem F (ringExpChar F)).2 fun x ↦ ?_,
+    fun _ ↦ le_perfectClosure F E L⟩
   obtain ⟨n, y, hy⟩ := h x.2
   exact ⟨n, y, (algebraMap L E).injective hy⟩
 
 theorem separableClosure_inf_perfectClosure : separableClosure F E ⊓ perfectClosure F E = ⊥ :=
   haveI := (le_separableClosure_iff F E _).mp (inf_le_left (b := perfectClosure F E))
   haveI := (le_perfectClosure_iff F E _).mp (inf_le_right (a := separableClosure F E))
-  IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable _
+  eq_bot_of_isPurelyInseparable_of_isSeparable _
 
 variable {F E K}
 
@@ -510,8 +509,7 @@ theorem isPurelyInseparable_iff_fd_isPurelyInseparable (halg : Algebra.IsAlgebra
 /-- A purely inseparable extension is normal. -/
 instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
   refine ⟨isAlgebraic F E, fun x ↦ ?_⟩
-  obtain ⟨q, _⟩ := ExpChar.exists F
-  obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F q x
+  obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
   rw [← splits_id_iff_splits, h]
   exact splits_pow _ (splits_X_sub_C _) _
 
@@ -755,7 +753,7 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this
-    refine ⟨z, (algebraMap F E).injective (by erw [RingHom.map_frobenius, h])⟩
+    exact ⟨z, (algebraMap F E).injective (by erw [RingHom.map_frobenius, h])⟩
   exact PerfectRing.toPerfectField F p
 
 /-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
@@ -832,11 +830,6 @@ theorem adjoin_eq_of_isAlgebraic (halg : Algebra.IsAlgebraic F E) :
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
   rfl
 
-variable (F E)
-lemma adjoin_eq_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E] [IsSeparable E K] :
-    adjoin E (separableClosure F K : Set K) = ⊤ :=
-  adjoin_eq_of_isAlgebraic_of_isSeparable K (IsPurelyInseparable.isAlgebraic F E)
-
 end separableClosure
 
 section TowerLaw
@@ -883,11 +876,11 @@ is separable, then the separable degree of `K / F` is equal to the degree of `K 
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
 intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
-    [IsPurelyInseparable F E] [IsSeparable E K] :
-    sepDegree F K = Module.rank E K := by
+    [IsPurelyInseparable F E] [IsSeparable E K] : sepDegree F K = Module.rank E K := by
   let S := separableClosure F K
   have h := S.adjoin_rank_le_of_isAlgebraic_right E (IsSeparable.isAlgebraic _ _)
-  rw [separableClosure.adjoin_eq_of_isPurelyInseparable_of_isSeparable F E K, rank_top'] at h
+  rw [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K
+    (IsPurelyInseparable.isAlgebraic F E), rank_top'] at h
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_separable E
@@ -924,8 +917,7 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
-theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
-    (halg : Algebra.IsAlgebraic F E) :
+theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic (halg : Algebra.IsAlgebraic F E) :
     Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
     Cardinal.lift.{v} (sepDegree F K) := by
   have h := lift_rank_mul_lift_sepDegree_of_isSeparable F (separableClosure F E) K
