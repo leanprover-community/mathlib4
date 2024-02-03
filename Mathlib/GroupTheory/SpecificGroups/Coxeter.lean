@@ -121,6 +121,8 @@ instance : Group (Matrix.CoxeterGroup M) := by
 
 namespace CoxeterGroup
 
+/-- The canonical map from `B` to the Coxeter group with generators `b : B`. The term `b`
+is mapped to the equivalence class of the image of `b` in `CoxeterGroup M`. -/
 def of (b : B) : Matrix.CoxeterGroup M := PresentedGroup.of b
 
 @[simp]
@@ -192,7 +194,6 @@ theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
     CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
   rfl
 
-@[simp]
 theorem map_relations_eq_reindex_relations (e : B ≃ B') :
     (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
     CoxeterGroup.Relations.toSet (reindex e e M) := by
