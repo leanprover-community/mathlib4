@@ -855,19 +855,20 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
   refine linearIndependent_iff.mpr fun l hl ↦ Finsupp.ext fun i ↦ ?_
   choose f hf using fun i ↦ (isPurelyInseparable_iff_pow_mem F q).1 ‹_› (l i)
   let n := l.support.sup f
+  have := (expChar_pow_pos F q n).ne'
   replace hf (i : ι) : l i ^ q ^ n ∈ (algebraMap F E).range := by
     by_cases hs : i ∈ l.support
     · convert pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
-    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]⟩
+    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
   let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
-    rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow (expChar_pow_pos F q n)]
+    rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow (expChar_pow_pos F q n)] at hl
+    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
