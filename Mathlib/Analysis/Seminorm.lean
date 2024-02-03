@@ -559,7 +559,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
         add_le' := fun x y => by
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
-          · simp [Real.ciSup_empty]
+          · simp [Real.iSup_of_isEmpty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine' ciSup_le fun i =>
@@ -625,7 +625,7 @@ protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
 
 protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   ext
-  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.iSup_of_isEmpty]
   rfl
 
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :

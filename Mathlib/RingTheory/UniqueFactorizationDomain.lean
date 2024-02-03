@@ -197,6 +197,15 @@ theorem exists_prime_factors (a : α) :
   apply WfDvdMonoid.exists_factors a
 #align unique_factorization_monoid.exists_prime_factors UniqueFactorizationMonoid.exists_prime_factors
 
+lemma exists_prime_iff :
+    (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
+  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
+  obtain ⟨f, hf, hf'⟩ := exists_prime_factors x hx₀
+  rcases f.empty_or_exists_mem with rfl | h
+  · have := associated_one_iff_isUnit.mp hf'.symm; contradiction
+  · obtain ⟨p, hp⟩ := h
+    exact ⟨p, hf _ hp⟩
+
 @[elab_as_elim]
 theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x : α, IsUnit x → P x)
     (h₃ : ∀ a p : α, a ≠ 0 → Prime p → P a → P (p * a)) : P a := by
@@ -1211,6 +1220,45 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
 #align unique_factorization_monoid.multiplicative_of_coprime UniqueFactorizationMonoid.multiplicative_of_coprime
 
 end Multiplicative
+
+section Coprime
+
+variable {x y d : R}
+
+/-- See also `IsCoprime.dvd_of_dvd_mul_left`. -/
+theorem dvd_of_coprime_of_dvd_mul_left
+    (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (h' : y ∣ x * d) : y ∣ d := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · replace h : IsUnit y := h y (dvd_zero y) (refl _); exact h.dvd
+  rcases eq_or_ne y 0 with rfl | hy
+  · simp only [zero_dvd_iff, mul_eq_zero, hx, false_or] at h'; simp [h']
+  induction' y using UniqueFactorizationMonoid.induction_on_coprime
+    with u hu p k hp a b _ ha hb generalizing x d
+  · simpa [hx] using h'
+  · exact hu.dvd
+  · rcases eq_or_ne k 0 with rfl | hk; · simp
+    replace h : ¬ p ∣ x := fun contra ↦ hp.not_unit <| h p contra (dvd_pow_self p hk)
+    exact Prime.pow_dvd_of_dvd_mul_left hp k h h'
+  · rw [ne_eq, mul_eq_zero, not_or] at hy
+    have hxa : ∀ p, p ∣ x → p ∣ a → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_right b)
+    have hxb : ∀ p, p ∣ x → p ∣ b → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_left a)
+    obtain ⟨a', rfl⟩ := @ha x d hxa (dvd_of_mul_right_dvd h') hx hy.1
+    rw [mul_left_comm, mul_dvd_mul_iff_left hy.1] at h'
+    exact mul_dvd_mul_left a (@hb x a' hxb h' hx hy.2)
+
+/-- See also `IsCoprime.dvd_of_dvd_mul_right`. -/
+theorem dvd_of_coprime_of_dvd_mul_right
+    (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (h' : y ∣ d * x) : y ∣ d := by
+  rw [mul_comm] at h'; exact dvd_of_coprime_of_dvd_mul_left h h'
+
+/-- See also `IsCoprime.mul_dvd`. -/
+theorem mul_dvd_of_coprime (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (hx : x ∣ d) (hy : y ∣ d) :
+    x * y ∣ d := by
+  obtain ⟨x', rfl⟩ := hx
+  suffices y ∣ x' by exact mul_dvd_mul_left x this
+  exact dvd_of_coprime_of_dvd_mul_left h hy
+
+end Coprime
 
 end UniqueFactorizationMonoid
 

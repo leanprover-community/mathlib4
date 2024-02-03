@@ -50,7 +50,7 @@ theorem image_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂] (c :
   image_smul_setₛₗ _ _ _ h c s
 #align image_smul_set image_smul_set
 
-theorem preimage_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂] {c : R} (hc : IsUnit c) (s : Set M₂) :
-    h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  preimage_smul_setₛₗ _ _ _ h hc s
+theorem preimage_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
+    {c : R} (hc : IsUnit c) (s : Set M₂) :
+    h ⁻¹' (c • s) = c • h ⁻¹' s := preimage_smul_setₛₗ _ _ _ h hc s
 #align preimage_smul_set preimage_smul_set
