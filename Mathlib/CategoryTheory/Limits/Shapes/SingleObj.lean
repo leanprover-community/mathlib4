@@ -3,8 +3,8 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
