@@ -187,6 +187,13 @@ theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   infer_instance
 #align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
 
+/-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
+is equivalent to being bijective. -/
+theorem ConcreteCategory.isIso_iff_bijective_of_reflectsIso [ReflectsIsomorphisms (forget C)]
+    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
+  rw [← isIso_iff_bijective]
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
+
 @[simp]
 theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type

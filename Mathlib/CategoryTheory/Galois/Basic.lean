@@ -164,6 +164,12 @@ lemma initial_iff_fibre_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.ob
     infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
+/-- An object is not initial if and only if its fibre is nonempty. -/
+lemma not_initial_iff_fibre_nonempty (X : C) : (IsInitial X → False) ↔ Nonempty (F.obj X) := by
+  rw [← not_isEmpty_iff]
+  refine ⟨fun h he ↦ ?_, fun h hin ↦ h <| (initial_iff_fibre_empty F X).mp ⟨hin⟩⟩
+  exact Nonempty.elim ((initial_iff_fibre_empty F X).mpr he) h
+
 /-- An object whose fibre is inhabited is not initial. -/
 lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :=
   ((initial_iff_fibre_empty F X).mp ⟨h⟩).false x

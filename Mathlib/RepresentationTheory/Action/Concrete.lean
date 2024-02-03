@@ -96,7 +96,7 @@ section ToMulAction
 
 variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}} [ConcreteCategory V]
 
-instance (X : Action V G) : MulAction G ((CategoryTheory.forget _).obj X) where
+instance instMulAction (X : Action V G) : MulAction G ((CategoryTheory.forget _).obj X) where
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
     show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
