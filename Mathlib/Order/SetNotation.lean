@@ -269,6 +269,18 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
 end delaborators
 
 @[simp]
+theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
+  ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
+    ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
+#align set.mem_Union Set.mem_iUnion
+
+@[simp]
+theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
+  ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
+    fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
+#align set.mem_Inter Set.mem_iInter
+
+@[simp]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
   rfl
 #align set.Sup_eq_sUnion Set.sSup_eq_sUnion
