@@ -345,7 +345,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source I xₜ
   -- express the derivative of the integral curve in the local chart
-  refine ⟨(continuousAt_extChartAt_symm'' _ hf3').comp h.continuousAt,
+  refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t

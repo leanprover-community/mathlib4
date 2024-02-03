@@ -137,7 +137,7 @@ theorem expSeries_apply_zero (n : ℕ) :
   rw [expSeries_apply_eq]
   cases' n with n
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
-  · rw [zero_pow (Nat.succ_ne_zero _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
+  · rw [zero_pow (Nat.succ_pos _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
 #align exp_series_apply_zero NormedSpace.expSeries_apply_zero
 
 @[simp]

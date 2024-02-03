@@ -176,32 +176,46 @@ def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶
       associator_naturality_assoc, ← id_tensor_comp, tensor_id_comp_id_tensor]
 #align category_theory.center.tensor_hom CategoryTheory.Center.tensorHom
 
-section
-
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
-  ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
+  ⟨𝟙_ C,
+    { β := fun U => λ_ U ≪≫ (ρ_ U).symm
+      monoidal := fun U U' => by simp
+      naturality := fun f => by
+        dsimp
+        rw [leftUnitor_naturality_assoc, rightUnitor_inv_naturality, Category.assoc] }⟩
 #align category_theory.center.tensor_unit CategoryTheory.Center.tensorUnit
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
-  isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
+  isoMk
+    ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by
+      dsimp
+      simp only [comp_tensor_id, id_tensor_comp, ← tensor_id, associator_conjugation]
+      coherence⟩
 #align category_theory.center.associator CategoryTheory.Center.associator
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
-  isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
+  isoMk
+    ⟨(λ_ X.1).hom, fun U => by
+      dsimp
+      simp only [Category.comp_id, Category.assoc, tensor_inv_hom_id, comp_tensor_id,
+        tensor_id_comp_id_tensor, triangle_assoc_comp_right_inv]
+      rw [← leftUnitor_tensor, leftUnitor_naturality, leftUnitor_tensor'_assoc]⟩
 #align category_theory.center.left_unitor CategoryTheory.Center.leftUnitor
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
-  isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
+  isoMk
+    ⟨(ρ_ X.1).hom, fun U => by
+      dsimp
+      simp only [tensor_id_comp_id_tensor_assoc, triangle_assoc, id_tensor_comp, Category.assoc]
+      rw [← tensor_id_comp_id_tensor_assoc (ρ_ U).inv, cancel_epi, ← rightUnitor_tensor_inv_assoc,
+        ← rightUnitor_inv_naturality_assoc]
+      simp⟩
 #align category_theory.center.right_unitor CategoryTheory.Center.rightUnitor
-
-end
 
 section
 
@@ -212,7 +226,6 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
-  tensorHom_def := by intros; ext; simp [tensorHom_def]
   -- Todo: replace it by `X.1 ◁ f.f`
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   -- Todo: replace it by `f.f ▷ Y.1`

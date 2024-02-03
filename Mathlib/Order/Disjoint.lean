@@ -705,12 +705,6 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
-    [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
-  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
-  rw [Subsingleton.elim ⊥ ⊤]
-  exact codisjoint_top_right
-
 namespace ComplementedLattice
 
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]

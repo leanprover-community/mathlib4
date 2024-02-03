@@ -259,7 +259,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
   have hj0 : j ≠ 0 := by
     intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hj
+    rw [h0, zero_pow zero_lt_two, neg_zero, or_self_iff] at hj
     apply left_ne_zero_of_mul hrsz hj
   rw [mul_comm] at hd
   rw [Int.gcd_comm] at htt4
@@ -267,7 +267,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   obtain ⟨k, hk⟩ := Int.sq_of_gcd_eq_one htt4 hd
   have hk0 : k ≠ 0 := by
     intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hk
+    rw [h0, zero_pow zero_lt_two, neg_zero, or_self_iff] at hk
     apply right_ne_zero_of_mul hrsz hk
   have hj2 : r ^ 2 = j ^ 4 := by
     cases' hj with hjp hjp <;>

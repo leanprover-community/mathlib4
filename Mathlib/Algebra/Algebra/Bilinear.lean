@@ -22,19 +22,6 @@ open TensorProduct Module
 
 namespace LinearMap
 
-/-- A version of `LinearMap.restrictScalars` for bilinear maps. -/
-@[simps!]
-def restrictScalars₂
-    (R : Type*) {A M N P : Type*}
-    [CommSemiring R] [CommSemiring A]
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-    [Algebra R A]
-    [Module R M] [Module R N] [Module R P]
-    [Module A M] [Module A N] [Module A P]
-    [IsScalarTower R A M] [IsScalarTower R A N] [IsScalarTower R A P]
-    (f : M →ₗ[A] N →ₗ[A] P) : M →ₗ[R] N →ₗ[R] P :=
-  (f.flip.restrictScalars _).flip.restrictScalars _
-
 section NonUnitalNonAssoc
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]

@@ -856,7 +856,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n)
     nthRoots n a = (Multiset.range n).map (ζ ^ · * α) := by
   obtain (rfl|hn) := n.eq_zero_or_pos; · simp
   by_cases hα : α = 0
-  · rw [hα, zero_pow hn.ne'] at e
+  · rw [hα, zero_pow hn] at e
     simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
       Finset.range_val, Multiset.map_const', Multiset.card_range]
   classical
@@ -910,7 +910,7 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha
   by_cases h : ∃ α, α ^ n = a
   · obtain ⟨α, hα⟩ := h
     by_cases hα' : α = 0
-    · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
+    · exact (ha (by rwa [hα', zero_pow hn, eq_comm] at hα)).elim
     rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
     exact h.injOn_pow_mul hα'
   · suffices nthRoots n a = 0 by simp [this]

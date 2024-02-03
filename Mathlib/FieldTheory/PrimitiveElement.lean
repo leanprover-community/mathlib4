@@ -253,26 +253,26 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     obtain ⟨y, h⟩ := mem_bot.1 (heq.symm ▸ mem_adjoin_simple_self F (α ^ n))
     refine ⟨X ^ n - C y, X_pow_sub_C_ne_zero hmn y, ?_⟩
     simp only [map_sub, map_pow, aeval_X, aeval_C, h, sub_self]
+  replace hm : 0 < m := Nat.pos_of_ne_zero hm
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
   by_cases hzero : aeval (α ^ n) s = 0
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
     exact h.symm ▸ isAlgebraic_zero
-  replace hm : 0 < m := Nat.pos_of_ne_zero hm
-  rw [eq_div_iff hzero, ← sub_eq_zero] at h
-  replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
-  let f : F[X] := X ^ m * expand F n s - expand F n r
-  refine ⟨f, ?_, ?_⟩
-  · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
-      have hn : 0 < n := by linarith only [hm, hmn]
-      have hndvd : ¬ n ∣ n * s.natDegree + m := by
-        rw [← Nat.dvd_add_iff_right (n.dvd_mul_right s.natDegree)]
-        exact Nat.not_dvd_of_pos_of_lt hm hmn
-      simp only [coeff_sub, coeff_X_pow_mul, s.coeff_expand_mul' hn, coeff_natDegree,
-        coeff_expand hn r, hndvd, ite_false, sub_zero]
-      exact leadingCoeff_ne_zero.2 hzero
-    intro h
-    simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
-  · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
+  · rw [eq_div_iff hzero, ← sub_eq_zero] at h
+    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
+    let f : F[X] := X ^ m * expand F n s - expand F n r
+    refine ⟨f, ?_, ?_⟩
+    · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
+        have hn : 0 < n := by linarith only [hm, hmn]
+        have hndvd : ¬ n ∣ n * s.natDegree + m := by
+          rw [← Nat.dvd_add_iff_right (n.dvd_mul_right s.natDegree)]
+          exact Nat.not_dvd_of_pos_of_lt hm hmn
+        simp only [coeff_sub, coeff_X_pow_mul, s.coeff_expand_mul' hn, coeff_natDegree,
+          coeff_expand hn r, hndvd, ite_false, sub_zero]
+        exact leadingCoeff_ne_zero.2 hzero
+      intro h
+      simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
+    · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
     [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := fun α ↦

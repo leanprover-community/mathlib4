@@ -202,7 +202,7 @@ theorem braiding_leftUnitor_aux₁ (X : C) :
     (α_ (𝟙_ C) (𝟙_ C) X).hom ≫
         (𝟙 (𝟙_ C) ⊗ (β_ X (𝟙_ C)).inv) ≫ (α_ _ X _).inv ≫ ((λ_ X).hom ⊗ 𝟙 _) =
       ((λ_ _).hom ⊗ 𝟙 X) ≫ (β_ X (𝟙_ C)).inv :=
-  by rw [← leftUnitor_tensor, leftUnitor_naturality]; simp [id_tensorHom, tensorHom_id]
+  by rw [← leftUnitor_tensor, leftUnitor_naturality]; simp
 #align category_theory.braiding_left_unitor_aux₁ CategoryTheory.braiding_leftUnitor_aux₁
 
 theorem braiding_leftUnitor_aux₂ (X : C) :
@@ -235,7 +235,7 @@ theorem braiding_rightUnitor_aux₁ (X : C) :
     (α_ X (𝟙_ C) (𝟙_ C)).inv ≫
         ((β_ (𝟙_ C) X).inv ⊗ 𝟙 (𝟙_ C)) ≫ (α_ _ X _).hom ≫ (𝟙 _ ⊗ (ρ_ X).hom) =
       (𝟙 X ⊗ (ρ_ _).hom) ≫ (β_ (𝟙_ C) X).inv :=
-  by rw [← rightUnitor_tensor, rightUnitor_naturality]; simp [id_tensorHom, tensorHom_id]
+  by rw [← rightUnitor_tensor, rightUnitor_naturality]; simp
 #align category_theory.braiding_right_unitor_aux₁ CategoryTheory.braiding_rightUnitor_aux₁
 
 theorem braiding_rightUnitor_aux₂ (X : C) :

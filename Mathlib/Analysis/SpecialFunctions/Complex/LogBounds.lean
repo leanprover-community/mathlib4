@@ -204,7 +204,7 @@ open unit disk. -/
 lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ (-1) ^ (n + 1) * z ^ n / n) (log (1 + z)) := by
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
-  · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
+  · refine (summable_geometric_of_norm_lt_1 hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
     intro n
     simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
     rcases n.eq_zero_or_pos with rfl | hn

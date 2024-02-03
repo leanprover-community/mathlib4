@@ -2705,10 +2705,6 @@ theorem piecewise_mem_Icc' {δ : α → Type*} [∀ i, Preorder (δ i)] {f g : �
   piecewise_mem_Icc_of_mem_of_mem _ (Set.right_mem_Icc.2 h) (Set.left_mem_Icc.2 h)
 #align finset.piecewise_mem_Icc' Finset.piecewise_mem_Icc'
 
-lemma piecewise_same : s.piecewise f f = f := by
-  ext i
-  by_cases h : i ∈ s <;> simp [h]
-
 end Piecewise
 
 section DecidablePiExists

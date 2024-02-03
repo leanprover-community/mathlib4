@@ -255,7 +255,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     intro x hx; dsimp only
     rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
       abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
-  exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
+  exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 _ _ zero_lt_one)
 #align complex.Gamma_integral_add_one Complex.GammaIntegral_add_one
 
 end GammaRecurrence

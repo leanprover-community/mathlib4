@@ -62,23 +62,11 @@ instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
 
 /-- If all closed balls of large enough radius are compact, then the space is proper. Especially
 useful when the lower bound for the radius is 0. -/
-theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
+theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
     (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
   ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
-#align proper_space_of_compact_closed_ball_of_le ProperSpace.of_isCompact_closedBall_of_le
-
-@[deprecated] -- Since 2024/01/31
-alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
-
-/-- If there exists a sequence of compact closed balls with the same center
-such that the radii tend to infinity, then the space is proper. -/
-theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x : α} {r : β → ℝ}
-    (hr : Tendsto r l atTop) (hc : ∀ᶠ i in l, IsCompact (closedBall x (r i))) :
-    ProperSpace α where
-  isCompact_closedBall a r :=
-    let ⟨_i, hci, hir⟩ := (hc.and <| hr.eventually_ge_atTop <| r + dist a x).exists
-    hci.of_isClosed_subset isClosed_ball <| closedBall_subset_closedBall' hir
+#align proper_space_of_compact_closed_ball_of_le properSpace_of_compact_closedBall_of_le
 
 -- A compact pseudometric space is proper
 -- see Note [lower instance priority]
@@ -121,7 +109,7 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
 /-- A finite product of proper spaces is proper. -/
 instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
     [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
-  refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
+  refine' properSpace_of_compact_closedBall_of_le 0 fun x r hr => _
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
 #align pi_proper_space pi_properSpace

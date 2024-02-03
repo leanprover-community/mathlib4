@@ -3,7 +3,6 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Data.Set.Intervals.OrdConnected
@@ -28,7 +27,7 @@ open Classical
 
 open Set
 
-variable {ι : Sort*} {α : Type*} (s : Set α)
+variable {α : Type*} (s : Set α)
 
 section SupSet
 
@@ -232,94 +231,13 @@ lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b
   congrArg Subtype.val (dif_neg hS.ne_empty)
 
 lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
-    [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
     ↑(iSup S) = (⨆ i, S i : α) :=
   (Set.Icc.coe_sSup h (range_nonempty S)).trans (congrArg sSup (range_comp Subtype.val S).symm)
 
 lemma Set.Icc.coe_iInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
-    [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
     ↑(iInf S) = (⨅ i, S i : α) :=
   (Set.Icc.coe_sInf h (range_nonempty S)).trans (congrArg sInf (range_comp Subtype.val S).symm)
 
 end Icc
-
-namespace Set.Iic
-
-variable [CompleteLattice α] {a : α}
-
-instance instCompleteLattice : CompleteLattice (Iic a) where
-  sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
-  sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
-  le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb
-  sSup_le S b hb := sSup_le <| fun c' ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
-  sInf_le S b hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
-  le_sInf S b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun d' ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
-  le_top := by simp
-  bot_le := by simp
-
-variable (S : Set <| Iic a) (f : ι → Iic a) (p : ι → Prop)
-
-@[simp] theorem coe_sSup : (↑(sSup S) : α) = sSup ((↑) '' S) := rfl
-
-@[simp] theorem coe_iSup : (↑(⨆ i, f i) : α) = ⨆ i, (f i : α) := by
-  rw [iSup, coe_sSup]; congr; ext; simp
-
-theorem coe_biSup : (↑(⨆ i, ⨆ (_ : p i), f i) : α) = ⨆ i, ⨆ (_ : p i), (f i : α) := by simp
-
-@[simp] theorem coe_sInf : (↑(sInf S) : α) = a ⊓ sInf ((↑) '' S) := rfl
-
-@[simp] theorem coe_iInf : (↑(⨅ i, f i) : α) = a ⊓ ⨅ i, (f i : α) := by
-  rw [iInf, coe_sInf]; congr; ext; simp
-
-theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ : p i), (f i : α) := by
-  cases isEmpty_or_nonempty ι
-  · simp
-  · simp_rw [coe_iInf, ← inf_iInf, ← inf_assoc, inf_idem]
-
-theorem isCompactElement {b : Iic a} (h : CompleteLattice.IsCompactElement (b : α)) :
-    CompleteLattice.IsCompactElement b := by
-  simp only [CompleteLattice.isCompactElement_iff, Finset.sup_eq_iSup] at h ⊢
-  intro ι s hb
-  replace hb : (b : α) ≤ iSup ((↑) ∘ s) := le_trans hb <| (coe_iSup s) ▸ le_refl _
-  obtain ⟨t, ht⟩ := h ι ((↑) ∘ s) hb
-  exact ⟨t, (by simpa using ht : (b : α) ≤ _)⟩
-
-instance instIsCompactlyGenerated [IsCompactlyGenerated α] : IsCompactlyGenerated (Iic a) := by
-  refine ⟨fun ⟨x, (hx : x ≤ a)⟩ ↦ ?_⟩
-  obtain ⟨s, hs, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq x
-  rw [sSup_le_iff] at hx
-  let f : s → Iic a := fun y ↦ ⟨y, hx _ y.property⟩
-  refine ⟨range f, ?_, ?_⟩
-  · rintro - ⟨⟨y, hy⟩, hy', rfl⟩
-    exact isCompactElement (hs _ hy)
-  · rw [Subtype.ext_iff]
-    change sSup (((↑) : Iic a → α) '' (range f)) = sSup s
-    congr
-    ext b
-    simpa using hx b
-
-end Set.Iic
-
-theorem complementedLattice_of_complementedLattice_Iic
-    [CompleteLattice α] [IsModularLattice α] [IsCompactlyGenerated α]
-    {ι : Type*} {s : Set ι} {f : ι → α}
-    (h : ∀ i ∈ s, ComplementedLattice <| Iic (f i))
-    (h' : ⨆ i ∈ s, f i = ⊤) :
-    ComplementedLattice α := by
-  apply complementedLattice_of_sSup_atoms_eq_top
-  have : ∀ i ∈ s, ∃ t : Set α, f i = sSup t ∧ ∀ a ∈ t, IsAtom a := fun i hi ↦ by
-    replace h := complementedLattice_iff_isAtomistic.mp (h i hi)
-    obtain ⟨u, hu, hu'⟩ := eq_sSup_atoms (⊤ : Iic (f i))
-    refine ⟨(↑) '' u, ?_, ?_⟩
-    · replace hu : f i = ↑(sSup u) := Subtype.ext_iff.mp hu
-      simp_rw [hu, Iic.coe_sSup]
-    · rintro b ⟨⟨a, ha'⟩, ha, rfl⟩
-      exact IsAtom.of_isAtom_coe_Iic (hu' _ ha)
-  choose t ht ht' using this
-  let u : Set α := ⋃ i, ⋃ hi : i ∈ s, t i hi
-  have hu₁ : u ⊆ {a | IsAtom a} := by
-    rintro a ⟨-, ⟨i, rfl⟩, ⟨-, ⟨hi, rfl⟩, ha : a ∈ t i hi⟩⟩
-    exact ht' i hi a ha
-  have hu₂ : sSup u = ⨆ i ∈ s, f i := by simp_rw [sSup_iUnion, biSup_congr' ht]
-  rw [eq_top_iff, ← h', ← hu₂]
-  exact sSup_le_sSup hu₁

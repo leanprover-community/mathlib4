@@ -143,15 +143,17 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     -- Porting note : `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
-      Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
-      MonoidalCategory.associator_hom_apply]
-    rw [compr₂_apply, compr₂_apply]
+    -- Porting note : this `dsimp` does nothing
+    -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
+    --   Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
+    --   MonoidalCategory.associator_hom_apply]
+    -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
+    rw [compr₂_apply, compr₂_apply, compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
-    rw [id_apply]
+    rw [id_apply, TensorProduct.mk_apply]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, id_apply, LinearMap.mul'_apply,
       LinearMap.mul'_apply]
     simp only [LinearMap.mul'_apply, mul_assoc]
@@ -191,7 +193,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                 -- Porting note : `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
-                rfl }
+                rfl
+              one_hom := by ext; rfl }
           inv :=
             { hom :=
                 { toFun := _root_.id
@@ -201,7 +204,11 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                 -- Porting note : `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
-                rfl } })
+                rfl
+              one_hom := by ext; rfl }
+          hom_inv_id := by ext; rfl
+          inv_hom_id := by ext; rfl })
+      (by aesop_cat)
   counitIso :=
     NatIso.ofComponents
       (fun A =>
@@ -219,6 +226,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
               map_one' := (algebraMap R A).map_one.symm
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun r => rfl } })
+      (by intros; rfl)
 #align Module.Mon_Module_equivalence_Algebra ModuleCat.monModuleEquivalenceAlgebra
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
@@ -240,6 +248,7 @@ def monModuleEquivalenceAlgebraForget :
           { toFun := _root_.id
             map_add' := fun x y => rfl
             map_smul' := fun c x => rfl } })
+    (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
 end ModuleCat

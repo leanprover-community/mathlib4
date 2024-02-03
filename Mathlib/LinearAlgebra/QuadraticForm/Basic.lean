@@ -328,12 +328,6 @@ def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
   (polar_smul_right Q)
 
-/-- `QuadraticForm.polar` as a bilinear map -/
-@[simps!]
-def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
-  LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
-  (polar_smul_right Q)
-
 variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 @[simp]
@@ -389,7 +383,6 @@ instance : SMul S (QuadraticForm R M) :=
       toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, mul_smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
-        letI := SMulCommClass.symm S R R
         ⟨a • B, by simp [h]⟩ }⟩
 
 @[simp]
@@ -494,7 +487,7 @@ instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass 
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S R] [SMulCommClass S R R] :
+instance [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
     Module S (QuadraticForm R M) where
   zero_smul Q := by
     ext
@@ -574,8 +567,9 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₂ S).compr₂ f, fun x y => by
-      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₂_apply_apply]⟩
+    ⟨(LinearMap.restrictScalars S (LinearMap.restrictScalars S B.flip).flip).compr₂ f, fun x y => by
+      simp_rw [h, f.map_add]
+      rfl⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
 end Comp
@@ -591,9 +585,9 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     simp only [smul_eq_mul, RingHom.id_apply, Pi.mul_apply, LinearMap.map_smulₛₗ]
     ring
   exists_companion' :=
-    ⟨(LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply',
-        LinearMap.add_apply]
+    ⟨LinearMap.linMulLin f g + LinearMap.linMulLin g f, fun x y => by
+      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply,
+        LinearMap.mk₂_apply]
       ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
@@ -660,7 +654,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
-def _root_.LinearMap.toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+def toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
@@ -670,8 +664,8 @@ def _root_.LinearMap.toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : Quadratic
 variable {B : M →ₗ[R] M →ₗ[R] R}
 
 /-- A bilinear form gives a quadratic form by applying the argument twice. -/
-def toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M :=
-  B.toQuadraticForm
+def _root_.BilinForm.toQuadraticForm (B : BilinForm R M) : QuadraticForm R M :=
+  B.toLin.toQuadraticForm
 #align bilin_form.to_quadratic_form BilinForm.toQuadraticForm
 
 @[simp]
@@ -698,7 +692,7 @@ theorem toQuadraticForm_add (B₁ B₂ : M →ₗ[R] M →ₗ[R] R) :
 
 @[simp]
 theorem toQuadraticForm_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    (a : S) (B : B : M →ₗ[R] M →ₗ[R] R) :
+    [SMulCommClass R S R] (a : S) (B : M →ₗ[R] M →ₗ[R] R) :
     (a • B).toQuadraticForm = a • B.toQuadraticForm :=
   rfl
 -- #align bilin_form.to_quadratic_form_smul BilinForm.toQuadraticForm_smul
@@ -1306,7 +1300,7 @@ end
 
 @[simp]
 theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    (w : ι → S) (v : ι → R) :
+    [SMulCommClass R S R] (w : ι → S) (v : ι → R) :
     weightedSumSquares R w v = ∑ i : ι, w i • (v i * v i) :=
   QuadraticForm.sum_apply _ _ _
 #align quadratic_form.weighted_sum_squares_apply QuadraticForm.weightedSumSquares_apply

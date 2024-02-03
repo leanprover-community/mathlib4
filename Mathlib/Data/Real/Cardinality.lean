@@ -92,7 +92,7 @@ theorem cantorFunctionAux_succ (f : ℕ → Bool) :
 
 theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     Summable (cantorFunctionAux c f) := by
-  apply (summable_geometric_of_lt_one h1 h2).summable_of_eq_zero_or_self
+  apply (summable_geometric_of_lt_1 h1 h2).summable_of_eq_zero_or_self
   intro n; cases h : f n <;> simp [h]
 #align cardinal.summable_cantor_function Cardinal.summable_cantor_function
 
@@ -148,7 +148,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       rwa [sub_pos]
     convert this
     · rw [cantorFunction_succ _ (le_of_lt h1) h3, div_eq_mul_inv, ←
-        tsum_geometric_of_lt_one (le_of_lt h1) h3]
+        tsum_geometric_of_lt_1 (le_of_lt h1) h3]
       apply zero_add
     · refine' (tsum_eq_single 0 _).trans _
       · intro n hn

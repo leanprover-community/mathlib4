@@ -128,7 +128,7 @@ theorem inverse_add (x : Rˣ) :
 
 theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
-  have := NormedRing.summable_geometric_of_norm_lt_one t ht
+  have := NormedRing.summable_geometric_of_norm_lt_1 t ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
     _ = ∑ i in range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
     _ = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
@@ -165,7 +165,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
     linarith
   simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
-  have := NormedRing.tsum_geometric_of_norm_lt_one t ht'
+  have := NormedRing.tsum_geometric_of_norm_lt_1 t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
     refine' inv_le_inv_of_le (by norm_num) _

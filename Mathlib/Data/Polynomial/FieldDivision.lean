@@ -73,7 +73,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
-      zero_pow hb0, smul_zero, zero_mul, smul_zero]
+      zero_pow' b hb0, smul_zero, zero_mul, smul_zero]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)

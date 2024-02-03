@@ -212,10 +212,6 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGr
     [AddCommGroup M₂] (f : M →+ M₂) :
     LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
 
-lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂}
-    (h : p ≤ LinearMap.range f) : (p.comap f).map f = p :=
-  SetLike.coe_injective <| Set.image_preimage_eq_of_subset h
-
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -1388,7 +1384,7 @@ namespace Submodule
 
 section Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given `p` a submodule of the module `M` and `q` a submodule of `p`, `p.equivSubtypeMap q`
 is the natural `LinearEquiv` between `q` and `q.map p.subtype`. -/
@@ -1413,17 +1409,6 @@ theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : 
   cases x
   rfl
 #align submodule.equiv_subtype_map_symm_apply Submodule.equivSubtypeMap_symm_apply
-
-/-- A linear injection `M ↪ N` restricts to an equivalence `f⁻¹ p ≃ p` for any submodule `p`
-contained in its range. -/
-@[simps! apply]
-noncomputable def comap_equiv_self_of_inj_of_le {f : M →ₗ[R] N} {p : Submodule R N}
-    (hf : Injective f) (h : p ≤ LinearMap.range f) :
-    p.comap f ≃ₗ[R] p :=
-  LinearEquiv.ofBijective
-  ((f ∘ₗ (p.comap f).subtype).codRestrict p <| fun ⟨x, hx⟩ ↦ mem_comap.mp hx)
-  (⟨fun x y hxy ↦ by simpa using hf (Subtype.ext_iff.mp hxy),
-    fun ⟨x, hx⟩ ↦ by obtain ⟨y, rfl⟩ := h hx; exact ⟨⟨y, hx⟩, by simp [Subtype.ext_iff]⟩⟩)
 
 end Module
 

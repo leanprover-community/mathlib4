@@ -505,13 +505,13 @@ theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t �
   rw [← map_nhds_subtype_val, mem_map]
 #align preimage_coe_mem_nhds_subtype preimage_coe_mem_nhds_subtype
 
-theorem eventually_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+theorem eventually_nhds_subtype_if (s : Set α) (a : s) (P : α → Prop) :
     (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] a, P x :=
   preimage_coe_mem_nhds_subtype
 
 theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
     (∃ᶠ x : s in 𝓝 a, P x) ↔ ∃ᶠ x in 𝓝[s] a, P x :=
-  eventually_nhds_subtype_iff s a (¬ P ·) |>.not
+  eventually_nhds_subtype_if s a (¬ P ·) |>.not
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by

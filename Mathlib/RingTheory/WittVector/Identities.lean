@@ -67,8 +67,11 @@ theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : ((p : 𝕎 
     exact Nat.pos_of_ne_zero hj
   · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP]
     cases j
-    · rw [verschiebung_coeff_zero, zero_pow hp.out.ne_zero]
-    · rw [verschiebung_coeff_succ, hi (ne_of_apply_ne _ hj), zero_pow hp.out.ne_zero]
+    · rw [verschiebung_coeff_zero, zero_pow]
+      exact Nat.Prime.pos hp.out
+    · rw [verschiebung_coeff_succ, hi, zero_pow]
+      · exact Nat.Prime.pos hp.out
+      · exact ne_of_apply_ne (fun j : ℕ => j.succ) hj
 #align witt_vector.coeff_p_pow_eq_zero WittVector.coeff_p_pow_eq_zero
 
 theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 else 0 := by
@@ -112,8 +115,8 @@ theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
 #align witt_vector.verschiebung_mul_frobenius WittVector.verschiebung_mul_frobenius
 
 theorem mul_charP_coeff_zero [CharP R p] (x : 𝕎 R) : (x * p).coeff 0 = 0 := by
-  rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_zero,
-    zero_pow hp.out.ne_zero]
+  rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_zero, zero_pow]
+  exact Nat.Prime.pos hp.out
 #align witt_vector.mul_char_p_coeff_zero WittVector.mul_charP_coeff_zero
 
 theorem mul_charP_coeff_succ [CharP R p] (x : 𝕎 R) (i : ℕ) :

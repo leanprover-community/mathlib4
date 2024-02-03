@@ -154,7 +154,7 @@ theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
-  simp only [quadraticCharFun, ha, sq_eq_zero_iff, IsSquare_sq, if_true, if_false,
+  simp only [quadraticCharFun, ha, pow_eq_zero_iff, Nat.succ_pos', IsSquare_sq, if_true, if_false,
     quadraticChar_apply]
 #align quadratic_char_sq_one' quadraticChar_sq_one'
 
@@ -209,7 +209,7 @@ theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
     (quadraticChar F a : F) = a ^ (Fintype.card F / 2) := by
   by_cases ha : a = 0
   · have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card two_pos
-    simp only [ha, zero_pow this.ne', quadraticChar_apply, quadraticCharFun_zero, Int.cast_zero]
+    simp only [ha, zero_pow this, quadraticChar_apply, quadraticCharFun_zero, Int.cast_zero]
   · rw [quadraticChar_eq_pow_of_char_ne_two hF ha]
     by_cases ha' : a ^ (Fintype.card F / 2) = 1
     · simp only [ha', eq_self_iff_true, if_true, Int.cast_one]
@@ -245,7 +245,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
     ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
-  · simp only [h₀, sq_eq_zero_iff, Int.ofNat_succ, Int.ofNat_zero, MulChar.map_zero,
+  · simp only [h₀, pow_eq_zero_iff, Nat.succ_pos', Int.ofNat_succ, Int.ofNat_zero, MulChar.map_zero,
       Set.setOf_eq_eq_singleton, Set.toFinset_card, Set.card_singleton]
   · set s := {x : F | x ^ 2 = a}.toFinset
     by_cases h : IsSquare a

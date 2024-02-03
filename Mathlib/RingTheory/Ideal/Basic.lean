@@ -514,7 +514,6 @@ theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]
 #align ideal.span_singleton_mul_right_unit Ideal.span_singleton_mul_right_unit
 
-@[simp]
 theorem span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
   rw [isUnit_iff_dvd_one, ← span_singleton_le_span_singleton, span_singleton_one, eq_top_iff]
 #align ideal.span_singleton_eq_top Ideal.span_singleton_eq_top

@@ -208,7 +208,7 @@ theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction' e with e ih
   · rw [Nat.pow_zero, _root_.pow_zero, one_right]
   · cases' eq_zero_or_neZero b with hb
-    · rw [hb, zero_pow e.succ_ne_zero, zero_right, one_pow]
+    · rw [hb, zero_pow (succ_pos e), zero_right, one_pow]
     · rw [_root_.pow_succ, _root_.pow_succ, mul_right, ih]
 #align jacobi_sym.pow_right jacobiSym.pow_right
 

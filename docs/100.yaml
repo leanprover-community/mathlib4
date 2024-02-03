@@ -335,8 +335,7 @@
   title  : Divergence of the Prime Reciprocal Series
   links  :
     mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/SumOfPrimeReciprocalsDiverges.lean
-  decl   : not_summable_one_div_on_primes
-  author : Manuel Candales (archive), Michael Stoll (Mathlib)
+  author : Manuel Candales
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   links :

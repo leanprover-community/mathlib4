@@ -963,8 +963,9 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   exact (norm_nonneg _).trans ha
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
-theorem neg_mem_ball_zero {r : ℝ} {x : E} : -x ∈ ball p 0 r ↔ x ∈ ball p 0 r := by
-  simp only [mem_ball_zero, map_neg_eq_map]
+-- Porting note: TODO: make that an `iff`
+theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+  simpa only [mem_ball_zero, map_neg_eq_map] using hx
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
 @[simp]

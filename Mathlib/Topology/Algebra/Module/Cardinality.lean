@@ -34,7 +34,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
   rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
   have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
-    tendsto_const_nhds.add (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc)
+    tendsto_const_nhds.add (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hc)
   rw [add_zero] at A
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
@@ -74,7 +74,7 @@ lemma cardinal_eq_of_mem_nhds_zero
     have : Tendsto (fun n ↦ (c^n) ⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
       have : Tendsto (fun n ↦ (c^n)⁻¹) atTop (𝓝 0) := by
         simp_rw [← inv_pow]
-        apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one
+        apply tendsto_pow_atTop_nhds_0_of_norm_lt_1
         rw [norm_inv]
         exact inv_lt_one hc
       exact Tendsto.smul_const this x

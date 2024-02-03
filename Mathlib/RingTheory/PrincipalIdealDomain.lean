@@ -103,7 +103,6 @@ theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {g
   Eq.symm (Classical.choose_spec (principal S))
 #align submodule.is_principal.span_singleton_generator Submodule.IsPrincipal.span_singleton_generator
 
-@[simp]
 theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
     Ideal.span ({generator I} : Set R) = I :=
   Eq.symm (Classical.choose_spec (principal I))
@@ -129,11 +128,6 @@ end Ring
 section CommRing
 
 variable [CommRing R] [Module R M]
-
-theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
-    Associated (generator <| Ideal.span {r}) r := by
-  rw [← Ideal.span_singleton_eq_span_singleton]
-  exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
   (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])

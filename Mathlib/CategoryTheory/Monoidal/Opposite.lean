@@ -170,8 +170,6 @@ variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   whiskerLeft X _ _ f := (X.unop ◁ f.unop).op

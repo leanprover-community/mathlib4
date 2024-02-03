@@ -3,9 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Data.Polynomial.Module.FiniteDimensional
-import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.Data.Polynomial.Module
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.CompleteSublattice
 import Mathlib.RingTheory.Nilpotent
@@ -28,15 +26,13 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
    submodules.
  * `Module.End.eq_zero_of_isNilpotent_isSemisimple`: the zero endomorphism is the only endomorphism
    that is both nilpotent and semisimple.
- * `Module.End.isSemisimple_of_squarefree_aeval_eq_zero`: an endomorphism that is a root of a
-   square-free polynomial is semisimple (in finite dimensions over a field).
 
 ## TODO
 
 In finite dimensions over a field:
  * Sum / difference / product of commuting semisimple endomorphisms is semisimple
  * If semisimple then generalized eigenspace is eigenspace
- * Converse of `Module.End.isSemisimple_of_squarefree_aeval_eq_zero`
+ * Semisimple iff minpoly is squarefree
  * Restriction of semisimple endomorphism is semisimple
  * Triangularizable iff diagonalisable for semisimple endomorphisms
 
@@ -47,8 +43,6 @@ open Set Function Polynomial
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
-
-section CommRing
 
 variable (f g : End R M)
 
@@ -106,38 +100,18 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [LinearMap.mem_ker]
   exact LinearMap.pow_map_zero_of_le (by omega : 1 ≤ k - 1) hm₁
 
-end CommRing
-
 section field
 
-variable {K : Type*} [Field K] [Module K M] {f : End K M}
+variable {K : Type*} [Field K] [Module K M] {f' : End K M}
 
 lemma IsSemisimple_smul_iff {t : K} (ht : t ≠ 0) :
-    (t • f).IsSemisimple ↔ f.IsSemisimple := by
-  simp [isSemisimple_iff, Submodule.comap_smul f (h := ht)]
+    (t • f').IsSemisimple ↔ f'.IsSemisimple := by
+  simp [isSemisimple_iff, Submodule.comap_smul f' (h := ht)]
 
-lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
-    (t • f).IsSemisimple := by
+lemma IsSemisimple_smul (t : K) (h : f'.IsSemisimple) :
+    (t • f').IsSemisimple := by
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
-
-open UniqueFactorizationMonoid in
-theorem isSemisimple_of_squarefree_aeval_eq_zero [FiniteDimensional K M]
-    {p : K[X]} (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
-  classical
-  have := (Submodule.isInternal_prime_power_torsion_of_pid <|
-    AEval.isTorsion_of_finiteDimensional K M f).submodule_iSup_eq_top
-  rw [AEval.annihilator_top_eq_ker_aeval, minpoly.ker_aeval_eq_span_minpoly,
-    Ideal.submodule_span_eq, factors_eq_normalizedFactors] at this
-  refine isSemisimpleModule_of_isSemisimpleModule_submodule'
-    (fun ⟨q, hq₁⟩ ↦ Submodule.isSemisimple_torsionBy_of_irreducible <| Prime.irreducible ?_) this
-  simp only [Multiset.mem_toFinset] at hq₁
-  simp only [prime_pow_iff]
-  refine ⟨Ideal.prime_generator_of_prime (prime_of_normalized_factor q hq₁),
-    Multiset.count_eq_one_of_mem ?_ hq₁⟩
-  have hf : Ideal.span {minpoly K f} ≠ 0 := by simpa using minpoly.ne_zero_of_finite K f
-  rw [← squarefree_iff_nodup_normalizedFactors hf, Ideal.squarefree_span_singleton]
-  exact hp.squarefree_of_dvd (minpoly.dvd K f hpf)
 
 end field
 

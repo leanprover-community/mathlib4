@@ -239,7 +239,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [mem_range] at H
   simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
-  exact pow_ne_zero _ hp.1.ne_zero
+  apply pow_pos hp.1.pos
 set_option linter.uppercaseLean3 false in
 #align constant_coeff_X_in_terms_of_W constantCoeff_xInTermsOfW
 

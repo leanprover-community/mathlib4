@@ -25,6 +25,80 @@ section MonoidWithZero
 
 variable [MonoidWithZero M]
 
+theorem zero_pow : ∀ {n : ℕ}, 0 < n → (0 : M) ^ n = 0
+  | n + 1, _ => by rw [pow_succ, zero_mul]
+#align zero_pow zero_pow
+
+@[simp]
+theorem zero_pow' : ∀ n : ℕ, n ≠ 0 → (0 : M) ^ n = 0
+  | 0, h => absurd rfl h
+  | k + 1, _ => by
+    rw [pow_succ]
+    exact zero_mul _
+#align zero_pow' zero_pow'
+
+theorem zero_pow_eq (n : ℕ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
+  split_ifs with h
+  · rw [h, pow_zero]
+  · rw [zero_pow (Nat.pos_of_ne_zero h)]
+#align zero_pow_eq zero_pow_eq
+
+theorem pow_eq_zero_of_le {x : M} {n m : ℕ} (hn : n ≤ m) (hx : x ^ n = 0) : x ^ m = 0 := by
+  rw [← tsub_add_cancel_of_le hn, pow_add, hx, mul_zero]
+#align pow_eq_zero_of_le pow_eq_zero_of_le
+
+theorem pow_eq_zero [NoZeroDivisors M] {x : M} {n : ℕ} (H : x ^ n = 0) : x = 0 := by
+  induction' n with n ih
+  · rw [pow_zero] at H
+    rw [← mul_one x, H, mul_zero]
+  · rw [pow_succ] at H
+    exact Or.casesOn (mul_eq_zero.1 H) id ih
+#align pow_eq_zero pow_eq_zero
+
+@[simp]
+theorem pow_eq_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n = 0 ↔ a = 0 := by
+  refine' ⟨pow_eq_zero, _⟩
+  rintro rfl
+  exact zero_pow hn
+#align pow_eq_zero_iff pow_eq_zero_iff
+
+@[simp]
+theorem pow_eq_zero_iff' [NoZeroDivisors M] [Nontrivial M] {a : M} {n : ℕ} :
+    a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by cases (zero_le n).eq_or_gt <;> simp [*, ne_of_gt]
+#align pow_eq_zero_iff' pow_eq_zero_iff'
+
+theorem pow_ne_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n ≠ 0 ↔ a ≠ 0 :=
+  (pow_eq_zero_iff hn).not
+#align pow_ne_zero_iff pow_ne_zero_iff
+
+theorem ne_zero_pow {a : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≠ 0 → a ≠ 0 := by
+  contrapose!
+  rintro rfl
+  exact zero_pow' n hn
+#align ne_zero_pow ne_zero_pow
+
+@[field_simps]
+theorem pow_ne_zero [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 :=
+  mt pow_eq_zero h
+#align pow_ne_zero pow_ne_zero
+
+instance NeZero.pow [NoZeroDivisors M] {x : M} [NeZero x] {n : ℕ} : NeZero (x ^ n) :=
+  ⟨pow_ne_zero n NeZero.out⟩
+#align ne_zero.pow NeZero.pow
+
+theorem sq_eq_zero_iff [NoZeroDivisors M] {a : M} : a ^ 2 = 0 ↔ a = 0 :=
+  pow_eq_zero_iff two_pos
+#align sq_eq_zero_iff sq_eq_zero_iff
+
+@[simp]
+theorem zero_pow_eq_zero [Nontrivial M] {n : ℕ} : (0 : M) ^ n = 0 ↔ 0 < n := by
+  constructor <;> intro h
+  · rw [pos_iff_ne_zero]
+    rintro rfl
+    simp at h
+  · exact zero_pow' n h.ne.symm
+#align zero_pow_eq_zero zero_pow_eq_zero
+
 theorem Ring.inverse_pow (r : M) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
   | 0 => by rw [pow_zero, pow_zero, Ring.inverse_one]
   | n + 1 => by
@@ -36,7 +110,7 @@ end MonoidWithZero
 
 section CommMonoidWithZero
 
-variable [CommMonoidWithZero M] {n : ℕ} (hn : n ≠ 0)
+variable [CommMonoidWithZero M] {n : ℕ} (hn : 0 < n)
 
 /-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
 def powMonoidWithZeroHom : M →*₀ M :=

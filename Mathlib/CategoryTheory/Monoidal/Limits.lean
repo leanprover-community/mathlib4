@@ -78,7 +78,7 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorH
     slice_rhs 2 3 =>
       rw [← id_tensor_comp, limit.lift_π]
       dsimp
-    dsimp; rw [id_tensor_comp_tensor_id])
+    dsimp; simp)
   (left_unitality := fun X => by
     ext j; dsimp
     simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,

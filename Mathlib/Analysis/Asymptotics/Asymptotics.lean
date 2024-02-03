@@ -2085,12 +2085,12 @@ theorem isLittleO_norm_pow_id {n : ℕ} (h : 1 < n) :
 #align asymptotics.is_o_norm_pow_id Asymptotics.isLittleO_norm_pow_id
 
 theorem IsBigO.eq_zero_of_norm_pow_within {f : E'' → F''} {s : Set E''} {x₀ : E''} {n : ℕ}
-    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : n ≠ 0) : f x₀ = 0 :=
+    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 0 < n) : f x₀ = 0 :=
   mem_of_mem_nhdsWithin hx₀ h.eq_zero_imp <| by simp_rw [sub_self, norm_zero, zero_pow hn]
 #align asymptotics.is_O.eq_zero_of_norm_pow_within Asymptotics.IsBigO.eq_zero_of_norm_pow_within
 
 theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
-    (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n) (hn : n ≠ 0) : f x₀ = 0 := by
+    (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n) (hn : 0 < n) : f x₀ = 0 := by
   rw [← nhdsWithin_univ] at h
   exact h.eq_zero_of_norm_pow_within (mem_univ _) hn
 #align asymptotics.is_O.eq_zero_of_norm_pow Asymptotics.IsBigO.eq_zero_of_norm_pow
@@ -2109,7 +2109,7 @@ theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
   simpa only [isLittleO_norm_right, pow_one] using isLittleO_pow_sub_pow_sub x₀ h
 #align asymptotics.is_o_pow_sub_sub Asymptotics.isLittleO_pow_sub_sub
 
-theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
+theorem IsBigOWith.right_le_sub_of_lt_1 {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
@@ -2117,24 +2117,22 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
       rw [mul_comm, one_div, ← div_eq_mul_inv, _root_.le_div_iff, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
-#align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsBigOWith.right_le_sub_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
+#align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsBigOWith.right_le_sub_of_lt_1
 
-theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
+theorem IsBigOWith.right_le_add_of_lt_1 {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
-  (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
+  (h.neg_right.right_le_sub_of_lt_1 hc).neg_right.of_neg_left.congr rfl (fun x => rfl) fun x => by
     rw [neg_sub, sub_neg_eq_add]
-#align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
+#align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_1
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₂ x - f₁ x :=
-  ((h.def' one_half_pos).right_le_sub_of_lt_one one_half_lt_one).isBigO
+  ((h.def' one_half_pos).right_le_sub_of_lt_1 one_half_lt_one).isBigO
 #align asymptotics.is_o.right_is_O_sub Asymptotics.IsLittleO.right_isBigO_sub
 
 theorem IsLittleO.right_isBigO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₁ x + f₂ x :=
-  ((h.def' one_half_pos).right_le_add_of_lt_one one_half_lt_one).isBigO
+  ((h.def' one_half_pos).right_le_add_of_lt_1 one_half_lt_one).isBigO
 #align asymptotics.is_o.right_is_O_add Asymptotics.IsLittleO.right_isBigO_add
 
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that

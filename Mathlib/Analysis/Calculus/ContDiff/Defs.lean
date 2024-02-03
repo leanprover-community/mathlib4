@@ -1520,7 +1520,7 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 #align iterated_fderiv iteratedFDeriv
 
-/-- Formal Taylor series associated to a function. -/
+/-- Formal Taylor series associated to a function within a set. -/
 def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 #align ftaylor_series ftaylorSeries

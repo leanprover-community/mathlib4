@@ -166,7 +166,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   convert I using 1
   · congr 1
     simp only [Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
-      zero_smul, Ne.def, not_false_iff, bit0_eq_zero, zero_pow]
+      zero_smul, Ne.def, not_false_iff, bit0_eq_zero, zero_pow']
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
       hpos.le, mul_assoc, pow_bit0_abs, norm_nonneg, abs_pow]

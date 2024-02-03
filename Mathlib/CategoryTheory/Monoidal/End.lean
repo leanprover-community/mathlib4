@@ -90,8 +90,6 @@ attribute [local instance] endofunctorMonoidalCategory
 -- porting note: used `dsimp [endofunctorMonoidalCategory]` when necessary instead
 -- attribute [local reducible] endofunctorMonoidalCategory
 
-attribute [local simp] id_tensorHom tensorHom_id in
-
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 @[simps!]
@@ -99,10 +97,30 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
     μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
+    -- The proof will be automated after merging #6307.
+    μ_natural_left := fun f X => by
+      ext Z
+      dsimp
+      simp only [← id_tensor_comp_tensor_id f (𝟙 X), id_tensor_comp, ← tensor_id, Category.assoc,
+        associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.id_comp]
+    μ_natural_right := fun X g => by
+      ext Z
+      dsimp
+      simp only [← id_tensor_comp_tensor_id (𝟙 X) g, id_tensor_comp, ← tensor_id, Category.assoc,
+        associator_naturality, associator_naturality_assoc]
+      simp only [tensor_id, Category.comp_id]
+    associativity := fun X Y Z => by
+      ext W
+      simp [pentagon]
     μ_isIso := fun X Y =>
       -- We could avoid needing to do this explicitly by
       -- constructing a partially applied analogue of `associatorNatIso`.
-      ⟨⟨{ app := fun Z => (α_ Z X Y).inv },
+      ⟨⟨{ app := fun Z => (α_ Z X Y).inv
+          naturality := fun Z Z' f => by
+            dsimp
+            rw [← associator_inv_naturality]
+            simp },
           by aesop_cat⟩⟩ }
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 

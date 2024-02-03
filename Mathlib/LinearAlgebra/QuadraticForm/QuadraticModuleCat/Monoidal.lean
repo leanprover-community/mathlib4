@@ -81,16 +81,6 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
       εIso := Iso.refl _
-      leftUnitor_eq := fun X => by
-        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
-          Iso.refl_hom, tensorIso_hom, MonoidalCategory.tensorHom_id]
-        erw [MonoidalCategory.id_whiskerRight, Category.id_comp, Category.id_comp]
-        rfl
-      rightUnitor_eq := fun X => by
-        simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
-          Iso.refl_hom, tensorIso_hom, MonoidalCategory.id_tensorHom]
-        erw [MonoidalCategory.whiskerLeft_id, Category.id_comp, Category.id_comp]
-        rfl
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,

@@ -47,13 +47,13 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   is also true for linear equivalences, as they map Haar measure to Haar measure. The general case
   follows from these two and linear algebra, as `L` can be interpreted as the composition of the
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
-  have : ProperSpace E := .of_locallyCompactSpace 𝕜
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
   have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
     rcases subsingleton_or_nontrivial E with hE|hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
       infer_instance
-    · have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
+    · have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
       have : FiniteDimensional 𝕜 F := Module.Finite.of_surjective L h
       exact FiniteDimensional.proper 𝕜 F
   let S : Submodule 𝕜 E := LinearMap.ker L
@@ -129,8 +129,8 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
     (∀ᵐ y ∂ν, ∀ᵐ x ∂μ, y + L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
   have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
   have : FiniteDimensional 𝕜 F := finiteDimensional_of_locallyCompactSpace 𝕜
-  have : ProperSpace E := .of_locallyCompactSpace 𝕜
-  have : ProperSpace F := .of_locallyCompactSpace 𝕜
+  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace F := properSpace_of_locallyCompactSpace 𝕜
   let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
   have hM : Function.Surjective M := by simp [← LinearMap.range_eq_top, LinearMap.range_coprod]
