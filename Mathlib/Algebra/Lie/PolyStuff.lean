@@ -130,7 +130,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
     rwa [eval_eq_eval_mv_eval']
 
 open Cardinal in
-lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
+lemma exists_eval_ne_zero_of_totalDegree_le_card
     {σ : Type*} [IsDomain R]
     (F : MvPolynomial σ R) (n : ℕ)
     (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (h : n ≤ #R) :
@@ -143,3 +143,5 @@ lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
   obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
   use r
   rwa [eval_rename]
+
+end MvPolynomial.IsHomogeneous

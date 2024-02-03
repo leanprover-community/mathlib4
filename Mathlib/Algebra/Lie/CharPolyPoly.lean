@@ -30,7 +30,7 @@ lemma univ_map (M : Matrix n n R) :
     rintro j -
     by_cases h : i j = j <;> simp [h]
 
-lemma univ_coeff_map (M : Matrix n n R) (i : ℕ) :
+lemma univ_coeff_aeval (M : Matrix n n R) (i : ℕ) :
     MvPolynomial.aeval (fun ij : n × n ↦ M ij.1 ij.2) (univ.coeff i) =
       (charpoly M).coeff i := by
   simp [← univ_map]
@@ -40,7 +40,7 @@ lemma univ_coeff_card : (univ (n := n)).coeff (Fintype.card n) = 1 := by
   apply MvPolynomial.funext
   intro M'
   let M := Matrix.of <| Function.curry M'
-  erw [univ_coeff_map M]
+  erw [univ_coeff_aeval M]
   rw [_root_.map_one, ← M.charpoly_natDegree_eq_dim]
   exact M.charpoly_monic.leadingCoeff
 
@@ -57,7 +57,7 @@ lemma univ_natDegree : (univ (n := n)).natDegree = Fintype.card n := by
     intro M'
     let M := Matrix.of <| Function.curry M'
     rw [← M.charpoly_natDegree_eq_dim] at hi
-    erw [univ_coeff_map M, Polynomial.coeff_eq_zero_of_natDegree_lt hi, map_zero]
+    erw [univ_coeff_aeval M, Polynomial.coeff_eq_zero_of_natDegree_lt hi, map_zero]
   · by_contra! h
     simpa only [Polynomial.coeff_eq_zero_of_natDegree_lt h, zero_ne_one]
       using univ_coeff_card (n := n)
