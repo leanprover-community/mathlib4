@@ -437,7 +437,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  simp only [coe_eq_coe, NNReal.coe_eq, coe_toReal]
+  simp only [coe_eq_coe, NNReal.coe_inj, coe_toReal]
 #align ennreal.to_real_eq_to_real ENNReal.toReal_eq_toReal
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by

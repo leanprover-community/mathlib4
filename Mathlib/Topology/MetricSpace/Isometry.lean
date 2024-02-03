@@ -46,7 +46,7 @@ theorem isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves distances. -/
 theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, dist (f x) (f y) = dist x y := by
-  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_eq]
+  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_inj]
 #align isometry_iff_dist_eq isometry_iff_dist_eq
 
 /-- An isometry preserves distances. -/

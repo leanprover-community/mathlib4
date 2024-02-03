@@ -62,7 +62,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     (NNReal.coe_eq_zero _).2 <|
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
   dist_comm x y :=
-    NNReal.coe_eq.2 <| by
+    NNReal.coe_inj.2 <| by
       refine' reverse_surjective.iInf_congr _ fun l => _
       rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
