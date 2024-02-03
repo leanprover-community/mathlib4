@@ -9,10 +9,10 @@ variable {R σ : Type*} [CommRing R]
 
 -- Mathlib.Data.Finsupp.Fin
 lemma Finsupp.cons_support {n : ℕ} {M : Type*} [Zero M] (y : M) (s : Fin n →₀ M) :
-    (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmbedding n).toEmbedding s.support) := by
+    (s.cons y).support ⊆ insert 0 (Finset.map (Fin.succEmb n).toEmbedding s.support) := by
   intro i hi
   simp only [Finset.mem_insert, Finset.mem_map, mem_support_iff, ne_eq,
-    RelEmbedding.coe_toEmbedding, Fin.val_succEmbedding]
+    RelEmbedding.coe_toEmbedding, Fin.val_succEmb]
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
@@ -22,70 +22,18 @@ namespace MvPolynomial -- move this
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 variable (f : R →+* S) (k : σ → τ) (g : τ → R) (p : MvPolynomial σ R)
 
--- Mathlib.Data.MvPolynomial.Rename
-theorem eval_rename : eval g (rename k p) = eval (g ∘ k) p :=
-  eval₂_rename _ _ _ _
-
--- Mathlib.Data.MvPolynomial.Rename
-@[simp]
-theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
-    (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
-  rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
-
--- Mathlib.RingTheory.MvPolynomial.Homogeneous
-theorem rename_isHomogeneous (f : σ → τ) (φ : MvPolynomial σ R) (n : ℕ) (hf : f.Injective) :
-    (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
-  obtain ⟨f, rfl⟩ : ∃ f' : σ ↪ τ, f = f' := ⟨⟨f, hf⟩, rfl⟩
-  have aux : ∀ d : σ →₀ ℕ,
-    ∑ i in (d.embDomain f).support, (d.embDomain f) i = ∑ i in d.support, d i := by
-    intro d
-    simp only [Finsupp.support_embDomain, Finset.sum_map, Finsupp.embDomain_apply]
-  constructor
-  · intro h d hd
-    rw [← (@h (d.embDomain f) (by rwa [coeff_rename_embDomain])), aux]
-  · intro h d hd
-    obtain ⟨d', rfl, hd'⟩ := coeff_rename_ne_zero _ _ _ hd
-    rw [← Finsupp.embDomain_eq_mapDomain, ← h hd', aux]
-
 -- move later??
 lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
     (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
-  have aux : 0 ∉ Finset.map (Fin.succEmbedding N).toEmbedding d.support := by
+  have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by
     simp [Fin.succ_ne_zero]
   simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
     (d.cons_support i) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
 
 end MvPolynomial
-
--- Mathlib.Data.Polynomial.RingDivision
-open Cardinal in
-lemma Polynomial.exists_eval_ne_zero_of_natDegree_lt_card [IsDomain R]
-    (f : Polynomial R) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
-    ∃ r, f.eval r ≠ 0 := by
-  contrapose! hf
-  obtain hR|hR := finite_or_infinite R
-  · have := Fintype.ofFinite R
-    apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
-    aesop
-  · exact Polynomial.funext <| by simpa using hf
-
--- Mathlib.Data.MvPolynomial.Variables
-lemma MvPolynomial.degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
-    degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
-  simp only [← Nat.lt_succ_iff, degreeOf_lt_iff (Nat.succ_pos _)]
-
--- Mathlib.Data.MvPolynomial.Variables
-lemma MvPolynomial.degreeOf_le_totalDegree {σ : Type*} (φ : MvPolynomial σ R) (i : σ) :
-    φ.degreeOf i ≤ φ.totalDegree := by
-  rw [degreeOf_le_iff]
-  intro d hd
-  refine le_trans ?_ (le_totalDegree hd)
-  if hi : i ∈ d.support
-  then exact Finset.single_le_sum (fun _ _ ↦ zero_le') hi
-  else rw [Finsupp.not_mem_support_iff] at hi; simp only [hi, zero_le]
 
 namespace MvPolynomial.IsHomogeneous
 
@@ -190,7 +138,7 @@ lemma MvPolynomial.IsHomogeneous.exists_eval_ne_zero_of_totalDegree_le_card
   -- reduce to the case where σ is finite
   obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
   have hF₀ : F ≠ 0 := by rintro rfl; simp at hF₀
-  have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous _ _ _ hf] at hF
+  have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous_iff hf] at hF
   obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux F n hF₀ hF h
   obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
   use r
