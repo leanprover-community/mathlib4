@@ -90,7 +90,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 `norm_num` successfully recognizes `n`. -/
 @[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
-  haveI' aa: u =QL 0 := ⟨⟩; haveI' xx : $α =Q ℕ := ⟨⟩
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Int.natAbs $x := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   match ← derive (u := .zero) x with
