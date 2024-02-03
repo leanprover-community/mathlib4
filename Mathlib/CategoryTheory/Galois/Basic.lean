@@ -22,6 +22,7 @@ the definitions in Lenstras notes (see below for a reference).
 
 * `PreGaloisCategory` : defining properties of Galois categories not involving a fibre functor
 * `FibreFunctor`      : a fibre functor from a PreGaloisCategory to `FintypeCat`
+* `GaloisCategory`    : a `PreGaloisCategory` that admits a `FibreFunctor`
 * `ConnectedObject`   : an object of a category that is not initial and has no non-trivial
                         subobjects
 
@@ -50,8 +51,8 @@ A category `C` is a PreGalois category if it satisfies all properties
 of a Galois category in the sense of SGA1 that do not involve a fibre functor.
 A Galois category should furthermore admit a fibre functor.
 
-We do not provide a typeclass `GaloisCategory`; users should
-assume `[PreGaloisCategory C] (F : C ⥤ FintypeCat) [FibreFunctor F]` instead.
+The only difference between `[PreGaloisCategory C] (F : C ⥤ FintypeCat) [FibreFunctor F]` and
+`[GaloisCategory C]` is that the former fixes one fibre functor `F`.
 -/
 
 /-- Definition of a (Pre)Galois category. Lenstra, Def 3.1, (G1)-(G3) -/
@@ -122,6 +123,9 @@ variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [P
 attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
+noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F :=
+  reflectsLimitsOfShapeOfReflectsIsomorphisms
+
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
 
@@ -169,7 +173,7 @@ lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :
   ((initial_iff_fibre_empty F X).mp ⟨h⟩).false x
 
 /-- The fibre of a connected object is nonempty. -/
-lemma nonempty_fibre_of_connected (X : C) [ConnectedObject X] : Nonempty (F.obj X) := by
+instance nonempty_fibre_of_connected (X : C) [ConnectedObject X] : Nonempty (F.obj X) := by
   by_contra h
   have ⟨hin⟩ : Nonempty (IsInitial X) := (initial_iff_fibre_empty F X).mpr (not_nonempty_iff.mp h)
   exact ConnectedObject.notInitial hin
@@ -199,6 +203,30 @@ lemma evaluation_aut_injective_of_connected (A : C) [ConnectedObject A] (a : F.o
   apply Function.Injective.comp
   · exact evaluationInjective_of_connected F A A a
   · exact @Aut.ext _ _ A
+
+end PreGaloisCategory
+
+/-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fibre functor. -/
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] extends PreGaloisCategory C where
+  hasFibreFunctor : ∃ F : C ⥤ FintypeCat.{w}, Nonempty (PreGaloisCategory.FibreFunctor F)
+
+namespace PreGaloisCategory
+
+variable {C : Type u₁} [Category.{u₂, u₁} C]
+
+/-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
+instance (A X : C) [ConnectedObject A] [GaloisCategory C] : Finite (A ⟶ X) := by
+  obtain ⟨(F : C ⥤ FintypeCat.{w}), ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
+  obtain ⟨a⟩ := nonempty_fibre_of_connected F A
+  apply Finite.of_injective (fun f ↦ F.map f a)
+  exact evaluationInjective_of_connected F A X a
+
+/-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
+instance [GaloisCategory C] (A : C) [ConnectedObject A] : Finite (Aut A) := by
+  obtain ⟨(F : C ⥤ FintypeCat.{w}), ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
+  obtain ⟨a⟩ := nonempty_fibre_of_connected F A
+  apply Finite.of_injective (fun f ↦ F.map f.hom a)
+  exact evaluation_aut_injective_of_connected F A a
 
 end PreGaloisCategory
 
