@@ -1593,9 +1593,9 @@ theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f
   congr_arg sSup (range_eq_empty f)
 #align supr_of_empty' iSup_of_empty'
 
-theorem iInf_of_empty' {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
+theorem iInf_of_isEmpty {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
   congr_arg sInf (range_eq_empty f)
-#align infi_of_empty' iInf_of_empty'
+#align infi_of_empty' iInf_of_isEmpty
 
 theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty
