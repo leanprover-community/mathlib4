@@ -90,7 +90,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 -/
 
 
-open Set BigOperators NNReal
+open Function Set NNReal
+open scoped BigOperators
 
 variable {α : Type*}
 
@@ -176,7 +177,10 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
-protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+
+@[simp] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
@@ -415,6 +419,8 @@ theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := not_congr coe_eq_coe
 theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
   WithTop.coe_mul
 #align ennreal.coe_mul ENNReal.coe_mul
+
+@[norm_cast] lemma coe_nsmul (n : ℕ) (p : ℝ≥0) : (↑(n • p) : ℝ≥0∞) = n • p := rfl
 
 #noalign ennreal.coe_bit0
 #noalign ennreal.coe_bit1

@@ -328,8 +328,18 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithTop α) :=
-  { WithTop.addSemigroup, WithTop.addZeroClass with }
+instance addMonoid : AddMonoid (WithTop α) where
+  __ := WithTop.addSemigroup
+  __ := WithTop.addZeroClass
+  nsmul n a := match a, n with
+    | (a : α), n => ↑(n • a)
+    | ⊤, 0 => 0
+    | ⊤, _n + 1 => ⊤
+  nsmul_zero a := by cases a <;> simp [zero_nsmul]
+  nsmul_succ n a := by
+    cases a <;> cases n <;> simp [succ_nsmul, coe_add, some_eq_coe, none_eq_top]
+
+@[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
 /-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithTop α where
@@ -340,10 +350,6 @@ def addHom : α →+ WithTop α where
 
 @[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithTop α) = WithTop.some := rfl
 #align with_top.coe_coe_add_hom WithTop.coe_addHom
-
-@[simp, norm_cast]
-lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) :=
-  (addHom : α →+ WithTop α).map_nsmul _ _
 
 end AddMonoid
 
