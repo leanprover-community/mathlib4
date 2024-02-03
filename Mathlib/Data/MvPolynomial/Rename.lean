@@ -188,6 +188,9 @@ theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
       simp [*]
 #align mv_polynomial.eval₂_rename MvPolynomial.eval₂_rename
 
+theorem eval_rename (g : τ → R) (p : MvPolynomial σ R) : eval g (rename k p) = eval (g ∘ k) p :=
+  eval₂_rename _ _ _ _
+
 theorem eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
   eval₂_rename _ _ _ _
 #align mv_polynomial.eval₂_hom_rename MvPolynomial.eval₂Hom_rename
@@ -302,6 +305,11 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
   · intros
     simp only [*, AlgHom.map_add, coeff_add]
 #align mv_polynomial.coeff_rename_map_domain MvPolynomial.coeff_rename_mapDomain
+
+@[simp]
+theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
+    (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
+  rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
 
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
