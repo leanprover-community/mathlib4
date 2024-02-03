@@ -368,6 +368,30 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
 
 end assoc
 
+section cancelBaseChange
+variable [Algebra A B] [IsScalarTower A B M]
+
+/-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
+In particular useful with `B = A`. -/
+def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N := by
+  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N :=
+    AlgebraTensorModule.congr (AlgebraTensorModule.rid A B M) (LinearEquiv.refl R N)
+  exact (AlgebraTensorModule.assoc R A B M A N).symm ≪≫ₗ g
+
+variable {M P N Q}
+
+@[simp]
+theorem cancelBaseChange_tmul (m : M) (n : N) (a : A) :
+    cancelBaseChange R A B M N (m ⊗ₜ (a ⊗ₜ n)) = (a • m) ⊗ₜ n :=
+  rfl
+
+@[simp]
+theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
+    (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
+  rfl
+
+end cancelBaseChange
+
 section leftComm
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/

@@ -1057,7 +1057,7 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
 -- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by
-  unfold instOfNat OfNat.ofNat
+  unfold instOfNatAtLeastTwo OfNat.ofNat
   simpa using by rfl
 #align ordinal.succ_one Ordinal.succ_one
 
