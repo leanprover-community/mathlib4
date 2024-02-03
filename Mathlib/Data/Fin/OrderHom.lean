@@ -31,12 +31,19 @@ def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
 theorem succAbove_eq_castSucc_or_succ (p : Fin (n + 1)) (i : Fin n) :
     p.succAbove i = i.castSucc ∨ p.succAbove i = i.succ := ite_eq_or_eq _ _ _
 
+theorem castSucc_le_succAbove (p : Fin (n + 1)) (i : Fin n) : castSucc i ≤ p.succAbove i := by
+  obtain h | h := succAbove_eq_castSucc_or_succ p i <;> rw [h]
+  exact (castSucc_lt_succ _).le
+
+theorem succAbove_le_succ (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≤ succ i := by
+  obtain h | h := succAbove_eq_castSucc_or_succ p i <;> rw [h]
+  exact (castSucc_lt_succ _).le
+
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
 embeds `i` by `castSucc` when the resulting `i.castSucc < p`. -/
 theorem succAbove_of_castSucc_lt (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
     p.succAbove i = castSucc i := if_pos h
 #align fin.succ_above_below Fin.succAbove_of_castSucc_lt
-
 theorem succAbove_of_succ_le (p : Fin (n + 1)) (i : Fin n) (h : succ i ≤ p) :
     p.succAbove i = castSucc i :=
   succAbove_of_castSucc_lt _ _ (castSucc_lt_iff_succ_le.mpr h)
@@ -46,7 +53,6 @@ embeds `i` by `succ` when the resulting `p < i.succ`. -/
 theorem succAbove_of_le_castSucc (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSucc i) :
     p.succAbove i = i.succ := if_neg h.not_lt
 #align fin.succ_above_above Fin.succAbove_of_le_castSucc
-
 theorem succAbove_of_lt_succ (p : Fin (n + 1)) (i : Fin n) (h : p < succ i) :
     p.succAbove i = succ i := succAbove_of_le_castSucc _ _ (le_castSucc_iff.mpr h)
 
@@ -57,6 +63,9 @@ theorem succAbove_succ_of_le (p i : Fin n) (h : i ≤ p) :
 @[simp]
 theorem succAbove_succ_self (j : Fin n) : j.succ.succAbove j = j.castSucc :=
   succAbove_succ_of_le _ _ le_rfl
+
+theorem succAbove_succ_of_lt' (p : Fin (n + 2)) (i : Fin n) (h : i.succ.castSucc < p) :
+    succAbove p (i.succ) = i.succ.castSucc := succAbove_of_castSucc_lt _ _ h
 
 theorem succAbove_castSucc_of_lt (p i : Fin n) (h : i < p) :
     succAbove p.castSucc i = i.castSucc :=
@@ -86,24 +95,6 @@ theorem succAbove_castPred_of_le (p i : Fin (n + 1)) (h : p ≤ i) (hi : i ≠ l
 theorem succAbove_castPred_self (p : Fin (n + 1)) (h: p ≠ last n):
     succAbove p (p.castPred h) = (p.castPred h).succ :=
   succAbove_castPred_of_le _ _ le_rfl h
-
-theorem succAbove_succAbove_eq_castSucc_of_lt {i j : Fin n} (p : Fin (n + 1)) (hij : i < j) :
-    succAbove (succAbove p j) i = i.castSucc := by
-  obtain h | h := p.succAbove_eq_castSucc_or_succ j <;> rw [h]
-  · rw [succAbove_castSucc_of_lt _ _ hij]
-  · rw [succAbove_succ_of_le _ _ hij.le]
-
-theorem succAbove_succAbove_eq_succ_of_lt {i j : Fin n} (p : Fin (n + 1)) (hij : j < i) :
-    succAbove (succAbove p j) i = i.succ := by
-  obtain h | h := p.succAbove_eq_castSucc_or_succ j <;> rw [h]
-  · rw [succAbove_castSucc_of_le _ _ hij.le]
-  · rw [succAbove_succ_of_lt _ _ hij]
-
-theorem succAbove_succAbove_const_of_ne {i j : Fin n} (hij : i ≠ j) (p q : Fin (n + 1)) :
-    succAbove (succAbove p j) i = succAbove (succAbove q j) i := by
-  obtain hij | hij := hij.lt_or_lt
-  · simp_rw [succAbove_succAbove_eq_castSucc_of_lt _ hij]
-  · simp_rw [succAbove_succAbove_eq_succ_of_lt _ hij]
 
 theorem succAbove_rev_left (p : Fin (n + 1)) (i : Fin n) :
     p.rev.succAbove i = (p.succAbove i.rev).rev := by
@@ -440,24 +431,6 @@ theorem predAbove_castPred_of_le (p i : Fin (n + 1)) (h : i ≤ p) (hp : p ≠ l
 theorem predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
     (castPred p hp).predAbove p = castPred p hp := predAbove_castPred_of_le _ _ le_rfl hp
 
-theorem predAbove_predAbove_eq_castPred_of_lt {i j : Fin (n + 1)} (p : Fin n) (hij : i < j)
-    (hi := ((le_last j).trans_lt' hij).ne) : predAbove (predAbove p j) i = castPred i hi := by
-  obtain ⟨h, heq⟩ | ⟨h, heq⟩ := p.predAbove_eq_pred_or_castPred j <;> rw [heq]
-  · rw [predAbove_pred_of_lt _ _ hij]
-  · rw [predAbove_castPred_of_le _ _ hij.le]
-
-theorem predAbove_predAbove_eq_pred_of_lt {i j : Fin (n + 1)} (p : Fin n) (hij : j < i)
-    (hi := ((zero_le j).trans_lt hij).ne') : predAbove (predAbove p j) i = pred i hi := by
-  obtain ⟨h, heq⟩ | ⟨h, heq⟩ := p.predAbove_eq_pred_or_castPred j <;> rw [heq]
-  · rw [predAbove_pred_of_le _ _ hij.le]
-  · rw [predAbove_castPred_of_lt _ _ hij]
-
-theorem predAbove_predAbove_const_of_ne {i j : Fin (n + 1)} (hij : i ≠ j) (p q : Fin n) :
-    predAbove (predAbove p j) i = predAbove (predAbove q j) i := by
-  obtain hij | hij := hij.lt_or_lt
-  · simp_rw [predAbove_predAbove_eq_castPred_of_lt _ hij]
-  · simp_rw [predAbove_predAbove_eq_pred_of_lt _ hij]
-
 theorem predAbove_rev_left (p : Fin n) (i : Fin (n + 1)) :
     p.rev.predAbove i = (p.predAbove i.rev).rev := by
   obtain h | h := (rev i).succ_le_or_le_castSucc p
@@ -566,7 +539,7 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
   obtain h | h := (le_or_lt (succ a) b)
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_succ_of_le _ _ h, succ_pred]
-  · rw [predAbove_of_lt_succ _ _ h, predAbove_succ_of_lt _ _ h, succ_castPred_eq_castPred_succ]
+  · rw [predAbove_of_lt_succ _ _ h, predAbove_succ_of_lt _ _ h, succ_castPred]
 #align fin.succ_pred_above_succ Fin.succ_predAbove_succ
 
 /-- `castSucc` commutes with `predAbove`. -/
@@ -574,8 +547,7 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
 theorem castSucc_predAbove_castSucc {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.castSucc.predAbove b.castSucc = (a.predAbove b).castSucc := by
   obtain h | h := (lt_or_le (castSucc a) b)
-  · rw [predAbove_of_castSucc_lt _ _ h, predAbove_castSucc_of_lt _ _ h,
-      castSucc_pred_eq_pred_castSucc]
+  · rw [predAbove_of_castSucc_lt _ _ h, predAbove_castSucc_of_lt _ _ h, castSucc_pred]
   · rw [predAbove_of_le_castSucc _ _ h, predAbove_castSucc_of_le _ _ h, castSucc_castPred]
 
 /-- `rev` commutes with `predAbove`. -/
@@ -750,6 +722,129 @@ lemma succAbove_succAbove_predAbove_self {p : Fin n} {i : Fin (n + 1)} :
     · rw [succAbove_succ_self, predAbove_succ_self, succAbove_castSucc_self]
     · rw [succAbove_succAbove_predAbove i h₁ h₂]
 
+@[simp]
+theorem succAbove_succ_eq_succAbove_castSucc_of_ne {j : Fin n} (i : Fin n) (h : i ≠ j) :
+    succAbove (succ j) i = succAbove (castSucc j) i := by
+  obtain h | h := h.lt_or_lt
+  · rw [succAbove_succ_of_le _ _ h.le, succAbove_castSucc_of_lt _ _ h]
+  · rw [succAbove_succ_of_lt _ _ h, succAbove_castSucc_of_le _ _ h.le]
+
+@[simp]
+theorem eqOn_succAbove_succ_succAbove_castSucc {j : Fin n}:
+    Set.EqOn (succ j).succAbove (castSucc j).succAbove {j}ᶜ :=
+  succAbove_succ_eq_succAbove_castSucc_of_ne
+
+theorem succAbove_succ_succAbove_eq_succAbove_castSucc_succAbove_of_le {k : Fin n}
+    {i j : Fin (n + 1)} (hij : i ≤ j) : succAbove (succ j) (succAbove i k) =
+    succAbove (castSucc i) (succAbove j k) := by
+  obtain hi | hi := lt_or_le (castSucc k) i
+  · rw [succAbove_of_castSucc_lt _ _ hi, succAbove_succ_of_le _ _ (hij.trans_lt' hi).le,
+    succAbove_of_castSucc_lt _ _ (hij.trans_lt' hi), succAbove_castSucc_of_lt _ _ hi]
+  · rw [succAbove_of_le_castSucc _ _ hi,
+    succAbove_castSucc_of_le _ _ (hi.trans (castSucc_le_succAbove j k))]
+    obtain hj | hj := le_or_lt (succ k) j
+    · rw [succAbove_of_succ_le _ _ hj, succAbove_succ_of_le _ _ hj, succ_castSucc]
+    · rw [succAbove_of_lt_succ _ _ hj, succAbove_succ_of_lt _ _ hj]
+
+lemma predAbove_succ_succAbove_castSucc_of_le_castSucc {i k : Fin (n + 1)} {j : Fin n}
+    (h : i ≤ castSucc j) : predAbove (succ j) (succAbove (castSucc i) k) =
+    succAbove i (predAbove j k) := by
+  obtain hj | hj := lt_or_le (castSucc j) k
+  · rw [predAbove_of_castSucc_lt _ _ hj, succAbove_pred_of_lt _ _ (h.trans_lt hj),
+    succAbove_castSucc_of_le _ _ (h.trans_lt hj).le, succ_predAbove_succ,
+    predAbove_of_castSucc_lt _ _ hj, succ_pred]
+  · rw [predAbove_of_le_castSucc _ _ hj]
+    obtain hi | hi := le_or_lt i k
+    · rw [succAbove_castPred_of_le _ _ hi, succAbove_castSucc_of_le _ _ hi, succ_predAbove_succ,
+      predAbove_of_le_castSucc _ _ hj]
+    · rw [succAbove_castPred_of_lt _ _ hi, succAbove_castSucc_of_lt _ _ hi,
+      predAbove_castSucc_of_le _ _ (hj.trans (castSucc_lt_succ _).le)]
+
+lemma predAbove_succ_succAbove_castSucc_of_lt_succ {i k : Fin (n + 1)} {j : Fin n}
+    (h : i < succ j) : predAbove (succ j) (succAbove (castSucc i) k) =
+    succAbove i (predAbove j k) :=
+  predAbove_succ_succAbove_castSucc_of_le_castSucc (le_castSucc_iff.mpr h)
+
+lemma predAbove_castSucc_succAbove_succ_of_succ_le {i k : Fin (n + 1)} {j : Fin n}
+    (h : succ j ≤ i) : predAbove (castSucc j) (succAbove (succ i) k) =
+    succAbove i (predAbove j k) := by
+  obtain hj | hj := lt_or_le k (succ j)
+  · rw [succAbove_succ_of_le _ _ (h.trans_lt' hj).le, castSucc_predAbove_castSucc,
+      predAbove_of_lt_succ _ _ hj, castSucc_castPred,
+      succAbove_castPred_of_lt _ _ (h.trans_lt' hj)]
+  · rw [predAbove_of_succ_le _ _ hj]
+    obtain hi | hi := le_or_lt k i
+    · rw [succAbove_succ_of_le _ _ hi, castSucc_predAbove_castSucc,
+        predAbove_of_succ_le _ _ hj, succAbove_pred_of_le _ _ hi]
+    · rw [succAbove_pred_of_lt _ _ hi, succAbove_succ_of_lt _ _ hi,
+        predAbove_succ_of_le _ _ ((castSucc_lt_succ _).le.trans hj)]
+
+lemma predAbove_castSucc_succAbove_succ_of_castSucc_lt {i k : Fin (n + 1)} {j : Fin n}
+    (h : castSucc j < i) : predAbove (castSucc j) (succAbove (succ i) k) =
+    succAbove i (predAbove j k) :=
+  predAbove_castSucc_succAbove_succ_of_succ_le (castSucc_lt_iff_succ_le.mp h)
+
+lemma predAbove_predAbove_castSucc_eq_predAbove_predAbove_succ {k : Fin (n + 2)} {i j : Fin n}
+    (h : i ≤ j) : predAbove j (predAbove (castSucc i) k) = predAbove i (predAbove (succ j) k) := by
+  obtain hi | hi := le_or_lt k i.castSucc.castSucc
+  · rw [← castSucc_le_castSucc_iff, ← castSucc_le_castSucc_iff] at h
+    rw [predAbove_of_le_castSucc _ _ hi,
+      predAbove_of_le_castSucc _ _ ((castPred_le_iff _).mpr (hi.trans h)),
+      predAbove_of_le_castSucc _ _ (hi.trans (h.trans
+      (castSucc_le_castSucc_iff.mpr (castSucc_lt_succ _).le))),
+      predAbove_of_le_castSucc _ _ ((castPred_le_iff _).mpr hi)]
+  · rw [predAbove_of_castSucc_lt _ _ hi]
+    obtain hj | hj := le_or_lt k j.castSucc.succ
+    · rw [predAbove_of_le_castSucc _ _ ((pred_le_iff _).mpr hj)]
+      rw [predAbove_of_le_castSucc _ k (succ_castSucc _ ▸ hj),
+      predAbove_of_castSucc_lt _ _ ((lt_castPred_iff _).mpr hi), pred_castPred]
+    · rw [← castSucc_le_castSucc_iff, ← succ_le_succ_iff] at h
+      rw [predAbove_of_castSucc_lt _ _ ((lt_pred_iff _).mpr hj),
+      predAbove_of_castSucc_lt _ k (succ_castSucc _ ▸ hj),
+      predAbove_of_castSucc_lt _ _ ((lt_pred_iff _).mpr (h.trans_lt hj))]
+
+/- The general case of the first simplicial identity. -/
+theorem succAbove_comp_succAbove_of_le {i j : Fin (n + 1)} (hij : i ≤ j) :
+    succAbove (succ j) ∘ (succAbove i) = succAbove (castSucc i) ∘ (succAbove j) :=
+funext (fun _ => succAbove_succ_succAbove_eq_succAbove_castSucc_succAbove_of_le hij)
+
+/- The special case of the first simplicial identity. -/
+theorem succAbove_comp_succAbove_eq
+    {i : Fin (n + 1)} : succAbove (succ i) ∘ succAbove i = succAbove (castSucc i) ∘ succAbove i :=
+  succAbove_comp_succAbove_of_le le_rfl
+
+/- The second simplicial identity. -/
+lemma predAbove_succ_comp_succAbove_castSucc {i : Fin (n + 1)} {j : Fin n}
+    (h : i ≤ castSucc j) :
+    (predAbove (succ j)) ∘ (succAbove (castSucc i)) = (succAbove i) ∘ (predAbove j) :=
+  funext (fun _ => predAbove_succ_succAbove_castSucc_of_le_castSucc h)
+
+/- First part of the third simplicial identity. -/
+lemma predAbove_comp_succAbove_castSucc {i : Fin n} :
+    (predAbove i) ∘ (succAbove (castSucc i)) = id :=
+  funext (fun j => i.predAbove_succAbove_castSucc j)
+
+/- Second part of the third simplicial identity. -/
+lemma predAbove_comp_succAbove_succ {i : Fin n} :
+    (predAbove i) ∘ (succAbove (succ i)) = id :=
+  funext (fun j => i.predAbove_succAbove_succ j)
+
+/- The fourth simplicial identity. -/
+lemma predAbove_castSucc_comp_succAbove_castSucc {i : Fin (n + 1)} {j : Fin n}
+    (h : castSucc j < i) :
+    (predAbove (castSucc j)) ∘ (succAbove (succ i)) = (succAbove i) ∘ (predAbove j) :=
+  funext (fun _ => predAbove_castSucc_succAbove_succ_of_castSucc_lt h)
+
+/- The general case of the fifth simplicial identity. -/
+lemma predAbove_comp_predAbove_of_le {i j : Fin n} (h : i ≤ j) :
+    (predAbove j) ∘ (predAbove (castSucc i)) = (predAbove i) ∘ (predAbove (succ j)) :=
+  funext (fun _ => predAbove_predAbove_castSucc_eq_predAbove_predAbove_succ h)
+
+/- The special case of the fifth simplicial identity. -/
+lemma predAbove_comp_predAbove_self {i : Fin n} :
+    (predAbove i) ∘ (predAbove (castSucc i)) = (predAbove i) ∘ (predAbove (succ i)) :=
+ predAbove_comp_predAbove_of_le le_rfl
+
 lemma predAbove_eq_iff (p k : Fin n) (i : Fin (n + 1)) :
     predAbove p i = k ↔ i = succAbove (succAbove i p) k := by
   rw [← succAbove_right_inj (succAbove i p) (j := k), succAbove_succAbove_predAbove_self]
@@ -766,7 +861,14 @@ lemma eq_succAbove_iff {p k : Fin (n + 1)} (h : k ≠ p) (i j : Fin n) :
     k = succAbove p i ↔ predAbove (predAbove j p) k = i := by
   rw [eq_comm, succAbove_eq_iff h, eq_comm]
 
-/-
+def succAbove_predAbove_equiv : (Fin (n + 1) × Fin n) ≃ (Fin (n + 1) × Fin n) where
+  toFun := fun (p, i) => (p.succAbove i, i.predAbove p)
+  invFun := fun (p, i) => (p.succAbove i, i.predAbove p)
+  left_inv := fun (p, i) =>
+    by simp only [succAbove_succAbove_predAbove_self, predAbove_predAbove_succAbove]
+  right_inv := fun (p, i) =>
+    by simp only [succAbove_succAbove_predAbove_self, predAbove_predAbove_succAbove]
+
 theorem succAbove_comp_predAbove_predAbove_left_cancel {α : Type*} (f : α → Fin (n + 1))
     {j : Fin (n + 1)} (h : ∀ a, f a ≠ j) :
   ∀ p, (succAbove j) ∘ (predAbove (predAbove p j)) ∘ f = f :=
@@ -777,7 +879,6 @@ theorem castSucc_or_succ_succAbove_of_rightInverse_predAbove (p : Fin n)
     f = p.castSucc.succAbove ∨ f = p.succ.succAbove := sorry
 
 -- Some equivalent with Left Inverses.
--/
 
 end SuccAbovePredAbove
 

@@ -1160,9 +1160,18 @@ section Pred
 #align fin.add_nat_sub_nat Fin.addNat_subNat
 #align fin.sub_nat_add_nat Fin.subNat_addNat
 
+-- Name matches std but ideally would be shorter.
 theorem eq_pred_iff_succ_eq (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin n) :
     j = pred i hi ↔ succ j = i := by
   rw [eq_comm, pred_eq_iff_eq_succ, eq_comm]
+
+theorem pred_ne_iff (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin n) :
+    pred i hi ≠ j ↔ i ≠ succ j := by
+  simp_rw [ne_eq, pred_eq_iff_eq_succ]
+
+theorem ne_pred_iff (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin n) :
+    j ≠ pred i hi ↔ succ j ≠ i := by
+  simp_rw [ne_eq, eq_pred_iff_succ_eq]
 
 theorem strictMono_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f a ≠ 0)
     (hf₂ : StrictMono f) : StrictMono (fun a => pred (f a) (hf a)) :=
@@ -1191,10 +1200,10 @@ theorem pred_le_iff {i : Fin (n + 1)} (hi : i ≠ 0) : pred i hi ≤ j ↔ i ≤
 theorem le_pred_iff {i : Fin (n + 1)} (hi : i ≠ 0) : j ≤ pred i hi ↔ succ j ≤ i := by
   rw [← succ_le_succ_iff, succ_pred]
 
-theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
+theorem castSucc_pred {a : Fin (n + 1)} (ha : a ≠ 0)
     (ha' := a.castSucc_ne_zero_iff.mpr ha) :
     (a.pred ha).castSucc = (castSucc a).pred ha' := rfl
-#align fin.cast_succ_pred_eq_pred_cast_succ Fin.castSucc_pred_eq_pred_castSucc
+#align fin.cast_succ_pred_eq_pred_cast_succ Fin.castSucc_pred
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
@@ -1215,11 +1224,11 @@ theorem pred_castSucc_lt {a : Fin (n + 1)} (ha : castSucc a ≠ 0) :
 
 theorem le_castSucc_pred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) :
     b ≤ castSucc (a.pred ha) ↔ b < a := by
-  rw [castSucc_pred_eq_pred_castSucc, le_pred_castSucc_iff]
+  rw [castSucc_pred, le_pred_castSucc_iff]
 
 theorem castSucc_pred_lt_iff {a b : Fin (n + 1)} (ha : a ≠ 0) :
     castSucc (a.pred ha) < b ↔ a ≤ b := by
-  rw [castSucc_pred_eq_pred_castSucc, pred_castSucc_lt_iff]
+  rw [castSucc_pred, pred_castSucc_lt_iff]
 
 theorem castSucc_pred_lt {a : Fin (n + 1)} (ha : a ≠ 0) :
     castSucc (a.pred ha) < a := by rw [castSucc_pred_lt_iff]
@@ -1252,6 +1261,7 @@ theorem castSucc_castPred (i : Fin (n + 1)) (h : i ≠ last n) :
   rw [castPred_castSucc]
 #align fin.cast_succ_cast_pred Fin.castSucc_castPred
 
+-- Names match std, but ideally would be shorter.
 theorem castPred_eq_iff_eq_castSucc (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
     castPred i hi = j ↔ i = castSucc j :=
   ⟨fun h => by rw [← h, castSucc_castPred], fun h => by simp_rw [h, castPred_castSucc]⟩
@@ -1259,6 +1269,14 @@ theorem castPred_eq_iff_eq_castSucc (i : Fin (n + 1)) (hi : i ≠ last _) (j : F
 theorem eq_castPred_iff_castSucc_eq (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
     j = castPred i hi ↔ castSucc j = i := by
   rw [eq_comm, castPred_eq_iff_eq_castSucc, eq_comm]
+
+theorem castPred_ne_iff (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
+    castPred i hi ≠ j ↔ i ≠ castSucc j := by
+  simp_rw [ne_eq, castPred_eq_iff_eq_castSucc]
+
+theorem ne_castPred_iff (i : Fin (n + 1)) (hi : i ≠ last _) (j : Fin n) :
+    j ≠ castPred i hi ↔ castSucc j ≠ i := by
+  simp_rw [ne_eq, eq_castPred_iff_castSucc_eq]
 
 @[simp]
 theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_self _))
@@ -1322,9 +1340,13 @@ theorem rev_castPred (h : i ≠ last n) (h' := rev_ne_iff.mpr ((rev_zero _).symm
     rev (castPred i h) = pred (rev i) h' := by
   rw [← succ_inj, succ_pred, ← rev_castSucc, castSucc_castPred]
 
-theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
+theorem succ_castPred {a : Fin (n + 1)} (ha : a ≠ last n)
     (ha' := a.succ_ne_last_iff.mpr ha) :
     (a.castPred ha).succ = (succ a).castPred ha' := rfl
+
+theorem pred_castPred {a : Fin (n + 2)} (ha₁ : a ≠ 0) (ha₂ : a ≠ last (n + 1)) :
+    (a.castPred ha₂).pred ((castPred_ne_iff _ _ _).mpr ha₁) =
+    (a.pred ha₁).castPred ((pred_ne_iff _ _ _).mpr ha₂) := rfl
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
@@ -1332,7 +1354,7 @@ theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
   · exact (ha rfl).elim
   · rw [castPred_castSucc, coeSucc_eq_succ]
 
-theorem castpred_succ_le_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
+theorem castPred_succ_le_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
     (succ a).castPred ha ≤ b ↔ a < b := by
   rw [castPred_le_iff, succ_le_castSucc_iff]
 
@@ -1345,11 +1367,11 @@ theorem lt_castPred_succ {a : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
 
 theorem succ_castPred_le_iff {a b : Fin (n + 1)} (ha : a ≠ last n) :
     succ (a.castPred ha) ≤ b ↔ a < b := by
-  rw [succ_castPred_eq_castPred_succ ha, castpred_succ_le_iff]
+  rw [succ_castPred ha, castPred_succ_le_iff]
 
 theorem lt_succ_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ last n) :
     b < succ (a.castPred ha) ↔ b ≤ a := by
-  rw [succ_castPred_eq_castPred_succ ha, lt_castPred_succ_iff]
+  rw [succ_castPred ha, lt_castPred_succ_iff]
 
 theorem lt_succ_castPred {a : Fin (n + 1)} (ha : a ≠ last n) :
     a < succ (a.castPred ha) := by rw [lt_succ_castPred_iff]
