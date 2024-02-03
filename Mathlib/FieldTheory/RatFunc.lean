@@ -876,7 +876,6 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 #align ratfunc.lift_monoid_with_zero_hom_apply_div RatFunc.liftMonoidWithZeroHom_apply_div
 
--- Porting note: added `simpNF` form of `liftMonoidWithZeroHom_apply_div`
 @[simp]
 theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
@@ -889,7 +888,6 @@ theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K
   liftMonoidWithZeroHom_apply_div _ hφ _ _  -- porting note: gave explicitly the `hφ`
 #align ratfunc.lift_ring_hom_apply_div RatFunc.liftRingHom_apply_div
 
--- Porting note: added `simpNF` form of `liftRingHom_apply_div`
 @[simp]
 theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
@@ -961,7 +959,6 @@ theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective �
   liftMonoidWithZeroHom_injective _ hφ
 #align ratfunc.lift_alg_hom_injective RatFunc.liftAlgHom_injective
 
--- Porting note: added `simpNF` form of `liftAlgHom_apply_div`
 @[simp]
 theorem liftAlgHom_apply_div' (p q : K[X]) :
     liftAlgHom φ hφ (algebraMap _ _ p) / liftAlgHom φ hφ (algebraMap _ _ q) = φ p / φ q :=

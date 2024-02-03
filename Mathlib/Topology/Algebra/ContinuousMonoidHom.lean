@@ -415,11 +415,11 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
+instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
   ContinuousMonoidHom.ContinuousMonoidHomClass
 
 /-- `PontryaginDual` is a functor. -/
-noncomputable def map (f : ContinuousMonoidHom A B) :
+def map (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
   f.compLeft circle
 #align pontryagin_dual.map PontryaginDual.map
