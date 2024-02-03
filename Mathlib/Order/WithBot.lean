@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
@@ -96,8 +97,8 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
-  | none => bot
-  | Option.some a => coe a
+  | ⊥ => bot
+  | (a : α) => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
@@ -239,18 +240,18 @@ theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a 
 #align with_bot.coe_le WithBot.coe_le
 
 theorem coe_le_iff : ∀ {x : WithBot α}, (a : WithBot α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b
-  | Option.some x => by simp [some_eq_coe]
-  | none => iff_of_false (not_coe_le_bot _) <| by simp [none_eq_bot]
+  | (x : α) => by simp
+  | ⊥ => iff_of_false (not_coe_le_bot _) <| by simp
 #align with_bot.coe_le_iff WithBot.coe_le_iff
 
 theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b
-  | Option.some b => by simp [some_eq_coe, coe_eq_coe]
-  | none => by simp [none_eq_bot]
+  | (b : α) => by simp
+  | ⊥ => by simp
 #align with_bot.le_coe_iff WithBot.le_coe_iff
 
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
-  | none, _ => bot_le
-  | Option.some _, hb => some_le_some.2 <| h <| some_le_some.1 hb
+  | ⊥, _ => bot_le
+  | (_ : α), hb => some_le_some.2 <| h <| some_le_some.1 hb
 #align is_max.with_bot IsMax.withBot
 
 theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
@@ -305,13 +306,13 @@ theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none :=
 #align with_bot.not_lt_none WithBot.not_lt_none
 
 theorem lt_iff_exists_coe : ∀ {a b : WithBot α}, a < b ↔ ∃ p : α, b = p ∧ a < p
-  | a, Option.some b => by simp [some_eq_coe, coe_eq_coe]
-  | a, none => iff_of_false (not_lt_none _) <| by simp [none_eq_bot]
+  | a, some b => by simp [coe_eq_coe]
+  | a, ⊥ => iff_of_false (not_lt_none _) <| by simp
 #align with_bot.lt_iff_exists_coe WithBot.lt_iff_exists_coe
 
-theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a : α, x = ↑a → a < b
-  | Option.some b => by simp [some_eq_coe, coe_eq_coe, coe_lt_coe]
-  | none => by simp [none_eq_bot, bot_lt_coe]
+theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a : α, x = a → a < b
+  | (_ : α) => by simp
+  | ⊥ => by simp [bot_lt_coe]
 #align with_bot.lt_coe_iff WithBot.lt_coe_iff
 
 /-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
@@ -1300,12 +1301,11 @@ instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop �
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
-  ⟨by
-    rintro (a | a) (b | b)
-    · simp
-    · simp
-    · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
+  ⟨fun
+    | (a : α), (b : α) => by simp [trichotomous]
+    | ⊤, (b : α) => by simp
+    | (a : α), ⊤ => by simp
+    | ⊤, ⊤ => by simp⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
 instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] : IsWellOrder (WithTop α) (· < ·) where
@@ -1313,12 +1313,7 @@ instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] : IsWellOrder (
 
 instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithTop α) (· > ·) :=
-  ⟨by
-    rintro (a | a) (b | b)
-    · simp
-    · simp
-    · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
+  have : IsTrichotomous α (· < ·) := .swap _; .swap _
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] : IsWellOrder (WithTop α) (· > ·) where

@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -606,7 +607,7 @@ def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X 
     J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
 #align category_theory.grothendieck_topology.cover.bind CategoryTheory.GrothendieckTopology.Cover.bind
 
-/-- The canonical moprhism from `S.bind T` to `T`. -/
+/-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=
   homOfLE <| by
     rintro Y f ⟨Z, e1, e2, h1, _, h3⟩

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
@@ -12,6 +13,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 

@@ -325,7 +325,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), mul_zero,
+    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
     -- porting note: was `decide`

@@ -86,7 +86,7 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 /-- For a field extension `L/K`, the intermediate field `K` is finite-dimensional over `K` -/
 theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     FiniteDimensional K (⊥ : IntermediateField K L) :=
-  finiteDimensional_of_rank_eq_one IntermediateField.rank_bot
+  .of_rank_eq_one IntermediateField.rank_bot
 #align intermediate_field.finite_dimensional_bot IntermediateField.finiteDimensional_bot
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
@@ -267,7 +267,7 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
   let E := IntermediateField.adjoin K ({x} : Set L)
   haveI := IntermediateField.adjoin.finiteDimensional (h_int x)
   refine' ⟨σ • E.fixingSubgroup,
-    ⟨E.fixingSubgroup_isOpen.leftCoset σ, E.fixingSubgroup_isClosed.leftCoset σ⟩,
+    ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]

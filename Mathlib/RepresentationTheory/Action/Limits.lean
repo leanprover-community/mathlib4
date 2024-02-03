@@ -334,7 +334,7 @@ end Linear
 
 section Abelian
 
-/-- Auxilliary construction for the `Abelian (Action V G)` instance. -/
+/-- Auxiliary construction for the `Abelian (Action V G)` instance. -/
 def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
   (functorCategoryEquivalence V G).trans (Equivalence.congrLeft ULift.equivalence)
 set_option linter.uppercaseLean3 false in
