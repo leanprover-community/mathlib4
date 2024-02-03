@@ -132,7 +132,7 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e
     · convert e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
-  supParts := by simp [← P.supParts]
+  sup_parts := by simp [← P.sup_parts]
   not_bot_mem := by
     rw [mem_map_equiv]
     convert P.not_bot_mem
@@ -574,7 +574,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     simp only [mem_univ, forall_true_left, mem_filter, true_and]
     exact ⟨fun r1 => s.trans (s.trans d2.2 (s.symm d1.2)) r1,
            fun r2 => s.trans (s.trans d1.2 (s.symm d2.2)) r2⟩
-  supParts := by
+  sup_parts := by
     ext a
     simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
     use a; exact s.refl a
