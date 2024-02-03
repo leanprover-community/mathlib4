@@ -90,11 +90,11 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
 
 instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
-  lift := 𝟙 (LiftObj.lift X) ⊗ LiftHom.lift f
+  lift := LiftObj.lift X ◁ LiftHom.lift f
 
 instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
-  lift := LiftHom.lift f ⊗ 𝟙 (LiftObj.lift Z)
+  lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
@@ -129,12 +129,12 @@ instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalC
 @[simps]
 instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  MonoidalCoherence.hom)⟩
+  ⟨(ρ_ X).inv ≫ (X ◁ MonoidalCoherence.hom)⟩
 
 @[simps]
 instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
+  ⟨(X ◁ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
 
 @[simps]
 instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
@@ -333,7 +333,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherence_loop (maxSteps := 47) : TacticM Unit :=
+def coherence_loop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do

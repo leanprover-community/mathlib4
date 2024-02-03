@@ -258,8 +258,6 @@ def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C ⥤ Mon_ C 
   map α := ((mapMonFunctor (Discrete PUnit) C).map α).app _
 #align Mon_.equiv_lax_monoidal_functor_punit.lax_monoidal_to_Mon Mon_.EquivLaxMonoidalFunctorPUnit.laxMonoidalToMon
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps]
 def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C where
@@ -382,8 +380,6 @@ theorem one_associator {M N P : Mon_ C} :
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp
 #align Mon_.one_associator Mon_.one_associator
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 theorem one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by

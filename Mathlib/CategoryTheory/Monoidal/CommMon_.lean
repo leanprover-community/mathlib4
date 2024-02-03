@@ -171,8 +171,6 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]
 def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 1}) C where

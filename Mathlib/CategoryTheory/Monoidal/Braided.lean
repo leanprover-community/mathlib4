@@ -138,14 +138,14 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
   braiding_naturality_right := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
   hexagon_forward := by
     intros
     apply F.map_injective
@@ -225,6 +225,7 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
     _ = (ρ_ X).hom ▷ 𝟙_ C := by rw [triangle]
 #align category_theory.braiding_left_unitor_aux₂ CategoryTheory.braiding_leftUnitor_aux₂
 
+@[reassoc]
 theorem braiding_leftUnitor (X : C) : (β_ X (𝟙_ C)).hom ≫ (λ_ X).hom = (ρ_ X).hom := by
   rw [← whiskerRight_iff, comp_whiskerRight, braiding_leftUnitor_aux₂]
 #align category_theory.braiding_left_unitor CategoryTheory.braiding_leftUnitor
@@ -256,24 +257,27 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
     _ = 𝟙_ C ◁ (λ_ X).hom := by rw [triangle_assoc_comp_right]
 #align category_theory.braiding_right_unitor_aux₂ CategoryTheory.braiding_rightUnitor_aux₂
 
+@[reassoc]
 theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (λ_ X).hom := by
   rw [← whiskerLeft_iff, MonoidalCategory.whiskerLeft_comp, braiding_rightUnitor_aux₂]
 #align category_theory.braiding_right_unitor CategoryTheory.braiding_rightUnitor
 
-@[simp]
+@[reassoc, simp]
 theorem braiding_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).hom = (λ_ X).hom ≫ (ρ_ X).inv := by
   simp [← braiding_rightUnitor]
 
+@[reassoc]
 theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
   simp
 #align category_theory.left_unitor_inv_braiding CategoryTheory.leftUnitor_inv_braiding
 
+@[reassoc]
 theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom = (λ_ X).inv := by
   apply (cancel_mono (λ_ X).hom).1
   simp only [assoc, braiding_leftUnitor, Iso.inv_hom_id]
 #align category_theory.right_unitor_inv_braiding CategoryTheory.rightUnitor_inv_braiding
 
-@[simp]
+@[reassoc, simp]
 theorem braiding_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).hom = (ρ_ X).hom ≫ (λ_ X).inv := by
   simp [← rightUnitor_inv_braiding]
 
@@ -473,8 +477,6 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
   slice_lhs 5 6 => rw [associator_inv_naturality]
   simp only [assoc]
 #align category_theory.tensor_μ_natural CategoryTheory.tensor_μ_natural
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 @[reassoc]
 theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
