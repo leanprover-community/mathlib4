@@ -256,6 +256,11 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   | h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
   | h_add x y hx hy =>
     -- TODO: The `()` around `map_add` are a regression from leanprover/lean4#2478
+    rw [map_add, map_add]
+    erw [RingHom.map_add, RingHom.map_add]
+    dsimp
+    -- The line below used to be sufficient but we need to use `RingHom.map_add` to avoid a timeout
+    -- and it only unifies at `default` transparency #8386
     simp only [(map_add), Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
@@ -291,7 +296,9 @@ theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q 
   ext m₁ m₂ : 4
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
-  rw [evenToNeg_ι, map_neg, evenToNeg_ι, neg_neg]
+  rw [evenToNeg_ι]
+  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
+  erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
 #align clifford_algebra.even_to_neg_comp_even_to_neg CliffordAlgebra.evenToNeg_comp_evenToNeg
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.
