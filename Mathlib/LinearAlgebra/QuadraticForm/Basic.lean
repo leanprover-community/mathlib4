@@ -586,9 +586,9 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     simp only [smul_eq_mul, RingHom.id_apply, Pi.mul_apply, LinearMap.map_smulₛₗ]
     ring
   exists_companion' :=
-    ⟨LinearMap.linMulLin f g + LinearMap.linMulLin g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply,
-        LinearMap.mk₂_apply]
+    ⟨(LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f, fun x y => by
+      simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply',
+        LinearMap.add_apply]
       ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
@@ -932,10 +932,10 @@ theorem coe_associatedHom :
 @[simp]
 theorem associated_linMulLin (f g : M →ₗ[R] R) :
     associated (R := R) (linMulLin f g) =
-      ⅟ (2 : R) • (LinearMap.linMulLin f g + LinearMap.linMulLin g f) := by
+      ⅟ (2 : R) • ((LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f) := by
   ext
-  simp only [associated_apply, linMulLin_apply, map_add, LinearMap.linMulLin, smul_add,
-    LinearMap.add_apply, LinearMap.smul_apply, LinearMap.mk₂_apply, smul_eq_mul]
+  simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
+    LinearMap.smul_apply, LinearMap.compl₁₂_apply, LinearMap.mul_apply', smul_eq_mul]
   ring_nf
 #align quadratic_form.associated_lin_mul_lin QuadraticForm.associated_linMulLin
 
