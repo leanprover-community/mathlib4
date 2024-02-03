@@ -150,14 +150,14 @@ theorem bind_const (p : PMF α) (q : PMF β) : (p.bind fun _ => q) = q :=
 @[simp]
 theorem bind_bind : (p.bind f).bind g = p.bind fun a => (f a).bind g :=
   PMF.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
+    simpa only [ENNReal.coe_inj.symm, bind_apply, ENNReal.tsum_mul_left.symm,
       ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
 #align pmf.bind_bind PMF.bind_bind
 
 theorem bind_comm (p : PMF α) (q : PMF β) (f : α → β → PMF γ) :
     (p.bind fun a => q.bind (f a)) = q.bind fun b => p.bind fun a => f a b :=
   PMF.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
+    simpa only [ENNReal.coe_inj.symm, bind_apply, ENNReal.tsum_mul_left.symm,
       ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
 #align pmf.bind_comm PMF.bind_comm
 
@@ -295,7 +295,7 @@ theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, �
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
       q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb := by
   apply PMF.ext; rintro c
-  simp only [ENNReal.coe_eq_coe.symm, bindOnSupport_apply, ← tsum_dite_right,
+  simp only [ENNReal.coe_inj.symm, bindOnSupport_apply, ← tsum_dite_right,
     ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
   refine' _root_.trans ENNReal.tsum_comm (tsum_congr fun b => tsum_congr fun a => _)
   split_ifs with h1 h2 h2 <;> ring

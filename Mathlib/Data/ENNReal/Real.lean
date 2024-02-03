@@ -277,11 +277,11 @@ lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
 
 @[simp]
 lemma ofReal_eq_nat_cast {r : ℝ} {n : ℕ} (h : n ≠ 0) : ENNReal.ofReal r = n ↔ r = n :=
-  ENNReal.coe_eq_coe.trans <| Real.toNNReal_eq_nat_cast h
+  ENNReal.coe_inj.trans <| Real.toNNReal_eq_nat_cast h
 
 @[simp]
 lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
-  ENNReal.coe_eq_coe.trans Real.toNNReal_eq_one
+  ENNReal.coe_inj.trans Real.toNNReal_eq_one
 
 @[simp]
 lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :

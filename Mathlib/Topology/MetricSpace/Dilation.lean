@@ -179,7 +179,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 @[simp]
 theorem nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β]
     (f : F) (x y : α) : nndist (f x) (f y) = ratio f * nndist x y := by
-  simp only [← ENNReal.coe_eq_coe, ← edist_nndist, ENNReal.coe_mul, edist_eq]
+  simp only [← ENNReal.coe_inj, ← edist_nndist, ENNReal.coe_mul, edist_eq]
 #align dilation.nndist_eq Dilation.nndist_eq
 
 @[simp]
@@ -192,7 +192,7 @@ theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 `dist` and `nndist` versions below -/
 theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : edist x y ≠ 0)
     (htop : edist x y ≠ ⊤) (hr : edist (f x) (f y) = r * edist x y) : r = ratio f := by
-  simpa only [hr, ENNReal.mul_eq_mul_right h₀ htop, ENNReal.coe_eq_coe] using edist_eq f x y
+  simpa only [hr, ENNReal.mul_eq_mul_right h₀ htop, ENNReal.coe_inj] using edist_eq f x y
 #align dilation.ratio_unique Dilation.ratio_unique
 
 /-- The `ratio` is equal to the distance ratio for any two points
@@ -350,7 +350,7 @@ theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
   have hgf := (edist_eq (g.comp f) x y).symm
   simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_eq_mul_right hα.1 hα.2]
     at hgf
-  rwa [← ENNReal.coe_eq_coe, ENNReal.coe_mul]
+  rwa [← ENNReal.coe_inj, ENNReal.coe_mul]
 #align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]

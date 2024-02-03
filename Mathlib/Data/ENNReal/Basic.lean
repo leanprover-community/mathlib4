@@ -179,7 +179,9 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
 
-@[simp] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+@[simp, norm_cast] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+#align ennreal.coe_eq_coe ENNReal.coe_inj
+
 lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
@@ -371,9 +373,6 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 #align ennreal.top_ne_one ENNReal.top_ne_one
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
-
-@[simp, norm_cast] theorem coe_eq_coe : (↑r : ℝ≥0∞) = ↑q ↔ r = q := WithTop.coe_eq_coe
-#align ennreal.coe_eq_coe ENNReal.coe_eq_coe
 
 @[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 #align ennreal.coe_le_coe ENNReal.coe_le_coe
