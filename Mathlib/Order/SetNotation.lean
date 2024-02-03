@@ -81,7 +81,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 /-- Delaborator for indexed supremum. -/
 @[delab app.iSup]
 def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
-  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
   let dep := f.bindingBody!.hasLooseBVar 0
@@ -109,7 +109,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
 /-- Delaborator for indexed infimum. -/
 @[delab app.iInf]
 def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
-  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
   let dep := f.bindingBody!.hasLooseBVar 0
