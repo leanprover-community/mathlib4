@@ -1,5 +1,19 @@
+/-
+Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
 import Mathlib.MeasureTheory.Function.LpSeminorm
 import Mathlib.MeasureTheory.Integral.MeanInequalities
+
+#align_import measure_theory.function.lp_seminorm from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
+
+/-!
+# Triangle inequality for `Lp`-seminorm
+
+In this file we prove several versions of the triangle inequality for the `Lp` seminorm,
+as well as simple corollaries.
+-/
 
 open Filter
 open scoped ENNReal Topology BigOperators
