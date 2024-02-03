@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.normed_space.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
