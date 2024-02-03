@@ -369,9 +369,6 @@ protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-lemma mk_le_mk {hx : 0 ≤ x} {hy : 0 ≤ y} : (⟨x, hx⟩ : ℝ≥0) ≤ ⟨y, hy⟩ ↔ x ≤ y := Iff.rfl
-lemma mk_lt_mk {x y : ℝ} {hx : 0 ≤ x} {hy : 0 ≤ y} : (⟨x, hx⟩ : ℝ≥0) < ⟨y, hy⟩ ↔ x < y := Iff.rfl
-
 @[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 #align nnreal.coe_le_coe NNReal.coe_le_coe
 
