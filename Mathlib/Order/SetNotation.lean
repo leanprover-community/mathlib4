@@ -1,9 +1,19 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Patrick Massot
+-/
 import Mathlib.Data.Set.Defs
 import Mathlib.Mathport.Notation
 
+/-!
+# Notation classes for set supremum and infimum
+-/
+
 open Set
 
-variable {α : Type*} {ι : Sort*}
+universe u v
+variable {α : Type u} {ι : Sort v}
 
 /-- Class for the `sSup` operator -/
 class SupSet (α : Type*) where
