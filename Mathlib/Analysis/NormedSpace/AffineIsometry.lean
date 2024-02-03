@@ -6,9 +6,9 @@ Authors: Heather Macbeth
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.normed_space.affine_isometry from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

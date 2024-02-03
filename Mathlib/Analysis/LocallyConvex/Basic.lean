@@ -5,8 +5,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Topology.Bornology.Absorbs
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.locally_convex.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

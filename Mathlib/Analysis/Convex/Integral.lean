@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.convex.integral from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

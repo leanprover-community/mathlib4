@@ -5,6 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.calculus.parametric_integral from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 

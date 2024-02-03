@@ -10,6 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.calculus.bump_function_findim from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

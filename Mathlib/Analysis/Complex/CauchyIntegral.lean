@@ -12,6 +12,7 @@ import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.complex.cauchy_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

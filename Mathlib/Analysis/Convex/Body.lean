@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.convex.body from "leanprover-community/mathlib"@"858a10cf68fd6c06872950fc58c4dcc68d465591"
 

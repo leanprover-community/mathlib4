@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Normed.Field.UnitBall
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.normed_space.ball_action from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
 
