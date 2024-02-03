@@ -332,14 +332,14 @@ open Finset
     exact ⟨a', ha', b', hb', UniqueMul.of_mulHom_image f hf h⟩
 
 @[to_additive]
-theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
+theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
     UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·)) uG
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`UniqueSums` is preserved under additive equivalences."]
 theorem mulHom_image_iff (f : G ≃* H) :
     UniqueProds G ↔ UniqueProds H :=
-  ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
+  ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
 open Finset MulOpposite in
 @[to_additive]
@@ -468,21 +468,21 @@ open UniqueMul in
 open ULift in
 @[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
-  · exact mulHom_image_of_injective (downMulHom H) down_injective ‹_›
-  · refine mulHom_image_of_injective (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
+  · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
+  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
       (instUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
-  · exact mulHom_image_of_injective (downMulHom G) down_injective ‹_›
+  · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 end UniqueProds
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
     UniqueSums (Π₀ i, G i) :=
-  UniqueSums.addHom_image_of_injective
+  UniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
-  UniqueSums.addHom_image_of_injective
+  UniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 namespace TwoUniqueProds
@@ -510,14 +510,14 @@ open Finset
     apply mem_image_of_mem <;> assumption
 
 @[to_additive]
-theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f)
+theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
     (uG : TwoUniqueProds G) : TwoUniqueProds H :=
   of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·)) uG
 
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
 theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
-  ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
+  ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
     TwoUniqueProds (∀ i, G i) where
@@ -551,11 +551,11 @@ theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H 
 open ULift in
 @[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
-  · exact mulHom_image_of_injective (downMulHom H) down_injective ‹_›
-  · refine mulHom_image_of_injective (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
+  · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
+  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
       (instTwoUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
-  · exact mulHom_image_of_injective (downMulHom G) down_injective ‹_›
+  · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 open MulOpposite in
 @[to_additive]
@@ -627,18 +627,18 @@ end TwoUniqueProds
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
-  TwoUniqueSums.addHom_image_of_injective
+  TwoUniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
-  TwoUniqueSums.addHom_image_of_injective
+  TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 /-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has
   `TwoUniqueSums` because it's ordered. -/
 instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
-  TwoUniqueSums.addHom_image_of_injective _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
+  TwoUniqueSums.of_injective_addHom _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
