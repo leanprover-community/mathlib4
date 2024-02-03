@@ -328,107 +328,6 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶
 
 namespace SimplexImage
 variable {X : SimplexCategoryᵒᵖ } {n: ℕ }{i : Fin (n+3)} ( α : Λ[n+2,i].obj X)
-/--Returns the smallest `m∈ℕ` such that `l≤m` and such that `(δ i).toOrderHom m` (when defined) is
-  not in the image of `α.1.down.toOrderHom`.-/
-def  firstEdgeNIImageGe (l : ℕ )  :  ℕ  :=
-        if l > n+1 then  (n+2)
-        else if ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l
-         then l
-         else firstEdgeNIImageGe (l+1)
-termination_by _ l => (n+2) - l
-decreasing_by
-    simp_wf
-    rename  ¬l > n + 1 =>  h1
-    push_neg at h1
-    rw [Nat.succ_sub h1]
-    exact Nat.lt.base (n + 1 - l)
-
-namespace firstEdgeNIImageGe
-lemma upper_bound (l : ℕ ) : firstEdgeNIImageGe α l < n+3 := by
-    unfold firstEdgeNIImageGe
-    simp_all only [gt_iff_lt, len_mk, ne_eq]
-    split
-    · exact Nat.lt.base (n + 2)
-    · simp_all only [not_lt, yoneda_obj_obj, len_mk]
-      split
-      · rename_i h1 h2
-        linarith
-      · apply upper_bound
-termination_by _ l => (n+2) - l
-decreasing_by
-    simp_wf
-    rename  ¬n+1<l =>  h1
-    push_neg at h1
-    rw [Nat.succ_sub h1]
-    exact Nat.lt.base (n + 1 - l)
-lemma lower_bound (l: ℕ)  (hl:  l<n+2): l< firstEdgeNIImageGe α (l+1):= by
-    unfold firstEdgeNIImageGe
-    split
-    · exact hl
-    · split
-      · exact Nat.lt.base l
-      · rename_i h1 h2
-        by_cases hn : (l+1) < n+2
-        · let ht:= lower_bound (l+1) hn
-          exact Nat.lt_of_succ_lt ht
-        · linarith
-termination_by _  => (n+2) - l
-decreasing_by
-    simp_wf
-    apply tsub_lt_tsub_right_of_le (Nat.lt_succ.mp hl) (Nat.lt.base (n + 1))
-lemma eq_self_cond (l: ℕ)  (hl:  l<n+2) (heq: firstEdgeNIImageGe α l=l) :
-    ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l:=by
-      unfold firstEdgeNIImageGe at heq
-      have h1 : ¬ (l >n+1) := by linarith
-      simp only [gt_iff_lt, h1, len_mk, yoneda_obj_obj, ne_eq, ite_false, ite_eq_left_iff,
-        not_forall, not_not, forall_exists_index] at heq
-      have h2 := Nat.ne_of_gt (lower_bound α l hl)
-      intro k
-      simp_all only [gt_iff_lt, not_lt, len_mk, imp_false, ne_eq, not_false_eq_true]
-
-lemma neq_self_cond (l: ℕ)  (hl:  l<n+2) (heq: firstEdgeNIImageGe α l≠ l) :
-    ¬ ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l:=by
-      unfold firstEdgeNIImageGe at heq
-      simp only [gt_iff_lt, show ¬ (l >n+1) by linarith, len_mk, yoneda_obj_obj, ne_eq, ite_false,
-       ite_eq_left_iff,not_forall, not_not, forall_exists_index, exists_prop, exists_and_right]
-         at heq
-      tauto
-
-lemma lt_cond (l:ℕ)  (hl: l< (firstEdgeNIImageGe α 0)) :
-    (¬ ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l) ∧
-    (firstEdgeNIImageGe α 0= firstEdgeNIImageGe α l):=by
-     induction' l with k hk
-     · have h1 : 0 < n+2 := by
-          exact Nat.succ_pos (n+1)
-       have h2 : firstEdgeNIImageGe α 0≠ 0:= by
-          exact Nat.pos_iff_ne_zero.mp hl
-       apply And.intro
-       exact neq_self_cond α Nat.zero h1 h2
-       rfl
-     · have hkl : k < firstEdgeNIImageGe α 0:= by
-          exact Nat.lt_of_succ_lt hl
-       have k_lt_np1 :¬ (k> n+1)  := by
-             let hr:= upper_bound α 0
-             simp only [gt_iff_lt, not_lt, ge_iff_le]
-             linarith
-       apply hk at hkl
-       rw [hkl.right] at hl
-       apply And.intro
-       · unfold firstEdgeNIImageGe at hl
-         simp only [gt_iff_lt, k_lt_np1, len_mk, yoneda_obj_obj, ne_eq, ite_false] at hl
-         split at hl
-         · tauto
-         · have ht: firstEdgeNIImageGe α (Nat.succ k) ≠ Nat.succ k  :=  Nat.ne_of_gt hl
-           apply neq_self_cond
-           · let hr:= upper_bound α (k+1)
-             linarith
-           · exact ht
-       · rw [hkl.right]
-         rw [show (firstEdgeNIImageGe α k=(if k > n + 1 then n + 2 else if ∀ l,
-          α.1.down.toOrderHom l ≠ (δ i).toOrderHom k
-          then k else firstEdgeNIImageGe α (k+1) )) by rw [firstEdgeNIImageGe]]
-         simp only [gt_iff_lt, k_lt_np1, len_mk, yoneda_obj_obj, ne_eq, ite_false, ite_eq_right_iff]
-         exact fun a => (hkl.left a).elim
 
 lemma preimage_δ_exe (x : Fin (n+3)) (hx : x ≠ i) : (Hom.toOrderHom (δ i))
     ((Fin.predAbove (Fin.predAbove 0 i)) x)=x := by
@@ -458,66 +357,44 @@ lemma preimage_δ_exe (x : Fin (n+3)) (hx : x ≠ i) : (Hom.toOrderHom (δ i))
             rw [ h2,← hi] at hx
             exact (hx rfl).elim
 
-lemma zero_ne : firstEdgeNIImageGe α 0 ≠ n+2 := by
-    by_contra h
-    have h1: ∀ (l : Fin (n+2)) , (¬ ∀ k , α.1.down.toOrderHom k ≠ (δ i).toOrderHom l) := by
-        intro l
-        rw [← (show Nat.cast l.val  = l from Fin.cast_val_eq_self l )]
-        have htt : l.val < firstEdgeNIImageGe α 0 := by simp_all only [len_mk, Fin.is_lt]
-        exact (lt_cond α  l htt).left
-    have hα:= α.prop∘Set.eq_univ_iff_forall.mpr
-    simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
-            not_forall, not_or, not_exists] at hα
-    obtain ⟨x, hx⟩ := hα
-    rw [← (preimage_δ_exe x hx.left)] at hx
-    let hxr:= hx.right
-    exact h1 (Fin.predAbove (Fin.predAbove 0 i) x) hxr
-
-lemma zero_upper_bound  : firstEdgeNIImageGe α 0 < n+2 :=
-    Nat.lt_of_le_of_ne (Nat.lt_succ.mp (  upper_bound α 0) ) (zero_ne α)
-
-
-end firstEdgeNIImageGe
-
 
 /--Returns the smallest `m∈ℕ` such that `(δ i).toOrderHom m` is
   not in the image of `α.1.down.toOrderHom`.-/
-def firstEdgeNIImage : Fin (n+2) := ⟨firstEdgeNIImageGe α 0,  firstEdgeNIImageGe.zero_upper_bound α⟩
+def filtered_set_cond : Fin (n+2) →  Prop := fun l =>
+ ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom l
+
+lemma exists_some_staifying :  ∃ x, filtered_set_cond α x := by
+  by_contra h
+  rw [not_exists] at h
+  have hα:= α.prop∘Set.eq_univ_iff_forall.mpr
+  simp only [ne_eq, Set.union_singleton, Set.mem_insert_iff, Set.mem_range, imp_false,
+          not_forall, not_or, not_exists] at hα
+  obtain ⟨x, hx⟩ := hα
+  rw [← (preimage_δ_exe x hx.left)] at hx
+  exact h (Fin.predAbove (Fin.predAbove 0 i) x) hx.right
+
+noncomputable instance : DecidablePred (filtered_set_cond α) := by
+  exact Classical.decPred (filtered_set_cond α)
+
+noncomputable def filtered_set : Finset (Fin (n+2)) := univ.filter (filtered_set_cond α)
+
+lemma filtered_setNonEmpty :  (filtered_set α).Nonempty := by
+  unfold filtered_set
+  obtain ⟨x, hx⟩ := exists_some_staifying α
+  use x
+  simp only [mem_filter,mem_univ, true_and]
+  exact hx
+
+noncomputable def firstEdgeNIImage : Fin (n+2) := min' (filtered_set α) (filtered_setNonEmpty α)
+
+
 
 namespace  firstEdgeNIImage
-open firstEdgeNIImageGe
-lemma eq_cond (l:ℕ)  (hl: l= (firstEdgeNIImage α).val) :
-    (firstEdgeNIImageGe α 0= firstEdgeNIImageGe α l):=by
-    by_cases hl2: l=0
-    · rw [hl2]
-    · let lm1:= Nat.pred l
-      have hl1: lm1< l:= Nat.pred_lt hl2
-      rw [hl] at hl1
-      rw [(lt_cond α lm1 hl1).right]
-      rw [show (firstEdgeNIImageGe α lm1=if lm1 > n + 1 then n + 2  else if ∀ l,
-      α.1.down.toOrderHom l ≠
-        (δ i).toOrderHom lm1 then lm1 else firstEdgeNIImageGe α (lm1+1)) by rw [firstEdgeNIImageGe]]
-      have hlm1N: ¬ (lm1>  n+1):=
-        Nat.not_lt.mpr (Nat.lt_succ.mp (Nat.lt_trans hl1 (zero_upper_bound α)))
-      simp only [gt_iff_lt, hlm1N, len_mk, ne_eq, ite_false]
-      rw [if_neg]
-      · rw [show Nat.pred l+1 =l from Nat.succ_pred hl2  ]
-      · exact (lt_cond α lm1 hl1).left
-lemma ge_cond (j: Fin (n+2)) : ( ∀ k, α.1.down.toOrderHom k ≠
-    (δ i).toOrderHom j )→ ((firstEdgeNIImage α)≤ j):= by
-      intro h
-      by_contra hn
-      rw [not_le] at hn
-      let hn2:=(lt_cond α j.val hn).left
-      rw [show Nat.cast j.val  = j from Fin.cast_val_eq_self j] at hn2
-      exact hn2 h
-
-lemma self_cond: ∀ k, α.1.down.toOrderHom k ≠
-    (δ i).toOrderHom (firstEdgeNIImage α):=by
-      rw [← (show Nat.cast (firstEdgeNIImageGe α 0)  = (firstEdgeNIImage α)  from
-      Fin.cast_val_eq_self (firstEdgeNIImage α))]
-      exact eq_self_cond α (firstEdgeNIImageGe α 0) (zero_upper_bound α)
-             (eq_cond α (firstEdgeNIImageGe α 0) rfl).symm
+lemma self_cond: ∀ k, α.1.down.toOrderHom k ≠ (δ i).toOrderHom (firstEdgeNIImage α) := by
+   have  ht:= min'_mem (filtered_set α) (filtered_setNonEmpty α)
+   unfold filtered_set at ht
+   rw [mem_filter] at ht
+   exact ht.right
 
 lemma le_cond (j: Fin (n+2)) : (∀ l < j, ¬  ∀  k, α.1.down.toOrderHom k ≠
     (δ i).toOrderHom l ) → (j≤(firstEdgeNIImage α)):= by
@@ -527,39 +404,31 @@ lemma le_cond (j: Fin (n+2)) : (∀ l < j, ¬  ∀  k, α.1.down.toOrderHom k �
       apply h at ht
       exact ht (self_cond α)
 
-
-
-
+lemma ge_cond (j: Fin (n+2)) : ( ∀ k, α.1.down.toOrderHom k ≠
+    (δ i).toOrderHom j )→ ((firstEdgeNIImage α)≤ j):= by
+      intro h
+      refine min'_le (filtered_set α) j ?_
+      rw [filtered_set,mem_filter,filtered_set_cond]
+      simp only [mem_univ, len_mk, yoneda_obj_obj, ne_eq, true_and]
+      exact fun k ↦ h k
 
 lemma of_face (j : Fin (n+3)) (h: j ≠ i) : firstEdgeNIImage (face.{u} i j h)  =
     (Fin.predAbove (Fin.predAbove 0 i)) j := by
-    clear α
-    have hin : ∀ l ,( l ≠ j)→  ¬ ∀  k, (face.{u} i j h).1.down.toOrderHom k ≠ l := by
-        intro l hl
-        rw [not_forall]
-        simp only [ne_eq, not_not]
-        exact Fin.exists_succAbove_eq hl
-    have hin2: ∀ l < Fin.predAbove (Fin.predAbove 0 i) j, ¬∀ k,
-      ((face.{u} i j h)).1.down.toOrderHom k ≠  (δ i).toOrderHom l:= by
-      intro l hl
-      have ht: (δ i).toOrderHom l< j := by
-          rw  [← (preimage_δ_exe j h)]
-          exact Fin.strictMono_succAbove i hl
-      have ht2:  (δ i).toOrderHom l≠  j :=  Fin.ne_of_lt ht
-      exact hin ((Hom.toOrderHom (δ i)) l) ht2
-    have heq : ∀  k, (face.{u} i j h).1.down.toOrderHom k ≠ j := by
-       by_contra h
-       rw [not_forall] at h
-       simp only [ne_eq, not_not] at h
-       apply Fin.exists_succAbove_eq_iff.mp at h
-       exact h rfl
-    nth_rewrite 2 [← (preimage_δ_exe j h)] at heq
-    have h1:= ge_cond (face i j h)  ((Fin.predAbove (Fin.predAbove 0 i)) j) heq
-    have h2:=le_cond (face i j h) ((Fin.predAbove (Fin.predAbove 0 i)) j) hin2
-    apply le_antisymm h1 h2
-
-
-
+    refine le_antisymm ?_ ?_
+    refine ge_cond (face i j h)  ((Fin.predAbove (Fin.predAbove 0 i)) j) ?_
+    by_contra h1
+    simp only [not_forall,ne_eq, not_not] at h1
+    apply Fin.exists_succAbove_eq_iff.mp at h1
+    exact h1 (preimage_δ_exe j h)
+    refine le_cond (face i j h) ((Fin.predAbove (Fin.predAbove 0 i)) j) ?_
+    intro l hl
+    refine (?_ :∀ l ,( l ≠ j)→  ¬ ∀  k, (face.{u} i j h).1.down.toOrderHom k ≠ l )
+     ((Hom.toOrderHom (δ i)) l) (Fin.ne_of_lt ?_)
+    intro l hl
+    simp only [not_forall,ne_eq, not_not]
+    exact Fin.exists_succAbove_eq hl
+    rw  [← (preimage_δ_exe j h)]
+    exact Fin.strictMono_succAbove i hl
 
 variable {Y : SimplexCategoryᵒᵖ } (φ':X⟶ Y)
 lemma congr_cond : ∀ k, (φ'.unop ≫ α.1.down).toOrderHom k ≠ (δ i).toOrderHom
@@ -593,36 +462,33 @@ lemma naturality_lt {S : SSet} {n  : ℕ } {i : Fin (n+3)} {X Y :SimplexCategory
       exclude_i1 exclude_i2),op_comp,S.map_comp,op_comp,S.map_comp,types_comp_apply,
       types_comp_apply,hface,← (factor_δ_comp_lt _ _ _ i1_lt_i2)]
 
+open SimplexImage in
 /-- The horn `Λ[n+2,i]⟶ S` constructed from the image of the appropriate to (n+1)-simplies and
 the appropriate compatiblity conditions on their faces. -/
-def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1])
+noncomputable def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1])
     (hface : (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (face_map i1)
     =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (face_map i2) ):
     Λ[n+2,i]⟶ S where
   app X α := by
     let α' :([(unop X).len]: SimplexCategory)⟶  [n+2]:= α.1.down
-    let id:= SimplexImage.firstEdgeNIImage α
-    exact S.map (factor_δ α' ((δ i).toOrderHom  id)).op (face_map id)
+    let id:= firstEdgeNIImage α
+    exact S.map (factor_δ α' ((δ i).toOrderHom  (id))).op (face_map (id))
   naturality X Y φ' := by
      funext α
      let φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop] := φ'.unop
-     simp only [mk_len, op_unop, len_mk, types_comp_apply]
-     let i1 := SimplexImage.firstEdgeNIImage (Λ[n+2, i].map φ' α)
-     let i2 := SimplexImage.firstEdgeNIImage α
-     let i1_le_i2 : i1≤i2 := SimplexImage.firstEdgeNIImage.congr_le α φ'
-     have h : i1<i2 ∨ i1=i2 := lt_or_eq_of_le i1_le_i2
-     change S.map (factor_δ _ ((δ i).toOrderHom i1)).op (face_map i1)
-        = S.map φ.op (S.map (factor_δ _ (((δ i).toOrderHom i2))).op (face_map i2))
-     cases h with
+     change S.map (factor_δ _ ((δ i).toOrderHom _)).op (face_map _)
+        = S.map φ.op (S.map (factor_δ _ (((δ i).toOrderHom _))).op (face_map _))
+     cases lt_or_eq_of_le (firstEdgeNIImage.congr_le α φ') with
      | inl h =>
-                apply naturality_lt
-                · exact  Fin.strictMono_succAbove i h
-                · exact SimplexImage.firstEdgeNIImage.self_cond (Λ[n+2, i].map φ' α)
-                · exact SimplexImage.firstEdgeNIImage.congr_cond α φ'
-                · exact hface i1 i2 h
-     | inr h => rw [← h,← (types_comp_apply (S.map _) (S.map _)),← S.map_comp, ← op_comp]
+          apply naturality_lt
+          · exact  Fin.strictMono_succAbove i h
+          · exact firstEdgeNIImage.self_cond (Λ[n+2, i].map _ α)
+          · exact firstEdgeNIImage.congr_cond α _
+          · exact hface (firstEdgeNIImage (Λ[n+2, i].map φ' α))  (firstEdgeNIImage α) h
+     | inr h => rw [← h,← types_comp_apply (S.map _) (S.map _),← S.map_comp, ← op_comp]
                 rfl
+
 section homMk
 variable {S : SSet}  {n:ℕ} (i: Fin (n+3)) (face_map : Fin (n+2) →  S _[n+1])
 variable (hface : (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
@@ -635,76 +501,67 @@ lemma homMk_face (j: Fin (n+3)) (hij : j≠ i):
      change S.map (factor_δ (face.{u} i j hij).1.down
       ((δ i).toOrderHom  (SimplexImage.firstEdgeNIImage (face.{u} i j hij)) )).op
        (face_map (SimplexImage.firstEdgeNIImage (face.{u} i j hij)) )=_
-     rw [SimplexImage.firstEdgeNIImage.of_face.{u}]
-     rw [SimplexImage.firstEdgeNIImageGe.preimage_δ_exe j hij]
      have hfac : factor_δ ((face.{u} i j hij)).1.down j = 𝟙 ([n+1]:SimplexCategory):= by
         change (δ j≫ σ (Fin.predAbove 0 j)) =_
         by_cases hj: j=0
         · rw [hj]
-          change (δ 0 ≫ σ 0)=_
           exact δ_comp_σ_self' rfl
         · rw [Fin.predAbove_zero hj]
-          have ht: j=Fin.succ (Fin.pred j hj):=(Fin.pred_eq_iff_eq_succ j hj (Fin.pred j hj)).mp rfl
-          exact δ_comp_σ_succ' j (Fin.pred j hj) ht
-     rw [hfac]
-     rw [op_id, S.map_id]
+          exact δ_comp_σ_succ' j (Fin.pred j hj)
+            ((Fin.pred_eq_iff_eq_succ j hj (Fin.pred j hj)).mp rfl)
+     rw [SimplexImage.firstEdgeNIImage.of_face.{u},SimplexImage.preimage_δ_exe j hij,hfac,op_id,
+      S.map_id]
      rfl
+
+def hornFaceMap {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,i]⟶ S)  (k : Fin (n+2)): S _[n+1]:=
+  f.app (op [n+1]) (face i  ((δ i).toOrderHom k) (Fin.exists_succAbove_eq_iff.mp
+     (Exists.intro k rfl) ))
+
+lemma hornFaceMap_cond {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,i]⟶ S) (i1 : Fin (n+2))
+    (i2 : Fin (n+2)) (h: i1< i2) :
+   S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (hornFaceMap f i1)
+        =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (hornFaceMap f i2):=by
+      dsimp
+      unfold hornFaceMap
+      rw [← (types_comp_apply (f.app _) (S.map _)),← (types_comp_apply (f.app _) (S.map _))]
+      rw [← f.naturality,← f.naturality,types_comp_apply,types_comp_apply]
+      apply congrArg
+      apply Subtype.ext
+      apply congrArg (⇑(standardSimplex.objEquiv [n + 2] (op [n])).symm)
+      let i2o:= Fin.succAbove i i2
+      let i1o:=Fin.succAbove i i1
+      change δ (Fin.predAbove 0 i2o)≫ δ i1o=δ (Fin.predAbove (Fin.last (n + 1)) i1o)≫ δ i2o
+      have hi2o : i1o<i2o:= Fin.strictMono_succAbove i  h
+      have hi2: i2o≠ 0 := by
+          contrapose! hi2o
+          simp_all only [Fin.le_zero_iff, Fin.zero_le]
+      have hi1: i1o≠ Fin.last (n+1+1) := by
+            simp_all only [ne_eq]
+            apply Not.intro
+            intro a
+            rw [a] at hi2o
+            exact (Fin.not_le.mpr hi2o) (Fin.le_last i2o)
+      rw [Fin.predAbove_zero hi2,Fin.predAbove_last_of_ne_last hi1]
+      rw [congrArg δ ((Fin.pred_eq_iff_eq_succ i2o hi2 (Fin.pred i2o hi2)).mp rfl),
+      congrArg δ (by rfl : i1o=(Fin.castPred i1o hi1).castSucc),δ_comp_δ]
+      exact (Fin.le_pred_iff hi2).mpr hi2o
 
 lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) :
     ∃ (fm: Fin (n+2) →  S _[n+1] ) (hf: (i1 : Fin (n+2))→ (i2 : Fin (n+2)) → (i1< i2) →
     S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (fm i1)
     =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (fm i2) ),
     (homMk i fm hf) = f := by
-      have hk (k: Fin (n+2)) : ((δ i).toOrderHom k) ≠ i := by
-        by_contra hkc
-        exact Fin.exists_succAbove_eq_iff.mp (Exists.intro k hkc) rfl
-      let fma (k : Fin (n+2)) : S _[n+1] := f.app (op [n+1]) (face i  ((δ i).toOrderHom k) (hk k))
-      use fma
-      have ht  (i1 : Fin (n+2)) (i2 : Fin (n+2)) (h: i1< i2) :
-       S.map (δ (Fin.predAbove 0 ((δ i).toOrderHom i2))).op (fma i1)
-        =S.map (δ (Fin.predAbove (Fin.last (n+1)) ((δ i).toOrderHom i1))).op (fma i2) := by
-            dsimp
-            rw [← (types_comp_apply (f.app _) (S.map _))]
-            rw [← (types_comp_apply (f.app _) (S.map _))]
-            rw [← f.naturality,← f.naturality,types_comp_apply,types_comp_apply]
-            apply congrArg
-            apply Subtype.ext
-            unfold horn
-            simp only [unop_op, len_mk, ne_eq, face_coe]
-            rw [standardSimplex.map_apply,standardSimplex.map_apply]
-            apply congrArg (⇑(standardSimplex.objEquiv [n + 2] (op [n])).symm)
-            let i2o:= Fin.succAbove i i2
-            let i1o:=Fin.succAbove i i1
-            change δ (Fin.predAbove 0 i2o)≫ δ i1o=δ (Fin.predAbove (Fin.last (n + 1)) i1o)≫ δ i2o
-            have hi2o : i1o<i2o:= Fin.strictMono_succAbove i  h
-            have hi2: i2o≠ 0 := by
-                contrapose! hi2o
-                simp_all only [Fin.le_zero_iff, Fin.zero_le]
-            have hi1: i1o≠ Fin.last (n+1+1) := by
-                  simp_all only [ne_eq]
-                  apply Not.intro
-                  intro a
-                  rw [a] at hi2o
-                  exact (Fin.not_le.mpr hi2o) (Fin.le_last i2o)
-            rw [Fin.predAbove_zero hi2,Fin.predAbove_last_of_ne_last hi1]
-            let i2oo:= (Fin.pred i2o hi2)
-            have hi2succ: i2o=i2oo.succ:= by
-                rw [Fin.eq_iff_veq]
-                simp only [Fin.succ_pred]
-            let i1oo := (Fin.castPred i1o hi1)
-            have hi1succ: i1o=i1oo.castSucc:= by
-                rw [Fin.eq_iff_veq]
-                simp only [Fin.castSucc_castPred]
-            rw [congrArg δ hi1succ,congrArg δ hi2succ,δ_comp_δ]
-            exact (Fin.le_pred_iff hi2).mpr hi2o
-      use ht
+      use hornFaceMap f
+      use hornFaceMap_cond f
       apply horn.hom_ext
+      unfold hornFaceMap
       intro j hij
       rw [homMk_face]
       dsimp
       apply congrArg
       congr 1
-      exact SimplexImage.firstEdgeNIImageGe.preimage_δ_exe j hij
+      exact SimplexImage.preimage_δ_exe j hij
+
 
 lemma homMk_lift_face (j : Fin (n+2)) (lift : Δ[n+2]⟶ S)
     (hlift: (homMk i face_map hface)  = hornInclusion (n+2) i ≫ lift):
@@ -715,32 +572,19 @@ lemma homMk_lift_face (j : Fin (n+2)) (lift : Δ[n+2]⟶ S)
        have hij: ((δ i).toOrderHom j) ≠ i := by
           by_contra hkc
           exact Fin.exists_succAbove_eq_iff.mp (Exists.intro j hkc) rfl
-       have hj: j= ((Fin.predAbove (Fin.predAbove 0 i))
-        ((δ i).toOrderHom j)):= by
-          have hj2: (Hom.toOrderHom (δ i)) j = (Hom.toOrderHom (δ i))
-             (((Fin.predAbove (Fin.predAbove 0 i)) ((δ i).toOrderHom j))):= by
-               exact
-                 (SimplexImage.firstEdgeNIImageGe.preimage_δ_exe ((Hom.toOrderHom (δ i)) j)
-                     hij).symm
-          exact Fin.succAbove_right_inj.mp hj2
-       rw [hj]
-       rw [← (homMk_face i face_map hface ((δ i).toOrderHom j) hij )]
-       rw [hlift,NatTrans.comp_app,types_comp_apply]
+       rw [(Fin.succAbove_right_inj i).mp ((SimplexImage.preimage_δ_exe
+        ((Hom.toOrderHom (δ i)) j) hij).symm),← (homMk_face i face_map hface ((δ i).toOrderHom j)
+        hij ),hlift,NatTrans.comp_app,types_comp_apply]
        apply congrArg
-       change _= (face i ((Hom.toOrderHom (δ i)) j) hij).val
-       unfold face
-       rw [standardSimplex.map_apply]
-       change _= (standardSimplex.objEquiv [n + 1 + 1] (op [n + 1])).symm
-           (δ ((Hom.toOrderHom (δ i)) j))
+       rw [face,standardSimplex.map_apply]
        congr
        change _≫ 𝟙 ([n + 2]: SimplexCategory)=_
        rw [Category.comp_id]
        change  (δ ((Hom.toOrderHom (δ i)) (Fin.predAbove (Fin.predAbove 0 i)
           ((Hom.toOrderHom (δ i)) j))))=_
        congr
-       exact id hj.symm
-
-
+       exact id ((Fin.succAbove_right_inj i).mp ((SimplexImage.preimage_δ_exe
+        ((Hom.toOrderHom (δ i)) j) hij).symm)).symm
 end homMk
 
 end horn
