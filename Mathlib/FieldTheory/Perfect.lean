@@ -263,23 +263,23 @@ theorem roots_expand_pow :
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
 
-theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
-  simp [roots_expand, Multiset.map_nsmul]
-
 theorem roots_expand_pow_map_iterateFrobenius :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) = p ^ n • f.roots := by
   simp_rw [← coe_iterateFrobeniusEquiv, roots_expand_pow, Multiset.map_nsmul,
     Multiset.map_map, comp_apply, RingEquiv.apply_symm_apply, map_id']
 
-theorem roots_expand_image_frobenius [DecidableEq R] :
-    (expand R p f).roots.toFinset.image (frobenius R p) = f.roots.toFinset := by
-  rw [Finset.image_toFinset, roots_expand_map_frobenius,
-      (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
+theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
+  simp [roots_expand, Multiset.map_nsmul]
 
 theorem roots_expand_image_iterateFrobenius [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) = f.roots.toFinset := by
   rw [Finset.image_toFinset, roots_expand_pow_map_iterateFrobenius,
     (roots f).toFinset_nsmul _ (expChar_pow_pos R p n).ne']
+
+theorem roots_expand_image_frobenius [DecidableEq R] :
+    (expand R p f).roots.toFinset.image (frobenius R p) = f.roots.toFinset := by
+  rw [Finset.image_toFinset, roots_expand_map_frobenius,
+      (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
 
 variable (p n f) [DecidableEq R]
 

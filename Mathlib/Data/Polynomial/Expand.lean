@@ -281,20 +281,18 @@ section rootMultiplicity
 
 variable {R : Type u} [CommRing R] {p n : ℕ} [ExpChar R p] {f : R[X]} {r : R}
 
-theorem rootMultiplicity_expand :
-    (expand R p f).rootMultiplicity r = p * f.rootMultiplicity (r ^ p) := by
-  obtain rfl | h0 := eq_or_ne f 0; · simp
-  obtain ⟨g, hg, ndvd⟩ := f.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h0 (r ^ p)
-  rw [dvd_iff_isRoot, ← eval_X (x := r), ← eval_pow, ← isRoot_comp, ← expand_eq_comp_X_pow] at ndvd
-  conv_lhs => rw [hg, map_mul, map_pow, map_sub, expand_X, expand_C, map_pow, ← sub_pow_expChar,
-    ← pow_mul, mul_comm, rootMultiplicity_mul_X_sub_C_pow ((expand_ne_zero <| expChar_pos R p).2 <|
-    right_ne_zero_of_mul <| hg ▸ h0), rootMultiplicity_eq_zero ndvd, zero_add]
-
 theorem rootMultiplicity_expand_pow :
     (expand R (p ^ n) f).rootMultiplicity r = p ^ n * f.rootMultiplicity (r ^ p ^ n) := by
-  induction' n with n ih generalizing f
-  · rw [pow_zero, expand_one, pow_one, one_mul]
-  · rw [pow_succ', expand_mul, ih, rootMultiplicity_expand, mul_assoc, pow_mul]
+  obtain rfl | h0 := eq_or_ne f 0; · simp
+  obtain ⟨g, hg, ndvd⟩ := f.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h0 (r ^ p ^ n)
+  rw [dvd_iff_isRoot, ← eval_X (x := r), ← eval_pow, ← isRoot_comp, ← expand_eq_comp_X_pow] at ndvd
+  conv_lhs => rw [hg, map_mul, map_pow, map_sub, expand_X, expand_C, map_pow, ← sub_pow_expChar_pow,
+    ← pow_mul, mul_comm, rootMultiplicity_mul_X_sub_C_pow (expand_ne_zero (expChar_pow_pos R p n)
+      |>.mpr <| right_ne_zero_of_mul <| hg ▸ h0), rootMultiplicity_eq_zero ndvd, zero_add]
+
+theorem rootMultiplicity_expand :
+    (expand R p f).rootMultiplicity r = p * f.rootMultiplicity (r ^ p) := by
+  rw [← pow_one p, rootMultiplicity_expand_pow]
 
 end rootMultiplicity
 
