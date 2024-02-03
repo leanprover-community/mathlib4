@@ -263,7 +263,7 @@ namespace Real
 theorem young_inequality_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hpq : p.IsConjugateExponent q) : a * b ≤ a ^ p / p + b ^ q / q := by
   simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, _root_.div_eq_inv_mul] using
-    geom_mean_le_arith_mean2_weighted hpq.one_div_nonneg hpq.symm.one_div_nonneg
+    geom_mean_le_arith_mean2_weighted hpq.inv_nonneg hpq.symm.inv_nonneg
       (rpow_nonneg ha p) (rpow_nonneg hb q) hpq.inv_add_inv_conj
 #align real.young_inequality_of_nonneg Real.young_inequality_of_nonneg
 
@@ -283,7 +283,7 @@ namespace NNReal
 
 /-- Young's inequality, `ℝ≥0` version. We use `{p q : ℝ≥0}` in order to avoid constructing
 witnesses of `0 ≤ p` and `0 ≤ q` for the denominators.  -/
-theorem young_inequality (a b : ℝ≥0) {p q : ℝ≥0} (hp : 1 < p) (hpq : 1 / p + 1 / q = 1) :
+theorem young_inequality (a b : ℝ≥0) {p q : ℝ≥0} (hp : 1 < p) (hpq : p⁻¹ + q⁻¹ = 1) :
     a * b ≤ a ^ (p : ℝ) / p + b ^ (q : ℝ) / q :=
   Real.young_inequality_of_nonneg a.coe_nonneg b.coe_nonneg ⟨hp, NNReal.coe_eq.2 hpq⟩
 #align nnreal.young_inequality NNReal.young_inequality
@@ -293,7 +293,7 @@ theorem young_inequality_real (a b : ℝ≥0) {p q : ℝ} (hpq : p.IsConjugateEx
     a * b ≤ a ^ p / Real.toNNReal p + b ^ q / Real.toNNReal q := by
   nth_rw 1 [← Real.coe_toNNReal p hpq.nonneg]
   nth_rw 1 [← Real.coe_toNNReal q hpq.symm.nonneg]
-  exact young_inequality a b hpq.one_lt_nnreal (by simpa using hpq.inv_add_inv_conj_nnreal)
+  exact young_inequality a b hpq.one_lt_nnreal hpq.inv_add_inv_conj_nnreal
 #align nnreal.young_inequality_real NNReal.young_inequality_real
 
 end NNReal
@@ -471,7 +471,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjugateExpon
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
         rpow_sub' _ A, _root_.add_sub_cancel, le_refl, true_and_iff, ← mul_div_assoc, B]
-      rw [div_eq_iff, ← rpow_add hf, hpq.inv_add_inv_conj, rpow_one]
+      rw [div_eq_iff, ← rpow_add hf, one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf
   · rintro _ ⟨g, hg, rfl⟩
     apply le_trans (inner_le_Lp_mul_Lq s f g hpq)
