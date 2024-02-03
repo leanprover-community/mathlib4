@@ -36,18 +36,9 @@ namespace Squarefree
 theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
     (hx : Squarefree x) (hp : Prime p) (h : p ^ (k + 1) ∣ x * y) :
     p ^ k ∣ y := by
-  nontriviality R
-  rcases eq_or_ne x 0 with rfl | hx₀
-  · have := not_squarefree_zero hx; contradiction
-  wlog hxu : ¬ IsUnit x
-  · rw [not_not] at hxu; rw [hxu.dvd_mul_left] at h; rw [pow_succ] at h; exact dvd_of_mul_left_dvd h
-  rw [squarefree_iff hx₀ hxu] at hx
   by_cases hxp : p ∣ x
   · obtain ⟨x', rfl⟩ := hxp
-    have hx' : ¬ p ∣ x' := by
-      specialize hx p hp
-      contrapose! hx
-      exact mul_dvd_mul_left p hx
+    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
       rw [pow_succ, mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
