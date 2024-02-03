@@ -46,7 +46,7 @@ def mk (x : ℕ × K) : PerfectClosure K p :=
 #align perfect_closure.mk PerfectClosure.mk
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
-  Eq.symm $ Quot.sound (R.intro m x)
+  Eq.symm <| Quot.sound (R.intro m x)
 
 @[simp]
 theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=
@@ -286,11 +286,11 @@ theorem eq_iff' (x y : ℕ × K) :
   constructor
   · intro H
     replace H := Quot.exact _ H
-    induction H
-    case rel x y H => cases' H with n x; exact ⟨0, rfl⟩
-    case refl H => exact ⟨0, rfl⟩
-    case symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
-    case trans x y z H1 H2 ih1 ih2 =>
+    induction H with
+    | rel x y H => cases' H with n x; exact ⟨0, rfl⟩
+    | refl H => exact ⟨0, rfl⟩
+    | symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
+    | trans x y z H1 H2 ih1 ih2 =>
       cases' ih1 with z1 ih1
       cases' ih2 with z2 ih2
       exists z2 + (y.1 + z1)
@@ -344,9 +344,9 @@ theorem frobenius_mk (x : ℕ × K) :
   dsimp only
   suffices ∀ p' : ℕ, mk K p (n, x) ^ p' = mk K p (n, x ^ p') by apply this
   intro p
-  induction' p with p ih
-  case zero => apply R.sound; rw [(frobenius _ _).iterate_map_one, pow_zero]
-  case succ =>
+  induction p with
+  | zero => apply R.sound; rw [(frobenius _ _).iterate_map_one, pow_zero]
+  | succ p ih =>
     rw [pow_succ, ih]
     symm
     apply R.sound

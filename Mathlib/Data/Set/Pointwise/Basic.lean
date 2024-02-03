@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Opposites
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
@@ -333,7 +334,7 @@ theorem image2_mul : image2 (· * ·) s t = s * t :=
 #align set.image2_add Set.image2_add
 
 @[to_additive]
-theorem mem_mul : a ∈ s * t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x * y = a :=
+theorem mem_mul : a ∈ s * t ↔ ∃ x ∈ s, ∃ y ∈ t, x * y = a :=
   Iff.rfl
 #align set.mem_mul Set.mem_mul
 #align set.mem_add Set.mem_add
@@ -599,7 +600,7 @@ theorem image2_div : image2 Div.div s t = s / t :=
 #align set.image2_sub Set.image2_sub
 
 @[to_additive]
-theorem mem_div : a ∈ s / t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x / y = a :=
+theorem mem_div : a ∈ s / t ↔ ∃ x ∈ s, ∃ y ∈ t, x / y = a :=
   Iff.rfl
 #align set.mem_div Set.mem_div
 #align set.mem_sub Set.mem_sub
@@ -893,13 +894,13 @@ scoped[Pointwise]
 
 @[to_additive]
 theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
-  ⟨x, 1, hx, ht, mul_one _⟩
+  ⟨x, hx, 1, ht, mul_one _⟩
 #align set.subset_mul_left Set.subset_mul_left
 #align set.subset_add_left Set.subset_add_left
 
 @[to_additive]
 theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx =>
-  ⟨1, x, hs, hx, one_mul _⟩
+  ⟨1, hs, x, hx, one_mul _⟩
 #align set.subset_mul_right Set.subset_mul_right
 #align set.subset_add_right Set.subset_add_right
 
@@ -979,13 +980,13 @@ theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 #align set.mul_univ_of_one_mem Set.mul_univ_of_one_mem
 #align set.add_univ_of_zero_mem Set.add_univ_of_zero_mem
 
 @[to_additive]
 theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 #align set.univ_mul_of_one_mem Set.univ_mul_of_one_mem
 #align set.univ_add_of_zero_mem Set.univ_add_of_zero_mem
 
@@ -1180,7 +1181,7 @@ attribute [to_additive] Disjoint.one_not_mem_div_set
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
-  mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
+  mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 #align set.nonempty.one_mem_div Set.Nonempty.one_mem_div
 #align set.nonempty.zero_mem_sub Set.Nonempty.zero_mem_sub
 
@@ -1255,14 +1256,14 @@ theorem preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 @[to_additive (attr := simp)]
 theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b => ⟨a, a⁻¹ * b, ha, trivial, mul_inv_cancel_left _ _⟩
+  eq_univ_of_forall fun b => ⟨a, ha, a⁻¹ * b, trivial, mul_inv_cancel_left _ _⟩
 #align set.mul_univ Set.mul_univ
 #align set.add_univ Set.add_univ
 
 @[to_additive (attr := simp)]
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
-  eq_univ_of_forall fun b => ⟨b * a⁻¹, a, trivial, ha, inv_mul_cancel_right _ _⟩
+  eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right _ _⟩
 #align set.univ_mul Set.univ_mul
 #align set.univ_add Set.univ_add
 
@@ -1300,7 +1301,7 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 
 @[to_additive]
 lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
-  rintro _ ⟨a, b, ha, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a * b, map_mul _ _ _⟩
@@ -1308,7 +1309,7 @@ lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) 
 @[to_additive]
 theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
-  exact ⟨_, _, ‹_›, ‹_›, (map_mul m _ _).symm⟩
+  exact ⟨_, ‹_›, _, ‹_›, (map_mul m _ _).symm⟩
 #align set.preimage_mul_preimage_subset Set.preimage_mul_preimage_subset
 #align set.preimage_add_preimage_subset Set.preimage_add_preimage_subset
 
@@ -1333,7 +1334,7 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, b, ha, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div _ _ _⟩
@@ -1341,7 +1342,7 @@ lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) 
 @[to_additive]
 theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
-  exact ⟨_, _, ‹_›, ‹_›, (map_div m _ _).symm⟩
+  exact ⟨_, ‹_›, _, ‹_›, (map_div m _ _).symm⟩
 #align set.preimage_div_preimage_subset Set.preimage_div_preimage_subset
 #align set.preimage_sub_preimage_subset Set.preimage_sub_preimage_subset
 

@@ -27,7 +27,7 @@ For many applications we can take `L = ContinuousLinearMap.lsmul ℝ ℝ` or
 
 We also define `ConvolutionExists` and `ConvolutionExistsAt` to state that the convolution is
 well-defined (everywhere or at a single point). These conditions are needed for pointwise
-computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not stong enough for any
+computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not strong enough for any
 local (or global) properties of the convolution. For this we need stronger assumptions on `f`
 and/or `g`, and generally if we impose stronger conditions on one of the functions, we can impose
 weaker conditions on the other.
@@ -124,7 +124,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
   · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
-      refine' ⟨_, _, Set.neg_mem_neg.mpr (subset_closure hxt), hx, _⟩
+      refine' ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, _⟩
       simp only [neg_sub, sub_add_cancel]
     simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 #align convolution_integrand_bound_right_of_le_of_subset convolution_integrand_bound_right_of_le_of_subset
@@ -560,7 +560,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx
+  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, nmem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -641,7 +641,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
     apply hgs p _ hp
     contrapose! hy
-    exact ⟨y - x, x, by simpa using hy, hx, by simp⟩
+    exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
   apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
 #align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param

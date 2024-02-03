@@ -386,7 +386,7 @@ theorem liftPropOn_of_locally_liftPropOn
   rcases h x hx with ⟨u, u_open, xu, hu⟩
   have := hu x ⟨hx, xu⟩
   rwa [hG.liftPropWithinAt_inter] at this
-  exact IsOpen.mem_nhds u_open xu
+  exact u_open.mem_nhds xu
 #align structure_groupoid.local_invariant_prop.lift_prop_on_of_locally_lift_prop_on StructureGroupoid.LocalInvariantProp.liftPropOn_of_locally_liftPropOn
 
 theorem liftProp_of_locally_liftPropOn (h : ∀ x, ∃ u, IsOpen u ∧ x ∈ u ∧ LiftPropOn P g u) :
@@ -484,7 +484,7 @@ theorem liftPropOn_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvariantP
     (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G) : LiftPropOn Q e e.source := by
   intro x hx
   apply hG.liftPropWithinAt_of_liftPropAt_of_mem_nhds (hG.liftPropAt_of_mem_maximalAtlas hQ he hx)
-  exact IsOpen.mem_nhds e.open_source hx
+  exact e.open_source.mem_nhds hx
 #align structure_groupoid.local_invariant_prop.lift_prop_on_of_mem_maximal_atlas StructureGroupoid.LocalInvariantProp.liftPropOn_of_mem_maximalAtlas
 
 theorem liftPropAt_symm_of_mem_maximalAtlas [HasGroupoid M G] {x : H}
@@ -503,7 +503,7 @@ theorem liftPropOn_symm_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvar
   intro x hx
   apply hG.liftPropWithinAt_of_liftPropAt_of_mem_nhds
     (hG.liftPropAt_symm_of_mem_maximalAtlas hQ he hx)
-  exact IsOpen.mem_nhds e.open_target hx
+  exact e.open_target.mem_nhds hx
 #align structure_groupoid.local_invariant_prop.lift_prop_on_symm_of_mem_maximal_atlas StructureGroupoid.LocalInvariantProp.liftPropOn_symm_of_mem_maximalAtlas
 
 theorem liftPropAt_chart [HasGroupoid M G] (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
@@ -693,7 +693,7 @@ theorem HasGroupoid.comp
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
   let _ := ChartedSpace.comp H₁ H₂ H₃ -- Porting note: need this to synthesize `ChartedSpace H₁ H₃`
   { compatible := by
-      rintro _ _ ⟨e, f, he, hf, rfl⟩ ⟨e', f', he', hf', rfl⟩
+      rintro _ _ ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
       apply G₁.locality
       intro x hx
       simp only [mfld_simps] at hx
@@ -709,7 +709,7 @@ theorem HasGroupoid.comp
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine' ⟨_, hs.inter φ.open_source, _, _⟩
       · simp only [hx, hφ_dom, mfld_simps]
-      · refine' G₁.eq_on_source (closedUnderRestriction' hφG₁ hs) _
+      · refine' G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) _
         rw [PartialHomeomorph.restr_source_inter]
         refine' PartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono _)
         mfld_set_tac }

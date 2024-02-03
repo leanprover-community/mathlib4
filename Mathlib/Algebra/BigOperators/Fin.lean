@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.BigOperators.Ring
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
@@ -230,7 +231,7 @@ theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [pa
 @[to_additive]
 theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt, ← Option.coe_def]
+  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt]
 #align fin.partial_prod_succ Fin.partialProd_succ
 #align fin.partial_sum_succ Fin.partialSum_succ
 
@@ -326,7 +327,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       · exact b.elim0
       cases' m with m
       · dsimp only [Nat.zero_eq] at a -- porting note: added, wrong zero
-        rw [zero_pow n.succ_pos] at a
+        rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
@@ -417,7 +418,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         /-
         refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
-        · convert Fin.prod_univ_succ (Fin.cons x xs : ∀ _, ℕ)
+        · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
           simp_rw [Fin.cons_succ]
         congr with i
         congr with j

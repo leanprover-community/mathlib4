@@ -6,7 +6,6 @@ Authors: Scott Morrison, Adam Topaz, Eric Wieser
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.Free
 import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
@@ -371,21 +370,21 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
     right_inv := fun F ↦ by
       ext t
       rcases t with ⟨x⟩
-      induction x
-      case of =>
+      induction x with
+      | of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
         simp only [Function.comp_apply, ι_def]
-      case ofScalar x =>
+      | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
-      case add a b ha hb =>
+      | add a b ha hb =>
         -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
         rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
-      case mul a b ha hb =>
+      | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)

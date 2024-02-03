@@ -7,7 +7,6 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
-import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 
 /-!
@@ -25,10 +24,10 @@ This file contains basics about the separable degree of a field extension.
 
   **Remark:** if `E / F` is not algebraic, then this definition makes no mathematical sense,
   and if it is infinite, then its cardinality doesn't behave as expected (namely, not equal to the
-  field extension degree of `separableClosure F E / F`). For example, if $ F = \mathbb{Q} $ and
-  $ E = \mathbb{Q}( \mu_{p^\infty} ) $, then $ \operatorname{Emb}_F (E) $ is in bijection with
+  field extension degree of `separableClosure F E / F`). For example, if $F = \mathbb{Q}$ and
+  $E = \mathbb{Q}( \mu_{p^\infty} )$, then $\operatorname{Emb}_F (E)$ is in bijection with
   $\operatorname{Gal}(E/F)$, which is isomorphic to
-  $ \mathbb{Z}_p^\times $, which is uncountable, while $ [E:F] $ is countable.
+  $\mathbb{Z}_p^\times$, which is uncountable, while $[E:F]$ is countable.
 
   **TODO:** prove or disprove that if `E / F` is algebraic and `Emb F E` is infinite, then
   `Field.Emb F E` has cardinality `2 ^ Module.rank F (separableClosure F E)`.
@@ -207,7 +206,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
-    (hS ▸ isAlgebraic_adjoin (S := S) <| fun x hx ↦ (hK x hx).1)
+    (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)) _)
     (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
@@ -223,7 +222,7 @@ theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
 and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
-  embEquivOfAdjoinSplits F E K (adjoin_univ F E) <| fun s _ ↦
+  embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
     ⟨(halg s).isIntegral, IsAlgClosed.splits_codomain _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
@@ -321,8 +320,13 @@ theorem natSepDegree_eq_natDegree_iff (hf : f ≠ 0) :
 
 /-- If a polynomial is separable, then its separable degree is equal to its degree. -/
 theorem natSepDegree_eq_natDegree_of_separable (h : f.Separable) :
-    f.natSepDegree = f.natDegree :=
-  (natSepDegree_eq_natDegree_iff f h.ne_zero).2 h
+    f.natSepDegree = f.natDegree := (natSepDegree_eq_natDegree_iff f h.ne_zero).2 h
+
+variable {f} in
+/-- Same as `Polynomial.natSepDegree_eq_natDegree_of_separable`, but enables the use of
+dot notation. -/
+theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
+    f.natSepDegree = f.natDegree := natSepDegree_eq_natDegree_of_separable f h
 
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
@@ -402,7 +406,7 @@ the degree of `g`. -/
 theorem IsSeparableContraction.natSepDegree_eq {g : Polynomial F} {q : ℕ} [ExpChar F q]
     (h : IsSeparableContraction q f g) : f.natSepDegree = g.natDegree := by
   obtain ⟨h1, m, h2⟩ := h
-  rw [← h2, natSepDegree_expand, natSepDegree_eq_natDegree_of_separable g h1]
+  rw [← h2, natSepDegree_expand, h1.natSepDegree_eq_natDegree]
 
 variable {f} in
 /-- If a polynomial has separable contraction, then its separable degree is equal to the degree of
@@ -436,7 +440,7 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · obtain ⟨g, h1, n, rfl⟩ := hi.hasSeparableContraction q
     have h2 : g.natDegree = 1 := by
-      rwa [natSepDegree_expand _ q, natSepDegree_eq_natDegree_of_separable g h1] at h
+      rwa [natSepDegree_expand _ q, h1.natSepDegree_eq_natDegree] at h
     rw [((monic_expand_iff <| expChar_pow_pos F q n).mp hm).eq_X_add_C h2]
     exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add]⟩
   rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]
@@ -528,7 +532,7 @@ private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
   by_cases halg : IsAlgebraic F α
   · rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral]
     exact (minpoly.irreducible halg.isIntegral).natSepDegree_dvd_natDegree
-  have : finrank F F⟮α⟯ = 0 := finrank_of_infinite_dimensional <| fun _ ↦
+  have : finrank F F⟮α⟯ = 0 := finrank_of_infinite_dimensional fun _ ↦
     halg ((AdjoinSimple.isIntegral_gen F α).1 (IsIntegral.of_finite F _)).isAlgebraic
   rw [this]
   exact dvd_zero _
@@ -583,7 +587,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     rw [H L h] at hd
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
-    linarith only [h', hd, Nat.le_mul_of_pos_right (m := finrank F L) (Nat.pos_of_ne_zero hd')]
+    linarith only [h', hd, Nat.le_mul_of_pos_right (finrank F L) (Nat.pos_of_ne_zero hd')]
   rw [← finSepDegree_top F, ← finrank_top F E]
   refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
     (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
@@ -603,7 +607,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
-    have := Nat.mul_lt_mul h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
+    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E (Algebra.IsAlgebraic.of_finite _ E),
       FiniteDimensional.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
@@ -625,9 +629,11 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_separable {x : E} :
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
 
-/-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
-theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] [IsSeparable E K] : IsSeparable F K := (isSeparable_def F K).2 fun x ↦ by
+variable {E K} in
+/-- If `K / E / F` is an extension tower such that `E / F` is separable,
+`x : K` is separable over `E`, then it's also separable over `F`. -/
+theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
+    [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
   let f := minpoly E x
   let E' : IntermediateField F E := adjoin F f.frange
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
@@ -637,10 +643,9 @@ theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
   have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
     simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
-  have halg : IsIntegral E' x := (IsSeparable.isAlgebraic F E).trans
-    (IsSeparable.isAlgebraic E K) x |>.isIntegral.tower_top
-  have hsep : f.Separable := IsSeparable.separable E x
-  rw [← h, separable_map] at hsep
+  have halg : IsIntegral E' x :=
+    isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
+  simp_rw [← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
   haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
@@ -654,6 +659,11 @@ theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
   change IsSeparable F (restrictScalars F E'⟮x⟯) at this
   exact separable_of_mem_isSeparable F K hx
 
+/-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
+theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
+    [IsSeparable F E] [IsSeparable E K] : IsSeparable F K :=
+  ⟨fun x ↦ (IsSeparable.separable E x).comap_minpoly_of_isSeparable F⟩
+
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
@@ -665,6 +675,15 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
   exact IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
 namespace Field
+
+variable {F}
+
+/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
+theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
+  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
+  exact IsSeparable.separable F x
+
+variable {E}
 
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
 theorem separable_mul {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
@@ -679,11 +698,6 @@ theorem separable_add {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F 
   haveI := isSeparable_adjoin_pair_of_separable F E hx hy
   separable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
-
-/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
-  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
-  exact IsSeparable.separable F x
 
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/
 theorem separable_inv (x : E) (hx : (minpoly F x).Separable) : (minpoly F x⁻¹).Separable :=

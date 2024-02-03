@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Lattice
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
@@ -82,12 +80,11 @@ theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpa
   le_antisymm
     (generateFrom_le fun u (hu : t.IsOpen u) => by
       rw [hs] at hu
-      induction hu
-      case basic u hu => exact GenerateMeasurable.basic u hu
-      case univ => exact @MeasurableSet.univ α (generateFrom s)
-      case inter s₁ s₂ _ _ hs₁ hs₂ => exact @MeasurableSet.inter α (generateFrom s) _ _ hs₁ hs₂
-      case
-        sUnion f hf ih =>
+      induction hu with
+      | basic u hu => exact GenerateMeasurable.basic u hu
+      | univ => exact @MeasurableSet.univ α (generateFrom s)
+      | inter s₁ s₂ _ _ hs₁ hs₂ => exact @MeasurableSet.inter α (generateFrom s) _ _ hs₁ hs₂
+      | sUnion f hf ih =>
         rcases isOpen_sUnion_countable f (by rwa [hs]) with ⟨v, hv, vf, vu⟩
         rw [← vu]
         exact @MeasurableSet.sUnion α (generateFrom s) _ hv fun x xv => ih _ (vf xv))
@@ -244,11 +241,11 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
     liftMetaTactic fun m => return [← subst m i]
   catch _ =>
     let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
-    throwError
-      (m!"`‹TopologicalSpace {e}› := {et}" ++ MessageData.ofFormat Format.line ++
-        m!"depends on" ++ MessageData.ofFormat Format.line ++
-        m!"{Expr.fvar i} : MeasurableSpace {e}`" ++ MessageData.ofFormat Format.line ++
-        "so `borelize` isn't avaliable")
+    throwError m!"\
+      `‹TopologicalSpace {e}› := {et}\n\
+      depends on\n\
+      {Expr.fvar i} : MeasurableSpace {e}`\n\
+      so `borelize` isn't avaliable"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te
@@ -364,6 +361,34 @@ theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
+
+/-- If two points are topologically inseparable,
+then they can't be separated by a Borel measurable set. -/
+theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
+    (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
+    fun _ _ _ h ↦ by simp [h]
+
+/-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
+then `s` includes the closure of `K` as well. -/
+theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK : IsCompact K)
+    (hs : MeasurableSet s) (hKs : K ⊆ s) : closure K ⊆ s := by
+  rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
+  exact fun x hx y hy ↦ (hy.mem_measurableSet_iff hs).1 (hKs hx)
+
+/-- In an R₁ topological space with Borel measure `μ`,
+the measure of the closure of a compact set `K` is equal to the measure of `K`.
+
+See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
+for a version that assumes `μ` to be outer regular
+but does not assume the `σ`-algebra to be Borel.  -/
+theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
+    μ (closure K) = μ K := by
+  refine le_antisymm ?_ (measure_mono subset_closure)
+  calc
+    μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono <|
+      hK.closure_subset_measurableSet (measurableSet_toMeasurable ..) (subset_toMeasurable ..)
+    _ = μ K := measure_toMeasurable ..
 
 @[measurability]
 theorem measurableSet_closure : MeasurableSet (closure s) :=
@@ -645,6 +670,15 @@ theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
+
+theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
+    NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
+  measurableSet_lt'.nullMeasurableSet
+
+theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
+    {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { a | f a ≤ g a } μ :=
+  (hf.prod_mk hg).nullMeasurable measurableSet_le'
 
 theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
@@ -1964,7 +1998,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
   finite n := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
-      ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs_self x).trans_lt (Nat.lt_floor_add_one _)),
+      ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
         (le_abs_self x).trans_lt (Nat.lt_floor_add_one _)⟩
 #align real.finite_spanning_sets_in_Ioo_rat Real.finiteSpanningSetsInIooRat
 

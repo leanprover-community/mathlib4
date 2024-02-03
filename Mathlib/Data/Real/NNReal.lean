@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
@@ -877,10 +876,7 @@ end Sub
 
 section Inv
 
-theorem sum_div {ι} (s : Finset ι) (f : ι → ℝ≥0) (b : ℝ≥0) :
-    (∑ i in s, f i) / b = ∑ i in s, f i / b :=
-  Finset.sum_div
-#align nnreal.sum_div NNReal.sum_div
+#align nnreal.sum_div Finset.sum_div
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by

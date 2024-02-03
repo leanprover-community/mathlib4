@@ -3,7 +3,6 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 
@@ -115,8 +114,6 @@ Tests for this ability of the simplifier (with more examples) are provided in
 derivative, differentiable, Fréchet, calculus
 
 -/
-
-set_option autoImplicit true
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
@@ -737,7 +734,7 @@ theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
     (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
   simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
-    h.eq_zero_of_norm_pow_within hx₀ <| zero_lt_one.trans hn, zero_apply, sub_zero,
+    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.has_fderiv_within_at Asymptotics.IsBigO.hasFDerivWithinAt
@@ -782,7 +779,7 @@ theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilte
     refine' h.isBigO_sub.trans_tendsto (Tendsto.mono_left _ hL)
     rw [← sub_self x]
     exact tendsto_id.sub tendsto_const_nhds
-  have := this.add (@tendsto_const_nhds _ _ _ (f x) _)
+  have := this.add (tendsto_const_nhds (x := f x))
   rw [zero_add (f x)] at this
   exact this.congr (by simp only [sub_add_cancel, eq_self_iff_true, forall_const])
 #align has_fderiv_at_filter.tendsto_nhds HasFDerivAtFilter.tendsto_nhds
@@ -1026,17 +1023,17 @@ theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : 
   simp only [fderivWithin, hs.hasFDerivWithinAt_iff hx]
 #align filter.eventually_eq.fderiv_within_eq Filter.EventuallyEq.fderivWithin_eq
 
-theorem Filter.EventuallyEq.fderiv_within' (hs : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) :
+theorem Filter.EventuallyEq.fderivWithin' (hs : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) :
     fderivWithin 𝕜 f₁ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 f t :=
   (eventually_nhdsWithin_nhdsWithin.2 hs).mp <|
     eventually_mem_nhdsWithin.mono fun _y hys hs =>
       EventuallyEq.fderivWithin_eq (hs.filter_mono <| nhdsWithin_mono _ ht)
         (hs.self_of_nhdsWithin hys)
-#align filter.eventually_eq.fderiv_within' Filter.EventuallyEq.fderiv_within'
+#align filter.eventually_eq.fderiv_within' Filter.EventuallyEq.fderivWithin'
 
 protected theorem Filter.EventuallyEq.fderivWithin (hs : f₁ =ᶠ[𝓝[s] x] f) :
     fderivWithin 𝕜 f₁ s =ᶠ[𝓝[s] x] fderivWithin 𝕜 f s :=
-  hs.fderiv_within' Subset.rfl
+  hs.fderivWithin' Subset.rfl
 #align filter.eventually_eq.fderiv_within Filter.EventuallyEq.fderivWithin
 
 theorem Filter.EventuallyEq.fderivWithin_eq_nhds (h : f₁ =ᶠ[𝓝 x] f) :
@@ -1241,7 +1238,7 @@ theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
 
-theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+theorem HasFDerivWithinAt.of_not_mem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
   (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
 

@@ -3,11 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.limits.final from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -395,18 +395,18 @@ namespace Final
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
-  induction t
-  case rel x y r =>
+  induction t with
+  | rel x y r =>
     obtain ⟨f, w⟩ := r
     fconstructor
     swap; fconstructor
     left; fconstructor
     exact StructuredArrow.homMk f
-  case refl => fconstructor
-  case symm x y _ ih =>
+  | refl => fconstructor
+  | symm x y _ ih =>
     apply zigzag_symmetric
     exact ih
-  case trans x y z _ _ ih₁ ih₂ =>
+  | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
     exact ih₁; exact ih₂
 #align category_theory.functor.final.zigzag_of_eqv_gen_quot_rel CategoryTheory.Functor.Final.zigzag_of_eqvGen_quot_rel

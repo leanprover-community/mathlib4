@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Separable
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
@@ -407,6 +405,12 @@ theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoo
   simp only [iff_def, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
 #align is_primitive_root.coe_units_iff IsPrimitiveRoot.coe_units_iff
 
+lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
+    IsPrimitiveRoot (hζ.isUnit hn).unit n := coe_units_iff.mp hζ
+
+lemma isUnit_unit' {ζ : G} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
+    IsPrimitiveRoot (hζ.isUnit hn).unit' n := coe_units_iff.mp hζ
+
 -- Porting note `variable` above already contains `(h : IsPrimitiveRoot ζ k)`
 theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
@@ -494,6 +498,16 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   exact h.dvd_of_pow_eq_one _ hl
 #align is_primitive_root.pow IsPrimitiveRoot.pow
 
+lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
+    Set.InjOn (ζ ^ ·) (Finset.range n) := by
+  obtain (rfl|hn) := n.eq_zero_or_pos; · simp
+  intros i hi j hj e
+  rw [Finset.coe_range, Set.mem_Iio] at hi hj
+  have : (hζ.isUnit hn).unit ^ i = (hζ.isUnit hn).unit ^ j := Units.ext (by simpa using e)
+  rw [pow_inj_mod, ← orderOf_injective ⟨⟨Units.val, Units.val_one⟩, Units.val_mul⟩
+    Units.ext (hζ.isUnit hn).unit] at this
+  simpa [← hζ.eq_orderOf, Nat.mod_eq_of_lt, hi, hj] using this
+
 section Maps
 
 open Function
@@ -542,6 +556,17 @@ protected theorem ne_zero [Nontrivial M₀] {ζ : M₀} (h : IsPrimitiveRoot ζ 
 #align is_primitive_root.ne_zero IsPrimitiveRoot.ne_zero
 
 end CommMonoidWithZero
+
+section CancelCommMonoidWithZero
+
+variable {M₀ : Type*} [CancelCommMonoidWithZero M₀]
+
+lemma injOn_pow_mul {n : ℕ} {ζ : M₀} (hζ : IsPrimitiveRoot ζ n)
+    {α : M₀} (hα : α ≠ 0) :
+    Set.InjOn (ζ ^ · * α) (Finset.range n) := fun i hi j hj e ↦
+  hζ.injOn_pow hi hj (by simpa [mul_eq_mul_right_iff, or_iff_left hα] using e)
+
+end CancelCommMonoidWithZero
 
 section DivisionCommMonoid
 
@@ -754,6 +779,33 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     _ = Fintype.card (Subgroup.zpowers ζ) := Fintype.card_congr h.zmodEquivZPowers.toEquiv
 #align is_primitive_root.zpowers_eq IsPrimitiveRoot.zpowers_eq
 
+lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {ζ : R} {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
+    (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
+  letI : CommMonoid Sˣ := inferInstance
+  replace hζ := hζ.isUnit_unit n.2
+  rw [← hζ.zpowers_eq,
+    ← (hζ.map_of_injective (Units.map_injective (f := (f : R →* S)) hf)).zpowers_eq,
+    MonoidHom.map_zpowers]
+
+/-- If `R` contains a `n`-th primitive root, and `S/R` is a ring extension,
+then the `n`-th roots of unity in `R` and `S` are isomorphic.
+Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
+@[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
+noncomputable
+def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
+    (rootsOfUnity n R) ≃* rootsOfUnity n S :=
+  (Subgroup.equivMapOfInjective _ _ (Units.map_injective hf)).trans (MulEquiv.subgroupCongr
+    (((mem_primitiveRoots (k := n) n.2).mp hζ.choose_spec).map_rootsOfUnity hf))
+
+lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
+    {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
+    f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
+  obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
+  rw [MulEquiv.symm_apply_apply, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe]
+
 -- Porting note: rephrased the next few lemmas to avoid `∃ (Prop)`
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ∈ rootsOfUnity k R) : ∃ (i : ℕ), i < k ∧ ζ ^ i = ξ := by
@@ -799,6 +851,35 @@ theorem isPrimitiveRoot_iff {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (h0
   · rintro ⟨i, -, hi, rfl⟩; exact h.pow_of_coprime i hi
 #align is_primitive_root.is_primitive_root_iff IsPrimitiveRoot.isPrimitiveRoot_iff
 
+theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+    {α a : R} (e : α ^ n = a) :
+    nthRoots n a = (Multiset.range n).map (ζ ^ · * α) := by
+  obtain (rfl|hn) := n.eq_zero_or_pos; · simp
+  by_cases hα : α = 0
+  · rw [hα, zero_pow hn.ne'] at e
+    simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
+      Finset.range_val, Multiset.map_const', Multiset.card_range]
+  classical
+  symm; apply Multiset.eq_of_le_of_card_le
+  · rw [← Finset.range_val,
+      ← Finset.image_val_of_injOn (hζ.injOn_pow_mul hα), Finset.val_le_iff_val_subset]
+    intro x hx
+    simp only [Finset.image_val, Finset.range_val, Multiset.mem_dedup, Multiset.mem_map,
+      Multiset.mem_range] at hx
+    obtain ⟨m, _, rfl⟩ := hx
+    rw [mem_nthRoots hn, mul_pow, e, ← pow_mul, mul_comm m,
+      pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+  · simpa only [Multiset.card_map, Multiset.card_range] using card_nthRoots n a
+
+theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
+    Multiset.card (nthRoots n a) = if ∃ α, α ^ n = a then n else 0 := by
+  split_ifs with h
+  · obtain ⟨α, hα⟩ := h
+    rw [nthRoots_eq hζ hα, Multiset.card_map, Multiset.card_range]
+  · obtain (rfl|hn) := n.eq_zero_or_pos; · simp
+    push_neg at h
+    simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_not_mem, mem_nthRoots hn]
+
 theorem card_rootsOfUnity' {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     Fintype.card (rootsOfUnity n R) = n := by
   let e := h.zmodEquivZPowers
@@ -819,51 +900,34 @@ theorem card_rootsOfUnity {ζ : R} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
 
 /-- The cardinality of the multiset `nthRoots ↑n (1 : R)` is `n`
 if there is a primitive root of unity in `R`. -/
-nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    Multiset.card (nthRoots n (1 : R)) = n := by
-  rcases Nat.eq_zero_or_pos n with hzero | hpos
-  · simp only [hzero, Multiset.card_zero, nthRoots_zero]
-  rw [eq_iff_le_not_lt]
-  use card_nthRoots n 1
-  · rw [not_lt]
-    have hcard :
-        Fintype.card { x // x ∈ nthRoots n (1 : R) } ≤ Multiset.card (nthRoots n (1 : R)).attach :=
-      Multiset.card_le_card (Multiset.dedup_le _)
-    rw [Multiset.card_attach] at hcard
-    rw [← PNat.toPNat'_coe hpos] at hcard h ⊢
-    set m := Nat.toPNat' n
-    rw [← Fintype.card_congr (rootsOfUnityEquivNthRoots R m), card_rootsOfUnity h] at hcard
-    exact hcard
-#align is_primitive_root.card_nth_roots IsPrimitiveRoot.card_nthRoots
+theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
+    Multiset.card (nthRoots n (1 : R)) = n := by rw [card_nthRoots h, if_pos ⟨ζ, h.pow_eq_one⟩]
+#align is_primitive_root.card_nth_roots IsPrimitiveRoot.card_nthRoots_one
+
+theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
+    (nthRoots n a).Nodup := by
+  obtain (rfl|hn) := n.eq_zero_or_pos; · simp
+  by_cases h : ∃ α, α ^ n = a
+  · obtain ⟨α, hα⟩ := h
+    by_cases hα' : α = 0
+    · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
+    rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
+    exact h.injOn_pow_mul hα'
+  · suffices nthRoots n a = 0 by simp [this]
+    push_neg at h
+    simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_not_mem, mem_nthRoots hn]
 
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements
 if there is a primitive root of unity in `R`. -/
-theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots n (1 : R)).Nodup := by
-  rcases Nat.eq_zero_or_pos n with hzero | hpos
-  · simp only [hzero, Multiset.nodup_zero, nthRoots_zero]
-  apply (Multiset.dedup_eq_self (α := R)).1
-  rw [eq_iff_le_not_lt]
-  constructor
-  · exact Multiset.dedup_le (nthRoots n (1 : R))
-  · by_contra ha
-    replace ha := Multiset.card_lt_card ha
-    rw [card_nthRoots h] at ha
-    have hrw : Multiset.card (nthRoots n (1 : R)).dedup =
-        Fintype.card { x // x ∈ nthRoots n (1 : R) } := by
-      set fs := (⟨(nthRoots n (1 : R)).dedup, Multiset.nodup_dedup _⟩ : Finset R)
-      rw [← Finset.card_mk, Fintype.card_of_subtype fs _]
-      intro x
-      simp only [Multiset.mem_dedup, Finset.mem_mk]
-    rw [← PNat.toPNat'_coe hpos] at h hrw ha
-    set m := Nat.toPNat' n
-    rw [hrw, ← Fintype.card_congr (rootsOfUnityEquivNthRoots R m), card_rootsOfUnity h] at ha
-    exact Nat.lt_asymm ha ha
-#align is_primitive_root.nth_roots_nodup IsPrimitiveRoot.nthRoots_nodup
+theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
+    (nthRoots n (1 : R)).Nodup :=
+  h.nthRoots_nodup one_ne_zero
+#align is_primitive_root.nth_roots_nodup IsPrimitiveRoot.nthRoots_one_nodup
 
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRootsFinset n R).card = n := by
-  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), card_mk, h.card_nthRoots]
+  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 #align is_primitive_root.card_nth_roots_finset IsPrimitiveRoot.card_nthRootsFinset
 
 open scoped Nat
@@ -905,7 +969,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   symm
   apply Finset.eq_of_subset_of_card_le
   · intro x
-    simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), exists_prop,
+    simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), exists_prop,
       Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
       Nat.mem_divisors, and_true_iff, Ne.def, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩

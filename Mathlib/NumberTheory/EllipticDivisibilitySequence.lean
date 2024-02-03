@@ -6,36 +6,49 @@ Authors: David Kurniadi Angdinata
 
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Elliptic divisibility sequences
 
-This file defines the type of elliptic divisibility sequences and a few examples.
+This file defines the type of an elliptic divisibility sequence (EDS) and a few examples.
 
 ## Mathematical background
 
-Let $R$ be a commutative ring. An elliptic sequence is a sequence $h : \mathbb{Z} \to R$ satisfying
-$$ h(m + n)h(m - n)h(r)^2 = h(m + r)h(m - r)h(n)^2 - h(n + r)h(n - r)h(m)^2, $$
-for any $m, n, r \in \mathbb{Z}$. A divisibility sequence is a sequence $h : \mathbb{Z} \to R$
-satisfying $h(m) \mid h(n)$ for any $m, n \in \mathbb{Z}$ such that $m \mid n$.
+Let $R$ be a commutative ring. An elliptic sequence is a sequence $W : \mathbb{Z} \to R$ satisfying
+$$ W(m + n)W(m - n)W(r)^2 = W(m + r)W(m - r)W(n)^2 - W(n + r)W(n - r)W(m)^2, $$
+for any $m, n, r \in \mathbb{Z}$. A divisibility sequence is a sequence $W : \mathbb{Z} \to R$
+satisfying $W(m) \mid W(n)$ for any $m, n \in \mathbb{Z}$ such that $m \mid n$.
 
-Some examples of elliptic divisibility sequences include
- * the integers $\mathbb{Z}$,
+Some examples of EDSs include
+ * the identity sequence,
  * certain terms of Lucas sequences, and
  * division polynomials of elliptic curves.
 
 ## Main definitions
 
- * `isEllSequence`: a sequence indexed by integers is an elliptic sequence.
- * `isDivSequence`: a sequence indexed by integers is a divisibility sequence.
- * `isEllDivSequence`: a sequence indexed by integers is an elliptic divisibility sequence.
- * `EllDivSequence'`: a canonical example of an elliptic divisibility sequence indexed by naturals.
- * `EllDivSequence`: a canonical example of an elliptic divisibility sequence indexed by integers.
+ * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
+ * `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
+ * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
+ * `normEDS'`: the canonical example of a normalised EDS indexed by `ℕ`.
+ * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
 
 ## Main statements
 
- * TODO: prove that `EllDivSequence` is an elliptic divisibility sequence.
- * TODO: prove that a general elliptic divisibility sequence can be given by `EllDivSequence`.
+ * TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
+ * TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
+
+## Implementation notes
+
+`IsEllDivSequence' b c d n` is defined in terms of the private `IsEllDivSequence'' b c d n`,
+which are equal when `n` is odd and differ by a factor of `b` when `n` is even. This coincides with
+the reference since both agree for `IsEllDivSequence' b c d 2` and for `IsEllDivSequence' b c d 4`,
+and the correct factors of `b` are removed in `IsEllDivSequence' b c d (2 * (m + 2) + 1)` and in
+`IsEllDivSequence' b c d (2 * (m + 3))`. This is done to avoid the necessity for ring division by
+`b` in the inductive definition of `IsEllDivSequence' b c d (2 * (m + 3))`. The idea is that, an
+easy lemma shows that `IsEllDivSequence' b c d (2 * (m + 3))` always contains a factor of `b`, so it
+is possible to remove a factor of `b` a posteriori, but stating this lemma requires first defining
+`IsEllDivSequence' b c d (2 * (m + 3))`, which requires having this factor of `b` a priori.
 
 ## References
 
@@ -51,90 +64,94 @@ universe u v w
 variable {R : Type u} [CommRing R]
 
 /-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
-def isEllSequence (h : ℤ → R) : Prop :=
-  ∀ m n r : ℤ, h (m + n) * h (m - n) * h r ^ 2 =
-    h (m + r) * h (m - r) * h n ^ 2 - h (n + r) * h (n - r) * h m ^ 2
+def IsEllSequence (W : ℤ → R) : Prop :=
+  ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
+    W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
 /-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
-def isDivSequence (h : ℤ → R) : Prop :=
-  ∀ m n : ℕ, m ∣ n → h m ∣ h n
+def IsDivSequence (W : ℤ → R) : Prop :=
+  ∀ m n : ℕ, m ∣ n → W m ∣ W n
 
-/-- The proposition that a sequence indexed by integers is an elliptic divisibility sequence. -/
-def isEllDivSequence (h : ℤ → R) : Prop :=
-  isEllSequence h ∧ isDivSequence h
+/-- The proposition that a sequence indexed by integers is an EDS. -/
+def IsEllDivSequence (W : ℤ → R) : Prop :=
+  IsEllSequence W ∧ IsDivSequence W
 
-/-- The integers form an elliptic divisibility sequence. -/
-lemma Int.isEllDivSequence : isEllDivSequence id :=
-  ⟨fun _ _ _ => by simp only [id_eq]; ring1, fun _ _ => Int.ofNat_dvd.mpr⟩
+lemma IsEllSequence_id : IsEllSequence id :=
+  fun _ _ _ => by simp only [id_eq]; ring1
 
-private def EllDivSequence'' (b c d : R) : ℕ → R
+lemma IsDivSequence_id : IsDivSequence id :=
+  fun _ _ => Int.ofNat_dvd.mpr
+
+/-- The identity sequence is an EDS. -/
+theorem IsEllDivSequence_id : IsEllDivSequence id :=
+  ⟨IsEllSequence_id, IsDivSequence_id⟩
+
+lemma IsEllSequence_mul (x : R) {W : ℤ → R} (h : IsEllSequence W) : IsEllSequence (x • W) :=
+  fun m n r => by
+    linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
+
+lemma IsDivSequence_mul (x : R) {W : ℤ → R} (h : IsDivSequence W) : IsDivSequence (x • W) :=
+  fun m n r => mul_dvd_mul_left x <| h m n r
+
+lemma IsEllDivSequence_mul (x : R) {W : ℤ → R} (h : IsEllDivSequence W) :
+    IsEllDivSequence (x • W) :=
+  ⟨IsEllSequence_mul x h.left, IsDivSequence_mul x h.right⟩
+
+private def normEDS'' (b c d : R) : ℕ → R
   | 0 => 0
   | 1 => 1
   | 2 => 1
   | 3 => c
   | 4 => d
-  | (n + 5) =>
+  | (n + 5) => let m := n / 2
+    have h4 : m + 4 < n + 5 := Nat.lt_succ.mpr <| add_le_add_right (n.div_le_self 2) 4
+    have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
+    have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
+    have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
     if hn : Even n then
-      let m := n / 2
-      have h4 : m + 4 < n + 5 :=
-        by linarith only [show n = 2 * m by exact (Nat.two_mul_div_two_of_even hn).symm]
-      have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
-      have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-      have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
-      EllDivSequence'' b c d (m + 4) * EllDivSequence'' b c d (m + 2) ^ 3 *
-          (if Even m then b ^ 4 else 1)
-        - EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) ^ 3 *
-            (if Even m then 1 else b ^ 4)
+      normEDS'' b c d (m + 4) * normEDS'' b c d (m + 2) ^ 3 * (if Even m then b ^ 4 else 1) -
+        normEDS'' b c d (m + 1) * normEDS'' b c d (m + 3) ^ 3 * (if Even m then 1 else b ^ 4)
     else
-      let m := n / 2
-      have h5 : m + 5 < n + 5 := by
-        linarith only [show n = 2 * m + 1
-          by exact (Nat.two_mul_div_two_add_one_of_odd <| Nat.odd_iff_not_even.mpr hn).symm]
-      have h4 : m + 4 < n + 5 := (lt_add_one _).trans h5
-      have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
-      have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-      have h1 : m + 1 < n + 5 := (lt_add_one _).trans h2
-      EllDivSequence'' b c d (m + 2) ^ 2 * EllDivSequence'' b c d (m + 3) *
-          EllDivSequence'' b c d (m + 5)
-        - EllDivSequence'' b c d (m + 1) * EllDivSequence'' b c d (m + 3) *
-            EllDivSequence'' b c d (m + 4) ^ 2
+      have h5 : m + 5 < n + 5 := add_lt_add_right
+        (Nat.div_lt_self (Nat.odd_iff_not_even.mpr hn).pos <| Nat.lt_succ_self 1) 5
+      normEDS'' b c d (m + 2) ^ 2 * normEDS'' b c d (m + 3) * normEDS'' b c d (m + 5) -
+        normEDS'' b c d (m + 1) * normEDS'' b c d (m + 3) * normEDS'' b c d (m + 4) ^ 2
 
 variable (b c d : R)
 
-/-- The canonical example of an elliptic divisibility sequence `h : ℕ → R`,
-with initial values `h(2) = b`, `h(3) = c`, and `h(4) = d`.
+/-- The canonical example of a normalised EDS `W : ℕ → R`,
+with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = b * d`.
 
 This is defined in terms of a truncated sequence whose even terms differ by a factor of `b`. -/
-def EllDivSequence' (n : ℕ) : R :=
-  EllDivSequence'' b c d n * if Even n then b else 1
+def normEDS' (n : ℕ) : R :=
+  normEDS'' b c d n * if Even n then b else 1
 
 @[simp]
-lemma EllDivSequence'_zero : EllDivSequence' b c d 0 = 0 := by
-  rw [EllDivSequence', EllDivSequence'', zero_mul]
+lemma normEDS'_zero : normEDS' b c d 0 = 0 := by
+  rw [normEDS', normEDS'', zero_mul]
 
 @[simp]
-lemma EllDivSequence'_one : EllDivSequence' b c d 1 = 1 := by
-  rw [EllDivSequence', EllDivSequence'', one_mul, if_neg Nat.not_even_one]
+lemma normEDS'_one : normEDS' b c d 1 = 1 := by
+  rw [normEDS', normEDS'', one_mul, if_neg Nat.not_even_one]
 
 @[simp]
-lemma EllDivSequence'_two : EllDivSequence' b c d 2 = b := by
-  rw [EllDivSequence', EllDivSequence'', one_mul, if_pos even_two]
+lemma normEDS'_two : normEDS' b c d 2 = b := by
+  rw [normEDS', normEDS'', one_mul, if_pos even_two]
 
 @[simp]
-lemma EllDivSequence'_three : EllDivSequence' b c d 3 = c := by
-  rw [EllDivSequence', EllDivSequence'', if_neg <| by decide, mul_one]
+lemma normEDS'_three : normEDS' b c d 3 = c := by
+  rw [normEDS', normEDS'', if_neg <| by decide, mul_one]
 
 @[simp]
-lemma EllDivSequence'_four : EllDivSequence' b c d 4 = d * b := by
-  rw [EllDivSequence', EllDivSequence'', if_pos <| by decide]
+lemma normEDS'_four : normEDS' b c d 4 = d * b := by
+  rw [normEDS', normEDS'', if_pos <| by decide]
 
-@[simp]
-lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
-    EllDivSequence' b c d (m + 4) * EllDivSequence' b c d (m + 2) ^ 3
-      - EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) ^ 3 := by
-  rw [EllDivSequence', if_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _,
-    show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, EllDivSequence'', dif_pos <| even_two_mul m]
-  simp only [EllDivSequence', Nat.mul_div_right _ zero_lt_two]
+lemma normEDS'_odd (m : ℕ) : normEDS' b c d (2 * (m + 2) + 1) =
+    normEDS' b c d (m + 4) * normEDS' b c d (m + 2) ^ 3 -
+      normEDS' b c d (m + 1) * normEDS' b c d (m + 3) ^ 3 := by
+  rw [normEDS', if_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _,
+    show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, normEDS'', dif_pos <| even_two_mul m]
+  simp only [normEDS', Nat.mul_div_right _ zero_lt_two]
   by_cases hm : Even m
   · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
     have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
@@ -149,15 +166,12 @@ lemma EllDivSequence'_odd (m : ℕ) : EllDivSequence' b c d (2 * (m + 2) + 1) =
     rw [if_neg hm, if_neg hm, if_neg hm4, if_neg hm2, if_pos hm1, if_pos hm3]
     ring1
 
-@[simp]
-lemma EllDivSequence'_even (m : ℕ) : EllDivSequence' b c d (2 * (m + 3)) * b =
-    EllDivSequence' b c d (m + 2) ^ 2 * EllDivSequence' b c d (m + 3) *
-        EllDivSequence' b c d (m + 5)
-      - EllDivSequence' b c d (m + 1) * EllDivSequence' b c d (m + 3) *
-          EllDivSequence' b c d (m + 4) ^ 2 := by
-  rw [EllDivSequence', if_pos <| even_two_mul _, show 2 * (m + 3) = 2 * m + 1 + 5 by rfl,
-    EllDivSequence'', dif_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _]
-  simp only [EllDivSequence', Nat.mul_add_div two_pos, show 1 / 2 = 0 by rfl]
+lemma normEDS'_even (m : ℕ) : normEDS' b c d (2 * (m + 3)) * b =
+    normEDS' b c d (m + 2) ^ 2 * normEDS' b c d (m + 3) * normEDS' b c d (m + 5) -
+      normEDS' b c d (m + 1) * normEDS' b c d (m + 3) * normEDS' b c d (m + 4) ^ 2 := by
+  rw [normEDS', if_pos <| even_two_mul _, show 2 * (m + 3) = 2 * m + 1 + 5 by rfl,
+    normEDS'', dif_neg <| fun h => Nat.even_add_one.mp h <| even_two_mul _]
+  simp only [normEDS', Nat.mul_add_div two_pos, show 1 / 2 = 0 by rfl]
   by_cases hm : Even m
   · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
     have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
@@ -174,49 +188,44 @@ lemma EllDivSequence'_even (m : ℕ) : EllDivSequence' b c d (2 * (m + 3)) * b =
     rw [if_neg hm2, if_pos hm3, if_pos hm5, if_pos hm1, if_neg hm4]
     ring1
 
-/-- The canonical example of an elliptic divisibility sequence `h : ℤ → R`,
-with initial values `h(2) = b`, `h(3) = c`, and `h(4) = d`.
+/-- The canonical example of a normalised EDS `W : ℤ → R`,
+with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = b * d`.
 
-This extends `EllDivSequence'` by defining its values at negative integers. -/
-def EllDivSequence : ℤ → R
-  | Int.ofNat n => EllDivSequence' b c d n
-  | Int.negSucc n => -EllDivSequence' b c d (n + 1)
+This extends `normEDS'` by defining its values at negative integers. -/
+def normEDS (n : ℤ) : R := n.sign * normEDS' b c d n.natAbs
 
 @[simp]
-lemma EllDivSequence_zero : EllDivSequence b c d 0 = 0 :=
-  EllDivSequence'_zero b c d
+lemma normEDS_zero : normEDS b c d 0 = 0 := by
+  erw [normEDS, Int.cast_zero, zero_mul]
 
 @[simp]
-lemma EllDivSequence_one : EllDivSequence b c d 1 = 1 :=
-  EllDivSequence'_one b c d
+lemma normEDS_one : normEDS b c d 1 = 1 := by
+  erw [normEDS, Int.cast_one, one_mul, normEDS'_one]
 
 @[simp]
-lemma EllDivSequence_two : EllDivSequence b c d 2 = b :=
-  EllDivSequence'_two b c d
+lemma normEDS_two : normEDS b c d 2 = b := by
+  erw [normEDS, Int.cast_one, one_mul, normEDS'_two]
 
 @[simp]
-lemma EllDivSequence_three : EllDivSequence b c d 3 = c :=
-  EllDivSequence'_three b c d
+lemma normEDS_three : normEDS b c d 3 = c := by
+  erw [normEDS, Int.cast_one, one_mul, normEDS'_three]
 
 @[simp]
-lemma EllDivSequence_four : EllDivSequence b c d 4 = d * b :=
-  EllDivSequence'_four b c d
+lemma normEDS_four : normEDS b c d 4 = d * b := by
+  erw [normEDS, Int.cast_one, one_mul, normEDS'_four]
+
+lemma normEDS_odd (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
+    normEDS b c d (m + 4) * normEDS b c d (m + 2) ^ 3 -
+      normEDS b c d (m + 1) * normEDS b c d (m + 3) ^ 3 := by
+  repeat erw [normEDS, Int.cast_one, one_mul]
+  exact normEDS'_odd b c d m
+
+lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
+    normEDS b c d (m + 2) ^ 2 * normEDS b c d (m + 3) * normEDS b c d (m + 5) -
+      normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m + 4) ^ 2 := by
+  repeat erw [normEDS, Int.cast_one, one_mul]
+  exact normEDS'_even b c d m
 
 @[simp]
-lemma EllDivSequence_odd (m : ℕ) : EllDivSequence b c d (2 * (m + 2) + 1) =
-    EllDivSequence b c d (m + 4) * EllDivSequence b c d (m + 2) ^ 3 -
-      EllDivSequence b c d (m + 1) * EllDivSequence b c d (m + 3) ^ 3 :=
-  EllDivSequence'_odd b c d m
-
-@[simp]
-lemma EllDivSequence_even (m : ℕ) : EllDivSequence b c d (2 * (m + 3)) * b =
-    EllDivSequence b c d (m + 2) ^ 2 * EllDivSequence b c d (m + 3) * EllDivSequence b c d (m + 5) -
-      EllDivSequence b c d (m + 1) * EllDivSequence b c d (m + 3) *
-        EllDivSequence b c d (m + 4) ^ 2 :=
-  EllDivSequence'_even b c d m
-
-@[simp]
-lemma EllDivSequence_neg (n : ℕ) : EllDivSequence b c d (-n) = -EllDivSequence b c d n := by
-  induction n
-  erw [EllDivSequence_zero, neg_zero]
-  rfl
+lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
+  simp [normEDS]

@@ -68,10 +68,11 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n := by
     rw [hn, ← hs]
     split_ifs with h <;> rw [tsub_mul, one_mul]
-    · refine' ⟨m_pos, le_succ _, le_add_right (le_mul_of_pos_left ‹0 < a›), _⟩
-      rw [tsub_add_eq_add_tsub (le_mul_of_pos_left h)]
-    · refine' ⟨succ_pos', le_rfl, le_add_left (le_mul_of_pos_left <| hab.resolve_left ‹¬0 < a›), _⟩
-      rw [← add_tsub_assoc_of_le (le_mul_of_pos_left <| hab.resolve_left ‹¬0 < a›)]
+    · refine' ⟨m_pos, le_succ _, le_add_right (Nat.le_mul_of_pos_left _ ‹0 < a›), _⟩
+      rw [tsub_add_eq_add_tsub (Nat.le_mul_of_pos_left _ h)]
+    · refine' ⟨succ_pos', le_rfl,
+        le_add_left (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›), _⟩
+      rw [← add_tsub_assoc_of_le (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›)]
   /- We will call the inductive hypothesis on a partition of `s \ t` for a carefully chosen `t ⊆ s`.
     To decide which, however, we must distinguish the case where all parts of `P` have size `m` (in
     which case we take `t` to be an arbitrary subset of `s` of size `n`) from the case where at

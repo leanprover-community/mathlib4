@@ -145,7 +145,7 @@ theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set
   let ⟨V, H⟩ := prod_self_subset <| (U.isOpen.preimage continuous_mul).mem_nhds <| by
     simpa only [Set.mem_preimage, Prod.snd_zero, mul_zero] using U.zero_mem
   use V
-  rintro v ⟨a, b, ha, hb, hv⟩
+  rintro v ⟨a, ha, b, hb, hv⟩
   have hy := H (Set.mk_mem_prod ha hb)
   simp only [Set.mem_preimage, SetLike.mem_coe, hv] at hy
   rw [SetLike.mem_coe]

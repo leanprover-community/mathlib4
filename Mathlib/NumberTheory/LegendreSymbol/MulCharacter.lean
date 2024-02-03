@@ -71,7 +71,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
+instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
   ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
@@ -390,7 +390,7 @@ theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ 
 #align mul_char.pow_apply_coe MulChar.pow_apply_coe
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n := by
+theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
   · exact pow_apply_coe χ n ha.unit
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
@@ -492,7 +492,7 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
   ext x
   rw [pow_apply_coe]
   rcases hχ x with (hx | hx | hx) <;> rw [hx]
-  · rw [zero_pow (@Fact.out p.Prime).pos]
+  · rw [zero_pow (@Fact.out p.Prime).ne_zero]
   · rw [one_pow]
   · exact CharP.neg_one_pow_char R' p
 #align mul_char.is_quadratic.pow_char MulChar.IsQuadratic.pow_char

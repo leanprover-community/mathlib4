@@ -130,7 +130,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -158,7 +158,7 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -247,14 +247,6 @@ instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α
     sInf_le := fun s t t_in a h => h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
-/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β :=
-  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
-#align set.kern_image Set.kernImage
-
-lemma subset_kernImage_iff {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
-  ⟨fun h _ hx ↦ h hx rfl,
-    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
 section GaloisConnection
 
 variable {f : α → β}
@@ -374,7 +366,7 @@ theorem nonempty_of_union_eq_top_of_nonempty {ι : Type*} (t : Set ι) (s : ι �
 theorem nonempty_of_nonempty_iUnion
     {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
   obtain ⟨x, hx⟩ := h_Union
-  exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
+  exact ⟨Classical.choose <| mem_iUnion.mp hx⟩
 
 theorem nonempty_of_nonempty_iUnion_eq_univ
     {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
@@ -592,11 +584,11 @@ lemma iInter_const (s : Set β) : ⋂ _ : ι, s = s := iInf_const
 #align set.Inter_const Set.iInter_const
 
 lemma iUnion_eq_const (hf : ∀ i, f i = s) : ⋃ i, f i = s :=
-  (iUnion_congr hf).trans $ iUnion_const _
+  (iUnion_congr hf).trans <| iUnion_const _
 #align set.Union_eq_const Set.iUnion_eq_const
 
 lemma iInter_eq_const (hf : ∀ i, f i = s) : ⋂ i, f i = s :=
-  (iInter_congr hf).trans $ iInter_const _
+  (iInter_congr hf).trans <| iInter_const _
 #align set.Inter_eq_const Set.iInter_eq_const
 
 end Nonempty
@@ -1435,7 +1427,7 @@ alias sUnion_mono := sUnion_subset_sUnion
 #align set.sUnion_mono Set.sUnion_mono
 
 theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι, s ⊆ ⋃ _ : ι₂, s :=
-  @iSup_const_mono (Set α) ι ι₂ _ s h
+  iSup_const_mono (α := Set α) h
 #align set.Union_subset_Union_const Set.iUnion_subset_iUnion_const
 
 @[simp]
@@ -1997,6 +1989,13 @@ theorem prod_sInter {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
   simp_rw [singleton_prod, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_right]
 #align set.prod_sInter Set.prod_sInter
 
+theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
+    (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
+  ext x
+  simp only [mem_prod, mem_iInter]
+  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
+#align prod_Inter Set.prod_iInter
+
 end Prod
 
 section Image2
@@ -2079,41 +2078,26 @@ end Image2
 
 section Seq
 
-/-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
-all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β :=
-  { b | ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b }
-#align set.seq Set.seq
-
-@[simp]
-theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
-    b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
-  Iff.rfl
-#align set.mem_seq_iff Set.mem_seq_iff
-
-lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := by
-  ext; simp
-
 theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t := by
   rw [seq_eq_image2, iUnion_image_left]
 #align set.seq_def Set.seq_def
 
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
-    seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u := by
-  rw [seq_eq_image2, image2_subset_iff]
+    seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
+  image2_subset_iff
 #align set.seq_subset Set.seq_subset
 
 @[gcongr]
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _ ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := image2_subset hs ht
 #align set.seq_mono Set.seq_mono
 
-theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t := by
-  rw [seq_eq_image2, image2_singleton_left]
+theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
+  image2_singleton_left
 #align set.singleton_seq Set.singleton_seq
 
-theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s := by
-  rw [seq_eq_image2, image2_singleton_right]
+theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : α → β => f a) '' s :=
+  image2_singleton_right
 #align set.seq_singleton Set.seq_singleton
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
@@ -2124,7 +2108,7 @@ theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
     f '' seq s t = seq ((f ∘ ·) '' s) t := by
-  rw [← singleton_seq, ← singleton_seq, seq_seq, image_singleton]
+  simp only [seq, image_image2, image2_image_left, comp_apply]
 #align set.image_seq Set.image_seq
 
 theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
@@ -2380,15 +2364,18 @@ theorem iSup_iUnion (s : ι → Set α) (f : α → β) : ⨆ a ∈ ⋃ i, s i, 
 #align supr_Union iSup_iUnion
 
 theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a :=
-  @iSup_iUnion α βᵒᵈ _ _ s f
+  iSup_iUnion (β := βᵒᵈ) s f
 #align infi_Union iInf_iUnion
+
+theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
+  simp_rw [sSup_eq_iSup, iSup_iUnion]
 
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 #align Sup_sUnion sSup_sUnion
 
 theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
-  @sSup_sUnion βᵒᵈ _ _
+  sSup_sUnion (β := βᵒᵈ) s
 #align Inf_sUnion sInf_sUnion
 
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :

@@ -72,10 +72,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   convert (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
-  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div,
-      mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
-      zero_pow (by positivity : 0 < n), zero_mul, zero_sub, ← integral_neg, ←
-      integral_const_mul]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
+      cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
+      ← integral_neg, ← integral_const_mul]
     refine' integral_congr fun x _ => _
     field_simp; ring
   · apply Continuous.intervalIntegrable
@@ -128,7 +127,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
         continuous_const.mul
           ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
             ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
-    · apply Nat.sub_pos_of_lt; exact one_lt_two.trans_le hn
+    · exact Nat.sub_ne_zero_of_lt hn
     refine' integral_congr fun x _ => _
     dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
@@ -331,7 +330,7 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
-    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.ofReal_mul_re]
+    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices
       (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
         (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by

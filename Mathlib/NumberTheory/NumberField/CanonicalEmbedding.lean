@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.Discriminant
+import Mathlib.Topology.Bornology.Constructions
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
@@ -21,7 +22,7 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 ## Main definitions and results
 
-* `NumberField.canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
+* `NumberField.canonicalEmbedding`: the ring homomorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
 sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
 
 * `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
@@ -134,7 +135,7 @@ noncomputable def latticeBasis [NumberField K] :
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext:2; rfl }]
-    rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
+    rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
@@ -576,8 +577,8 @@ theorem convexBodySumFun_eq_zero_iff (x : E K) :
       Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => norm_nonneg _)] at h
     ext : 2
     · exact norm_eq_zero.mp (h.1 _ (Finset.mem_univ _))
-    · exact norm_eq_zero.mp ((smul_eq_zero_iff_eq' two_ne_zero (α := ℝ)).mp
-        (h.2 _ (Finset.mem_univ _)))
+    · exact norm_eq_zero.1 <| eq_zero_of_ne_zero_of_mul_left_eq_zero two_ne_zero <| h.2 _ <|
+        Finset.mem_univ _
   · simp only [convexBodySumFun, h, Prod.fst_zero, Pi.zero_apply, norm_zero, Finset.sum_const_zero,
       Prod.snd_zero, mul_zero, add_zero]
 
@@ -677,7 +678,7 @@ theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
   obtain hB | hB := le_or_lt B 0
   · rw [convexBodySum_volume_eq_zero_of_le_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
-    exact finrank_pos
+    exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
       rw [mul_comm]
       convert addHaar_smul volume B (convexBodySum K 1)
@@ -799,7 +800,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
   · rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
     exact Subtype.ne_of_val_ne h_nzr
   · rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-      (rpow_nonneg_of_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (rpow_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
       (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
     refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
     rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]

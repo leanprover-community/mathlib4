@@ -132,15 +132,24 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 #align nat.four_pow_le_two_mul_add_one_mul_central_binom Nat.four_pow_le_two_mul_add_one_mul_central_binom
 
+/-- **Zhu Shijie's identity** aka hockey-stick identity. -/
+theorem sum_Icc_choose (n k : ℕ) : ∑ m in Icc k n, m.choose k = (n + 1).choose (k + 1) := by
+  cases' le_or_gt k n with h h
+  · induction' n, h using le_induction with n _ ih; · simp
+    rw [← Ico_insert_right (by linarith), sum_insert (by simp),
+      show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
+  · rw [choose_eq_zero_of_lt (by linarith), Icc_eq_empty_of_lt h, sum_empty]
+
 end Nat
 
 theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 := by
-  cases n; · simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     have h := add_pow (-1 : ℤ) 1 n.succ
     simp only [one_pow, mul_one, add_left_neg] at h
-    rw [← h, zero_pow (Nat.succ_pos n), if_neg (Nat.succ_ne_zero n)]
+    rw [← h, zero_pow n.succ_ne_zero, if_neg (Nat.succ_ne_zero n)]
 #align int.alternating_sum_range_choose Int.alternating_sum_range_choose
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :

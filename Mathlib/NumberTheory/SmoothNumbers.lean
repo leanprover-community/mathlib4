@@ -174,15 +174,15 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     · nth_rw 2 [← prod_factors hm₀]
       refine prod_eq <| (filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
       rw [filter_append, hp.factors_pow,
-          filter_eq_nil.mpr <| fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2],
-          nil_append, filter_eq_self.mpr <| fun q hq ↦ by simp [hm q hq]]
+          filter_eq_nil.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2],
+          nil_append, filter_eq_self.mpr fun q hq ↦ by simp [hm q hq]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rw 3 [← prod_factors hm₀]
     have : m.factors.filter (· = p) = m.factors.filter (¬ · < p)
-    · refine (filter_congr' <| fun q hq ↦ ?_).symm
+    · refine (filter_congr' fun q hq ↦ ?_).symm
       have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| lt_succ_iff.mp (hm q hq)
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, true_eq_decide_iff]
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
@@ -250,7 +250,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
   refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
-    simp only [ne_eq, _root_.mul_eq_zero, zero_lt_two, pow_eq_zero_iff, not_or] at this
+    simp only [ne_eq, _root_.mul_eq_zero, sq_eq_zero_iff, not_or] at this
     exact this.1
   · rw [lt_succ, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)

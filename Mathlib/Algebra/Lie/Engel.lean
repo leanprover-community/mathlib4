@@ -158,10 +158,8 @@ be nilpotent is that the image of the map `L → End(M)` consists of nilpotent e
 Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
-  ∀ (M : Type u₄) [AddCommGroup M],
-    ∀ [Module R M] [LieRingModule L M],
-      ∀ [LieModule R L M],
-        ∀ _ : ∀ x : L, _root_.IsNilpotent (toEndomorphism R L M x), LieModule.IsNilpotent R L M
+  ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
+    (∀ x : L, _root_.IsNilpotent (toEndomorphism R L M x)) → LieModule.IsNilpotent R L M
 #align lie_algebra.is_engelian LieAlgebra.IsEngelian
 
 variable {R L}

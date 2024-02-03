@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Cover
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -271,7 +270,7 @@ protected theorem exists_coe {α : Type*} (s : Finset α) (p : s → Prop) :
   Subtype.exists
 #align finset.exists_coe Finset.exists_coe
 
-instance PiFinsetCoe.canLift (ι : Type*) (α : ∀ _i : ι, Type*) [_ne : ∀ i, Nonempty (α i)]
+instance PiFinsetCoe.canLift (ι : Type*) (α : ι → Type*) [_ne : ∀ i, Nonempty (α i)]
     (s : Finset ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι α (· ∈ s)
 #align finset.pi_finset_coe.can_lift Finset.PiFinsetCoe.canLift
@@ -826,6 +825,8 @@ theorem not_nontrivial_singleton : ¬ ({a} : Finset α).Nontrivial := by simp [F
 theorem Nontrivial.ne_singleton (hs : s.Nontrivial) : s ≠ {a} := by
   rintro rfl; exact not_nontrivial_singleton hs
 #align finset.nontrivial.ne_singleton Finset.Nontrivial.ne_singleton
+
+nonrec lemma Nontrivial.exists_ne (hs : s.Nontrivial) (a : α) : ∃ b ∈ s, b ≠ a := hs.exists_ne _
 
 theorem eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
   rw [← coe_eq_singleton]; exact Set.eq_singleton_or_nontrivial ha
@@ -1501,10 +1502,10 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
 #align finset.empty_union Finset.empty_union
 
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono $ subset_union_left s t
+  h.mono <| subset_union_left s t
 
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono $ subset_union_right s t
+  h.mono <| subset_union_right s t
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
@@ -1923,6 +1924,9 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 #align finset.erase_empty Finset.erase_empty
 
+protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).Nonempty :=
+  (hs.exists_ne a).imp $ by aesop
+
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
   refine ⟨?_, fun hs ↦ hs.exists_ne a⟩
@@ -2092,7 +2096,7 @@ lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
   exact ⟨s.erase a, a, not_mem_erase _ _, by simp [insert_erase ha]⟩
 
 lemma Nontrivial.exists_cons_eq (hs : s.Nontrivial) :
-    ∃ t a ha b hb hab, (cons b t hb).cons a (mem_cons.not.2 $ not_or_intro hab ha) = s := by
+    ∃ t a ha b hb hab, (cons b t hb).cons a (mem_cons.not.2 <| not_or_intro hab ha) = s := by
   classical
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   have : b ∈ s.erase a := mem_erase.2 ⟨hab.symm, hb⟩
@@ -2474,6 +2478,8 @@ end Sdiff
 
 section SymmDiff
 
+open scoped symmDiff
+
 variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
@@ -2699,6 +2705,10 @@ theorem piecewise_mem_Icc' {δ : α → Type*} [∀ i, Preorder (δ i)] {f g : �
   piecewise_mem_Icc_of_mem_of_mem _ (Set.right_mem_Icc.2 h) (Set.left_mem_Icc.2 h)
 #align finset.piecewise_mem_Icc' Finset.piecewise_mem_Icc'
 
+lemma piecewise_same : s.piecewise f f = f := by
+  ext i
+  by_cases h : i ∈ s <;> simp [h]
+
 end Piecewise
 
 section DecidablePiExists
@@ -2917,6 +2927,13 @@ theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
   eq_of_veq <| Multiset.filter_add _ _ _
 #align finset.filter_disj_union Finset.filter_disj_union
 
+lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : Set β) (t : Finset α) :
+    s.PairwiseDisjoint fun x ↦ t.filter (f · = x) := by
+  rintro i - j - h u hi hj x hx
+  obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = i := by simpa using hi hx
+  obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = j := by simpa using hj hx
+  contradiction
+
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =
       (if p a then {a} else ∅ : Finset α).disjUnion (filter p s)
@@ -2979,7 +2996,7 @@ theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter 
 #align finset.filter_and Finset.filter_and
 
 theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
-  ext <| fun a => by
+  ext fun a => by
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
@@ -3695,7 +3712,7 @@ theorem biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a 
       exists_eq_left]
 #align finset.bUnion_insert Finset.biUnion_insert
 
--- ext $ λ x, by simp [or_and_distrib_right, exists_or_distrib]
+-- ext <| λ x, by simp [or_and_distrib_right, exists_or_distrib]
 theorem biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
   ext fun x => by
     simp_rw [mem_biUnion]

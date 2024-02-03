@@ -153,13 +153,71 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 
 end
 
+section MonoidWithZero
+variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
+
+@[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
+  | n + 1, _ => by rw [pow_succ, zero_mul]
+#align zero_pow zero_pow
+#align zero_pow' zero_pow
+
+lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
+  split_ifs with h
+  · rw [h, pow_zero]
+  · rw [zero_pow h]
+#align zero_pow_eq zero_pow_eq
+
+lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
+  | _, _, Nat.le.refl, ha => ha
+  | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, mul_zero]
+#align pow_eq_zero_of_le pow_eq_zero_of_le
+
+lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; exact ha $ zero_pow hn
+#align ne_zero_pow ne_zero_pow
+
+@[simp]
+lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
+  ⟨by rintro h rfl; simp at h, zero_pow⟩
+#align zero_pow_eq_zero zero_pow_eq_zero
+
+variable [NoZeroDivisors M₀]
+
+lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
+  | 0, ha => by simpa using congr_arg (a * ·) ha
+  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim id pow_eq_zero
+#align pow_eq_zero pow_eq_zero
+
+@[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
+  ⟨pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
+
+#align pow_eq_zero_iff pow_eq_zero_iff
+
+lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
+#align pow_ne_zero_iff pow_ne_zero_iff
+
+@[field_simps]
+lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
+#align pow_ne_zero pow_ne_zero
+
+instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
+#align ne_zero.pow NeZero.pow
+
+lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
+#align sq_eq_zero_iff sq_eq_zero_iff
+
+@[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
+  obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+#align pow_eq_zero_iff' pow_eq_zero_iff'
+
+end MonoidWithZero
+
 section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
 -- see Note [lower instance priority]
 instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
-  ⟨fun ab0 => or_iff_not_imp_left.mpr <| fun ha => mul_left_cancel₀ ha <|
+  ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
     ab0.trans (mul_zero _).symm⟩
 #align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
 

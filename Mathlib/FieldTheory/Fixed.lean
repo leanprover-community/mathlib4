@@ -314,13 +314,13 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext <| fun _ => FunLike.ext_iff.1 hfg _ :
+        AlgHom.ext fun _ => DFunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
 
 theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
-    [FiniteDimensional K V] [Field W] [Algebra K W] [FiniteDimensional K W] :
+    [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
 #align cardinal_mk_alg_hom cardinal_mk_algHom
@@ -345,7 +345,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
       Fintype.card G ≤ Fintype.card (F →ₐ[FixedPoints.subfield G F] F) :=
         Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
       _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (subfield G F) F)
-      _ = finrank (FixedPoints.subfield G F) F := finrank_linear_map' _ _ _
+      _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
@@ -359,7 +359,7 @@ theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite
   · apply le_antisymm
     · exact Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
     · rw [← finrank_eq_card G F]
-      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linear_map' _ _ _)
+      exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linearMap_self _ _ _)
 #align fixed_points.to_alg_hom_bijective FixedPoints.toAlgHom_bijective
 
 /-- Bijection between G and algebra homomorphisms that fix the fixed points -/
