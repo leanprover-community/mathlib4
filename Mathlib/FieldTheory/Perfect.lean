@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Algebra.Squarefree.UniqueFactorizationDomain
 
 /-!
 
@@ -24,6 +25,8 @@ prime characteristic.
    sense of Serre.
  * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
  * `PerfectField.ofFinite`: all finite fields are perfect.
+ * `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
+   it is square-free.
  * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
    if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
    and `L` is also a perfect field.
@@ -186,7 +189,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
 
 namespace PerfectField
 
-variable (K : Type*) [Field K]
+variable {K : Type*} [Field K]
 
 instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
 
@@ -227,6 +230,23 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
+
+theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
+  refine ⟨Separable.squarefree, ?_⟩
+  induction' g using UniqueFactorizationMonoid.induction_on_coprime with p hp p n hp p q _ ihp ihq
+  · simp
+  · obtain ⟨x, hx, rfl⟩ := isUnit_iff.mp hp
+    exact fun _ ↦ (separable_C x).mpr hx
+  · intro hpn
+    rcases hpn.eq_zero_or_one_of_pow_of_not_isUnit hp.not_unit with rfl | rfl; · simp
+    exact (pow_one p).symm ▸ PerfectField.separable_of_irreducible hp.irreducible
+  · intro hpq'
+    obtain ⟨h, hp, hq⟩ := squarefree_mul_iff.mp hpq'
+    apply (ihp hp).mul (ihq hq)
+    classical
+    apply EuclideanDomain.isCoprime_of_dvd
+    · rintro ⟨rfl, rfl⟩; simp at hp
+    · exact fun d hd _ hdp hdq ↦ mem_nonunits_iff.mpr hd <| h d hdp hdq
 
 end PerfectField
 
