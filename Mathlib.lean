@@ -290,6 +290,7 @@ import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
+import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Killing
@@ -2655,6 +2656,7 @@ import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Function.LpOrder
 import Mathlib.MeasureTheory.Function.LpSeminorm
+import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.SimpleFunc
