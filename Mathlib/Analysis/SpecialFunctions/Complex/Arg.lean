@@ -14,16 +14,20 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
--/
 
+## Main definitions
+
+* `Complex.arg`: Argument of a complex number
+* `Complex.arcLength`: Arc-length between two complex numbers.
+-/
 
 noncomputable section
 
-namespace Complex
-
-open ComplexConjugate Real Topology
-
 open Filter Set
+open scoped ComplexConjugate Real Topology
+
+namespace Complex
+variable {a x z : ℂ}
 
 /-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
@@ -122,6 +126,14 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 set_option linter.uppercaseLean3 false in
 #align complex.arg_cos_add_sin_mul_I Complex.arg_cos_add_sin_mul_I
+
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
+  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
+  · rw [← exp_mul_I, eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · convert toIocMod_mem_Ioc _ _ _
+    ring
 
 @[simp]
 theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
@@ -346,6 +358,20 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   · exact arg_real_mul (conj x) (by simp [hx])
 #align complex.arg_inv Complex.arg_inv
 
+@[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
+
+lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
+  rw [abs_eq_one_iff]
+  constructor
+  · rintro ⟨θ, rfl⟩
+    refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
+    · convert toIocMod_mem_Ioc _ _ _
+      ring
+    · rw [eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · rintro ⟨θ, _, rfl⟩
+    exact ⟨θ, rfl⟩
+
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
   rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or_iff]
@@ -536,6 +562,41 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
+/-! ### Arc-length -/
+
+/-- The arc-length between two complex numbers is the absolute value of their argument.
+
+The arc-length to `0` is always zero. -/
+noncomputable def arcLength (x y : ℂ) : ℝ := |(x / y).arg|
+
+lemma arcLength_comm (x y : ℂ) : arcLength x y = arcLength y x := by
+  rw [arcLength, ← abs_arg_inv, inv_div, arcLength]
+
+@[simp] lemma arcLength_zero_left (y : ℂ) : arcLength 0 y = 0 := by simp [arcLength]
+@[simp] lemma arcLength_zero_right (x : ℂ) : arcLength x 0 = 0 := by simp [arcLength]
+lemma arcLength_one_left (y : ℂ) : arcLength 1 y = |y.arg| := by simp [arcLength]
+lemma arcLength_one_right (x : ℂ) : arcLength x 1 = |x.arg| := by simp [arcLength]
+@[simp] lemma arcLength_mul_left (ha : a ≠ 0) (x y : ℂ) :
+    arcLength (a * x) (a * y) = arcLength x y := by simp [arcLength, mul_div_mul_left _ _ ha]
+@[simp] lemma arcLength_mul_right (ha : a ≠ 0) (x y : ℂ) :
+    arcLength (x * a) (y * a) = arcLength x y := by simp [arcLength, mul_div_mul_right _ _ ha]
+
+lemma arcLength_div_left_eq_arcLength_mul_right (a x y : ℂ) :
+    arcLength (x / a) y = arcLength x (y * a) := by simp [arcLength, div_div, mul_comm]
+
+lemma arcLength_div_right_eq_arcLength_mul_left (a x y : ℂ) :
+    arcLength x (y / a) = arcLength (x * a) y := by
+  rw [arcLength_comm, arcLength_div_left_eq_arcLength_mul_right, arcLength_comm]
+
+lemma arcLength_exp_exp (x y : ℝ) :
+    arcLength (exp (x * I)) (exp (y * I)) =
+      |toIocMod (mul_pos two_pos Real.pi_pos) (-π) (x - y)| := by
+  simp_rw [arcLength, ← exp_sub, ← sub_mul, ← ofReal_sub, arg_exp_mul_I]
+
+lemma arcLength_exp_one (x : ℝ) :
+    arcLength (exp (x * I)) 1 = |toIocMod (mul_pos two_pos Real.pi_pos) (-π) x| := by
+  simpa using arcLength_exp_exp x 0
+
 section slitPlane
 
 open ComplexOrder in
@@ -550,8 +611,6 @@ lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :
 end slitPlane
 
 section Continuity
-
-variable {x z : ℂ}
 
 theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / abs x) :=
   ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le
