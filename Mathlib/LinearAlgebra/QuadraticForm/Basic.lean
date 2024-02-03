@@ -740,7 +740,7 @@ theorem toQuadraticForm_sum {ι : Type*} (s : Finset ι) (B : ι → M →ₗ[R]
 -- #align bilin_form.to_quadratic_form_sum BilinForm.toQuadraticForm_sum
 
 @[simp]
-theorem toQuadraticForm_eq_zero {B : M →ₗ[R] M →ₗ[R] R} : B.toQuadraticForm = 0 ↔ B.IsAlt (R := R) (R₁ := R) (M := R) (M₁ := M) :=
+theorem toQuadraticForm_eq_zero {B : M →ₗ[R] M →ₗ[R] R} : B.toQuadraticForm = 0 ↔ B.IsAlt :=
   QuadraticForm.ext_iff
 -- #align bilin_form.to_quadratic_form_eq_zero BilinForm.toQuadraticForm_eq_zero
 
@@ -980,8 +980,7 @@ theorem _root_.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, LinearMap.toQuadraticForm_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ←h, RingHom.id_apply, add_self_eq_zero]
-
+  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
 
 end CommSemiring
 
@@ -1228,9 +1227,11 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
     rw [hd] at b
     refine' ⟨b, fun i j _ => rfl⟩
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
-  rw [← Submodule.finrank_add_eq_of_isCompl (LinearMap.isCompl_span_singleton_orthogonal hx).symm] at hd
+  rw [← Submodule.finrank_add_eq_of_isCompl (LinearMap.isCompl_span_singleton_orthogonal hx).symm]
+    at hd
   rw [finrank_span_singleton (ne_zero_of_map hx)] at hd
-  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B ) (Submodule.orthogonalBilin (K ∙ x) B )
+  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B )
+    (Submodule.orthogonalBilin (K ∙ x) B )
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _  : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=
