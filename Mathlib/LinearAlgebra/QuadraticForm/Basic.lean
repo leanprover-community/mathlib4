@@ -655,7 +655,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
-def toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+def toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
