@@ -69,6 +69,8 @@ section Colimits
 
 variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 
+/-- The relation used to construct colimits in types for `J : SingleObj G ⥤ Type u` is
+equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj  (SingleObj.star G)`. -/
 lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     Types.Quot.Rel J ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩
     ↔ Setoid.Rel (MulAction.orbitRel G (J.obj (SingleObj.star G))) x y := by
@@ -77,6 +79,8 @@ lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   conv => lhs; simp only [h]
 
+/-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
+equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 def Types.Quot.equivOrbitRelQuotient :
     Types.Quot J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
   toFun := Quot.lift (fun p => ⟦p.2⟧) <| fun a b h => Quotient.sound <|
