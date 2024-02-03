@@ -559,7 +559,6 @@ def evalRatNum : PositivityExt where eval {u α} _ _ e := do
       assumeInstancesCommute
       match ← core zα pα a with
       | .positive pa =>
-        Lean.logInfo "tetrteer"
         return .positive q(num_pos_of_pos $pa)
       | .nonnegative pa => return .nonnegative q(num_nonneg_of_nonneg $pa)
       | .nonzero pa => return .nonzero q(num_ne_zero_of_ne_zero $pa)
