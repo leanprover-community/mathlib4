@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Linarith
 
