@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 
 #align_import measure_theory.function.conditional_expectation.ae_measurable from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 

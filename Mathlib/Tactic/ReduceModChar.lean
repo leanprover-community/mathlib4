@@ -190,23 +190,22 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
     iota := false
   }
   let congrTheorems ← Meta.getSimpCongrTheorems
-  let (.some ext) ← getSimpExtension? `reduce_mod_char |
-    throwError "internal error: reduce_mod_char not registered as simp extension"
+  let ext? ← getSimpExtension? `reduce_mod_char
+  let ext ← match ext? with
+  | some ext => pure ext
+  | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx : Simp.Context := {
     config := config,
     congrTheorems := congrTheorems,
     simpTheorems := #[← ext.getTheorems]
   }
   let discharge := Mathlib.Meta.NormNum.discharge ctx
-  let r := {expr := e}
-
-  let pre e := do
-    Simp.andThen (← Simp.preDefault e discharge) fun e =>
+  let r : Simp.Result := {expr := e}
+  let pre := Simp.preDefault #[] >> fun e =>
       try return (Simp.Step.done (← matchAndNorm e))
-      catch _ => pure (Simp.Step.visit {expr := e})
-  let post e := do
-    Simp.postDefault e discharge
-  let r ← Simp.mkEqTrans r (← Simp.main r.expr ctx (methods := { pre, post })).1
+      catch _ => pure .continue
+  let post := Simp.postDefault #[]
+  let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 
   return r
 

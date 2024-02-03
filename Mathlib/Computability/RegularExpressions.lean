@@ -343,7 +343,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
-  termination_by star_rmatch_iff P t => (P,t.length)
+  termination_by t => (P,t.length)
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
@@ -354,8 +354,7 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     rw [zero_def, zero_rmatch]
     tauto
   | epsilon =>
-    rw [one_def, one_rmatch_iff]
-    rfl
+    rw [one_def, one_rmatch_iff, matches'_epsilon, Language.mem_one]
   | char =>
     rw [char_rmatch_iff]
     rfl
