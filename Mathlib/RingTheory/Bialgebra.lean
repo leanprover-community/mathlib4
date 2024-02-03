@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ali Ramsey
+Authors: Ali Ramsey, Kevin Buzzard
 -/
 import Mathlib.RingTheory.Coalgebra
 import Mathlib.RingTheory.TensorProduct
