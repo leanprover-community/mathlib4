@@ -72,9 +72,9 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.IsCon
     _ = 1 := by
       simp only [div_eq_mul_inv]
       rw [lintegral_add_left']
-      · rw [lintegral_mul_const'' _ (hf.pow_const p), lintegral_mul_const', hf_norm, hg_norm, ←
-          div_eq_mul_inv, ← div_eq_mul_inv]
-        simp [hpq.symm.pos, hpq.inv_add_inv_conj_ennreal]
+      · rw [lintegral_mul_const'' _ (hf.pow_const p), lintegral_mul_const', hf_norm, hg_norm,
+          one_mul, one_mul, hpq.inv_add_inv_conj_ennreal]
+        simp [hpq.symm.pos]
       · exact (hf.pow_const _).mul_const _
 #align ennreal.lintegral_mul_le_one_of_lintegral_rpow_eq_one ENNReal.lintegral_mul_le_one_of_lintegral_rpow_eq_one
 
@@ -195,8 +195,7 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     rw [one_div]
     apply one_lt_inv hp
     linarith
-  have h2pq : 1 / (1 / p) + 1 / (1 / q) = 1 := by
-    simp [hp.ne', hq.ne', hpq]
+  have h2pq : (1 / p)⁻¹ + (1 / q)⁻¹ = 1 := by simp [hp.ne', hq.ne', hpq]
   have := ENNReal.lintegral_mul_le_Lp_mul_Lq μ ⟨h2p, h2pq⟩ (hf.pow_const p) (hg.pow_const q)
   simpa [← ENNReal.rpow_mul, hp.ne', hq.ne'] using this
 
