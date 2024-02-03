@@ -115,7 +115,7 @@ section
 variable {C D}
 
 @[reassoc (attr := simp)]
-theorem  LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
+theorem LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
     (f : X ⟶ Y) (g : X' ⟶ Y') :
       (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
   simp [tensorHom_def]

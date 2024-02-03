@@ -180,6 +180,8 @@ set_option linter.uppercaseLean3 false in
 
 variable (A)
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- A monoid object as a bimodule over itself. -/
 @[simps]
 def regular : Bimod A A where
@@ -866,7 +868,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     pure_coherence
-  slice_rhs 2 4 => rw [this]
+  slice_rhs 2 4 => rw [← tensorHom_id, this]
   slice_rhs 1 2 => rw [Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align Bimod.id_whisker_left_Bimod Bimod.id_whiskerLeft_bimod

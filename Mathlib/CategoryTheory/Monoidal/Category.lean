@@ -951,6 +951,8 @@ def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
 
 section
 
+attribute [local simp] id_tensorHom tensorHom_id whisker_exchange
+
 -- Porting Note: This used to be `variable {C}` but it seems like Lean 4 parses that differently
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 

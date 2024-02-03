@@ -69,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]

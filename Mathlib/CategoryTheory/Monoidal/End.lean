@@ -90,6 +90,8 @@ attribute [local instance] endofunctorMonoidalCategory
 -- porting note: used `dsimp [endofunctorMonoidalCategory]` when necessary instead
 -- attribute [local reducible] endofunctorMonoidalCategory
 
+attribute [local simp] id_tensorHom tensorHom_id in
+
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 @[simps!]

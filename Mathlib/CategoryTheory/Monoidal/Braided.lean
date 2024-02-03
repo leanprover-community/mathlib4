@@ -3,9 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Discrete
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 #align_import category_theory.monoidal.braided from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -40,7 +41,7 @@ which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
 class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
-  /-- braiding natural isomorphism -/
+  /-- The braiding natural isomorphism. -/
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
   braiding_naturality_right :
     ∀ (X : C) {Y Z : C} (f : Y ⟶ Z),
@@ -50,12 +51,13 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
     ∀ {X Y : C} (f : X ⟶ Y) (Z : C),
       f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
     aesop_cat
-  -- hexagon identities:
+  /-- The first hexagon identity. -/
   hexagon_forward :
     ∀ X Y Z : C,
       (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
         ((braiding X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ (Y ◁ (braiding X Z).hom) := by
     aesop_cat
+  /-- The second hexagon identity. -/
   hexagon_reverse :
     ∀ X Y Z : C,
       (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
@@ -74,6 +76,7 @@ open MonoidalCategory
 
 open BraidedCategory
 
+@[inherit_doc]
 notation "β_" => BraidedCategory.braiding
 
 namespace BraidedCategory
@@ -135,14 +138,14 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left'_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right']
   braiding_naturality_right := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right'_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left']
   hexagon_forward := by
     intros
     apply F.map_injective
@@ -220,7 +223,6 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
       by (slice_lhs 2 3 => rw [← braiding_naturality_right]); simp only [assoc]
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) := by rw [Iso.hom_inv_id, comp_id]
     _ = (ρ_ X).hom ▷ 𝟙_ C := by rw [triangle]
-
 #align category_theory.braiding_left_unitor_aux₂ CategoryTheory.braiding_leftUnitor_aux₂
 
 theorem braiding_leftUnitor (X : C) : (β_ X (𝟙_ C)).hom ≫ (λ_ X).hom = (ρ_ X).hom := by
@@ -252,7 +254,6 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
       by (slice_lhs 2 3 => rw [← braiding_naturality_left]); simp only [assoc]
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) := by rw [Iso.hom_inv_id, comp_id]
     _ = 𝟙_ C ◁ (λ_ X).hom := by rw [triangle_assoc_comp_right]
-
 #align category_theory.braiding_right_unitor_aux₂ CategoryTheory.braiding_rightUnitor_aux₂
 
 theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (λ_ X).hom := by
@@ -455,6 +456,7 @@ def tensor_μ (X Y : C × C) : (X.1 ⊗ X.2) ⊗ Y.1 ⊗ Y.2 ⟶ (X.1 ⊗ Y.1) �
         (X.1 ◁ (α_ Y.1 X.2 Y.2).hom) ≫ (α_ X.1 Y.1 (X.2 ⊗ Y.2)).inv
 #align category_theory.tensor_μ CategoryTheory.tensor_μ
 
+@[reassoc]
 theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : U₁ ⟶ V₁)
     (g₂ : U₂ ⟶ V₂) :
     ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensor_μ C (Y₁, Y₂) (V₁, V₂) =
@@ -472,6 +474,8 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
   simp only [assoc]
 #align category_theory.tensor_μ_natural CategoryTheory.tensor_μ_natural
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 @[reassoc]
 theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
     (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
@@ -484,6 +488,7 @@ theorem tensor_μ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ 
       tensor_μ C (Z₁, Z₂) (X₁, X₂) ≫ (Z₁ ◁ f₁ ⊗ Z₂ ◁ f₂) := by
   convert tensor_μ_natural C (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
 
+@[reassoc]
 theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =
       ((λ_ (𝟙_ C)).inv ▷ (X₁ ⊗ X₂)) ≫
@@ -501,6 +506,7 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
   simp [tensorHom_id, id_tensorHom, tensorHom_def]
 #align category_theory.tensor_left_unitality CategoryTheory.tensor_left_unitality
 
+@[reassoc]
 theorem tensor_right_unitality (X₁ X₂ : C) :
     (ρ_ (X₁ ⊗ X₂)).hom =
       ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).inv) ≫
@@ -534,19 +540,29 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     _ = _ := by rw [← whisker_exchange]; coherence
 #align category_theory.tensor_associativity CategoryTheory.tensor_associativity
 
+-- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
+attribute [reassoc] tensor_associativity
+
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/
 @[simps!]
 def tensorMonoidal : MonoidalFunctor (C × C) C :=
   { tensor C with
     ε := (λ_ (𝟙_ C)).inv
     μ := tensor_μ C
-    μ_natural_left := fun f Z => tensor_μ_natural_left C f.1 f.2 Z.1 Z.2
-    μ_natural_right := fun Z f => tensor_μ_natural_right C Z.1 Z.2 f.1 f.2
-    associativity := fun X Y Z => tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2
-    left_unitality := fun ⟨X₁, X₂⟩ => tensor_left_unitality C X₁ X₂
-    right_unitality := fun ⟨X₁, X₂⟩ => tensor_right_unitality C X₁ X₂
+    μ_natural_left := fun f Z => by
+      -- `simpa` will be not needed when we define `μ_natural_left` in terms of the whiskerings.
+      simpa using tensor_μ_natural_left C f.1 f.2 Z.1 Z.2
+    μ_natural_right := fun Z f => by
+      simpa using tensor_μ_natural_right C Z.1 Z.2 f.1 f.2
+    associativity := fun X Y Z => by
+      simpa using tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2
+    left_unitality := fun ⟨X₁, X₂⟩ => by
+      simpa using tensor_left_unitality C X₁ X₂
+    right_unitality := fun ⟨X₁, X₂⟩ => by
+      simpa using tensor_right_unitality C X₁ X₂
     μ_isIso := by dsimp [tensor_μ]; infer_instance }
 
+@[reassoc]
 theorem leftUnitor_monoidal (X₁ X₂ : C) :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       tensor_μ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).hom ▷ (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom := by
@@ -562,6 +578,7 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
   coherence
 #align category_theory.left_unitor_monoidal CategoryTheory.leftUnitor_monoidal
 
+@[reassoc]
 theorem rightUnitor_monoidal (X₁ X₂ : C) :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       tensor_μ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).hom) ≫ (ρ_ (X₁ ⊗ X₂)).hom := by
@@ -582,13 +599,16 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
       ((α_ X₁ X₂ X₃).hom ⊗ (α_ Y₁ Y₂ Y₃).hom) ≫
         tensor_μ C (X₁, X₂ ⊗ X₃) (Y₁, Y₂ ⊗ Y₃) ≫ ((X₁ ⊗ Y₁) ◁ tensor_μ C (X₂, X₃) (Y₂, Y₃)) := by
-  dsimp [tensor_μ]
+  dsimp only [tensor_μ]
   calc
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
         (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
     _ = _ := by rw [whisker_exchange]; simp; coherence
 #align category_theory.associator_monoidal CategoryTheory.associator_monoidal
+
+-- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
+attribute [reassoc] associator_monoidal
 
 end Tensor
 

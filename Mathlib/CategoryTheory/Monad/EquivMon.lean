@@ -98,8 +98,8 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
         intro Z
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
-        simp only [NatTrans.naturality, NatTrans.hcomp_app, assoc, NatTrans.comp_app,
-          ofMon_μ] }
+        simp only [Category.assoc, NatTrans.naturality, ofMon_obj]
+        rfl }
 #align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
