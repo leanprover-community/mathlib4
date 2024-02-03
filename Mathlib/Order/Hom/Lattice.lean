@@ -1222,8 +1222,7 @@ def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 #align bounded_lattice_hom.to_bounded_order_hom BoundedLatticeHom.toBoundedOrderHom
 
-instance instFunLike : FunLike (BoundedLatticeHom α β) α β
-    where
+instance instFunLike : FunLike (BoundedLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 

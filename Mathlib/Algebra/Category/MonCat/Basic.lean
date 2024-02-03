@@ -87,11 +87,11 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 
 @[to_additive]
 instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (X →* Y) X Y by infer_instance
+  inferInstanceAs <| FunLike (X →* Y) X Y
 
 @[to_additive]
 instance monoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
-  show MonoidHomClass (X →* Y) X Y by infer_instance
+  inferInstanceAs <| MonoidHomClass (X →* Y) X Y
 
 -- porting note: added
 @[to_additive (attr := simp)]

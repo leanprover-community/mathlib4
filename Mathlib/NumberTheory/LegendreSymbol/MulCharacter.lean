@@ -132,10 +132,6 @@ theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
   exact MonoidHom.ext h
 #align mul_char.ext' MulChar.ext'
 
-instance : FunLike (MulChar R R') R R' where
-  coe χ := χ.toMonoidHom.toFun
-  coe_injective' _ _ h := ext' fun a => congr_fun h a
-
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
   map_one χ := χ.map_one'

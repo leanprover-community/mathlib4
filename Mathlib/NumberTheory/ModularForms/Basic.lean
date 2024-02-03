@@ -62,8 +62,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and bounded
 at infinity. -/
 class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ]
-    extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   bdd_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsBoundedAtImInfty (f ∣[k] A)
 #align modular_form_class ModularFormClass
@@ -72,8 +71,7 @@ class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k :
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and zero
 at infinity. -/
 class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ]
-    extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
 #align cusp_form_class CuspFormClass

@@ -133,6 +133,7 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
     (fun c n  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
     -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
+    -- It looks like we now run out of assignable metavariables.
     (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 #align linear_map.flip LinearMap.flip
 

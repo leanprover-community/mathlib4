@@ -1149,7 +1149,7 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
   { Equiv.prodAssoc E E₂ E₃ with
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
-    map_add' := by simp [-_root_.map_add] -- HACK to fix timeout
+    map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
     map_smul' := by simp
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩

@@ -460,7 +460,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
         rw [this]
         apply Ideal.mul_mem_left
-        -- Note: adding `includeLeft` as a hint fixes a timeout
+        -- Note: adding `includeLeft` as a hint fixes a timeout #8386
         apply Ideal.mem_map_of_mem includeLeft
         exact Submodule.coe_mem a
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
@@ -528,7 +528,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
           Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
         apply Ideal.mul_mem_left
-        -- Note: adding `includeRight` as a hint fixes a timeout
+        -- Note: adding `includeRight` as a hint fixes a timeout #8386
         apply Ideal.mem_map_of_mem includeRight
         exact Submodule.coe_mem b
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,

@@ -76,8 +76,7 @@ theorem toMultilinearMap_injective :
   | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
-instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
-    where
+instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 

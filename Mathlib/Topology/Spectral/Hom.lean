@@ -109,7 +109,7 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 #align spectral_map.to_continuous_map SpectralMap.toContinuousMap
 
-instance : FunLike (SpectralMap α β) α β where
+instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
 

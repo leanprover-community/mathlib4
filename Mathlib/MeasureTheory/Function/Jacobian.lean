@@ -1222,10 +1222,8 @@ theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
-    -- `Pi.smul_apply _` forces explicit binders and relaxes transparency to use non-reducibly
-    -- defeq instances see documentation for `Lean.Meta.Simp.synthesizeArgs`
     simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
-      Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply _, mul_one]
+      Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply, mul_one]
   rw [this, ContinuousLinearMap.det, ContinuousLinearMap.coe_smul]
   rw [show ((1 : 𝕜 →L[𝕜] 𝕜) : 𝕜 →ₗ[𝕜] 𝕜) = LinearMap.id from rfl]
   rw [LinearMap.det_smul, FiniteDimensional.finrank_self, LinearMap.det_id, pow_one, mul_one]

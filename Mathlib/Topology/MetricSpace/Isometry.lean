@@ -319,10 +319,6 @@ instance : EquivLike (α ≃ᵢ β) α β where
   right_inv e := e.right_inv
   coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
 
-instance : FunLike (α ≃ᵢ β) α β where
-  coe e := e.toEquiv
-  coe_injective' := DFunLike.coe_injective
-
 theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 #align isometry_equiv.coe_eq_to_equiv IsometryEquiv.coe_eq_toEquiv
 

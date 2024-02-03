@@ -169,8 +169,7 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
 /-- Lift a `OneHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) "Lift a `ZeroHom` to `Finset` via `image`"]
 def imageOneHom [DecidableEq β] [One β] [FunLike F α β] [OneHomClass F α β] (f : F) :
-    OneHom (Finset α) (Finset β)
-    where
+    OneHom (Finset α) (Finset β) where
   toFun := Finset.image f
   map_one' := by rw [image_one, map_one, singleton_one]
 #align finset.image_one_hom Finset.imageOneHom

@@ -76,7 +76,9 @@ instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
 
 instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible and instance
+  -- transparency. It seems that `(CategoryTheory.forget SemiRingCat).toPrefunctor` is not
+  -- unfolding during unification
   ConcreteCategory.instFunLike
 
 -- Porting note: added

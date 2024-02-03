@@ -53,8 +53,8 @@ section
 /-- `PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
-class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-    [FunLike F α β]
+class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*)
+    [Preorder α] [Preorder β] [FunLike F α β]
     extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
@@ -115,7 +115,7 @@ namespace PseudoEpimorphism
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance : FunLike (PseudoEpimorphism α β) α β where
+instance instFunLike : FunLike (PseudoEpimorphism α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -239,7 +239,7 @@ def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 #align esakia_hom.to_pseudo_epimorphism EsakiaHom.toPseudoEpimorphism
 
-instance : FunLike (EsakiaHom α β) α β where
+instance instFunLike : FunLike (EsakiaHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f

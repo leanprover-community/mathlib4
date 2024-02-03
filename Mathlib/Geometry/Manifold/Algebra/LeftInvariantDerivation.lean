@@ -139,11 +139,9 @@ instance : Add (LeftInvariantDerivation I G) where
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  -- Note: restored to state before port
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
 
 instance : Sub (LeftInvariantDerivation I G) where
-  -- Note: restored to state before port
   sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
 
 @[simp]

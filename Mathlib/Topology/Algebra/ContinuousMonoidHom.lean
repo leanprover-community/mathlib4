@@ -413,7 +413,7 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-noncomputable instance : FunLike (PontryaginDual A) A circle :=
+instance : FunLike (PontryaginDual A) A circle :=
   ContinuousMonoidHom.funLike
 
 noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=

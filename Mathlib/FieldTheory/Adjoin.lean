@@ -1264,9 +1264,7 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : (minpoly F α
     simp only [adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_sep, h_splits]
 #align intermediate_field.card_alg_hom_adjoin_integral IntermediateField.card_algHom_adjoin_integral
 
--- Note: #8386 had to bump heartbeats.
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
-set_option synthInstance.maxHeartbeats 40000 in
 open FiniteDimensional AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
@@ -1281,7 +1279,8 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
   · have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
+    -- Needed to specialize `map_sub` to avoid a timeout #8386
+    rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
   have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h

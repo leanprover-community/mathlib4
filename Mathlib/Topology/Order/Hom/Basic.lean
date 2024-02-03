@@ -98,7 +98,7 @@ def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 #align continuous_order_hom.to_continuous_map ContinuousOrderHom.toContinuousMap
 
-instance : FunLike (α →Co β) α β where
+instance instFunLike : FunLike (α →Co β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f

@@ -102,7 +102,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
-instance : FunLike (Homotopy f₀ f₁) (I × X) Y where
+instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -416,7 +416,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
-instance : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
+instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective'
   | ⟨⟨⟨_, _⟩, _, _⟩, _⟩, ⟨⟨⟨_, _⟩, _, _⟩, _⟩, rfl => rfl

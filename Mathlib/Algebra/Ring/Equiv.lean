@@ -146,10 +146,6 @@ instance : EquivLike (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance : FunLike (R ≃+* S) R S where
-  coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
-
 instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'

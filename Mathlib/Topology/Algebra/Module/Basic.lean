@@ -414,8 +414,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
   congr
 #align continuous_linear_map.coe_injective ContinuousLinearMap.coe_injective
 
-instance funLike :
-    FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 

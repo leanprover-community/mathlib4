@@ -369,8 +369,8 @@ You should extend this class when you extend `RingHom`.
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
-class RingHomClass (F : Type*) (α β : outParam Type*) [NonAssocSemiring α] [NonAssocSemiring β]
-    [FunLike F α β]
+class RingHomClass (F : Type*) (α β : outParam Type*)
+    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β]
   extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
 #align ring_hom_class RingHomClass
 

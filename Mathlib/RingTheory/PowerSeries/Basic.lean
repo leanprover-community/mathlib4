@@ -2288,7 +2288,7 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine' not_iff_not.mp _
   push_neg
-  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression?
+  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
   simp [PowerSeries.ext_iff, (coeff R _).map_zero]
 #align power_series.exists_coeff_ne_zero_iff_ne_zero PowerSeries.exists_coeff_ne_zero_iff_ne_zero
 

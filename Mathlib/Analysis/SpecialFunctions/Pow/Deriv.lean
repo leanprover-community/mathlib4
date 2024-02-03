@@ -307,7 +307,7 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prod hg) using 1
-  simp [Pi.smul_apply, mul_assoc, mul_comm, mul_left_comm]
+  simp [mul_assoc, mul_comm, mul_left_comm]
 #align has_strict_deriv_at.rpow HasStrictDerivAt.rpow
 
 theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :

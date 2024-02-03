@@ -254,7 +254,7 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   smul_def' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
-    -- HACK
+    -- Qualified `map_smul` to avoid a TC timeout #8386
     erw [LinearMap.map_smul]
     erw [LinearEquiv.symm_apply_apply]
 
@@ -379,7 +379,7 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
-    -- HACK
+    -- Qualified `map_smul` to avoid a TC timeout #8386
     erw [LinearMap.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]
 

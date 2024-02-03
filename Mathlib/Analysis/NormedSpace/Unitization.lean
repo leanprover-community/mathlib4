@@ -233,7 +233,7 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul]
-    -- Note: this used to be `rw [norm_smul, ← norm_def]`
+    -- Note: this used to be `rw [norm_smul, ← norm_def]` before #8386
     exact (norm_smul k (splitMul 𝕜 A x)).le
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
