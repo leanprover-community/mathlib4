@@ -10,18 +10,6 @@ import Mathlib.Algebra.Lie.PolyStuff
 
 open BigOperators
 
--- namespace MvPolynomial
-
--- variable {σ R : Type*} [CommSemiring R]
-
--- lemma rename_finSuccEquiv :
---   let F := optionEquivLeft R σ
---   _ := by
-
-
-
--- end MvPolynomial
-
 namespace Matrix.charpoly
 
 variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
@@ -48,19 +36,34 @@ lemma univ_coeff_map (M : Matrix n n R) (i : ℕ) :
   simp [← univ_map]
 
 @[simp]
-lemma univ_natDegree : (univ (n := n)).natDegree = Fintype.card n := by
-  sorry
-
-lemma univ_monic : (univ (n := n)).Monic := by
-  simp only [Polynomial.Monic, Polynomial.leadingCoeff, univ_natDegree]
+lemma univ_coeff_card : (univ (n := n)).coeff (Fintype.card n) = 1 := by
   apply MvPolynomial.funext
   intro M'
   let M := Matrix.of <| Function.curry M'
-  have := univ_coeff_map M
-  erw [this]
-  rw [_root_.map_one, ← charpoly_natDegree_eq_dim M]
-  sorry
+  erw [univ_coeff_map M]
+  rw [_root_.map_one, ← M.charpoly_natDegree_eq_dim]
+  exact M.charpoly_monic.leadingCoeff
 
+@[simp]
+lemma univ_natDegree : (univ (n := n)).natDegree = Fintype.card n := by
+  have aux : univ (n := n) ≠ 0 := by
+    intro h; simpa [h] using univ_coeff_card (n := n)
+  apply le_antisymm
+  · rw [Polynomial.natDegree_eq_support_max' aux, Finset.max'_le_iff]
+    intro i hi
+    simp only [Polynomial.mem_support_iff, ne_eq] at hi
+    contrapose! hi
+    apply MvPolynomial.funext
+    intro M'
+    let M := Matrix.of <| Function.curry M'
+    rw [← M.charpoly_natDegree_eq_dim] at hi
+    erw [univ_coeff_map M, Polynomial.coeff_eq_zero_of_natDegree_lt hi, map_zero]
+  · by_contra! h
+    simpa only [Polynomial.coeff_eq_zero_of_natDegree_lt h, zero_ne_one]
+      using univ_coeff_card (n := n)
+
+lemma univ_monic : (univ (n := n)).Monic := by
+  simp only [Polynomial.Monic, Polynomial.leadingCoeff, univ_natDegree, univ_coeff_card]
 
 open MvPolynomial in
 lemma optionEquivLeft_univ_isHomogeneous :
