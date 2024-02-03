@@ -168,7 +168,7 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       (s.filter p).card * (t.filter q).card +
         (s.filter (¬ p ·)).card * (t.filter (¬ q ·)).card := by
   classical
-    rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_eq]
+    rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_of_disjoint]
     · apply congr_arg
       ext ⟨a, b⟩
       simp only [filter_union_right, mem_filter, mem_product]

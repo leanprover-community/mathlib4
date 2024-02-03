@@ -463,18 +463,22 @@ theorem card_union_le (s t : Finset α) : (s ∪ t).card ≤ s.card + t.card :=
   card_union_add_card_inter s t ▸ Nat.le_add_right _ _
 #align finset.card_union_le Finset.card_union_le
 
-theorem card_union_eq (h : Disjoint s t) : (s ∪ t).card = s.card + t.card := by
+@[simp] lemma card_union_of_disjoint (h : Disjoint s t) : (s ∪ t).card = s.card + t.card := by
   rw [← disjUnion_eq_union s t h, card_disjUnion _ _ _]
-#align finset.card_union_eq Finset.card_union_eq
+#align finset.card_union_eq Finset.card_union_of_disjoint
+#align finset.card_disjoint_union Finset.card_union_of_disjoint
 
-@[simp]
-theorem card_disjoint_union (h : Disjoint s t) : card (s ∪ t) = s.card + t.card :=
-  card_union_eq h
-#align finset.card_disjoint_union Finset.card_disjoint_union
+lemma cast_card_inter [AddGroupWithOne R] :
+    ((s ∩ t).card : R) = s.card + t.card - (s ∪ t).card := by
+  rw [eq_sub_iff_add_eq, ← cast_add, card_inter_add_card_union, cast_add]
+
+lemma cast_card_union [AddGroupWithOne R] :
+    ((s ∪ t).card : R) = s.card + t.card - (s ∩ t).card := by
+  rw [eq_sub_iff_add_eq, ← cast_add, card_union_add_card_inter, cast_add]
 
 theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
   suffices card (t \ s) = card (t \ s ∪ s) - s.card by rwa [sdiff_union_of_subset h] at this
-  rw [card_disjoint_union sdiff_disjoint, add_tsub_cancel_right]
+  rw [card_union_of_disjoint sdiff_disjoint, add_tsub_cancel_right]
 #align finset.card_sdiff Finset.card_sdiff
 
 lemma cast_card_sdiff [AddGroupWithOne R] (h : s ⊆ t) : ((t \ s).card : R) = t.card - s.card := by
@@ -497,7 +501,7 @@ theorem card_le_card_sdiff_add_card : s.card ≤ (s \ t).card + t.card :=
 #align finset.card_le_card_sdiff_add_card Finset.card_le_card_sdiff_add_card
 
 theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
-  rw [← card_disjoint_union sdiff_disjoint, sdiff_union_self_eq_union]
+  rw [← card_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
@@ -507,7 +511,7 @@ lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
     (s \ t).card + (s ∩ t).card = s.card := by
-  rw [← card_disjoint_union (disjoint_sdiff_inter _ _), sdiff_union_inter]
+  rw [← card_union_of_disjoint (disjoint_sdiff_inter _ _), sdiff_union_inter]
 
 @[simp]
 lemma card_inter_add_card_sdiff (s t : Finset α) :
@@ -519,7 +523,7 @@ end Lattice
 theorem filter_card_add_filter_neg_card_eq_card
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     (s.filter p).card + (s.filter (fun a => ¬ p a)).card = s.card := by
-  classical rw [← card_union_eq (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
+  classical rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
 #align finset.filter_card_add_filter_neg_card_eq_card Finset.filter_card_add_filter_neg_card_eq_card
 
 /-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`

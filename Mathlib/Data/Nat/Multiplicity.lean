@@ -256,7 +256,7 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
       rw [multiplicity_choose hp hkn (lt_succ_self _),
         multiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt
           (lt_succ_of_le (log_mono_right hkn)),
-        ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_disjoint_union hdisj,
+        ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_union_of_disjoint hdisj,
         filter_union_right]
       have filter_le_Ico := (Ico 1 n.succ).card_filter_le
         fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k

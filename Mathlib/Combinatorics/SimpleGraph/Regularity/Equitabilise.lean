@@ -187,7 +187,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 #align finpartition.card_filter_equitabilise_small Finpartition.card_filter_equitabilise_small
 
 theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b := by
-  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or, card_union_eq,
+  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or, card_union_of_disjoint,
     P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   -- Porting note: was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀

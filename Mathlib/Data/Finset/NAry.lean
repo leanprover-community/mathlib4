@@ -508,7 +508,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)
   rw [image₂_insert_left]
   by_cases h : Disjoint (image (f a) t) (image₂ f s t)
-  · rw [card_union_eq h]
+  · rw [card_union_of_disjoint h]
     exact (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd.add ih
   simp_rw [← biUnion_image_left, disjoint_biUnion_right, not_forall] at h
   obtain ⟨b, hb, h⟩ := h
