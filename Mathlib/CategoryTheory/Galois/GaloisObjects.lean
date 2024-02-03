@@ -38,14 +38,10 @@ noncomputable instance {G : Type v} [Group G] [Finite G] :
   choose G' hg hf e using Finite.exists_type_zero_nonempty_mulEquiv G
   exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
 
-@[simps!]
-def autToEnd {C : Type u₁} [Category.{u₂, u₁} C] (X : C) : Aut X →* End X :=
-  (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
-
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
 class GaloisObject {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C) : Prop where
   connected : ConnectedObject X
-  quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| autToEnd X)
+  quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X)
 
 namespace GaloisObject
 
@@ -70,9 +66,9 @@ instance autMulFibre (X : C) : MulAction (Aut X) (F.obj X) where
 the quotient `F.obj X / Aut X` has exactly one element. -/
 noncomputable def quotientByAutTerminalEquivUniqueQuotient [GaloisCategory C]
     (X : C) [ConnectedObject X] :
-    IsTerminal (colimit <| SingleObj.functor <| autToEnd X) ≃
+    IsTerminal (colimit <| SingleObj.functor <| Aut.toEnd X) ≃
     Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
-  letI J : SingleObj (Aut X) ⥤ C := SingleObj.functor (autToEnd X)
+  letI J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
   letI e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
     (Equiv.toIso <| SingleObj.Types.colimitEquivQuotient (J ⋙ F ⋙ FintypeCat.incl))
@@ -82,7 +78,7 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient [GaloisCategory C]
   exact Types.isTerminalEquivUnique _
 
 lemma galois_iff_aux [GaloisCategory C] (X : C) [ConnectedObject X] :
-    GaloisObject X ↔ Nonempty (IsTerminal <| colimit <| SingleObj.functor <| autToEnd X) :=
+    GaloisObject X ↔ Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X) :=
   ⟨fun h ↦ h.quotientByAutTerminal, fun h ↦ ⟨inferInstance, h⟩⟩
 
 /-- Given a fibre functor `F` and a connected object `X` of `C`. Then `X` is Galois if and only if

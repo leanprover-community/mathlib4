@@ -207,7 +207,8 @@ lemma evaluation_aut_injective_of_connected (A : C) [ConnectedObject A] (a : F.o
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fibre functor. -/
-class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] extends PreGaloisCategory C where
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
+    extends PreGaloisCategory C : Prop where
   hasFibreFunctor : ∃ F : C ⥤ FintypeCat.{w}, Nonempty (PreGaloisCategory.FibreFunctor F)
 
 namespace PreGaloisCategory
