@@ -188,8 +188,7 @@ theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α �
   hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
     apply ae_of_all μ
     intro x
-    rw [← coe_nnnorm (f x)]
-    apply NNReal.toReal_le_toReal
+    rw [← coe_nnnorm (f x), NNReal.coe_le_coe]
     apply Finset.le_sup (Finset.mem_univ x)
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
