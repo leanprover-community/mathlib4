@@ -10,36 +10,24 @@ import Mathlib.Lean.Expr.ExtraRecognizers
 /-!
 # Subsets as subtypes
 
-This file defines the function `setRestrict` that converts sets in a type, to sets in a subtype
-(as the elements in the subtype whose lift lives in the set), and some notation and simplification
-lemmas for convenience.
+This file defines notation for sets in a type pulled down to sets in a subtype, and sets in
+a subtype, lifted up to sets in the ambient type.
 
-More precisely, given `α : Type` and `A : Set α`, `setRestrict A : Set α → Set A` takes
-some `B : Set α` and produces some `Set ↑A` whose elements are `{ x : ↑A | ↑x ∈ B }`.
+It also provides some related lemmas for convenience.
 
-It also defines the notation `A ↓∩ B` for `setRestrict A B`.
+## Notation
 
-## Implementation
+Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set ↑A` a set in the subtype `↑A`.
 
-The simplification lemmas are designed to simplify the expression appearing inside the `↓∩`
-operation, if possible.
+- `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
+- `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
+
+To access this notation, type `open Subset`.
 
 ## Tags
 
 subsets
 -/
-
-open Lean PrettyPrinter Delaborator SubExpr in
-/--
-Sets of a subtype coerced to the ambient type are denoted with `↑`.
--/
-@[delab app.Set.image]
-def delab_set_image_subtype : Delab := do
-  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
-  let e ← withAppArg delab
-  `(↑$e)
 
 open Set
 
@@ -51,43 +39,37 @@ variable {S : Set (Set α)} {T : Set (Set ↑A)} {i : β → Set α} {j : β →
 namespace Subset
 
 /--
-Given two sets `A` and `B`, `setRestrict A B` is the set of `↑A` formed by the elements
-whose value is in `B`.
+Given two sets `A` and `B`, `A ↓∩ B` denotes `((↑) ⁻¹' B : Set A)`.
 -/
-def setRestrict (A B : Set α) : Set ↑A := (↑) ⁻¹' B
+scoped notation A:67 " ↓∩ " B:67  => ((↑) ⁻¹' B : Set A)
 
+open Lean PrettyPrinter Delaborator SubExpr in
 /--
-`A ↓∩ B` denotes `restrict A B`.
+The set of elements of `↑A` that satisfy that `↑x ∈ B` are denoted `A ↓∩ B`.
 -/
-infixl:67 " ↓∩ " => setRestrict
+@[scoped delab app.Set.preimage]
+def delab_preimage_subtype : Delab := do
+  let #[_, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let B ← withAppArg delab
+  let A ← withAppFn <| withAppFn <| withAppFn <| withAppArg <| withAppArg delab
+  `($A ↓∩ $B)
 
-@[simp]
-lemma mem_setRestrict_iff (x : A) : x ∈ (A ↓∩ B) ↔ ↑x ∈ B := by rfl
-
-@[simp]
-lemma setRestrict_empty : A ↓∩ (∅ : Set α) = (∅ : Set A) := rfl
-
-@[simp]
-lemma setRestrict_self : A ↓∩ A = univ := by
-  ext x
-  simp only [mem_setRestrict_iff, Subtype.coe_prop, mem_univ]
-
-@[simp]
-lemma setRestrict_univ : A ↓∩ (univ : Set α) = (univ : Set A) := rfl
-
-@[simp]
-lemma setRestrict_union : A ↓∩ (B ∪ C) = (A ↓∩ B) ∪ (A ↓∩ C) := rfl
-
-@[simp]
-lemma setRestrict_inter : A ↓∩ (B ∩ C) = (A ↓∩ B) ∩ (A ↓∩ C) := rfl
-
-@[simp]
-lemma set_restrit_compl : A ↓∩ Bᶜ = (A ↓∩ B)ᶜ := by
-  apply Eq.refl
+open Lean PrettyPrinter Delaborator SubExpr in
+/--
+Sets of a subtype coerced to the ambient type are denoted with `↑`.
+-/
+@[scoped delab app.Set.image]
+def delab_set_image_subtype : Delab := do
+  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let some _ := α.coeTypeSet? | failure
+  let e ← withAppArg delab
+  `(↑$e)
 
 lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x
-  simp only [mem_setRestrict_iff, mem_univ, iff_true]
+  simp only [mem_univ, iff_true]
   exact h x.2
 
 lemma restrict_subsetRestrict_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
@@ -110,40 +92,25 @@ lemma setRestrict_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
     inter_subset_left, true_and]
 
 @[simp]
-lemma setRestrict_diff : A ↓∩ (B \ C) = (A ↓∩ B) \ (A ↓∩ C) := by
-  apply Eq.refl
-
-@[simp]
 lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
-  simp only [mem_sUnion, mem_setOf_eq, exists_exists_and_eq_and, mem_setRestrict_iff]
-
-@[simp]
-lemma setRestrict_iUnion : A ↓∩ (⋃ (B : β), i B) = ⋃ (B : β), A ↓∩ i B := by
-  ext x
-  simp only [mem_iUnion, mem_setRestrict_iff]
+  simp only [preimage_sUnion, mem_iUnion, mem_preimage, exists_prop, mem_sUnion, mem_setOf_eq,
+    exists_exists_and_eq_and]
 
 @[simp]
 lemma setRestrict_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := by
-  ext x
-  simp only [mem_iInter, mem_setRestrict_iff]
+  exact preimage_iInter
 
 @[simp]
 lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
-  simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    mem_setRestrict_iff]
+  simp only [preimage_sInter, mem_iInter, mem_preimage, mem_sInter, mem_setOf_eq,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
   simp only [setRestrict_eq_iff,hB,hC] at h
   exact h
-
-lemma restrict_mono (h : B ⊆ C) : A ↓∩ B ⊆ A ↓∩ C := by
-  simp only [restrict_subsetRestrict_iff, subset_inter_iff, inter_subset_left, true_and]
-  apply subset_trans (inter_subset_right A B) h
-
-lemma mem_coe_iff (x : α) : x ∈ (↑D : Set α) ↔ ∃ y : ↑A, y ∈ D ∧ ↑y = x := by rfl
 
 /-!
 The following simp lemmas try to transform operations in the subtype into operations in the ambient
@@ -260,19 +227,19 @@ lemma coe_contained : ↑D ⊆ A := by
   simp only [image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coueOut_union_self_right : A ∪ ↑D = A := by
+lemma coe_union_self_right_eq : A ∪ ↑D = A := by
   simp only [union_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coueOut_union_self_left : ↑D ∪ A = A := by
+lemma coe_union_self_left_eq : ↑D ∪ A = A := by
   simp only [union_eq_right, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coueOut_inter_self_right : A ∩ ↑D = ↑D := by
+lemma cou_inter_self_right_eq_coe : A ∩ ↑D = ↑D := by
   simp only [inter_eq_right, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coueOut_inter_self_left : ↑D ∩ A = ↑D := by
+lemma coe_inter_self_left_eq_coe : ↑D ∩ A = ↑D := by
   simp only [inter_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
@@ -294,37 +261,17 @@ lemma coe_eq_iff : (D : Set α) = ↑E ↔ D = E := by
   simp only [subset_antisymm_iff, image_subset_iff, coe_contained_iff]
 
 lemma coe_inj (h : (↑D : Set α) = ↑E) : D = E := by
-  simp only [coe_eq_iff] at h
+  rw [coe_eq_iff] at h
   exact h
 
 lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
-  intro x hx
-  specialize h _
-  · exact ↑x
-  · simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta, hx,
-    Subtype.coe_prop, exists_const]
-  simp only [mem_image, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
-    Subtype.coe_prop, exists_const] at h
-  exact h
+  simp_all only [image_subset_iff, coe_contained_iff]
 
 /-!
 Relations between restriction and coercion.
 -/
 
-@[simp]
-lemma setRestrict_coe_eq_self : A ↓∩ ↑D = D := by
-  ext x
-  simp only [mem_setRestrict_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    Subtype.coe_eta, Subtype.coe_prop, exists_const]
-
-@[simp]
-lemma coe_setRestrict_eq_inter : ↑(A ↓∩ B) = A ∩ B := by
-  ext x
-  simp only [mem_image, mem_setRestrict_iff, Subtype.exists, exists_and_left, exists_prop,
-    exists_eq_right_right, mem_inter_iff]
-  rw [and_comm]
-
 lemma coe_setRestrict_subset_self : ↑(A ↓∩ B) ⊆ B := by
-  simp only [coe_setRestrict_eq_inter, inter_subset_right]
+  simp only [Subtype.image_preimage_coe, inter_subset_left]
 
 end Subset

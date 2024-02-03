@@ -6,7 +6,6 @@ Authors: Kexing Ying
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Subset
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
@@ -1630,9 +1629,7 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 #align subgroup.comap_top Subgroup.comap_top
 #align add_subgroup.comap_top AddSubgroup.comap_top
 
-/-- For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`.
-
-It is the subgroup version of `Subset.setRestrict`.-/
+/-- For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`. -/
 @[to_additive "For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`."]
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
@@ -1660,10 +1657,6 @@ theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=
   rfl
 #align subgroup.comap_subtype Subgroup.comap_subtype
 #align add_subgroup.comap_subtype AddSubgroup.comap_subtype
-
-@[to_additive]
-theorem comap_subset {H K : Subgroup G} : ↑(K.subgroupOf H) = (H : Set G) ↓∩ ↑K :=
-  rfl
 
 @[to_additive (attr := simp)]
 theorem comap_inclusion_subgroupOf {K₁ K₂ : Subgroup G} (h : K₁ ≤ K₂) (H : Subgroup G) :
