@@ -201,7 +201,7 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
   choose! V hxV hVc hVU using fun x (hx : x ∈ K) ↦
     exists_mem_nhds_isCompact_mapsTo hf (hU.mem_nhds (hKU hx))
   rcases hK.elim_nhds_subcover_nhdsSet hxV with ⟨s, hsK, hKs⟩
-  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂ fun x hx ↦
+  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂.2 fun x hx ↦
     hVU x (hsK x hx)⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open

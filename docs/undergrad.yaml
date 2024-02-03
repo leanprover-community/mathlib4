@@ -429,7 +429,7 @@ Topology:
     normed space of bounded continuous functions: 'BoundedContinuousFunction.normedSpace'
     its completeness: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
     Heine-Borel theorem (closed bounded subsets are compact in finite dimension): 'FiniteDimensional.proper'
-    Riesz' lemma (unit-ball characterization of finite dimension): 'finiteDimensional_of_isCompact_closedBall'
+    Riesz' lemma (unit-ball characterization of finite dimension): 'FiniteDimensional.of_isCompact_closedBall'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
