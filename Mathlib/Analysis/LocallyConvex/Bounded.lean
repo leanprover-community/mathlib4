@@ -10,6 +10,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.locally_convex.bounded from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
