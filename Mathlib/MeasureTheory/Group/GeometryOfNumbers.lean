@@ -69,7 +69,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
       mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
-      mul_right_comm, ofReal_pow (by norm_num : 0 ≤ (2 : ℝ)⁻¹), ← ofReal_inv_of_pos zero_lt_two]
+      mul_right_comm, ofReal_pow (by norm_num : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
     norm_num
     rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero two_ne_top, one_pow, one_mul]
   obtain ⟨x, y, hxy, h⟩ :=
