@@ -323,22 +323,21 @@ open Finset
 
 @[to_additive] theorem of_mulHom (f : H →ₙ* G)
     (hf : ∀ ⦃a b c d : H⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
-    (uG : UniqueProds G) : UniqueProds H where
+    [UniqueProds G] : UniqueProds H where
   uniqueMul_of_nonempty {A B} A0 B0 := by
     classical
-    obtain ⟨a0, ha0, b0, hb0, h⟩ := uG.uniqueMul_of_nonempty (A0.image f) (B0.image f)
+    obtain ⟨a0, ha0, b0, hb0, h⟩ := uniqueMul_of_nonempty (A0.image f) (B0.image f)
     obtain ⟨a', ha', rfl⟩ := mem_image.mp ha0
     obtain ⟨b', hb', rfl⟩ := mem_image.mp hb0
     exact ⟨a', ha', b', hb', UniqueMul.of_mulHom_image f hf h⟩
 
 @[to_additive]
-theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (uG : UniqueProds G) :
-    UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·)) uG
+theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : UniqueProds G) :
+    UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`UniqueSums` is preserved under additive equivalences."]
-theorem mulHom_image_iff (f : G ≃* H) :
-    UniqueProds G ↔ UniqueProds H :=
+theorem mulHom_image_iff (f : G ≃* H) : UniqueProds G ↔ UniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
 open Finset MulOpposite in
@@ -491,11 +490,11 @@ open Finset
 
 @[to_additive] theorem of_mulHom (f : H →ₙ* G)
     (hf : ∀ ⦃a b c d : H⦄, a * b = c * d → f a = f c ∧ f b = f d → a = c ∧ b = d)
-    (uG : TwoUniqueProds G) : TwoUniqueProds H where
+    [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
     obtain hc' | hc' := lt_or_le 1 ((A.image f).card * (B.image f).card)
-    · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uG.uniqueMul_of_one_lt_card hc'
+    · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1
       obtain ⟨⟨a2, ha2, rfl⟩, b2, hb2, rfl⟩ := h2
@@ -511,8 +510,8 @@ open Finset
 
 @[to_additive]
 theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
-    (uG : TwoUniqueProds G) : TwoUniqueProds H :=
-  of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·)) uG
+    (_ : TwoUniqueProds G) : TwoUniqueProds H :=
+  of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
@@ -643,8 +642,8 @@ instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
   .of_mulHom ⟨Multiplicative.ofAdd ∘ List.length, fun _ _ ↦ congr_arg _ (List.length_append _ _)⟩
-    (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective _ h'.1) inferInstance
+    (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective _ h'.1)
 
 /-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
 instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
-  .of_addHom ⟨_, List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1) inferInstance
+  .of_addHom ⟨_, List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)
