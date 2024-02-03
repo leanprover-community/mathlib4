@@ -19,7 +19,7 @@ about these definitions.
 -/
 
 
-variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
+variable {𝕜 E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
 open scoped BigOperators NNReal ENNReal uniformity
@@ -40,51 +40,44 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
 typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
 "semi modules". -/
-class NormedSpace (α : Type*) (β : Type*) [NormedField α] [SeminormedAddCommGroup β] extends
-  Module α β where
-  norm_smul_le : ∀ (a : α) (b : β), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
+    extends Module 𝕜 E where
+  norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 #align normed_space NormedSpace
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
 end Prio
 
-variable [NormedField α] [SeminormedAddCommGroup β]
+variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : BoundedSMul α β :=
+instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
   BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
+instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul α α :=
+instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
   NormedSpace.boundedSMul
 #align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
-theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
-    ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
+variable (𝕜) in
+theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
+  rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-@[simp]
-theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
-#align abs_norm abs_norm
-
-theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
-    ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
+theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ E] (x : E) :
+    ‖x‖⁻¹ • x ∈ closedBall (0 : E) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
     div_self_le_one]
 #align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_closed_unit_ball
 
-theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : β) : ‖t • x‖ = t * ‖x‖ := by
+theorem norm_smul_of_nonneg [NormedSpace ℝ E] {t : ℝ} (ht : 0 ≤ t) (x : E) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
 #align norm_smul_of_nonneg norm_smul_of_nonneg
-
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
-
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
 
 theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
     dist (r • x + (1 - r) • y) x ≤ dist y x :=
@@ -97,20 +90,22 @@ theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h
     _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
     _ = dist y x := by rw [sub_zero, one_mul]
 
-theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
     ((continuous_id.sub continuous_const).const_smul _).norm.tendsto' _ _ (by simp)
   this.eventually (gt_mem_nhds h)
 #align eventually_nhds_norm_smul_sub_lt eventually_nhds_norm_smul_sub_lt
 
-theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : ι → α} {g : ι → E} {l : Filter ι}
+theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
 #align filter.tendsto.zero_smul_is_bounded_under_le Filter.Tendsto.zero_smul_isBoundedUnder_le
 
-theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : ι → α} {g : ι → E} {l : Filter ι}
+theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
@@ -191,12 +186,12 @@ instance NormedSpace.discreteTopology_zmultiples
 
 open NormedField
 
-instance ULift.normedSpace : NormedSpace α (ULift E) :=
+instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
   { ULift.seminormedAddCommGroup (E := E), ULift.module' with
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
-instance Prod.normedSpace : NormedSpace α (E × F) :=
+instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
@@ -204,15 +199,15 @@ instance Prod.normedSpace : NormedSpace α (E × F) :=
 #align prod.normed_space Prod.normedSpace
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
-instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
-    [∀ i, NormedSpace α (E i)] : NormedSpace α (∀ i, E i) where
+instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] : NormedSpace 𝕜 (∀ i, E i) where
   norm_smul_le a f := by
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
-instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
+instance MulOpposite.normedSpace : NormedSpace 𝕜 Eᵐᵒᵖ :=
   { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
     norm_smul_le := fun s x => norm_smul_le s x.unop }
 #align mul_opposite.normed_space MulOpposite.normedSpace
@@ -230,16 +225,11 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances] -/
 @[reducible]
-def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddCommGroup β] [Module α β]
-    [SeminormedAddCommGroup γ] [NormedSpace α γ] [LinearMapClass F α β γ] (f : F) :
-    @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
-  -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
-  -- unfolding the induced semi-norm is fiddly
-  refine @NormedSpace.mk (α := α) (β := β) _ ?_ ?_ ?_
-  · infer_instance
-  · intro a b
-    change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
-    exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+def NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [LinearMapClass F 𝕜 E G] (f : F) :
+    @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
+  let _ := SeminormedAddCommGroup.induced E G f
+  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
 #align normed_space.induced NormedSpace.induced
 
 section NormedAddCommGroup
