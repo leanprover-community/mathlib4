@@ -692,7 +692,7 @@ theorem card_reprs : P.reprs.card = P.parts.card := by simp [reprs]
 theorem mem_of_reprs (h : a ∈ P.reprs) : a ∈ s := by
   simp_rw [reprs, mem_map, mem_attach, true_and] at h
   obtain ⟨p, rfl⟩ := h
-  exact mem_of_subset ((le_sup p.2).trans P.supParts.le) (P.nonempty_of_mem_parts p.2).choose_spec
+  exact mem_of_subset ((le_sup p.2).trans P.sup_parts.le) (P.nonempty_of_mem_parts p.2).choose_spec
 
 /-- Two representatives coming from the same part are equal. -/
 theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
