@@ -293,7 +293,7 @@ theorem young_inequality_real (a b : ℝ≥0) {p q : ℝ} (hpq : p.IsConjugateEx
     a * b ≤ a ^ p / Real.toNNReal p + b ^ q / Real.toNNReal q := by
   nth_rw 1 [← Real.coe_toNNReal p hpq.nonneg]
   nth_rw 1 [← Real.coe_toNNReal q hpq.symm.nonneg]
-  exact young_inequality a b hpq.one_lt_nnreal hpq.inv_add_inv_conj_nnreal
+  exact young_inequality a b hpq.one_lt_nnreal (by simpa using hpq.inv_add_inv_conj_nnreal)
 #align nnreal.young_inequality_real NNReal.young_inequality_real
 
 end NNReal
@@ -341,7 +341,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
       refine' add_le_add _ _
       · rwa [div_le_iff hp_ne_zero, div_mul_cancel _ hp_ne_zero]
       · rwa [div_le_iff hq_ne_zero, div_mul_cancel _ hq_ne_zero]
-    _ = 1 := hpq.inv_add_inv_conj_nnreal
+    _ = 1 := by simp_rw [one_div, hpq.inv_add_inv_conj_nnreal]
 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjugateExponent q) (hf : ∑ i in s, f i ^ p = 0) :

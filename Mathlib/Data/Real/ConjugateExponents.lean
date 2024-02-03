@@ -17,6 +17,10 @@ satisfy `1/p + 1/q = 1`. This property shows up often in analysis, especially wh
 We make several basic facts available through dot notation in this situation.
 
 We also introduce `p.conjugateExponent` for `p / (p-1)`. When `p > 1`, it is conjugate to `p`.
+
+## TODO
+
+Eradicate the `1 / p` spelling in lemmas.
 -/
 
 
@@ -29,7 +33,7 @@ namespace Real
 norms. -/
 structure IsConjugateExponent (p q : ℝ) : Prop where
   one_lt : 1 < p
-  inv_add_inv_conj : 1 / p + 1 / q = 1
+  inv_add_inv_conj : p⁻¹ + q⁻¹ = 1
 #align real.is_conjugate_exponent Real.IsConjugateExponent
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `1/p + 1/q = 1`. -/
@@ -59,6 +63,10 @@ theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.one_lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := ne_of_gt h.sub_one_pos
 #align real.is_conjugate_exponent.sub_one_ne_zero Real.IsConjugateExponent.sub_one_ne_zero
 
+nonrec lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
+lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
+lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
+
 theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
 #align real.is_conjugate_exponent.one_div_pos Real.IsConjugateExponent.one_div_pos
 
@@ -70,7 +78,7 @@ theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
 theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
-  rw [← eq_sub_iff_add_eq', one_div, inv_eq_iff_eq_inv] at this
+  rw [← eq_sub_iff_add_eq', inv_eq_iff_eq_inv] at this
   field_simp [this, h.ne_zero]
 #align real.is_conjugate_exponent.conj_eq Real.IsConjugateExponent.conj_eq
 
@@ -103,15 +111,15 @@ theorem one_lt_nnreal : 1 < Real.toNNReal p := by
   exact h.one_lt
 #align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nnreal
 
-theorem inv_add_inv_conj_nnreal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
-  rw [← Real.toNNReal_one, ← Real.toNNReal_div' h.nonneg, ← Real.toNNReal_div' h.symm.nonneg,
-      ← Real.toNNReal_add h.one_div_nonneg h.symm.one_div_nonneg, h.inv_add_inv_conj]
+theorem inv_add_inv_conj_nnreal : p.toNNReal⁻¹ + q.toNNReal⁻¹ = 1 := by
+  rw [← Real.toNNReal_one, ← Real.toNNReal_inv, ← Real.toNNReal_inv,
+      ← Real.toNNReal_add h.inv_nonneg h.symm.inv_nonneg, h.inv_add_inv_conj]
 #align real.is_conjugate_exponent.inv_add_inv_conj_nnreal Real.IsConjugateExponent.inv_add_inv_conj_nnreal
 
-theorem inv_add_inv_conj_ennreal : 1 / ENNReal.ofReal p + 1 / ENNReal.ofReal q = 1 := by
-  rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_div_of_pos h.pos,
-      ← ENNReal.ofReal_div_of_pos h.symm.pos,
-      ← ENNReal.ofReal_add h.one_div_nonneg h.symm.one_div_nonneg, h.inv_add_inv_conj]
+theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
+  rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_inv_of_pos h.pos,
+    ← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
+    h.inv_add_inv_conj]
 #align real.is_conjugate_exponent.inv_add_inv_conj_ennreal Real.IsConjugateExponent.inv_add_inv_conj_ennreal
 
 end IsConjugateExponent
@@ -124,10 +132,11 @@ theorem isConjugateExponent_conjugateExponent {p : ℝ} (h : 1 < p) :
     p.IsConjugateExponent (conjugateExponent p) := (isConjugateExponent_iff h).2 rfl
 #align real.is_conjugate_exponent_conjugate_exponent Real.isConjugateExponent_conjugateExponent
 
+lemma isConjugateExponent_inv {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
+    a⁻¹.IsConjugateExponent b⁻¹ := ⟨one_lt_inv ha $ by linarith, by simpa only [inv_inv]⟩
+
 theorem isConjugateExponent_one_div {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
-    (1 / a).IsConjugateExponent (1 / b) :=
-  ⟨by rw [lt_div_iff ha, one_mul]; linarith,
-   by simp_rw [one_div_one_div]; exact hab⟩
+    (1 / a).IsConjugateExponent (1 / b) := by simpa using isConjugateExponent_inv ha hb hab
 #align real.is_conjugate_exponent_one_div Real.isConjugateExponent_one_div
 
 end Real

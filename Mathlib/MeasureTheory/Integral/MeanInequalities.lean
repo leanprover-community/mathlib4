@@ -73,8 +73,8 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.IsCon
       simp only [div_eq_mul_inv]
       rw [lintegral_add_left']
       · rw [lintegral_mul_const'' _ (hf.pow_const p), lintegral_mul_const', hf_norm, hg_norm, ←
-          div_eq_mul_inv, ← div_eq_mul_inv, hpq.inv_add_inv_conj_ennreal]
-        simp [hpq.symm.pos]
+          div_eq_mul_inv, ← div_eq_mul_inv]
+        simp [hpq.symm.pos, hpq.inv_add_inv_conj_ennreal]
       · exact (hf.pow_const _).mul_const _
 #align ennreal.lintegral_mul_le_one_of_lintegral_rpow_eq_one ENNReal.lintegral_mul_le_one_of_lintegral_rpow_eq_one
 
