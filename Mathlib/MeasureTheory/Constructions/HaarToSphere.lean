@@ -8,7 +8,6 @@ import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.NormedSpace.Real
 
 /-!
 # Generalized polar coordinate change

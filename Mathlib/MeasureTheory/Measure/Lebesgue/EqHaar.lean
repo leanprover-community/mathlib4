@@ -3,13 +3,11 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.Analysis.NormedSpace.Real
 
 #align_import measure_theory.measure.lebesgue.eq_haar from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Group.Freiman
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.NormedSpace.Real
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
