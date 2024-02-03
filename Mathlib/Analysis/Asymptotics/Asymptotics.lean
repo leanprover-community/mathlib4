@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
 

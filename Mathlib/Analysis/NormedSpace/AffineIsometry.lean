@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
 

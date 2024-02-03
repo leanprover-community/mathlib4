@@ -5,7 +5,7 @@ Authors: Hans Parshall
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Matrix
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Topology.UniformSpace.Matrix
