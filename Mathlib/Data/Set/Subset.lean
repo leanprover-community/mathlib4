@@ -91,7 +91,6 @@ lemma setRestrict_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
   simp only [subset_antisymm_iff, restrict_subsetRestrict_iff, subset_inter_iff,
     inter_subset_left, true_and]
 
-@[simp]
 lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [preimage_sUnion, mem_iUnion, mem_preimage, exists_prop, mem_sUnion, mem_setOf_eq,
@@ -101,7 +100,6 @@ lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S
 lemma setRestrict_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := by
   exact preimage_iInter
 
-@[simp]
 lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [preimage_sInter, mem_iInter, mem_preimage, mem_sInter, mem_setOf_eq,
