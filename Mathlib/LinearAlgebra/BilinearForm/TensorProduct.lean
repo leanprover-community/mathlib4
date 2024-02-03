@@ -39,6 +39,47 @@ variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M�
 variable [Module R M₂]
 
 variable (R A) in
+/-- The tensor product of two bilinear maps injects into bilinear maps on tensor products.
+
+Note this is heterobasic; the bilinear map on the left can take values in an (commutative) algebra
+over the ring in which the right bilinear map is valued. -/
+def _root_.LinearMap.tensorDistrib : (M₁ →ₗ[A] M₁ →ₗ[A] A) ⊗[R] (M₂ →ₗ[R] M₂ →ₗ[R] R) →ₗ[A]
+    ((M₁ ⊗[R] M₂) →ₗ[A] (M₁ ⊗[R] M₂) →ₗ[A] A) :=
+  ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
+    ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm).toLinearMap
+  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
+  ∘ₗ (TensorProduct.AlgebraTensorModule.congr
+    (TensorProduct.lift.equiv A M₁ M₁ A)
+    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+
+@[simp]
+theorem _root_.LinearMap.tensorDistrib_tmul (B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A) (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R)
+    (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
+    LinearMap.tensorDistrib R A (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
+      = B₂ m₂ m₂' • B₁ m₁ m₁' :=
+  rfl
+
+/-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
+@[reducible]
+protected def _root_.LinearMap.tmul (B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A) (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) :
+    (M₁ ⊗[R] M₂) →ₗ[A] (M₁ ⊗[R] M₂) →ₗ[A] A :=
+  LinearMap.tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
+
+variable (A) in
+/-- The base change of a bilinear form. -/
+protected def _root_.LinearMap.baseChange₂ (B : M₂ →ₗ[R] M₂ →ₗ[R] R) :
+    ((A ⊗[R] M₂) →ₗ[A] (A ⊗[R] M₂) →ₗ[A] A) :=
+  LinearMap.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
+
+attribute [ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear forms is symmetric. -/
+lemma _root_.LinearMap.IsSymm.tmul {B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A} {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R}
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
+  rw [LinearMap.isSymm_iff_eq_flip]
+  ext x₁ x₂ y₁ y₂
+  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+
+variable (R A) in
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
 
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra

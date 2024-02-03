@@ -322,6 +322,16 @@ theorem polar_self (x : M) : polar Q x x = 2 * Q x := by
   norm_num
 #align quadratic_form.polar_self QuadraticForm.polar_self
 
+/-- `QuadraticForm.polar` as a bilinear form -/
+@[simps]
+def polarBilin : BilinForm R M where
+  bilin := polar Q
+  bilin_add_left := polar_add_left Q
+  bilin_smul_left := polar_smul_left Q
+  bilin_add_right x y z := by simp_rw [polar_comm _ x, polar_add_left Q]
+  bilin_smul_right r x y := by simp_rw [polar_comm _ x, polar_smul_left Q]
+#align quadratic_form.polar_bilin QuadraticForm.polarBilin
+
 /-- `QuadraticForm.polar` as a bilinear map -/
 @[simps!]
 def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
@@ -1112,7 +1122,7 @@ variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 /-- `M.toQuadraticForm'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) :=
-  M.toBilin'.toQuadraticForm
+  M.toLinearMap₂'.toQuadraticForm
 #align matrix.to_quadratic_form' Matrix.toQuadraticForm'
 
 variable [Invertible (2 : R)]
