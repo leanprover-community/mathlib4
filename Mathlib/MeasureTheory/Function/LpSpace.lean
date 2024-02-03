@@ -7,6 +7,8 @@ import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
 
