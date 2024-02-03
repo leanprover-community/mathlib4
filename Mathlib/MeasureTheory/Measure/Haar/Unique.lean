@@ -294,15 +294,8 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG] at H
   -- Fix some nonzero continuous function with compact support `g`.
-  obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
-      ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
-    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
-    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
-      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
-    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
-    have := gk (mem_of_mem_nhds k_mem)
-    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
-    simp [this]
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_g_pos : 0 < ∫ x, g x ∂μ' := by
     apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
     · exact IsOpen.measure_pos μ' g_cont.isOpen_support ⟨1, g_one⟩
