@@ -1058,6 +1058,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Examples
+import Mathlib.CategoryTheory.Galois.GaloisObjects
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
