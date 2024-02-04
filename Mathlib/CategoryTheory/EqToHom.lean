@@ -306,11 +306,19 @@ theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
 #align category_theory.eq_to_hom_map CategoryTheory.eqToHom_map
 
+@[simp]
+theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
+    F.map (eqToHom p) ≫ F.map (eqToHom q) = F.map (eqToHom <| p.trans q) := by aesop_cat
+
 /-- See the note on `eqToHom_map` regarding using this as a `simp` lemma.
 -/
 theorem eqToIso_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.mapIso (eqToIso p) = eqToIso (congr_arg F.obj p) := by ext; cases p; simp
 #align category_theory.eq_to_iso_map CategoryTheory.eqToIso_map
+
+@[simp]
+theorem eqToIso_map_trans (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
+    F.mapIso (eqToIso p) ≪≫ F.mapIso (eqToIso q) = F.mapIso (eqToIso <| p.trans q) := by aesop_cat
 
 @[simp]
 theorem eqToHom_app {F G : C ⥤ D} (h : F = G) (X : C) :
