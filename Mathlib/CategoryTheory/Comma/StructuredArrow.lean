@@ -112,7 +112,7 @@ and to check that the triangle commutes.
 @[simps]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
-  left := eqToHom (by ext)
+  left := 𝟙 _
   right := g
   w := by
     dsimp
@@ -127,7 +127,7 @@ attribute [-simp, nolint simpNF] homMk_left
     structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
 @[simps]
 def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
-  left := eqToHom (by ext)
+  left := 𝟙 _
   right := g
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
@@ -150,7 +150,7 @@ lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
 /-- Variant of `homMk'` where both objects are applications of `mk`. -/
 @[simps]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
-  left := eqToHom (by ext)
+  left := 𝟙 _
   right := g
 
 lemma mkPostcomp_id (f : S ⟶ T.obj Y) : mkPostcomp f (𝟙 Y) = eqToHom (by aesop_cat) := by aesop_cat
@@ -166,7 +166,7 @@ and to check that the triangle commutes.
 def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
     (w : f.hom ≫ T.map g.hom = f'.hom := by aesop_cat) :
     f ≅ f' :=
-  Comma.isoMk (eqToIso (by ext)) g (by simpa [eqToHom_map] using w.symm)
+  Comma.isoMk (eqToIso (by ext)) g (by simpa using w.symm)
 #align category_theory.structured_arrow.iso_mk CategoryTheory.StructuredArrow.isoMk
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter
@@ -456,8 +456,7 @@ and to check that the triangle commutes.
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
     (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
   left := g
-  right := eqToHom (by ext)
-  w := by simpa [eqToHom_map] using w
+  right := 𝟙 _
 #align category_theory.costructured_arrow.hom_mk CategoryTheory.CostructuredArrow.homMk
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter
@@ -469,7 +468,7 @@ attribute [-simp, nolint simpNF] homMk_right_down_down
 @[simps]
 def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.hom) ⟶ f where
   left := g
-  right := eqToHom (by ext)
+  right := 𝟙 _
 
 lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by aesop_cat) := by
   ext
@@ -491,7 +490,7 @@ lemma homMk'_mk_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
 @[simps]
 def mkPrecomp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) : mk (S.map g ≫ f) ⟶ mk f where
   left := g
-  right := eqToHom (by ext)
+  right := 𝟙 _
 
 lemma mkPrecomp_id (f : S.obj Y ⟶ T) : mkPrecomp f (𝟙 Y) = eqToHom (by aesop_cat) := by aesop_cat
 lemma mkPrecomp_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
@@ -505,7 +504,7 @@ and to check that the triangle commutes.
 @[simps!]
 def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
     (w : S.map g.hom ≫ f'.hom = f.hom := by aesop_cat) : f ≅ f' :=
-  Comma.isoMk g (eqToIso (by ext)) (by simpa [eqToHom_map] using w)
+  Comma.isoMk g (eqToIso (by ext)) (by simpa using w)
 #align category_theory.costructured_arrow.iso_mk CategoryTheory.CostructuredArrow.isoMk
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter
