@@ -83,12 +83,12 @@ theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 #align pow_one pow_one
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
-@[to_additive two_nsmul ""]
-theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
+@[to_additive two_nsmul] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align pow_two pow_two
 #align two_nsmul two_nsmul
 
-alias sq := pow_two
+-- TODO: Should `alias` automatically transfer `to_additive` statements?
+@[to_additive existing two_nsmul] alias sq := pow_two
 #align sq sq
 
 @[to_additive three'_nsmul]

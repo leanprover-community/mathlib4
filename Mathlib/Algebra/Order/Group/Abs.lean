@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Group.Lattice
 
@@ -561,6 +562,15 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 #align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
 
 end LatticeOrderedAddCommGroup
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
+
+@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+
+lemma abs_def [∀ i, Neg (α i)] [∀ i, Sup (α i)] (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+
+end Pi
 
 @[deprecated] alias neg_le_abs_self := neg_le_abs
 @[deprecated] alias neg_abs_le_self := neg_abs_le
