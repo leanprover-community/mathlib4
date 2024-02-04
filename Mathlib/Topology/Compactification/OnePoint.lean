@@ -6,6 +6,7 @@ Authors: Yourong Zang, Yury Kudryashov
 import Mathlib.Data.Fintype.Option
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Perfect
 
 #align_import topology.alexandroff from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -321,11 +322,11 @@ instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (�
   infer_instance
 #align alexandroff.nhds_within_compl_infty_ne_bot OnePoint.nhdsWithin_compl_infty_neBot
 
-instance (priority := 900) nhdsWithin_compl_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
-    (x : OnePoint X) : NeBot (𝓝[≠] x) :=
+instance (priority := 900) perfectSpace [PerfectSpace X] [NoncompactSpace X] :
+    PerfectSpace (OnePoint X) := perfectSpace_iff_forall_not_isolated.mpr fun x =>
   OnePoint.rec OnePoint.nhdsWithin_compl_infty_neBot
     (fun y => OnePoint.nhdsWithin_compl_coe_neBot y) x
-#align alexandroff.nhds_within_compl_ne_bot OnePoint.nhdsWithin_compl_neBot
+#align alexandroff.nhds_within_compl_ne_bot OnePoint.perfectSpace
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsWithin_compl_infty_eq, nhdsWithin_compl_singleton_sup_pure]

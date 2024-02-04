@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.Perfect
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
@@ -77,14 +78,14 @@ variable (R M)
 /-- Let `R` be a topological ring such that zero is not an isolated point (e.g., a nontrivially
 normed field, see `NormedField.punctured_nhds_neBot`). Let `M` be a nontrivial module over `R`
 such that `c • x = 0` implies `c = 0 ∨ x = 0`. Then `M` has no isolated points. We formulate this
-using `NeBot (𝓝[≠] x)`.
+using `PerfectSpace M`.
 
 This lemma is not an instance because Lean would need to find `[ContinuousSMul ?m_1 M]` with
 unknown `?m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
-One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
+One can also use `haveI := Module.perfectSpace R M` in a proof.
 -/
-theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
-    (x : M) : NeBot (𝓝[≠] x) := by
+theorem Module.perfectSpace [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M] :
+    PerfectSpace M := perfectSpace_iff_forall_not_isolated.mpr fun x => by
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices : Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x); exact this.neBot
   refine' Tendsto.inf _ (tendsto_principal_principal.2 <| _)
@@ -92,6 +93,17 @@ theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [
     rw [zero_smul, add_zero]
   · intro c hc
     simpa [hy] using hc
+
+/--
+This theorem is deprecated in favor of `Module.perfectSpace`; any
+`haveI := Module.punctured_nhds_neBot R M` can safely be replaced with
+`haveI := Module.perfectSpace R M`, as the latter provides this theorem as an instance.
+-/
+@[deprecated Module.perfectSpace]
+theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
+    (x : M) : NeBot (𝓝[≠] x) :=
+  haveI := Module.perfectSpace R M
+  PerfectSpace.not_isolated x
 #align module.punctured_nhds_ne_bot Module.punctured_nhds_neBot
 
 end

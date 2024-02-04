@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Topology.Perfect
 
 #align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
@@ -969,18 +970,20 @@ theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
 
 variable {α}
 
-@[instance]
-theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
+instance perfectSpace : PerfectSpace α := perfectSpace_iff_forall_not_isolated.mpr fun x => by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
-  rintro ε ε0
-  rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
+  intro ε ε0
+  have ⟨b, hb0, hbε⟩ := exists_norm_lt α ε0
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?lt⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel']
+
+@[deprecated NormedField.perfectSpace]
+theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := inferInstance
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
-  simpa only [isUnit_iff_ne_zero] using punctured_nhds_neBot (0 : α)
+  simpa only [isUnit_iff_ne_zero] using (PerfectSpace.not_isolated (0 : α))
 #align normed_field.nhds_within_is_unit_ne_bot NormedField.nhdsWithin_isUnit_neBot
 
 end Nontrivially

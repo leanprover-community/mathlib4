@@ -2645,6 +2645,7 @@ theorem tendsto_Iio_atTop {f : β → Iio a} :
   rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Iio_at_top tendsto_Iio_atTop
 
+-- TODO: upon splitting this module, prove `PerfectSpace α` here instead
 instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
   refine forall_mem_nonempty_iff_neBot.1 fun s hs => ?_
   obtain ⟨u, u_open, xu, us⟩ : ∃ u : Set α, IsOpen u ∧ x ∈ u ∧ u ∩ {x}ᶜ ⊆ s := mem_nhdsWithin.1 hs

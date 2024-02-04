@@ -299,12 +299,20 @@ theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
 
 end Surj
 
+section PerfectSpace
+
+variable (E : Type*) [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Nontrivial E]
+  [Module ℝ E] [ContinuousSMul ℝ E]
+
 /-- If `E` is a nontrivial topological module over `ℝ`, then `E` has no isolated points.
 This is a particular case of `Module.punctured_nhds_neBot`. -/
-instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
-    [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] (x : E) : NeBot (𝓝[≠] x) :=
-  Module.punctured_nhds_neBot ℝ E x
+instance Real.module_perfectSpace : PerfectSpace E := Module.perfectSpace ℝ E
+
+@[deprecated Real.module_perfectSpace]
+theorem Real.punctured_nhds_module_neBot (x : E) : NeBot (𝓝[≠] x) := inferInstance
 #align real.punctured_nhds_module_ne_bot Real.punctured_nhds_module_neBot
+
+end PerfectSpace
 
 theorem interior_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     interior (closedBall x r) = ball x r := by
