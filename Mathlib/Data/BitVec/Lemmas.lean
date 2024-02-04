@@ -209,7 +209,7 @@ open BitVec (toNat)
 @[simp] lemma toNat_or  : (x ||| y).toNat = x.toNat ||| y.toNat := rfl
 @[simp] lemma toNat_xor : (x ^^^ y).toNat = x.toNat ^^^ y.toNat := rfl
 
-/- `Std.BitVec.toNat_add` and `Std.BitVec.toNat_zero` already exists in Std -/
+/- `Std.BitVec.toNat_add` already exists in Std. -/
 attribute [simp] Std.BitVec.toNat_add
 
 lemma toNat_mul : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ w           := rfl
