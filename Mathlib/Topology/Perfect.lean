@@ -58,35 +58,36 @@ accumulation point, perfect set, cantor-bendixson.
 
 open Topology Filter Set
 open TopologicalSpace (IsTopologicalBasis)
-variable {α : Type*} [TopologicalSpace α] {s t : Set α}
+variable {X : Type*} [TopologicalSpace X] {s t : Set X}
 
 section Defs
 
-/-- A set `C` is preperfect if all of its points are accumulation points of itself.
-If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
+/-- A set `s` is preperfect if all of its points are accumulation points of itself.
+If `s` is nonempty and `X` is a T1 space, this is equivalent to the closure of `s` being perfect.
 See `preperfect_iff_perfect_closure`.-/
-def Preperfect (C : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ C → AccPt x (𝓟 C)
+def Preperfect (s : Set X) : Prop :=
+  ∀ ⦃x⦄, x ∈ s → AccPt x (𝓟 s)
 #align preperfect Preperfect
 
-/-- A set `C` is called perfect if it is closed and all of its
+/-- A set `s` is called perfect if it is closed and all of its
 points are accumulation points of itself.
-Note that we do not require `C` to be nonempty.-/
-structure Perfect (C : Set α) : Prop where
-  closed : IsClosed C
-  acc : Preperfect C
+Note that we do not require `s` to be nonempty.-/
+structure Perfect (s : Set X) : Prop where
+  closed : IsClosed s
+  acc : Preperfect s
 #align perfect Perfect
 
+variable (X) in
 /--
 A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
-class PerfectSpace (X : Type*) [TopologicalSpace X]: Prop :=
+class PerfectSpace : Prop :=
   univ_perfect' : Perfect (Set.univ : Set X)
 
-variable [PerfectSpace α] in
-variable (α) in
-theorem PerfectSpace.univ_perfect : Perfect (Set.univ : Set α) := PerfectSpace.univ_perfect'
+variable (X) in
+variable [PerfectSpace X] in
+theorem PerfectSpace.univ_perfect : Perfect (Set.univ : Set X) := PerfectSpace.univ_perfect'
 
 end Defs
 
@@ -96,13 +97,13 @@ theorem preperfect_iff_nhds : Preperfect s ↔ ∀ x ∈ s, ∀ U ∈ 𝓝 x, �
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
 
-theorem Preperfect.nhdsWithin_neBot (s_prePerfect : Preperfect s) {x : α} (x_in_s : x ∈ s) :
+theorem Preperfect.nhdsWithin_neBot (s_preperfect : Preperfect s) {x : X} (x_in_s : x ∈ s) :
     Filter.NeBot (𝓝[≠] x) := ⟨fun eq_bot => by
-  simpa [AccPt, Filter.neBot_iff, eq_bot, bot_inf_eq] using s_prePerfect x_in_s⟩
+  simpa [AccPt, Filter.neBot_iff, eq_bot, bot_inf_eq] using s_preperfect x_in_s⟩
 
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
-theorem accPt_principal_iff_inter_of_mem_nhds {x : α} (t_nhds : t ∈ 𝓝 x) :
+theorem accPt_principal_iff_inter_of_mem_nhds {x : X} (t_nhds : t ∈ 𝓝 x) :
     AccPt x (𝓟 s) ↔ AccPt x (𝓟 (s ∩ t)) := by
   refine ⟨fun h_acc => ?acc_inter,
     fun h_acc => AccPt.mono h_acc <| Filter.principal_mono.mpr <| Set.inter_subset_left _ _⟩
@@ -111,19 +112,19 @@ theorem accPt_principal_iff_inter_of_mem_nhds {x : α} (t_nhds : t ∈ 𝓝 x) :
   exact h_acc
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
-theorem Preperfect.open_inter (s_prePerfect : Preperfect s) (t_open : IsOpen t) :
+theorem Preperfect.open_inter (s_preperfect : Preperfect s) (t_open : IsOpen t) :
     Preperfect (s ∩ t) := fun _ ⟨x_in_s, x_in_t⟩ =>
-  (accPt_principal_iff_inter_of_mem_nhds <| t_open.mem_nhds x_in_t).mp (s_prePerfect x_in_s)
+  (accPt_principal_iff_inter_of_mem_nhds <| t_open.mem_nhds x_in_t).mp (s_preperfect x_in_s)
 
 #align preperfect.open_inter Preperfect.open_inter
 
 /-- The closure of a preperfect set is perfect.
 For a converse, see `preperfect_iff_perfect_closure`. -/
-theorem Preperfect.perfect_closure (s_prePerfect : Preperfect s) : Perfect (closure s) := by
+theorem Preperfect.perfect_closure (s_preperfect : Preperfect s) : Perfect (closure s) := by
   constructor; · exact isClosed_closure
   intro x hx
   by_cases h : x ∈ s <;> apply AccPt.mono _ (principal_mono.mpr subset_closure)
-  · exact s_prePerfect h
+  · exact s_preperfect h
   have : {x}ᶜ ∩ s = s := by simp [h]
   rw [AccPt, nhdsWithin, inf_assoc, inf_principal, this]
   rw [closure_eq_cluster_pts] at hx
@@ -131,7 +132,7 @@ theorem Preperfect.perfect_closure (s_prePerfect : Preperfect s) : Perfect (clos
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
-theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect s ↔ Perfect (closure s) := by
+theorem preperfect_iff_perfect_closure [T1Space X] : Preperfect s ↔ Perfect (closure s) := by
   constructor <;> intro h
   · exact h.perfect_closure
   intro x xC
@@ -150,7 +151,7 @@ end Preperfect
 
 section Splitting
 
-theorem Perfect.closure_nhds_inter (s_perfect : Perfect s) (x : α) (x_in_s : x ∈ s) (x_in_t : x ∈ t)
+theorem Perfect.closure_nhds_inter (s_perfect : Perfect s) (x : X) (x_in_s : x ∈ s) (x_in_t : x ∈ t)
     (t_open : IsOpen t) : Perfect (closure (t ∩ s)) ∧ (closure (t ∩ s)).Nonempty := ⟨
   Preperfect.perfect_closure <| Set.inter_comm _ _ ▸ s_perfect.acc.open_inter t_open,
   ⟨x, subset_closure ⟨x_in_t, x_in_s⟩⟩⟩
@@ -158,24 +159,24 @@ theorem Perfect.closure_nhds_inter (s_perfect : Perfect s) (x : α) (x_in_s : x 
 
 /-- Given a perfect nonempty set in a T2.5 space, we can find two disjoint perfect subsets.
 This is the main inductive step in the proof of the Cantor-Bendixson Theorem. -/
-theorem Perfect.splitting [T25Space α] (hC : Perfect s) (hnonempty : s.Nonempty) :
-    ∃ C₀ C₁ : Set α,
+theorem Perfect.splitting [T25Space X] (s_perfect : Perfect s) (hnonempty : s.Nonempty) :
+    ∃ C₀ C₁ : Set X,
     (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ s) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ s) ∧ Disjoint C₀ C₁ := by
   cases' hnonempty with y yC
   obtain ⟨x, xC, hxy⟩ : ∃ x ∈ s, x ≠ y := by
-    have := hC.acc yC
+    have := s_perfect.acc yC
     rw [accPt_iff_nhds] at this
     rcases this univ univ_mem with ⟨x, xC, hxy⟩
     exact ⟨x, xC.2, hxy⟩
   obtain ⟨U, xU, Uop, V, yV, Vop, hUV⟩ := exists_open_nhds_disjoint_closure hxy
   use closure (U ∩ s), closure (V ∩ s)
   constructor <;> rw [← and_assoc]
-  · refine' ⟨hC.closure_nhds_inter x xC xU Uop, _⟩
-    rw [hC.closed.closure_subset_iff]
+  · refine' ⟨s_perfect.closure_nhds_inter x xC xU Uop, _⟩
+    rw [s_perfect.closed.closure_subset_iff]
     exact inter_subset_right _ _
   constructor
-  · refine' ⟨hC.closure_nhds_inter y yC yV Vop, _⟩
-    rw [hC.closed.closure_subset_iff]
+  · refine' ⟨s_perfect.closure_nhds_inter y yC yV Vop, _⟩
+    rw [s_perfect.closed.closure_subset_iff]
     exact inter_subset_right _ _
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
 #align perfect.splitting Perfect.splitting
@@ -186,9 +187,9 @@ section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
 can be written as the union of a countable set and a perfect set.-/
-theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
-    (hclosed : IsClosed s) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ s = V ∪ D := by
-  obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
+theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology X]
+    (hclosed : IsClosed s) : ∃ V D : Set X, V.Countable ∧ Perfect D ∧ s = V ∪ D := by
+  obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis X
   let v := { U ∈ b | (U ∩ s).Countable }
   let V := ⋃ U ∈ v, U
   let D := s \ V
@@ -222,8 +223,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset.-/
-theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
-    (hclosed : IsClosed s) (hunc : ¬s.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ s := by
+theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology X]
+    (hclosed : IsClosed s) (hunc : ¬s.Countable) : ∃ D : Set X, Perfect D ∧ D.Nonempty ∧ D ⊆ s := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
   refine' ⟨D, ⟨Dperf, _⟩⟩
   constructor
@@ -240,19 +241,19 @@ end Kernel
 
 section PerfectSpace
 
-theorem perfectSpace_of_forall_not_isolated (h_forall : ∀ x : α, Filter.NeBot (𝓝[≠] x)) :
-    PerfectSpace α := ⟨⟨isClosed_univ, fun x _ => by
+theorem perfectSpace_of_forall_not_isolated (h_forall : ∀ x : X, Filter.NeBot (𝓝[≠] x)) :
+    PerfectSpace X := ⟨⟨isClosed_univ, fun x _ => by
   rw [AccPt, Filter.principal_univ, inf_top_eq]
   exact h_forall x⟩⟩
 
-variable [PerfectSpace α]
+variable [PerfectSpace X]
 
-instance PerfectSpace.not_isolated (x : α): Filter.NeBot (𝓝[≠] x) := by
-  have := (PerfectSpace.univ_perfect α).acc (Set.mem_univ x)
+instance PerfectSpace.not_isolated (x : X): Filter.NeBot (𝓝[≠] x) := by
+  have := (PerfectSpace.univ_perfect X).acc (Set.mem_univ x)
   rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
 
-theorem PerfectSpace.prePerfect_of_isOpen {s : Set α} (s_open : IsOpen s) : Preperfect s :=
-  Set.univ_inter s ▸ (PerfectSpace.univ_perfect α).acc.open_inter s_open
+theorem PerfectSpace.preperfect_of_isOpen {s : Set X} (s_open : IsOpen s) : Preperfect s :=
+  Set.univ_inter s ▸ (PerfectSpace.univ_perfect X).acc.open_inter s_open
 
 end PerfectSpace
 
@@ -266,21 +267,21 @@ The product topological space `α × β` is perfect if `α` or `β` is perfect.
 
 variable {β : Type*} [TopologicalSpace β]
 
-theorem nhdsWithin_punctured_prod_neBot_iff {p : α} {q : β} : Filter.NeBot (𝓝[≠] (p, q)) ↔
+theorem nhdsWithin_punctured_prod_neBot_iff {p : X} {q : β} : Filter.NeBot (𝓝[≠] (p, q)) ↔
     Filter.NeBot (𝓝[≠] p) ∨ Filter.NeBot (𝓝[≠] q) := by
   simp_rw [← Set.singleton_prod_singleton, Set.compl_prod_eq_union, nhdsWithin_union,
     nhdsWithin_prod_eq, nhdsWithin_univ, Filter.neBot_iff, ne_eq, sup_eq_bot_iff,
     Filter.prod_eq_bot, Filter.NeBot.ne <| nhds_neBot, or_false, false_or, not_and_or]
 
 variable (α β) in
-instance PerfectSpace.prod_left [PerfectSpace α] : PerfectSpace (α × β) :=
+instance PerfectSpace.prod_left [PerfectSpace X] : PerfectSpace (X × β) :=
   perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
     rw [nhdsWithin_punctured_prod_neBot_iff]
     left
     exact PerfectSpace.not_isolated p
 
 variable (α β) in
-instance PerfectSpace.prod_right [PerfectSpace β] : PerfectSpace (α × β) :=
+instance PerfectSpace.prod_right [PerfectSpace β] : PerfectSpace (X × β) :=
   perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
     rw [nhdsWithin_punctured_prod_neBot_iff]
     right
@@ -288,7 +289,7 @@ instance PerfectSpace.prod_right [PerfectSpace β] : PerfectSpace (α × β) :=
 
 /-- A non-trivial connected T1 space has no isolated points. -/
 instance (priority := 100) ConnectedSpace.perfectSpace_of_nontrivial_of_t1space
-    [PreconnectedSpace α] [Nontrivial α] [T1Space α] : PerfectSpace α := by
+    [PreconnectedSpace X] [Nontrivial X] [T1Space X] : PerfectSpace X := by
   apply perfectSpace_of_forall_not_isolated
   intro x
   by_contra contra
@@ -311,31 +312,31 @@ open set must be infinite (`set_infinite_of_perfectSpace`).
 /--
 In a T1 space, nonempty open pre-perfect sets are infinite.
 -/
-theorem set_infinite_of_prePerfect [T1Space α] {s : Set α} (s_prePerfect : Preperfect s)
+theorem set_infinite_of_preperfect [T1Space X] {s : Set X} (s_preperfect : Preperfect s)
     (s_open : IsOpen s) (s_nonempty : s.Nonempty) : s.Infinite := by
   let ⟨p, p_in_s⟩ := s_nonempty
-  have := s_prePerfect.nhdsWithin_neBot p_in_s
+  have := s_preperfect.nhdsWithin_neBot p_in_s
   apply infinite_of_mem_nhds p
   exact IsOpen.mem_nhds s_open p_in_s
 
 /--
 In a T1, perfect space, nonempty open sets are infinite.
 -/
-theorem set_infinite_of_perfectSpace [T1Space α] [PerfectSpace α] {s : Set α} (s_open : IsOpen s)
+theorem set_infinite_of_perfectSpace [T1Space X] [PerfectSpace X] {s : Set X} (s_open : IsOpen s)
     (s_nonempty : s.Nonempty) : s.Infinite :=
-  set_infinite_of_prePerfect (PerfectSpace.prePerfect_of_isOpen s_open) s_open s_nonempty
+  set_infinite_of_preperfect (PerfectSpace.preperfect_of_isOpen s_open) s_open s_nonempty
 
 variable (α) in
 /--
 If a topological space is perfect, T1 and nonempty, then it is infinite.
 -/
-theorem infinite_of_perfectSpace [T1Space α] [PerfectSpace α] [Nonempty α] : Infinite α :=
+theorem infinite_of_perfectSpace [T1Space X] [PerfectSpace X] [Nonempty X] : Infinite X :=
   Set.infinite_univ_iff.mp (set_infinite_of_perfectSpace isOpen_univ univ_nonempty)
 
 end PerfectSpace.Infinite
 
 @[deprecated accPt_principal_iff_inter_of_mem_nhds]
-theorem AccPt.nhds_inter {x : α} (h_acc : AccPt x (𝓟 s)) (t_nhds : t ∈ 𝓝 x) :
+theorem AccPt.nhds_inter {x : X} (h_acc : AccPt x (𝓟 s)) (t_nhds : t ∈ 𝓝 x) :
     AccPt x (𝓟 (t ∩ s)) :=
   Set.inter_comm _ _ ▸ (accPt_principal_iff_inter_of_mem_nhds t_nhds).mp h_acc
 #align acc_pt.nhds_inter AccPt.nhds_inter
