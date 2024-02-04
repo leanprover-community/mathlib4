@@ -78,7 +78,7 @@ theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
 instance : DivInvOneMonoid ℝ≥0∞ :=
   { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
-    inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_eq_coe.2 inv_one }
+    inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
   | _, 0 => by simp only [pow_zero, inv_one]

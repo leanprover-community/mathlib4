@@ -514,7 +514,7 @@ theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x 
 infinity -/
 theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
     ENNReal.toNNReal (∑ a in s, f a) = ∑ a in s, ENNReal.toNNReal (f a) := by
-  rw [← coe_eq_coe, coe_toNNReal, coe_finset_sum, sum_congr rfl]
+  rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
   · intro x hx
     exact (coe_toNNReal (hf x hx)).symm
   · exact (sum_lt_top hf).ne
@@ -529,7 +529,7 @@ theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f 
 
 theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∑ i in s, f i) = ∑ i in s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_eq_coe]
+  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_inj]
   exact Real.toNNReal_sum_of_nonneg hf
 #align ennreal.of_real_sum_of_nonneg ENNReal.ofReal_sum_of_nonneg
 
