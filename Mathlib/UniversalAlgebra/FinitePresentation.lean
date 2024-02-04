@@ -6,11 +6,6 @@ structure RFLP where
   sortNames : List String
   opNames : List (String × List (Fin sortNames.length) × Fin sortNames.length)
 
-instance : Lean.ToExpr RFLP where
-  toExpr := fun ⟨nm, sorts, ops⟩ =>
-    Lean.mkAppN (.const ``RFLP.mk []) #[Lean.toExpr nm, Lean.toExpr sorts, Lean.toExpr ops]
-  toTypeExpr := .const ``RFLP []
-
 namespace RFLP
 
 variable (R : RFLP)
@@ -49,7 +44,7 @@ syntax prod_word "×" prod_word : prod_word
 syntax "[ProdWord|" prod_word "]" : term
 
 declare_syntax_cat lawvere_word
-syntax opName : lawvere_word
+syntax "[of" opName "]" : lawvere_word
 syntax "[id" prod_word "]" : lawvere_word
 syntax "[comp" lawvere_word "," lawvere_word "]" : lawvere_word
 syntax "[fst" prod_word "," prod_word "]" : lawvere_word
@@ -92,10 +87,26 @@ def elabOpDescr (descr : TSyntax `opDescr) : TermElabM (String × List String ×
     return (nm, nms.toList, out)
   | _ => throwUnsupportedSyntax
 
-def elabRelDescr (descr : TSyntax `relDescr) :
+def elabRelDescrAux (descr : TSyntax `relDescr) :
     TermElabM (String × TSyntax `lawvere_word × TSyntax `lawvere_word) :=
   match descr with
   | `(relDescr|$nm : $lhs = $rhs) => return (← elabRelName nm, lhs, rhs)
+  | _ => throwUnsupportedSyntax
+
+def RFLP.elabSort (rflp : RFLP) : TermElabM Expr := do
+  return .app (.const ``Fin []) (toExpr <| rflp.sortNames.length)
+
+def RFLP.elabOp (rflp : RFLP) : TermElabM Expr :=
+  Meta.withLocalDecls
+    #[(`L, .default, fun _ => return .app (.const ``List [0]) <| ← rflp.elabSort),
+      (`X, .default, fun _ => rflp.elabSort)] fun xs => do
+      return .app (.const ``Fin []) _
+
+def elabWord (rfpl : RFLP) (word : TSyntax `lawvere_word) : TermElabM Expr :=
+  match word with
+  | `(lawvere_word|[of $opname:opName]) => do
+    let opname ← elabOpName opname
+    return mkAppN (.const ``LawvereWord.of [0,0]) _
   | _ => throwUnsupportedSyntax
 
 @[term_elab flpStx]
@@ -120,11 +131,11 @@ def elabFlp : TermElab := fun stx tp =>
       | 0 => []
       | _+1 => ops.map fun (opnm, ins, out) =>
         (opnm, ins.map fun s => sorts.indexOf s, sorts.indexOf out)
-    let rflp : RFLP := .mk nm sorts actualOps
-    return toExpr rflp
+    --let rflp : RFLP := .mk nm sorts actualOps
+    return mkApp3 (.const ``RFLP.mk []) (toExpr nm) (toExpr sorts) (toExpr actualOps)
+    --return toExpr rflp
   | _ => throwUnsupportedSyntax
 
-#check FiniteLawverePresentation.mk
 #check [RFLP|
   NAME:
     Module
