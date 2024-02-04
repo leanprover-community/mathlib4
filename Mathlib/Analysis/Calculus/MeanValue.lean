@@ -469,7 +469,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
     simpa using ((hf (g t) (segm ht)).restrictScalars ℝ).comp_hasDerivWithinAt _
       AffineMap.hasDerivWithinAt_lineMap segm
   have bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖f' (g t) (y - x)‖ ≤ C * ‖y - x‖ := fun t ht =>
-    le_of_op_norm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
+    le_of_opNorm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
   simpa using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
 

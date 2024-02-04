@@ -129,7 +129,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       _ = ‖x - x₀‖⁻¹ * ‖F x a - F x₀ a‖ + ‖x - x₀‖⁻¹ * ‖F' a (x - x₀)‖ := by
         rw [norm_smul_of_nonneg, norm_smul_of_nonneg] <;> exact nneg _
       _ ≤ ‖x - x₀‖⁻¹ * (b a * ‖x - x₀‖) + ‖x - x₀‖⁻¹ * (‖F' a‖ * ‖x - x₀‖) := by
-        gcongr; exact (F' a).le_op_norm _
+        gcongr; exact (F' a).le_opNorm _
       _ ≤ b a + ‖F' a‖ := ?_
     simp only [← div_eq_inv_mul]
     apply_rules [add_le_add, div_le_of_nonneg_of_le_mul] <;> first | rfl | positivity

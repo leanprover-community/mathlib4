@@ -1454,7 +1454,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
-    · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
+    · apply eventually_of_forall (fun x ↦ (le_opNorm₂ L (g x) (f p x)).trans ?_)
       gcongr
       apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
@@ -1478,7 +1478,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
           calc
           ‖L (g x) (f p x) - L (g x) (f q x)‖
             = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
-          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_op_norm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_opNorm₂ _ _ _
           _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
         · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
           positivity

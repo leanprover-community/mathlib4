@@ -392,7 +392,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     rw [inv_mul_le_iff hnx, mul_comm]
     simp only [Function.comp_apply, Prod_map]
     rw [norm_sub_rev]
-    exact (f' n.1 x - g' x).le_op_norm (n.2 - x)
+    exact (f' n.1 x - g' x).le_opNorm (n.2 - x)
 #align has_fderiv_at_of_tendsto_uniformly_on_filter hasFDerivAt_of_tendstoUniformlyOnFilter
 
 theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
@@ -468,7 +468,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   intro n hn
   refine' lt_of_le_of_lt _ hq'
   simp only [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg] at hn ⊢
-  refine' ContinuousLinearMap.op_norm_le_bound _ hq.le _
+  refine' ContinuousLinearMap.opNorm_le_bound _ hq.le _
   intro z
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply]
@@ -516,7 +516,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     intro n hn
     refine' lt_of_le_of_lt _ hq'
     simp only [dist_eq_norm] at hn ⊢
-    refine' ContinuousLinearMap.op_norm_le_bound _ hq.le _
+    refine' ContinuousLinearMap.opNorm_le_bound _ hq.le _
     intro z
     simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply]
