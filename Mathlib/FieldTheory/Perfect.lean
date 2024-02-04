@@ -230,11 +230,14 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
 
-theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g :=
-  ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) fun p h ↦ by
-    rintro ⟨q, rfl⟩ dvd
+theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
+  refine ⟨Separable.squarefree,
+    fun sqf ↦ isCoprime_of_irreducible_dvd (not_and_of_not_left _ sqf.ne_zero) ?_⟩
+  rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
+  replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
-    exact h.1 (sqf _ <| mul_dvd_mul_left _ <| (separable_of_irreducible h).dvd_of_dvd_mul_left dvd)⟩
+    exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
+  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 
