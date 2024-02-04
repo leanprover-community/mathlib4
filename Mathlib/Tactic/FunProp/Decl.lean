@@ -5,7 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Qq
-import Mathlib.Tactic.FunProp.Types
+import Std.Tactic.Where
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 ## `funProp` environment extension that stores all registered function properties

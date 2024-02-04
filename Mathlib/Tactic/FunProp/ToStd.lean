@@ -5,8 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Std.Data.Nat.Lemmas
-import Std.Lean.Expr
+import Std.Data.Array.Init.Basic
 
 
 /-!

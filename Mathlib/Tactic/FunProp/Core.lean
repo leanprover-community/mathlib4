@@ -7,8 +7,8 @@ import Lean
 import Qq
 import Std.Tactic.Exact
 
-import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ToStd
+import Mathlib.Tactic.FunProp.Theorems
 
 /-!
 ## `funProp` core tactic algorithm

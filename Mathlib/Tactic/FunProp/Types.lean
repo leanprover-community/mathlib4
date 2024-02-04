@@ -7,7 +7,6 @@ import Lean.Meta.Tactic.Simp.Types
 
 import Std.Lean.HashSet
 
-import Mathlib.Logic.Function.Basic
 
 /-!
 ## `funProp`
