@@ -1910,7 +1910,7 @@ variable (μ) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 theorem toLp_norm_eq_toLp_norm_coe :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =
       ‖(BoundedContinuousFunction.toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ :=
-  ContinuousLinearMap.op_norm_comp_linearIsometryEquiv _ _
+  ContinuousLinearMap.opNorm_comp_linearIsometryEquiv _ _
 #align continuous_map.to_Lp_norm_eq_to_Lp_norm_coe ContinuousMap.toLp_norm_eq_toLp_norm_coe
 
 /-- Bound for the operator norm of `ContinuousMap.toLp`. -/

@@ -321,11 +321,11 @@ theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E
     ‖f.compAlongComposition p c v‖ ≤ (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) * ∏ i : Fin n, ‖v i‖ :=
   calc
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
-    _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := (ContinuousMultilinearMap.le_op_norm _ _)
+    _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := (ContinuousMultilinearMap.le_opNorm _ _)
     _ ≤ ‖f‖ * ∏ i, ‖p (c.blocksFun i)‖ * ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
       apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
       refine' Finset.prod_le_prod (fun i _hi => norm_nonneg _) fun i _hi => _
-      apply ContinuousMultilinearMap.le_op_norm
+      apply ContinuousMultilinearMap.le_opNorm
     _ = (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) *
         ∏ i, ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
       rw [Finset.prod_mul_distrib, mul_assoc]
@@ -339,7 +339,7 @@ the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
-  ContinuousMultilinearMap.op_norm_le_bound _
+  ContinuousMultilinearMap.opNorm_le_bound _
     (mul_nonneg (norm_nonneg _) (Finset.prod_nonneg fun _i _hi => norm_nonneg _))
     (compAlongComposition_bound _ _ _)
 #align formal_multilinear_series.comp_along_composition_norm FormalMultilinearSeries.compAlongComposition_norm
@@ -462,7 +462,6 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
 
 section
 
-set_option maxHeartbeats 300000 in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/
@@ -737,7 +736,6 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
@@ -838,7 +836,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       calc
         ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
             ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ :=
-          by apply ContinuousMultilinearMap.le_op_norm
+          by apply ContinuousMultilinearMap.le_opNorm
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
@@ -1165,9 +1163,9 @@ def sigmaEquivSigmaPi (n : ℕ) :
       rw [get_of_eq (splitWrtComposition_join _ _ _)]
       · simp only [get_ofFn]
         rfl
-      · congr
       · simp only [map_ofFn]
         rfl
+      · congr
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
@@ -1176,7 +1174,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option maxHeartbeats 500000 in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
