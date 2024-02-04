@@ -766,7 +766,7 @@ theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y 
     add_sub_cancel', sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 #align bilin_form.polar_to_quadratic_form LinearMap.polar_toQuadraticForm
 
-theorem polarBilin_toQuadraticForm : polarLinearMap₂ (toQuadraticForm B) = B + B.flip :=
+theorem polarLinearMap₂_toQuadraticForm : polarLinearMap₂ (toQuadraticForm B) = B + B.flip :=
   ext₂ polar_toQuadraticForm
 
 @[simp] theorem _root_.QuadraticForm.toQuadraticForm_polarLinearMap₂ (Q : QuadraticForm R M) :
