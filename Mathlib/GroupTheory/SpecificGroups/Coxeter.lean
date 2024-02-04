@@ -90,10 +90,10 @@ variable (M : Matrix B B ℕ)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
 and off-diagonal entries distinct from one. -/
-class Matrix.IsCoxeter : Prop where
+structure Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
-  diagonal : ∀ i : B, M i i = 1 := by aesop
-  off_diagonal : ∀ i j : B, i ≠ j → M i j ≠ 1 := by aesop
+  diagonal : ∀ b : B, M b b  = 1 := by aesop
+  off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
 
 namespace CoxeterGroup
 
@@ -101,7 +101,7 @@ namespace Relations
 
 /-- The relations corresponding to a Coxeter matrix. -/
 def ofMatrix : B × B → FreeGroup B :=
- Function.uncurry fun i j => (FreeGroup.of i * FreeGroup.of j) ^ M i j
+ Function.uncurry fun b₁ b₂ => (FreeGroup.of b₁ * FreeGroup.of b₂) ^ M b₁ b₂
 
 /-- The set of relations corresponding to a Coxeter matrix. -/
 def toSet : Set (FreeGroup B) :=
@@ -152,7 +152,7 @@ open Matrix
 
 variable {B B' W H : Type*} [Group W] [Group H]
 
-variable {M : Matrix B B ℕ} [M.IsCoxeter]
+variable {M : Matrix B B ℕ}
 
 /-- A Coxeter system for `W` with Coxeter matrix `M` indexed by `B`, is associated to
 a map `B → W` recording the images of the indices. -/
@@ -170,11 +170,11 @@ instance funLike : FunLike (CoxeterSystem M W) B (fun _ => W) where
 theorem mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) : cs.mulEquiv (cs b) = .of b :=
   cs.mulEquiv.eq_symm_apply.mp rfl
 
-/-- The map sending a Coxeter system to its associated map `B → W`. -/
-theorem ext' {c d : CoxeterSystem M W} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
+/-- The map sending a Coxeter system to its associated map `B → W` is injective. -/
+theorem ext' {cs₁ cs₂ : CoxeterSystem M W} (H : ⇑cs₁ = ⇑cs₂) : cs₁ = cs₂ := FunLike.coe_injective H
 
 /-- Extensionality rule for Coxeter systems. -/
-theorem ext {c d : CoxeterSystem M W} (H : ∀ x, c x = d x) : c = d :=
+theorem ext {cs₁ cs₂ : CoxeterSystem M W} (H : ∀ b, cs₁ b = cs₂ b) : cs₁ = cs₂ :=
   ext' <| by ext; apply H
 
 /-- The canonical Coxeter system of the Coxeter group over `X`. -/
@@ -256,12 +256,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Aₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
-      else (if i = n - 1 ∨ j = n - 1 then 2 else 3)
+      else (if i - j = 1 ∨ j - i = 1 then 3 else 2)
 
-instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
+theorem AₙIsCoxeter [NeZero n] : IsCoxeter (Aₙ n) where
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -271,13 +271,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
-      else (if i = (1 : ℕ) ∨ j = (1 : ℕ) then 4
-        else (if i = n - 1 ∨ j = n - 1 then 2 else 3))
+      else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
+        else (if i - j = 1 ∨ j - i = 1 then 3 else 2))
 
-instance BₙIsCoxeter : IsCoxeter (Bₙ n) where
+theorem BₙIsCoxeter [NeZero n] : IsCoxeter (Bₙ n) where
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -290,13 +290,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
-      else (if i = (1 : ℕ) ∨ j = (1 : ℕ) then 4
-        else (if i = n - 1 ∨ j = n - 1 then 2 else 3))
+      else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
+        else (if i - j = 1 ∨ j - i = 1 then 3 else 2))
 
-instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
+theorem DₙIsCoxeter [NeZero n] : IsCoxeter (Dₙ n) where
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
@@ -309,7 +309,7 @@ The corresponding Coxeter-Dynkin diagram is:
 abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
   Matrix.of fun i j => if i = j then 1 else m + 2
 
-instance I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
+theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
 
 /-- The Coxeter matrix of system E₆.
 
@@ -328,7 +328,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
      2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 3, 1]
 
-instance E₆IsCoxeter : IsCoxeter E₆ where
+theorem E₆IsCoxeter : IsCoxeter E₆ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -351,7 +351,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
      2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 3, 1]
 
-instance E₇IsCoxeter : IsCoxeter E₇ where
+theorem E₇IsCoxeter : IsCoxeter E₇ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -375,7 +375,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
      2, 2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 2, 3, 1]
 
-instance E₈IsCoxeter : IsCoxeter E₈ where
+theorem E₈IsCoxeter : IsCoxeter E₈ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -394,7 +394,7 @@ def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 4, 1, 3;
      2, 2, 3, 1]
 
-instance F₄IsCoxeter : IsCoxeter F₄ where
+theorem F₄IsCoxeter : IsCoxeter F₄ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -411,7 +411,7 @@ def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
   !![1, 6;
      6, 1]
 
-instance G₂IsCoxeter : IsCoxeter G₂ where
+theorem G₂IsCoxeter : IsCoxeter G₂ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -429,7 +429,7 @@ def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
      3, 1, 5;
      2, 5, 1]
 
-instance H₃IsCoxeter : IsCoxeter H₃ where
+theorem H₃IsCoxeter : IsCoxeter H₃ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
@@ -448,7 +448,7 @@ def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 3, 1, 5;
      2, 2, 5, 1]
 
-instance H₄IsCoxeter : IsCoxeter H₄ where
+theorem H₄IsCoxeter : IsCoxeter H₄ where
   symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
