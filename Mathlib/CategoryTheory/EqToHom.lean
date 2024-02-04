@@ -300,7 +300,7 @@ end Functor
 as we lose the ability to use results that interact with `F`,
 e.g. the naturality of a natural transformation.
 
-In some files it may be appropriate to use `local attribute [simp] eqToHom_map`, however.
+In some files it may be appropriate to use `attribute [local simp] eqToHom_map`, however.
 -/
 theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
