@@ -122,6 +122,11 @@ def val {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     OverArrows η s → F.obj (op X) :=
   Subtype.val
 
+@[simp]
+lemma val_mk {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) {X : C} (s : yoneda.obj X ⟶ A) (u : F.obj (op X))
+    (h : MakesOverArrow η s u) : val ⟨u, h⟩ = u :=
+  rfl
+
 @[ext]
 lemma ext {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X : C} {s : yoneda.obj X ⟶ A}
     {u v : OverArrows η s} : u.val = v.val → u = v :=
@@ -425,10 +430,7 @@ lemma unitForward_naturality₂ {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X Y : C
 lemma app_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : Cᵒᵖ)
     (p : YonedaCollection (restrictedYonedaObj η) X.unop) :
     η.app X (unitForward η X.unop p) = p.yonedaEquivFst := by
-  simp [unitForward]
-  have := p.snd.app_val
-  dsimp  at this
-  simp [ this, YonedaCollection.yonedaEquivFst_eq]
+  simpa [unitForward] using p.snd.app_val
 
 /-- Backward direction of the unit. -/
 def unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
@@ -436,19 +438,14 @@ def unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
   fun x => YonedaCollection.mk (yonedaEquiv.symm (η.app _ x)) ⟨x, ⟨by aesop_cat⟩⟩
 
 lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
-    unitForward η X ∘ unitBackward η X = id := by
-  ext x
-  dsimp [unitForward, unitBackward]
-  aesop_cat
+    unitForward η X ∘ unitBackward η X = id :=
+  funext fun x => by simp [unitForward, unitBackward]
 
 lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
-  ext1 p
-  simp only [Function.comp_apply, unitBackward, unitForward, unop_op, CostructuredArrow.mk_left,
-    CostructuredArrow.mk_hom_eq_self, id_eq]
-  refine YonedaCollection.ext ?_ ?_
-  · simpa using congrArg yonedaEquiv.symm p.snd.app_val
-  · aesop_cat
+  refine funext fun p => YonedaCollection.ext ?_ (OverArrows.ext ?_)
+  · simpa [unitForward, unitBackward] using congrArg yonedaEquiv.symm p.snd.app_val
+  · simp [unitForward, unitBackward]
 
 /-- Intermediate stage of assembling the unit. -/
 @[simps]
