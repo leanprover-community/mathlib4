@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
+import Std.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Init.Order.Defs
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
 
@@ -462,7 +463,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.mul_self_sub_mul_self_eq Nat.mul_self_sub_mul_self_eq
 
-#align nat.succ_mul_succ_eq Nat.succ_mul_succ_eq
+#align nat.succ_mul_succ_eq Nat.succ_mul_succ
 
 /-! min -/
 
@@ -780,7 +781,7 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
           simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
         else
           simp only [hdiv_ten,
-            to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
+            to_digits_core_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
           exact Nat.succ_le_succ ih
       else
         obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos

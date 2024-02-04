@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Separable
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
@@ -266,16 +264,16 @@ section Reduced
 variable (R) [CommRing R] [IsReduced R]
 
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
-theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
-    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, hp.1.pos⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
+theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [ExpChar R p]
+    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, expChar_pos R p⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', PNat.mul_coe, PNat.pow_coe, PNat.mk_coe,
-    CharP.pow_prime_pow_mul_eq_one_iff]
+    ExpChar.pow_prime_pow_mul_eq_one_iff]
 #align mem_roots_of_unity_prime_pow_mul_iff mem_rootsOfUnity_prime_pow_mul_iff
 
 @[simp]
-theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
+theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ+) [ExpChar R p]
     {ζ : Rˣ} : ζ ^ (p ^ k * ↑m) = 1 ↔ ζ ∈ rootsOfUnity m R := by
-  rw [← PNat.mk_coe p hp.1.pos, ← PNat.pow_coe, ← PNat.mul_coe, ← mem_rootsOfUnity,
+  rw [← PNat.mk_coe p (expChar_pos R p), ← PNat.pow_coe, ← PNat.mul_coe, ← mem_rootsOfUnity,
     mem_rootsOfUnity_prime_pow_mul_iff]
 
 end Reduced
@@ -858,7 +856,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n)
     nthRoots n a = (Multiset.range n).map (ζ ^ · * α) := by
   obtain (rfl|hn) := n.eq_zero_or_pos; · simp
   by_cases hα : α = 0
-  · rw [hα, zero_pow hn] at e
+  · rw [hα, zero_pow hn.ne'] at e
     simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
       Finset.range_val, Multiset.map_const', Multiset.card_range]
   classical
@@ -912,7 +910,7 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha
   by_cases h : ∃ α, α ^ n = a
   · obtain ⟨α, hα⟩ := h
     by_cases hα' : α = 0
-    · exact (ha (by rwa [hα', zero_pow hn, eq_comm] at hα)).elim
+    · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
     rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
     exact h.injOn_pow_mul hα'
   · suffices nthRoots n a = 0 by simp [this]

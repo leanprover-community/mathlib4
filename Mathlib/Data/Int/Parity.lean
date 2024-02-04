@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Abel
 
 #align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -136,6 +137,10 @@ theorem even_add_one : Even (n + 1) ↔ ¬Even n := by
 #align int.even_add_one Int.even_add_one
 
 @[parity_simps]
+theorem even_sub_one : Even (n - 1) ↔ ¬Even n := by
+  simp [even_sub]
+
+@[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
@@ -195,6 +200,9 @@ theorem odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
 theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
   simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
+
+theorem even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
+  simpa [even_mul, parity_simps] using n.even_or_odd
 
 @[simp, norm_cast]
 theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by

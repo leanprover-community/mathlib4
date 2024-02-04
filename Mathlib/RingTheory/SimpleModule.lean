@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.JordanHolder
+import Mathlib.Order.CompactlyGenerated.Intervals
 
 #align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
@@ -29,7 +30,7 @@ import Mathlib.Order.JordanHolder
 -/
 
 
-variable (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
+variable {ι : Type*} (R : Type*) [Ring R] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
 abbrev IsSimpleModule :=
@@ -70,15 +71,15 @@ theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m 
   exact Submodule.comapMkQRelIso m
 #align is_simple_module_iff_is_coatom isSimpleModule_iff_isCoatom
 
-theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
+theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
-  rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
+  rw [covBy_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
   -- This used to be in the next `simp`, but we need `erw` after leanprover/lean4#2644
   erw [RelIso.coe_fn_mk]
   simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
     inf_eq_right.2 hAB]
-#align covby_iff_quot_is_simple covby_iff_quot_is_simple
+#align covby_iff_quot_is_simple covBy_iff_quot_is_simple
 
 namespace IsSimpleModule
 
@@ -118,6 +119,34 @@ theorem is_semisimple_iff_top_eq_sSup_simples :
     intro
     exact IsSemisimpleModule.sSup_simples_eq_top⟩
 #align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
+
+lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+    (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
+    IsSemisimpleModule R M := by
+  refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
+  let e : Submodule R (p i) ≃o Set.Iic (p i) := Submodule.MapSubtype.relIso (p i)
+  simpa only [← e.complementedLattice_iff] using hp i hi
+
+lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+    (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) :
+    IsSemisimpleModule R ↥(⨆ i ∈ s, p i) := by
+  let q := ⨆ i ∈ s, p i
+  let p' : ι → Submodule R q := fun i ↦ (p i).comap q.subtype
+  have hp₀ : ∀ i ∈ s, p i ≤ LinearMap.range q.subtype := fun i hi ↦ by
+    simpa only [Submodule.range_subtype] using le_biSup _ hi
+  have hp₁ : ∀ i ∈ s, IsSemisimpleModule R (p' i) := fun i hi ↦ by
+    let e : p' i ≃ₗ[R] p i := (p i).comap_equiv_self_of_inj_of_le q.injective_subtype (hp₀ i hi)
+    exact (Submodule.orderIsoMapComap e).complementedLattice_iff.mpr <| hp i hi
+  have hp₂ : ⨆ i ∈ s, p' i = ⊤ := by
+    apply Submodule.map_injective_of_injective q.injective_subtype
+    simp_rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_iSup]
+    exact biSup_congr fun i hi ↦ Submodule.map_comap_eq_of_le (hp₀ i hi)
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule hp₁ hp₂
+
+lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule R M}
+    (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
+    IsSemisimpleModule R M :=
+  isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
 namespace LinearMap
 
@@ -222,9 +251,9 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
 
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
-  lt_of_isMaximal := Covby.lt
-  sup_eq_of_isMaximal hxz hyz := Wcovby.sup_eq hxz.wcovby hyz.wcovby
-  isMaximal_inf_left_of_isMaximal_sup := inf_covby_of_covby_sup_of_covby_sup_left
+  lt_of_isMaximal := CovBy.lt
+  sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
+  isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
   Iso := Iso
   iso_symm := iso_symm
   iso_trans := iso_trans

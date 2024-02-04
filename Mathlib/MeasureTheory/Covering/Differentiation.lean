@@ -136,7 +136,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     apply v.fineSubfamilyOn_of_frequently f s fun x hx => ?_
     have :=
       (hs x hx).and_eventually
-        ((v.eventually_filterAt_mem_sets x).and
+        ((v.eventually_filterAt_mem_setsAt x).and
           (v.eventually_filterAt_subset_of_nhds (U_open.mem_nhds (sU hx))))
     apply Frequently.mono this
     rintro a ⟨ρa, _, aU⟩

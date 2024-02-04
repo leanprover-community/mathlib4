@@ -342,7 +342,7 @@ private theorem average_density_near_total_density [Nonempty α]
   suffices (G.edgeDensity (A.biUnion id) (B.biUnion id) : ℝ) -
       (∑ ab in A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) ≤ ε ^ 5 / 50 by
     apply this.trans
-    exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
+    gcongr <;> [sz_positivity; norm_num]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
 
@@ -457,7 +457,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by
     have := average_density_near_total_density hPα hPε hε₁
       (Subset.refl (chunk hP G ε hU).parts) (Subset.refl (chunk hP G ε hV).parts)
-    simp_rw [← sup_eq_biUnion, supParts, card_chunk (m_pos hPα).ne', cast_pow] at this
+    simp_rw [← sup_eq_biUnion, sup_parts, card_chunk (m_pos hPα).ne', cast_pow] at this
     norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by

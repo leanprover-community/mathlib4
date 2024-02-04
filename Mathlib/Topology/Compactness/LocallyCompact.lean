@@ -86,19 +86,22 @@ theorem local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n �
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
 
-theorem locallyCompactSpace_of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → Prop}
+theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set X} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace X :=
   ⟨fun x _t ht =>
     let ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
-#align locally_compact_space_of_has_basis locallyCompactSpace_of_hasBasis
+#align locally_compact_space_of_has_basis LocallyCompactSpace.of_hasBasis
+
+@[deprecated] -- since 29 Dec 2023
+alias locallyCompactSpace_of_hasBasis := LocallyCompactSpace.of_hasBasis
 
 instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
-  locallyCompactSpace_of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+ .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 #align prod.locally_compact_space Prod.locallyCompactSpace
 
 section Pi
@@ -158,9 +161,9 @@ most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_e
 It is satisfied in two cases:
 
 - if `X` is a locally compact topological space, for obvious reasons;
-- if `X` is a weakly locally compact topological space and `Y` is a Hausdorff space;
+- if `X` is a weakly locally compact topological space and `Y` is an R₁ space;
   this fact is a simple generalization of the theorem
-  saying that a weakly locally compact Hausdorff topological space is locally compact.
+  saying that a weakly locally compact R₁ topological space is locally compact.
 -/
 class LocallyCompactPair (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] : Prop where
   /-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces
@@ -198,7 +201,7 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
   choose! V hxV hVc hVU using fun x (hx : x ∈ K) ↦
     exists_mem_nhds_isCompact_mapsTo hf (hU.mem_nhds (hKU hx))
   rcases hK.elim_nhds_subcover_nhdsSet hxV with ⟨s, hsK, hKs⟩
-  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂ fun x hx ↦
+  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂.2 fun x hx ↦
     hVU x (hsK x hx)⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
@@ -214,11 +217,10 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
 
 protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
-  haveI : ∀ x : X, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (f x) ∧ IsCompact s) fun s => f ⁻¹' s := by
-    intro x
+  haveI : ∀ x : X, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (f x) ∧ IsCompact s) (f ⁻¹' ·) := fun x ↦ by
     rw [hf.toInducing.nhds_eq_comap]
     exact (compact_basis_nhds _).comap _
-  locallyCompactSpace_of_hasBasis this fun x s hs => hf.isCompact_preimage hs.2
+  .of_hasBasis this fun x s hs => hf.isCompact_preimage hs.2
 #align closed_embedding.locally_compact_space ClosedEmbedding.locallyCompactSpace
 
 protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
@@ -228,13 +230,12 @@ protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set 
 
 protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : OpenEmbedding f) : LocallyCompactSpace X := by
-  have : ∀ x : X, (𝓝 x).HasBasis
-      (fun s => (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) fun s => f ⁻¹' s := by
-    intro x
-    rw [hf.toInducing.nhds_eq_comap]
-    exact
-      ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <| mem_range_self _).comap _
-  refine' locallyCompactSpace_of_hasBasis this fun x s hs => _
+  have : ∀ x : X,
+      (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) (f ⁻¹' ·) := fun x ↦ by
+    rw [hf.nhds_eq_comap]
+    exact ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <|
+      mem_range_self _).comap _
+  refine .of_hasBasis this fun x s hs => ?_
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace

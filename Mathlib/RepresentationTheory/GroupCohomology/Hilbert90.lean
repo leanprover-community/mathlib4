@@ -3,7 +3,7 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Fixed
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
 
@@ -61,10 +61,10 @@ linear independence of characters -/
   have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
     LinearIndependent.comp (ι' := L ≃ₐ[K] L)
       (linearIndependent_monoidHom L L) (fun f => f)
-      (fun x y h => by ext; exact FunLike.ext_iff.1 h _)
+      (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
-  fun H => Units.ne_zero (f 1) (FunLike.ext_iff.1 (h H) 1)
+  fun H => Units.ne_zero (f 1) (DFunLike.ext_iff.1 (h H) 1)
 
 end Hilbert90
 section
@@ -76,7 +76,7 @@ theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ)
     ∃ β : Lˣ, ∀ g : (L ≃ₐ[K] L), f g * Units.map g β = β := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux K L f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero K L f $ funext fun x => H x)
+    not_forall.1 (fun H => aux_ne_zero K L f <| funext fun x => H x)
   have : aux K L f z = ∑ h, f h * h z := by simp [aux, Finsupp.total, Finsupp.sum_fintype]
 /- Let `β = ∑ f(h) * h(z).` -/
   use Units.mk0 (aux K L f z) hz
@@ -102,6 +102,7 @@ noncomputable instance hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) whe
     refine' Additive.toMul.bijective.1 _
     show Units.map g β⁻¹ / β⁻¹ = Additive.toMul (x.1 g)
     rw [map_inv, div_inv_eq_mul, mul_comm]
-    exact mul_inv_eq_iff_eq_mul.2 (hβ g).symm
+    -- TODO this used to be `exact` prior to leanprover/lean4#2478
+    apply mul_inv_eq_iff_eq_mul.2 (hβ g).symm
 
 end groupCohomology

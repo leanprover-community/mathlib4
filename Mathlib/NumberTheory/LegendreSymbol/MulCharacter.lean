@@ -71,7 +71,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance MulChar.instFunLike : FunLike (MulChar R R') R (fun _ => R') :=
+instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
   ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
@@ -257,6 +257,16 @@ protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (�
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
+/-- We can convert a multiplicative character into a homomorphism of monoids with zero when
+the source has a zero and another element. -/
+@[coe, simps]
+def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+    R →*₀ R' where
+      toFun := χ.toFun
+      map_zero' := χ.map_zero
+      map_one' := χ.map_one'
+      map_mul' := χ.map_mul'
+
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
@@ -274,6 +284,9 @@ noncomputable instance inhabited : Inhabited (MulChar R R') :=
 @[simp]
 theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by classical exact dif_pos a.isUnit
 #align mul_char.one_apply_coe MulChar.one_apply_coe
+
+/-- Evaluation of the trivial character -/
+lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_coe hx.unit
 
 /-- Multiplication of multiplicative characters. (This needs the target to be commutative.) -/
 def mul (χ χ' : MulChar R R') : MulChar R R' :=
@@ -390,7 +403,7 @@ theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ 
 #align mul_char.pow_apply_coe MulChar.pow_apply_coe
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n := by
+theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
   · exact pow_apply_coe χ n ha.unit
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
@@ -492,7 +505,7 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
   ext x
   rw [pow_apply_coe]
   rcases hχ x with (hx | hx | hx) <;> rw [hx]
-  · rw [zero_pow (@Fact.out p.Prime).pos]
+  · rw [zero_pow (@Fact.out p.Prime).ne_zero]
   · rw [one_pow]
   · exact CharP.neg_one_pow_char R' p
 #align mul_char.is_quadratic.pow_char MulChar.IsQuadratic.pow_char

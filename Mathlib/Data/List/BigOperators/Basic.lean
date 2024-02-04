@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Data.List.BigOperators.Defs
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Int.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -13,7 +14,7 @@ import Mathlib.Data.List.Forall2
 # Sums and products from lists
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
-of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
+of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
 
@@ -229,8 +230,6 @@ theorem prod_set :
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
-
-open MulOpposite
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.

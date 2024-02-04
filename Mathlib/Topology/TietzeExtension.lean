@@ -134,7 +134,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
     rw [← zero_mul ‖f‖]
-    refine' (tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num1
+    refine' (tendsto_pow_atTop_nhds_zero_of_lt_one _ _).mul tendsto_const_nhds <;> norm_num1
   refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
     refine'
@@ -333,7 +333,7 @@ theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
   rcases exists_extension_forall_mem_of_closedEmbedding f hf hne
       (closedEmbedding_subtype_val hs) with
     ⟨g, hg, hgf⟩
-  exact ⟨g, hg, FunLike.coe_injective hgf⟩
+  exact ⟨g, hg, DFunLike.coe_injective hgf⟩
 #align bounded_continuous_function.exists_forall_mem_restrict_eq_of_closed BoundedContinuousFunction.exists_forall_mem_restrict_eq_of_closed
 
 end BoundedContinuousFunction

@@ -40,7 +40,7 @@ the augmentation on the alternating face map complex of `X` is a homotopy
 equivalence.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
@@ -78,7 +78,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
-augmented simplical object in `D` obtained by applying `F` to `X`. -/
+augmented simplicial object in `D` obtained by applying `F` to `X`. -/
 def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun_succ SSet.Augmented.StandardSimplex.shiftFun_succ
 
 /-- The shift of a morphism `f : [n] → Δ` in `SimplexCategory` corresponds to
-the monotone map which sends `0` to `0` and `i.succ` to `f.to_order_hom i`. -/
+the monotone map which sends `0` to `0` and `i.succ` to `f.toOrderHom i`. -/
 @[simp]
 def shift {n : ℕ} {Δ : SimplexCategory}
     (f : ([n] : SimplexCategory) ⟶ Δ) : ([n + 1] : SimplexCategory) ⟶ Δ :=
@@ -189,31 +189,38 @@ def shift {n : ℕ} {Δ : SimplexCategory}
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift SSet.Augmented.StandardSimplex.shift
 
+open SSet.standardSimplex in
 /-- The obvious extra degeneracy on the standard simplex. -/
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
-  s' _ := SimplexCategory.Hom.mk (OrderHom.const _ 0)
-  s n f := shift f
+  s' _ := objMk (OrderHom.const _ 0)
+  s  n f := (objEquiv _ _).symm
+    (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
     apply Subsingleton.elim
   s₀_comp_δ₁ := by
+    dsimp
     ext1 x
-    apply SimplexCategory.Hom.ext
+    apply (objEquiv _ _).injective
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext i : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     by_cases h : j = 0
     · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
@@ -222,13 +229,14 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
         Fin.succAboveEmb_apply]
   s_comp_σ n i := by
     ext1 φ
+    apply (objEquiv _ _).injective
     apply SimplexCategory.Hom.ext
     ext j : 2
-    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex]
+    dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.standardSimplex,
+      objEquiv, Equiv.ulift, uliftFunctor]
     by_cases h : j = 0
     · subst h
-      simp only [shiftFun_0]
-      exact shiftFun_0 φ.toOrderHom
+      rfl
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
       simp only [Fin.succ_predAbove_succ, shiftFun_succ, Function.comp_apply]
 set_option linter.uppercaseLean3 false in

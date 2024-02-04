@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -489,6 +488,7 @@ theorem snorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ,
   snorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 #align measure_theory.snorm_congr_norm_ae MeasureTheory.snorm_congr_norm_ae
 
+open scoped symmDiff in
 theorem snorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     snorm (s.indicator f - t.indicator f) p μ = snorm ((s ∆ t).indicator f) p μ :=
   snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
@@ -512,7 +512,7 @@ theorem snorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
   congr
   ext1 x
   simp_rw [← ofReal_norm_eq_coe_nnnorm]
-  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg_of_nonneg (norm_nonneg _) _), mul_comm, ←
+  rw [Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 #align measure_theory.snorm'_norm_rpow MeasureTheory.snorm'_norm_rpow
 
@@ -992,64 +992,6 @@ theorem _root_.MeasurableEquiv.memℒp_map_measure_iff (f : α ≃ᵐ β) {g : �
 #align measurable_equiv.mem_ℒp_map_measure_iff MeasurableEquiv.memℒp_map_measure_iff
 
 end MapMeasure
-
-section Trim
-
-theorem snorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snorm' f q (ν.trim hm) = snorm' f q ν := by
-  simp_rw [snorm']
-  congr 1
-  refine' lintegral_trim hm _
-  refine' @Measurable.pow_const _ _ _ _ _ _ _ m _ (@Measurable.coe_nnreal_ennreal _ m _ _) q
-  apply @StronglyMeasurable.measurable
-  exact @StronglyMeasurable.nnnorm α m _ _ _ hf
-#align measure_theory.snorm'_trim MeasureTheory.snorm'_trim
-
-theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
-    (ν.trim hm).ae.limsup f = ν.ae.limsup f := by
-  simp_rw [limsup_eq]
-  suffices h_set_eq : { a : ℝ≥0∞ | ∀ᵐ n ∂ν.trim hm, f n ≤ a } = { a : ℝ≥0∞ | ∀ᵐ n ∂ν, f n ≤ a }
-  · rw [h_set_eq]
-  ext1 a
-  suffices h_meas_eq : ν { x | ¬f x ≤ a } = ν.trim hm { x | ¬f x ≤ a }
-  · simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]; rfl
-  refine' (trim_measurableSet_eq hm _).symm
-  refine' @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf _)
-  exact @measurable_const _ _ _ m _
-#align measure_theory.limsup_trim MeasureTheory.limsup_trim
-
-theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
-    essSup f (ν.trim hm) = essSup f ν := by
-  simp_rw [essSup]
-  exact limsup_trim hm hf
-#align measure_theory.ess_sup_trim MeasureTheory.essSup_trim
-
-theorem snormEssSup_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snormEssSup f (ν.trim hm) = snormEssSup f ν :=
-  essSup_trim _ (@StronglyMeasurable.ennnorm _ m _ _ _ hf)
-#align measure_theory.snorm_ess_sup_trim MeasureTheory.snormEssSup_trim
-
-theorem snorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snorm f p (ν.trim hm) = snorm f p ν := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · simpa only [h_top, snorm_exponent_top] using snormEssSup_trim hm hf
-  simpa only [snorm_eq_snorm' h0 h_top] using snorm'_trim hm hf
-#align measure_theory.snorm_trim MeasureTheory.snorm_trim
-
-theorem snorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable f (ν.trim hm)) :
-    snorm f p (ν.trim hm) = snorm f p ν := by
-  rw [snorm_congr_ae hf.ae_eq_mk, snorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
-  exact snorm_trim hm hf.stronglyMeasurable_mk
-#align measure_theory.snorm_trim_ae MeasureTheory.snorm_trim_ae
-
-theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p (ν.trim hm)) : Memℒp f p ν :=
-  ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
-    (le_of_eq (snorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
-#align measure_theory.mem_ℒp_of_mem_ℒp_trim MeasureTheory.memℒp_of_memℒp_trim
-
-end Trim
 
 theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q) {f : α → E}
     (hf : AEStronglyMeasurable f μ) :

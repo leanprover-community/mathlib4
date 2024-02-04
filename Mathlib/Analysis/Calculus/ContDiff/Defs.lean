@@ -888,19 +888,19 @@ theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fi
   rfl
 #align iterated_fderiv_within_one_apply iteratedFDerivWithin_one_apply
 
-theorem Filter.EventuallyEq.iterated_fderiv_within' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
+theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
   induction' n with n ihn
-  · exact h.mono fun y hy => FunLike.ext _ _ fun _ => hy
-  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderiv_within' ht
+  · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
+  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
     apply this.mono
     intro y hy
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
-#align filter.eventually_eq.iterated_fderiv_within' Filter.EventuallyEq.iterated_fderiv_within'
+#align filter.eventually_eq.iterated_fderiv_within' Filter.EventuallyEq.iteratedFDerivWithin'
 
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ s =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f s :=
-  h.iterated_fderiv_within' Subset.rfl n
+  h.iteratedFDerivWithin' Subset.rfl n
 #align filter.eventually_eq.iterated_fderiv_within Filter.EventuallyEq.iteratedFDerivWithin
 
 /-- If two functions coincide in a neighborhood of `x` within a set `s` and at `x`, then their
@@ -908,7 +908,7 @@ iterated differentials within this set at `x` coincide. -/
 theorem Filter.EventuallyEq.iteratedFDerivWithin_eq (h : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x)
     (n : ℕ) : iteratedFDerivWithin 𝕜 n f₁ s x = iteratedFDerivWithin 𝕜 n f s x :=
   have : f₁ =ᶠ[𝓝[insert x s] x] f := by simpa [EventuallyEq, hx]
-  (this.iterated_fderiv_within' (subset_insert _ _) n).self_of_nhdsWithin (mem_insert _ _)
+  (this.iteratedFDerivWithin' (subset_insert _ _) n).self_of_nhdsWithin (mem_insert _ _)
 #align filter.eventually_eq.iterated_fderiv_within_eq Filter.EventuallyEq.iteratedFDerivWithin_eq
 
 /-- If two functions coincide on a set `s`, then their iterated differentials within this set
@@ -1147,7 +1147,7 @@ theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
   rwa [fderivWithin_inter (o_open.mem_nhds hy.2)] at A
 #align cont_diff_on_succ_iff_fderiv_within contDiffOn_succ_iff_fderivWithin
 
-theorem contDiffOn_succ_iff_has_fderiv_within {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
+theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       ∃ f' : E → E →L[𝕜] F, ContDiffOn 𝕜 n f' s ∧ ∀ x, x ∈ s → HasFDerivWithinAt f (f' x) s x := by
   rw [contDiffOn_succ_iff_fderivWithin hs]
@@ -1155,7 +1155,7 @@ theorem contDiffOn_succ_iff_has_fderiv_within {n : ℕ} (hs : UniqueDiffOn 𝕜 
   rcases h with ⟨f', h1, h2⟩
   refine' ⟨fun x hx => (h2 x hx).differentiableWithinAt, fun x hx => _⟩
   exact (h1 x hx).congr' (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
-#align cont_diff_on_succ_iff_has_fderiv_within contDiffOn_succ_iff_has_fderiv_within
+#align cont_diff_on_succ_iff_has_fderiv_within contDiffOn_succ_iff_hasFDerivWithin
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
@@ -1502,12 +1502,12 @@ theorem contDiff_iff_forall_nat_le : ContDiff 𝕜 n f ↔ ∀ m : ℕ, ↑m ≤
 #align cont_diff_iff_forall_nat_le contDiff_iff_forall_nat_le
 
 /-- A function is `C^(n+1)` iff it has a `C^n` derivative. -/
-theorem contDiff_succ_iff_has_fderiv {n : ℕ} :
+theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiff 𝕜 (n + 1 : ℕ) f ↔
       ∃ f' : E → E →L[𝕜] F, ContDiff 𝕜 n f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   simp only [← contDiffOn_univ, ← hasFDerivWithinAt_univ,
-    contDiffOn_succ_iff_has_fderiv_within uniqueDiffOn_univ, Set.mem_univ, forall_true_left]
-#align cont_diff_succ_iff_has_fderiv contDiff_succ_iff_has_fderiv
+    contDiffOn_succ_iff_hasFDerivWithin uniqueDiffOn_univ, Set.mem_univ, forall_true_left]
+#align cont_diff_succ_iff_has_fderiv contDiff_succ_iff_hasFDerivAt
 
 /-! ### Iterated derivative -/
 
@@ -1520,7 +1520,7 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 #align iterated_fderiv iteratedFDeriv
 
-/-- Formal Taylor series associated to a function within a set. -/
+/-- Formal Taylor series associated to a function. -/
 def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 #align ftaylor_series ftaylorSeries

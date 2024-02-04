@@ -60,6 +60,7 @@ theorem sup_insert [DecidableEq β] {b : β} : (insert b s : Finset β).sup f = 
   fold_insert_idem
 #align finset.sup_insert Finset.sup_insert
 
+@[simp]
 theorem sup_image [DecidableEq β] (s : Finset γ) (f : γ → β) (g : β → α) :
     (s.image f).sup g = s.sup (g ∘ f) :=
   fold_image_idem
@@ -304,7 +305,7 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
     s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.comp.left_id]
+  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
@@ -341,6 +342,7 @@ theorem inf_insert [DecidableEq β] {b : β} : (insert b s : Finset β).inf f = 
   fold_insert_idem
 #align finset.inf_insert Finset.inf_insert
 
+@[simp]
 theorem inf_image [DecidableEq β] (s : Finset γ) (f : γ → β) (g : β → α) :
     (s.image f).inf g = s.inf (g ∘ f) :=
   fold_image_idem
@@ -854,13 +856,13 @@ protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
   eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
 #align finset.sup'_comm Finset.sup'_comm
 
-theorem sup'_product_left {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).sup' (hs.product ht) f = s.sup' hs fun i => t.sup' ht fun i' => f ⟨i, i'⟩ :=
+theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
+    (s ×ˢ t).sup' h f = s.sup' h.fst fun i => t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
   eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
 #align finset.sup'_product_left Finset.sup'_product_left
 
-theorem sup'_product_right {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).sup' (hs.product ht) f = t.sup' ht fun i' => s.sup' hs fun i => f ⟨i, i'⟩ := by
+theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
+    (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
   rw [sup'_product_left, Finset.sup'_comm]
 #align finset.sup'_product_right Finset.sup'_product_right
 
@@ -1033,14 +1035,14 @@ protected theorem inf'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
   @Finset.sup'_comm αᵒᵈ _ _ _ _ _ hs ht _
 #align finset.inf'_comm Finset.inf'_comm
 
-theorem inf'_product_left {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).inf' (hs.product ht) f = s.inf' hs fun i => t.inf' ht fun i' => f ⟨i, i'⟩ :=
-  @sup'_product_left αᵒᵈ _ _ _ _ _ hs ht _
+theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
+    (s ×ˢ t).inf' h f = s.inf' h.fst fun i => t.inf' h.snd fun i' => f ⟨i, i'⟩ :=
+  sup'_product_left (α := αᵒᵈ) h f
 #align finset.inf'_product_left Finset.inf'_product_left
 
-theorem inf'_product_right {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).inf' (hs.product ht) f = t.inf' ht fun i' => s.inf' hs fun i => f ⟨i, i'⟩ :=
-  @sup'_product_right αᵒᵈ _ _ _ _ _ hs ht _
+theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
+    (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
+  sup'_product_right (α := αᵒᵈ) h f
 #align finset.inf'_product_right Finset.inf'_product_right
 
 section Prod
@@ -1217,7 +1219,7 @@ theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.
 
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
     s.sup' hs f ⊓ t.sup' ht g = (s ×ˢ t).sup' (hs.product ht) fun i => f i.1 ⊓ g i.2 := by
-  simp_rw [Finset.sup'_inf_distrib_right, Finset.sup'_inf_distrib_left, sup'_product_left hs ht]
+  simp_rw [Finset.sup'_inf_distrib_right, Finset.sup'_inf_distrib_left, sup'_product_left]
 #align finset.sup'_inf_sup' Finset.sup'_inf_sup'
 
 theorem inf'_sup_distrib_left (f : ι → α) (a : α) : a ⊔ s.inf' hs f = s.inf' hs fun i => a ⊔ f i :=

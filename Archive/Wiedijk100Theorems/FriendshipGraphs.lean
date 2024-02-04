@@ -254,7 +254,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have := ZMod.trace_pow_card (G.adjMatrix (ZMod p))
   contrapose! this; clear this
   -- the trace is 0 mod p when computed one way
-  rw [trace_adjMatrix, zero_pow (Fact.out (p := p.Prime)).pos]
+  rw [trace_adjMatrix, zero_pow this.out.ne_zero]
   -- but the trace is 1 mod p when computed the other way
   rw [adjMatrix_pow_mod_p_of_regular hG dmod hd hp2]
   dsimp only [Fintype.card] at Vmod

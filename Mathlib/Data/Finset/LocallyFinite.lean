@@ -19,10 +19,10 @@ In addition, it shows that in a locally finite order `≤` and `<` are the trans
 respectively, `⩿` and `⋖`, which then leads to a characterization of monotone and strictly
 functions whose domain is a locally finite order. In particular, this file proves:
 
-* `le_iff_transGen_wcovby`: `≤` is the transitive closure of `⩿`
-* `lt_iff_transGen_covby`: `≤` is the transitive closure of `⩿`
-* `monotone_iff_forall_wcovby`: Characterization of monotone functions
-* `strictMono_iff_forall_covby`: Characterization of strictly monotone functions
+* `le_iff_transGen_wcovBy`: `≤` is the transitive closure of `⩿`
+* `lt_iff_transGen_covBy`: `≤` is the transitive closure of `⩿`
+* `monotone_iff_forall_wcovBy`: Characterization of monotone functions
+* `strictMono_iff_forall_covBy`: Characterization of strictly monotone functions
 
 ## TODO
 
@@ -1192,7 +1192,7 @@ section Cover
 open Finset Relation
 
 set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
-lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
+lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
   -- It's impossible for the cardinality to be zero since `x ≤ y`
@@ -1200,7 +1200,7 @@ lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_not_mem_Ico⟩⟩⟩
   by_cases hxy' : y ≤ x
   -- If `y ≤ x`, then `x ⩿ y`
-  · exact .single <| wcovby_of_le_of_le hxy hxy'
+  · exact .single <| wcovBy_of_le_of_le hxy hxy'
   /- and if `¬ y ≤ x`, then `x < y`, not because it is a linear order, but because `x ≤ y`
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
@@ -1210,28 +1210,28 @@ lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
       (Icc x z).card ≤ (Ico x y).card :=
         card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
       _              < (Icc x y).card := this
-    have h₁ := transGen_wcovby_of_le (mem_Ico.mp z_mem).1
+    have h₁ := transGen_wcovBy_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by
       refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
       exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
     exact .tail h₁ h₂
-termination_by _ => (Icc x y).card
+termination_by (Icc x y).card
 
 /-- In a locally finite preorder, `≤` is the transitive closure of `⩿`. -/
-lemma le_iff_transGen_wcovby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
+lemma le_iff_transGen_wcovBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
     x ≤ y ↔ TransGen (· ⩿ ·) x y := by
-  refine ⟨transGen_wcovby_of_le, fun h ↦ ?_⟩
+  refine ⟨transGen_wcovBy_of_le, fun h ↦ ?_⟩
   induction h with
   | single h => exact h.le
   | tail _ h₁ h₂ => exact h₂.trans h₁.le
 
 /-- In a locally finite partial order, `≤` is the reflexive transitive closure of `⋖`. -/
-lemma le_iff_reflTransGen_covby [PartialOrder α] [LocallyFiniteOrder α] {x y : α} :
+lemma le_iff_reflTransGen_covBy [PartialOrder α] [LocallyFiniteOrder α] {x y : α} :
     x ≤ y ↔ ReflTransGen (· ⋖ ·) x y := by
-  rw [le_iff_transGen_wcovby, wcovby_eq_reflGen_covby, transGen_reflGen]
+  rw [le_iff_transGen_wcovBy, wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
 set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
-lemma transGen_covby_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x < y) :
+lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x < y) :
     TransGen (· ⋖ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Ico x y`.
   -- It's impossible for the cardinality to be zero since `x < y`
@@ -1248,17 +1248,17 @@ lemma transGen_covby_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   by_cases hxz : x < z
   /- when `x < z`, then we may use the induction hypothesis to get a chain
   `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/
-  · exact .tail (transGen_covby_of_lt hxz) hzy
+  · exact .tail (transGen_covBy_of_lt hxz) hzy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
   · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
-termination_by _ => (Ico x y).card
+termination_by (Ico x y).card
 
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
-lemma lt_iff_transGen_covby [Preorder α] [LocallyFiniteOrder α] {x y : α} :
+lemma lt_iff_transGen_covBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
     x < y ↔ TransGen (· ⋖ ·) x y := by
-  refine ⟨transGen_covby_of_lt, fun h ↦ ?_⟩
+  refine ⟨transGen_covBy_of_lt, fun h ↦ ?_⟩
   induction h with
   | single hx => exact hx.1
   | tail _ hb ih => exact ih.trans hb.1
@@ -1267,45 +1267,45 @@ variable {β : Type*}
 
 /-- A function from a locally finite preorder is monotone if and only if it is monotone when
 restricted to pairs satisfying `a ⩿ b`. -/
-lemma monotone_iff_forall_wcovby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
   simpa [transGen_eq_self (r := ((· : β) ≤ ·)) transitive_le]
-    using TransGen.lift f h <| le_iff_transGen_wcovby.mp hab
+    using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
 restricted to pairs satisfying `a ⋖ b`. -/
-lemma monotone_iff_forall_covby [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
+lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
   simpa [reflTransGen_eq_self (r := ((· : β) ≤ ·)) IsRefl.reflexive transitive_le]
-    using ReflTransGen.lift f h <| le_iff_reflTransGen_covby.mp hab
+    using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
 monotone when restricted to pairs satisfying `a ⋖ b`. -/
-lemma strictMono_iff_forall_covby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
   have := Relation.TransGen.lift f h (a := a) (b := b)
-  rw [← lt_iff_transGen_covby, transGen_eq_self (@lt_trans β _)] at this
+  rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
   · exact this hab
 
 /-- A function from a locally finite preorder is antitone if and only if it is antitone when
 restricted to pairs satisfying `a ⩿ b`. -/
-lemma antitone_iff_forall_wcovby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+lemma antitone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Antitone f ↔ ∀ a b : α, a ⩿ b → f b ≤ f a :=
-  monotone_iff_forall_wcovby (β := βᵒᵈ) f
+  monotone_iff_forall_wcovBy (β := βᵒᵈ) f
 
 /-- A function from a locally finite partial order is antitone if and only if it is antitone when
 restricted to pairs satisfying `a ⋖ b`. -/
-lemma antitone_iff_forall_covby [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
+lemma antitone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Antitone f ↔ ∀ a b : α, a ⋖ b → f b ≤ f a :=
-  monotone_iff_forall_covby (β := βᵒᵈ) f
+  monotone_iff_forall_covBy (β := βᵒᵈ) f
 
 /-- A function from a locally finite preorder is strictly antitone if and only if it is strictly
 antitone when restricted to pairs satisfying `a ⋖ b`. -/
-lemma strictAnti_iff_forall_covby [Preorder α] [LocallyFiniteOrder α] [Preorder β]
+lemma strictAnti_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : StrictAnti f ↔ ∀ a b : α, a ⋖ b → f b < f a :=
-  strictMono_iff_forall_covby (β := βᵒᵈ) f
+  strictMono_iff_forall_covBy (β := βᵒᵈ) f
 
 end Cover

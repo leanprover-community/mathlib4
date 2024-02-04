@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
 
@@ -587,7 +588,7 @@ theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x := by
-  nth_rewrite 2 [← swap_inv]
+  nth_rewrite 3 [← swap_inv]
   rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 
@@ -603,7 +604,7 @@ variable [AddGroup α] (a b : α)
 #align equiv.add_right_zero Equiv.addRight_zero
 
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-  ext $ add_assoc _ _
+  ext <| add_assoc _ _
 #align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
@@ -649,7 +650,7 @@ lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
-  ext $ mul_assoc _ _
+  ext <| mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
 @[to_additive existing (attr := simp)]

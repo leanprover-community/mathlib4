@@ -5,7 +5,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Basic
+import Mathlib.Order.Notation
 import Mathlib.Tactic.Conv
 
 #align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
@@ -42,8 +42,8 @@ def IsIdempotentElem (p : M) : Prop :=
 
 namespace IsIdempotentElem
 
-theorem of_isIdempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
-  IsIdempotent.idempotent a
+theorem of_isIdempotent [Std.IdempotentOp (α := M) (· * ·)] (a : M) : IsIdempotentElem a :=
+  Std.IdempotentOp.idempotent a
 #align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_isIdempotent
 
 theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=
