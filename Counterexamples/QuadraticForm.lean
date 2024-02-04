@@ -27,9 +27,9 @@ namespace Counterexample
 set_option linter.uppercaseLean3 false
 
 /-- The bilinear form we will use as a counterexample, over some field `F` of characteristic two. -/
-def B : BilinForm F (F × F) :=
-  BilinForm.linMulLin (LinearMap.fst _ _ _) (LinearMap.snd _ _ _) +
-    BilinForm.linMulLin (LinearMap.snd _ _ _) (LinearMap.fst _ _ _)
+def B : (F × F) →ₗ[F] (F × F) →ₗ[F] F :=
+  (LinearMap.mul F F).compl₁₂ (LinearMap.fst _ _ _) (LinearMap.snd _ _ _) +
+    (LinearMap.mul F F).compl₁₂ (LinearMap.snd _ _ _) (LinearMap.fst _ _ _)
 #align counterexample.B Counterexample.B
 
 @[simp]
@@ -43,7 +43,7 @@ theorem isSymm_B : (B F).IsSymm := fun x y => by simp [mul_comm, add_comm]
 theorem isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq_zero (x.1 * x.2)]
 #align counterexample.is_alt_B Counterexample.isAlt_B
 
-theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using BilinForm.congr_fun h (1, 0) (1, 1)
+theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
 #align counterexample.B_ne_zero Counterexample.B_ne_zero
 
 /-- `BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.
@@ -52,12 +52,12 @@ This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
 theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
-      Set.InjOn (toQuadraticForm : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
+      Set.InjOn (LinearMap.toQuadraticForm : (M →ₗ[R] M →ₗ[R] R) → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)
   apply B_ne_zero F
-  apply h (isSymm_B F) isSymm_zero
-  rw [BilinForm.toQuadraticForm_zero, BilinForm.toQuadraticForm_eq_zero]
+  apply h (isSymm_B F) LinearMap.isSymm_zero
+  rw [LinearMap.toQuadraticForm_zero, LinearMap.toQuadraticForm_eq_zero]
   exact isAlt_B F
 #align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.BilinForm.not_injOn_toQuadraticForm_isSymm
 
