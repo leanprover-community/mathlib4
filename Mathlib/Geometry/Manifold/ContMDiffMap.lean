@@ -37,8 +37,10 @@ def SmoothMap :=
   ContMDiffMap I I' M M' ⊤
 #align smooth_map SmoothMap
 
+@[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
 
+@[inherit_doc]
 scoped[Manifold]
   notation "C^" n "⟮" I ", " M "; " k "⟯" => ContMDiffMap I (modelWithCornersSelf k k) M k n
 

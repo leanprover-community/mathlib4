@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -28,7 +29,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 universe u v
 
-open BigOperators
+open BigOperators Function Set
 
 variable {R S : Type*} {x y : R}
 
@@ -44,6 +45,9 @@ def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
 theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
   ⟨n, e⟩
 #align is_nilpotent.mk IsNilpotent.mk
+
+@[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
+  ⟨0, Subsingleton.elim _ _⟩
 
 @[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
   ⟨1, pow_one 0⟩
@@ -120,6 +124,74 @@ theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilp
   refine' IsNilpotent.sub_one_isUnit ⟨n, _⟩
   rw [neg_pow, hru.mul_pow, hn]
   simp
+
+section NilpotencyClass
+
+section ZeroPow
+
+variable [Zero R] [Pow R ℕ]
+
+variable (x) in
+/-- If `x` is nilpotent, the nilpotency class is the smallest natural number `k` such that
+`x ^ k = 0`. If `x` is not nilpotent, the nilpotency class takes the junk value `0`. -/
+noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
+
+@[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
+    nilpotencyClass x = 0 := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  suffices s = univ by change sInf _ = 0; simp [this]
+  exact eq_univ_iff_forall.mpr fun k ↦ Subsingleton.elim _ _
+
+lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
+    IsNilpotent x := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  change s.Nonempty
+  change 0 < sInf s at hx
+  by_contra contra
+  simp [not_nonempty_iff_eq_empty.mp contra] at hx
+
+lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
+  Nat.sInf_mem hx
+
+end ZeroPow
+
+section MonoidWithZero
+
+variable [MonoidWithZero R]
+
+lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
+    nilpotencyClass x = k + 1 ↔ x ^ (k + 1) = 0 ∧ x ^ k ≠ 0 := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  have : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := fun k₁ k₂ h_le hk₁ ↦ pow_eq_zero_of_le h_le hk₁
+  simp [nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
+
+@[simp] lemma nilpotencyClass_zero [Nontrivial R] :
+    nilpotencyClass (0 : R) = 1 :=
+  nilpotencyClass_eq_succ_iff.mpr <| by constructor <;> simp
+
+@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
+    0 < nilpotencyClass x ↔ IsNilpotent x := by
+  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ ?_⟩
+  replace hx := pow_nilpotencyClass hx
+  rw [hx', pow_zero] at hx
+  exact one_ne_zero hx
+
+lemma pow_pred_nilpotencyClass [Nontrivial R] (hx : IsNilpotent x) :
+    x ^ (nilpotencyClass x - 1) ≠ 0 :=
+  (nilpotencyClass_eq_succ_iff.mp <| Nat.eq_add_of_sub_eq (pos_nilpotencyClass_iff.mpr hx) rfl).2
+
+lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
+    x = 0 := by
+  have : IsNilpotent x := isNilpotent_of_pos_nilpotencyClass (hx ▸ one_pos)
+  rw [← pow_nilpotencyClass this, hx, pow_one]
+
+@[simp] lemma nilpotencyClass_eq_one [Nontrivial R] :
+    nilpotencyClass x = 1 ↔ x = 0 :=
+  ⟨eq_zero_of_nilpotencyClass_eq_one, fun hx ↦ hx ▸ nilpotencyClass_zero⟩
+
+end MonoidWithZero
+
+end NilpotencyClass
 
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
 @[mk_iff]

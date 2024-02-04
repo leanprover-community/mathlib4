@@ -658,7 +658,7 @@ theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico a b, f t ∂μ = ∫ t in Io
   integral_Ico_eq_integral_Ioo' <| measure_singleton a
 #align measure_theory.integral_Ico_eq_integral_Ioo MeasureTheory.integral_Ico_eq_integral_Ioo
 
-theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ := by
+theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
 #align measure_theory.integral_Icc_eq_integral_Ioo MeasureTheory.integral_Icc_eq_integral_Ioo
 
@@ -1190,21 +1190,21 @@ end ContinuousLinearEquiv
 
 @[norm_cast]
 theorem integral_ofReal {f : α → ℝ} : (∫ a, (f a : 𝕜) ∂μ) = ↑(∫ a, f a ∂μ) :=
-  (@IsROrC.ofRealLi 𝕜 _).integral_comp_comm f
+  (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
 theorem integral_re {f : α → 𝕜} (hf : Integrable f μ) :
     (∫ a, IsROrC.re (f a) ∂μ) = IsROrC.re (∫ a, f a ∂μ) :=
-  (@IsROrC.reClm 𝕜 _).integral_comp_comm hf
+  (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
 theorem integral_im {f : α → 𝕜} (hf : Integrable f μ) :
     (∫ a, IsROrC.im (f a) ∂μ) = IsROrC.im (∫ a, f a ∂μ) :=
-  (@IsROrC.imClm 𝕜 _).integral_comp_comm hf
+  (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
 theorem integral_conj {f : α → 𝕜} : (∫ a, conj (f a) ∂μ) = conj (∫ a, f a ∂μ) :=
-  (@IsROrC.conjLie 𝕜 _).toLinearIsometry.integral_comp_comm f
+  (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
@@ -1454,7 +1454,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
-    · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
+    · apply eventually_of_forall (fun x ↦ (le_opNorm₂ L (g x) (f p x)).trans ?_)
       gcongr
       apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
@@ -1478,7 +1478,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
           calc
           ‖L (g x) (f p x) - L (g x) (f q x)‖
             = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
-          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_op_norm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_opNorm₂ _ _ _
           _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
         · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
           positivity

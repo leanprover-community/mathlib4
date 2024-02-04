@@ -48,15 +48,15 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
       (fun x y => by -- Porting note: placeholder filled here
         rw [← left_distrib]
         exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
-      fun x => le_trans (le_abs_self _) (f.le_op_norm _) with ⟨g, g_eq, g_le⟩
+      fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
   · refine' ⟨g', g_eq, _⟩
     · apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
-      refine' f.op_norm_le_bound (norm_nonneg _) fun x => _
+      refine' f.opNorm_le_bound (norm_nonneg _) fun x => _
       dsimp at g_eq
       rw [← g_eq]
-      apply g'.le_op_norm
+      apply g'.le_opNorm
 #align real.exists_extension_norm_eq Real.exists_extension_norm_eq
 
 end Real
@@ -76,7 +76,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
-  let fr := reClm.comp (f.restrictScalars ℝ)
+  let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
   -- we'll call `g : E →L[ℝ] ℝ`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
@@ -103,9 +103,9 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   · calc
       ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reClm‖ * ‖f‖ := (ContinuousLinearMap.op_norm_comp_le _ _)
-      _ = ‖f‖ := by rw [reClm_norm, one_mul]
-  · exact f.op_norm_le_bound g.extendTo𝕜.op_norm_nonneg fun x => h x ▸ g.extendTo𝕜.le_op_norm x
+      _ ≤ ‖reCLM‖ * ‖f‖ := (ContinuousLinearMap.opNorm_comp_le _ _)
+      _ = ‖f‖ := by rw [reCLM_norm, one_mul]
+  · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
 #align exists_extension_norm_eq exists_extension_norm_eq
 
 open FiniteDimensional

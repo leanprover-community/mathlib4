@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Lattice
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
@@ -45,9 +43,9 @@ import Mathlib.Topology.Semicontinuous
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory
+open Set Filter MeasureTheory
 
-open Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -130,30 +128,17 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine' generateFrom_le _
     rintro _ ⟨a, rfl | rfl⟩
-    swap
+    · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
+      · rw [hb.Ioi_eq, ← compl_Iio]
+        exact (H _).compl
+      · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
+        have : Ioi a = ⋃ b ∈ t, Ici b := by
+          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
+          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
+          simpa [CovBy, htU, subset_def] using hcovBy
+        simp only [this, ← compl_Iio]
+        exact .biUnion htc <| fun _ _ ↦ (H _).compl
     · apply H
-    by_cases h : ∃ a', ∀ b, a < b ↔ a' ≤ b
-    · rcases h with ⟨a', ha'⟩
-      rw [(_ : Ioi a = (Iio a')ᶜ)]
-      · exact (H _).compl
-      simp [Set.ext_iff, ha']
-    · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
-          isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
-      simp? [Set.ext_iff] at vu says
-        simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
-          exists_and_right] at vu
-      have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
-        simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
-          exists_prop, Subtype.exists, exists_and_right]
-        refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
-        rcases (vu x).2 (by
-          refine' not_imp_comm.1 (fun h => _) h
-          exact ⟨x, fun b =>
-            ⟨fun ab => le_of_not_lt fun h' => h ⟨b, ab, h'⟩, lt_of_lt_of_le ax⟩⟩) with ⟨a', h₁, h₂⟩
-        · exact ⟨a', h₁, le_of_lt h₂⟩
-      rw [this]
-      apply MeasurableSet.iUnion
-      exact fun _ => (H _).compl
   · rw [forall_range_iff]
     intro a
     exact GenerateMeasurable.basic _ isOpen_Iio
@@ -363,6 +348,34 @@ theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
+
+/-- If two points are topologically inseparable,
+then they can't be separated by a Borel measurable set. -/
+theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
+    (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
+    fun _ _ _ h ↦ by simp [h]
+
+/-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
+then `s` includes the closure of `K` as well. -/
+theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK : IsCompact K)
+    (hs : MeasurableSet s) (hKs : K ⊆ s) : closure K ⊆ s := by
+  rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
+  exact fun x hx y hy ↦ (hy.mem_measurableSet_iff hs).1 (hKs hx)
+
+/-- In an R₁ topological space with Borel measure `μ`,
+the measure of the closure of a compact set `K` is equal to the measure of `K`.
+
+See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
+for a version that assumes `μ` to be outer regular
+but does not assume the `σ`-algebra to be Borel.  -/
+theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
+    μ (closure K) = μ K := by
+  refine le_antisymm ?_ (measure_mono subset_closure)
+  calc
+    μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono <|
+      hK.closure_subset_measurableSet (measurableSet_toMeasurable ..) (subset_toMeasurable ..)
+    _ = μ K := measure_toMeasurable ..
 
 @[measurability]
 theorem measurableSet_closure : MeasurableSet (closure s) :=
@@ -644,6 +657,15 @@ theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
+
+theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
+    NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
+  measurableSet_lt'.nullMeasurableSet
+
+theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
+    {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { a | f a ≤ g a } μ :=
+  (hf.prod_mk hg).nullMeasurable measurableSet_le'
 
 theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
@@ -1492,14 +1514,14 @@ theorem aemeasurable_biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
 -/
 theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasCountableBasis p s) (hs : ∀ j, (s j).Countable) :
-    Measurable fun x => liminf (fun i => f i x) v := by
+    Measurable fun x => liminf (f · x) v := by
   /- We would like to write the liminf as `⨆ (j : Subtype p), ⨅ (i : s j), f i x`, as the
   measurability would follow from the measurability of infs and sups. Unfortunately, this is not
   true in general conditionally complete linear orders because of issues with empty sets or sets
   which are not bounded above or below. A slightly more complicated expression for the liminf,
   valid in general, is given in `Filter.HasBasis.liminf_eq_ite`. This expression, built from
   `if ... then ... else` and infs and sups, can be readily checked to be measurable. -/
-  have : Countable (Subtype p) := Encodable.nonempty_encodable.1 hv.countable
+  have : Countable (Subtype p) := hv.countable
   rcases isEmpty_or_nonempty (Subtype p) with hp|hp
   · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅
@@ -1519,12 +1541,12 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ measurable_iInf (fun (i : s j) ↦ hf i)
   set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1
   change Measurable F1
-  let g : ℕ → Subtype p := choose (exists_surjective_nat (Subtype p))
+  let g : ℕ → Subtype p := Classical.choose (exists_surjective_nat (Subtype p))
   have Z : ∀ x, ∃ n, x ∈ m (g n) ∨ ∀ k, x ∉ m k := by
     intro x
     by_cases H : ∃ k, x ∈ m k
     · rcases H with ⟨k, hk⟩
-      rcases choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
+      rcases Classical.choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
       exact ⟨n, Or.inl hk⟩
     · push_neg at H
       exact ⟨0, Or.inr H⟩
@@ -1664,9 +1686,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       congr
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
-      have H : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      cases' H with H H
-      · simp only [H, eq_self_iff_true, or_false_iff, zero_lt_top, not_top_lt, and_false_iff]
+      obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
+      · simp only [H, eq_self_iff_true, or_false_iff, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true_iff, false_or_iff]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2

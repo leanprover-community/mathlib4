@@ -8,6 +8,7 @@ import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.RieszLemma
+import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
@@ -32,7 +33,7 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
   resolution. It is however registered as an instance for `𝕜 = ℝ` and `𝕜 = ℂ`. As properness
   implies completeness, there is no need to also register `FiniteDimensional.complete` on `ℝ` or
   `ℂ`.
-* `finiteDimensional_of_isCompact_closedBall`: Riesz' theorem: if the closed unit ball is
+* `FiniteDimensional.of_isCompact_closedBall`: Riesz' theorem: if the closed unit ball is
   compact, then the space is finite-dimensional.
 
 ## Implementation notes
@@ -268,9 +269,9 @@ theorem isOpen_setOf_nat_le_rank (n : ℕ) :
   exact isOpen_setOf_linearIndependent.preimage this
 #align is_open_set_of_nat_le_rank isOpen_setOf_nat_le_rank
 
-theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
+theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
     (hu : ∀ i, ‖u (v i)‖₊ ≤ M) : ‖u‖₊ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊ * M :=
-  u.op_nnnorm_le_bound _ fun e => by
+  u.opNNNorm_le_bound _ fun e => by
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
@@ -283,35 +284,51 @@ theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : 
         gcongr
         calc
           ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
-          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_op_nnnorm e) _
+          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_opNNNorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
-#align basis.op_nnnorm_le Basis.op_nnnorm_le
+#align basis.op_nnnorm_le Basis.opNNNorm_le
 
-theorem Basis.op_norm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
+@[deprecated Basis.opNNNorm_le]
+alias Basis.op_nnnorm_le :=
+  Basis.opNNNorm_le -- deprecated on 2024-02-02
+
+theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
-  simpa using NNReal.coe_le_coe.mpr (v.op_nnnorm_le ⟨M, hM⟩ hu)
-#align basis.op_norm_le Basis.op_norm_le
+  simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
+#align basis.op_norm_le Basis.opNorm_le
 
-/-- A weaker version of `Basis.op_nnnorm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_nnnorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
+@[deprecated Basis.opNorm_le]
+alias Basis.op_norm_le :=
+  Basis.opNorm_le -- deprecated on 2024-02-02
+
+/-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
+theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ≥0), ∀ {u : E →L[𝕜] F} (M : ℝ≥0), (∀ i, ‖u (v i)‖₊ ≤ M) → ‖u‖₊ ≤ C * M := by
   cases nonempty_fintype ι
   exact
     ⟨max (Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊) 1,
       zero_lt_one.trans_le (le_max_right _ _), fun {u} M hu =>
-      (v.op_nnnorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
-#align basis.exists_op_nnnorm_le Basis.exists_op_nnnorm_le
+      (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
+#align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-/-- A weaker version of `Basis.op_norm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_norm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
+@[deprecated Basis.exists_opNNNorm_le]
+alias Basis.exists_op_nnnorm_le :=
+  Basis.exists_opNNNorm_le -- deprecated on 2024-02-02
+
+/-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
+theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ), ∀ {u : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖u (v i)‖ ≤ M) → ‖u‖ ≤ C * M := by
-  obtain ⟨C, hC, h⟩ := v.exists_op_nnnorm_le (F := F)
+  obtain ⟨C, hC, h⟩ := v.exists_opNNNorm_le (F := F)
   -- Porting note: used `Subtype.forall'` below
   refine ⟨C, hC, ?_⟩
   intro u M hM H
   simpa using h ⟨M, hM⟩ H
-#align basis.exists_op_norm_le Basis.exists_op_norm_le
+#align basis.exists_op_norm_le Basis.exists_opNorm_le
+
+@[deprecated Basis.exists_opNorm_le]
+alias Basis.exists_op_norm_le :=
+  Basis.exists_opNorm_le -- deprecated on 2024-02-02
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
@@ -326,7 +343,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
-    v.exists_op_norm_le (E := E) (F := F)
+    v.exists_opNorm_le (E := E) (F := F)
   have h_2C : 0 < 2 * C := mul_pos zero_lt_two C_pos
   have hε2C : 0 < ε / (2 * C) := div_pos ε_pos h_2C
   have : ∀ φ : E →L[𝕜] F, ∃ n : Fin d → ℕ, ‖φ - (v.constrL <| u ∘ n)‖ ≤ ε / 2 := by
@@ -421,7 +438,7 @@ variable (𝕜)
 
 /-- **Riesz's theorem**: if a closed ball with center zero of positive radius is compact in a vector
 space, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
+theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     (h : IsCompact (Metric.closedBall (0 : E) r)) : FiniteDimensional 𝕜 E := by
   by_contra hfin
   obtain ⟨R, f, Rgt, fle, lef⟩ :
@@ -451,22 +468,29 @@ theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
       apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
-#align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closedBall₀
+#align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
+
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
 space is finite-dimensional. -/
-theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
-    (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 E := by
-  apply finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos
-  have : Continuous fun x => -c + x := continuous_const.add continuous_id
-  simpa using h.image this
-#align finite_dimensional_of_is_compact_closed_ball finiteDimensional_of_isCompact_closedBall
+theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : E}
+    (h : IsCompact (Metric.closedBall c r)) : FiniteDimensional 𝕜 E :=
+  .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
+#align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
+
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompact_closedBall
 
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
-theorem finiteDimensional_of_locallyCompactSpace [LocallyCompactSpace E] :
-    FiniteDimensional 𝕜 E := by
-  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
-  exact finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos hr
+theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E :=
+  let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
+  .of_isCompact_closedBall₀ 𝕜 rpos hr
+
+@[deprecated] -- Since 2024/02/02
+alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/
@@ -489,44 +513,38 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
     Metric.nhds_basis_closedBall.mem_iff.1 this
   have : IsCompact (Metric.closedBall x r) :=
     hf.of_isClosed_subset Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
-  exact finiteDimensional_of_isCompact_closedBall 𝕜 rpos this
+  exact .of_isCompact_closedBall 𝕜 rpos this
 #align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
 
 /-- A locally compact normed vector space is proper. -/
-lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [LocallyCompactSpace E] : ProperSpace E := by
+lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
+    ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have M : ∀ n (x : E), IsCompact (closedBall x (‖c‖^n * r)) := by
-    intro n x
-    let f : E → E := fun y ↦ c^n • y + x
-    have Cf : Continuous f := (continuous_id.const_smul _).add continuous_const
-    have A : closedBall x (‖c‖^n * r) ⊆ f '' (closedBall 0 r) := by
-      rintro y hy
-      refine ⟨(c^n)⁻¹ • (y - x), ?_, ?_⟩
-      · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
-      · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
-        simp [smul_smul, mul_inv_cancel this]
-    exact (hr.image Cf).of_isClosed_subset isClosed_ball A
-  refine ⟨fun x s ↦ ?_⟩
-  have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
-    have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
-      Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
-    exact Tendsto.eventually_ge_atTop this s
-  rcases L.exists with ⟨n, hn⟩
-  exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
+  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖^n * r)) := fun n ↦ by
+    have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_lt] at hc
+    simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
+  have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+    Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
+  exact .of_seq_closedBall hTop (eventually_of_forall hC)
+
+@[deprecated] -- Since 2024/01/31
+alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
 
 variable (E)
-lemma properSpace_of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
-    ProperSpace 𝕜 := by
+lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
+    ProperSpace 𝕜 :=
   have : LocallyCompactSpace 𝕜 := by
     obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
     let L : 𝕜 → E := fun t ↦ t • v
     have : ClosedEmbedding L := closedEmbedding_smul_left hv
     apply ClosedEmbedding.locallyCompactSpace this
-  exact properSpace_of_locallyCompactSpace 𝕜
+  .of_locallyCompactSpace 𝕜
+
+@[deprecated] -- Since 2024/01/31
+alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
 
@@ -549,7 +567,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
             (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
         (Fintype.card ι : ℝ) fun g => ?_
       rw [← nsmul_eq_mul]
-      refine op_norm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
+      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
       simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
         LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
@@ -589,7 +607,7 @@ We do not register this as an instance to avoid an instance loop when trying to 
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
-  have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+  have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
 #align finite_dimensional.proper FiniteDimensional.proper
@@ -609,8 +627,8 @@ instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by
   nontriviality E
-  have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   exact FiniteDimensional.proper 𝕜 S
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
@@ -640,7 +658,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
   · rw [mem_interior_iff_mem_nhds, Metric.nhds_basis_closedBall.mem_iff] at hx'
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
-      finiteDimensional_of_isCompact_closedBall ℝ hr₀
+      .of_isCompact_closedBall ℝ hr₀
         (hK.of_isClosed_subset Metric.isClosed_ball hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine' ⟨x, hx', _⟩
@@ -660,7 +678,7 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     set e := v.equivFunL
     have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
     refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
-    simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_op_norm (e <| f i)
+    simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_opNorm (e <| f i)
   clear! E
   -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg

@@ -1234,8 +1234,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
   constructor
   · intro hT
     ext x
-    simp only [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V]
-    simp (config := {singlePass := true}) only [inner_map_polarization]
+    rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
     norm_num
   · rintro rfl x
@@ -1784,14 +1783,14 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine'
-    le_antisymm ((innerSL 𝕜 x).op_norm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) _
+    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) _
   rcases eq_or_ne x 0 with (rfl | h)
   · simp
   · refine' (mul_le_mul_right (norm_pos_iff.2 h)).mp _
     calc
       ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
         rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
-      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_op_norm _
+      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
 set_option linter.uppercaseLean3 false in
 #align innerSL_apply_norm innerSL_apply_norm
 
@@ -1828,8 +1827,8 @@ theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') : toSesqForm f x = (
 #align continuous_linear_map.to_sesq_form_apply_coe ContinuousLinearMap.toSesqForm_apply_coe
 
 theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm f v‖ ≤ ‖f‖ * ‖v‖ := by
-  refine op_norm_le_bound _ (by positivity) fun x ↦ ?_
-  have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
+  refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
+  have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
@@ -2289,7 +2288,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_apply (T : E →L[𝕜] E) (x : E) 
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=
-  reClm.continuous.comp <| T.continuous.inner continuous_id
+  reCLM.continuous.comp <| T.continuous.inner continuous_id
 #align continuous_linear_map.re_apply_inner_self_continuous ContinuousLinearMap.reApplyInnerSelf_continuous
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :

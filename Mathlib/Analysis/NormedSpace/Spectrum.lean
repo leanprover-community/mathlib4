@@ -285,7 +285,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_1 _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 #align spectrum.has_fpower_series_on_ball_inverse_one_sub_smul spectrum.hasFPowerSeriesOnBall_inverse_one_sub_smul
 
@@ -538,7 +538,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 @[simp]
 theorem toContinuousLinearMap_norm [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
     ‖φ.toContinuousLinearMap‖ = 1 :=
-  ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one
+  ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one
     (fun a => (one_mul ‖a‖).symm ▸ spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _))
     fun _ _ h => by simpa only [coe_toContinuousLinearMap, map_one, norm_one, mul_one] using h 1
 #align alg_hom.to_continuous_linear_map_norm AlgHom.toContinuousLinearMap_norm

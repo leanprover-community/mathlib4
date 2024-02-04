@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Data.Set.Defs
 
 #align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -396,7 +396,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `obviously`.)
+-- (In this order the proofs are handled by `aesop_cat`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

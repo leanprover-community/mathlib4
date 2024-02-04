@@ -136,6 +136,9 @@ theorem pred_self_lt (a : ℤ) : pred a < a :=
 #align int.lt_add_one_iff Int.lt_add_one_iff
 #align int.le_add_one Int.le_add_one
 
+theorem le_add_one_iff {m n : ℤ} : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
+  rw [le_iff_lt_or_eq, lt_add_one_iff]
+
 theorem sub_one_lt_iff {a b : ℤ} : a - 1 < b ↔ a ≤ b :=
   sub_lt_iff_lt_add.trans lt_add_one_iff
 #align int.sub_one_lt_iff Int.sub_one_lt_iff
@@ -145,13 +148,8 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 #align int.le_sub_one_iff Int.le_sub_one_iff
 
 @[simp]
-theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
-  ⟨fun a0 => by
-    let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [← zero_add 1, lt_add_one_iff] at hp
-    -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
-    exact hp.antisymm hn,
-    fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
+theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
+  rw [← zero_add 1, lt_add_one_iff, abs_nonpos_iff]
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
@@ -417,7 +415,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
   · intro h
     rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
-    simp (config := { singlePass := true }) only [← emod_add_ediv m n]
+    rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
     rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
     exact add_lt_add_right (emod_lt_of_pos _ hn) _

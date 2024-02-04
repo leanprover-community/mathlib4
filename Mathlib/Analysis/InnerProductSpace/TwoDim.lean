@@ -74,11 +74,15 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
-lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
+lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  fact_finiteDimensional_of_finrank_eq_succ 1
+  .of_fact_finrank_eq_succ 1
 
-attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
+@[deprecated] -- Since 2024/02/02
+alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
+  FiniteDimensional.of_fact_finrank_eq_two
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
@@ -472,7 +476,7 @@ real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
 On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`. -/
 def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
-  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealClm ∘ₗ innerₛₗ ℝ +
+  LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealCLM ∘ₗ innerₛₗ ℝ +
     LinearMap.llcomp ℝ E ℝ ℂ ((LinearMap.lsmul ℝ ℂ).flip Complex.I) ∘ₗ ω
 #align orientation.kahler Orientation.kahler
 

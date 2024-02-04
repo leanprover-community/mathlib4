@@ -734,7 +734,7 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM (E := E) f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_op_norm _ _)
+    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_opNorm _ _)
     _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
@@ -1218,21 +1218,17 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ENNReal.ofReal (∫ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
-  simp_rw [integral_congr_ae (show f =ᵐ[μ] fun x => ‖f x‖ by
-      filter_upwards [f_nn] with x hx
-      rw [Real.norm_eq_abs, abs_eq_self.mpr hx]),
-    ofReal_integral_norm_eq_lintegral_nnnorm hfi, ← ofReal_norm_eq_coe_nnnorm]
-  apply lintegral_congr_ae
-  filter_upwards [f_nn] with x hx
-  exact congr_arg ENNReal.ofReal (by rw [Real.norm_eq_abs, abs_eq_self.mpr hx])
+  have : f =ᵐ[μ] (‖f ·‖) := f_nn.mono fun _x hx ↦ (abs_of_nonneg hx).symm
+  simp_rw [integral_congr_ae this, ofReal_integral_norm_eq_lintegral_nnnorm hfi,
+    ← ofReal_norm_eq_coe_nnnorm]
+  exact lintegral_congr_ae (this.symm.fun_comp ENNReal.ofReal)
 #align measure_theory.of_real_integral_eq_lintegral_of_real MeasureTheory.ofReal_integral_eq_lintegral_ofReal
 
 theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : ∀ᵐ x ∂μ, f x < ∞) :
     ∫ a, (f a).toReal ∂μ = (∫⁻ a, f a ∂μ).toReal := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable]
-  · rw [lintegral_congr_ae]; refine' hf.mp (eventually_of_forall _)
-    intro x hx; rw [lt_top_iff_ne_top] at hx; simp [hx]
-  · exact eventually_of_forall fun x => ENNReal.toReal_nonneg
+  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable,
+    lintegral_congr_ae (ofReal_toReal_ae_eq hf)]
+  exact eventually_of_forall fun x => ENNReal.toReal_nonneg
 #align measure_theory.integral_to_real MeasureTheory.integral_toReal
 
 theorem lintegral_coe_le_coe_iff_integral_le {f : α → ℝ≥0} (hfi : Integrable (fun x => (f x : ℝ)) μ)
@@ -1319,10 +1315,7 @@ theorem L1.dist_eq_integral_dist (f g : α →₁[μ] H) : dist f g = ∫ a, dis
 theorem L1.norm_of_fun_eq_integral_norm {f : α → H} (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ∫ a, ‖f a‖ ∂μ := by
   rw [L1.norm_eq_integral_norm]
-  refine' integral_congr_ae _
-  apply hf.coeFn_toL1.mono
-  intro a ha
-  simp_rw [ha]
+  exact integral_congr_ae <| hf.coeFn_toL1.fun_comp _
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.norm_of_fun_eq_integral_norm MeasureTheory.L1.norm_of_fun_eq_integral_norm
 
@@ -1330,12 +1323,10 @@ theorem Memℒp.snorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
     (hf : Memℒp f p μ) :
     snorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
-    apply lintegral_congr
-    intro x
-    rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
+    simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
   simp only [snorm_eq_lintegral_rpow_nnnorm hp1 hp2, one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
-  · exact eventually_of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
+  · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp1 hp2 hf.2).ne
@@ -1377,17 +1368,15 @@ theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 �
     ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne]
 #align measure_theory.integral_mono_measure MeasureTheory.integral_mono_measure
 
-theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ :=
+theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ := by
   have le_ae : ∀ᵐ a ∂μ, 0 ≤ ‖f a‖ := eventually_of_forall fun a => norm_nonneg _
-  by_cases
-    (fun h : AEStronglyMeasurable f μ =>
-      calc
-        ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
-          norm_integral_le_lintegral_norm _
-        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm)
-    fun h : ¬AEStronglyMeasurable f μ => by
-      rw [integral_non_aestronglyMeasurable h, norm_zero]
-      exact integral_nonneg_of_ae le_ae
+  by_cases h : AEStronglyMeasurable f μ
+  · calc
+      ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
+        norm_integral_le_lintegral_norm _
+      _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm
+  · rw [integral_non_aestronglyMeasurable h, norm_zero]
+    exact integral_nonneg_of_ae le_ae
 #align measure_theory.norm_integral_le_integral_norm MeasureTheory.norm_integral_le_integral_norm
 
 theorem norm_integral_le_of_norm_le {f : α → G} {g : α → ℝ} (hg : Integrable g μ)

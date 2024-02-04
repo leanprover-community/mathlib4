@@ -366,7 +366,7 @@ def merge : List α → List α → List α
   | [], l' => l'
   | l, [] => l
   | a :: l, b :: l' => if a ≼ b then a :: merge l (b :: l') else b :: merge (a :: l) l'
-  termination_by merge l₁ l₂ => length l₁ + length l₂
+  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.merge List.merge
 
 /-- Implementation of a merge sort algorithm to sort a list. -/
@@ -381,7 +381,7 @@ def mergeSort : List α → List α
     have := h.1
     have := h.2
     exact merge r (mergeSort ls.1) (mergeSort ls.2)
-  termination_by mergeSort l => length l
+  termination_by l => length l
 #align list.merge_sort List.mergeSort
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
@@ -401,7 +401,7 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
     · simpa [merge, h] using perm_merge _ _
     · suffices b :: merge r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge, h]
       exact ((perm_merge _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))
-  termination_by perm_merge l₁ l₂ => length l₁ + length l₂
+  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.perm_merge List.perm_merge
 
 theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
@@ -414,7 +414,7 @@ theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
     apply (perm_merge r _ _).trans
     exact
       ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
-  termination_by perm_mergeSort l => length l
+  termination_by l => length l
 #align list.perm_merge_sort List.perm_mergeSort
 
 @[simp]
@@ -452,7 +452,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
-  termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
+  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)
@@ -465,7 +465,7 @@ theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
     cases' length_split_lt e with h₁ h₂
     rw [mergeSort_cons_cons r e]
     exact (sorted_mergeSort l₁).merge (sorted_mergeSort l₂)
-  termination_by sorted_mergeSort l => length l
+  termination_by l => length l
 #align list.sorted_merge_sort List.sorted_mergeSort
 
 theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=

@@ -107,7 +107,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
@@ -443,7 +442,6 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
   Iff.rfl
@@ -1521,7 +1519,7 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
-    (eventually_of_forall fun a => L.le_op_norm (φ a))
+    (eventually_of_forall fun a => L.le_opNorm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}

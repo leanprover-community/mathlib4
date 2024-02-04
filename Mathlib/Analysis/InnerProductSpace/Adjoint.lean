@@ -100,11 +100,11 @@ theorem adjointAux_adjointAux (A : E →L[𝕜] F) : adjointAux (adjointAux A) =
 @[simp]
 theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := by
   refine' le_antisymm _ _
-  · refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+  · refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => _
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
   · nth_rw 1 [← adjointAux_adjointAux A]
-    refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => _
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
 #align continuous_linear_map.adjoint_aux_norm ContinuousLinearMap.adjointAux_norm
@@ -226,14 +226,14 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖ContinuousLinearMap.adjoint A ∘L A‖ = ‖A‖ * ‖A‖ := by
   refine' le_antisymm _ _
   · calc
-      ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
+      ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := opNorm_comp_le _ _
       _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
   · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
-    refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
+    refine' opNorm_le_bound _ (Real.sqrt_nonneg _) fun x => _
     have :=
       calc
         re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
-        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
+        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
     calc
       ‖A x‖ = Real.sqrt (re ⟪(A† ∘L A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
       _ ≤ Real.sqrt (‖A† ∘L A‖ * ‖x‖ * ‖x‖) := (Real.sqrt_le_sqrt this)
@@ -373,18 +373,18 @@ theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
   rfl
 #align linear_map.adjoint_to_continuous_linear_map LinearMap.adjoint_toContinuousLinearMap
 
-theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) :
+theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     haveI := FiniteDimensional.complete 𝕜 E
     haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
-#align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toClm_adjoint
+#align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toCLM_adjoint
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
-  rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
+  rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
@@ -392,7 +392,7 @@ theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
   haveI := FiniteDimensional.complete 𝕜 E
   haveI := FiniteDimensional.complete 𝕜 F
-  rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
+  rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
 
