@@ -186,6 +186,17 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
+/-- Erase proofs in an expression by replacing them with `sorry`s.
+
+Useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable. -/
+def eraseProofs (e : Expr) : MetaM Expr :=
+  Meta.transform e
+    (pre := fun e => do
+      if (← Meta.isProof e) then
+        return .done (← mkSyntheticSorry (← inferType e))
+      else
+        return .continue)
+
 /--
 Check if an expression is a "rational in normal form",
 i.e. either an integer number in normal form,

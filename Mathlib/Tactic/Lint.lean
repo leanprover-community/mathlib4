@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Std.Tactic.Lint
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Linters for Mathlib
@@ -44,12 +45,19 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
   test declName := do
     if (← isAutoDecl declName) then return none
-    if !(← isProp (← getConstInfo declName).type) then return none
-    forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName)) fun args ty => do
+    let type := (← getConstInfo declName).type
+    if !(← isProp type) then return none
+    let names :=
+      if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
+      else if Name.isPrefixOf `Fintype declName
+        then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
+        else if Name.isPrefixOf `Encodable declName
+        then #[`Decidable, `DecidableEq, `DecidablePred, `Encodable]
+        else #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
+    forallTelescopeReducing type fun args ty => do
       let argTys ← args.mapM inferType
-      let impossibleArgs ← args.zipWithIndex.filterMapM fun (arg, i) => do
-        let t ← inferType arg
-        let names := #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
+      let ty ← ty.eraseProofs
+      let impossibleArgs ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) => do
         if !names.any t.getForallBody.isAppOf then return none
         let fv := arg.fvarId!
         if ty.containsFVar fv then return none
