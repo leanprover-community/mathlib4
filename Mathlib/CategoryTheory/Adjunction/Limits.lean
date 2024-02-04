@@ -30,13 +30,11 @@ the functor associating to each `Y` the cocones over `K` with cone point `G.obj 
 
 open Opposite
 
-namespace CategoryTheory.Adjunction
+namespace CategoryTheory
 
-open CategoryTheory
+open Functor Limits
 
-open CategoryTheory.Functor
-
-open CategoryTheory.Limits
+namespace Adjunction
 
 universe v u v₁ v₂ v₀ u₁ u₂
 
@@ -343,4 +341,23 @@ def conesIso {J : Type u} [Category.{v} J] {K : J ⥤ D} :
       inv := conesIsoComponentInv adj X }
 #align category_theory.adjunction.cones_iso CategoryTheory.Adjunction.conesIso
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+variable {J C D : Type*} [Category J] [Category C] [Category D]
+  (F : C ⥤ D)
+
+instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
+  (Adjunction.ofLeftAdjoint F).leftAdjointPreservesColimits.preservesColimitsOfShape
+
+instance [IsLeftAdjoint F] : PreservesColimits F where
+
+instance [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
+  (Adjunction.ofRightAdjoint F).rightAdjointPreservesLimits.preservesLimitsOfShape
+
+instance [IsRightAdjoint F] : PreservesLimits F where
+
+end Functor
+
+end CategoryTheory

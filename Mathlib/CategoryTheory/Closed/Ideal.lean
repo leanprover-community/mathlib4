@@ -203,9 +203,6 @@ noncomputable def bijection (A B : C) (X : D) :
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
-  -- Porting note: added
-  have : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
-  have := preservesSmallestLimitsOfPreservesLimits i
   dsimp [bijection]
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
@@ -216,8 +213,7 @@ theorem bijection_symm_apply_id (A B : C) :
   dsimp only [Functor.comp_obj]
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
     ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc]
-  -- Porting note: rw became erw
-  erw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
+  rw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
   apply prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
     apply (Adjunction.ofRightAdjoint i).unit.naturality
