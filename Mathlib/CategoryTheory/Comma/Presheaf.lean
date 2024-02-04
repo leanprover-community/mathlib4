@@ -540,7 +540,7 @@ def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : Costru
   hom_inv_id := counitBackward_counitForward F s
   inv_hom_id := counitForward_counitBackward F s
 
-/-- Intermediate state of assembling the counit. -/
+/-- Intermediate stage of assembling the counit. -/
 @[simps! (config := { fullyApplied := false }) hom]
 def counitAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     F ≅ restrictedYonedaObj (yonedaCollectionPresheafToA F) :=
