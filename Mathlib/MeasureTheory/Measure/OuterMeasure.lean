@@ -1561,7 +1561,7 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
 theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   refine' extend_iUnion_le_tsum_nat' MeasurableSet.iUnion _; intro f h
-  simp (config := { singlePass := true }) [iUnion_disjointed.symm]
+  simp (config := { singlePass := true }) only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
   refine' ENNReal.tsum_le_tsum fun i => _
   rw [← extend_eq m, ← extend_eq m]
