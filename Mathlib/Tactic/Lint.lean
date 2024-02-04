@@ -50,9 +50,9 @@ but don't use this assumption in the type.
     let names :=
       if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
       else if Name.isPrefixOf `Fintype declName
-        then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
-        else if Name.isPrefixOf `Encodable declName
         then #[`Decidable, `DecidableEq, `DecidablePred, `Encodable]
+        else if Name.isPrefixOf `Encodable declName
+        then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
         else #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
     forallTelescopeReducing type fun args ty => do
       let argTys ← args.mapM inferType
