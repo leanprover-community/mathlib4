@@ -189,7 +189,7 @@ def costructuredArrowIso (s t : CostructuredArrow yoneda A) : OverArrows s.hom t
 
 end OverArrows
 
-/-- This is basically just `yoneda.obj η : (Over A)ᵒᵖ ⥤ Type (munitForward u v)` restricted along the
+/-- This is basically just `yoneda.obj η : (Over A)ᵒᵖ ⥤ Type (max u v)` restricted along the
     forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way that we land in a
     smaller universe. -/
 @[simps (config := { fullyApplied := false }) obj map]
@@ -204,7 +204,7 @@ def restrictedYonedaObjMap₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G 
     (hε : ε ≫ μ = η) : restrictedYonedaObj η ⟶ restrictedYonedaObj μ where
   app s u := u.map₁ ε hε
 
-/-- This is basically just `yoneda : Over A ⥤ (Over A)ᵒᵖ ⥤ Type (munitForward u v)` restricted in the second
+/-- This is basically just `yoneda : Over A ⥤ (Over A)ᵒᵖ ⥤ Type (max u v)` restricted in the second
     argument along the forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way
     that we land in a smaller universe.
 
