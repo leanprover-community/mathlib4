@@ -396,7 +396,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `obviously`.)
+-- (In this order the proofs are handled by `aesop_cat`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

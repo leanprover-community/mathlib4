@@ -24,7 +24,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 * Then we can use the equivalence `List.TProd.piEquivTProd` below (or enhanced versions of it,
   like a `MeasurableEquiv` for product measures) to get the construction on `∀ i : ι, α i`, at
   least when assuming `[Fintype ι] [Encodable ι]` (using `Encodable.sortedUniv`).
-  Using `local attribute [instance] Fintype.toEncodable` we can get rid of the argument
+  Using `attribute [local instance] Fintype.toEncodable` we can get rid of the argument
   `[Encodable ι]`.
 
 ## Main definitions
