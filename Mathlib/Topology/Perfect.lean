@@ -18,6 +18,7 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
+* `PerfectSpace X`: A topological space `X` is perfect if its universe is a perfect set.
 
 ## Main Statements
 
@@ -54,25 +55,9 @@ accumulation point, perfect set, cantor-bendixson.
 
 open Topology Filter Set
 open TopologicalSpace (IsTopologicalBasis)
-
-section Basic
-
 variable {α : Type*} [TopologicalSpace α] {s t : Set α}
 
-/-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
-then `x` is an accumulation point of `U ∩ C`. -/
-theorem accPt_principal_iff_inter_of_mem_nhds {x : α} (t_nhds : t ∈ 𝓝 x) :
-    AccPt x (𝓟 s) ↔ AccPt x (𝓟 (s ∩ t)) := by
-  refine ⟨fun h_acc => ?acc_inter,
-    fun h_acc => AccPt.mono h_acc <| Filter.principal_mono.mpr <| Set.inter_subset_left _ _⟩
-  have : 𝓝[≠] x ≤ 𝓟 t := le_principal_iff.mpr <| mem_nhdsWithin_of_mem_nhds t_nhds
-  rw [AccPt, ← inf_principal, inf_comm (a := 𝓟 s), ← inf_assoc, inf_of_le_left this]
-  exact h_acc
-
-theorem AccPt.nhds_inter {x : α} (h_acc : AccPt x (𝓟 s)) (t_nhds : t ∈ 𝓝 x) :
-    AccPt x (𝓟 (t ∩ s)) :=
-  Set.inter_comm _ _ ▸ (accPt_principal_iff_inter_of_mem_nhds t_nhds).mp h_acc
-#align acc_pt.nhds_inter AccPt.nhds_inter
+section Defs
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
@@ -92,6 +77,31 @@ structure Perfect (C : Set α) : Prop where
 theorem preperfect_iff_nhds : Preperfect s ↔ ∀ x ∈ s, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ s, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
+
+/--
+A topological space `X` is said to be perfect if its universe is a perfect set.
+Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
+-/
+class PerfectSpace (X : Type*) [TopologicalSpace X]: Prop :=
+  univ_perfect' : Perfect (Set.univ : Set X)
+
+variable [PerfectSpace α] in
+variable (α) in
+theorem PerfectSpace.univ_perfect : Perfect (Set.univ : Set α) := PerfectSpace.univ_perfect'
+
+end Defs
+
+section Preperfect
+
+/-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
+then `x` is an accumulation point of `U ∩ C`. -/
+theorem accPt_principal_iff_inter_of_mem_nhds {x : α} (t_nhds : t ∈ 𝓝 x) :
+    AccPt x (𝓟 s) ↔ AccPt x (𝓟 (s ∩ t)) := by
+  refine ⟨fun h_acc => ?acc_inter,
+    fun h_acc => AccPt.mono h_acc <| Filter.principal_mono.mpr <| Set.inter_subset_left _ _⟩
+  have : 𝓝[≠] x ≤ 𝓟 t := le_principal_iff.mpr <| mem_nhdsWithin_of_mem_nhds t_nhds
+  rw [AccPt, ← inf_principal, inf_comm (a := 𝓟 s), ← inf_assoc, inf_of_le_left this]
+  exact h_acc
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
 theorem Preperfect.open_inter (s_prePerfect : Preperfect s) (t_open : IsOpen t) :
@@ -129,6 +139,10 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect s ↔ Perfect (
   exact H.mono this
 #align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
+end Preperfect
+
+section Splitting
+
 theorem Perfect.closure_nhds_inter (s_perfect : Perfect s) (x : α) (x_in_s : x ∈ s) (x_in_t : x ∈ t)
     (t_open : IsOpen t) : Perfect (closure (t ∩ s)) ∧ (closure (t ∩ s)).Nonempty := ⟨
   Preperfect.perfect_closure <| Set.inter_comm _ _ ▸ s_perfect.acc.open_inter t_open,
@@ -158,6 +172,8 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect s) (hnonempty : s.Nonempty
     exact inter_subset_right _ _
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
 #align perfect.splitting Perfect.splitting
+
+end Splitting
 
 section Kernel
 
@@ -215,4 +231,49 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
 
 end Kernel
 
-end Basic
+section PerfectSpace
+
+theorem perfectSpace_of_forall_not_isolated (h_forall : ∀ x : α, Filter.NeBot (𝓝[≠] x)) :
+    PerfectSpace α := ⟨⟨isClosed_univ, fun x _ => by
+  rw [AccPt, Filter.principal_univ, inf_top_eq]
+  exact h_forall x⟩⟩
+
+variable [PerfectSpace α]
+
+instance PerfectSpace.not_isolated (x : α): Filter.NeBot (𝓝[≠] x) := by
+  have := (PerfectSpace.univ_perfect α).acc (Set.mem_univ x)
+  rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
+
+end PerfectSpace
+
+section PerfectSpace.Prod
+
+variable {β : Type*} [TopologicalSpace β]
+
+theorem nhdsWithin_punctured_prod_neBot_iff' {p : α} {q : β} : Filter.NeBot (𝓝[≠] (p, q)) ↔
+    Filter.NeBot (𝓝[≠] p) ∨ Filter.NeBot (𝓝[≠] q) := by
+  simp_rw [← Set.singleton_prod_singleton, Set.compl_prod_eq_union, nhdsWithin_union,
+    nhdsWithin_prod_eq, nhdsWithin_univ, Filter.neBot_iff, ne_eq, sup_eq_bot_iff,
+    Filter.prod_eq_bot, Filter.NeBot.ne <| nhds_neBot, or_false, false_or, not_and_or]
+
+variable (α β) in
+instance PerfectSpace.prod_left [PerfectSpace α] : PerfectSpace (α × β) :=
+  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
+    rw [nhdsWithin_punctured_prod_neBot_iff]
+    left
+    exact PerfectSpace.not_isolated p
+
+variable (α β) in
+instance PerfectSpace.prod_right [PerfectSpace β] : PerfectSpace (α × β) :=
+  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
+    rw [nhdsWithin_punctured_prod_neBot_iff]
+    right
+    exact PerfectSpace.not_isolated q
+
+end PerfectSpace.Prod
+
+@[deprecated accPt_principal_iff_inter_of_mem_nhds]
+theorem AccPt.nhds_inter {x : α} (h_acc : AccPt x (𝓟 s)) (t_nhds : t ∈ 𝓝 x) :
+    AccPt x (𝓟 (t ∩ s)) :=
+  Set.inter_comm _ _ ▸ (accPt_principal_iff_inter_of_mem_nhds t_nhds).mp h_acc
+#align acc_pt.nhds_inter AccPt.nhds_inter
