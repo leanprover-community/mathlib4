@@ -10,9 +10,9 @@ import Mathlib.Data.ZMod.Basic
 #align_import quadratic_form from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
-# `QuadraticForm R M` and `Subtype BilinForm.IsSymm` are distinct notions in characteristic 2
+# `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2
 
-The main result of this file is `BilinForm.not_injOn_toQuadraticForm_isSymm`.
+The main result of this file is `LinearMap.not_injOn_toQuadraticForm_isSymm`.
 
 The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' : ZMod 2`.
 -/
@@ -45,11 +45,11 @@ theorem isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq
 theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
 #align counterexample.B_ne_zero Counterexample.B_ne_zero
 
-/-- `BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.
+/-- `LinearMap.toQuadraticForm` is not injective on symmetric bilinear forms.
 
 This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
-theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
+theorem LinearMap.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
       Set.InjOn (toQuadraticForm : (M →ₗ[R] M →ₗ[R] R) → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
@@ -58,6 +58,6 @@ theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
   apply h (isSymm_B F) isSymm_zero
   rw [toQuadraticForm_zero, toQuadraticForm_eq_zero]
   exact isAlt_B F
-#align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.BilinForm.not_injOn_toQuadraticForm_isSymm
+#align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.LinearMap.not_injOn_toQuadraticForm_isSymm
 
 end Counterexample
