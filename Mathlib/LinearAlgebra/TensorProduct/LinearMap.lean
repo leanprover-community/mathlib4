@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -33,7 +32,7 @@ namespace LinearMap
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁]
-variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
+variable [IsScalarTower R A M₁]
 variable [Module R M₂]
 
 variable (R A) in
