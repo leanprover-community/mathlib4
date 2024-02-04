@@ -842,7 +842,7 @@ theorem toReal_rpow (x : ℝ≥0∞) (z : ℝ) : x.toReal ^ z = (x ^ z).toReal :
 theorem ofReal_rpow_of_pos {x p : ℝ} (hx_pos : 0 < x) :
     ENNReal.ofReal x ^ p = ENNReal.ofReal (x ^ p) := by
   simp_rw [ENNReal.ofReal]
-  rw [coe_rpow_of_ne_zero, coe_eq_coe, Real.toNNReal_rpow_of_nonneg hx_pos.le]
+  rw [coe_rpow_of_ne_zero, coe_inj, Real.toNNReal_rpow_of_nonneg hx_pos.le]
   simp [hx_pos]
 #align ennreal.of_real_rpow_of_pos ENNReal.ofReal_rpow_of_pos
 
