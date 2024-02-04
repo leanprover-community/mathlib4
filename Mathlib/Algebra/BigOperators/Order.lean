@@ -3,10 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
 
@@ -790,37 +788,6 @@ lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
 
 end OrderedCancelCommMonoid
 end Fintype
-
-namespace WithTop
-
-open Finset
-
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
-    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
-    fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
-#align with_top.prod_lt_top WithTop.prod_lt_top
-
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
-  induction s using Finset.cons_induction <;> simp [*]
-#align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
-#align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
-  sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
-#align with_top.sum_lt_top WithTop.sum_lt_top
-
-end WithTop
 
 section AbsoluteValue
 

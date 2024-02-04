@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Real.NNReal
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.Set.Intervals.WithBotTop
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Real.NNReal
+import Mathlib.Data.Set.Intervals.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
