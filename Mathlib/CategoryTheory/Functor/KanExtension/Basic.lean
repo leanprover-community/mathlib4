@@ -79,7 +79,7 @@ noncomputable def isUniversalOfIsRightKanExtension : (RightExtension.mk F' α).I
   IsRightKanExtension.nonempty_isUniversal.some
 
 /-- If `(F', α)` is a right Kan extension of `F` along `L` and `β : L ⋙ G ⟶ F` is
-a natural transformation, this is the induced morphisms `G ⟶ F'`. -/
+a natural transformation, this is the induced morphism `G ⟶ F'`. -/
 noncomputable def liftOfIsRightKanExtension (G : H ⥤ D) (β : L ⋙ G ⟶ F) : G ⟶ F' :=
   (F'.isUniversalOfIsRightKanExtension α).lift (RightExtension.mk G β)
 
