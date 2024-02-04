@@ -72,6 +72,8 @@ theorem t2_separation_smul_subset {x : α} {g : G} {s : Set α} (s_open : IsOpen
 -- `t2_separation_of_smul_injOn` without a few helper lemmas. These are marked as private so as to
 -- not pollute the rest of the module's exports.
 
+-- TODO: investigate whether Set.Finite.t2_separation or the `choose` tactic can help remove this
+
 private def t2_of_smul_injOn_pair (inj_on : s.InjOn (· • x)) (g h : s) (g_ne_h : g.val ≠ h.val) :
     Set α :=
   t2_separation_smul (mem_fixedBy_compl_mul_of_smul_injOn inj_on g.prop h.prop g_ne_h)
