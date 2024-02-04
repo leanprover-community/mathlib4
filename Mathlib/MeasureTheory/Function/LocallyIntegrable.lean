@@ -384,10 +384,10 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
 
 theorem integrable_iff_integrableAtFilter_cocompact :
     (IntegrableAtFilter f (Filter.cocompact X) μ ∧ LocallyIntegrable f μ) ↔ Integrable f μ := by
-  refine ⟨fun ⟨⟨s, hsc, hs⟩, h0⟩ ↦ ?_, fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩⟩
+  refine ⟨fun ⟨⟨s, hsc, hs⟩, hloc⟩ ↦ ?_, fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩⟩
   obtain ⟨t, htc, ht⟩ := Filter.mem_cocompact'.mp hsc
   rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
-  exact ⟨(h0.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
+  exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
 end MeasureTheory
 
