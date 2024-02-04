@@ -28,13 +28,20 @@ open Asymptotics MeasureTheory Set Filter
 variable {α E : Type*} [MeasurableSpace α] [NormedDivisionRing E] [NormedSpace ℝ E] [Nontrivial E]
   {f g : α → E} {a b : α} {μ : Measure α} {l : Filter α}
 
-theorem integrable_of_isBigO_integrable (hf : f =O[l] g) (hg : IntegrableAtFilter g l μ) :
-    IntegrableAtFilter f l μ := by
+theorem __root__.Asymptotics.IsBigO.integrableAtFilter (hf : f =O[l] g)
+    (hg : IntegrableAtFilter g l μ) : IntegrableAtFilter f l μ := by
   obtain ⟨C, hC⟩ := hf.bound
   obtain ⟨s, hsl, hs⟩ := hC.exists_mem
   obtain ⟨t, htl, ht⟩ := hg
   let u := s ∩ t
   use u, inter_mem hsl htl
+  sorry
+
+variable [TopologicalSpace α]
+
+theorem integrable_iff_integrableAtFilter_cocompact :
+    (IntegrableAtFilter f (Filter.cocompact α) μ ∧ LocallyIntegrable f μ) ↔ Integrable f μ := by
+  refine ⟨?_, fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩⟩
   sorry
 
 end
