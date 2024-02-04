@@ -345,7 +345,7 @@ theorem toDual_eq_equivFun [Fintype ι] (m : M) (i : ι) : b.toDual m (b i) = b.
 #align basis.to_dual_eq_equiv_fun Basis.toDual_eq_equivFun
 
 theorem toDual_injective : Injective b.toDual := fun x y h ↦ b.ext_elem_iff.mpr fun i ↦ by
-  simp_rw [← toDual_eq_repr]; exact FunLike.congr_fun h _
+  simp_rw [← toDual_eq_repr]; exact DFunLike.congr_fun h _
 
 theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
   b.toDual_injective (by rwa [_root_.map_zero])
@@ -687,7 +687,7 @@ lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
     let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
-      exact FunLike.congr_arg f (e.apply_symm_apply m).symm
+      exact DFunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
@@ -1106,7 +1106,7 @@ variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| FunLike.congr_fun
+  congr_arg φ <| DFunLike.congr_fun
     (Classical.choose_spec <| W.subtype.exists_leftInverse_of_injective W.ker_subtype) w
 #align subspace.dual_lift_of_subtype Subspace.dualLift_of_subtype
 
@@ -1295,7 +1295,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 #align submodule.dual_copairing Submodule.dualCopairing
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M fun _ => R :=
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
   { coe := fun φ => φ.val,
     coe_injective' := fun φ ψ h => by
       ext
@@ -1390,7 +1390,7 @@ theorem quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
 
 theorem flip_quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual.flip :=
-  fun _ _ he ↦ Subtype.ext <| LinearMap.ext fun m ↦ FunLike.congr_fun he ⟦m⟧
+  fun _ _ he ↦ Subtype.ext <| LinearMap.ext fun m ↦ DFunLike.congr_fun he ⟦m⟧
 
 open LinearMap in
 theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
@@ -1422,7 +1422,9 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
   -- Porting note: broken dot notation lean4#1910
-  · change range ((range f).subtype.comp f.rangeRestrict).dualMap = _
+  · calc
+      _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
+      _ = _ := ?_
     rw [← dualMap_comp_dualMap, range_comp_of_range_eq_top]
     rwa [range_eq_top]
   · apply congr_arg
@@ -1545,7 +1547,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K 
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W
-    rw [iSup_of_empty', iInf_of_empty', sInf_empty, sSup_empty, dualAnnihilator_top]
+    rw [iSup_of_empty', iInf_of_isEmpty, sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
     rw [iInf_option, iSup_option, dualAnnihilator_inf_eq, h]
 #align subspace.dual_annihilator_infi_eq Subspace.dualAnnihilator_iInf_eq

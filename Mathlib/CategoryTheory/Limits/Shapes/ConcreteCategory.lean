@@ -33,7 +33,7 @@ universe w v u
 
 namespace CategoryTheory.Limits.Concrete
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C]
 
@@ -61,9 +61,28 @@ end Products
 
 section Terminal
 
+variable [ConcreteCategory.{w} C]
+
+/-- If `forget C` preserves terminals and `X` is terminal, then `(forget C).obj X` is a
+singleton. -/
+noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : IsTerminal X) : Unique ((forget C).obj X) :=
+  Types.isTerminalEquivUnique ((forget C).obj X) <| IsTerminal.isTerminalObj (forget C) X h
+
+/-- If `forget C` reflects terminals and `(forget C).obj X` is a singleton, then `X` is terminal. -/
+noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : Unique ((forget C).obj X)) : IsTerminal X :=
+  IsTerminal.isTerminalOfObj (forget C) X <| (Types.isTerminalEquivUnique ((forget C).obj X)).symm h
+
+/-- The equivalence `IsTerminal X ≃ Unique ((forget C).obj X)` if the forgetful functor
+preserves and reflects terminals. -/
+noncomputable def terminalIffUnique [PreservesLimit (Functor.empty.{0} C) (forget C)]
+    [ReflectsLimit (Functor.empty.{0} C) (forget C)] (X : C) :
+    IsTerminal X ≃ Unique ((forget C).obj X) :=
+  (IsTerminal.isTerminalIffObj (forget C) X).trans <| Types.isTerminalEquivUnique _
+
 variable (C)
-variable [ConcreteCategory.{w} C] [HasTerminal C]
-  [PreservesLimit (Functor.empty.{0} C) (forget C)]
+variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 
 /-- The equivalence `(forget C).obj (⊤_ C) ≃ PUnit` when `C` is a concrete category. -/
 noncomputable def terminalEquiv : (forget C).obj (⊤_ C) ≃ PUnit :=
@@ -74,6 +93,31 @@ noncomputable instance : Unique ((forget C).obj (⊤_ C)) where
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
 end Terminal
+
+section Initial
+
+variable [ConcreteCategory.{w} C]
+
+/-- If `forget C` preserves initials and `X` is initial, then `(forget C).obj X` is empty. -/
+lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C)
+    (h : Nonempty (IsInitial X)) : IsEmpty ((forget C).obj X) := by
+  rw [← Types.initial_iff_empty]
+  exact Nonempty.map (IsInitial.isInitialObj (forget C) _) h
+
+/-- If `forget C` reflects initials and `(forget C).obj X` is empty, then `X` is initial. -/
+lemma initial_of_empty_of_reflects [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
+    (h : IsEmpty ((forget C).obj X)) : Nonempty (IsInitial X) :=
+  Nonempty.map (IsInitial.isInitialOfObj (forget C) _) <|
+    (Types.initial_iff_empty ((forget C).obj X)).mpr h
+
+/-- If `forget C` preserves and reflects initials, then `X` is initial if and only if
+`(forget C).obj X` is empty. -/
+lemma initial_iff_empty_of_preserves_of_reflects [PreservesColimit (Functor.empty.{0} C) (forget C)]
+    [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C) :
+    Nonempty (IsInitial X) ↔ IsEmpty ((forget C).obj X) := by
+  rw [← Types.initial_iff_empty, (IsInitial.isInitialIffObj (forget C) X).nonempty_congr]
+
+end Initial
 
 section BinaryProducts
 

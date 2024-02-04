@@ -2,7 +2,8 @@
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
-import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Order.Basic
 
 set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by

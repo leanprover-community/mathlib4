@@ -5,9 +5,10 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Set
 import Mathlib.Mathport.Notation
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
@@ -305,12 +306,7 @@ theorem iInf_le_iff {s : ι → α} : iInf s ≤ a ↔ ∀ b, (∀ i, b ≤ s i)
 #align infi_le_iff iInf_le_iff
 
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_of_forall_le
-    (by
-      simp only [le_sInf_iff]
-      introv h₀ h₁
-      rcases h _ h₁ with ⟨y, hy, hy'⟩
-      solve_by_elim [le_trans _ hy'])
+  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 #align Inf_le_Inf_of_forall_exists_le sInf_le_sInf_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
@@ -701,6 +697,11 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
   iSup_congr fun i ↦ iSup_congr (h i)
 
+theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
+    (h : ∀ i (hi : p i), f i hi = g i hi) :
+    ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
+  congr; ext i; congr; ext hi; exact h i hi
+
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
   simp only [iSup._eq_1]
@@ -769,6 +770,11 @@ theorem iInf_congr (h : ∀ i, f i = g i) : ⨅ i, f i = ⨅ i, g i :=
 theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨅ (i) (_ : p i), f i = ⨅ (i) (_ : p i), g i :=
   biSup_congr (α := αᵒᵈ) h
+
+theorem biInf_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
+    (h : ∀ i (hi : p i), f i hi = g i hi) :
+    ⨅ i, ⨅ (hi : p i), f i hi = ⨅ i, ⨅ (hi : p i), g i hi := by
+  congr; ext i; congr; ext hi; exact h i hi
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=
@@ -1311,6 +1317,14 @@ theorem iInf_inf_eq : ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ ⨅ x, g x :=
   @iSup_sup_eq αᵒᵈ _ _ _ _
 #align infi_inf_eq iInf_inf_eq
 
+lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
+    ⨅ i ∈ s, f i ≤ f i := by
+  simpa only [iInf_subtype'] using iInf_le (ι := s) (f := f ∘ (↑)) ⟨i, hi⟩
+
+lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
+    f i ≤ ⨆ i ∈ s, f i :=
+  biInf_le (α := αᵒᵈ) f hi
+
 /- TODO: here is another example where more flexible pattern matching
    might help.
 
@@ -1467,6 +1481,14 @@ theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f
   @sSup_image αᵒᵈ _ _ _ _
 #align Inf_image sInf_image
 
+theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sSup s) = sSup (f.symm ⁻¹' s) := by
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+
+theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sInf s) = sInf (f.symm ⁻¹' s) := by
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+
 /-
 ### iSup and iInf under set constructions
 -/
@@ -1571,9 +1593,9 @@ theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f
   congr_arg sSup (range_eq_empty f)
 #align supr_of_empty' iSup_of_empty'
 
-theorem iInf_of_empty' {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
+theorem iInf_of_isEmpty {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
   congr_arg sInf (range_eq_empty f)
-#align infi_of_empty' iInf_of_empty'
+#align infi_of_empty' iInf_of_isEmpty
 
 theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty

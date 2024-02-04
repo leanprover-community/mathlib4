@@ -174,13 +174,6 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂
 
 /-! ### Equality on a set -/
 
-
-/-- Two functions `f₁ f₂ : α → β` are equal on `s`
-  if `f₁ x = f₂ x` for all `x ∈ s`. -/
-def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
-#align set.eq_on Set.EqOn
-
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
 #align set.eq_on_empty Set.eqOn_empty
@@ -351,18 +344,6 @@ end Mono
 
 /-! ### maps to -/
 
-
-/-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
-def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f x ∈ t
-#align set.maps_to Set.MapsTo
-
-/-- Given a map `f` sending `s : Set α` into `t : Set β`, restrict domain of `f` to `s`
-and the codomain to `t`. Same as `Subtype.map`. -/
-def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) : s → t :=
-  Subtype.map f h
-#align set.maps_to.restrict Set.MapsTo.restrict
-
 theorem MapsTo.restrict_commutes (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
     Subtype.val ∘ h.restrict f s t = f ∘ Subtype.val :=
   rfl
@@ -526,13 +507,6 @@ theorem mapsTo_inter : MapsTo f s (t₁ ∩ t₂) ↔ MapsTo f s t₁ ∧ MapsTo
 theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
 #align set.maps_to_univ Set.mapsTo_univ
 
-theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := by rw [mapsTo']
-#align set.maps_to_image Set.mapsTo_image
-
-theorem mapsTo_preimage (f : α → β) (t : Set β) : MapsTo f (f ⁻¹' t) t :=
-  Subset.refl _
-#align set.maps_to_preimage Set.mapsTo_preimage
-
 theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
   (mapsTo_image f s).mono (Subset.refl s) (image_subset_range _ _)
 #align set.maps_to_range Set.mapsTo_range
@@ -590,13 +564,6 @@ section
 
 variable (t f)
 
-/-- The restriction of a function onto the preimage of a set. -/
-@[simps!]
-def restrictPreimage : f ⁻¹' t → t :=
-  (Set.mapsTo_preimage f t).restrict _ _ _
-#align set.restrict_preimage Set.restrictPreimage
-#align set.restrict_preimage_coe Set.restrictPreimage_coe
-
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   delta Set.restrictPreimage
   rw [MapsTo.range_restrict, Set.image_preimage_eq_inter_range, Set.preimage_inter,
@@ -628,12 +595,6 @@ end
 
 /-! ### Injectivity on a set -/
 
-
-/-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
-def InjOn (f : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
-#align set.inj_on Set.InjOn
-
 theorem Subsingleton.injOn (hs : s.Subsingleton) (f : α → β) : InjOn f s := fun _ hx _ hy _ =>
   hs hx hy
 #align set.subsingleton.inj_on Set.Subsingleton.injOn
@@ -646,6 +607,8 @@ theorem injOn_empty (f : α → β) : InjOn f ∅ :=
 theorem injOn_singleton (f : α → β) (a : α) : InjOn f {a} :=
   subsingleton_singleton.injOn f
 #align set.inj_on_singleton Set.injOn_singleton
+
+@[simp] lemma injOn_pair {b : α} : InjOn f {a, b} ↔ f a = f b → a = b := by unfold InjOn; aesop
 
 theorem InjOn.eq_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x = f y ↔ x = y :=
   ⟨h hx hy, fun h => h ▸ rfl⟩
@@ -792,9 +755,6 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
 
-/-- The graph of a function `f : α → β` on a set `s`. -/
-def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
-
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 
 @[simp]
@@ -833,11 +793,6 @@ lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
     exists_eq_graphOn_image_fst
 
 /-! ### Surjectivity on a set -/
-
-/-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
-def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  t ⊆ f '' s
-#align set.surj_on Set.SurjOn
 
 theorem SurjOn.subset_range (h : SurjOn f s t) : t ⊆ range f :=
   Subset.trans h <| image_subset_range f s
@@ -995,12 +950,6 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
 
 /-! ### Bijectivity -/
 
-
-/-- `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. -/
-def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
-#align set.bij_on Set.BijOn
-
 theorem BijOn.mapsTo (h : BijOn f s t) : MapsTo f s t :=
   h.left
 #align set.bij_on.maps_to Set.BijOn.mapsTo
@@ -1117,12 +1066,6 @@ theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :
 
 /-! ### left inverse -/
 
-
-/-- `g` is a left inverse to `f` on `a` means that `g (f x) = x` for all `x ∈ a`. -/
-def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ s → f' (f x) = x
-#align set.left_inv_on Set.LeftInvOn
-
 theorem LeftInvOn.eqOn (h : LeftInvOn f' f s) : EqOn (f' ∘ f) id s :=
   h
 #align set.left_inv_on.eq_on Set.LeftInvOn.eqOn
@@ -1195,13 +1138,6 @@ theorem LeftInvOn.image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' ''
 
 /-! ### Right inverse -/
 
-
-/-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
-@[reducible]
-def RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop :=
-  LeftInvOn f f' t
-#align set.right_inv_on Set.RightInvOn
-
 theorem RightInvOn.eqOn (h : RightInvOn f' f t) : EqOn (f ∘ f') id t :=
   h
 #align set.right_inv_on.eq_on Set.RightInvOn.eqOn
@@ -1264,12 +1200,6 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
 
 /-! ### Two-side inverses -/
 
-
-/-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/
-def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
-  LeftInvOn g f s ∧ RightInvOn g f t
-#align set.inv_on Set.InvOn
-
 lemma invOn_id (s : Set α) : InvOn id id s s := ⟨s.leftInvOn_id, s.rightInvOn_id⟩
 #align set.inv_on_id Set.invOn_id
 
@@ -1307,7 +1237,7 @@ variable [Nonempty α] {s : Set α} {f : α → β} {a : α} {b : β}
 attribute [local instance] Classical.propDecidable
 
 /-- Construct the inverse for a function `f` on domain `s`. This function is a right inverse of `f`
-on `f '' s`. For a computable version, see `Function.Injective.inv_of_mem_range`. -/
+on `f '' s`. For a computable version, see `Function.Embedding.invOfMemRange`. -/
 noncomputable def invFunOn (f : α → β) (s : Set α) (b : β) : α :=
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
 #align function.inv_fun_on Function.invFunOn

@@ -40,6 +40,11 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
 instance [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
+/-- If `V` has limits of shape `J`, so does `Action V G`.-/
+instance hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    HasLimitsOfShape J (Action V G) :=
+  Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
 instance [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
   out _ :=
     Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
@@ -50,6 +55,11 @@ instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
 
 instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
+/-- If `V` has colimits of shape `J`, so does `Action V G`.-/
+instance hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
+    [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
+  Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 end Limits
 
@@ -136,6 +146,60 @@ def preservesColimitsOfSizeOfPreserves (F : C ⥤ Action V G)
   exact PreservesColimitsOfSize.preservesColimitsOfShape
 
 end Preservation
+
+section Forget
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    PreservesLimitsOfShape J (Action.forget V G) := by
+  show PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+    PreservesColimitsOfShape J (Action.forget V G) := by
+  show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
+  show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteLimits
+
+noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
+  show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteColimits
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsLimit F (Action.forget V G) where
+  reflects h := by
+    apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsLimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsLimits (Action.forget V G) where
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsColimit F (Action.forget V G) where
+  reflects h := by
+    apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsColimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsColimits (Action.forget V G) where
+
+end Forget
 
 section HasZeroMorphisms
 
@@ -270,7 +334,7 @@ end Linear
 
 section Abelian
 
-/-- Auxilliary construction for the `Abelian (Action V G)` instance. -/
+/-- Auxiliary construction for the `Abelian (Action V G)` instance. -/
 def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
   (functorCategoryEquivalence V G).trans (Equivalence.congrLeft ULift.equivalence)
 set_option linter.uppercaseLean3 false in

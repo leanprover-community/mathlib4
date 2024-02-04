@@ -6,10 +6,12 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Quotient
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -829,6 +831,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
 instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
+instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+    [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
+  Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
+
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
 lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
@@ -1311,6 +1317,7 @@ theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 #align ideal.le_of_dvd Ideal.le_of_dvd
 
+@[simp]
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸

@@ -358,7 +358,7 @@ theorem repr_injective :
 
 -- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
+instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
@@ -380,7 +380,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι fun _ => E where
 theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
     ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   funext
   congr!
 #align orthonormal_basis.coe_of_repr OrthonormalBasis.coe_ofRepr
@@ -389,7 +389,7 @@ theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 �
 protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
   -- Porting note: simplified with `congr!`
-  dsimp only [FunLike.coe]
+  dsimp only [DFunLike.coe]
   congr!
 #align orthonormal_basis.repr_symm_single OrthonormalBasis.repr_symm_single
 
@@ -915,8 +915,8 @@ space, there exists an isometry from the orthogonal complement of a nonzero sing
 `EuclideanSpace 𝕜 (Fin n)`. -/
 def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : OrthonormalBasis (Fin n) 𝕜 (𝕜 ∙ v)ᗮ :=
-  -- Porting note: was `attribute [local instance] fact_finiteDimensional_of_finrank_eq_succ`
-  haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ (K := 𝕜) (V := E) n
+  -- Porting note: was `attribute [local instance] FiniteDimensional.of_fact_finrank_eq_succ`
+  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
   (stdOrthonormalBasis _ _).reindex <| finCongr <| finrank_orthogonal_span_singleton hv
 #align orthonormal_basis.from_orthogonal_span_singleton OrthonormalBasis.fromOrthogonalSpanSingleton
 

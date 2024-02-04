@@ -891,7 +891,7 @@ theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fi
 theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
   induction' n with n ihn
-  · exact h.mono fun y hy => FunLike.ext _ _ fun _ => hy
+  · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
   · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
     apply this.mono
     intro y hy
@@ -1520,7 +1520,7 @@ noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 #align iterated_fderiv iteratedFDeriv
 
-/-- Formal Taylor series associated to a function within a set. -/
+/-- Formal Taylor series associated to a function. -/
 def ftaylorSeries (f : E → F) (x : E) : FormalMultilinearSeries 𝕜 E F := fun n =>
   iteratedFDeriv 𝕜 n f x
 #align ftaylor_series ftaylorSeries

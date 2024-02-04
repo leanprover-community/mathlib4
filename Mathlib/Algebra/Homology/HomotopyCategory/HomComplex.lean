@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.GroupPower.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
@@ -467,8 +467,8 @@ variable {F G R}
 @[simp] lemma δ_smul (k : R) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
   (δ_hom R F G n m).map_smul k z
 
-@[simp] lemma δ_units_smul (k : Rˣ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z := by
-  apply δ_smul
+@[simp] lemma δ_units_smul (k : Rˣ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
+  δ_smul ..
 
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
   by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]

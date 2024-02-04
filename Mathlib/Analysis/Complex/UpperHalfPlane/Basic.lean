@@ -50,7 +50,7 @@ def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
 #align upper_half_plane UpperHalfPlane
 
-scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
+@[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
 open UpperHalfPlane
 
@@ -138,6 +138,34 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
+
+end UpperHalfPlane
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
+@[positivity UpperHalfPlane.im _]
+def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
+    assertInstancesCommute
+    pure (.positive q(@UpperHalfPlane.im_pos $a))
+  | _, _, _ => throwError "not UpperHalfPlane.im"
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
+@[positivity UpperHalfPlane.coe _]
+def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
+    assertInstancesCommute
+    pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
+  | _, _, _ => throwError "not UpperHalfPlane.coe"
+
+end Mathlib.Meta.Positivity
+
+namespace UpperHalfPlane
 
 theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
   rw [Complex.normSq_pos]; exact z.ne_zero

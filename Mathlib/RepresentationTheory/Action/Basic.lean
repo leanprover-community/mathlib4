@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
-import Mathlib.Algebra.Algebra.Basic
 
 #align_import representation_theory.Action from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
@@ -176,7 +175,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FunctorCategoryEquivalence
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
@@ -190,7 +189,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.functor Action.FunctorCategoryEquivalence.functor
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
@@ -205,14 +204,14 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.inverse Action.FunctorCategoryEquivalence.inverse
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.unit_iso Action.FunctorCategoryEquivalence.unitIso
 
-/-- Auxilliary definition for `functorCategoryEquivalence`. -/
+/-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
   NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
@@ -361,65 +360,6 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
-
-/-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
-  V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
-set_option linter.uppercaseLean3 false in
-#align Action.of_mul_action Action.ofMulAction
-
-@[simp]
-theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
-    (ofMulAction G H).ρ g x = (g • x : H) :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Action.of_mul_action_apply Action.ofMulAction_apply
-
-/-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
-product of `F` as types is a product in the category of `G`-sets. -/
-def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
-    [∀ i : ι, MulAction G (F i)] :
-    LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
-  cone :=
-    { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun g => rfl⟩) }
-  isLimit :=
-    { lift := fun s =>
-        { hom := fun x i => (s.π.app ⟨i⟩).hom x
-          comm := fun g => by
-            ext x
-            funext j
-            exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
-      fac := fun s j => rfl
-      uniq := fun s f h => by
-        ext x
-        funext j
-        dsimp at *
-        rw [← h ⟨j⟩]
-        rfl }
-set_option linter.uppercaseLean3 false in
-#align Action.of_mul_action_limit_cone Action.ofMulActionLimitCone
-
-/-- The `G`-set `G`, acting on itself by left multiplication. -/
-@[simps!]
-def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
-  Action.ofMulAction G G
-set_option linter.uppercaseLean3 false in
-#align Action.left_regular Action.leftRegular
-
-/-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
-@[simps!]
-def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :=
-  Action.ofMulAction G (Fin n → G)
-set_option linter.uppercaseLean3 false in
-#align Action.diagonal Action.diagonal
-
-/-- We have `fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
-def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
-  Action.mkIso (Equiv.funUnique _ _).toIso fun _ => rfl
-set_option linter.uppercaseLean3 false in
-#align Action.diagonal_one_iso_left_regular Action.diagonalOneIsoLeftRegular
 
 end Action
 

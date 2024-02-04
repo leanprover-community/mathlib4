@@ -215,7 +215,7 @@ theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 
 #align hyperreal.gt_of_tendsto_zero_of_neg Hyperreal.gt_of_tendsto_zero_of_neg
 
 theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
-  lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_0_nat
+  lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_zero_nat
 #align hyperreal.epsilon_lt_pos Hyperreal.epsilon_lt_pos
 
 /-- Standard part predicate -/
@@ -716,7 +716,7 @@ theorem infinitesimal_of_tendsto_zero {f : ℕ → ℝ} (h : Tendsto f atTop (�
 #align hyperreal.infinitesimal_of_tendsto_zero Hyperreal.infinitesimal_of_tendsto_zero
 
 theorem infinitesimal_epsilon : Infinitesimal ε :=
-  infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_0_nat
+  infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_zero_nat
 #align hyperreal.infinitesimal_epsilon Hyperreal.infinitesimal_epsilon
 
 theorem not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=

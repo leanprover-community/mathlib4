@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
 
 #align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
@@ -103,7 +104,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
-  termination_by card_sym_fin_eq_multichoose n k => n + k
+  termination_by n k => n + k
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/

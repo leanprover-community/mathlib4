@@ -3,7 +3,8 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs
@@ -23,6 +24,15 @@ injective, surjective and bijective, and have corresponding notation.
 * `SimpleGraph.Hom`, `G →g H`: a graph homomorphism from `G` to `H`.
 * `SimpleGraph.Embedding`, `G ↪g H`: a graph embedding of `G` in `H`.
 * `SimpleGraph.Iso`, `G ≃g H`: a graph isomorphism between `G` and `H`.
+
+Note that a graph embedding is a stronger notion than an injective graph homomorphism,
+since its image is an induced subgraph.
+
+## Implementation notes
+
+Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
+To make use of pre-existing simp lemmas, definitions involving morphisms are
+abbreviations as well.
 -/
 
 
@@ -236,9 +246,9 @@ abbrev Iso :=
   RelIso G.Adj G'.Adj
 #align simple_graph.iso SimpleGraph.Iso
 
-infixl:50 " →g " => Hom
-infixl:50 " ↪g " => Embedding
-infixl:50 " ≃g " => Iso
+@[inherit_doc] infixl:50 " →g " => Hom
+@[inherit_doc] infixl:50 " ↪g " => Embedding
+@[inherit_doc] infixl:50 " ≃g " => Iso
 
 namespace Hom
 
@@ -252,7 +262,7 @@ protected abbrev id : G →g G :=
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
 #align simple_graph.hom.coe_id SimpleGraph.Hom.coe_id
 
-instance [Subsingleton (V → W)] : Subsingleton (G →g H) := FunLike.coe_injective.subsingleton
+instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 
 instance [IsEmpty V] : Unique (G →g H) where
   default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
@@ -264,7 +274,7 @@ instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj
     { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
       left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
 
-instance [Finite V] [Finite W] : Finite (G →g H) := FunLike.finite _
+instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
 theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
@@ -343,11 +353,11 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 #align simple_graph.hom.coe_comp SimpleGraph.Hom.coe_comp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLe (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-#align simple_graph.hom.of_le SimpleGraph.Hom.ofLe
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+#align simple_graph.hom.of_le SimpleGraph.Hom.ofLE
 
-@[simp, norm_cast] lemma coe_ofLe (h : G₁ ≤ G₂) : ⇑(ofLe h) = id := rfl
-#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLe
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLE
 
 end Hom
 
@@ -578,11 +588,16 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
   right_inv w := by simp
 #align simple_graph.iso.map_neighbor_set SimpleGraph.Iso.mapNeighborSet
 
-theorem card_eq_of_iso [Fintype V] [Fintype W] (f : G ≃g G') : Fintype.card V = Fintype.card W := by
+theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  -- porting note: need to help it to find the typeclass instances from the target expression
-  apply @Fintype.card_congr' _ _ (_) (_) rfl
-#align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq_of_iso
+  convert rfl
+#align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
+
+theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    G.edgeFinset.card = G'.edgeFinset.card := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
@@ -650,5 +665,21 @@ def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+
+section Finite
+
+variable [Fintype V] {n : ℕ}
+
+/-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
+`G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
+def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
+  Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
+  symm x y := by simp_rw [adj_comm, imp_self]
+
+/-- The isomorphism between `G` and `G.overFin hc`. -/
+noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
+  use Fintype.equivFinOfCardEq hc; simp [overFin]
+
+end Finite
 
 end SimpleGraph

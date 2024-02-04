@@ -689,8 +689,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
   rfl
 #align ratfunc.coe_map_ring_hom_eq_coe_map RatFunc.coe_mapRingHom_eq_coe_map
 
-set_option maxHeartbeats 300000 in
--- TODO: Generalize to `FunLike` classes,
+-- TODO: Generalize to `DFunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/

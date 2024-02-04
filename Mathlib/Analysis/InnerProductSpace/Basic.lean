@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.LinearAlgebra.BilinearForm.Basic
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -81,11 +81,8 @@ class Inner (𝕜 E : Type*) where
 
 export Inner (inner)
 
-/-- The inner product with values in `ℝ`. -/
-notation "⟪" x ", " y "⟫_ℝ" => @inner ℝ _ _ x y
-
-/-- The inner product with values in `ℂ`. -/
-notation "⟪" x ", " y "⟫_ℂ" => @inner ℂ _ _ x y
+/-- The inner product with values in `𝕜`. -/
+notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
 section Notations
 
@@ -1237,8 +1234,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
   constructor
   · intro hT
     ext x
-    simp only [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V]
-    simp (config := {singlePass := true}) only [inner_map_polarization]
+    rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
     norm_num
   · rintro rfl x
@@ -2292,7 +2288,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_apply (T : E →L[𝕜] E) (x : E) 
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=
-  reClm.continuous.comp <| T.continuous.inner continuous_id
+  reCLM.continuous.comp <| T.continuous.inner continuous_id
 #align continuous_linear_map.re_apply_inner_self_continuous ContinuousLinearMap.reApplyInnerSelf_continuous
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :

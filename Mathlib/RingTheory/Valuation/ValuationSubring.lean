@@ -385,7 +385,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 #align valuation_subring.prime_spectrum_equiv ValuationSubring.primeSpectrumEquiv
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
-@[simps]
+@[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=

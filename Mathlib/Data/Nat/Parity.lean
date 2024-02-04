@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Set.Basic
 
 #align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -217,10 +218,13 @@ theorem even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by
   exact em _
 #align nat.even_mul_succ_self Nat.even_mul_succ_self
 
-theorem even_mul_self_pred : ∀ n : ℕ, Even (n * (n - 1))
+theorem even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | 0 => even_zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
-#align nat.even_mul_self_pred Nat.even_mul_self_pred
+#align nat.even_mul_self_pred Nat.even_mul_pred_self
+
+@[deprecated] -- 2024-01-20
+alias even_mul_self_pred := even_mul_pred_self
 
 theorem two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h =>
   Nat.mul_div_cancel_left' (even_iff_two_dvd.mp h)
@@ -305,7 +309,7 @@ theorem iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
 #align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
 
 theorem iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
-  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
+  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
 #align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
 
 end
@@ -320,7 +324,7 @@ theorem iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
 
 theorem iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rcases hn with ⟨m, rfl⟩
-  rw [iterate_add, hf.iterate_two_mul, comp.left_id, iterate_one]
+  rw [iterate_add, hf.iterate_two_mul, id_comp, iterate_one]
 #align function.involutive.iterate_odd Function.Involutive.iterate_odd
 
 theorem iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=
@@ -336,12 +340,43 @@ end Involutive
 
 end Function
 
-variable {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-
-theorem neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
+theorem neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
+    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
   ⟨fun h' => of_not_not fun hn => h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h',
     Even.neg_one_pow⟩
 #align neg_one_pow_eq_one_iff_even neg_one_pow_eq_one_iff_even
+
+section LinearOrderedRing
+
+variable {R : Type*} [LinearOrderedRing R] {a b : R} {n : ℕ}
+
+theorem pow_eq_pow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
+  match n.even_xor_odd with
+  | .inl hne => by simp only [*, and_true, ← abs_eq_abs,
+    ← pow_left_inj (abs_nonneg a) (abs_nonneg b) hn, hne.1.pow_abs]
+  | .inr hn => by simp [hn, (hn.1.strictMono_pow (R := R)).injective.eq_iff]
+
+theorem pow_eq_pow_iff_cases : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
+  rcases eq_or_ne n 0 with rfl | hn <;> simp [pow_eq_pow_iff_of_ne_zero, *]
+
+theorem pow_eq_one_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← pow_eq_pow_iff_of_ne_zero hn]
+
+theorem pow_eq_one_iff_cases : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← pow_eq_pow_iff_cases]
+
+theorem pow_eq_neg_pow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
+  match n.even_or_odd with
+  | .inl he =>
+    suffices a ^ n > -b ^ n by simpa [he] using this.ne'
+    lt_of_lt_of_le (by simp [he.pow_pos hb]) (he.pow_nonneg _)
+  | .inr ho => by
+    simp only [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]
+
+theorem pow_eq_neg_one_iff : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
+  simpa using pow_eq_neg_pow_iff (R := R) one_ne_zero
+
+end LinearOrderedRing
 
 /-- If `a` is even, then `n` is odd iff `n % a` is odd. -/
 theorem Odd.mod_even_iff {n a : ℕ} (ha : Even a) : Odd (n % a) ↔ Odd n :=

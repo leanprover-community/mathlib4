@@ -60,7 +60,7 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 -- mathport name: exprabsR
-local notation "absR" => Abs.abs
+local notation "absR" => abs
 
 /-! ### Orthogonal projection in inner product spaces -/
 
@@ -92,7 +92,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
     have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
-      convert h.add tendsto_one_div_add_atTop_nhds_0_nat
+      convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
@@ -172,14 +172,14 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       convert this
       exact sqrt_zero.symm
     have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert (tendsto_const_nhds (x := 8 * δ)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert (tendsto_const_nhds (x := 4)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     have eq₂ :
         Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
+      convert this.mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]
@@ -893,7 +893,7 @@ theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
     [HasOrthogonalProjection U] : orthogonalProjection U ∘L V.subtypeL = 0 ↔ U ⟂ V :=
   ⟨fun h u hu v hv => by
     convert orthogonalProjection_inner_eq_zero v u hu using 2
-    have : orthogonalProjection U v = 0 := FunLike.congr_fun h (⟨_, hv⟩ : V)
+    have : orthogonalProjection U v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
     rw [this, Submodule.coe_zero, sub_zero], Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
 set_option linter.uppercaseLean3 false in
 #align orthogonal_projection_comp_subtypeL_eq_zero_iff orthogonalProjection_comp_subtypeL_eq_zero_iff
@@ -1173,7 +1173,7 @@ theorem Submodule.finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K 
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
-  haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ n
+  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ n
   exact Submodule.finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 #align finrank_orthogonal_span_singleton finrank_orthogonal_span_singleton

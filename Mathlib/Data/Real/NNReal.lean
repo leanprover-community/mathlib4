@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
@@ -1043,7 +1042,7 @@ theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
 theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+  rw [_root_.iInf_of_isEmpty, sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]

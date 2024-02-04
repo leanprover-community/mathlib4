@@ -3,9 +3,10 @@ Copyright (c) 2019 Chris Hughes All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
+import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Analysis.Complex.Liouville
-import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
 #align_import analysis.complex.polynomial from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"

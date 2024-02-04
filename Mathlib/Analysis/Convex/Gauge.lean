@@ -38,9 +38,6 @@ For a real vector space,
 Minkowski functional, gauge
 -/
 
-set_option autoImplicit true
-
-
 open NormedField Set
 open scoped Pointwise Topology NNReal
 
@@ -58,7 +55,7 @@ def gauge (s : Set E) (x : E) : ℝ :=
   sInf { r : ℝ | 0 < r ∧ x ∈ r • s }
 #align gauge gauge
 
-variable {s t : Set E} {a : ℝ}
+variable {s t : Set E} {x : E} {a : ℝ}
 
 theorem gauge_def : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | x ∈ r • s }) :=
   rfl
@@ -78,8 +75,8 @@ private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • 
 which is useful for proving many properties about the gauge.  -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
-  let ⟨r, hr₁, hr₂⟩ := absorbs x
-  ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge⟩
+  let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
+  ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 #align absorbent.gauge_set_nonempty Absorbent.gauge_set_nonempty
 
 theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
@@ -236,7 +233,7 @@ theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
 theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
   rw [starConvex_zero_iff] at hs₀
-  obtain ⟨r, hr, h⟩ := hs₂
+  obtain ⟨r, hr, h⟩ := hs₂.exists_pos
   refine' le_csInf ⟨r, hr, singleton_subset_iff.1 <| h _ (Real.norm_of_nonneg hr.le).ge⟩ _
   rintro b ⟨hb, x, hx', rfl⟩
   refine' not_lt.1 fun hba => hx _
@@ -330,7 +327,7 @@ theorem gauge_norm_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) :
   unfold gauge
   congr with θ
   rw [@IsROrC.real_smul_eq_coe_smul 𝕜]
-  refine' and_congr_right fun hθ => (hs.smul _).mem_smul_iff _
+  refine' and_congr_right fun hθ => (hs.smul _).smul_mem_iff _
   rw [IsROrC.norm_ofReal, abs_norm]
 #align gauge_norm_smul gauge_norm_smul
 
@@ -341,7 +338,38 @@ theorem gauge_smul (hs : Balanced 𝕜 s) (r : 𝕜) (x : E) : gauge s (r • x)
 
 end IsROrC
 
+open Filter
+
 section TopologicalSpace
+
+variable [TopologicalSpace E]
+
+theorem comap_gauge_nhds_zero_le (ha : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    comap (gauge s) (𝓝 0) ≤ 𝓝 0 := fun u hu ↦ by
+  rcases (hb hu).exists_pos with ⟨r, hr₀, hr⟩
+  filter_upwards [preimage_mem_comap (gt_mem_nhds (inv_pos.2 hr₀))] with x (hx : gauge s x < r⁻¹)
+  rcases exists_lt_of_gauge_lt ha hx with ⟨c, hc₀, hcr, y, hy, rfl⟩
+  have hrc := (lt_inv hr₀ hc₀).2 hcr
+  rcases hr c⁻¹ (hrc.le.trans (le_abs_self _)) hy with ⟨z, hz, rfl⟩
+  simpa only [smul_inv_smul₀ hc₀.ne']
+
+variable [T1Space E]
+
+theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    gauge s x = 0 ↔ x = 0 := by
+  refine ⟨fun h₀ ↦ by_contra fun (hne : x ≠ 0) ↦ ?_, fun h ↦ h.symm ▸ gauge_zero⟩
+  have : {x}ᶜ ∈ comap (gauge s) (𝓝 0) :=
+    comap_gauge_nhds_zero_le hs hb (isOpen_compl_singleton.mem_nhds hne.symm)
+  rcases ((nhds_basis_zero_abs_sub_lt _).comap _).mem_iff.1 this with ⟨r, hr₀, hr⟩
+  exact hr (by simpa [h₀]) rfl
+
+theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    0 < gauge s x ↔ x ≠ 0 := by
+  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
+
+end TopologicalSpace
+
+section ContinuousSMul
 
 variable [TopologicalSpace E] [ContinuousSMul ℝ E]
 
@@ -397,9 +425,29 @@ theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha :
   ⟨mem_closure_of_gauge_le_one hc hs₀ ha h.le, fun h' ↦
     (interior_subset_gauge_lt_one s h').out.ne h⟩
 
-end TopologicalSpace
+theorem tendsto_gauge_nhds_zero' (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
+  refine nhdsWithin_Ici_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
+  rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
+  filter_upwards [hs] with x hx
+  exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
 
-section TopologicalAddGroup
+theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
+  (tendsto_gauge_nhds_zero' hs).mono_right inf_le_left
+
+/-- If `s` is a neighborhood of the origin, then `gauge s` is continuous at the origin.
+See also `continuousAt_gauge`. -/
+theorem continuousAt_gauge_zero (hs : s ∈ 𝓝 0) : ContinuousAt (gauge s) 0 := by
+  rw [ContinuousAt, gauge_zero]
+  exact tendsto_gauge_nhds_zero hs
+
+theorem comap_gauge_nhds_zero (hb : Bornology.IsVonNBounded ℝ s) (h₀ : s ∈ 𝓝 0) :
+    comap (gauge s) (𝓝 0) = 𝓝 0 :=
+  (comap_gauge_nhds_zero_le (absorbent_nhds_zero h₀) hb).antisymm
+    (tendsto_gauge_nhds_zero h₀).le_comap
+
+end ContinuousSMul
+
+section TopologicalVectorSpace
 
 open Filter
 
@@ -408,10 +456,9 @@ variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
 `Convex.lipschitz_gauge`. -/
-theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) := by
+theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : ContinuousAt (gauge s) x := by
   have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
-  simp only [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_Icc_pos _).tendsto_right_iff]
-  intro x ε hε₀
+  refine (nhds_basis_Icc_pos _).tendsto_right_iff.2 fun ε hε₀ ↦ ?_
   rw [← map_add_left_nhds_zero, eventually_map]
   have : ε • s ∩ -(ε • s) ∈ 𝓝 0
   · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
@@ -426,6 +473,13 @@ theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous
   · calc
       gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
       _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
+
+/-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
+is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
+`Convex.lipschitz_gauge`. -/
+@[continuity]
+theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
+  continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
 theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     { x | gauge s x < 1 } = interior s := by
@@ -448,24 +502,7 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
   rw [eq_iff_le_not_lt, gauge_le_one_iff_mem_closure hc hs₀, gauge_lt_one_iff_mem_interior hc hs₀]
   rfl
 
-theorem gauge_eq_zero [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
-    gauge s x = 0 ↔ x = 0 := by
-  refine ⟨not_imp_not.1 fun (h : x ≠ 0) ↦ ne_of_gt ?_, fun h ↦ h.symm ▸ gauge_zero⟩
-  rcases hb (isOpen_compl_singleton.mem_nhds h.symm) with ⟨c, hc₀, hc⟩
-  refine (inv_pos.2 hc₀).trans_le <| le_csInf hs.gauge_set_nonempty ?_
-  rintro r ⟨hr₀, x, hx, rfl⟩
-  contrapose! hc
-  refine ⟨r⁻¹, ?_, fun h ↦ ?_⟩
-  · rw [norm_inv, Real.norm_of_nonneg hr₀.le, le_inv hc₀ hr₀]
-    exact hc.le
-  · rcases h hx with ⟨y, hy, rfl⟩
-    simp [hr₀.ne'] at hy
-
-theorem gauge_pos [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
-    0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
-
-end TopologicalAddGroup
+end TopologicalVectorSpace
 
 section IsROrC
 
@@ -522,7 +559,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
 theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
     gaugeSeminorm (p.balanced_ball_zero 1) (p.convex_ball 0 1) (p.absorbent_ball_zero zero_lt_one) =
       p :=
-  FunLike.coe_injective p.gauge_ball
+  DFunLike.coe_injective p.gauge_ball
 #align seminorm.gauge_seminorm_ball Seminorm.gaugeSeminorm_ball
 
 end AddCommGroup
