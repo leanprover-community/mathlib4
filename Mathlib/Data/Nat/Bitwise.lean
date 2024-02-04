@@ -311,7 +311,7 @@ lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) :=
       testBit (pred <| bit false (1 <<< w)) i = decide (i < w + 1)
     by simpa only [bit_val, Bool.cond_false, shiftLeft_succ] using this
     rw [bit_false, Nat.pred_bit0 (by
-      rw [shiftLeft_eq_mul_pow, one_mul]
+      rw [shiftLeft_eq, one_mul]
       exact two_pow_pos w
     )]
     cases i
