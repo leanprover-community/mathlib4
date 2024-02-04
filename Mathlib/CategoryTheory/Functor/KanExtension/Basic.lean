@@ -76,7 +76,7 @@ variable [F'.IsRightKanExtension α]
 /-- If `(F', α)` is a right Kan extension of `F` along `L`, then `(F', α)` is a terminal object
 in the category `RightExtension L F`. -/
 noncomputable def isUniversalOfIsRightKanExtension : (RightExtension.mk F' α).IsUniversal :=
-    IsRightKanExtension.nonempty_isUniversal.some
+  IsRightKanExtension.nonempty_isUniversal.some
 
 /-- If `(F', α)` is a right Kan extension of `F` along `L` and `β : L ⋙ G ⟶ F` is
 a natural transformation, this is the induced morphisms `G ⟶ F'`. -/
