@@ -1,9 +1,26 @@
 import Mathlib.Tactic.TypeCheck
+import Std.Tactic.GuardMsgs
 
 /-- A term where `inferType` returns `Prop`, but which does not type check. -/
 elab "wrong" : term =>
   return Lean.mkApp2 (.const ``id [.zero]) (.sort .zero) (.app (.sort .zero) (.sort .zero))
 
+/--
+info: Type
+---
+info: Bool
+---
+info: Nat
+---
+info: Nat
+---
+info: Prop
+---
+info: Prop
+---
+info: Nat -> Nat
+-/
+#guard_msgs in
 example : True := by
   type_check Nat -- Type
   type_check Bool.true -- Bool

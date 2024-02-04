@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
+Authors: Eric Wieser, Yaël Dillies
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
 
@@ -20,6 +20,7 @@ In this file we express trigonometric functions in terms of their series expansi
 * `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
 
+open NormedSpace
 
 open scoped Nat
 
@@ -34,7 +35,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   have := ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
     (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
@@ -52,7 +53,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   have := (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
     (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
@@ -100,14 +101,14 @@ theorem Complex.sin_eq_tsum (z : ℂ) :
 
 /-- The power series expansion of `Real.cos`. -/
 theorem Real.hasSum_cos (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) := by
-  exact_mod_cast Complex.hasSum_cos r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) :=
+  mod_cast Complex.hasSum_cos r
 #align real.has_sum_cos Real.hasSum_cos
 
 /-- The power series expansion of `Real.sin`. -/
 theorem Real.hasSum_sin (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) := by
-  exact_mod_cast Complex.hasSum_sin r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) :=
+  mod_cast Complex.hasSum_sin r
 #align real.has_sum_sin Real.hasSum_sin
 
 theorem Real.cos_eq_tsum (r : ℝ) : Real.cos r = ∑' n : ℕ, (-1) ^ n * r ^ (2 * n) / ↑(2 * n)! :=
@@ -120,3 +121,50 @@ theorem Real.sin_eq_tsum (r : ℝ) :
 #align real.sin_eq_tsum Real.sin_eq_tsum
 
 end SinCos
+
+/-! ### `cosh` and `sinh` for `ℝ` and `ℂ` -/
+
+section SinhCosh
+namespace Complex
+
+/-- The power series expansion of `Complex.cosh`. -/
+lemma hasSum_cosh (z : ℂ) : HasSum (fun n ↦ z ^ (2 * n) / ↑(2 * n)!) (cosh z) := by
+  simpa [mul_assoc, cos_mul_I] using hasSum_cos' (z * I)
+
+/-- The power series expansion of `Complex.sinh`. -/
+lemma hasSum_sinh (z : ℂ) : HasSum (fun n ↦ z ^ (2 * n + 1) / ↑(2 * n + 1)!) (sinh z) := by
+  simpa [mul_assoc, sin_mul_I, neg_pow z, pow_add, pow_mul, neg_mul, neg_div]
+    using (hasSum_sin' (z * I)).mul_right (-I)
+
+lemma cosh_eq_tsum (z : ℂ) : cosh z = ∑' n, z ^ (2 * n) / ↑(2 * n)! := z.hasSum_cosh.tsum_eq.symm
+
+lemma sinh_eq_tsum (z : ℂ) : sinh z = ∑' n, z ^ (2 * n + 1) / ↑(2 * n + 1)! :=
+  z.hasSum_sinh.tsum_eq.symm
+
+end Complex
+
+namespace Real
+
+/-- The power series expansion of `Real.cosh`. -/
+lemma hasSum_cosh (r : ℝ) : HasSum (fun n  ↦ r ^ (2 * n) / ↑(2 * n)!) (cosh r) :=
+  mod_cast Complex.hasSum_cosh r
+
+/-- The power series expansion of `Real.sinh`. -/
+lemma hasSum_sinh (r : ℝ) : HasSum (fun n ↦ r ^ (2 * n + 1) / ↑(2 * n + 1)!) (sinh r) :=
+  mod_cast Complex.hasSum_sinh r
+
+lemma cosh_eq_tsum (r : ℝ) : cosh r = ∑' n, r ^ (2 * n) / ↑(2 * n)! := r.hasSum_cosh.tsum_eq.symm
+
+lemma sinh_eq_tsum (r : ℝ) : sinh r = ∑' n, r ^ (2 * n + 1) / ↑(2 * n + 1)! :=
+  r.hasSum_sinh.tsum_eq.symm
+
+lemma cosh_le_exp_half_sq (x : ℝ) : cosh x ≤ exp (x ^ 2 / 2) := by
+  rw [cosh_eq_tsum, exp_eq_exp_ℝ, exp_eq_tsum]
+  refine tsum_le_tsum (fun i ↦ ?_) x.hasSum_cosh.summable $ expSeries_summable' (x ^ 2 / 2)
+  simp only [div_pow, pow_mul, smul_eq_mul, inv_mul_eq_div, div_div]
+  gcongr
+  norm_cast
+  exact Nat.two_pow_mul_factorial_le_factorial_two_mul _
+
+end Real
+end SinhCosh

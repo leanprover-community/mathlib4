@@ -30,7 +30,7 @@ Most of the proofs come from the properties of `SemiconjBy`.
 variable {G : Type*}
 
 /-- Two elements commute if `a * b = b * a`. -/
-@[to_additive AddCommute "Two elements additively commute if `a + b = b + a`"]
+@[to_additive "Two elements additively commute if `a + b = b + a`"]
 def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
@@ -67,7 +67,7 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 #align commute.semiconj_by Commute.semiconjBy
-#align add_commute.semiconj_by AddCommute.semiconjBy
+#align add_commute.semiconj_by AddCommute.addSemiconjBy
 
 @[to_additive]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
@@ -133,7 +133,7 @@ protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
 end Semigroup
 
 @[to_additive]
-protected theorem all {S : Type*} [CommSemigroup S] (a b : S) : Commute a b :=
+protected theorem all {S : Type*} [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ
 #align add_commute.all AddCommute.allₓ

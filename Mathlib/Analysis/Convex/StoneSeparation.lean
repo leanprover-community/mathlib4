@@ -101,12 +101,12 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
         (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
     simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
-  by_contra' h
+  by_contra! h
   suffices h : Disjoint (convexHull 𝕜 (insert c C)) t
   · rw [←
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc
     exact hc (subset_convexHull _ _ <| mem_insert _ _)
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]
-  refine' disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inf_le.mpr fun b hb => h a _ ⟨b, hb⟩
+  refine disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inter_eq_empty.2 (h a ?_)
   rwa [← hC.1.convexHull_eq]
 #align exists_convex_convex_compl_subset exists_convex_convex_compl_subset

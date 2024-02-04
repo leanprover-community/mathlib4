@@ -47,8 +47,8 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
-      (IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
+    pure $ acc ++ s!"url = {← mkFileURL fileName none}\n\
+      -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
@@ -129,9 +129,30 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
+def checkForToolchainMismatch : IO Unit := do
+  let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
+  let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
+  let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
+  if !(mathlibToolchain.trim = downstreamToolchain.trim) then
+    IO.println "Dependency Mathlib uses a different lean-toolchain"
+    IO.println s!"  Project uses {downstreamToolchain.trim}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
+    IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
+    IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
+into the `lean-toolchain` file at the root directory of your project"
+    if !System.Platform.isWindows then
+      IO.println s!"You can use `cp {mathlibToolchainFile} ./lean-toolchain`"
+    else
+      IO.println s!"On powershell you can use `cp {mathlibToolchainFile} ./lean-toolchain`"
+      IO.println s!"On Windows CMD you can use `copy {mathlibToolchainFile} lean-toolchain`"
+    IO.Process.exit 1
+  return ()
+
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO Unit := do
+  let isMathlibRoot ← IO.isMathlibRoot
+  if !isMathlibRoot then checkForToolchainMismatch
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack

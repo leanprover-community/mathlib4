@@ -20,6 +20,7 @@ Commands:
   unpack!      Decompress linked already downloaded files (no skipping)
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
+  lookup       Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
@@ -59,7 +60,7 @@ def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
 
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack"]
+  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
@@ -68,6 +69,9 @@ def main (args : List String) : IO Unit := do
   let extraRoots := match args with
   | [] => #[]
   | _ :: t => t.toArray.map FilePath.mk
+  if args.isEmpty then
+    println help
+    Process.exit 0
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
@@ -99,4 +103,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
+  | "lookup" :: args => lookup hashMap (toPaths args)
   | _ => println help

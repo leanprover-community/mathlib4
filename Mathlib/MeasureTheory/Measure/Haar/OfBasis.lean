@@ -46,7 +46,7 @@ def parallelepiped (v : ι → E) : Set E :=
 #align parallelepiped parallelepiped
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
-    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ) (_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
+    x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
@@ -54,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, _root_.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
@@ -146,7 +146,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · rintro ⟨t, ht, rfl⟩ i
     specialize ht i
     simp_rw [smul_eq_mul, Pi.mul_apply]
-    cases' le_total (a i) 0 with hai hai
+    rcases le_total (a i) 0 with hai | hai
     · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai]
       exact ⟨le_mul_of_le_one_left hai ht.2, mul_nonpos_of_nonneg_of_nonpos ht.1 hai⟩
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
@@ -154,14 +154,14 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · intro h
     refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
     · specialize h i
-      cases' le_total (a i) 0 with hai hai
+      rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h
         exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
-      cases' eq_or_ne (a i) 0 with hai hai
+      rcases eq_or_ne (a i) 0 with hai | hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
         rw [hai, ← h, zero_div, zero_mul]
       · rw [div_mul_cancel _ hai]
@@ -193,7 +193,7 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 
 @[simp]
 theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
-   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
@@ -207,11 +207,10 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (have := FiniteDimensional.of_fintype_basis b
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.continuous_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this (e.toLinearMap))
+    LinearMap.continuous_of_finiteDimensional e.toLinearMap)
     (have := FiniteDimensional.of_fintype_basis (b.map e)
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _
-      e.surjective) :=
+    LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 

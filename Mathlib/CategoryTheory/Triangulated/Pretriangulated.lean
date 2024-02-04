@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luke Kershaw
+Authors: Luke Kershaw, Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -100,17 +101,17 @@ lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
 
 /-- Given any distinguished triangle `T`, then we know `T.rotate` is also distinguished.
 -/
-theorem rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
+theorem rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
   (rotate_distinguished_triangle T).mp H
-#align category_theory.pretriangulated.rot_of_dist_triangle CategoryTheory.Pretriangulated.rot_of_dist_triangle
+#align category_theory.pretriangulated.rot_of_dist_triangle CategoryTheory.Pretriangulated.rot_of_distTriang
 
 /-- Given any distinguished triangle `T`, then we know `T.inv_rotate` is also distinguished.
 -/
-theorem inv_rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) :
+theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
     T.invRotate ∈ distTriang C :=
   (rotate_distinguished_triangle T.invRotate).mpr
     (isomorphic_distinguished T H T.invRotate.rotate (invRotCompRot.app T))
-#align category_theory.pretriangulated.inv_rot_of_dist_triangle CategoryTheory.Pretriangulated.inv_rot_of_dist_triangle
+#align category_theory.pretriangulated.inv_rot_of_dist_triangle CategoryTheory.Pretriangulated.inv_rot_of_distTriang
 
 /-- Given any distinguished triangle
 ```
@@ -121,12 +122,12 @@ the composition `f ≫ g = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
+theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
   simpa only [contractibleTriangle_mor₂, zero_comp] using hc.left.symm
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₁₂
+#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₁₂ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₁₂
 
 /-- Given any distinguished triangle
 ```
@@ -137,10 +138,10 @@ the composition `g ≫ h = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
-  T.mor₂ ≫ T.mor₃ = 0 :=
-  comp_dist_triangle_mor_zero₁₂ T.rotate (rot_of_dist_triangle T H)
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
+theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
+    T.mor₂ ≫ T.mor₃ = 0 :=
+  comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
+#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₂₃
 
 /-- Given any distinguished triangle
 ```
@@ -151,17 +152,17 @@ the composition `h ≫ f⟦1⟧ = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
+theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
-  have H₂ := rot_of_dist_triangle T.rotate (rot_of_dist_triangle T H)
-  simpa using comp_dist_triangle_mor_zero₁₂ T.rotate.rotate H₂
-#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₃₁
+  have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
+  simpa using comp_distTriang_mor_zero₁₂ T.rotate.rotate H₂
+#align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_distTriang_mor_zero₃₁
 
 /-- Any morphism `Y ⟶ Z` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
     ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨X', f', g', mem⟩ := distinguished_cocone_triangle g
-  exact ⟨_, _, _, inv_rot_of_dist_triangle _ mem⟩
+  exact ⟨_, _, _, inv_rot_of_distTriang _ mem⟩
 
 /-- Any morphism `Z ⟶ X⟦1⟧` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
@@ -169,7 +170,7 @@ lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
   obtain ⟨Y', f', g', mem⟩ := distinguished_cocone_triangle h
   let T' := (Triangle.mk h f' g').invRotate.invRotate
   refine' ⟨T'.obj₂, ((shiftEquiv C (1 : ℤ)).unitIso.app X).hom ≫ T'.mor₁, T'.mor₂,
-    isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ mem)) _ _⟩
+    isomorphic_distinguished _ (inv_rot_of_distTriang _ (inv_rot_of_distTriang _ mem)) _ _⟩
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
@@ -182,7 +183,7 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
     ∃ (a : T₁.obj₁ ⟶ T₂.obj₁), T₁.mor₁ ≫ b = a ≫ T₂.mor₁ ∧
       T₁.mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ T₂.mor₃ := by
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
-    (rot_of_dist_triangle _ hT₁) (rot_of_dist_triangle _ hT₂) b c comm
+    (rot_of_distTriang _ hT₁) (rot_of_distTriang _ hT₂) b c comm
   refine' ⟨(shiftFunctor C (1 : ℤ)).preimage a, ⟨_, _⟩⟩
   · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
@@ -197,7 +198,7 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
     (c : T₁.obj₃ ⟶ T₂.obj₃) (comm : T₁.mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ T₂.mor₃) :
     ∃ (b : T₁.obj₂ ⟶ T₂.obj₂), T₁.mor₁ ≫ b = a ≫ T₂.mor₁ ∧ T₁.mor₂ ≫ c = b ≫ T₂.mor₂ := by
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
-    (inv_rot_of_dist_triangle _ hT₁) (inv_rot_of_dist_triangle _ hT₂) (c⟦(-1 : ℤ)⟧') a (by
+    (inv_rot_of_distTriang _ hT₁) (inv_rot_of_distTriang _ hT₂) (c⟦(-1 : ℤ)⟧') a (by
     dsimp
     simp only [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
       Functor.map_comp, shift_shift_neg', Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
@@ -210,7 +211,7 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
 lemma contractible_distinguished₁ (X : C) :
     Triangle.mk (0 : 0 ⟶ X) (𝟙 X) 0 ∈ distTriang C := by
   refine' isomorphic_distinguished _
-    (inv_rot_of_dist_triangle _ (contractible_distinguished X)) _ _
+    (inv_rot_of_distTriang _ (contractible_distinguished X)) _ _
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
@@ -218,7 +219,7 @@ lemma contractible_distinguished₁ (X : C) :
 lemma contractible_distinguished₂ (X : C) :
     Triangle.mk (0 : X ⟶ 0) 0 (𝟙 (X⟦1⟧)) ∈ distTriang C := by
   refine' isomorphic_distinguished _
-    (inv_rot_of_dist_triangle _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
+    (inv_rot_of_distTriang _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ _
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
@@ -235,7 +236,7 @@ lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
 
 lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
     ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
-  yoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
+  yoneda_exact₂ _ (rot_of_distTriang _ hT) f hf
 
 lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
     ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
@@ -245,11 +246,11 @@ lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
 
 lemma coyoneda_exact₁ {X : C} (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) :
     ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
-  coyoneda_exact₂ _ (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)) f (by aesop_cat)
+  coyoneda_exact₂ _ (rot_of_distTriang _ (rot_of_distTriang _ hT)) f (by aesop_cat)
 
 lemma coyoneda_exact₃ {X : C} (f : X ⟶ T.obj₃) (hf : f ≫ T.mor₃ = 0) :
     ∃ (g : X ⟶ T.obj₂), f = g ≫ T.mor₂ :=
-  coyoneda_exact₂ _ (rot_of_dist_triangle _ hT) f hf
+  coyoneda_exact₂ _ (rot_of_distTriang _ hT) f hf
 
 lemma mor₃_eq_zero_iff_epi₂ : T.mor₃ = 0 ↔ Epi T.mor₂ := by
   constructor
@@ -259,15 +260,15 @@ lemma mor₃_eq_zero_iff_epi₂ : T.mor₃ = 0 ↔ Epi T.mor₂ := by
     obtain ⟨f, rfl⟩ := yoneda_exact₃ T hT g hg
     rw [h, zero_comp]
   · intro
-    rw [← cancel_epi T.mor₂, comp_dist_triangle_mor_zero₂₃ _ hT, comp_zero]
+    rw [← cancel_epi T.mor₂, comp_distTriang_mor_zero₂₃ _ hT, comp_zero]
 
 lemma mor₂_eq_zero_iff_epi₁ : T.mor₂ = 0 ↔ Epi T.mor₁ := by
-  have h := mor₃_eq_zero_iff_epi₂ _ (inv_rot_of_dist_triangle _ hT)
+  have h := mor₃_eq_zero_iff_epi₂ _ (inv_rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, IsIso.comp_right_eq_zero]
 
 lemma mor₁_eq_zero_iff_epi₃ : T.mor₁ = 0 ↔ Epi T.mor₃ := by
-  have h := mor₃_eq_zero_iff_epi₂ _ (rot_of_dist_triangle _ hT)
+  have h := mor₃_eq_zero_iff_epi₂ _ (rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, neg_eq_zero]
   constructor
@@ -292,13 +293,13 @@ lemma mor₁_eq_zero_iff_mono₂ : T.mor₁ = 0 ↔ Mono T.mor₂ := by
     obtain ⟨f, rfl⟩ := coyoneda_exact₂ T hT g hg
     rw [h, comp_zero]
   · intro
-    rw [← cancel_mono T.mor₂, comp_dist_triangle_mor_zero₁₂ _ hT, zero_comp]
+    rw [← cancel_mono T.mor₂, comp_distTriang_mor_zero₁₂ _ hT, zero_comp]
 
 lemma mor₂_eq_zero_iff_mono₃ : T.mor₂ = 0 ↔ Mono T.mor₃ :=
-  mor₁_eq_zero_iff_mono₂ _ (rot_of_dist_triangle _ hT)
+  mor₁_eq_zero_iff_mono₂ _ (rot_of_distTriang _ hT)
 
 lemma mor₃_eq_zero_iff_mono₁ : T.mor₃ = 0 ↔ Mono T.mor₁ := by
-  have h := mor₁_eq_zero_iff_mono₂ _ (inv_rot_of_dist_triangle _ hT)
+  have h := mor₁_eq_zero_iff_mono₂ _ (inv_rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, neg_eq_zero, IsIso.comp_right_eq_zero]
   constructor
@@ -324,13 +325,13 @@ lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
     rw [IsZero.iff_id_eq_zero, hf, h₁, comp_zero]
 
 lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
-  refine' (isZero₂_iff _ (inv_rot_of_dist_triangle _ hT)).trans _
+  refine' (isZero₂_iff _ (inv_rot_of_distTriang _ hT)).trans _
   dsimp
-  simp [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
+  simp only [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
   tauto
 
 lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
-  refine' (isZero₂_iff _ (rot_of_dist_triangle _ hT)).trans _
+  refine' (isZero₂_iff _ (rot_of_distTriang _ hT)).trans _
   dsimp
   tauto
 
@@ -343,7 +344,7 @@ lemma isZero₂_of_isZero₁₃ (h₁ : IsZero T.obj₁) (h₃ : IsZero T.obj₃
   exact ⟨h₁.eq_of_src _ _, h₃.eq_of_tgt _ _⟩
 
 lemma isZero₃_of_isZero₁₂ (h₁ : IsZero T.obj₁) (h₂ : IsZero T.obj₂) : IsZero T.obj₃ :=
-  isZero₂_of_isZero₁₃ _ (rot_of_dist_triangle _ hT) h₂ (by
+  isZero₂_of_isZero₁₃ _ (rot_of_distTriang _ hT) h₂ (by
     dsimp
     simp only [IsZero.iff_id_eq_zero] at h₁ ⊢
     rw [← Functor.map_id, h₁, Functor.map_zero])
@@ -361,10 +362,10 @@ lemma isZero₁_iff_isIso₂ :
     constructor <;> infer_instance
 
 lemma isZero₂_iff_isIso₃ : IsZero T.obj₂ ↔ IsIso T.mor₃ :=
-  isZero₁_iff_isIso₂ _ (rot_of_dist_triangle _ hT)
+  isZero₁_iff_isIso₂ _ (rot_of_distTriang _ hT)
 
 lemma isZero₃_iff_isIso₁ : IsZero T.obj₃ ↔ IsIso T.mor₁ := by
-  refine' Iff.trans _ (Triangle.isZero₁_iff_isIso₂ _ (inv_rot_of_dist_triangle _ hT))
+  refine' Iff.trans _ (Triangle.isZero₁_iff_isIso₂ _ (inv_rot_of_distTriang _ hT))
   dsimp
   simp only [IsZero.iff_id_eq_zero, ← Functor.map_id, Functor.map_eq_zero_iff]
 
@@ -381,12 +382,12 @@ lemma shift_distinguished (n : ℤ) :
   have H_zero : H 0 := fun T hT =>
     isomorphic_distinguished _ hT _ ((Triangle.shiftFunctorZero C).app T)
   have H_one : H 1 := fun T hT =>
-    isomorphic_distinguished _ (rot_of_dist_triangle _
-      (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT))) _
+    isomorphic_distinguished _ (rot_of_distTriang _
+      (rot_of_distTriang _ (rot_of_distTriang _ hT))) _
         ((rotateRotateRotateIso C).symm.app T)
-  have H_neg_one : H (-1):= fun T hT =>
-    isomorphic_distinguished _ (inv_rot_of_dist_triangle _
-      (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ hT))) _
+  have H_neg_one : H (-1) := fun T hT =>
+    isomorphic_distinguished _ (inv_rot_of_distTriang _
+      (inv_rot_of_distTriang _ (inv_rot_of_distTriang _ hT))) _
         ((invRotateInvRotateInvRotateIso C).symm.app T)
   have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
@@ -423,14 +424,14 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     obtain ⟨g, rfl⟩ := Triangle.coyoneda_exact₂ _ hT f
       (by rw [← cancel_mono φ.hom₃, assoc, φ.comm₂, reassoc_of% hf, zero_comp, zero_comp])
     rw [assoc] at hf
-    obtain ⟨h, hh⟩ := Triangle.coyoneda_exact₂ T'.invRotate (inv_rot_of_dist_triangle _ hT')
+    obtain ⟨h, hh⟩ := Triangle.coyoneda_exact₂ T'.invRotate (inv_rot_of_distTriang _ hT')
       (g ≫ φ.hom₁) (by dsimp; rw [assoc, ← φ.comm₁, hf])
     obtain ⟨k, rfl⟩ : ∃ (k : A ⟶ T.invRotate.obj₁), k ≫ T.invRotate.mor₁ = g := by
       refine' ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), _⟩
       have eq := ((invRotate C).map φ).comm₁
       dsimp only [invRotate] at eq
       rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
-    erw [assoc, comp_dist_triangle_mor_zero₁₂ _ (inv_rot_of_dist_triangle _ hT), comp_zero]
+    erw [assoc, comp_distTriang_mor_zero₁₂ _ (inv_rot_of_distTriang _ hT), comp_zero]
   refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
   · intro f₁ f₂ h
     simpa only [← cancel_mono φ.hom₂] using h
@@ -439,7 +440,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
       ⟨y₂ ≫ T'.mor₂ ≫ inv φ.hom₃, by simp⟩
     obtain ⟨x₂, hx₂⟩ := Triangle.coyoneda_exact₃ _ hT x₃
       (by rw [← cancel_mono (φ.hom₁⟦(1 : ℤ)⟧'), assoc, zero_comp, φ.comm₃, reassoc_of% hx₃,
-        comp_dist_triangle_mor_zero₂₃ _ hT', comp_zero])
+        comp_distTriang_mor_zero₂₃ _ hT', comp_zero])
     obtain ⟨y₁, hy₁⟩ := Triangle.coyoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂)
       (by rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
     obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
@@ -449,18 +450,170 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
-  isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
-    (rot_of_dist_triangle _ hT') h₂ (by dsimp; infer_instance)
+  isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_distTriang _ hT)
+    (rot_of_distTriang _ hT') h₂ (by dsimp; infer_instance)
 
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=
-  isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_dist_triangle _ hT)
-    (inv_rot_of_dist_triangle _ hT') (by dsimp; infer_instance) (by dsimp; infer_instance)
+  isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_distTriang _ hT)
+    (inv_rot_of_distTriang _ hT') (by dsimp; infer_instance) (by dsimp; infer_instance)
 
-/-
-TODO: If `C` is pretriangulated with respect to a shift,
-then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
--/
+/-- Given a distinguished triangle `T` such that `T.mor₃ = 0` and the datum of morphisms
+`inr : T.obj₃ ⟶ T.obj₂` and `fst : T.obj₂ ⟶ T.obj₁` satisfying suitable relations, this
+is the binary biproduct data expressing that `T.obj₂` identifies to the binary
+biproduct of `T.obj₁` and `T.obj₃`.
+See also `exists_iso_binaryBiproduct_of_distTriang`. -/
+@[simps]
+def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mor₃ = 0)
+    (inr : T.obj₃ ⟶ T.obj₂) (inr_snd : inr ≫ T.mor₂ = 𝟙 _) (fst : T.obj₂ ⟶ T.obj₁)
+    (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
+    BinaryBiproductData T.obj₁ T.obj₃ := by
+  have : Mono T.mor₁ := T.mono₁ hT hT₀
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel]
+  exact
+    { bicone :=
+      { pt := T.obj₂
+        fst := fst
+        snd := T.mor₂
+        inl := T.mor₁
+        inr := inr
+        inl_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
+            comp_distTriang_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
+        inl_snd := comp_distTriang_mor_zero₁₂ _ hT
+        inr_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
+            comp_id, sub_self, zero_comp]
+        inr_snd := inr_snd }
+      isBilimit := isBinaryBilimitOfTotal _ total }
+
+instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
+  obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
+    Triangle.coyoneda_exact₃ _ mem (𝟙 X₃) (by simp)
+  obtain ⟨fst : X₂ ⟶ X₁, hfst : 𝟙 X₂ - snd ≫ inr = fst ≫ inl⟩ :=
+    Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
+      dsimp
+      simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
+  refine' ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst _⟩⟩
+  dsimp
+  simp only [← hfst, sub_add_cancel]⟩
+
+instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
+instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+
+lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
+    (zero : T.mor₃ = 0) :
+    ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
+      T.mor₂ = e.hom ≫ biprod.snd := by
+  have := T.epi₂ hT zero
+  have := isSplitEpi_of_epi T.mor₂
+  obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
+  let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
+    (by simp only [← hfst, sub_add_cancel])
+  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp⟩⟩
+  ext
+  · simpa using d.bicone.inl_fst
+  · simpa using d.bicone.inl_snd
+
+lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
+    binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
+  obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
+  dsimp at he₁ he₂
+  refine' isomorphic_distinguished _ mem _ (Iso.symm _)
+  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
+    binaryProductTriangle X₁ X₂ ∈ distTriang C :=
+  isomorphic_distinguished _ (binaryBiproductTriangle_distinguished X₁ X₂) _
+    (binaryProductTriangleIsoBinaryBiproductTriangle X₁ X₂)
+
+/-- A chosen extension of a commutative square into a morphism of distinguished triangles. -/
+@[simps hom₁ hom₂]
+def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
+    (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    T₁ ⟶ T₂ :=
+    have h := complete_distinguished_triangle_morphism _ _ hT₁ hT₂ a b comm
+    { hom₁ := a
+      hom₂ := b
+      hom₃ := h.choose
+      comm₁ := comm
+      comm₂ := h.choose_spec.1
+      comm₃ := h.choose_spec.2 }
+
+/-- A product of distinguished triangles is distinguished -/
+lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
+    (hT : ∀ j, T j ∈ distTriang C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
+    productTriangle T ∈ distTriang C := by
+  /- The proof proceeds by constructing a morphism of triangles
+    `φ' : T' ⟶ productTriangle T` with `T'` distinguished, and such that
+    `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
+    `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
+    and diagram chases. -/
+  let f₁ := Pi.map (fun j => (T j).mor₁)
+  obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
+  let T' := Triangle.mk f₁ f₂ f₃
+  change T' ∈ distTriang C at hT'
+  let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
+    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp)
+  let φ' := productTriangle.lift _ φ
+  have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
+  have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat
+  have : IsIso φ'.hom₁ := by rw [h₁]; infer_instance
+  have : IsIso φ'.hom₂ := by rw [h₂]; infer_instance
+  suffices IsIso φ'.hom₃ by
+    have : IsIso φ' := by
+      apply Triangle.isIso_of_isIsos
+      all_goals infer_instance
+    exact isomorphic_distinguished _ hT' _ (asIso φ').symm
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  /- the proofs by diagram chase start here -/
+  · suffices Mono φ'.hom₃ by
+      intro a₁ a₂ ha
+      simpa only [← cancel_mono φ'.hom₃] using ha
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    have hf' : f ≫ T'.mor₃ = 0 := by
+      rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
+    obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
+    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 :=
+        by rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
+      rw [φ'.comm₂_assoc, h₂, id_comp] at this
+      simpa using this
+    have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)
+    let α := fun j => (hg'' j).choose
+    have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
+    have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
+    rw [hg, hg''', assoc, comp_distTriang_mor_zero₁₂ _ hT', comp_zero]
+  · intro a
+    obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
+      have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
+        rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
+          id_comp, productTriangle.zero₃₁]
+        intro j
+        exact comp_distTriang_mor_zero₃₁ _ (hT j)
+      have ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
+        rw [assoc, zero, comp_zero])
+      exact ⟨g, hg.symm⟩
+    have ha'' := fun (j : J) => (T j).coyoneda_exact₃ (hT j) ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by
+      simp only [sub_comp, assoc]
+      erw [← (productTriangle.π T j).comm₃]
+      rw [← φ'.comm₃_assoc]
+      rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
+    let b := fun j => (ha'' j).choose
+    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
+      Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
+    have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+    exact ⟨_, this⟩
 
 end Pretriangulated
 

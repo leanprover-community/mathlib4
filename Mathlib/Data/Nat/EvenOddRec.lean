@@ -21,8 +21,8 @@ This is nothing more than a wrapper around `Nat.binaryRec`, to avoid having to s
 dealing with `bit0` and `bit1`. -/
 
 @[elab_as_elim]
-def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ (n) (_ : P n), P (2 * n))
-    (h_odd : ∀ (n) (_ : P n), P (2 * n + 1)) (n : ℕ) : P n :=
+def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ n, P n → P (2 * n))
+    (h_odd : ∀ n, P n → P (2 * n + 1)) (n : ℕ) : P n :=
   binaryRec h0 (fun
     | false, i, hi => (bit0_val i ▸ h_even i hi : P (bit0 i))
     | true, i, hi => (bit1_val i ▸ h_odd i hi : P (bit1 i))) n

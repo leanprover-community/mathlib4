@@ -5,7 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Clopen
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -61,51 +62,52 @@ variable [AlexandrovDiscrete α] {S : Set (Set α)} {f : ι → Set α}
 lemma isOpen_sInter : (∀ s ∈ S, IsOpen s) → IsOpen (⋂₀ S) := AlexandrovDiscrete.isOpen_sInter _
 
 lemma isOpen_iInter (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-isOpen_sInter $ forall_range_iff.2 hf
+  isOpen_sInter $ forall_range_iff.2 hf
 
 lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j)) :
-  IsOpen (⋂ i, ⋂ j, f i j) :=
-isOpen_iInter λ _ ↦ isOpen_iInter $ hf _
+    IsOpen (⋂ i, ⋂ j, f i j) :=
+  isOpen_iInter fun _ ↦ isOpen_iInter $ hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [←isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter $ ball_image_iff.2 hS
+  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter $ ball_image_iff.2 hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
-isClosed_sUnion $ forall_range_iff.2 hf
+  isClosed_sUnion $ forall_range_iff.2 hf
 
 lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f i j)) :
-  IsClosed (⋃ i, ⋃ j, f i j) :=
-isClosed_iUnion λ _ ↦ isClosed_iUnion $ hf _
+    IsClosed (⋃ i, ⋃ j, f i j) :=
+  isClosed_iUnion fun _ ↦ isClosed_iUnion $ hf _
 
 lemma isClopen_sInter (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋂₀ S) :=
-⟨isOpen_sInter λ s hs ↦ (hS s hs).1, isClosed_sInter λ s hs ↦ (hS s hs).2⟩
+  ⟨isOpen_sInter fun s hs ↦ (hS s hs).1, isClosed_sInter fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iInter (hf : ∀ i, IsClopen (f i)) : IsClopen (⋂ i, f i) :=
-⟨isOpen_iInter λ i ↦ (hf i).1, isClosed_iInter λ i ↦ (hf i).2⟩
+  ⟨isOpen_iInter fun i ↦ (hf i).1, isClosed_iInter fun i ↦ (hf i).2⟩
 
 lemma isClopen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
-  IsClopen (⋂ i, ⋂ j, f i j) :=
-isClopen_iInter λ _ ↦ isClopen_iInter $ hf _
+    IsClopen (⋂ i, ⋂ j, f i j) :=
+  isClopen_iInter fun _ ↦ isClopen_iInter $ hf _
 
 lemma isClopen_sUnion (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋃₀ S) :=
-⟨isOpen_sUnion λ s hs ↦ (hS s hs).1, isClosed_sUnion λ s hs ↦ (hS s hs).2⟩
+  ⟨isOpen_sUnion fun s hs ↦ (hS s hs).1, isClosed_sUnion fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
-⟨isOpen_iUnion λ i ↦ (hf i).1, isClosed_iUnion λ i ↦ (hf i).2⟩
+  ⟨isOpen_iUnion fun i ↦ (hf i).1, isClosed_iUnion fun i ↦ (hf i).2⟩
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
-  IsClopen (⋃ i, ⋃ j, f i j) :=
-isClopen_iUnion λ _ ↦ isClopen_iUnion $ hf _
+    IsClopen (⋃ i, ⋃ j, f i j) :=
+  isClopen_iUnion fun _ ↦ isClopen_iUnion $ hf _
 
 lemma interior_iInter (f : ι → Set α) : interior (⋂ i, f i) = ⋂ i, interior (f i) :=
-(interior_maximal (iInter_mono λ _ ↦ interior_subset) $ isOpen_iInter λ _ ↦
-  isOpen_interior).antisymm' $ subset_iInter λ _ ↦ interior_mono $ iInter_subset _ _
+  (interior_maximal (iInter_mono fun _ ↦ interior_subset) $ isOpen_iInter fun _ ↦
+    isOpen_interior).antisymm' $ subset_iInter fun _ ↦ interior_mono $ iInter_subset _ _
 
 lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
   simp_rw [sInter_eq_biInter, interior_iInter]
 
 lemma closure_iUnion (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) :=
-  compl_injective $ by simpa only [←interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
+  compl_injective <| by
+    simpa only [← interior_compl, compl_iUnion] using interior_iInter fun i ↦ (f i)ᶜ
 
 lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
   simp_rw [sUnion_eq_biUnion, closure_iUnion]
@@ -131,54 +133,54 @@ lemma mem_exterior : a ∈ exterior s ↔ ∀ U, IsOpen U → s ⊆ U → a ∈ 
 lemma subset_exterior_iff : s ⊆ exterior t ↔ ∀ U, IsOpen U → t ⊆ U → s ⊆ U := by
   simp [exterior_def]
 
-lemma subset_exterior : s ⊆ exterior s := subset_exterior_iff.2 $ λ _ _ ↦ id
+lemma subset_exterior : s ⊆ exterior s := subset_exterior_iff.2 fun _ _ ↦ id
 
 lemma exterior_minimal (h₁ : s ⊆ t) (h₂ : IsOpen t) : exterior s ⊆ t := by
   rw [exterior_def]; exact sInter_subset_of_mem ⟨h₂, h₁⟩
 
 lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
-(exterior_minimal Subset.rfl h).antisymm subset_exterior
+  (exterior_minimal Subset.rfl h).antisymm subset_exterior
 
 lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
-⟨subset_exterior.trans, λ h ↦ exterior_minimal h ht⟩
+  ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
 @[mono] lemma exterior_mono : Monotone (exterior : Set α → Set α) :=
-λ _s _t h ↦ ker_mono $ nhdsSet_mono h
+  fun _s _t h ↦ ker_mono $ nhdsSet_mono h
 
 @[simp] lemma exterior_empty : exterior (∅ : Set α) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set α) = univ := isOpen_univ.exterior_eq
 
 @[simp] lemma exterior_eq_empty : exterior s = ∅ ↔ s = ∅ :=
-⟨eq_bot_mono subset_exterior, by rintro rfl; exact exterior_empty⟩
+  ⟨eq_bot_mono subset_exterior, by rintro rfl; exact exterior_empty⟩
 
 variable [AlexandrovDiscrete α] [AlexandrovDiscrete β]
 
 @[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
-  rw [exterior_def]; exact isOpen_sInter $ λ _ ↦ And.left
+  rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left
 
 lemma exterior_mem_nhdsSet : exterior s ∈ 𝓝ˢ s := isOpen_exterior.mem_nhdsSet.2 subset_exterior
 
 @[simp] lemma exterior_eq_iff_isOpen : exterior s = s ↔ IsOpen s :=
-  ⟨λ h ↦ h ▸ isOpen_exterior, IsOpen.exterior_eq⟩
+  ⟨fun h ↦ h ▸ isOpen_exterior, IsOpen.exterior_eq⟩
 
 @[simp] lemma exterior_subset_iff_isOpen : exterior s ⊆ s ↔ IsOpen s := by
   simp only [exterior_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_exterior, and_true]
 
 lemma exterior_subset_iff : exterior s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
-  ⟨λ h ↦ ⟨exterior s, isOpen_exterior, subset_exterior, h⟩,
-    λ ⟨_U, hU, hsU, hUt⟩ ↦ (exterior_minimal hsU hU).trans hUt⟩
+  ⟨fun h ↦ ⟨exterior s, isOpen_exterior, subset_exterior, h⟩,
+    fun ⟨_U, hU, hsU, hUt⟩ ↦ (exterior_minimal hsU hU).trans hUt⟩
 
 lemma exterior_subset_iff_mem_nhdsSet : exterior s ⊆ t ↔ t ∈ 𝓝ˢ s :=
-exterior_subset_iff.trans mem_nhdsSet_iff_exists.symm
+  exterior_subset_iff.trans mem_nhdsSet_iff_exists.symm
 
 lemma exterior_singleton_subset_iff_mem_nhds : exterior {a} ⊆ t ↔ t ∈ 𝓝 a := by
   simp [exterior_subset_iff_mem_nhdsSet]
 
 lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
-  ⟨subset_exterior.trans, λ h ↦ exterior_minimal h ht⟩
+  ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
 lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) interior :=
-  λ s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
+  fun s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
 
 @[simp] lemma exterior_exterior (s : Set α) : exterior (exterior s) = exterior s :=
   isOpen_exterior.exterior_eq
@@ -187,35 +189,35 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
   gc_exterior_interior.l_sup
 
 @[simp] lemma nhdsSet_exterior (s : Set α) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
-  ext t; simp_rw [←exterior_subset_iff_mem_nhdsSet, exterior_exterior]
+  ext t; simp_rw [← exterior_subset_iff_mem_nhdsSet, exterior_exterior]
 
 @[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
-  rw [←nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
+  rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
 @[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  refine ⟨?_, λ h ↦ ker_mono h⟩
-  simp_rw [le_def, ←exterior_subset_iff_mem_nhdsSet]
-  exact λ h u ↦ h.trans
+  refine ⟨?_, fun h ↦ ker_mono h⟩
+  simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
+  exact fun h u ↦ h.trans
 
 lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
   simp [Specializes]
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine' ⟨λ hs x y hxy ↦ hxy.mem_open hs, λ hs ↦ _⟩
+  refine' ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ _⟩
   simp_rw [specializes_iff_exterior_subset] at hs
   simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
   rintro a ha
-  refine ⟨_, λ b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior $ mem_singleton _⟩
+  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior $ mem_singleton _⟩
   rwa [isOpen_exterior.exterior_subset, singleton_subset_iff]
 
 lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := by
   classical
-  refine isCompact_of_finite_subcover λ f hf hsf ↦ ?_
-  choose g hg using λ a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
-  refine ⟨hs.toFinset.attach.image λ a ↦ g a.1 $ subset_exterior $ (Finite.mem_toFinset _).1 a.2,
-    (isOpen_iUnion λ i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
-  exact λ _ ↦ hf _
-  refine λ a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ $ subset_exterior ha⟩
+  refine isCompact_of_finite_subcover fun f hf hsf ↦ ?_
+  choose g hg using fun a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
+  refine ⟨hs.toFinset.attach.image fun a ↦ g a.1 $ subset_exterior $ (Finite.mem_toFinset _).1 a.2,
+    (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
+  exact fun _ ↦ hf _
+  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ $ subset_exterior ha⟩
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
   exact ⟨a, ha, rfl⟩
 
@@ -227,20 +229,22 @@ lemma Inducing.alexandrovDiscrete {f : β → α} (h : Inducing f) : AlexandrovD
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
-  @AlexandrovDiscrete β (coinduced f ‹_›) :=
-@AlexandrovDiscrete.mk β (coinduced f ‹_›) λ S hS ↦ by
-  rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
+    @AlexandrovDiscrete β (coinduced f ‹_›) :=
+  @AlexandrovDiscrete.mk β (coinduced f ‹_›) fun S hS ↦ by
+    rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
-  (_ : @AlexandrovDiscrete α t₂) :
-  @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
-@AlexandrovDiscrete.mk α (t₁ ⊔ t₂) λ _S hS ↦
-  ⟨@isOpen_sInter _ t₁ _ _ λ _s hs ↦ (hS _ hs).1, isOpen_sInter λ _s hs ↦ (hS _ hs).2⟩
+    (_ : @AlexandrovDiscrete α t₂) :
+    @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
+  @AlexandrovDiscrete.mk α (t₁ ⊔ t₂) fun _S hS ↦
+    ⟨@isOpen_sInter _ t₁ _ _ fun _s hs ↦ (hS _ hs).1, isOpen_sInter fun _s hs ↦ (hS _ hs).2⟩
 
 lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @AlexandrovDiscrete α (t i)) :
-  @AlexandrovDiscrete α (⨆ i, t i) :=
-@AlexandrovDiscrete.mk α (⨆ i, t i) λ _S hS ↦ isOpen_iSup_iff.2 λ i ↦ @isOpen_sInter _ (t i) _ _
-  λ _s hs ↦ isOpen_iSup_iff.1 (hS _ hs) _
+    @AlexandrovDiscrete α (⨆ i, t i) :=
+  @AlexandrovDiscrete.mk α (⨆ i, t i)
+    fun _S hS ↦ isOpen_iSup_iff.2
+      fun i ↦ @isOpen_sInter _ (t i) _ _
+        fun _s hs ↦ isOpen_iSup_iff.1 (hS _ hs) _
 
 instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
   nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
@@ -251,14 +255,14 @@ instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
       exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact_exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
-inducing_subtype_val.alexandrovDiscrete
+  inducing_subtype_val.alexandrovDiscrete
 
 instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
-alexandrovDiscrete_coinduced
+  alexandrovDiscrete_coinduced
 
 instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
-alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
+  alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
 instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-  [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
-alexandrovDiscrete_iSup λ _ ↦ alexandrovDiscrete_coinduced
+    [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
+  alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced

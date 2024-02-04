@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
@@ -21,6 +21,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 -/
 
+suppress_compilation
 
 universe u v w uι uR uA uM₁ uM₂
 

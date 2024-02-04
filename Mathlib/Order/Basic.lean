@@ -176,20 +176,9 @@ theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
 #align lt_self_iff_false lt_self_iff_false
 
-theorem le_of_le_of_eq (hab : a ≤ b) (hbc : b = c) : a ≤ c :=
-  hab.trans hbc.le
 #align le_of_le_of_eq le_of_le_of_eq
-
-theorem le_of_eq_of_le (hab : a = b) (hbc : b ≤ c) : a ≤ c :=
-  hab.le.trans hbc
 #align le_of_eq_of_le le_of_eq_of_le
-
-theorem lt_of_lt_of_eq (hab : a < b) (hbc : b = c) : a < c :=
-  hab.trans_le hbc.le
 #align lt_of_lt_of_eq lt_of_lt_of_eq
-
-theorem lt_of_eq_of_lt (hab : a = b) (hbc : b < c) : a < c :=
-  hab.le.trans_lt hbc
 #align lt_of_eq_of_lt lt_of_eq_of_lt
 
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
@@ -353,18 +342,7 @@ theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 #align ge_of_eq ge_of_eq
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem ge_iff_le [LE α] {a b : α} : a ≥ b ↔ b ≤ a :=
-  Iff.rfl
 #align ge_iff_le ge_iff_le
-
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem gt_iff_lt [LT α] {a b : α} : a > b ↔ b < a :=
-  Iff.rfl
 #align gt_iff_lt gt_iff_lt
 
 theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
@@ -735,7 +713,7 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total     := λ a b : α => le_total b a
+  le_total := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
@@ -1371,7 +1349,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance linearOrder: LinearOrder PUnit where
+instance linearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
@@ -1452,3 +1430,41 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder
+
+section dite
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+
+@[to_additive dite_nonneg]
+lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive dite_pos]
+lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+end dite
+
+section
+variable [One α] {p : Prop} [Decidable p] {a b : α}
+
+@[to_additive ite_nonneg]
+lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
+
+@[to_additive ite_pos]
+lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
+
+end

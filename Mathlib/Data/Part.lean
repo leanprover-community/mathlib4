@@ -74,7 +74,7 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
-theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
+theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
     cases t; rw [show o = p from funext fun p => H2 p p]
@@ -387,7 +387,7 @@ theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o 
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
   ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
-    Eq.trans (by dsimp; congr ) (to_ofOption o)⟩
+    Eq.trans (by dsimp; congr) (to_ofOption o)⟩
 #align part.equiv_option Part.equivOption
 
 /-- We give `Part α` the order where everything is greater than `none`. -/
@@ -472,7 +472,7 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
   dsimp [assert]
   cases h' : f h
-  simp [h', mk.injEq, h, exists_prop_of_true, true_and]
+  simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
   · aesop

@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.MeasureTheory.Constructions.Polish
-import Mathlib.Probability.Kernel.IntegralCompProd
+import Mathlib.Probability.Kernel.MeasureCompProd
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 
@@ -13,15 +13,14 @@ import Mathlib.Probability.Kernel.IntegralCompProd
 # Disintegration of measures on product spaces
 
 Let `ρ` be a finite measure on `α × Ω`, where `Ω` is a standard Borel space. In mathlib terms, `Ω`
-verifies `[Nonempty Ω] [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]`.
+verifies `[Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]`.
 Then there exists a kernel `ρ.condKernel : kernel α Ω` such that for any measurable set
 `s : Set (α × Ω)`, `ρ s = ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst`.
 
 In terms of kernels, `ρ.condKernel` is such that for any measurable space `γ`, we
 have a disintegration of the constant kernel from `γ` with value `ρ`:
 `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ (condKernel ρ))`,
-where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular,
-`ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit (condKernel ρ))) ()`.
+where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular, `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
 
 In order to obtain a disintegration for any standard Borel space, we use that these spaces embed
 measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`. In the real case,
@@ -40,8 +39,8 @@ function `condCdf ρ a` (the conditional cumulative distribution function).
   `∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s`
 * `ProbabilityTheory.kernel.const_eq_compProd`:
   `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ ρ.condKernel)`
-* `ProbabilityTheory.measure_eq_compProd`:
-  `ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit ρ.condKernel)) ()`
+* `ProbabilityTheory.measure_eq_compProd`: `ρ = ρ.fst ⊗ₘ ρ.condKernel`
+* `ProbabilityTheory.eq_condKernel_of_measure_eq_compProd`: a.e. uniqueness of `condKernel`
 
 -/
 
@@ -127,7 +126,7 @@ theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t
       prod_iUnion, measure_iUnion]
     · simp_rw [hf_eq]
     · intro i j hij
-      rw [Function.onFun, disjoint_prod]
+      rw [Function.onFun, Set.disjoint_prod]
       exact Or.inr (hf_disj hij)
     · exact fun i => MeasurableSet.prod hs (hf_meas i)
 #align probability_theory.set_lintegral_cond_kernel_real_prod ProbabilityTheory.set_lintegral_condKernelReal_prod
@@ -140,15 +139,10 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
   apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
   · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
       zero_mul]
-  · intro t ht
-    rw [mem_image2] at ht
-    obtain ⟨t₁, t₂, ht₁, ht₂, rfl⟩ := ht
+  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
-    cases' eq_empty_or_nonempty t₂ with h h
-    · simp only [h, prod_empty, mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
-        zero_mul]
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ a in t₁, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} ∂ρ.fst =
         ∫⁻ a in t₁, condKernelReal ρ a t₂ ∂ρ.fst := by
@@ -216,31 +210,26 @@ theorem kernel.const_eq_compProd_real (γ : Type*) [MeasurableSpace γ] (ρ : Me
   rw [lintegral_condKernelReal_mem ρ hs]
 #align probability_theory.kernel.const_eq_comp_prod_real ProbabilityTheory.kernel.const_eq_compProd_real
 
-theorem measure_eq_compProd_real :
-    ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit (condKernelReal ρ)) () := by
-  rw [← kernel.const_eq_compProd_real Unit ρ, kernel.const_apply]
+theorem measure_eq_compProd_real : ρ = ρ.fst ⊗ₘ condKernelReal ρ := by
+  rw [Measure.compProd, ← kernel.const_eq_compProd_real Unit ρ, kernel.const_apply]
 #align probability_theory.measure_eq_comp_prod_real ProbabilityTheory.measure_eq_compProd_real
 
 theorem lintegral_condKernelReal {f : α × ℝ → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, ∫⁻ y, f (a, y) ∂condKernelReal ρ a ∂ρ.fst = ∫⁻ x, f x ∂ρ := by
   nth_rw 3 [measure_eq_compProd_real ρ]
-  rw [kernel.lintegral_compProd _ _ _ hf, kernel.const_apply]
-  simp_rw [kernel.prodMkLeft_apply]
+  rw [Measure.lintegral_compProd hf]
 #align probability_theory.lintegral_cond_kernel_real ProbabilityTheory.lintegral_condKernelReal
 
 theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ {x | x.snd ∈ sᶜ} = 0) :
     ∀ᵐ a ∂ρ.fst, condKernelReal ρ a s = 1 := by
-  have h : ρ {x | x.snd ∈ sᶜ} = (kernel.const Unit ρ.fst ⊗ₖ
-      kernel.prodMkLeft Unit (condKernelReal ρ)) () {x | x.snd ∈ sᶜ} := by
+  have h : ρ {x | x.snd ∈ sᶜ} = (ρ.fst ⊗ₘ condKernelReal ρ) {x | x.snd ∈ sᶜ} := by
     rw [← measure_eq_compProd_real]
-  rw [hρ, kernel.compProd_apply] at h
+  rw [hρ, Measure.compProd_apply] at h
   swap; · exact measurable_snd hs.compl
   rw [eq_comm, lintegral_eq_zero_iff] at h
   swap
-  · simp_rw [kernel.prodMkLeft_apply']
-    simp only [mem_compl_iff, mem_setOf_eq]
+  · simp only [mem_compl_iff, mem_setOf_eq]
     exact kernel.measurable_coe _ hs.compl
-  rw [kernel.const_apply] at h
   simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
   filter_upwards [h] with a ha
   change condKernelReal ρ a sᶜ = 0 at ha
@@ -249,21 +238,21 @@ theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ 
 
 end Real
 
-section Polish
+section StandardBorel
 
-/-! ### Disintegration of measures on Polish Borel spaces
+/-! ### Disintegration of measures on standard Borel spaces
 
 Since every standard Borel space embeds measurably into `ℝ`, we can generalize the disintegration
 property on `ℝ` to all these spaces. -/
 
 
-variable {Ω : Type*} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
   [Nonempty Ω] (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
 
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
 theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     ∃ (η : kernel α Ω) (_h : IsMarkovKernel η), kernel.const γ ρ =
-      kernel.compProd (kernel.const γ ρ.fst) (kernel.prodMkLeft γ η) := by
+      (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ η) := by
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
   let ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f)
   -- The general idea is to define `η = kernel.comapRight (condKernelReal ρ') hf`. There is
@@ -343,8 +332,7 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
 #align probability_theory.exists_cond_kernel ProbabilityTheory.exists_cond_kernel
 
 /-- Conditional kernel of a measure on a product space: a Markov kernel such that
-`ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit ρ.condKernel)) ()`
-(see `ProbabilityTheory.measure_eq_compProd`). -/
+`ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `ProbabilityTheory.measure_eq_compProd`). -/
 noncomputable irreducible_def _root_.MeasureTheory.Measure.condKernel : kernel α Ω :=
   (exists_cond_kernel ρ Unit).choose
 #align measure_theory.measure.cond_kernel MeasureTheory.Measure.condKernel
@@ -361,19 +349,18 @@ theorem kernel.const_unit_eq_compProd :
   simp_rw [condKernel_def]; exact (exists_cond_kernel ρ Unit).choose_spec.choose_spec
 #align probability_theory.kernel.const_unit_eq_comp_prod ProbabilityTheory.kernel.const_unit_eq_compProd
 
-/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is Polish Borel. Such a
+/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is standard Borel. Such a
 measure can be written as the composition-product of the constant kernel with value `ρ.fst`
 (marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that Markov kernel
 `ProbabilityTheory.condKernel ρ`. -/
-theorem measure_eq_compProd :
-    ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit ρ.condKernel) () := by
-  rw [← kernel.const_unit_eq_compProd, kernel.const_apply]
+theorem measure_eq_compProd : ρ = ρ.fst ⊗ₘ ρ.condKernel := by
+  rw [Measure.compProd, ← kernel.const_unit_eq_compProd, kernel.const_apply]
 #align probability_theory.measure_eq_comp_prod ProbabilityTheory.measure_eq_compProd
 
 /-- **Disintegration** of constant kernels. A constant kernel on a product space `α × Ω`, where `Ω`
-is Polish Borel, can be written as the composition-product of the constant kernel with value `ρ.fst`
-(marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that Markov kernel
-`ProbabilityTheory.condKernel ρ`. -/
+is standard Borel, can be written as the composition-product of the constant kernel with
+value `ρ.fst` (marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that
+Markov kernel `ProbabilityTheory.condKernel ρ`. -/
 theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × Ω))
     [IsFiniteMeasure ρ] :
     kernel.const γ ρ = kernel.const γ ρ.fst ⊗ₖ kernel.prodMkLeft γ ρ.condKernel := by
@@ -385,40 +372,35 @@ theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure
 theorem lintegral_condKernel_mem {s : Set (α × Ω)} (hs : MeasurableSet s) :
     ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s := by
   conv_rhs => rw [measure_eq_compProd ρ]
-  simp_rw [kernel.compProd_apply _ _ _ hs, kernel.const_apply, kernel.prodMkLeft_apply]
+  simp_rw [Measure.compProd_apply hs]
+  rfl
 #align probability_theory.lintegral_cond_kernel_mem ProbabilityTheory.lintegral_condKernel_mem
 
 theorem set_lintegral_condKernel_eq_measure_prod {s : Set α} (hs : MeasurableSet s) {t : Set Ω}
     (ht : MeasurableSet t) : ∫⁻ a in s, ρ.condKernel a t ∂ρ.fst = ρ (s ×ˢ t) := by
-  have : ρ (s ×ˢ t) =
-      ((kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit ρ.condKernel) ()) (s ×ˢ t) := by
+  have : ρ (s ×ˢ t) = (ρ.fst ⊗ₘ ρ.condKernel) (s ×ˢ t) := by
     congr; exact measure_eq_compProd ρ
-  rw [this, kernel.compProd_apply _ _ _ (hs.prod ht)]
-  simp only [prod_mk_mem_set_prod_eq, kernel.lintegral_const, kernel.prodMkLeft_apply]
-  rw [← lintegral_indicator _ hs]
-  congr
-  ext1 x
+  rw [this, Measure.compProd_apply (hs.prod ht)]
   classical
-  rw [indicator_apply]
-  split_ifs with hx
-  · simp only [hx, if_true, true_and_iff, setOf_mem_eq]
-  · simp only [hx, if_false, false_and_iff, setOf_false, measure_empty]
+  have : ∀ a, ρ.condKernel a (Prod.mk a ⁻¹' s ×ˢ t)
+      = s.indicator (fun a ↦ ρ.condKernel a t) a := by
+    intro a
+    by_cases ha : a ∈ s <;> simp [ha]
+  simp_rw [this]
+  rw [lintegral_indicator _ hs]
 #align probability_theory.set_lintegral_cond_kernel_eq_measure_prod ProbabilityTheory.set_lintegral_condKernel_eq_measure_prod
 
 theorem lintegral_condKernel {f : α × Ω → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, ∫⁻ ω, f (a, ω) ∂ρ.condKernel a ∂ρ.fst = ∫⁻ x, f x ∂ρ := by
   conv_rhs => rw [measure_eq_compProd ρ]
-  rw [kernel.lintegral_compProd _ _ _ hf, kernel.const_apply]
-  simp_rw [kernel.prodMkLeft_apply]
+  rw [Measure.lintegral_compProd hf]
 #align probability_theory.lintegral_cond_kernel ProbabilityTheory.lintegral_condKernel
 
 theorem set_lintegral_condKernel {f : α × Ω → ℝ≥0∞} (hf : Measurable f) {s : Set α}
     (hs : MeasurableSet s) {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ a in s, ∫⁻ ω in t, f (a, ω) ∂ρ.condKernel a ∂ρ.fst = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [measure_eq_compProd ρ]
-  rw [← kernel.restrict_apply _ (hs.prod ht), ← kernel.compProd_restrict hs ht,
-    kernel.lintegral_compProd _ _ _ hf, kernel.restrict_apply]
-  conv_rhs => enter [2, b, 1]; rw [kernel.restrict_apply _ ht]
+  rw [Measure.set_lintegral_compProd hf hs ht]
 #align probability_theory.set_lintegral_cond_kernel ProbabilityTheory.set_lintegral_condKernel
 
 theorem set_lintegral_condKernel_univ_right {f : α × Ω → ℝ≥0∞} (hf : Measurable f) {s : Set α}
@@ -447,10 +429,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condKernel {ρ : Meas
 theorem integral_condKernel {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {f : α × Ω → E}
     (hf : Integrable f ρ) : ∫ a, ∫ x, f (a, x) ∂ρ.condKernel a ∂ρ.fst = ∫ ω, f ω ∂ρ := by
   conv_rhs => rw [measure_eq_compProd ρ]
-  have hf': Integrable f ((kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit ρ.condKernel) ()) := by
-    rwa [measure_eq_compProd ρ] at hf
-  rw [integral_compProd hf', kernel.const_apply]
-  simp_rw [kernel.prodMkLeft_apply]
+  have hf': Integrable f (ρ.fst ⊗ₘ ρ.condKernel) := by rwa [measure_eq_compProd ρ] at hf
+  rw [Measure.integral_compProd hf']
 #align probability_theory.integral_cond_kernel ProbabilityTheory.integral_condKernel
 
 theorem set_integral_condKernel {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {f : α × Ω → E}
@@ -458,9 +438,8 @@ theorem set_integral_condKernel {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {
     (hf : IntegrableOn f (s ×ˢ t) ρ) :
     ∫ a in s, ∫ ω in t, f (a, ω) ∂ρ.condKernel a ∂ρ.fst = ∫ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [measure_eq_compProd ρ]
-  rw [set_integral_compProd hs ht]
-  · simp_rw [kernel.prodMkLeft_apply, kernel.const_apply]
-  · rwa [measure_eq_compProd ρ] at hf
+  rw [Measure.set_integral_compProd hs ht]
+  rwa [measure_eq_compProd ρ] at hf
 #align probability_theory.set_integral_cond_kernel ProbabilityTheory.set_integral_condKernel
 
 theorem set_integral_condKernel_univ_right {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ] {f : α × Ω → E}
@@ -477,7 +456,113 @@ theorem set_integral_condKernel_univ_left {ρ : Measure (α × Ω)} [IsFiniteMea
 
 end IntegralCondKernel
 
-end Polish
+section Unique
+
+/-! ### Uniqueness
+
+This section will prove that the conditional kernel is unique almost everywhere. -/
+
+/-- A s-finite kernel which satisfy the disintegration property of the given measure `ρ` is almost
+everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
+
+This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
+which asserts that the kernels are equal almost everywhere and not just on a given measurable
+set. -/
+theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKernel κ]
+    (hκ : ρ = ρ.fst ⊗ₘ κ) {s : Set Ω} (hs : MeasurableSet s) :
+    ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
+  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
+    (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) _
+  intros t ht _
+  conv_rhs => rw [set_lintegral_condKernel_eq_measure_prod _ ht hs, hκ]
+  simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator _ ht]
+  congr; ext x
+  by_cases hx : x ∈ t
+  all_goals simp [hx]
+
+-- This lemma establishes uniqueness of the disintegration kernel on ℝ
+lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
+    (κ : kernel α ℝ) [IsFiniteKernel κ] (hκ : ρ = ρ.fst ⊗ₘ κ) :
+    ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
+  have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
+    eq_condKernel_of_measure_eq_compProd' ρ κ hκ MeasurableSet.univ
+  suffices : ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t
+  · filter_upwards [this] with x hx
+    ext t ht; exact hx ht
+  apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
+    Real.isPiSystem_Iic_rat
+  · simp only [OuterMeasure.empty', Filter.eventually_true]
+  · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    exact ae_all_iff.2 fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
+  · filter_upwards [huniv] with x hxuniv t ht heq
+    rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
+  · refine' ae_of_all _ (fun x f hdisj hf heq => _)
+    rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
+    exact tsum_congr heq
+
+/-- A finite kernel which satisfies the disintegration property is almost everywhere equal to the
+disintegration kernel. -/
+theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel κ]
+    (hκ : ρ = ρ.fst ⊗ₘ κ) :
+    ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
+-- The idea is to transporting the question to `ℝ` from `Ω` using `exists_measurableEmbedding_real`
+-- and then constructing a measure on `α × ℝ` using the obtained measurable embedding
+  obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
+  set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
+  have hρ' : ρ'.fst = ρ.fst
+  · ext s hs
+    rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
+    exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
+      measurable_fst hs, hs, hs]
+  have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x
+  · refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
+    ext s hs
+    simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
+    conv_lhs => congr; rw [hκ]
+    rw [Measure.compProd_apply hs, Measure.compProd_apply
+      (measurable_id.prod_map hf.measurable hs), (_ : (ρ.map (Prod.map id f)).fst = ρ.fst)]
+    · congr
+      ext x
+      simp only [Set.mem_preimage, Prod_map, id_eq, kernel.prodMkLeft_apply, kernel.map_apply]
+      rw [Measure.map_apply hf.measurable]
+      · rfl
+      · exact measurable_prod_mk_left hs
+    · rw [Measure.fst_map_prod_mk]
+      · simp only [Prod_map, id_eq]; rfl
+      · exact (hf.measurable.comp measurable_snd)
+  rw [hρ'] at hρ''
+  suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
+    ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s)
+  · filter_upwards [hρ'', this] with x hx h
+    rw [kernel.map_apply] at hx
+    ext s hs
+    rw [← Set.preimage_image_eq s hf.injective,
+      ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
+      h _ <| hf.measurableSet_image.2 hs]
+  have hprod : (ρ.map (Prod.map id f)).fst = ρ.fst
+  · ext s hs
+    rw [Measure.fst_apply hs,
+      Measure.map_apply (measurable_id.prod_map hf.measurable) (measurable_fst hs),
+      ← Set.preimage_comp, Measure.fst_apply hs]
+    rfl
+  suffices : ρ.map (Prod.map id f) =
+    ((ρ.map (Prod.map id f)).fst ⊗ₘ (kernel.map (Measure.condKernel ρ) f hf.measurable))
+  · have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
+    rw [hprod] at heq
+    filter_upwards [heq] with x hx s hs
+    rw [← hx, kernel.map_apply, Measure.map_apply hf.measurable hs]
+  ext s hs
+  simp only [hprod, Measure.compProd_apply hs, kernel.map_apply _ hf.measurable]
+  rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, ← lintegral_condKernel_mem]
+  · simp only [mem_preimage, Prod_map, id_eq]
+    congr with a
+    rw [Measure.map_apply hf.measurable (measurable_prod_mk_left hs)]
+    rfl
+  · exact measurable_id.prod_map hf.measurable hs
+
+end Unique
+
+end StandardBorel
 
 end ProbabilityTheory
 
@@ -490,8 +575,8 @@ We place these lemmas in the `MeasureTheory` namespace to enable dot notation. -
 
 open ProbabilityTheory
 
-variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω] [TopologicalSpace Ω]
-  [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α Ω E F : Type*} {mα : MeasurableSpace α} [MeasurableSpace Ω]
+  [StandardBorelSpace Ω] [Nonempty Ω] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
@@ -500,8 +585,7 @@ theorem AEStronglyMeasurable.ae_integrable_condKernel_iff {f : α × Ω → F}
       Integrable (fun a => ∫ ω, ‖f (a, ω)‖ ∂ρ.condKernel a) ρ.fst ↔ Integrable f ρ := by
   rw [measure_eq_compProd ρ] at hf
   conv_rhs => rw [measure_eq_compProd ρ]
-  rw [integrable_compProd_iff hf]
-  simp_rw [kernel.prodMkLeft_apply, kernel.const_apply]
+  rw [Measure.integrable_compProd_iff hf]
 #align measure_theory.ae_strongly_measurable.ae_integrable_cond_kernel_iff MeasureTheory.AEStronglyMeasurable.ae_integrable_condKernel_iff
 
 theorem Integrable.condKernel_ae {f : α × Ω → F} (hf_int : Integrable f ρ) :

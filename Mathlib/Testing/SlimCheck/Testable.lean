@@ -217,7 +217,7 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
 def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q  :=
+    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
@@ -334,7 +334,7 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
       let currentStep := OptionT.lift $ pure $ Sigma.mk candidate (addShrinks (n + 1) res)
       let nextStep := minimizeAux cfg var candidate (n + 1)
-      return ←(nextStep <|> currentStep)
+      return ← (nextStep <|> currentStep)
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
@@ -388,6 +388,20 @@ where
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
     pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
 
+instance (priority := 2000) subtypeVarTestable {p : α → Prop} {β : α → Prop}
+    [∀ x, PrintableProp (p x)]
+    [∀ x, Testable (β x)]
+    [SampleableExt (Subtype p)] {var'} :
+    Testable (NamedBinder var $ Π x : α, NamedBinder var' $ p x → β x) where
+  run cfg min :=
+    letI (x : Subtype p) : Testable (β x) :=
+      { run := fun cfg min => do
+          let r ← Testable.runProp (β x.val) cfg min
+          pure $ addInfo s!"guard: {printProp (p x)} (by construction)" id r (PSum.inr id) }
+    do
+      let r ← @Testable.run (∀ x : Subtype p, β x.val) (@varTestable var _ _ _ _) cfg min
+      pure $ iff Subtype.forall' r
+
 instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] :
     Testable p where
   run := λ _ _ =>
@@ -413,16 +427,16 @@ instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y)
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
 
-instance And.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∧ y) where
+instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
 
-instance Or.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∨ y) where
+instance Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
   printProp := s!"{printProp x} ∨ {printProp y}"
 
-instance Iff.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ↔ y) where
+instance Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
   printProp := s!"{printProp x} ↔ {printProp y}"
 
-instance Imp.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x → y) where
+instance Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
   printProp := s!"{printProp x} → {printProp y}"
 
 instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
@@ -461,7 +475,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand (TestResult p)
+    TestResult p → Nat → Rand (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -480,6 +494,7 @@ def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand
 
 /-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => IO.runRand (Testable.runSuite p cfg)
   | some seed => IO.runRandWith seed (Testable.runSuite p cfg)
@@ -492,16 +507,18 @@ open Lean
 
 /-- Traverse the syntax of a proposition to find universal quantifiers
 quantifiers and add `NamedBinder` annotations next to them. -/
-partial def addDecorations (e : Expr) : Expr :=
-  e.replace $ λ expr =>
-    match expr with
-    | Expr.forallE name type body data =>
+partial def addDecorations (e : Expr) : MetaM Expr :=
+  Meta.transform e fun expr => do
+    if not (← Meta.inferType e).isProp then
+      return .continue
+    else if let Expr.forallE name type body data := expr then
       let n := name.toString
-      let newType := addDecorations type
-      let newBody := addDecorations body
+      let newType ← addDecorations type
+      let newBody ← addDecorations body
       let rest := Expr.forallE name newType newBody data
-      some $ mkApp2 (mkConst `SlimCheck.NamedBinder) (mkStrLit n) rest
-    | _ => none
+      return .done $ (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
+    else
+      return .continue
 
 /-- `DecorationsOf p` is used as a hint to `mk_decorations` to specify
 that the goal should be satisfied with a proposition equivalent to `p`
@@ -526,7 +543,7 @@ scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← goal.getType
   if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
-    closeMainGoal (addDecorations body)
+    closeMainGoal (← addDecorations body)
 
 end Decorations
 

@@ -20,6 +20,8 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
+suppress_compilation
+
 -- Porting note: universe metavariables behave oddly
 universe w u v₁ v₂ v₃ v₄
 

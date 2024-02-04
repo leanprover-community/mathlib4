@@ -116,6 +116,16 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} 
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
 
+theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
+    natDegree (a • f) ≤ n :=
+  (natDegree_smul_le a f).trans hf
+
+theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
+    degree (a • f) ≤ n :=
+  (degree_smul_le a f).trans hf
+
+theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
+
 section congr_lemmas
 
 /--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
@@ -320,6 +330,8 @@ def dispatchLemma
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
         | .inr ``Polynomial.C =>
           π ``natDegree_C_le ``degree_C_le ``coeff_C
+        | .inr ``HSMul.hSMul =>
+          π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
@@ -433,11 +445,10 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
     | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
-    | (_, .anonymous, _) => throwError
-        (m!"'compute_degree' inapplicable. The goal{indentD gt}\nis expected to be '≤' or '='.")
-    | (.anonymous, _, _) => throwError
-        (m!"'compute_degree' inapplicable. The LHS must be an application of {
-          ""}'natDegree', 'degree', or 'coeff'.")
+    | (_, .anonymous, _) => throwError m!"'compute_degree' inapplicable. \
+        The goal{indentD gt}\nis expected to be '≤' or '='."
+    | (.anonymous, _, _) => throwError m!"'compute_degree' inapplicable. \
+        The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
       trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"
@@ -448,12 +459,14 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
-        (← `(tactic| try any_goals conv_lhs => (simp only [Nat.cast_withBot]; norm_num)))
+        (← `(tactic| try any_goals conv_lhs =>
+                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]
         for g in ← getGoals do
-          let gs' ← run g do evalTactic (← `(tactic| try (any_goals norm_num <;> try assumption)))
+          let gs' ← run g do evalTactic (←
+            `(tactic| try (any_goals norm_num <;> norm_cast <;> try assumption)))
           new_goals := new_goals ++ gs'.toArray
           if ← gs'.anyM fun g' => g'.withContext do return (← g'.getType'').isConstOf ``False then
             false_goals := false_goals.push g
@@ -463,6 +476,19 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
           unless errors.isEmpty do
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
+
+/-- `monicity` tries to solve a goal of the form `Monic f`.
+It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`
+and calls `compute_degree` on those two goals.
+
+The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on the two side-goals.
+-/
+macro (name := monicityMacro) "monicity" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
+
+@[inherit_doc monicityMacro]
+macro "monicity!" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
 end Tactic
 

@@ -68,6 +68,11 @@ end Semiring
 
 section Semiring
 
+theorem dvd_sum [NonUnitalSemiring β]
+    {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
+  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
+#align finset.dvd_sum Finset.dvd_sum
+
 variable [NonAssocSemiring β]
 
 theorem sum_mul_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α) :
@@ -101,8 +106,8 @@ theorem prod_sum {δ : α → Type*} [DecidableEq α] [∀ a, DecidableEq (δ a)
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
-      have : Pi.cons s a x p₂ a (mem_insert_self _ _) = Pi.cons s a y p₃ a (mem_insert_self _ _) :=
-        by rw [eq₂, eq₃, eq]
+      have : Pi.cons s a x p₂ a (mem_insert_self _ _)
+              = Pi.cons s a y p₃ a (mem_insert_self _ _) := by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
@@ -129,30 +134,24 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
   classical
   calc
     ∏ a in s, (f a + g a) =
-        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
-      by simp
+        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a := by simp
     _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
       sum_bij'
-        (fun f _ => s.filter (fun a => ∀ h : a ∈ s, f a h))
-        (by simp)
-        (fun a _ => by
-          rw [prod_ite]
-          congr 1
-          exact prod_bij'
-            (fun a _ => a.1) (by simp; tauto) (by simp)
-            (fun a ha => ⟨a, (mem_filter.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
-            (by simp) (by simp)
-          exact prod_bij'
-            (fun a _ => a.1) (by simp) (by simp)
-            (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
-            (by simp) (by simp))
+        (fun f _ ↦ s.filter fun a ↦ ∃ h : a ∈ s, f a h)
         (fun t _ a _ => a ∈ t)
+        (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
+        (fun a _ ↦ by
+          simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
+            Subtype.map_coe, id_eq, prod_attach, filter_congr_decidable]
+          congr 2 with x
+          simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
+          tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -209,10 +208,6 @@ theorem sum_pow_mul_eq_add_pow {α R : Type*} [CommSemiring R] (a b : R) (s : Fi
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 
-theorem dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
-#align finset.dvd_sum Finset.dvd_sum
-
 @[norm_cast]
 theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
   (Nat.castRingHom β).map_prod f s
@@ -227,7 +222,7 @@ variable {R : Type*} [CommRing R]
 theorem prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  cases' le_or_lt k n with hkn hnk
+  rcases le_or_lt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
@@ -262,7 +257,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
       `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
-    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetCard j s, f t := by
   rw [powerset_card_disjiUnion, prod_disjiUnion]
 #align finset.prod_powerset Finset.prod_powerset
 #align finset.sum_powerset Finset.sum_powerset

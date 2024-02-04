@@ -93,12 +93,12 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
 #align homological_complex.ext HomologicalComplex.ext
 
 /-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
-def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
-  K.X p ≅ K.X q := eqToIso (by rw [h])
+def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) : K.X p ≅ K.X q :=
+  eqToIso (by rw [h])
 
 @[simp]
 lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
-  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+    K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
@@ -276,7 +276,7 @@ theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.
   rfl
 #align homological_complex.id_f HomologicalComplex.id_f
 
-@[simp]
+@[simp, reassoc]
 theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     (f ≫ g).f i = f.f i ≫ g.f i :=
   rfl
@@ -803,10 +803,10 @@ theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
 #align chain_complex.mk_d_1_0 ChainComplex.mk_d_1_0
 
 @[simp]
-theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
+theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
   rw [if_pos rfl, Category.id_comp]
-#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_0
+#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_1
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.

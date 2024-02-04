@@ -370,14 +370,14 @@ a list of elements of `s` whose product is `a`. -/
       a set `s`, there exists a list of elements of `s` whose sum is `a`."]
 theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
     ∃ l : List M, (∀ x ∈ l, x ∈ s) ∧ l.prod = a := by
-  induction h
-  case basic a ha => exists [a]; simp [ha]
-  case one => exists []; simp
-  case mul a b _ _ ha hb =>
+  induction h with
+  | @basic a ha => exists [a]; simp [ha]
+  | one => exists []; simp
+  | mul _ _ ha hb =>
     rcases ha with ⟨la, ha, eqa⟩
     rcases hb with ⟨lb, hb, eqb⟩
     exists la ++ lb
-    simp [eqa.symm, eqb.symm, or_imp]
+    simp only [List.mem_append, or_imp, List.prod_append, eqa.symm, eqb.symm, and_true]
     exact fun a => ⟨ha a, hb a⟩
 #align monoid.exists_list_of_mem_closure Monoid.exists_list_of_mem_closure
 #align add_monoid.exists_list_of_mem_closure AddMonoid.exists_list_of_mem_closure

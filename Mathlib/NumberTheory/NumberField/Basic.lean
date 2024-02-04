@@ -57,7 +57,7 @@ variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
 protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
-  Algebra.isAlgebraic_of_finite _ _
+  Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -146,7 +146,7 @@ instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
-  IsIntegralClosure.isLocalization ℤ ℚ K (𝓞 K)
+  IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
 
 /-- A ℤ-basis of the ring of integers of `K`. -/
 noncomputable def basis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℤ (𝓞 K) :=

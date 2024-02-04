@@ -26,28 +26,31 @@ theorem Fintype.card_finset [Fintype α] : Fintype.card (Finset α) = 2 ^ Fintyp
   Finset.card_powerset Finset.univ
 #align fintype.card_finset Fintype.card_finset
 
-@[simp]
-theorem Finset.powerset_univ [Fintype α] : (univ : Finset α).powerset = univ :=
+namespace Finset
+variable [Fintype α] {s : Finset α} {k : ℕ}
+
+@[simp] lemma powerset_univ : (univ : Finset α).powerset = univ :=
   coe_injective <| by simp [-coe_eq_univ]
 #align finset.powerset_univ Finset.powerset_univ
 
-@[simp]
-theorem Finset.powerset_eq_univ [Fintype α] {s : Finset α} : s.powerset = univ ↔ s = univ := by
+lemma filter_subset_univ [DecidableEq α] (s : Finset α) :
+    filter (fun t ↦ t ⊆ s) univ = powerset s := by ext; simp
+
+@[simp] lemma powerset_eq_univ : s.powerset = univ ↔ s = univ := by
   rw [← Finset.powerset_univ, powerset_inj]
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
-@[simp]
-theorem Finset.mem_powerset_len_univ_iff [Fintype α] {s : Finset α} {k : ℕ} :
-    s ∈ powersetLen k (univ : Finset α) ↔ card s = k :=
-  mem_powersetLen.trans <| and_iff_right <| subset_univ _
-#align finset.mem_powerset_len_univ_iff Finset.mem_powerset_len_univ_iff
+@[simp] lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
+  mem_powersetCard.trans <| and_iff_right <| subset_univ _
+#align finset.mem_powerset_len_univ_iff Finset.mem_powersetCard_univ
 
-@[simp]
-theorem Finset.univ_filter_card_eq (α : Type*) [Fintype α] (k : ℕ) :
-    ((Finset.univ : Finset (Finset α)).filter fun s => s.card = k) = Finset.univ.powersetLen k := by
-  ext
-  simp [Finset.mem_powersetLen]
+variable (α)
+
+@[simp] lemma univ_filter_card_eq (k : ℕ) :
+    (univ : Finset (Finset α)).filter (fun s ↦ s.card = k) = univ.powersetCard k := by ext; simp
 #align finset.univ_filter_card_eq Finset.univ_filter_card_eq
+
+end Finset
 
 @[simp]
 theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :

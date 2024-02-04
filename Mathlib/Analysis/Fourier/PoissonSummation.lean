@@ -140,22 +140,21 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y → y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) := by
     intro x hx y hy
     rw [max_lt_iff] at hx
+    obtain ⟨hx1, hx2⟩ := hx
     have hxR : 0 < x + R := by
-      rcases le_or_lt 0 R with (h | h)
-      · exact add_pos_of_pos_of_nonneg hx.1 h
-      · rw [← sub_lt_iff_lt_add, zero_sub]
-        refine' lt_trans _ hx.2
-        rwa [neg_mul, neg_lt_neg_iff, two_mul, add_lt_iff_neg_left]
+      rcases le_or_lt 0 R with (h | _)
+      · positivity
+      · linarith
     have hy' : 0 < y := hxR.trans_le hy
     have : y ^ (-b) ≤ (x + R) ^ (-b) := by
-      rw [rpow_neg hy'.le, rpow_neg hxR.le,
-        inv_le_inv (rpow_pos_of_pos hy' _) (rpow_pos_of_pos hxR _)]
-      exact rpow_le_rpow hxR.le hy hb.le
+      rw [rpow_neg, rpow_neg, inv_le_inv]
+      · gcongr
+      all_goals positivity
     refine' this.trans _
-    rw [← mul_rpow one_half_pos.le hx.1.le, rpow_neg (mul_pos one_half_pos hx.1).le,
-      rpow_neg hxR.le]
-    refine' inv_le_inv_of_le (rpow_pos_of_pos (mul_pos one_half_pos hx.1) _) _
-    exact rpow_le_rpow (mul_pos one_half_pos hx.1).le (by linarith) hb.le
+    rw [← mul_rpow, rpow_neg, rpow_neg]
+    · gcongr
+      linarith
+    all_goals positivity
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
@@ -202,7 +201,7 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
-  obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+  obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have :
     ∀ x : ℝ,

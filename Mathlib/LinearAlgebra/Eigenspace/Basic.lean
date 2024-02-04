@@ -53,7 +53,7 @@ namespace Module
 
 namespace End
 
-open FiniteDimensional
+open FiniteDimensional Set
 
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]
@@ -140,117 +140,6 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
         rw [LinearMap.ker_smul _ b hb]
     _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
 #align module.End.eigenspace_div Module.End.eigenspace_div
-
-/-- The eigenspaces of a linear operator form an independent family of subspaces of `V`.  That is,
-any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
-theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
-  classical
-  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of finitely-supported
-  -- choices of an eigenvector from each eigenspace, to `V`, by sending a collection to its sum.
-  let S : @LinearMap K K _ _ (RingHom.id K) (Π₀ μ : K, f.eigenspace μ) V
-      (@DFinsupp.addCommMonoid K (fun μ => f.eigenspace μ) _) _
-      (@DFinsupp.module K _ (fun μ => f.eigenspace μ) _ _ _) _ :=
-    @DFinsupp.lsum K K ℕ _ V _ _ _ _ _ _ _ _ _ fun μ => (f.eigenspace μ).subtype
-  -- We need to show that if a finitely-supported collection `l` of representatives of the
-  -- eigenspaces has sum `0`, then it itself is zero.
-  suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0 by
-    rw [CompleteLattice.independent_iff_dfinsupp_lsum_injective]
-    change Function.Injective S
-    rw [← @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
-      (@DFinsupp.addCommGroup K (fun μ => f.eigenspace μ) _)]
-    rw [eq_bot_iff]
-    exact this
-  intro l hl
-  -- We apply induction on the finite set of eigenvalues from which `l` selects a nonzero
-  -- eigenvector, i.e. on the support of `l`.
-  induction' h_l_support : l.support using Finset.induction with μ₀ l_support' hμ₀ ih generalizing l
-  -- If the support is empty, all coefficients are zero and we are done.
-  · exact DFinsupp.support_eq_empty.1 h_l_support
-  -- Now assume that the support of `l` contains at least one eigenvalue `μ₀`. We define a new
-  -- collection of representatives `l'` to apply the induction hypothesis on later. The collection
-  -- of representatives `l'` is derived from `l` by multiplying the coefficient of the eigenvector
-  -- with eigenvalue `μ` by `μ - μ₀`.
-  · let l' := DFinsupp.mapRange.linearMap
-      (fun μ => (μ - μ₀) • @LinearMap.id K (f.eigenspace μ) _ _ _) l
-    -- The support of `l'` is the support of `l` without `μ₀`.
-    have h_l_support' : l'.support = l_support' := by
-      rw [← Finset.erase_insert hμ₀, ← h_l_support]
-      ext a
-      have : ¬(a = μ₀ ∨ l a = 0) ↔ ¬a = μ₀ ∧ ¬l a = 0 := not_or
-      simp only [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply,
-        DFinsupp.mem_support_iff, Finset.mem_erase, id.def, LinearMap.id_coe, LinearMap.smul_apply,
-        Ne.def, smul_eq_zero, sub_eq_zero, this]
-    -- The entries of `l'` add up to `0`.
-    have total_l' : S l' = 0 := by
-      let g := f - algebraMap K (End K V) μ₀
-      let a : Π₀ _ : K, V := DFinsupp.mapRange.linearMap (fun μ => (f.eigenspace μ).subtype) l
-      calc
-        S l' =
-          DFinsupp.lsum ℕ (fun μ => (f.eigenspace μ).subtype.comp ((μ - μ₀) • LinearMap.id)) l := ?_
-        _ = DFinsupp.lsum ℕ (fun μ => g.comp (f.eigenspace μ).subtype) l := ?_
-        _ = DFinsupp.lsum ℕ (fun _ => g) a := ?_
-        _ = g (DFinsupp.lsum ℕ (fun _ => (LinearMap.id : V →ₗ[K] V)) a) := ?_
-        _ = g (S l) := ?_
-        _ = 0 := by rw [hl, g.map_zero]
-      · exact DFinsupp.sum_mapRange_index.linearMap
-      · congr
-        ext μ v
-        simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply, LinearMap.id_coe,
-          id.def, sub_smul, Submodule.subtype_apply, Submodule.coe_sub, Submodule.coe_smul_of_tower,
-          LinearMap.sub_apply, mem_eigenspace_iff.1 v.prop, algebraMap_end_apply]
-      · rw [DFinsupp.sum_mapRange_index.linearMap]
-      · simp only [DFinsupp.sumAddHom_apply, LinearMap.id_coe, map_dfinsupp_sum, id.def,
-          LinearMap.toAddMonoidHom_coe, DFinsupp.lsum_apply_apply]
-      · simp only [DFinsupp.sum_mapRange_index.linearMap, LinearMap.id_comp]
-    -- Therefore, by the induction hypothesis, all entries of `l'` are zero.
-    have l'_eq_0 := ih l' total_l' h_l_support'
-    -- By the definition of `l'`, this means that `(μ - μ₀) • l μ = 0` for all `μ`.
-    have h_smul_eq_0 : ∀ μ, (μ - μ₀) • l μ = 0 := by
-      intro μ
-      calc
-        (μ - μ₀) • l μ = l' μ := by
-          simp only [LinearMap.id_coe, id.def, LinearMap.smul_apply, DFinsupp.mapRange_apply,
-            DFinsupp.mapRange.linearMap_apply]
-        _ = 0 := by rw [l'_eq_0]; rfl
-    -- Thus, the eigenspace-representatives in `l` for all `μ ≠ μ₀` are `0`.
-    have h_lμ_eq_0 : ∀ μ : K, μ ≠ μ₀ → l μ = 0 := by
-      intro μ hμ
-      apply or_iff_not_imp_left.1 (smul_eq_zero.1 (h_smul_eq_0 μ))
-      rwa [sub_eq_zero]
-    -- So if we sum over all these representatives, we obtain `0`.
-    have h_sum_l_support'_eq_0 : (Finset.sum l_support' fun μ => (l μ : V)) = 0 := by
-      rw [← Finset.sum_const_zero]
-      apply Finset.sum_congr rfl
-      intro μ hμ
-      rw [Submodule.coe_eq_zero, h_lμ_eq_0]
-      rintro rfl
-      exact hμ₀ hμ
-    -- The only potentially nonzero eigenspace-representative in `l` is the one corresponding to
-    -- `μ₀`. But since the overall sum is `0` by assumption, this representative must also be `0`.
-    have : l μ₀ = 0 := by
-      simp only [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
-        LinearMap.toAddMonoidHom_coe, DFinsupp.sum, h_l_support, Submodule.subtype_apply,
-        Submodule.coe_eq_zero, Finset.sum_insert hμ₀, h_sum_l_support'_eq_0, add_zero] at hl
-      exact hl
-    -- Thus, all coefficients in `l` are `0`.
-    show l = 0
-    · ext μ
-      by_cases h_cases : μ = μ₀
-      · rwa [h_cases, SetLike.coe_eq_coe, DFinsupp.coe_zero, Pi.zero_apply]
-      · exact congr_arg _ (h_lμ_eq_0 μ h_cases)
-#align module.End.eigenspaces_independent Module.End.eigenspaces_independent
-
-/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
-    independent. (Lemma 5.10 of [axler2015])
-
-    We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
-    eigenvalue in the image of `xs`. -/
-theorem eigenvectors_linearIndependent (f : End K V) (μs : Set K) (xs : μs → V)
-    (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent K xs :=
-  CompleteLattice.Independent.linearIndependent _
-    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
-    (h_eigenvec μ).2
-#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
 
 /-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
 kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
@@ -379,12 +268,149 @@ theorem generalizedEigenspace_le_generalizedEigenspace_finrank [FiniteDimensiona
   ker_pow_le_ker_pow_finrank _ _
 #align module.End.generalized_eigenspace_le_generalized_eigenspace_finrank Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank
 
+@[simp] theorem iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank
+    [FiniteDimensional K V] (f : End K V) (μ : K) :
+    ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
+  le_antisymm (iSup_le (generalizedEigenspace_le_generalizedEigenspace_finrank f μ)) (le_iSup _ _)
+
 /-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
 theorem generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDimensional K V]
     (f : End K V) (μ : K) {k : ℕ} (hk : finrank K V ≤ k) :
     f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
   ker_pow_eq_ker_pow_finrank_of_le hk
 #align module.End.generalized_eigenspace_eq_generalized_eigenspace_finrank_of_le Module.End.generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le
+
+lemma mapsTo_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ) :
+    MapsTo g (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) := by
+  replace h : Commute ((f - μ • (1 : End R M)) ^ k) g :=
+    (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left k
+  intro x hx
+  simp only [SetLike.mem_coe, mem_generalizedEigenspace] at hx ⊢
+  rw [← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, h.eq, LinearMap.mul_eq_comp,
+    LinearMap.comp_apply, hx, map_zero]
+
+lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) := by
+  simp only [MapsTo, Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
+  rintro x ⟨k, hk⟩
+  exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
+
+/-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) :=
+      mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
+  use k
+  ext
+  simp [LinearMap.restrict_apply, LinearMap.pow_restrict _]
+
+/-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) :=
+      mapsTo_iSup_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
+  obtain ⟨l, hl⟩ : ∃ l, ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ l :=
+    ⟨_, maximalGeneralizedEigenspace_eq f μ⟩
+  use l
+  ext ⟨x, hx⟩
+  simpa [hl, LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx
+
+lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
+    Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by
+  nontriviality M
+  have := NoZeroSMulDivisors.isReduced R M
+  rw [disjoint_iff]
+  set p := f.generalizedEigenspace μ₁ k ⊓ f.generalizedEigenspace μ₂ l
+  by_contra hp
+  replace hp : Nontrivial p := Submodule.nontrivial_iff_ne_bot.mpr hp
+  let f₁ : End R p := (f - algebraMap R (End R M) μ₁).restrict <| MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₁ k)
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₂ l)
+  let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <| MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
+  have : IsNilpotent (f₂ - f₁) := by
+    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
+    · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
+  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
+  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
+    isNilpotent_iff_eq_zero, sub_eq_zero] at this
+  contradiction
+
+lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) :
+    Disjoint (⨆ k, f.generalizedEigenspace μ₁ k) (⨆ k, f.generalizedEigenspace μ₂ k) := by
+  simp_rw [(f.generalizedEigenspace μ₁).mono.directed_le.disjoint_iSup_left,
+    (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
+  exact disjoint_generalizedEigenspace f hμ
+
+lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    InjOn (⨆ k, f.generalizedEigenspace · k) {μ | ⨆ k, f.generalizedEigenspace μ k ≠ ⊥} := by
+  rintro μ₁ _ μ₂ hμ₂ (hμ₁₂ : ⨆ k, f.generalizedEigenspace μ₁ k = ⨆ k, f.generalizedEigenspace μ₂ k)
+  by_contra contra
+  apply hμ₂
+  simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_generalizedEigenspace contra
+
+theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
+  classical
+  suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.generalizedEigenspace μ k)
+      (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
+    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
+      Finset.supIndep_iff_disjoint_erase]
+    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
+  intro μ₁ s
+  induction' s using Finset.induction_on with μ₂ s _ ih; simp
+  intro hμ₁₂
+  obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
+  specialize ih hμ₁
+  rw [Finset.sup_insert, disjoint_iff, Submodule.eq_bot_iff]
+  rintro x ⟨hx, hx'⟩
+  simp only [SetLike.mem_coe] at hx hx'
+  suffices x ∈ ⨆ k, generalizedEigenspace f μ₂ k by
+    rw [← Submodule.mem_bot (R := R), ← (f.disjoint_iSup_generalizedEigenspace hμ₁₂).eq_bot]
+    exact ⟨hx, this⟩
+  obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
+  let g := f - algebraMap R (End R M) μ₂
+  obtain ⟨k : ℕ, hk : (g ^ k) y = 0⟩ := by simpa using hy
+  have hyz : (g ^ k) (y + z) ∈
+      (⨆ k, generalizedEigenspace f μ₁ k) ⊓ s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k := by
+    refine ⟨f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ₁ hx, ?_⟩
+    · exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
+    · rw [SetLike.mem_coe, map_add, hk, zero_add]
+      suffices (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k).map (g ^ k) ≤
+          s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k by exact this (Submodule.mem_map_of_mem hz)
+      simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := R), Submodule.map_iSup (ι := _ ∈ s)]
+      refine iSup₂_mono fun μ _ ↦ ?_
+      rintro - ⟨u, hu, rfl⟩
+      refine f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ hu
+      exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
+  rw [ih.eq_bot, Submodule.mem_bot] at hyz
+  simp_rw [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace]
+  exact ⟨k, hyz⟩
+
+/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
+any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
+theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent f.eigenspace :=
+  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+
+/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
+    independent. (Lemma 5.10 of [axler2015])
+
+    We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
+    eigenvalue in the image of `xs`. -/
+theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
+    (f : End R M) (μs : Set R) (xs : μs → M)
+    (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
+  CompleteLattice.Independent.linearIndependent _
+    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
+    (h_eigenvec μ).2
+#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
@@ -399,6 +425,12 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
   · erw [pow_succ', pow_succ', LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 #align module.End.generalized_eigenspace_restrict Module.End.generalizedEigenspace_restrict
+
+lemma _root_.Submodule.inf_generalizedEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
+    (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
+    p ⊓ f.generalizedEigenspace μ k =
+      (generalizedEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
+  rw [f.generalizedEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
@@ -462,6 +494,63 @@ theorem map_generalizedEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
     _ ≤ f.generalizedEigenrange μ n := LinearMap.map_le_range
 
 #align module.End.map_generalized_eigenrange_le Module.End.map_generalizedEigenrange_le
+
+lemma iSup_generalizedEigenspace_le_smul (f : Module.End R M) (μ t : R) :
+    (⨆ k, f.generalizedEigenspace μ k) ≤ ⨆ k, (t • f).generalizedEigenspace (t * μ) k := by
+  intro m hm
+  simp only [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace] at hm ⊢
+  refine Exists.imp (fun k hk ↦ ?_) hm
+  rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hk, smul_zero]
+
+lemma iSup_generalizedEigenspace_inf_le_add
+    (f₁ f₂ : End R M) (μ₁ μ₂ : R) (h : Commute f₁ f₂) :
+    (⨆ k, f₁.generalizedEigenspace μ₁ k) ⊓ (⨆ k, f₂.generalizedEigenspace μ₂ k) ≤
+    ⨆ k, (f₁ + f₂).generalizedEigenspace (μ₁ + μ₂) k := by
+  intro m hm
+  simp only [iSup_le_iff, Submodule.mem_inf, Submodule.mem_iSup_of_chain,
+    mem_generalizedEigenspace] at hm ⊢
+  obtain ⟨⟨k₁, hk₁⟩, ⟨k₂, hk₂⟩⟩ := hm
+  use k₁ + k₂ - 1
+  have : f₁ + f₂ - (μ₁ + μ₂) • 1 = (f₁ - μ₁ • 1) + (f₂ - μ₂ • 1) := by
+    rw [add_smul]; exact add_sub_add_comm f₁ f₂ (μ₁ • 1) (μ₂ • 1)
+  replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
+    (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
+      (Algebra.commute_algebraMap_left μ₁ _)
+  rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
+  refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
+  suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
+    rw [LinearMap.smul_apply, this, smul_zero]
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
+  · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hk₁,
+      LinearMap.map_zero]
+  · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
+
+lemma map_smul_of_iInf_generalizedEigenspace_ne_bot [NoZeroSMulDivisors R M]
+    {L F : Type*} [SMul R L] [SMulHomClass F R L (End R M)] (f : F)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (t : R) (x : L) :
+    μ (t • x) = t • μ x := by
+  by_contra contra
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  apply Disjoint.mono_left (iSup_generalizedEigenspace_le_smul (f x) (μ x) t)
+  simp only [map_smul]
+  exact disjoint_iSup_generalizedEigenspace (t • f x) (Ne.symm contra)
+
+lemma map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
+    {L F : Type*} [Add L] [AddHomClass F L (End R M)] (f : F)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
+    μ (x + y) = μ x + μ y := by
+  by_contra contra
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
+    le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  apply Disjoint.mono_left (iSup_generalizedEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
+  simp only [map_add]
+  exact disjoint_iSup_generalizedEigenspace (f x + f y) (Ne.symm contra)
 
 end End
 

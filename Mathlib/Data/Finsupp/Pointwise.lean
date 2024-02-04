@@ -3,8 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Data.Finsupp.Defs
 
 #align_import data.finsupp.pointwise from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -48,6 +49,10 @@ theorem coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
 theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a * g₂ a :=
   rfl
 #align finsupp.mul_apply Finsupp.mul_apply
+
+@[simp]
+theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a b₁ * single a b₂ :=
+  (zipWith_single_single _ _ _ _ _).symm
 
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
@@ -104,7 +109,7 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
 #align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : FunLike.coe (f • g) = f • g :=
+theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
   rfl
 #align finsupp.coe_pointwise_smul Finsupp.coe_pointwise_smul
 

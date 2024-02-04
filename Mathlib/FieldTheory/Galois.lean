@@ -35,7 +35,7 @@ Together, these two results prove the Galois correspondence.
 -/
 
 
-open scoped Polynomial
+open scoped Polynomial IntermediateField
 
 open FiniteDimensional AlgEquiv
 
@@ -363,8 +363,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     [Fintype (K →ₐ[F] E)]
     [Fintype (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
     Fintype.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Fintype.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
-  have h : IsIntegral K x :=
-    isIntegral_of_isScalarTower (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x)
+  have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
     rw [hp, Polynomial.aroots_zero] at hx
     exact Multiset.not_mem_zero x hx

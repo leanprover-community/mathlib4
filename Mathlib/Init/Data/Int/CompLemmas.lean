@@ -95,7 +95,7 @@ theorem zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n :=
 theorem ne_of_natAbs_ne_natAbs_of_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (h : natAbs a ≠ natAbs b) : a ≠ b := fun h => by
   have : (natAbs a : ℤ) = natAbs b := by
-    rwa [ofNat_natAbs_eq_of_nonneg _ ha, ofNat_natAbs_eq_of_nonneg _ hb]
+    rwa [natAbs_of_nonneg ha, natAbs_of_nonneg hb]
   injection this
   contradiction
 #align int.ne_of_nat_abs_ne_nat_abs_of_nonneg Int.ne_of_natAbs_ne_natAbs_of_nonneg

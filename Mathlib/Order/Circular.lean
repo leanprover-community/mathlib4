@@ -289,7 +289,7 @@ section CircularOrder
 variable {α : Type*} [CircularOrder α]
 
 theorem btw_refl_left_right (a b : α) : btw a b a :=
-  (or_self_iff _).1 (btw_total a b a)
+  or_self_iff.1 (btw_total a b a)
 #align btw_refl_left_right btw_refl_left_right
 
 theorem btw_rfl_left_right {a b : α} : btw a b a :=
@@ -457,8 +457,8 @@ See note [reducible non-instances]. -/
 def LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
     btw_total := fun a b c => by
-      cases' le_total a b with hab hba <;> cases' le_total b c with hbc hcb <;>
-        cases' le_total c a with hca hac
+      rcases le_total a b with hab | hba <;> rcases le_total b c with hbc | hcb <;>
+        rcases le_total c a with hca | hac
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
       · exact Or.inl (Or.inr <| Or.inr ⟨hca, hab⟩)

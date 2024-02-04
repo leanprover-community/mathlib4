@@ -3,9 +3,8 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
-import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
@@ -74,44 +73,13 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
-
-/-- Product of a list.
-
-     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-def prod [Mul α] [One α] : List α → α :=
-  foldl (· * ·) 1
-#align list.prod List.prod
-
--- Later this will be tagged with `to_additive`, but this can't be done yet because of imports.
--- dependencies.
-/-- Sum of a list.
-
-     `List.sum [a, b, c] = ((0 + a) + b) + c` -/
-def sum [Add α] [Zero α] : List α → α :=
-  foldl (· + ·) 0
-#align list.sum List.sum
-
-/-- The alternating sum of a list. -/
-def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
-  | [] => 0
-  | g :: [] => g
-  | g :: h :: t => g + -h + alternatingSum t
-#align list.alternating_sum List.alternatingSum
-
-/-- The alternating product of a list. -/
-def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
-  | [] => 1
-  | g :: [] => g
-  | g :: h :: t => g * h⁻¹ * alternatingProd t
-#align list.alternating_prod List.alternatingProd
-
 #align list.partition_map List.partitionMap
 #align list.find List.find?
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM <| fun a => (tac a) $> a
+  List.firstM fun a => (tac a) $> a
 #align list.mfind List.findM
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
@@ -211,23 +179,23 @@ end mapIdxM
 #align list.lookmap List.lookmap
 #align list.countp List.countP
 #align list.count List.count
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
+#align list.is_prefix List.IsPrefix
+#align list.is_suffix List.IsSuffix
+#align list.is_infix List.IsInfix
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
 
-/-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`List.All₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+/-- `l.Forall p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
+`List.Forall p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
-def All₂ (p : α → Prop) : List α → Prop
+def Forall (p : α → Prop) : List α → Prop
   | [] => True
   | x :: [] => p x
-  | x :: l => p x ∧ All₂ p l
-#align list.all₂ List.All₂
+  | x :: l => p x ∧ Forall p l
+#align list.all₂ List.Forall
 
 #align list.transpose List.transpose
 #align list.sections List.sections
@@ -298,7 +266,7 @@ def permutations'Aux (t : α) : List α → List (List α)
 
 /-- List of all permutations of `l`. This version of `permutations` is less efficient but has
 simpler definitional equations. The permutations are in a different order,
-but are equal up to permutation, as shown by `list.permutations_perm_permutations'`.
+but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
@@ -410,10 +378,11 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
-      let ⟨a, ⟨a_mem_ls, pa⟩⟩ :=
+      -- pattern matching on `hx` too makes this not reducible!
+      let ⟨a, ha⟩ :=
         chooseX ls
           (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
-      ⟨a, ⟨mem_cons.mpr <| Or.inr a_mem_ls, pa⟩⟩
+      ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 #align list.choose_x List.chooseX
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
@@ -436,25 +405,17 @@ Example: suppose `l = [1, 2, 3]`. `mapDiagM' f l` will evaluate, in this order,
 `f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
 -/
 def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
--- as ported:
---   | [] => return ()
---   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
     _ ← f h h
     _ ← t.mapM' (f h)
     t.mapDiagM' f
+-- as ported:
+--   | [] => return ()
+--   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
-/-- Map each element of a `List` to an action, evaluate these actions in order,
-    and collect the results.
--/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-    List α → F (List β)
-  | [] => pure []
-  | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
-
 #align list.get_rest List.getRest
 #align list.slice List.dropSlice
 

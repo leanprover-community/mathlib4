@@ -23,7 +23,7 @@ set_option autoImplicit true
 namespace PUnit
 
 @[to_additive]
-instance commGroup: CommGroup PUnit where
+instance commGroup : CommGroup PUnit where
   mul _ _ := unit
   one := unit
   inv _ := unit
@@ -69,7 +69,7 @@ theorem inv_eq : x⁻¹ = unit :=
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
 
-instance commRing: CommRing PUnit where
+instance commRing : CommRing PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
   left_distrib := by intros; rfl
@@ -78,10 +78,10 @@ instance commRing: CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
 
-instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
+instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
   lcm _ _ := unit
   normUnit _ := 1
@@ -112,15 +112,15 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
+instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
     { PUnit.commRing, PUnit.completeBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
     intros <;>
     trivial
 
-instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit where
-  __ := PUnit.canonicallyOrderedAddMonoid
+instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
+  __ := PUnit.canonicallyOrderedAddCommMonoid
   __ := PUnit.linearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl

@@ -42,7 +42,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   | some fr => some <| fr.as! ModuleName
   | none => none
   searchPathRef.set compile_time_search_path%
-  let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
+  let dotFile ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.downstreamOf (NameSet.empty.insert f)
@@ -67,13 +67,20 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
      match fp.extension with
      | none
      | "dot" => writeFile fp dotFile
-     | some ext => _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+     | some ext => try
+        _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+      catch ex =>
+        IO.eprintln s!"Error occurred while writing out {fp}."
+        IO.eprintln s!"Make sure you have `graphviz` installed and the file is writable."
+        throw ex
   return 0
 
 /-- Setting up command line options and help text for `lake exe graph`. -/
 def graph : Cmd := `[Cli|
   graph VIA importGraphCLI; ["0.0.1"]
-  "Generate representations of a Lean import graph."
+  "Generate representations of a Lean import graph. \
+   By default generates the import graph up to `Mathlib`. \
+   If you are working in a downstream project, use `lake exe graph --to MyProject`."
 
   FLAGS:
     reduce;               "Remove transitively redundant edges."
@@ -83,11 +90,11 @@ def graph : Cmd := `[Cli|
     "include-deps";       "Include used files from other projects (e.g. lake packages)"
 
   ARGS:
-    ...outputs : String;  "Filename(s) for the output. " ++
-      "If none are specified, generates `import_graph.dot`. " ++
-      "Automatically chooses the format based on the file extension. " ++
-      "Currently `.dot` is supported, " ++
-      "and if you have `graphviz` installed then any supported output format is allowed."
+    ...outputs : String;  "Filename(s) for the output. \
+      If none are specified, generates `import_graph.dot`. \
+      Automatically chooses the format based on the file extension. \
+      Currently `.dot` is supported, \
+      and if you have `graphviz` installed then any supported output format is allowed."
 ]
 
 /-- `lake exe graph` -/

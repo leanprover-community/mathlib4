@@ -77,7 +77,7 @@ lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_
 #align smul_eq_zero_of_left smul_eq_zero_of_left
 lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
 #align smul_eq_zero_of_right smul_eq_zero_of_right
-lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt $ fun h ↦ smul_eq_zero_of_left h b
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
 lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
 #align right_ne_zero_of_smul right_ne_zero_of_smul
@@ -105,14 +105,14 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]
-  smul_zero c := by rw [←f.map_zero, ←smul, smul_zero]
+  smul_zero c := by rw [← f.map_zero, ← smul, smul_zero]
 #align function.surjective.smul_with_zero Function.Surjective.smulWithZero
 
 variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
-  smul := (· • ·) ∘ f
+  smul := (f · • ·)
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom
@@ -165,7 +165,8 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
 
 protected lemma MulActionWithZero.subsingleton
     [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
-  ⟨λ x y => by rw [←one_smul R x, ←one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+  ⟨λ x y => by
+    rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
 #align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
 
 protected lemma MulActionWithZero.nontrivial
@@ -175,7 +176,13 @@ protected lemma MulActionWithZero.nontrivial
 #align mul_action_with_zero.nontrivial MulActionWithZero.nontrivial
 
 variable {R M}
-variable [MulActionWithZero R M] [Zero M'] [SMul R M']
+variable [MulActionWithZero R M] [Zero M'] [SMul R M'] (p : Prop) [Decidable p]
+
+@[simp]
+lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then a • b else 0 := by
+  rw [ite_smul, zero_smul]
+
+lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/

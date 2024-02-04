@@ -21,9 +21,21 @@ open List
 def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
   ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
 
-/-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial integer solution
+/-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
+def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
+
+/-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial natural solution
 when `n ≥ 3`. -/
-def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremWith ℕ n
+def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
+
+lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
+  fun _ _ _ _ _ _ ↦ by norm_num
+
+lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
+  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
+  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
@@ -34,8 +46,12 @@ lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α 
   simp_rw [pow_mul']
   refine hm _ _ _ ?_ ?_ ?_ <;> exact pow_ne_zero _ ‹_›
 
+lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
+    FermatLastTheoremFor n := by
+  exact FermatLastTheoremWith.mono hmn hm
+
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
-  TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
+    TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
   tfae_have 1 → 2
   · rintro h a b c ha hb hc habc
     obtain hn | hn := n.even_or_odd
@@ -48,7 +64,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
       push_cast
-      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ←mul_add, habc, *]
+      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
     · exact (by positivity : 0 < c ^ n).not_lt $ habc.symm.trans_lt $ add_neg (hn.pow_neg ha) $
         hn.pow_neg hb
     · refine' h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
@@ -78,7 +94,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       simp only [abs_of_pos, habc, *]
   tfae_have 2 → 3
   · rintro h a b c ha hb hc habc
-    rw [←Rat.num_ne_zero] at ha hb hc
+    rw [← Rat.num_ne_zero] at ha hb hc
     have : a.den ≠ 0 := a.den_pos.ne'
     have : b.den ≠ 0 := b.den_pos.ne'
     have : c.den ≠ 0 := c.den_pos.ne'
@@ -87,10 +103,19 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
     refine' Int.cast_injective $ (div_left_inj' this).1 _
     push_cast
-    simp only [add_div, ←div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
+    simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
   tfae_have 3 → 1
   · rintro h a b c
-    exact_mod_cast h a b c
+    exact mod_cast h a b c
   tfae_finish
+
+lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℕ n :=
+  Iff.rfl
+
+lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+
+lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2

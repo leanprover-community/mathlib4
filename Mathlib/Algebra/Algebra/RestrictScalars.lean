@@ -32,12 +32,12 @@ typeclass instead.
 There are many similarly-named definitions elsewhere which do not refer to this type alias. These
 refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R] B` to `A →ₗ[S] B`:
 
-* `LinearMap.RestrictScalars`
-* `LinearEquiv.RestrictScalars`
-* `AlgHom.RestrictScalars`
-* `AlgEquiv.RestrictScalars`
-* `Submodule.RestrictScalars`
-* `Subalgebra.RestrictScalars`
+* `LinearMap.restrictScalars`
+* `LinearEquiv.restrictScalars`
+* `AlgHom.restrictScalars`
+* `AlgEquiv.restrictScalars`
+* `Submodule.restrictScalars`
+* `Subalgebra.restrictScalars`
 -/
 
 
@@ -214,11 +214,11 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 #align restrict_scalars.ring_equiv_map_smul RestrictScalars.ringEquiv_map_smul
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance : Algebra R (RestrictScalars R S A) :=
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
   { (algebraMap S A).comp (algebraMap R S) with
     smul := (· • ·)
-    commutes' := fun _ _ ↦ Algebra.commutes' _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def' _ _ }
+    commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
+    smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

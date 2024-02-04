@@ -73,7 +73,7 @@ def lsmul : A →ₐ[R] Module.End B M where
 #align algebra.lsmul Algebra.lsmulₓ
 
 @[simp]
-theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (· • ·) a := rfl
+theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
 #align algebra.lsmul_coe Algebra.lsmul_coe
 
 end Algebra
@@ -157,8 +157,8 @@ variable {R S A B}
 
 @[simp]
 theorem _root_.AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) :
-    f (algebraMap R A r) = algebraMap R B r :=
-  by rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
+    f (algebraMap R A r) = algebraMap R B r := by
+  rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
 #align alg_hom.map_algebra_map AlgHom.map_algebraMap
 
 variable (R)
@@ -175,12 +175,12 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
 -- Porting note: @[nolint instance_priority]
-instance (priority := 999) of_ring_hom {R A B : Type*} [CommSemiring R] [CommSemiring A]
+instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
   letI := (f : A →+* B).toAlgebra
   of_algebraMap_eq fun x => (f.commutes x).symm
-#align is_scalar_tower.of_ring_hom IsScalarTower.of_ring_hom
+#align is_scalar_tower.of_ring_hom IsScalarTower.of_algHom
 
 end Semiring
 
@@ -299,7 +299,7 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.mem_smul.2 ⟨c, x, hc, hx, rfl⟩)
+  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
     (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
     fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
@@ -319,7 +319,7 @@ theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S
     (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) :=
   span_induction hx
     (fun x hx => by
-      let ⟨p, q, _hp, hq, hpq⟩ := Set.mem_smul.1 hx
+      let ⟨p, _hp, q, hq, hpq⟩ := Set.mem_smul.1 hx
       rw [← hpq, smul_smul]
       exact smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hq)
     (by rw [smul_zero]; exact zero_mem _)

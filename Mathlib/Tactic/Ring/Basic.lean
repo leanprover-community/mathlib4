@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Aurélien Saue, Tim Baanen
+Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
@@ -254,7 +254,7 @@ variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
-  ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
+    ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
@@ -803,7 +803,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
-  (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+    (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
 
 /-- Exponentiates two polynomials `va, vb`.
 
@@ -1086,6 +1086,29 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | _ => els
   | _, _, _ => els
 
+/-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`
+(which is not a commutative semiring) into a commutative semiring `β` by using an injective map
+`lift : α → β`. -/
+class CSLift (α : Type u) (β : outParam (Type u)) where
+  /-- `lift` is the "canonical injection" from `α` to `β` -/
+  lift : α → β
+  /-- `lift` is an injective function -/
+  inj : Function.Injective lift
+
+/-- `CSLiftVal a b` means that `b = lift a`. This is used by `ring` to construct an expression `b`
+from the input expression `a`, and then run the usual ring algorithm on `b`. -/
+class CSLiftVal {α} {β : outParam (Type u)} [CSLift α β] (a : α) (b : outParam β) : Prop where
+  /-- The output value `b` is equal to the lift of `a`. This can be supplied by the default
+  instance which sets `b := lift a`, but `ring` will treat this as an atom so it is more useful
+  when there are other instances which distribute addition or multiplication. -/
+  eq : b = CSLift.lift a
+
+instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift.lift a) := ⟨rfl⟩
+
+theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
+    [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
+  inst.2 <| by rwa [← h1.1, ← h2.1]
+
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
@@ -1104,17 +1127,39 @@ def proveEq (g : MVarId) : AtomM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
+  let sα ←
+    try Except.ok <$> synthInstanceQ q(CommSemiring $α)
+    catch e => pure (.error e)
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
-  let c ← mkCache sα
-  profileitM Exception "ring" (← getOptions) do
-    let ⟨a, va, pa⟩ ← eval sα c e₁
-    let ⟨b, vb, pb⟩ ← eval sα c e₂
-    unless va.eq vb do
-      let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
-      throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
-    let pb : Q($e₂ = $a) := pb
-    g.assign q(of_eq $pa $pb)
+  let eq ← match sα with
+  | .ok sα => ringCore sα e₁ e₂
+  | .error e =>
+    let β ← mkFreshExprMVarQ q(Type v)
+    let e₁' ← mkFreshExprMVarQ q($β)
+    let e₂' ← mkFreshExprMVarQ q($β)
+    let (sβ, (pf : Q($e₁' = $e₂' → $e₁ = $e₂))) ← try
+      let _l ← synthInstanceQ q(CSLift $α $β)
+      let sβ ← synthInstanceQ q(CommSemiring $β)
+      let _ ← synthInstanceQ q(CSLiftVal $e₁ $e₁')
+      let _ ← synthInstanceQ q(CSLiftVal $e₂ $e₂')
+      pure (sβ, q(of_lift (a := $e₁) (b := $e₂)))
+    catch _ => throw e
+    pure q($pf $(← ringCore sβ e₁' e₂'))
+  g.assign eq
+where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
+  ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
+      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
+    let c ← mkCache sα
+    profileitM Exception "ring" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sα c e₁
+      let ⟨b, vb, pb⟩ ← eval sα c e₂
+      unless va.eq vb do
+        let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+        throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
+      let pb : Q($e₂ = $a) := pb
+      return q(of_eq $pa $pb)
 
 /--
 Tactic for solving equations of *commutative* (semi)rings,

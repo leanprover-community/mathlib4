@@ -5,7 +5,7 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Data.Set.Pointwise.SMul
@@ -140,8 +140,9 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
-        MonoidHom.comp_apply, h]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
+        MonoidHom.comp_apply, h]; rfl
 #align free_product.ext_hom Monoid.CoprodI.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
@@ -151,7 +152,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
-        simp_rw [Con.rel_eq_coe, Con.ker_rel]
+        simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩)
         · change FreeMonoid.lift _ (FreeMonoid.of _) = FreeMonoid.lift _ 1
           simp only [MonoidHom.map_one, FreeMonoid.lift_eval_of]
@@ -163,7 +164,8 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   left_inv := by
     intro fi
     ext i x
-    rw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
     ext i x
@@ -375,7 +377,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp [rcons, cons]
+  simp only [rcons._eq_1, cons._eq_1, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head
@@ -816,7 +818,8 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
   · simp [mulHead, replaceHead]
   · specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
-    simp [replaceHead, ← mul_assoc] at *
+    simp? [replaceHead, ← mul_assoc] at * says
+      simp only [replaceHead, head, append_prod, ← mul_assoc] at *
     congr 1
 #align free_product.neword.mul_head_prod Monoid.CoprodI.NeWord.mulHead_prod
 
@@ -964,7 +967,7 @@ theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Wor
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 #align free_product.empty_of_word_prod_eq_one Monoid.CoprodI.empty_of_word_prod_eq_one
 
-/-- The Ping-Pong-Lemma.
+/-- The **Ping-Pong-Lemma**.
 
 Given a group action of `G` on `X` so that the `H i` acts in a specific way on disjoint subsets
 `X i` we can prove that `lift f` is injective, and thus the image of `lift f` is isomorphic to the
@@ -989,21 +992,22 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
 
 end PingPongLemma
 
-/-- The free product of free groups is itself a free group -/
-@[simps!]  --Porting note: added `!`
-instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [hG : ∀ i, IsFreeGroup (G i)] :
-    IsFreeGroup (CoprodI G) where
-  Generators := Σi, IsFreeGroup.Generators (G i)
-  MulEquiv' :=
-    MonoidHom.toMulEquiv
-      (FreeGroup.lift fun x : Σi, IsFreeGroup.Generators (G i) =>
-        CoprodI.of (IsFreeGroup.of x.2 : G x.1))
-      (CoprodI.lift fun i : ι =>
-        (IsFreeGroup.lift fun x : IsFreeGroup.Generators (G i) =>
-            FreeGroup.of (⟨i, x⟩ : Σi, IsFreeGroup.Generators (G i)) :
-          G i →* FreeGroup (Σi, IsFreeGroup.Generators (G i))))
-      (by ext; simp)
-      (by ext; simp)
+/-- Given a family of free groups with distinguished bases, then their free product is free, with
+a basis given by the union of the bases of the components. -/
+def FreeGroupBasis.coprodI {ι : Type*} {X : ι → Type*} {G : ι → Type*} [∀ i, Group (G i)]
+    (B : ∀ i, FreeGroupBasis (X i) (G i)) :
+    FreeGroupBasis (Σ i, X i) (CoprodI G) :=
+  ⟨MulEquiv.symm <| MonoidHom.toMulEquiv
+    (FreeGroup.lift fun x : Σ i, X i => CoprodI.of (B x.1 x.2))
+    (CoprodI.lift fun i : ι => (B i).lift fun x : X i =>
+              FreeGroup.of (⟨i, x⟩ : Σ i, X i))
+    (by ext; simp)
+    (by ext1 i; apply (B i).ext_hom; simp)⟩
+
+/-- The free product of free groups is itself a free group. -/
+instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGroup (G i)] :
+    IsFreeGroup (CoprodI G) :=
+  (FreeGroupBasis.coprodI (fun i ↦ IsFreeGroup.basis (G i))).isFreeGroup
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.

@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Says
 
 #align_import logic.equiv.set from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
@@ -261,7 +262,7 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
 /-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
   ⟨fun _ => PUnit.unit, fun _ => ⟨a, mem_singleton _⟩, fun ⟨x, h⟩ => by
-    simp at h
+    simp? at h says simp only [mem_singleton_iff] at h
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
@@ -488,16 +489,14 @@ protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Inje
 
 @[simp]
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
-    (h : x ∈ s) : (Set.image f s H).symm ⟨f x, ⟨x, ⟨h, rfl⟩⟩⟩ = ⟨x, h⟩ := by
-  apply (Set.image f s H).injective
-  simp [(Set.image f s H).apply_symm_apply]
+    (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
+  (Equiv.symm_apply_eq _).2 rfl
 #align equiv.set.image_symm_apply Equiv.Set.image_symm_apply
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
   ext ⟨b, a, has, rfl⟩
-  have : ∀ h : ∃ a', a' ∈ s ∧ a' = a, Classical.choose h = a := fun h => (Classical.choose_spec h).2
-  simp [Equiv.Set.image, Equiv.Set.imageOfInjOn, hf.eq_iff, this]
+  simp [hf.eq_iff]
 #align equiv.set.image_symm_preimage Equiv.Set.image_symm_preimage
 
 /-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
@@ -661,11 +660,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
-  -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
-  -- This regression is https://github.com/leanprover/lean4/issues/1926
-  by_cases hi : p i
-  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  by_cases hi : p i <;> simp [hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.

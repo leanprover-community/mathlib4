@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Algebra.Hom.Ring.Basic
 
 #align_import data.int.cast.lemmas from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -47,7 +48,7 @@ theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
 #align int.coe_nat_succ_pos Int.coe_nat_succ_pos
 
 lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [←toNat_lt_toNat, toNat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
+  rw [← toNat_lt_toNat, toNat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
@@ -166,7 +167,7 @@ theorem cast_max : (↑(max a b) : α) = max (a : α) (b : α) :=
 theorem cast_abs : ((|a| : ℤ) : α) = |(a : α)| := by simp [abs_eq_max_neg]
 #align int.cast_abs Int.cast_abs
 
-theorem cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := by exact_mod_cast Int.add_one_le_of_lt h
+theorem cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := mod_cast Int.add_one_le_of_lt h
 #align int.cast_one_le_of_pos Int.cast_one_le_of_pos
 
 theorem cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
@@ -191,9 +192,9 @@ theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n
     rwa [add_right_neg] at this
   rw [← mul_add, mul_nonneg_iff]
   rcases lt_trichotomy n 0 with (h | rfl | h)
-  · exact Or.inr ⟨by exact_mod_cast h.le, hnx' h⟩
+  · exact Or.inr ⟨mod_cast h.le, hnx' h⟩
   · simp [le_total 0 x]
-  · exact Or.inl ⟨by exact_mod_cast h.le, hnx h⟩
+  · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 #align int.nneg_mul_add_sq_of_abs_le_one Int.nneg_mul_add_sq_of_abs_le_one
 
 theorem cast_natAbs : (n.natAbs : α) = |n| := by
@@ -266,7 +267,7 @@ theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
   · exact (FunLike.congr_fun h_nat x : _)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact_mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
 #align monoid_hom.ext_int MonoidHom.ext_int
 
 end MonoidHom

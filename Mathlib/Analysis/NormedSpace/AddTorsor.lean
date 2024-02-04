@@ -24,12 +24,12 @@ open NNReal Topology
 
 open Filter
 
-variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 section NormedSpace
 
-variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
 
@@ -232,14 +232,16 @@ end invertibleTwo
     dist p (Equiv.pointReflection p q) = dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_left _ _)
 
-@[simp] theorem dist_pointReflection_right (p q : P) :
+variable (𝕜) in
+theorem dist_pointReflection_right (p q : P) :
     dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
   simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V),
     nsmul_eq_smul_cast 𝕜, norm_smul]
 
-@[simp] theorem dist_right_pointReflection (p q : P) :
+variable (𝕜) in
+theorem dist_right_pointReflection (p q : P) :
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
-  (dist_comm _ _).trans (dist_pointReflection_right _ _)
+  (dist_comm _ _).trans (dist_pointReflection_right 𝕜 _ _)
 
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
@@ -253,7 +255,7 @@ variable (𝕜)
 theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
     ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
   rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
-  cases' eq_or_ne y x with h h
+  rcases eq_or_ne y x with h | h
   · use 1
     simp [h.symm, interior_subset hy]
   have hxy : 0 < ‖y -ᵥ x‖ := by rwa [norm_pos_iff, vsub_ne_zero]
@@ -298,7 +300,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`
-      simp
+      simp only [Function.comp_apply, AffineEquiv.vaddConst_apply, AffineEquiv.vaddConst_symm_apply]
       conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
           midpoint_vsub_midpoint]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))

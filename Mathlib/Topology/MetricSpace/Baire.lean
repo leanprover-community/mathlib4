@@ -40,7 +40,7 @@ open EMetric ENNReal
 
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
-Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_open` working
+Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_isOpen` working
 with any encodable source space). -/
 class BaireSpace (α : Type*) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
@@ -187,43 +187,43 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
 variable [TopologicalSpace α] [BaireSpace α]
 
 /-- Definition of a Baire space. -/
-theorem dense_iInter_of_open_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n)) (hd : ∀ n, Dense (f n)) :
-    Dense (⋂ n, f n) :=
+theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n))
+    (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
-#align dense_Inter_of_open_nat dense_iInter_of_open_nat
+#align dense_Inter_of_open_nat dense_iInter_of_isOpen_nat
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
-theorem dense_sInter_of_open {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
+theorem dense_sInter_of_isOpen {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
     have F : ∀ n, f n ∈ S := fun n => by rw [hf]; exact mem_range_self _
     rw [hf, sInter_range]
-    exact dense_iInter_of_open_nat (fun n => ho _ (F n)) fun n => hd _ (F n)
-#align dense_sInter_of_open dense_sInter_of_open
+    exact dense_iInter_of_isOpen_nat (fun n => ho _ (F n)) fun n => hd _ (F n)
+#align dense_sInter_of_open dense_sInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
-theorem dense_biInter_of_open {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S, IsOpen (f s))
+theorem dense_biInter_of_isOpen {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S, IsOpen (f s))
     (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) := by
   rw [← sInter_image]
-  apply dense_sInter_of_open
+  apply dense_sInter_of_isOpen
   · rwa [ball_image_iff]
   · exact hS.image _
   · rwa [ball_image_iff]
-#align dense_bInter_of_open dense_biInter_of_open
+#align dense_bInter_of_open dense_biInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is an encodable type. -/
-theorem dense_iInter_of_open [Encodable β] {f : β → Set α} (ho : ∀ s, IsOpen (f s))
+theorem dense_iInter_of_isOpen [Encodable β] {f : β → Set α} (ho : ∀ s, IsOpen (f s))
     (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) := by
   rw [← sInter_range]
-  apply dense_sInter_of_open
+  apply dense_sInter_of_isOpen
   · rwa [forall_range_iff]
   · exact countable_range _
   · rwa [forall_range_iff]
-#align dense_Inter_of_open dense_iInter_of_open
+#align dense_Inter_of_open dense_iInter_of_isOpen
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
 theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t := by
@@ -231,7 +231,7 @@ theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
     refine' ⟨_, Ss, ⟨_, fun t ht => hSo _ ht, Sct, rfl⟩, _⟩
-    exact dense_sInter_of_open hSo Sct hSd
+    exact dense_sInter_of_isOpen hSo Sct hSd
   rintro ⟨t, ts, ho, hd⟩
   exact mem_of_superset (residual_of_dense_Gδ ho hd) ts
 #align mem_residual mem_residual
@@ -294,10 +294,10 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Encodable ι] {s : Set α} (hs : 
   let g i := (frontier (f i))ᶜ
   have hgo : ∀ i, IsOpen (g i) := fun i => isClosed_frontier.isOpen_compl
   have hgd : Dense (⋂ i, g i) := by
-    refine' dense_iInter_of_open hgo fun i x => _
+    refine' dense_iInter_of_isOpen hgo fun i x => _
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine' (hd.inter_of_Gδ hs (isGδ_iInter_of_open fun i => (hgo i)) hgd).mono _
+  refine' (hd.inter_of_Gδ hs (isGδ_iInter_of_isOpen fun i => (hgo i)) hgd).mono _
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩

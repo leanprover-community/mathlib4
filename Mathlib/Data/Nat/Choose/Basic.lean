@@ -127,7 +127,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp
   | n + 1, succ k, hk => by
-    cases' lt_or_eq_of_le hk with hk₁ hk₁
+    rcases lt_or_eq_of_le hk with hk₁ | hk₁
     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
         rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
         simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
@@ -303,7 +303,7 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
   cases' le_or_gt r n with b b
-  · cases' le_or_lt r (n / 2) with a h
+  · rcases le_or_lt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left

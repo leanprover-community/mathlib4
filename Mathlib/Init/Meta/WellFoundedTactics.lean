@@ -16,17 +16,11 @@ theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
     assumption
 #align nat.lt_add_of_zero_lt_left Nat.lt_add_of_zero_lt_left
 
-theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
-  suffices 0 < a + 1 by
-    simp [Nat.add_comm]
-    assumption
-  Nat.zero_lt_succ _
+theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a := by simp [Nat.one_add]
 #align nat.zero_lt_one_add Nat.zero_lt_one_add
 
 #align nat.lt_add_right Nat.lt_add_right
 
-theorem Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
-  lt_of_lt_of_le h (Nat.le_add_left _ _)
 #align nat.lt_add_left Nat.lt_add_left
 
 /-

@@ -127,7 +127,7 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
     { toCompHaus := X.compHaus,
-      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
@@ -185,16 +185,16 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
   dsimp [Function.Surjective]
   intro h y
-  by_contra' hy
+  by_contra! hy
   let C := Set.range f
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ
   have hUy : U ∈ nhds y := by
     simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
-  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
+  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) :=
-    ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+    ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
   let h : Y ⟶ mkFinite (ULift (Fin 2)) := ⟨fun _ => ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]
@@ -235,6 +235,17 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
     intro B C φ f _
     haveI : ExtremallyDisconnected (toProfinite.obj X) := X.extrDisc
     have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
+
+/-- Every Stonean space is projective in `Stonean`. -/
+instance (X : Stonean) : Projective X where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
     use ⟨f', h.left⟩
     ext

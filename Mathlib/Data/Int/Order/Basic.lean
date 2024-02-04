@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
 
@@ -62,7 +62,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.coe_nat_abs Int.coe_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-  by rw [←coe_natAbs, Int.cast_ofNat]
+  by rw [← coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
@@ -120,7 +120,7 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
   ⟨fun a0 => by
     let ⟨hn, hp⟩ := abs_lt.mp a0
-    rw [←zero_add 1, lt_add_one_iff] at hp
+    rw [← zero_add 1, lt_add_one_iff] at hp
     -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
     exact hp.antisymm hn,
     fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
@@ -347,7 +347,7 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
 
 #align int.mul_div_cancel' Int.mul_ediv_cancel'
 
-theorem ediv_dvd_ediv : ∀ {a b c : ℤ} (_ : a ∣ b) (_ : b ∣ c), b / a ∣ c / a
+theorem ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by

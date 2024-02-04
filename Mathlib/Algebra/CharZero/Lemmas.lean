@@ -3,8 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Algebra.Function.Support
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Data.Nat.Cast.Field
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -21,6 +22,7 @@ with `1`.
 * Characteristic zero implies that the additive monoid is infinite.
 -/
 
+open Function Set
 
 namespace Nat
 
@@ -50,9 +52,8 @@ theorem cast_div_charZero {k : Type*} [DivisionSemiring k] [CharZero k] {m n : �
 
 end Nat
 
-section
-
-variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
+section AddMonoidWithOne
+variable {α M : Type*} [AddMonoidWithOne M] [CharZero M] {n : ℕ}
 
 instance CharZero.NeZero.two : NeZero (2 : M) :=
   ⟨by
@@ -60,7 +61,18 @@ instance CharZero.NeZero.two : NeZero (2 : M) :=
     rwa [Nat.cast_two] at this⟩
 #align char_zero.ne_zero.two CharZero.NeZero.two
 
-end
+namespace Function
+
+lemma support_nat_cast (hn : n ≠ 0) : support (n : α → M) = univ :=
+  support_const <| Nat.cast_ne_zero.2 hn
+#align function.support_nat_cast Function.support_nat_cast
+
+lemma mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
+  mulSupport_const <| Nat.cast_ne_one.2 hn
+#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+
+end Function
+end AddMonoidWithOne
 
 section
 
@@ -98,17 +110,17 @@ section
 
 variable {R : Type*} [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
-theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
+@[simp] theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 #align neg_eq_self_iff neg_eq_self_iff
 
-theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+@[simp] theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 #align eq_neg_self_iff eq_neg_self_iff
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by
   rw [← sub_eq_zero, ← mul_sub, mul_eq_zero, sub_eq_zero] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align nat_mul_inj nat_mul_inj
 
 theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n ≠ 0) : a = b := by
@@ -121,7 +133,7 @@ theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
   refine' nat_mul_inj' _ two_ne_zero
-  exact_mod_cast h
+  exact mod_cast h
 #align bit0_injective bit0_injective
 
 theorem bit1_injective : Function.Injective (bit1 : R → R) := fun a b h => by

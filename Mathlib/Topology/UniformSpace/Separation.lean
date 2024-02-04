@@ -137,7 +137,7 @@ theorem separated_def {α : Type u} [UniformSpace α] :
 #align separated_def separated_def
 
 theorem separated_def' {α : Type u} [UniformSpace α] :
-    SeparatedSpace α ↔ ∀ x y, x ≠ y → ∃ r ∈ 𝓤 α, (x, y) ∉ r :=
+    SeparatedSpace α ↔ Pairwise fun x y => ∃ r ∈ 𝓤 α, (x, y) ∉ r :=
   separated_def.trans <| forall₂_congr fun x y => by rw [← not_imp_not]; simp [not_forall]
 #align separated_def' separated_def'
 

@@ -43,9 +43,6 @@ These are not declared as instances because there are several natural choices fo
 of a matrix.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
-
 noncomputable section
 
 open scoped BigOperators NNReal Matrix
@@ -435,7 +432,7 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
   -- porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖(WithLp.equiv 2 _).symm <| fun i => (WithLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
+  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
     WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_nnnorm_def Matrix.frobenius_nnnorm_def
@@ -546,8 +543,7 @@ variable [IsROrC α]
 theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
   rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum, Finset.sum_product]
-  refine' NNReal.rpow_le_rpow _ one_half_pos.le
-  refine' Finset.sum_le_sum fun i _ => Finset.sum_le_sum fun j _ => _
+  gcongr with i _ j
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel' (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
   dsimp only

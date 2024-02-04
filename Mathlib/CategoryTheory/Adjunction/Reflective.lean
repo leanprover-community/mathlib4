@@ -167,21 +167,21 @@ Functor.essImage.unit_isIso X.property
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
 def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
-  ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
+    ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
   refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
   refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
   dsimp
   exact inferInstance
 
 lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
     simp [equivEssImageOfReflective_counitIso_app, asIso]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).inv =
     (NatTrans.app (ofRightAdjoint i).unit X.obj) := rfl
 

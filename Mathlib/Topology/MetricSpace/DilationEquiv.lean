@@ -20,7 +20,7 @@ We also develop basic API about these equivalences.
 -/
 
 open scoped NNReal ENNReal
-open Function Set
+open Function Set Filter Bornology
 open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
@@ -77,6 +77,10 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
       ENNReal.coe_one, one_mul]
 
 @[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
@@ -173,5 +177,15 @@ theorem coe_pow (e : X ≃ᵈ X) (n : ℕ) : ⇑(e ^ n) = e^[n] := by
   rw [← coe_toEquiv, ← toPerm_apply, map_pow, Equiv.Perm.coe_pow]; rfl
 
 end PseudoEMetricSpace
+
+section PseudoMetricSpace
+
+variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] [DilationEquivClass F X Y]
+
+@[simp]
+lemma map_cobounded (e : F) : map e (cobounded X) = cobounded Y := by
+  rw [← Dilation.comap_cobounded e, map_comap_of_surjective (EquivLike.surjective e)]
+
+end PseudoMetricSpace
 
 end DilationEquiv

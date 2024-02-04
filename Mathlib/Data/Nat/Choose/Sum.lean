@@ -72,7 +72,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
 also with the binomial coefficient applied via scalar action of ℕ. -/
 theorem add_pow' (h : Commute x y) (n : ℕ) :
-    (x + y) ^ n = ∑ m in Nat.antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
+    (x + y) ^ n = ∑ m in antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
   simp_rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ choose n m • (x ^ m * y ^ p),
     _root_.nsmul_eq_mul, cast_comm, h.add_pow]
 #align commute.add_pow' Commute.add_pow'
@@ -136,8 +136,9 @@ end Nat
 
 theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 := by
-  cases n; · simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     have h := add_pow (-1 : ℤ) 1 n.succ
     simp only [one_pow, mul_one, add_left_neg] at h
     rw [← h, zero_pow (Nat.succ_pos n), if_neg (Nat.succ_ne_zero n)]
@@ -157,11 +158,11 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
     rw [mem_powerset] at hy
-    exact card_le_of_subset hy
+    exact card_le_card hy
   · refine' sum_congr rfl fun y _ ↦ _
-    rw [← card_powersetLen, ← sum_const]
-    refine' sum_congr powersetLen_eq_filter.symm fun z hz ↦ _
-    rw [(mem_powersetLen.1 hz).2]
+    rw [← card_powersetCard, ← sum_const]
+    refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
+    rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
@@ -196,9 +197,9 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
 -- porting note: new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
-    (∏ ij in Nat.antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
-      (∏ ij in Nat.antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
-        ∏ ij in Nat.antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by
+    (∏ ij in antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
+      (∏ ij in antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
+        ∏ ij in antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by
   simp only [Nat.prod_antidiagonal_eq_prod_range_succ_mk, prod_pow_choose_succ]
   have : ∀ i ∈ range (n + 1), i ≤ n := fun i hi ↦ by simpa [Nat.lt_succ_iff] using hi
   congr 1
@@ -220,9 +221,9 @@ theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
 /-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
 antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
 theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
-    (∑ ij in Nat.antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
-      (∑ ij in Nat.antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
-        ∑ ij in Nat.antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
+    (∑ ij in antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
+      (∑ ij in antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
+        ∑ ij in antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 

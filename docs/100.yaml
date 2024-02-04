@@ -215,8 +215,8 @@
 58:
   title  : Formula for the Number of Combinations
   decls  :
-    - Finset.card_powersetLen
-    - Finset.mem_powersetLen
+    - Finset.card_powersetCard
+    - Finset.mem_powersetCard
   author : mathlib <!--Jeremy Avigad in lean 2-->
 59:
   title  : The Laws of Large Numbers
@@ -340,6 +340,7 @@
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   links :
     mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/CubingACube.lean
+  author : Floris van Doorn
 83:
   title  : The Friendship Theorem
   links  :
@@ -384,7 +385,7 @@
 93:
   title  : The Birthday Problem
   links  :
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BirthdayProble.lean
+    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BirthdayProblem.lean
   author : Eric Rodriguez
 94:
   title  : The Law of Cosines
@@ -411,3 +412,6 @@
   title  : Buffon Needle Problem
 100:
   title  : Descartes Rule of Signs
+  links  :
+    github : https://github.com/Timeroot/lean-descartes-signs/
+  author : Alex Meiburg

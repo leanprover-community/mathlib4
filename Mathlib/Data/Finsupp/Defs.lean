@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -140,6 +141,8 @@ theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
   FunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
 
+lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := FunLike.ne_iff
+
 @[deprecated FunLike.coe_fn_eq]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
   FunLike.coe_fn_eq
@@ -155,7 +158,7 @@ theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
   FunLike.congr_fun h _
 #align finsupp.congr_fun Finsupp.congr_fun
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0) : ⇑(⟨s, f, h⟩ : α →₀ M) = f :=
   rfl
 #align finsupp.coe_mk Finsupp.coe_mk
@@ -164,9 +167,7 @@ instance zero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 #align finsupp.has_zero Finsupp.zero
 
-@[simp]
-theorem coe_zero : ⇑(0 : α →₀ M) = 0 :=
-  rfl
+@[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 #align finsupp.coe_zero Finsupp.coe_zero
 
 theorem zero_apply {a : α} : (0 : α →₀ M) a = 0 :=
@@ -211,17 +212,15 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
 #align finsupp.ext_iff' Finsupp.ext_iff'
 
 @[simp]
-theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 := by
-  exact_mod_cast @Function.support_eq_empty_iff _ _ _ f
+theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
+  mod_cast @Function.support_eq_empty_iff _ _ _ f
 #align finsupp.support_eq_empty Finsupp.support_eq_empty
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne.def]
 #align finsupp.support_nonempty_iff Finsupp.support_nonempty_iff
 
-theorem nonzero_iff_exists {f : α →₀ M} : f ≠ 0 ↔ ∃ a : α, f a ≠ 0 := by
-  simp [← Finsupp.support_eq_empty, Finset.eq_empty_iff_forall_not_mem]
-#align finsupp.nonzero_iff_exists Finsupp.nonzero_iff_exists
+#align finsupp.nonzero_iff_exists Finsupp.ne_iff
 
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero
@@ -237,7 +236,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
-    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
+    ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -469,7 +468,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -483,7 +482,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 
@@ -542,7 +541,8 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     Function.update f a b
   mem_support_toFun i := by
     classical
-    simp [Function.update, Ne.def]
+    rw [Function.update]
+    simp only [eq_rec_constant, dite_eq_ite, ne_eq]
     split_ifs with hb ha ha <;>
       try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
@@ -555,7 +555,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
       simp [ha]
 #align finsupp.update Finsupp.update
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.update f a b := by
   delta update Function.update
   ext
@@ -599,6 +599,23 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
+
+theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+    support (f.update a b) ⊆ insert a f.support := by
+  rw [support_update]
+  split_ifs
+  · exact (erase_subset _ _).trans (subset_insert _ _)
+  · rfl
+
+theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁ m₂ : M) :
+    update (update f a₁ m₁) a₂ m₂ = update (update f a₂ m₂) a₁ m₁ :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_comm h _ _ _
+
+@[simp] theorem update_idem (f : α →₀ M) (a : α) (b c : M) :
+    update (update f a b) a c = update f a c :=
+  letI := Classical.decEq α
+  FunLike.coe_injective <| Function.update_idem _ _ _
 
 end Update
 
@@ -672,6 +689,28 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
 #align finsupp.erase_zero Finsupp.erase_zero
+
+theorem erase_eq_update_zero (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
+  letI := Classical.decEq α
+  ext fun _ => (Function.update_apply _ _ _ _).symm
+
+-- The name matches `Finset.erase_insert_of_ne`
+theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M) :
+    erase a (update f a' b) = update (erase a f) a' b := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
+
+-- not `simp` as `erase_of_not_mem_support` can prove this
+theorem erase_idem (f : α →₀ M) (a : α) :
+    erase a (erase a f) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
+
+@[simp] theorem update_erase_eq_update (f : α →₀ M) (a : α) (b : M) :
+    update (erase a f) a b = update f a b := by
+  rw [erase_eq_update_zero, update_idem]
+
+@[simp] theorem erase_update_eq_erase (f : α →₀ M) (a : α) (b : M) :
+    erase a (update f a b) = erase a f := by
+  rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
 
 end Erase
 
@@ -773,7 +812,7 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun a => by simp only [hf, zero_apply, mapRange_apply]
+  ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
 #align finsupp.map_range_zero Finsupp.mapRange_zero
 
 @[simp]
@@ -834,7 +873,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
     · simp only [h, true_iff_iff, Ne.def]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne.def, ne_self_iff_false]
+    · simp only [h, Ne.def, ne_self_iff_false, not_true_eq_false]
 #align finsupp.emb_domain Finsupp.embDomain
 
 @[simp]
@@ -954,6 +993,15 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0
   rw [Subsingleton.elim D] <;> exact support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
+@[simp]
+theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m : M) (n : N) :
+    zipWith f hf (single a m) (single a n) = single a (f m n) := by
+  ext a'
+  rw [zipWith_apply]
+  obtain rfl | ha' := eq_or_ne a a'
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
+
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
@@ -967,9 +1015,7 @@ instance add : Add (α →₀ M) :=
   ⟨zipWith (· + ·) (add_zero 0)⟩
 #align finsupp.has_add Finsupp.add
 
-@[simp]
-theorem coe_add (f g : α →₀ M) : ⇑(f + g) = f + g :=
-  rfl
+@[simp, norm_cast] lemma coe_add (f g : α →₀ M) : ⇑(f + g) = f + g := rfl
 #align finsupp.coe_add Finsupp.coe_add
 
 theorem add_apply (g₁ g₂ : α →₀ M) (a : α) : (g₁ + g₂) a = g₁ a + g₂ a :=
@@ -995,15 +1041,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 
 @[simp]
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
-  ext fun a' => by
-    by_cases h : a = a'
-    · rw [h, add_apply, single_eq_same, single_eq_same, single_eq_same]
-    · rw [add_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, zero_add]
+  (zipWith_single_single _ _ _ _ _).symm
 #align finsupp.single_add Finsupp.single_add
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
+
+instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -1203,7 +1254,7 @@ variable [AddMonoid M]
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar : SMul ℕ (α →₀ M) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance addMonoid : AddMonoid (α →₀ M) :=
@@ -1213,16 +1264,16 @@ instance addMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
 instance neg [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
 #align finsupp.has_neg Finsupp.neg
 
-@[simp]
-theorem coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g :=
-  rfl
+@[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g := rfl
 #align finsupp.coe_neg Finsupp.coe_neg
 
 theorem neg_apply [NegZeroClass G] (g : α →₀ G) (a : α) : (-g) a = -g a :=
@@ -1243,9 +1294,7 @@ instance sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 #align finsupp.has_sub Finsupp.sub
 
-@[simp]
-theorem coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ :=
-  rfl
+@[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
 #align finsupp.coe_sub Finsupp.coe_sub
 
 theorem sub_apply [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) (a : α) : (g₁ - g₂) a = g₁ a - g₂ a :=
@@ -1267,16 +1316,21 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
 instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddGroup := Finsupp.addGroup }
 #align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

@@ -395,18 +395,18 @@ namespace Final
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
-  induction t
-  case rel x y r =>
+  induction t with
+  | rel x y r =>
     obtain ⟨f, w⟩ := r
     fconstructor
     swap; fconstructor
     left; fconstructor
     exact StructuredArrow.homMk f
-  case refl => fconstructor
-  case symm x y _ ih =>
+  | refl => fconstructor
+  | symm x y _ ih =>
     apply zigzag_symmetric
     exact ih
-  case trans x y z _ _ ih₁ ih₂ =>
+  | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
     exact ih₁; exact ih₂
 #align category_theory.functor.final.zigzag_of_eqv_gen_quot_rel CategoryTheory.Functor.Final.zigzag_of_eqvGen_quot_rel
@@ -852,7 +852,7 @@ adjoints preserve filteredness), as right adjoints are always final, see `final_
 -/
 theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
 { IsFilteredOrEmpty.of_final F with
-  Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
+  nonempty := Nonempty.map F.obj IsFiltered.nonempty }
 
 /-- Initial functors preserve cofilteredness.
 
@@ -860,7 +860,7 @@ This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which st
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
-  IsCofilteredOrEmpty D :=
+    IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 

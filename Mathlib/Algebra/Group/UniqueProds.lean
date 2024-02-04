@@ -64,7 +64,8 @@ namespace UniqueMul
 variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 
 @[to_additive (attr := nontriviality, simp)]
-theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by simp [UniqueMul]
+theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
+  simp [UniqueMul, eq_iff_true_of_subsingleton]
 
 @[to_additive]
 theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) (hB1 : B.card ≤ 1) :
@@ -202,7 +203,7 @@ theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
 theorem iff_mulOpposite :
     UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0) ↔
       UniqueMul A B a0 b0 :=
-⟨of_mulOpposite, to_mulOpposite⟩
+  ⟨of_mulOpposite, to_mulOpposite⟩
 
 end Opposites
 
@@ -331,7 +332,7 @@ theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f) 
 @[to_additive "`UniqueSums` is preserved under additive equivalences."]
 theorem mulHom_image_iff (f : G ≃* H) :
     UniqueProds G ↔ UniqueProds H :=
-⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
+  ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
 
 open Finset MulOpposite in
 @[to_additive]
@@ -343,6 +344,97 @@ theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
 
 @[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
   of_mulOpposite <| (mulHom_image_iff <| MulEquiv.opOp G).mp h
+
+@[to_additive] private theorem toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
+  mul_left_cancel a b1 b2 he := by
+    classical
+    have := mem_insert_self b1 {b2}
+    obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty ⟨a, mem_singleton_self a⟩ ⟨b1, this⟩
+    cases mem_singleton.mp ha
+    simp_rw [mem_insert, mem_singleton] at hb
+    obtain rfl | rfl := hb
+    · exact (hu ha (mem_insert_of_mem <| mem_singleton_self b2) he.symm).2.symm
+    · exact (hu ha this he).2
+
+open MulOpposite in
+@[to_additive] theorem toIsCancelMul [UniqueProds G] : IsCancelMul G where
+  mul_left_cancel := toIsLeftCancelMul.mul_left_cancel
+  mul_right_cancel _ _ _ h :=
+    op_injective <| toIsLeftCancelMul.mul_left_cancel _ _ _ <| unop_injective h
+
+/-! Two theorems in [Andrzej Strojnowski, *A note on u.p. groups*][Strojnowski1980] -/
+
+/-- `UniqueProds G` says that for any two nonempty `Finset`s `A` and `B` in `G`, `A × B`
+  contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
+  a group, then we only need to check this when `A = B`.
+  Here we generalize the result to cancellative semigroups.
+  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+@[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
+    (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
+    UniqueProds G where
+  uniqueMul_of_nonempty {A B} hA hB := by
+    classical
+    obtain ⟨g1, h1, g2, h2, hu⟩ := h (hB.mul hA)
+    obtain ⟨b1, hb1, a1, ha1, rfl⟩ := mem_mul.mp h1
+    obtain ⟨b2, hb2, a2, ha2, rfl⟩ := mem_mul.mp h2
+    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => ?_⟩
+    specialize hu (mul_mem_mul hb1 ha) (mul_mem_mul hb ha2) _
+    · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
+    exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
+
+/-- If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
+  For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
+  but not `TwoUniqueProds`, see Example 10.13 in
+  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
+@[to_additive] theorem toTwoUniqueProds_of_group {G}
+    [Group G] [UniqueProds G] : TwoUniqueProds G where
+  uniqueMul_of_one_lt_card {A B} hc := by
+    simp_rw [Nat.one_lt_mul_iff, card_pos] at hc
+    obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty hc.1 hc.2.1
+    let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
+    let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
+    have hcard : 1 < C.card ∨ 1 < D.card; · simp_rw [card_map]; exact hc.2.2
+    have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_self a⟩
+    have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_self b⟩
+    suffices : ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d
+    · simp_rw [mem_product]
+      obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
+      obtain ⟨a0, ha0, rfl⟩ := mem_map.mp hc
+      obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
+      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
+      simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
+      · rwa [Ne, Prod.mk.inj_iff, not_and_or, eq_comm]
+      specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
+      simp_rw [Function.Embedding.coeFn_mk, mul_left_cancel_iff, mul_right_cancel_iff] at hu'
+      rw [mul_assoc, ← mul_assoc a', he, mul_assoc, mul_assoc] at hu'
+      exact hu' rfl
+    classical
+    let _ := Finset.mul (α := G)              -- E = D⁻¹C, F = DC⁻¹
+    have := uniqueMul_of_nonempty (A := D.image (·⁻¹) * C) (B := D * C.image (·⁻¹)) ?_ ?_
+    · obtain ⟨e, he, f, hf, hu⟩ := this
+      clear_value C D
+      simp only [UniqueMul, mem_mul, mem_image] at he hf hu
+      obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
+      obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
+      by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
+      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
+        specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩
+        rw [mul_left_cancel_iff, mul_right_cancel_iff,
+            mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
+      push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
+      by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
+      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
+        specialize hu ⟨_, ⟨_, hd4, rfl⟩, _, hC, rfl⟩ ⟨_, hD, _, ⟨_, hc4, rfl⟩, rfl⟩
+        simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
+      push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
+      rcases hcard with hC | hD
+      · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
+        refine (hc1 ?_).elim
+        simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
+      · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
+        refine (hd1 ?_).elim
+        simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
+    all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
 
 open UniqueMul in
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, UniqueProds (G i)] :
@@ -408,7 +500,7 @@ theorem mulHom_image_of_injective (f : H →ₙ* G) (hf : Function.Injective f)
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
 theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
-⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
+  ⟨mulHom_image_of_injective f.symm f.symm.injective, mulHom_image_of_injective f f.injective⟩
 
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
     TwoUniqueProds (∀ i, G i) where
@@ -472,15 +564,15 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 @[to_additive
   "This instance asserts that if `G` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
-instance (priority := 100) of_Covariant_right [IsRightCancelMul G]
+instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     [LinearOrder G] [CovariantClass G G (· * ·) (· < ·)] :
     TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
     rw [card_pos] at hA hB
     rw [← card_product] at hc
-    obtain ⟨a0, b0, ha0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
-    obtain ⟨a1, b1, ha1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
+    obtain ⟨a0, ha0, b0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
+    obtain ⟨a1, ha1, b1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
     have : UniqueMul A B a0 b0
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
@@ -506,13 +598,13 @@ open MulOpposite in
 @[to_additive
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
   addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
-instance (priority := 100) of_Covariant_left [IsLeftCancelMul G]
+instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [CovariantClass G G (Function.swap (· * ·)) (· < ·)] :
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
   let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (· * ·) (· < ·) :=
-  { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
-  of_mulOpposite of_Covariant_right
+    { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
+  of_mulOpposite of_covariant_right
 
 end TwoUniqueProds
 

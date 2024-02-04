@@ -29,6 +29,7 @@ In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplic
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
 
+suppress_compilation
 
 open scoped TensorProduct
 

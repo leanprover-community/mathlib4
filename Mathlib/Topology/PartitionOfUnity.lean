@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
 
@@ -203,12 +203,8 @@ variable {f}
 
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι) (n : Set X) (_ : n ∈ 𝓝 x) (_ : n ⊆ ⋂ i ∈ is, U i),
-      ∀ z ∈ n, (support fun i => f i z) ⊆ is :=
-  -- Porting note: Original proof was simply
-  -- `f.locallyFinite.exists_finset_nhd_support_subset hso ho x`
-  let ⟨a, ⟨b, ⟨c, ⟨d, e⟩⟩⟩⟩ := f.locallyFinite.exists_finset_nhd_support_subset hso ho x
-  ⟨a, b, c, d, e⟩
+    ∃ (is : Finset ι),  ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
+  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
@@ -321,7 +317,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
       (fun _ _ hs ht hd =>
-        (exists_continuous_zero_one_of_closed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
+        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
   ⟨f, hfU⟩
 #align bump_covering.exists_is_subordinate_of_locally_finite BumpCovering.exists_isSubordinate_of_locallyFinite

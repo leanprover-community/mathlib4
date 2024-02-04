@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -100,7 +100,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
-  f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+    f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -201,8 +201,9 @@ theorem adjoin_rootSet (n : ℕ) :
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
     rw [rootSet_def, aroots_def]
-    rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
+    rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
       Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),
@@ -286,7 +287,8 @@ instance : Field (SplittingField f) :=
       apply_fun e
       have : e a ≠ 0 := fun w' => by
         apply w
-        simp at w'
+        simp? at w' says
+          simp only [AddEquivClass.map_eq_zero_iff] at w'
         exact w'
       simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
       rw [mul_inv_cancel]
@@ -358,33 +360,12 @@ instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
-def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
-  refine'
-    AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
-      ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
-  haveI := finiteDimensional (SplittingField f) f
-  haveI := finiteDimensional L f
-  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
-    le_antisymm
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift L f <| splits (SplittingField f) f).toLinearMap from
-          RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)))
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
-          RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
-  change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
-  refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
-  exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
+def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
+  AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
+    have := finiteDimensional L f
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField
 
 end Polynomial
-
-section Normal
-
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
-  Normal.of_isSplittingField p
-#align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
-
-end Normal

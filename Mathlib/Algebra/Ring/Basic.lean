@@ -3,11 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.ring.basic from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -29,15 +29,15 @@ open Function
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def mulLeft [Distrib R] (r : R) : AddHom R R where
-  toFun := (· * ·) r
+  toFun := (r * ·)
   map_add' := mul_add r
 #align add_hom.mul_left AddHom.mulLeft
 #align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def mulRight [Distrib R] (r : R) : AddHom R R where
   toFun a := a * r
   map_add' _ _ := add_mul _ _ r
@@ -147,7 +147,7 @@ theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a :=
 #align succ_ne_self succ_ne_self
 
 theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
-  one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
+  one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [← sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
 
 section NoZeroDivisors
@@ -156,46 +156,46 @@ variable (α)
 
 lemma IsLeftCancelMulZero.to_noZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
-{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
-    by_cases hx : x = 0
-    { left
-      exact hx }
-    { right
-      rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
-      have := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
-      rwa [sub_zero] at this } }
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
+      by_cases hx : x = 0
+      { left
+        exact hx }
+      { right
+        rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
+        have := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
+        rwa [sub_zero] at this } }
 #align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.to_noZeroDivisors
 
 lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α] :
     NoZeroDivisors α :=
-{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
-    by_cases hy : y = 0
-    { right
-      exact hy }
-    { left
-      rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
-      have := (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
-      rwa [sub_zero] at this } }
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
+      by_cases hy : y = 0
+      { right
+        exact hy }
+      { left
+        rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
+        have := (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
+        rwa [sub_zero] at this } }
 #align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_noZeroDivisors
 
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦ by
-    rw [← sub_eq_zero, ← mul_sub] at h
-    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-  mul_right_cancel_of_ne_zero := fun hb h ↦ by
-    rw [← sub_eq_zero, ← sub_mul] at h
-    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+  { mul_left_cancel_of_ne_zero := fun ha h ↦ by
+      rw [← sub_eq_zero, ← mul_sub] at h
+      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
+    mul_right_cancel_of_ne_zero := fun hb h ↦ by
+      rw [← sub_eq_zero, ← sub_mul] at h
+      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_isCancelMulZero
 
 lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
-  IsDomain α :=
-{ NoZeroDivisors.to_isCancelMulZero α, h with .. }
+    IsDomain α :=
+  { NoZeroDivisors.to_isCancelMulZero α, h with .. }
 #align no_zero_divisors.to_is_domain NoZeroDivisors.to_isDomain
 
 instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=
-IsRightCancelMulZero.to_noZeroDivisors α
+  IsRightCancelMulZero.to_noZeroDivisors α
 #align is_domain.to_no_zero_divisors IsDomain.to_noZeroDivisors
 
 end NoZeroDivisors

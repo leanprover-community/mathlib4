@@ -433,11 +433,27 @@ A full test suite is provided at the bottom of the file.
 --   "(1 - 2)"]
 --   "linear_combination h1 - h2"
 
+-- example {R} [CommRing R] (x : R) (h2 : (2 : R) = 0) : x + x = 0 :=
+-- by test_polyrith
+--   "{\"data\":[\"(poly.var 0)\"],\"success\":true}"
+--   ["ff",
+--   "R",
+--   "1",
+--   "[(2 - 0)]",
+--   "((var0 + var0) - 0)"]
+--   "linear_combination x * h2"
+
+-- example {R} [CommRing R] (_x : R) (h : (2 : R) = 4) : (0 : R) = 2 :=
+-- by test_polyrith
+--   "{\"data\":[\"(poly.const 1/1)\"],\"success\":true}"
+--   ["ff",
+--   "R",
+--   "0",
+--   "[(2 - 4)]",
+--   "(0 - 2)"]
+--   "linear_combination h"
 
 -- We comment the following tests so that we don't overwhelm the SageCell API.
-
-
-
 
 /-
 
@@ -544,6 +560,26 @@ by polyrith
 --     polyrith,},
 --   polyrith,
 -- end
+
+/-
+
+### Examples with exponent
+
+-/
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by
+  polyrith
+
+example (K : Type)
+    [Field K]
+    [CharZero K]
+    {x y z : K}
+    (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
+    (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
+    (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
+    (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
+    x = 0 := by
+  polyrith
 
 /-!
 ### With trace enabled

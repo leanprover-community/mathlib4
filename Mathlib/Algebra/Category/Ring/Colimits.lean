@@ -144,12 +144,12 @@ def ColimitType : Type v :=
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   zero := Quotient.mk _ zero
   neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+  add := Quotient.map₂ add fun x x' rx y y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
 
 -- Porting note : failed to derive `Inhabited` instance
@@ -190,25 +190,27 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Neg.neg (α := ColimitType F)` to tell Lean negation happens inside `ColimitType F`.
-  (Quot.mk Setoid.r (neg x) : ColimitType F) = Neg.neg (α := ColimitType F) (Quot.mk Setoid.r x) :=
+    -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
+    -- annotation unless we use `by exact` to change the elaboration order.
+    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
   rfl
 #align CommRing.colimits.quot_neg CommRingCat.Colimits.quot_neg
 
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Add.add (α := ColimitType F)` to tell Lean addition happens inside `ColimitType F`.
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    Quot.mk Setoid.r (add x y) = Add.add (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
+      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_add CommRingCat.Colimits.quot_add
 
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Mul.mul (α := ColimitType F)` to tell Lean multiplication happens inside `ColimitType F`.
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    Quot.mk Setoid.r (mul x y) = Mul.mul (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
+      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_mul CommRingCat.Colimits.quot_mul
 
@@ -307,8 +309,8 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun, (· + ·)]
-    rw [←quot_add]
+    dsimp [descFun]
+    rw [← quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
 #align CommRing.colimits.desc_morphism CommRingCat.Colimits.descMorphism
@@ -323,11 +325,16 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     induction x with
     | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
     | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]
+    -- extra rfl with leanprover/lean4#2644
+    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y => erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]
-    | mul x y ih_x ih_y => erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]
+    | add x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
+    | mul x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
 instance hasColimits_commRingCat : HasColimits CommRingCat where

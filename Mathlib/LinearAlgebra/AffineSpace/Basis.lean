@@ -180,7 +180,7 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
-  cases' eq_or_ne i j with h h <;> simp [h]
+  rcases eq_or_ne i j with h | h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]
@@ -247,7 +247,8 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
   let s : Finset ι := {i}
   have hi : i ∈ s := by simp
   have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp
-  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by simp
+  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by
+    simp [eq_iff_true_of_subsingleton]
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 
@@ -257,7 +258,6 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
     have hi : i ∈ s := by simp
-    have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
     have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
     use s.affineCombination k b w

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sets.Closeds
@@ -74,9 +75,9 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   ⟨⟨I, hI.isPrime⟩⟩
 
 /-- The prime spectrum of the zero ring is empty. -/
-theorem punit (x : PrimeSpectrum PUnit) : False :=
-  x.1.ne_top_iff_one.1 x.2.1 <| Eq.substr (Subsingleton.elim 1 (0 : PUnit)) x.1.zero_mem
-#align prime_spectrum.punit PrimeSpectrum.punit
+instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
+  ⟨fun x ↦ x.IsPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+#noalign prime_spectrum.punit
 
 variable (R S)
 
@@ -101,7 +102,7 @@ noncomputable def primeSpectrumProd :
           · exact False.elim (hJ.ne_top h.right)
           · simp only [h]
         · rintro ⟨I, hI⟩
-          rcases(Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
+          rcases (Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
           · exact ⟨Sum.inl ⟨p, hp⟩, rfl⟩
           · exact ⟨Sum.inr ⟨p, hp⟩, rfl⟩)
 #align prime_spectrum.prime_spectrum_prod PrimeSpectrum.primeSpectrumProd
@@ -248,12 +249,8 @@ theorem vanishingIdeal_anti_mono {s t : Set (PrimeSpectrum R)} (h : s ⊆ t) :
 #align prime_spectrum.vanishing_ideal_anti_mono PrimeSpectrum.vanishingIdeal_anti_mono
 
 theorem zeroLocus_subset_zeroLocus_iff (I J : Ideal R) :
-    zeroLocus (I : Set R) ⊆ zeroLocus (J : Set R) ↔ J ≤ I.radical :=
-  ⟨fun h =>
-    Ideal.radical_le_radical_iff.mp
-      (vanishingIdeal_zeroLocus_eq_radical I ▸
-        vanishingIdeal_zeroLocus_eq_radical J ▸ vanishingIdeal_anti_mono h),
-    fun h => zeroLocus_radical I ▸ zeroLocus_anti_mono_ideal h⟩
+    zeroLocus (I : Set R) ⊆ zeroLocus (J : Set R) ↔ J ≤ I.radical := by
+  rw [subset_zeroLocus_iff_le_vanishingIdeal, vanishingIdeal_zeroLocus_eq_radical]
 #align prime_spectrum.zero_locus_subset_zero_locus_iff PrimeSpectrum.zeroLocus_subset_zeroLocus_iff
 
 theorem zeroLocus_subset_zeroLocus_singleton_iff (f g : R) :
@@ -302,7 +299,7 @@ theorem zeroLocus_empty_iff_eq_top {I : Ideal R} : zeroLocus (I : Set R) = ∅ �
   · contrapose!
     intro h
     rcases Ideal.exists_le_maximal I h with ⟨M, hM, hIM⟩
-    exact Set.Nonempty.ne_empty ⟨⟨M, hM.isPrime⟩, hIM⟩
+    exact ⟨⟨M, hM.isPrime⟩, hIM⟩
   · rintro rfl
     apply zeroLocus_empty_of_one_mem
     trivial
@@ -439,34 +436,13 @@ theorem isClosed_zeroLocus (s : Set R) : IsClosed (zeroLocus s) := by
   exact ⟨s, rfl⟩
 #align prime_spectrum.is_closed_zero_locus PrimeSpectrum.isClosed_zeroLocus
 
-theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
-    IsClosed ({x} : Set (PrimeSpectrum R)) ↔ x.asIdeal.IsMaximal := by
-  refine' (isClosed_iff_zeroLocus _).trans ⟨fun h => _, fun h => _⟩
-  · obtain ⟨s, hs⟩ := h
-    rw [eq_comm, Set.eq_singleton_iff_unique_mem] at hs
-    refine'
-      ⟨⟨x.2.1, fun I hI =>
-          Classical.not_not.1
-            (mt (Ideal.exists_le_maximal I) <| not_exists.2 fun J => not_and.2 fun hJ hIJ => _)⟩⟩
-    exact
-      ne_of_lt (lt_of_lt_of_le hI hIJ)
-        (symm <|
-          congr_arg PrimeSpectrum.asIdeal
-            (hs.2 ⟨J, hJ.isPrime⟩ fun r hr => hIJ (le_of_lt hI <| hs.1 hr)))
-  · refine' ⟨x.asIdeal.1, _⟩
-    rw [eq_comm, Set.eq_singleton_iff_unique_mem]
-    refine' ⟨fun _ h => h, fun y hy => PrimeSpectrum.ext _ _ (h.eq_of_le y.2.ne_top hy).symm⟩
-#align prime_spectrum.is_closed_singleton_iff_is_maximal PrimeSpectrum.isClosed_singleton_iff_isMaximal
-
 theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (PrimeSpectrum R)) :
     zeroLocus (vanishingIdeal t : Set R) = closure t := by
-  apply Set.Subset.antisymm
-  · rintro x hx t' ⟨ht', ht⟩
-    obtain ⟨fs, rfl⟩ : ∃ s, t' = zeroLocus s := by rwa [isClosed_iff_zeroLocus] at ht'
-    rw [subset_zeroLocus_iff_subset_vanishingIdeal] at ht
-    exact Set.Subset.trans ht hx
-  · rw [(isClosed_zeroLocus _).closure_subset_iff]
-    exact subset_zeroLocus_vanishingIdeal t
+  rcases isClosed_iff_zeroLocus (closure t) |>.mp isClosed_closure with ⟨I, hI⟩
+  rw [subset_antisymm_iff, (isClosed_zeroLocus _).closure_subset_iff, hI,
+      subset_zeroLocus_iff_subset_vanishingIdeal, (gc R).u_l_u_eq_u,
+      ← subset_zeroLocus_iff_subset_vanishingIdeal, ← hI]
+  exact ⟨subset_closure, subset_zeroLocus_vanishingIdeal t⟩
 #align prime_spectrum.zero_locus_vanishing_ideal_eq_closure PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure
 
 theorem vanishingIdeal_closure (t : Set (PrimeSpectrum R)) :
@@ -477,6 +453,16 @@ theorem vanishingIdeal_closure (t : Set (PrimeSpectrum R)) :
 theorem closure_singleton (x) : closure ({x} : Set (PrimeSpectrum R)) = zeroLocus x.asIdeal := by
   rw [← zeroLocus_vanishingIdeal_eq_closure, vanishingIdeal_singleton]
 #align prime_spectrum.closure_singleton PrimeSpectrum.closure_singleton
+
+theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
+    IsClosed ({x} : Set (PrimeSpectrum R)) ↔ x.asIdeal.IsMaximal := by
+  rw [← closure_subset_iff_isClosed, ← zeroLocus_vanishingIdeal_eq_closure,
+      vanishingIdeal_singleton]
+  constructor <;> intro H
+  · rcases x.asIdeal.exists_le_maximal x.2.1 with ⟨m, hm, hxm⟩
+    exact (congr_arg asIdeal (@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
+  · exact fun p hp ↦ PrimeSpectrum.ext _ _ (H.eq_of_le p.2.1 hp).symm
+#align prime_spectrum.is_closed_singleton_iff_is_maximal PrimeSpectrum.isClosed_singleton_iff_isMaximal
 
 theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s).IsRadical := by
   rw [← vanishingIdeal_closure, ← zeroLocus_vanishingIdeal_eq_closure,
@@ -500,7 +486,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommRing R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
-  OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal <| OrderDual.ofDual s) fun s _ =>
+  OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal ↑(OrderDual.ofDual s)) fun s _ =>
     (vanishingIdeal_anti_mono_iff s.2).symm
 #align prime_spectrum.closeds_embedding PrimeSpectrum.closedsEmbedding
 
@@ -559,6 +545,19 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
+lemma vanishingIdeal_isIrreducible {R} [CommRing R] :
+    vanishingIdeal (R := R) '' {s | IsIrreducible s} = {P | P.IsPrime} :=
+  Set.ext fun I ↦ ⟨fun ⟨_, hs, e⟩ ↦ e ▸ isIrreducible_iff_vanishingIdeal_isPrime.mp hs,
+    fun h ↦ ⟨zeroLocus I, (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h,
+      (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
+
+lemma vanishingIdeal_isClosed_isIrreducible {R} [CommRing R] :
+    vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
+  refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
+  · exact Set.image_subset _ fun _ ↦ And.right
+  rintro _ ⟨s, hs, rfl⟩
+  exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
+
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
@@ -567,6 +566,13 @@ instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
+
+/-- The prime spectrum of a commutative ring is a compact topological space. -/
+instance compactSpace : CompactSpace (PrimeSpectrum R) := by
+  refine compactSpace_of_finite_subfamily_closed fun S S_closed S_empty ↦ ?_
+  choose I hI using fun i ↦ (isClosed_iff_zeroLocus_ideal (S i)).mp (S_closed i)
+  simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
+  exact Ideal.isCompactElement_top.exists_finset_of_le_iSup _ _ S_empty
 
 section Comap
 
@@ -816,7 +822,7 @@ theorem basicOpen_pow (f : R) (n : ℕ) (hn : 0 < n) : basicOpen (f ^ n) = basic
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : R => (basicOpen r : Set (PrimeSpectrum R))) := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen
   · rintro p U hp ⟨s, hs⟩
@@ -833,33 +839,6 @@ theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicO
   rw [← Set.range_comp]
   rfl
 #align prime_spectrum.is_basis_basic_opens PrimeSpectrum.isBasis_basic_opens
-
-theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) :=
-  isCompact_of_finite_subfamily_closed fun {ι} Z hZc hZ => by
-    let I : ι → Ideal R := fun i => vanishingIdeal (Z i)
-    have hI : ∀ i, Z i = zeroLocus (I i) := fun i => by
-      simpa only [zeroLocus_vanishingIdeal_eq_closure] using (hZc i).closure_eq.symm
-    rw [basicOpen_eq_zeroLocus_compl f, Set.inter_comm, ← Set.diff_eq, Set.diff_eq_empty,
-      funext hI, ← zeroLocus_iSup] at hZ
-    obtain ⟨n, hn⟩ : f ∈ (⨆ i : ι, I i).radical := by
-      rw [← vanishingIdeal_zeroLocus_eq_radical]
-      apply vanishingIdeal_anti_mono hZ
-      exact subset_vanishingIdeal_zeroLocus {f} (Set.mem_singleton f)
-    rcases Submodule.exists_finset_of_mem_iSup I hn with ⟨s, hs⟩
-    use s
-    -- Using simp_rw here, because `hI` and `zeroLocus_iSup` need to be applied underneath binders
-    simp_rw [basicOpen_eq_zeroLocus_compl f, Set.inter_comm (zeroLocus {f})ᶜ, ← Set.diff_eq,
-      Set.diff_eq_empty]
-    rw [show (Set.iInter fun i => Set.iInter fun (_ : i ∈ s) => Z i) =
-      Set.iInter fun i => Set.iInter fun (_ : i ∈ s) => zeroLocus (I i) from congr_arg _
-        (funext fun i => congr_arg _ (funext fun _ => hI i))]
-    simp_rw [← zeroLocus_iSup]
-    rw [← zeroLocus_radical]
-    -- this one can't be in `simp_rw` because it would loop
-    apply zeroLocus_anti_mono
-    rw [Set.singleton_subset_iff]
-    exact ⟨n, hs⟩
-#align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
 
 @[simp]
 theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
@@ -890,13 +869,12 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
       exact isOpen_basicOpen }
 #align prime_spectrum.localization_away_open_embedding PrimeSpectrum.localization_away_openEmbedding
 
-end BasicOpen
+theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
+  rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
+  exact isCompact_range (map_continuous _)
+#align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
 
-/-- The prime spectrum of a commutative ring is a compact topological space. -/
-instance compactSpace : CompactSpace (PrimeSpectrum R) :=
-  { isCompact_univ := by
-      convert isCompact_basicOpen (1 : R)
-      rw [basicOpen_one, TopologicalSpace.Opens.coe_top] }
+end BasicOpen
 
 section Order
 
@@ -962,6 +940,65 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
       exact (IsLocalization.map_units (Localization.AtPrime x.asIdeal)
         ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
 #align prime_spectrum.localization_map_of_specializes PrimeSpectrum.localizationMapOfSpecializes
+
+variable (R) in
+/--
+Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
+irreducible set is a zero locus of some prime ideal.
+-/
+protected def pointsEquivIrreducibleCloseds :
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
+  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+  map_rel_iff' {p q} :=
+    (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
+
+end PrimeSpectrum
+
+open PrimeSpectrum in
+/--
+[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
+Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal.
+-/
+protected def minimalPrimes.equivIrreducibleComponents :
+    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ :=
+  let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
+    ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
+  (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
+    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed, and_comm]).dual
+
+namespace PrimeSpectrum
+
+lemma vanishingIdeal_irreducibleComponents :
+    vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
+    minimalPrimes R := by
+  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
+    ← PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
+  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
+
+lemma zeroLocus_minimalPrimes :
+    zeroLocus ∘ (↑) '' minimalPrimes R =
+    irreducibleComponents (PrimeSpectrum R) := by
+  rw [← vanishingIdeal_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
+  intros s hs
+  simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
+    using isClosed_of_mem_irreducibleComponents s hs
+
+variable {R}
+
+lemma vanishingIdeal_mem_minimalPrimes {s : Set (PrimeSpectrum R)} :
+    vanishingIdeal s ∈ minimalPrimes R ↔ closure s ∈ irreducibleComponents (PrimeSpectrum R) := by
+  constructor
+  · rw [← zeroLocus_minimalPrimes, ← zeroLocus_vanishingIdeal_eq_closure]
+    exact Set.mem_image_of_mem _
+  · rw [← vanishingIdeal_irreducibleComponents, ← vanishingIdeal_closure]
+    exact Set.mem_image_of_mem _
+
+lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
+    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I.radical ∈ minimalPrimes R := by
+  rw [← vanishingIdeal_zeroLocus_eq_radical]
+  conv_lhs => rw [← (isClosed_zeroLocus _).closure_eq]
+  exact vanishingIdeal_mem_minimalPrimes.symm
 
 end PrimeSpectrum
 
