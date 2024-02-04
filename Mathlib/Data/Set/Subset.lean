@@ -8,7 +8,7 @@ import Mathlib.Data.Set.Functor
 import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
-# Subsets as subtypes
+# Sets in subtypes
 
 This file defines notation for sets in a type pulled down to sets in a subtype, and sets in
 a subtype, lifted up to sets in the ambient type.
@@ -39,21 +39,9 @@ variable {S : Set (Set α)} {T : Set (Set ↑A)} {i : β → Set α} {j : β →
 namespace Subset
 
 /--
-Given two sets `A` and `B`, `A ↓∩ B` denotes `((↑) ⁻¹' B : Set A)`.
+Given two sets `A` and `B`, `A ↓∩ B` denotes `{x : ↑A | ↑x ∈ B}`.
 -/
-scoped notation A:67 " ↓∩ " B:67  => ((↑) ⁻¹' B : Set A)
-
-open Lean PrettyPrinter Delaborator SubExpr in
-/--
-The set of elements of `↑A` that satisfy that `↑x ∈ B` are denoted `A ↓∩ B`.
--/
-@[scoped delab app.Set.preimage]
-def delab_preimage_subtype : Delab := do
-  let #[_, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let B ← withAppArg delab
-  let A ← withAppFn <| withAppFn <| withAppFn <| withAppArg <| withAppArg delab
-  `($A ↓∩ $B)
+scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -67,12 +55,14 @@ def delab_set_image_subtype : Delab := do
   let e ← withAppArg delab
   `(↑$e)
 
-lemma setRestrict_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
+lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x
   simp only [mem_univ, iff_true]
   exact h x.2
 
-lemma restrict_subsetRestrict_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
+example : A ↓∩ B = {x : ↑A | ↑x ∈ B} := rfl
+
+lemma preimage_val_subset_preimage_val_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
   · rintro h x ⟨hxA, hxB⟩
     constructor
@@ -87,27 +77,31 @@ lemma restrict_subsetRestrict_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A 
     · exact ⟨hxA, hx⟩
     exact h.2
 
-lemma setRestrict_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
-  simp only [subset_antisymm_iff, restrict_subsetRestrict_iff, subset_inter_iff,
+lemma preimage_val_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
+  simp only [subset_antisymm_iff, preimage_val_subset_preimage_val_iff, subset_inter_iff,
     inter_subset_left, true_and]
 
-lemma setRestrict_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
+@[simp]
+lemma preimage_val_iUnion : A ↓∩ (⋃ (B : β), i B) = ⋃ (B : β), A ↓∩ i B := by
+  exact preimage_iUnion
+
+lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [preimage_sUnion, mem_iUnion, mem_preimage, exists_prop, mem_sUnion, mem_setOf_eq,
     exists_exists_and_eq_and]
 
 @[simp]
-lemma setRestrict_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := by
+lemma preimage_val_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := by
   exact preimage_iInter
 
-lemma setRestrict_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
+lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [preimage_sInter, mem_iInter, mem_preimage, mem_sInter, mem_setOf_eq,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
-lemma eq_of_restrict_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
+lemma eq_of_preimage_val_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
-  simp only [setRestrict_eq_iff, hB, hC] at h
+  simp only [preimage_val_eq_iff, hB, hC] at h
   exact h
 
 /-!
@@ -264,7 +258,7 @@ lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
 Relations between restriction and coercion.
 -/
 
-lemma coe_setRestrict_subset_self : ↑(A ↓∩ B) ⊆ B := by
+lemma coe_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B := by
   simp only [Subtype.image_preimage_coe, inter_subset_left]
 
 end Subset
