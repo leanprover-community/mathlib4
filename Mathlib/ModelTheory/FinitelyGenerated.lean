@@ -226,6 +226,31 @@ theorem FG.map_of_surjective {N : Type*} [L.Structure N] (h : FG L M) (f : M →
   exact h.range f
 #align first_order.language.Structure.fg.map_of_surjective FirstOrder.Language.Structure.FG.map_of_surjective
 
+theorem FG.countable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+    Countable (M →[L] N) := by
+  let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
+  let g : (M →[L] N) → (S → N) :=
+    fun f ↦ f ∘ (↑)
+  have g_inj : Function.Injective g := by
+    intro f f' h
+    apply Hom.eq_of_eqOn_dense closure_S
+    intro x x_in_S
+    exact congr_fun h ⟨x, x_in_S⟩
+  have : Finite ↑S := (S.finite_coe_iff).2 finite_S
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance FG.instCountable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+    Countable (M →[L] N) :=
+  FG.countable_Hom_to_countable N h
+
+theorem FG.countable_Embedding_to_countable (N : Type*) [L.Structure N] [Countable N] (_ : FG L M) :
+    Countable (M ↪[L] N) :=
+  Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
+
+instance Fg.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
+    [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
+  FG.countable_Embedding_to_countable N h
+
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align first_order.language.Structure.cg_def FirstOrder.Language.Structure.cg_def
@@ -301,6 +326,38 @@ set_option linter.uppercaseLean3 false in
 theorem Substructure.SubEquivalence.fg_iff {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.sub_dom.FG ↔ f.sub_cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.equiv.fg_iff, Substructure.fg_iff_structure_fg]
-end Language
 
+theorem Substructure.countable_fg_substructures_if_countable [Countable M] :
+    Countable { S : L.Substructure M // S.FG } := by
+  let g : { S : L.Substructure M // S.FG } → Finset M :=
+    fun S ↦ Exists.choose S.prop
+  have g_inj : Function.Injective g := by
+    intro S S' h
+    apply Subtype.eq
+    rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
+    exact congr_arg ((closure L) ∘ Finset.toSet) h
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+instance Substructure.instCountable_fg_substructures_if_countable [Countable M] :
+    Countable { S : L.Substructure M // S.FG } :=
+  countable_fg_substructures_if_countable
+
+theorem Substructure.countable_finiteEquiv_if_countable [Countable M] :
+    Countable { f : M ≃ₚ[L] M // f.sub_dom.FG } := by
+  let g : { f : M ≃ₚ[L] M // f.sub_dom.FG } →
+      Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
+    fun f ↦ ⟨⟨f.val.sub_dom, f.prop⟩, (subtype _).toHom.comp f.val.equiv.toHom⟩
+  have g_inj : Function.Injective g := by
+    intro f f' h
+    ext
+    let ⟨⟨dom_f, cod_f, equiv_f⟩, f_fin⟩ := f
+    cases congr_arg (·.1) h
+    apply SubEquivalence.ext (by rfl)
+    simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and] at h
+    exact fun x hx ↦ congr_fun (congr_arg (↑) h) ⟨x, hx⟩
+  have : ∀ U : { S : L.Substructure M // S.FG }, Structure.FG L U.val :=
+    fun U ↦ (U.val.fg_iff_structure_fg.1 U.prop)
+  exact Function.Embedding.countable ⟨g, g_inj⟩
+
+end Language
 end FirstOrder

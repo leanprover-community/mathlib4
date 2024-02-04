@@ -668,6 +668,15 @@ theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
+theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
+  intro f f' h
+  ext
+  exact congr_fun (congr_arg (↑) h) _
+
+@[simp]
+theorem toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
+  ⟨fun h ↦ toHom_injective h, fun h ↦ congr_arg (·.toHom) h⟩
+
 theorem injective (f : M ↪[L] N) : Function.Injective f :=
   f.toEmbedding.injective
 #align first_order.language.embedding.injective FirstOrder.Language.Embedding.injective
