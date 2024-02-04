@@ -166,7 +166,7 @@ theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
 #align category_theory.functor_to_types.comp CategoryTheory.FunctorToTypes.comp
 
 @[simp]
-theorem eqToHom_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
+theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
     F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
   aesop_cat
 
