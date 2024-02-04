@@ -196,7 +196,8 @@ set_option linter.uppercaseLean3 false in
 #align dimH_singleton dimH_singleton
 
 @[simp]
-theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
+theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
+    dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
   refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
   contrapose! hd
