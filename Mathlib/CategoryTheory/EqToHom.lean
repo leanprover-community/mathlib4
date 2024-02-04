@@ -306,7 +306,7 @@ theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
 #align category_theory.eq_to_hom_map CategoryTheory.eqToHom_map
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
     F.map (eqToHom p) ≫ F.map (eqToHom q) = F.map (eqToHom <| p.trans q) := by aesop_cat
 
