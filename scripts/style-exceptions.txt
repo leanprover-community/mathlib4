@@ -11,7 +11,7 @@ Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file 
 Mathlib/Analysis/Convolution.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1545 lines, try to split it up
 Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2367 lines, try to split it up
 Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2815 lines, try to split it up
-Mathlib/Analysis/NormedSpace/OperatorNorm.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2033 lines, try to split it up
+Mathlib/Analysis/NormedSpace/OperatorNorm.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2278 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2118 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2728 lines, try to split it up
 Mathlib/Combinatorics/SimpleGraph/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1625 lines, try to split it up
