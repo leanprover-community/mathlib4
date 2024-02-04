@@ -13,9 +13,9 @@ import Mathlib.Topology.ContinuousFunction.Basic
 # Category instance for topological spaces
 
 We introduce the bundled category `TopCat` of topological spaces together with the functors
-`discrete` and `trivial` from the category of types to `TopCat` which equip a type with the
-corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `topology.category.TopCat.adjunctions`.
+`TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
+with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
+resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
 
