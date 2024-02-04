@@ -10,7 +10,7 @@ import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 
 /-!
-## `funProp` enviroment extensions storing thorems for `funProp`
+## `fun_prop` enviroment extensions storing thorems for `fun_prop`
 -/
 
 namespace Mathlib
@@ -334,7 +334,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     | .const funName _ =>
 
       let .some (f',_) ← splitMorToComp f
-        | throwError s!"funProp bug: failed at detecting theorem type `{← ppExpr b}`"
+        | throwError s!"fun_prop bug: failed at detecting theorem type `{← ppExpr b}`"
 
       let form : TheoremForm := if (← isDefEq f' f) then .uncurried else .comp
 
@@ -372,13 +372,13 @@ def addTheorem (declName : Name) (attrKind : AttributeKind := .global)
     (prio : Nat := eval_prio default) : MetaM Unit := do
   match (← getTheoremFromConst declName prio) with
   | .lam thm =>
-    trace[Meta.Tactic.funProp.attr] "\
+    trace[Meta.Tactic.fun_prop.attr] "\
 lambda theorem: {thm.thmName}
 function property: {thm.funPropName}
 type: {repr thm.thmArgs.type}"
     lambdaTheoremsExt.add thm attrKind
   | .function thm =>
-    trace[Meta.Tactic.funProp.attr] "\
+    trace[Meta.Tactic.fun_prop.attr] "\
 function theorem: {thm.thmName}
 function property: {thm.funPropName}
 function name: {thm.funName}
@@ -387,12 +387,12 @@ applied arguments: {thm.appliedArgs}
 form: {repr thm.form}"
     functionTheoremsExt.add thm attrKind
   | .mor thm =>
-    trace[Meta.Tactic.funProp.attr] "\
+    trace[Meta.Tactic.fun_prop.attr] "\
 morphism theorem: {thm.thmName}
 function property: {thm.funPropName}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
-    trace[Meta.Tactic.funProp.attr] "\
+    trace[Meta.Tactic.fun_prop.attr] "\
 transition theorem: {thm.thmName}
 function property: {thm.funPropName}"
     transitionTheoremsExt.add thm attrKind
