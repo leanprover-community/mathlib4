@@ -71,6 +71,13 @@ protected def _root_.LinearMap.baseChange₂ (B : M₂ →ₗ[R] M₂ →ₗ[R] 
     ((A ⊗[R] M₂) →ₗ[A] (A ⊗[R] M₂) →ₗ[A] A) :=
   LinearMap.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
 
+@[simp]
+theorem _root_.LinearMap.baseChange_tmul₂ (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) (a : A) (m₂ : M₂)
+    (a' : A) (m₂' : M₂) :
+    B₂.baseChange₂ A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
+  rfl
+
+
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma _root_.LinearMap.IsSymm.tmul {B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A} {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R}
