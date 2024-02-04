@@ -20,7 +20,7 @@ The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' 
 
 variable (F : Type*) [Nontrivial F] [CommRing F] [CharP F 2]
 
-open BilinForm
+open LinearMap
 
 namespace Counterexample
 
@@ -28,8 +28,7 @@ set_option linter.uppercaseLean3 false
 
 /-- The bilinear form we will use as a counterexample, over some field `F` of characteristic two. -/
 def B : (F × F) →ₗ[F] (F × F) →ₗ[F] F :=
-  (LinearMap.mul F F).compl₁₂ (LinearMap.fst _ _ _) (LinearMap.snd _ _ _) +
-    (LinearMap.mul F F).compl₁₂ (LinearMap.snd _ _ _) (LinearMap.fst _ _ _)
+  (mul F F).compl₁₂ (fst _ _ _) (snd _ _ _) + (mul F F).compl₁₂ (snd _ _ _) (fst _ _ _)
 #align counterexample.B Counterexample.B
 
 @[simp]
@@ -52,12 +51,12 @@ This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
 theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
-      Set.InjOn (LinearMap.toQuadraticForm : (M →ₗ[R] M →ₗ[R] R) → QuadraticForm R M) {B | B.IsSymm} := by
+      Set.InjOn (toQuadraticForm : (M →ₗ[R] M →ₗ[R] R) → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)
   apply B_ne_zero F
-  apply h (isSymm_B F) LinearMap.isSymm_zero
-  rw [LinearMap.toQuadraticForm_zero, LinearMap.toQuadraticForm_eq_zero]
+  apply h (isSymm_B F) isSymm_zero
+  rw [toQuadraticForm_zero, toQuadraticForm_eq_zero]
   exact isAlt_B F
 #align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.BilinForm.not_injOn_toQuadraticForm_isSymm
 
