@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
+Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
@@ -104,7 +104,7 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
 
 @[symm] protected lemma symm (h : v₁ ≅ v₂) : v₂ ≅ v₁ := fun i₁ i₂ => (h i₁ i₂).symm
 
-@[simp] lemma _root_.congruence_comm : v₁ ≅ v₂ ↔ v₂ ≅ v₁ :=
+lemma _root_.congruence_comm : v₁ ≅ v₂ ↔ v₂ ≅ v₁ :=
   ⟨Congruence.symm, Congruence.symm⟩
 
 @[trans] protected lemma trans (h₁₂ : v₁ ≅ v₂) (h₂₃ : v₂ ≅ v₃) : v₁ ≅ v₃ :=
@@ -115,7 +115,7 @@ lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ �
   fun i₁ i₂ => edist_eq h (f i₁) (f i₂)
 
 /-- Change between equivalent index sets ι and ι'. -/
-@[simp] lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
+lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
     v₁ ∘ f ≅ v₂ ∘ f ↔ v₁ ≅ v₂ := by
   refine' ⟨fun h i₁ i₂ => _, fun h => index_map h f⟩
   simpa [Equiv.right_inv f i₁, Equiv.right_inv f i₂] using edist_eq h (f.symm i₁) (f.symm i₂)
@@ -140,10 +140,8 @@ lemma map_refl_apply (a : Set.range v₁) : congruence_map v₁ v₁ a = a := by
 lemma map_sound (h : v₁ ≅ v₂) (i : ι) :
     (congruence_map v₁ v₂ (Set.rangeFactorization v₁ i)) = v₂ i := by
   unfold congruence_map
-  rw [Set.rangeFactorization_coe v₂]
-  rw [← edist_eq_zero, ← h, edist_eq_zero]
-  rw [Set.apply_rangeSplitting v₁]
-  rw [Set.rangeFactorization_coe v₁]
+  rw [Set.rangeFactorization_coe v₂, ← edist_eq_zero, ← h, edist_eq_zero,
+    Set.apply_rangeSplitting v₁, Set.rangeFactorization_coe v₁]
 
 lemma map_comp_apply (h : v₂ ≅ v₃) (a : Set.range v₁) :
     congruence_map v₂ v₃ (congruence_map v₁ v₂ a) = congruence_map v₁ v₃ a := by
