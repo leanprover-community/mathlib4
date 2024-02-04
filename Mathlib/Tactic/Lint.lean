@@ -46,7 +46,7 @@ but don't use this assumption in the type.
   test declName := do
     if (← isAutoDecl declName) then return none
     let type := (← getConstInfo declName).type
-    if !(← isProp type) then return none
+    unless (← isProp type) do return none
     let names :=
       if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
       else if Name.isPrefixOf `Fintype declName
@@ -58,7 +58,7 @@ but don't use this assumption in the type.
       let argTys ← args.mapM inferType
       let ty ← ty.eraseProofs
       let impossibleArgs ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) => do
-        if !names.any t.getForallBody.isAppOf then return none
+        unless names.any t.cleanupAnnotations.getForallBody.isAppOf do return none
         let fv := arg.fvarId!
         if ty.containsFVar fv then return none
         if argTys[i+1:].any (·.containsFVar fv) then return none
