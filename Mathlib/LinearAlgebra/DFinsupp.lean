@@ -482,7 +482,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [AddCommGroup N] [Module R N]
+variable [DecidableEq ι] [Ring R] [AddCommGroup N] [Module R N]
 
 /- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
