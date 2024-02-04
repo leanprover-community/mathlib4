@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
@@ -321,21 +321,12 @@ theorem polar_self (x : M) : polar Q x x = 2 * Q x := by
   norm_num
 #align quadratic_form.polar_self QuadraticForm.polar_self
 
-/-- `QuadraticForm.polar` as a bilinear form -/
-@[simps]
-def polarBilin : BilinForm R M where
-  bilin := polar Q
-  bilin_add_left := polar_add_left Q
-  bilin_smul_left := polar_smul_left Q
-  bilin_add_right x y z := by simp_rw [polar_comm _ x, polar_add_left Q]
-  bilin_smul_right r x y := by simp_rw [polar_comm _ x, polar_smul_left Q]
-#align quadratic_form.polar_bilin QuadraticForm.polarBilin
-
 /-- `QuadraticForm.polar` as a bilinear map -/
 @[simps!]
 def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
   (polar_smul_right Q)
+-- #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 
 variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
@@ -670,13 +661,9 @@ def toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
   exists_companion' := ⟨B + B.flip,
     fun x y => by simp only [map_add, LinearMap.add_apply, LinearMap.flip_apply]; abel⟩
+-- #align bilin_form.to_quadratic_form BilinForm.toQuadraticForm
 
 variable {B : M →ₗ[R] M →ₗ[R] R}
-
-/-- A bilinear form gives a quadratic form by applying the argument twice. -/
-def _root_.BilinForm.toQuadraticForm (B : BilinForm R M) : QuadraticForm R M :=
-  B.toLin.toQuadraticForm
-#align bilin_form.to_quadratic_form BilinForm.toQuadraticForm
 
 @[simp]
 theorem toQuadraticForm_apply (B : M →ₗ[R] M →ₗ[R] R) (x : M) : B.toQuadraticForm x = B x x :=
@@ -814,7 +801,7 @@ end LinearMap
 
 namespace QuadraticForm
 
-open BilinForm
+open LinearMap
 
 section AssociatedHom
 
@@ -1198,8 +1185,8 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear form is nondegenerate if the quadratic form it is associated with is anisotropic. -/
-theorem nondegenerate_of_anisotropic {B : BilinForm R M} (hB : B.toQuadraticForm.Anisotropic) :
-    B.Nondegenerate := fun x hx => hB _ (hx x)
+theorem nondegenerate_of_anisotropic {B : M →ₗ[R] M →ₗ[R] R} (hB : B.toQuadraticForm.Anisotropic) :
+    B.SeparatingLeft := fun x hx => hB _ (hx x)
 #align bilin_form.nondegenerate_of_anisotropic BilinForm.nondegenerate_of_anisotropic
 
 end Semiring
