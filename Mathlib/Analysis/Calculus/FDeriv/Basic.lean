@@ -698,7 +698,7 @@ theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   nontriviality E
   have H : 𝓝[univ \ {x}] x ≠ ⊥
   · rw [← compl_eq_univ_diff, ← neBot_iff]
-    exact Module.punctured_nhds_neBot 𝕜 E x
+    exact (Module.perfectSpace 𝕜 E).not_isolated x
   simp [fderivWithin, fderiv, H]
 #align fderiv_within_univ fderivWithin_univ
 
