@@ -64,7 +64,7 @@ theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal (p + q) = ENNReal.ofReal p + ENNReal.ofReal q := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_eq_coe,
+  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_inj,
     Real.toNNReal_add hp hq]
 #align ennreal.of_real_add ENNReal.ofReal_add
 
@@ -195,7 +195,7 @@ lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q
 @[simp]
 theorem ofReal_eq_ofReal_iff {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal p = ENNReal.ofReal q ↔ p = q := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, coe_eq_coe, Real.toNNReal_eq_toNNReal_iff hp hq]
+  rw [ENNReal.ofReal, ENNReal.ofReal, coe_inj, Real.toNNReal_eq_toNNReal_iff hp hq]
 #align ennreal.of_real_eq_of_real_iff ENNReal.ofReal_eq_ofReal_iff
 
 @[simp]
@@ -351,7 +351,7 @@ theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNR
 #align ennreal.of_real_nsmul ENNReal.ofReal_nsmul
 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : (ENNReal.ofReal x)⁻¹ = ENNReal.ofReal x⁻¹ := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_eq_coe,
+  rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
 #align ennreal.of_real_inv_of_pos ENNReal.ofReal_inv_of_pos
 
@@ -437,7 +437,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  simp only [coe_eq_coe, NNReal.coe_eq, coe_toReal]
+  simp only [coe_inj, NNReal.coe_eq, coe_toReal]
 #align ennreal.to_real_eq_to_real ENNReal.toReal_eq_toReal
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by
@@ -498,7 +498,7 @@ theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := 
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∏ i in s, f i) = ∏ i in s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_eq_coe]
+  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 #align ennreal.of_real_prod_of_nonneg ENNReal.ofReal_prod_of_nonneg
 
