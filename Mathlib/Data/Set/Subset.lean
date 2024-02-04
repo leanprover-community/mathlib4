@@ -81,10 +81,6 @@ lemma preimage_val_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
   simp only [subset_antisymm_iff, preimage_val_subset_preimage_val_iff, subset_inter_iff,
     inter_subset_left, true_and]
 
-@[simp]
-lemma preimage_val_iUnion : A ↓∩ (⋃ (B : β), i B) = ⋃ (B : β), A ↓∩ i B := by
-  exact preimage_iUnion
-
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
   simp only [preimage_sUnion, mem_iUnion, mem_preimage, exists_prop, mem_sUnion, mem_setOf_eq,
