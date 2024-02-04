@@ -72,11 +72,11 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
 theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
 #align abs_norm abs_norm
 
-theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
+theorem inv_norm_smul_mem_unit_closedBall [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
     div_self_le_one]
-#align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_closed_unit_ball
+#align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_unit_closedBall
 
 theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : β) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
