@@ -72,7 +72,8 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
-theorem polarLinearMap₂_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+theorem polarLinearMap₂_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁)
+    (Q₂ : QuadraticForm R M₂) :
     polarLinearMap₂ (Q₁.tmul Q₂) = ⅟(2 : A) • (polarLinearMap₂ Q₁).tmul (polarLinearMap₂ Q₂) := by
   simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, LinearMap.tmul, tmul_smul,
     ← smul_tmul', map_nsmul, associated_tmul]
