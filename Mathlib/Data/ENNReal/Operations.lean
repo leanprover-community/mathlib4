@@ -37,7 +37,6 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
   norm_cast at *
   calc
     ↑(a * b) < ↑(a' * b') := coe_lt_coe.2 (mul_lt_mul₀ aa' bb')
-    _ = ↑a' * ↑b' := coe_mul
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 #align ennreal.mul_lt_mul ENNReal.mul_lt_mul
 
@@ -53,7 +52,8 @@ theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0∞ => x ^ n
   | 0, h => absurd rfl h
   | 1, _ => by simpa only [pow_one] using strictMono_id
-  | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
+  | n + 2, _ => fun x y h ↦ by
+    simp_rw [pow_succ _ (n + 1)]; exact mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
 @[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
@@ -182,11 +182,6 @@ end OperationsAndOrder
 section OperationsAndInfty
 
 variable {α : Type*}
-
-@[simp, norm_cast]
-theorem coe_pow (n : ℕ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n :=
-  ofNNRealHom.map_pow r n
-#align ennreal.coe_pow ENNReal.coe_pow
 
 @[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
 #align ennreal.add_eq_top ENNReal.add_eq_top

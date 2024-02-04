@@ -591,14 +591,14 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
-  · exact ENNReal.pow_pos ha.bot_lt _
+  · simpa using ENNReal.pow_pos ha.bot_lt _
   · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 #align ennreal.zpow_pos ENNReal.zpow_pos
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by
   cases n
-  · exact ENNReal.pow_lt_top h'a.lt_top _
+  · simpa using ENNReal.pow_lt_top h'a.lt_top _
   · simp only [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
 #align ennreal.zpow_lt_top ENNReal.zpow_lt_top
 
