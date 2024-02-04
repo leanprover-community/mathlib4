@@ -591,16 +591,16 @@ instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup 
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
+    (instProdNormedAddCommGroup p α β).toUniformSpace.toTopologicalSpace =
     instProdTopologicalSpace p α β :=
   rfl
 
 example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
+    (instProdNormedAddCommGroup p α β).toUniformSpace = instProdUniformSpace p α β :=
   rfl
 
 example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
+    (instProdNormedAddCommGroup p α β).toBornology = instProdBornology p α β :=
   rfl
 
 section norm_of

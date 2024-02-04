@@ -68,7 +68,7 @@ instance : NormedAddCommGroup ℂ :=
       eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
 
 instance : NormedField ℂ where
-  dist_eq _ _ := rfl
+  __ : MetricSpace _ := inferInstance
   norm_mul' := map_mul abs
 
 instance : DenselyNormedField ℂ where

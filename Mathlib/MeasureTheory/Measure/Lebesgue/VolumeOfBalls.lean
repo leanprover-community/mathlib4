@@ -100,8 +100,8 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
-    · congr!
-      simp_rw [Metric.ball, dist_zero_right]
+    · congr! 1
+      simp_rw [Metric.ball, sub_zero]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
@@ -144,13 +144,13 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
     · congr!
-      simp_rw [Metric.closedBall, dist_zero_right]
+      simp_rw [Metric.closedBall, sub_zero]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
-      simp_rw [Metric.ball, dist_zero_right]
+      simp_rw [Metric.ball, sub_zero]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
