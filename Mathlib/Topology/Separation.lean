@@ -838,7 +838,10 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 #align is_preconnected.infinite_of_nontrivial IsPreconnected.infinite_of_nontrivial
 
-@[deprecated PerfectSpace.infinite]
+/--
+Prefer `PerfectSpace.infinite`, which is a strictly broader theorem.
+-/
+@[deprecated]
 theorem ConnectedSpace.infinite [ConnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 #align connected_space.infinite ConnectedSpace.infinite
