@@ -970,7 +970,7 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
-theorem _root_.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
+theorem _root_.LinearMap.toQuadraticForm_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : M →ₗ[R] M →ₗ[R] R} {x y : M} (h : B.IsSymm):
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
@@ -984,12 +984,12 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M] {Q : QuadraticForm R M}
 
 @[simp]
-theorem isOrtho_polarBilin {x y : M} : Q.polarLinearMap₂.IsOrtho x y ↔ IsOrtho Q x y := by
+theorem isOrtho_polarLinearMap₂ {x y : M} : Q.polarLinearMap₂.IsOrtho x y ↔ IsOrtho Q x y := by
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, polarLinearMap₂_apply_apply, polar, sub_sub,
     sub_eq_zero]
 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
-  isOrtho_polarBilin.mpr h
+  isOrtho_polarLinearMap₂.mpr h
 
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
@@ -1029,13 +1029,13 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
-theorem nondegenerate_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M)
+theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
     (QuadraticForm.associated' (R := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
-#align quadratic_form.nondegenerate_of_anisotropic QuadraticForm.nondegenerate_of_anisotropic
+#align quadratic_form.nondegenerate_of_anisotropic QuadraticForm.separatingLeft_of_anisotropic
 
 end Ring
 
@@ -1264,7 +1264,7 @@ end LinearMap
 
 namespace QuadraticForm
 
-open Finset BilinForm
+open Finset
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
