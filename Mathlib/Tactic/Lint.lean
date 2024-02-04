@@ -49,7 +49,8 @@ but don't use this assumption in the type.
       let argTys ← args.mapM inferType
       let impossibleArgs ← args.zipWithIndex.filterMapM fun (arg, i) => do
         let t ← inferType arg
-        if !#[`Decidable, `DecidableEq, `DecidablePred].any t.getForallBody.isAppOf then return none
+        let names := #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
+        if !names.any t.getForallBody.isAppOf then return none
         let fv := arg.fvarId!
         if ty.containsFVar fv then return none
         if argTys[i+1:].any (·.containsFVar fv) then return none
