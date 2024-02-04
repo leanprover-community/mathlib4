@@ -29,7 +29,7 @@ noncomputable section
 
 open scoped Classical Topology Filter ENNReal
 
-open Filter Encodable Set TopologicalSpace
+open Filter Set TopologicalSpace
 
 variable {X α : Type*} {ι : Sort*}
 
