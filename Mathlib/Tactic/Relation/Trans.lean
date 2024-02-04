@@ -28,7 +28,7 @@ def transExt.config : WhnfCoreConfig := {}
 initialize transExt :
     SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n transExt.config
+    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
     initial := {}
   }
 

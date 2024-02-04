@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Metrizable.Urysohn
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -319,7 +318,7 @@ class InnerRegularCompactLTTop (μ : Measure α) : Prop where
   protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)
 
 -- see Note [lower instance priority]
-/-- A regular measure is weakly regular in a preregular space. -/
+/-- A regular measure is weakly regular in an R₁ space. -/
 instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     WeaklyRegular μ where
   innerRegular := fun _U hU r hr ↦
@@ -1028,14 +1027,6 @@ instance (priority := 100) {X : Type*}
     (univ_subset_iff.2 (iUnion_spanningSets μ)) (monotone_spanningSets μ)
   have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
   exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
-
-/- Check that typeclass inference works to guarantee regularity and inner regularity in
-interesting situations. -/
-example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : Regular μ := by infer_instance
-
-example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by infer_instance
 
 end Measure
 

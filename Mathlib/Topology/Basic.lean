@@ -425,6 +425,18 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
     _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 #align interior_sInter_subset interior_sInter_subset
 
+theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
+  h.lift' fun _ _ ↦ interior_mono
+
+theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
+  mem_of_superset (mem_lift' hs) interior_subset
+
+theorem Filter.HasBasis.lift'_interior_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
+    (h : l.HasBasis p s) (ho : ∀ i, p i → IsOpen (s i)) : l.lift' interior = l :=
+  le_antisymm l.lift'_interior_le <| h.lift'_interior.ge_iff.2 fun i hi ↦ by
+    simpa only [(ho i hi).interior_eq] using h.mem_of_mem hi
+
 /-!
 ### Closure of a set
 -/
@@ -902,6 +914,14 @@ theorem nhds_basis_closeds (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∉ s
     compl_surjective.exists.trans <| by simp only [isOpen_compl_iff, mem_compl_iff]⟩
 #align nhds_basis_closeds nhds_basis_closeds
 
+@[simp]
+theorem lift'_nhds_interior (x : X) : (𝓝 x).lift' interior = 𝓝 x :=
+  (nhds_basis_opens x).lift'_interior_eq_self fun _ ↦ And.right
+
+theorem Filter.HasBasis.nhds_interior {x : X} {p : ι → Prop} {s : ι → Set X}
+    (h : (𝓝 x).HasBasis p s) : (𝓝 x).HasBasis p (interior <| s ·) :=
+  lift'_nhds_interior x ▸ h.lift'_interior
+
 /-- A filter lies below the neighborhood filter at `x` iff it contains every open set around `x`. -/
 theorem le_nhds_iff {f} : f ≤ 𝓝 x ↔ ∀ s : Set X, x ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
 #align le_nhds_iff le_nhds_iff
@@ -1179,17 +1199,29 @@ theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f �
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩
 #align ultrafilter.cluster_pt_iff Ultrafilter.clusterPt_iff
 
+theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
+    ∃ u : Ultrafilter X, u ≤ f ∧ u ≤ 𝓝 x := by
+  simp_rw [ClusterPt, ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
+
 /-- A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point
 of `map u F`. -/
 def MapClusterPt {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) : Prop :=
   ClusterPt x (map u F)
 #align map_cluster_pt MapClusterPt
 
+theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
   simp_rw [MapClusterPt, ClusterPt, inf_neBot_iff_frequently_left, frequently_map]
   rfl
 #align map_cluster_pt_iff mapClusterPt_iff
+
+theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
+    MapClusterPt x F u ↔ ∃ U : Ultrafilter ι, U ≤ F ∧ Tendsto u U (𝓝 x) := by
+  simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
+    ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
 theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
     {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
@@ -1431,6 +1463,10 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
+
+theorem isClosed_iff_ultrafilter : IsClosed s ↔
+    ∀ x, ∀ u : Ultrafilter X, ↑u ≤ 𝓝 x → s ∈ u → x ∈ s := by
+  simp [isClosed_iff_clusterPt, ClusterPt, ← exists_ultrafilter_iff]
 
 theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by

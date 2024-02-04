@@ -513,13 +513,7 @@ variable [Semiring R]
 
 /-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
-  if h0 : k = 0 then ζ
-  else
-    ⟨fun x => f x ^ k, by
-      -- porting note: added next line
-      dsimp only
-      rw [map_zero]
-      exact zero_pow (Nat.pos_of_ne_zero h0)⟩
+  if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
 #align nat.arithmetic_function.ppow Nat.ArithmeticFunction.ppow
 
 @[simp]

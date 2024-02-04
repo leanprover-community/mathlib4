@@ -272,6 +272,14 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
+@[to_additive]
+lemma isCompact_preimage [TopologicalSpace β]
+    (h'f : HasCompactMulSupport f) (hf : Continuous f) {k : Set β} (hk : IsClosed k)
+    (h'k : 1 ∉ k) : IsCompact (f ⁻¹' k) := by
+  apply IsCompact.of_isClosed_subset h'f (hk.preimage hf) (fun x hx ↦ ?_)
+  apply subset_mulTSupport
+  aesop
+
 variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
 
 @[to_additive]

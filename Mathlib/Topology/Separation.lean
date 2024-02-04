@@ -914,7 +914,7 @@ theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
   (embedding_inclusion ts).induced
 #align topological_space.subset_trans TopologicalSpace.subset_trans
 
-/-! ### Preregular (R₁) spaces -/
+/-! ### R₁ (preregular) spaces -/
 
 section R1Space
 
@@ -935,20 +935,25 @@ theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ 
 theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) :=
   disjoint_nhds_nhds_iff_not_specializes.not_left.symm
 
-/-- An R₁ space is an R₀ space: the `Specializes` relation is symmetric. -/
+/-- In an R₁ space, the `Specializes` relation is symmetric,
+i.e., an R₁ space is an R₀ space. -/
 theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := by
   simpa only [specializes_iff_not_disjoint, disjoint_comm] using h
 #align specializes.symm Specializes.symm
 
-/-- An R₁ space is an R₀ space: the `Specializes` relation is symmetric. -/
+/-- In an R₁ space, the `Specializes` relation is symmetric,
+i.e., an R₁ space is an R₀ space. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
 #align specializes_comm specializes_comm
 
+/-- In an R₁ space, `Specializes` is equivalent to `Inseparable`,
+i.e., an R₁ space is an R₀ space. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
   ⟨fun h ↦ h.antisymm h.symm, Inseparable.specializes⟩
 #align specializes_iff_inseparable specializes_iff_inseparable
 
-/-- An R₁ space is an R₀ space: if `x` specializes `y`, then they are inseparable. -/
+/-- In an R₁ space, `Specializes` implies `Inseparable`,
+i.e., an R₁ space is an R₀ space. -/
 alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
 theorem disjoint_nhds_nhds_iff_not_inseparable : Disjoint (𝓝 x) (𝓝 y) ↔ ¬Inseparable x y := by
@@ -968,7 +973,7 @@ theorem isClosed_setOf_inseparable : IsClosed { p : X × X | Inseparable p.1 p.2
   simp only [← specializes_iff_inseparable, isClosed_setOf_specializes]
 #align is_closed_set_of_inseparable isClosed_setOf_inseparable
 
-/-- In a preregular space, a point belongs to the closure of a compact set `K`
+/-- In an R₁ space, a point belongs to the closure of a compact set `K`
 if and only if it is topologically inseparable from some point of `K`. -/
 theorem IsCompact.mem_closure_iff_exists_inseparable {K : Set X} (hK : IsCompact K) :
     y ∈ closure K ↔ ∃ x ∈ K, Inseparable x y := by
@@ -984,14 +989,20 @@ theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) 
     closure K = ⋃ x ∈ K, {y | Inseparable x y} := by
   ext; simp [hK.mem_closure_iff_exists_inseparable]
 
-/-- In a preregular space, if a compact set `K` is contained in an open set `U`,
+/-- In an R₁ space, the closure of a compact set is the union of the closures of its points. -/
+theorem IsCompact.closure_eq_biUnion_closure_singleton {K : Set X} (hK : IsCompact K) :
+    closure K = ⋃ x ∈ K, closure {x} := by
+  simp only [hK.closure_eq_biUnion_inseparable, ← specializes_iff_inseparable,
+    specializes_iff_mem_closure, setOf_mem_eq]
+
+/-- In an R₁ space, if a compact set `K` is contained in an open set `U`,
 then its closure is also contained in `U`. -/
 theorem IsCompact.closure_subset_of_isOpen {K : Set X} (hK : IsCompact K)
     {U : Set X} (hU : IsOpen U) (hKU : K ⊆ U) : closure K ⊆ U := by
   rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
   exact fun x hx y hxy ↦ (hxy.mem_open_iff hU).1 (hKU hx)
 
-/-- The closure of a compact set in a preregular space is a compact set. -/
+/-- The closure of a compact set in an R₁ space is a compact set. -/
 protected theorem IsCompact.closure {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
   refine isCompact_of_finite_subcover fun U hUo hKU ↦ ?_
   rcases hK.elim_finite_subcover U hUo (subset_closure.trans hKU) with ⟨t, ht⟩
@@ -1014,7 +1025,7 @@ theorem exists_isCompact_superset_iff {s : Set X} :
 @[deprecated] -- Since 28 Jan 2024
 alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
-/-- If `K` and `L` are a disjoint compact set in a preregular topological space
+/-- If `K` and `L` are disjoint compact sets in an R₁ topological space
 and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
 theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
     (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : SeparatedNhds K L := by
@@ -1128,7 +1139,7 @@ instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyComp
     let ⟨_K, hKc, hKx⟩ := exists_compact_mem_nhds _
     exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds hf hs hKc hKx
 
-/-- If a point in a preregular space has a compact neighborhood,
+/-- If a point in an R₁ space has a compact neighborhood,
 then it has a basis of compact closed neighborhoods. -/
 theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCompact L)
     (hxL : L ∈ 𝓝 x) : (𝓝 x).HasBasis (fun K ↦ K ∈ 𝓝 x ∧ IsCompact K ∧ IsClosed K) (·) :=
@@ -1139,10 +1150,10 @@ theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCom
       (hKc.closure_subset_of_isOpen isOpen_interior hKU).trans interior_subset⟩
 
 /-!
-### Lemmas about a weakly locally compact preregular space
+### Lemmas about a weakly locally compact R₁ space
 
 In fact, a space with these properties is locally compact and regular.
-Some lemmas are formulated in that assumptions below.
+Some lemmas are formulated using the latter assumptions below.
 -/
 
 variable [WeaklyLocallyCompactSpace X]
@@ -1159,12 +1170,12 @@ theorem exists_mem_nhds_isCompact_isClosed (x : X) : ∃ K ∈ 𝓝 x, IsCompact
   (isCompact_isClosed_basis_nhds x).ex_mem
 
 -- see Note [lower instance priority]
-/-- A weakly locally compact preregular space is locally compact. -/
+/-- A weakly locally compact R₁ space is locally compact. -/
 instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : LocallyCompactSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h
 #align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
-/-- In a weakly locally compact space which is either T₂ or locally compact regular,
+/-- In a weakly locally compact R₁ space,
 every compact set has an open neighborhood with compact closure. -/
 theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact K) :
     ∃ V, IsOpen V ∧ K ⊆ V ∧ IsCompact (closure V) := by
@@ -1175,7 +1186,7 @@ theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact
 @[deprecated] -- Since 28 Jan 2024
 alias exists_open_superset_and_isCompact_closure := exists_isOpen_superset_and_isCompact_closure
 
-/-- In a weakly locally compact which is either T₂ or locally compact regular,
+/-- In a weakly locally compact R₁ space,
 every point has an open neighborhood with compact closure. -/
 theorem exists_isOpen_mem_isCompact_closure (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
@@ -1635,7 +1646,7 @@ theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h 
   mod_cast .of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 SeparatedNhds.of_singleton_finset
 
-@[deprecated]
+@[deprecated] -- Since 28 Jan 2024
 alias point_disjoint_finset_opens_of_t2 := SeparatedNhds.of_singleton_finset
 
 end SeparatedFinset
@@ -1663,6 +1674,18 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space X] :
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
+
+lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
+  constructor <;> intro H
+  · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
+  · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
+
+lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+    IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
+  simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
 /-- If `V : ι → Set X` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
@@ -1809,7 +1832,7 @@ theorem disjoint_nhds_nhdsSet : Disjoint (𝓝 x) (𝓝ˢ s) ↔ x ∉ closure s
   disjoint_comm.trans disjoint_nhdsSet_nhds
 #align disjoint_nhds_nhds_set disjoint_nhds_nhdsSet
 
-/-- A regular space is preregular. -/
+/-- A regular space is R₁. -/
 instance (priority := 100) : R1Space X where
   specializes_or_disjoint_nhds _ _ := or_iff_not_imp_left.2 fun h ↦ by
     rwa [← nhdsSet_singleton, disjoint_nhdsSet_nhds, ← specializes_iff_mem_closure]
@@ -2109,7 +2132,7 @@ instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
     (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
 #align normal_space.t3_space T4Space.t3Space
 
-@[deprecated inferInstance]
+@[deprecated inferInstance] -- Since 28 Jan 2024
 theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
     T4Space X := inferInstance
 #align normal_of_compact_t2 T4Space.of_compactSpace_t2Space

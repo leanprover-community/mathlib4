@@ -762,7 +762,7 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
     simp only [iUnion_smul, h''f]
 
 /-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
     (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
   hk.closure_subset_measurableSet hs h
@@ -778,10 +778,10 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
-@[to_additive]
+@[to_additive (attr := deprecated IsCompact.measure_closure)] -- Since 28 Jan 2024
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k := by
-  rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
+    μ (closure k) = μ k :=
+  hk.measure_closure μ
 
 @[to_additive]
 lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegularCompactLTTop μ] :
@@ -789,8 +789,8 @@ lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegul
   intro s ⟨s_meas, μs⟩ r hr
   rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
   refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
-  · exact IsCompact.closure_subset_of_measurableSet_of_group K_comp s_meas Ks
-  · rwa [K_comp.measure_closure_eq_of_group]
+  · exact IsCompact.closure_subset_measurableSet K_comp s_meas Ks
+  · rwa [K_comp.measure_closure]
 
 end TopologicalGroup
 
@@ -848,15 +848,6 @@ class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace 
 #noalign measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
-
-/-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
-topological group is automatically regular and inner regular. -/
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    Regular μ := by infer_instance
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by

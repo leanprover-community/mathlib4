@@ -373,7 +373,7 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
       · cases isEmpty_or_nonempty ι
-        · simp only [Real.ciSup_empty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
+        · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
         · refine' le_antisymm (ciSup_le fun i => _) _
           · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
               PseudoMetricSpace.edist_dist]
