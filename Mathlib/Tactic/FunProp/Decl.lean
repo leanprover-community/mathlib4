@@ -49,7 +49,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with decls := d.decls.insertCore e.path e {}}
+      {d with decls := d.decls.insertCore e.path e}
   }
 
 /-- -/

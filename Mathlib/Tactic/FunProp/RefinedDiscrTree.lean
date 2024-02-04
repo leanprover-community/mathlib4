@@ -612,7 +612,7 @@ where
         loop (i+1)
     else
       vs.push v
-termination_by loop i => vs.size - i
+termination_by vs.size - i
 
 /-- Insert the value `v` at index `keys : Array Key` in a `Trie`. -/
 partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie α → Trie α
