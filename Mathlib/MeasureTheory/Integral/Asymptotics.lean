@@ -35,4 +35,10 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter (hfm : Measurable f) (hgm :
     gcongr
     apply le_max_left
 
+theorem _root_.Asymptotics.IsBigO.integrable
+    (hfm : Measurable f) (hgm : Measurable g)
+    (hf : f =O[⊤] g) (hg : Integrable g μ) : Integrable f μ := by
+  rewrite [← IntegrableAtFilter.top] at *
+  exact hf.integrableAtFilter hfm hgm hg
+
 end
