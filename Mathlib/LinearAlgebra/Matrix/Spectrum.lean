@@ -24,15 +24,17 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
 
 variable {A : Matrix n n 𝕜}
-
-open scoped Matrix
 
 open scoped BigOperators
 
 namespace IsHermitian
+
+section DecidableEq
+
+variable [DecidableEq n]
 
 variable (hA : A.IsHermitian)
 
@@ -172,9 +174,12 @@ lemma mulVec_eigenvectorBasis (i : n) :
   convert this using 1
   rw [mul_comm, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
 
+end DecidableEq
+
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
-lemma exists_eigenvector_of_ne_zero (h_ne : A ≠ 0) :
+lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ mulVec A v = t • v := by
+  classical
   have : hA.eigenvalues ≠ 0
   · contrapose! h_ne
     have := hA.spectral_theorem'
