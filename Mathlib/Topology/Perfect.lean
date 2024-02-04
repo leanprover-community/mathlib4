@@ -16,6 +16,7 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
+* `PerfectSpace X`: A topological space `X` is perfect if its universe is a perfect set.
 
 ## Main Statements
 
@@ -52,7 +53,8 @@ accumulation point, perfect set, cantor-bendixson.
 
 open Topology Filter
 
-open TopologicalSpace Filter Set
+open Filter Set
+open TopologicalSpace (IsTopologicalBasis)
 
 section Basic
 
@@ -87,6 +89,19 @@ structure Perfect (C : Set α) : Prop where
 theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
+
+/--
+A topological space `X` is said to be perfect if its universe is a perfect set.
+Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
+-/
+class PerfectSpace (X : Type*) [TopologicalSpace X]: Prop :=
+  univ_perfect' : Perfect (Set.univ : Set X)
+
+variable [PerfectSpace α] in
+variable (α) in
+theorem PerfectSpace.univ_perfect : Perfect (Set.univ : Set α) := PerfectSpace.univ_perfect'
+
+section Preperfect
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
 theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
@@ -158,6 +173,8 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
 #align perfect.splitting Perfect.splitting
 
+end Preperfect
+
 section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
@@ -215,3 +232,44 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
 end Kernel
 
 end Basic
+
+section PerfectSpace
+
+variable {X : Type*} [TopologicalSpace X]
+
+theorem perfectSpace_of_forall_not_isolated (h_forall : ∀ x : X, Filter.NeBot (𝓝[≠] x)) :
+    PerfectSpace X := ⟨⟨isClosed_univ, fun x _ => by
+  rw [AccPt, Filter.principal_univ, inf_top_eq]
+  exact h_forall x⟩⟩
+
+variable [PerfectSpace X]
+
+instance PerfectSpace.not_isolated (x : X): Filter.NeBot (𝓝[≠] x) := by
+  have := (PerfectSpace.univ_perfect X).acc _ (Set.mem_univ x)
+  rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
+
+section Prod
+
+variable {Y : Type*} [TopologicalSpace Y]
+
+theorem nhdsWithin_punctured_prod_neBot_iff {p : X} {q : Y} : Filter.NeBot (𝓝[≠] (p, q)) ↔
+    Filter.NeBot (𝓝[≠] p) ∨ Filter.NeBot (𝓝[≠] q) := by
+  simp_rw [← Set.singleton_prod_singleton, Set.compl_prod_eq_union, nhdsWithin_union,
+    nhdsWithin_prod_eq, nhdsWithin_univ, Filter.neBot_iff, ne_eq, sup_eq_bot_iff,
+    Filter.prod_eq_bot, Filter.NeBot.ne <| nhds_neBot, or_false, false_or, not_and_or]
+
+variable (X Y) in
+instance PerfectSpace.prod_left [PerfectSpace X] : PerfectSpace (X × Y) :=
+  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
+    rw [nhdsWithin_punctured_prod_neBot_iff]
+    left
+    exact PerfectSpace.not_isolated p
+
+variable (X Y) in
+instance PerfectSpace.prod_right [PerfectSpace Y] : PerfectSpace (X × Y) :=
+  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
+    rw [nhdsWithin_punctured_prod_neBot_iff]
+    right
+    exact PerfectSpace.not_isolated q
+
+end Prod
