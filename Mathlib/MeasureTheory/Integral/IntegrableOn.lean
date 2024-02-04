@@ -487,6 +487,17 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
   exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
+@[simp]
+theorem IntegrableAtFilter.top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
+  obtain ⟨s, hsf, hs⟩ := h
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
+
+theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
+    IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
+  use fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
+  exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
 
