@@ -45,6 +45,14 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter'
   refine hf.integrableAtFilter_aux hfm (fun _ s hs t ht ↦ ?_) hg
   exact ae_restrict_iff' <| (hgm s hs).inter (hgm t ht)
 
+/-- Variant of `MeasureTheory.Integrable.mono` taking `f =O[⊤] (g)` instead of `‖f(x)‖ ≤ ‖g(x)‖` -/
+theorem _root_.Asymptotics.IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
+    (hf : f =O[⊤] g) (hg : Integrable g μ) : Integrable f μ := by
+  rewrite [← IntegrableAtFilter.top] at *
+  refine hf.integrableAtFilter' hfm (fun _ hs ↦ ?_) hg
+  convert MeasurableSet.univ
+  exact mem_top.mp hs
+
 variable [MeasurableSpace E] [OpensMeasurableSpace E] [SecondCountableTopology E]
 
 /-- Given measurable functions `f`, `g` with `f = O[l] g`,
