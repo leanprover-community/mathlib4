@@ -26,7 +26,7 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 ## Main results
 
-- ...
+- `PerfectClosure.isPerfectClosure`: the absolute perfect closure `PerfectClosure` is a perfect closure.
 
 ## Tags
 
@@ -402,5 +402,19 @@ end comp
 end equiv
 
 end CommRing
+
+-- TODO: relax `Field` assumption (need to change `PerfectClosure` file)
+variable (K) in
+/-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
+instance PerfectClosure.isPerfectClosure [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] :
+    IsPerfectClosure (PerfectClosure.of K p) p where
+  perfectRing' := inferInstance
+  pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
+    rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
+  ker_le' x h := by
+    rw [RingHom.mem_ker, of_apply, zero_def, eq_iff'] at h
+    obtain ⟨n, h⟩ := h
+    simp_rw [zero_add, ← coe_iterateFrobenius, map_zero] at h
+    exact mem_pNilradical.2 ⟨n, h⟩
 
 end IsPerfectClosure
