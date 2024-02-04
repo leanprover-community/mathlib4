@@ -925,6 +925,21 @@ nonrec theorem basis_toMatrix_basisFun_mul
   exact this
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul
 
+theorem fromBasis_xbasis_toMatrix_basisFun_mul (b : Basis (Fin (Fintype.card ι)) 𝕜 (ι → 𝕜))
+    (A : Matrix ι ι 𝕜) :
+    b.toMatrix (Pi.basisFun 𝕜 ι) * A = of fun i j => b.repr (Aᵀ j) i := by
+  classical
+    simp only [basis_toMatrix_mul _ _ (Pi.basisFun 𝕜 ι), Matrix.toLin_eq_toLin']
+    ext i j
+    rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
+      Matrix.mulVec_stdBasis_apply, Matrix.of_apply]
+
+nonrec theorem xbasis_toMatrix_basisFun_mul
+    (b : Basis (Fin (Fintype.card ι)) 𝕜 (PiLp p fun _ : ι => 𝕜)) (A : Matrix ι ι 𝕜) :
+    b.toMatrix (PiLp.basisFun _ _ _) * A =
+      Matrix.of fun i j => b.repr ((WithLp.equiv _ _).symm (Aᵀ j)) i := by
+  exact fromBasis_xbasis_toMatrix_basisFun_mul 𝕜 ι ?_ A
+
 end Basis
 
 end PiLp
