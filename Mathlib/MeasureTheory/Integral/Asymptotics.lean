@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Field.Basic
 /-!
 # Bounding of integrals by asymptotics
 
-We establish 0 < `integral f` < `∞` using `f = O(g)` and `g = O(f)`.
+We establish integrability of `f` from `f = O(g)`.
 
 ## Main results
 
@@ -19,9 +19,6 @@ We establish 0 < `integral f` < `∞` using `f = O(g)` and `g = O(f)`.
 * `integrable_of_isBigO_integrable`: If `f` is continuous, `‖f(x)‖ = ‖f(-x)‖`,
   `g` is integrable on `(b, ∞)` for some `b ∈ ℝ`, and `f(x) = O(g(x))`, then
   `f` is integrable.
-* `integral_pos_of_isBigO_integral_pos`: If `f` is continuous and integrable on `[a, ∞)`,
-  `g(x) = O(f(x))`, and `∫ x in Ioi b, g x > 0` as `b` → `atTop`,
-   then `∫ x in Ioi b, f x > 0` for all `b ≥ a`.
 -/
 
 noncomputable section
@@ -56,15 +53,12 @@ theorem integrable_Ioi_of_isBigO_integrable_Ioi (hf : ContinuousOn f (Ici a))
     gcongr
     apply le_max_left
 
+theorem integrable_Iic_of_isBigO_integrable_Iic (hf : ContinuousOn f (Iic a))
+    (hg : IntegrableOn g (Iic b) μ) (ho : (f ∘ Neg.neg) =O[atTop] g) : IntegrableOn f (Iic a) μ := by
+  sorry
+
 /-- If `f` is continuous, `‖f(x)‖ = ‖f(-x)‖`, `g` is integrable on `(b, ∞)` for some `b ∈ ℝ`,
 and `f(x) = O(g(x))`, then `f` is integrable. -/
 theorem integrable_of_isBigO_integrable (hf : Continuous f) (hsymm : ∀ x, ‖f x‖ = ‖f (-x)‖)
    (hg : IntegrableOn g (Ioi b) μ) (ho : f =O[atTop] g) : Integrable f μ := by
-  sorry
-
-/-- If `f` is continuous and integrable on `[a, ∞)`, `g(x) = O(f(x))`,
-and `∫ x in Ioi b, g x > 0` as `b` → `atTop`, then `∫ x in Ioi b, f x > 0` for all `b ≥ a`. -/
-theorem integral_pos_of_isBigO_integral_pos [LT E] (hf : ContinuousOn f (Ici a))
-    (hf_int : IntegrableOn f (Ioi a) μ) (hg : ∀ᶠ b in atTop, ∫ x in Ioi b, g x > 0) :
-    ∀ b ≥ a, ∫ x in Ioi b, g x > 0 := by
   sorry
