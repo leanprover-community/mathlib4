@@ -192,8 +192,8 @@ variable [Module R M₁] [Module R M₂]
 @[simp] theorem associated_prod [Invertible (2 : R)]
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     associated (Q₁.prod Q₂) =
-      (associated Q₁).compl₁₂ (LinearMap.fst R M₁ M₂) (LinearMap.fst R M₁ M₂) +
-      (associated Q₂).compl₁₂ (LinearMap.snd R M₁ M₂) (LinearMap.snd R M₁ M₂) := by
+      (associated Q₁).compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      (associated Q₂).compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) := by
   dsimp [associated, associatedHom]
   rw [polarLinearMap₂_prod, smul_add]
   rfl
