@@ -89,7 +89,7 @@ variable {M : Type*} [Monoid M]
 
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
-variable {ι : Type*} [hdec : DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
@@ -161,16 +161,16 @@ def noncommPiCoprodEquiv :
 @[to_additive]
 theorem noncommPiCoprod_mrange :
     MonoidHom.mrange (noncommPiCoprod ϕ hcomm) = ⨆ i : ι, MonoidHom.mrange (ϕ i) := by
-  classical
-    apply le_antisymm
-    · rintro x ⟨f, rfl⟩
-      refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
-      apply Submonoid.mem_sSup_of_mem
-      · use i
-      simp
-    · refine' iSup_le _
-      rintro i x ⟨y, rfl⟩
-      refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
+  letI := Classical.decEq ι
+  apply le_antisymm
+  · rintro x ⟨f, rfl⟩
+    refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
+    apply Submonoid.mem_sSup_of_mem
+    · use i
+    simp
+  · refine' iSup_le _
+    rintro i x ⟨y, rfl⟩
+    refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
 #align add_monoid_hom.noncomm_pi_coprod_mrange AddMonoidHom.noncommPiCoprod_mrange
 
@@ -198,17 +198,17 @@ namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
 theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
-  classical
-    apply le_antisymm
-    · rintro x ⟨f, rfl⟩
-      refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) ?_
-      intro i _hi
-      apply Subgroup.mem_sSup_of_mem
-      · use i
-      simp
-    · refine' iSup_le _
-      rintro i x ⟨y, rfl⟩
-      refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
+  letI := Classical.decEq ι
+  apply le_antisymm
+  · rintro x ⟨f, rfl⟩
+    refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) ?_
+    intro i _hi
+    apply Subgroup.mem_sSup_of_mem
+    · use i
+    simp
+  · refine' iSup_le _
+    rintro i x ⟨y, rfl⟩
+    refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range
 #align add_monoid_hom.noncomm_pi_coprod_range AddMonoidHom.noncommPiCoprod_range
 
@@ -236,34 +236,34 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent fun i => (ϕ i).range := by
   cases nonempty_fintype ι
-  classical
-    rintro i
-    rw [disjoint_iff_inf_le]
-    rintro f ⟨hxi, hxp⟩
-    dsimp at hxi hxp
-    rw [iSup_subtype', ← noncommPiCoprod_range] at hxp
-    rotate_left
-    · intro _ _ hj
-      apply hcomm
-      exact hj ∘ Subtype.ext
-    cases' hxp with g hgf
-    cases' hxi with g' hg'f
-    have hxi : orderOf f ∣ Fintype.card (H i) := by
-      rw [← hg'f]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
-    have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
-      rw [← hgf, ← Fintype.card_pi]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
-    change f = 1
-    rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
-    -- porting note: ouch, had to replace an ugly `convert`
-    obtain ⟨c, hc⟩ := Nat.dvd_gcd hxp hxi
-    use c
-    rw [← hc]
-    symm
-    rw [← Nat.coprime_iff_gcd_eq_one, Nat.coprime_fintype_prod_left_iff, Subtype.forall]
-    intro j h
-    exact hcoprime h
+  letI := Classical.decEq ι
+  rintro i
+  rw [disjoint_iff_inf_le]
+  rintro f ⟨hxi, hxp⟩
+  dsimp at hxi hxp
+  rw [iSup_subtype', ← noncommPiCoprod_range] at hxp
+  rotate_left
+  · intro _ _ hj
+    apply hcomm
+    exact hj ∘ Subtype.ext
+  cases' hxp with g hgf
+  cases' hxi with g' hg'f
+  have hxi : orderOf f ∣ Fintype.card (H i) := by
+    rw [← hg'f]
+    exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
+  have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
+    rw [← hgf, ← Fintype.card_pi]
+    exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
+  change f = 1
+  rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
+  -- porting note: ouch, had to replace an ugly `convert`
+  obtain ⟨c, hc⟩ := Nat.dvd_gcd hxp hxi
+  use c
+  rw [← hc]
+  symm
+  rw [← Nat.coprime_iff_gcd_eq_one, Nat.coprime_fintype_prod_left_iff, Subtype.forall]
+  intro j h
+  exact hcoprime h
 #align monoid_hom.independent_range_of_coprime_order MonoidHom.independent_range_of_coprime_order
 #align add_monoid_hom.independent_range_of_coprime_order AddMonoidHom.independent_range_of_coprime_order
 
