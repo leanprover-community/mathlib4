@@ -23,7 +23,7 @@ We establish integrability of `f` from `f = O(g)`.
 
 noncomputable section
 
-open MeasureTheory Set Filter
+open Asymptotics MeasureTheory Set Filter
 
 variable {E : Type*} [NormedDivisionRing E] [NormedSpace ℝ E] [Nontrivial E] {f g : ℝ → E} {a b : ℝ}
   {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
@@ -33,9 +33,9 @@ variable {E : Type*} [NormedDivisionRing E] [NormedSpace ℝ E] [Nontrivial E] {
 `f` is integrable on `(a, ∞)`. -/
 theorem integrable_Ioi_of_isBigO_integrable_Ioi (hf : ContinuousOn f (Ici a))
     (hg : IntegrableOn g (Ioi b) μ) (ho : f =O[atTop] g) : IntegrableOn f (Ioi a) μ := by
-  obtain ⟨C, hC⟩ := ho.isBigOWith
+  obtain ⟨C, hC⟩ := ho.bound
   obtain ⟨C', hC'⟩ := exists_norm_eq E <| le_max_right C 0
-  rewrite [Asymptotics.isBigOWith_iff, eventually_atTop] at hC
+  rewrite [eventually_atTop] at hC
   obtain ⟨x', hx'⟩ := hC
   let x := max a (max b x')
   obtain ⟨h_ax, h_bx, h_x'x⟩ := show a ≤ x ∧ b ≤ x ∧ x' ≤ x by simp
@@ -54,11 +54,16 @@ theorem integrable_Ioi_of_isBigO_integrable_Ioi (hf : ContinuousOn f (Ici a))
     apply le_max_left
 
 theorem integrable_Iic_of_isBigO_integrable_Iic (hf : ContinuousOn f (Iic a))
-    (hg : IntegrableOn g (Iic b) μ) (ho : (f ∘ Neg.neg) =O[atTop] g) : IntegrableOn f (Iic a) μ := by
+    (hg : IntegrableOn g (Ioi b) μ) (ho : (f ∘ Neg.neg) =O[atTop] g) :
+    IntegrableOn f (Iic a) μ := by
   sorry
 
 /-- If `f` is continuous, `‖f(x)‖ = ‖f(-x)‖`, `g` is integrable on `(b, ∞)` for some `b ∈ ℝ`,
 and `f(x) = O(g(x))`, then `f` is integrable. -/
 theorem integrable_of_isBigO_integrable (hf : Continuous f) (hsymm : ∀ x, ‖f x‖ = ‖f (-x)‖)
    (hg : IntegrableOn g (Ioi b) μ) (ho : f =O[atTop] g) : Integrable f μ := by
-  sorry
+  rewrite [← integrableOn_univ, ← Iic_union_Ioi (a := 0), integrableOn_union]
+  refine ⟨?_, integrable_Ioi_of_isBigO_integrable_Ioi hf.continuousOn hg ho⟩
+  refine integrable_Iic_of_isBigO_integrable_Iic hf.continuousOn hg ?_
+  rw [isBigO_iff] at *
+  simpa only [fun x ↦ show ‖(f ∘ Neg.neg) x‖ = ‖f x‖ from (hsymm x).symm] using ho
