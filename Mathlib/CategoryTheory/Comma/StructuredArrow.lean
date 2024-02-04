@@ -147,7 +147,7 @@ lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
     homMk' (mk f) (g ≫ g') = homMk' (mk f) g ≫ homMk' (mk (f ≫ T.map g)) g' ≫ eqToHom (by simp) :=
   homMk'_comp _ _ _
 
-/-- Variant of `homMk'` where both objects are application of `mk`. -/
+/-- Variant of `homMk'` where both objects are applications of `mk`. -/
 @[simps]
 def mkPostcomp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') : mk f ⟶ mk (f ≫ T.map g) where
   left := eqToHom (by ext)
