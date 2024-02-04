@@ -9,6 +9,11 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 # Bounding of integrals by asymptotics
 
 We establish integrability of `f` from `f = O(g)`.
+
+## Main results
+
+* `Asymptotics.IsBigO.integrableAtFilter`: Given measurable functions `f`, `g` with `f = O[l] g`,
+  `IntegrableAtFilter g l μ` implies `IntegrableAtFilter f l μ`.
 -/
 
 open Asymptotics MeasureTheory Set Filter
@@ -33,6 +38,7 @@ private theorem _root_.Asymptotics.IsBigO.integrableAtFilter_aux
   gcongr
   apply le_max_left
 
+/-- `Asymptotics.IsBigO.integrableAtFilter` with measurability hypothesis on `l` instead of `g`. -/
 theorem _root_.Asymptotics.IsBigO.integrableAtFilter'
     (hfm : AEStronglyMeasurable f μ) (hgm : ∀ s ∈ l, MeasurableSet s)
     (hf : f =O[l] g) (hg : IntegrableAtFilter g l μ) : IntegrableAtFilter f l μ := by
@@ -41,6 +47,8 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter'
 
 variable [MeasurableSpace E] [OpensMeasurableSpace E] [SecondCountableTopology E]
 
+/-- Given measurable functions `f`, `g` with `f = O[l] g`,
+`IntegrableAtFilter g l μ` implies `IntegrableAtFilter f l μ`. -/
 theorem _root_.Asymptotics.IsBigO.integrableAtFilter (hfm : Measurable f) (hgm : Measurable g)
     (hf : f =O[l] g) (hg : IntegrableAtFilter g l μ) : IntegrableAtFilter f l μ := by
   refine hf.integrableAtFilter_aux hfm.aestronglyMeasurable (fun C' _ _ _ _ ↦ ?_) hg
