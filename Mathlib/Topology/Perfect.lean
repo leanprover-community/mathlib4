@@ -331,7 +331,7 @@ variable (α) in
 /--
 If a topological space is perfect, T1 and nonempty, then it is infinite.
 -/
-theorem infinite_of_perfectSpace [T1Space X] [PerfectSpace X] [Nonempty X] : Infinite X :=
+theorem PerfectSpace.infinite [T1Space X] [PerfectSpace X] [Nonempty X] : Infinite X :=
   Set.infinite_univ_iff.mp (set_infinite_of_perfectSpace isOpen_univ univ_nonempty)
 
 end PerfectSpace.Infinite
