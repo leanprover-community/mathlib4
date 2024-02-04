@@ -328,6 +328,8 @@ variable (x y : BitVec w) (i : Fin w)
   simp only [← getLsb'_rev, getLsb'_ofNat_zero]
 
 proof_wanted getMsb'_negOne : getMsb' (-1) i = true
+  -- Once we have `getLsb'_negOne`, this lemma trivially follows by
+  --   `simp only [← getLsb'_rev, getLsb'_negOne]`
 
 end
 
