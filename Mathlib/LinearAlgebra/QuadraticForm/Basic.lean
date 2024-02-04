@@ -1178,16 +1178,18 @@ namespace QuadraticForm
 
 end QuadraticForm
 
-namespace BilinForm
+namespace LinearMap
 
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- A bilinear form is nondegenerate if the quadratic form it is associated with is anisotropic. -/
-theorem nondegenerate_of_anisotropic {B : M →ₗ[R] M →ₗ[R] R} (hB : B.toQuadraticForm.Anisotropic) :
+/--
+A bilinear form is separating left if the quadratic form it is associated with is anisotropic.
+-/
+theorem separatingLeft_of_anisotropic {B : M →ₗ[R] M →ₗ[R] R} (hB : B.toQuadraticForm.Anisotropic) :
     B.SeparatingLeft := fun x hx => hB _ (hx x)
-#align bilin_form.nondegenerate_of_anisotropic BilinForm.nondegenerate_of_anisotropic
+#align bilin_form.nondegenerate_of_anisotropic LinearMap.separatingLeft_of_anisotropic
 
 end Semiring
 
@@ -1196,12 +1198,12 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 /-- There exists a non-null vector with respect to any symmetric, nonzero bilinear form `B`
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 `x : M` such that `B x x ≠ 0`. -/
-theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : M →ₗ[R] M →ₗ[R] R}
+theorem exists_linearMap₂_self_ne_zero [htwo : Invertible (2 : R)] {B : M →ₗ[R] M →ₗ[R] R}
     (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
   lift B to QuadraticForm R M using hB₂ with Q
   obtain ⟨x, hx⟩ := QuadraticForm.exists_quadraticForm_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
-#align bilin_form.exists_bilin_form_self_ne_zero BilinForm.exists_bilinForm_self_ne_zero
+#align bilin_form.exists_bilin_form_self_ne_zero LinearMap.exists_linearMap₂_self_ne_zero
 
 open FiniteDimensional
 
@@ -1222,8 +1224,8 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
   · let b := FiniteDimensional.finBasis K V
     rw [hd] at b
     refine' ⟨b, fun i j _ => rfl⟩
-  obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
-  rw [← Submodule.finrank_add_eq_of_isCompl (LinearMap.isCompl_span_singleton_orthogonal hx).symm]
+  obtain ⟨x, hx⟩ := exists_linearMap₂_self_ne_zero hB₁ hB₂
+  rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm]
     at hd
   rw [finrank_span_singleton (ne_zero_of_map hx)] at hd
   let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B )
@@ -1236,7 +1238,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
         rintro c y hy hc
         rw [add_eq_zero_iff_neg_eq] at hc
         rw [← hc, Submodule.neg_mem_iff] at hy
-        have := (LinearMap.isCompl_span_singleton_orthogonal hx).disjoint
+        have := (isCompl_span_singleton_orthogonal hx).disjoint
         rw [Submodule.disjoint_def] at this
         have := this (c • x) (Submodule.smul_mem _ _ <| Submodule.mem_span_singleton_self _) hy
         exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
@@ -1244,22 +1246,21 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : V →ₗ[K] V →
         intro y
         refine' ⟨-B x y / B x x, fun z hz => _⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [LinearMap.IsOrtho, LinearMap.map_smul, LinearMap.smul_apply, LinearMap.map_add,
-          LinearMap.map_smul, smul_eq_mul, smul_eq_mul, div_mul_cancel _ hx, add_neg_self,
-          mul_zero])
+        rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
+          div_mul_cancel _ hx, add_neg_self, mul_zero])
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
-    · rw [LinearMap.IsOrtho, ← hB₂]
+    · rw [IsOrtho, ← hB₂]
       exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
     · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
     · exact hv₁ (ne_of_apply_ne _ hij)
-#align bilin_form.exists_orthogonal_basis BilinForm.exists_orthogonal_basis
+#align bilin_form.exists_orthogonal_basis LinearMap.exists_orthogonal_basis
 
-end BilinForm
+end LinearMap
 
 namespace QuadraticForm
 
