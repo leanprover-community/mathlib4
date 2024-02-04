@@ -45,7 +45,7 @@ variables {α : Type*} [Monoid α]
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
 section
-local attribute [instance] invertibleOne
+attribute [local instance] invertibleOne
 def something_one := something_that_needs_inverses 1
 end
 ```
