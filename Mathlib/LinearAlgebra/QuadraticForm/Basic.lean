@@ -6,7 +6,6 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
