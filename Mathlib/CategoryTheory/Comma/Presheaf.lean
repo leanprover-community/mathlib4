@@ -232,14 +232,14 @@ def toOverYonedaCompRestrictedYoneda (A : Cᵒᵖ ⥤ Type v) :
 
 /-! ### Construction of the backward functor `((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A` -/
 
-/-- This lemma will be key to establishing good simp normal forms. -/
-lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X Y : C} {f : X ⟶ Y}
-    {g g' : yoneda.obj Y ⟶ A} (h : g = g') {x : F.obj (op (CostructuredArrow.mk g'))} :
-    F.map (CostructuredArrow.mkPrecomp g f).op (F.map (eqToHom (by rw [h])) x) =
-      F.map (eqToHom (by rw [h])) (F.map (CostructuredArrow.mkPrecomp g' f).op x) := by
-  aesop_cat
+--/-- This lemma will be key to establishing good simp normal forms. -/
+--lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X Y : C} {f : X ⟶ Y}
+--    {g g' : yoneda.obj Y ⟶ A} (h : g = g') {x : F.obj (op (CostructuredArrow.mk g'))} :
+--    F.map (CostructuredArrow.mkPrecomp g f).op (F.map (eqToHom (by rw [h])) x) =
+--      F.map (eqToHom (by rw [h])) (F.map (CostructuredArrow.mkPrecomp g' f).op x) := by
+--  aesop_cat
 
-attribute [local simp] map_mkPrecomp_eqToHom
+--attribute [local simp] map_mkPrecomp_eqToHom
 
 /-- To give an object of `Over A`, we will in particular need a presheaf `Cᵒᵖ ⥤ Type v`. This is the
     definition of that presheaf on objects.
@@ -259,7 +259,7 @@ variable {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X : C}
 /-- Given a costructured arrow `s : yoneda.obj X ⟶ A` and an element `x : F.obj s`, construct
     an element of `YonedaCollection F X`. -/
 def mk (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) : YonedaCollection F X :=
-  ⟨yonedaEquiv s, F.map (eqToHom <| by rw [Equiv.symm_apply_apply]) x⟩
+  ⟨yonedaEquiv s, F.map (Quiver.Hom.op (CostructuredArrow.homMk (by exact 𝟙 _))) x⟩
 
 /-- Access the first component of an element of `YonedaCollection F X`. -/
 def fst (p : YonedaCollection F X) : yoneda.obj X ⟶ A :=
@@ -283,16 +283,18 @@ lemma mk_fst (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) 
 
 @[simp]
 lemma mk_snd (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) :
-    (mk s x).snd = F.map (eqToHom <| by rw [YonedaCollection.mk_fst]) x :=
+    (mk s x).snd = F.map (CostructuredArrow.homMk (by exact 𝟙 _)).op x :=
   rfl
 
 @[ext]
 lemma ext {p q : YonedaCollection F X} (h : p.fst = q.fst)
-    (h' : F.map (eqToHom <| by rw [h]) q.snd = p.snd) : p = q := by
+    (h' : F.map (CostructuredArrow.homMk (by exact 𝟙 _)).op q.snd = p.snd) : p = q := by
   rcases p with ⟨p, p'⟩
   rcases q with ⟨q, q'⟩
   obtain rfl : p = q := yonedaEquiv.symm.injective h
-  exact Sigma.ext rfl (by simpa [snd] using h'.symm)
+  exact Sigma.ext rfl (by
+    change F.map (𝟙 _).op q' = p' at h'
+    simpa using h'.symm)
 
 /-- Functoriality of `YonedaCollection F X` in `F`. -/
 def map₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) :
@@ -313,7 +315,7 @@ lemma map₁_yonedaEquivFst {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} 
 @[simp]
 lemma map₁_snd {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G)
     (p : YonedaCollection F X) : (YonedaCollection.map₁ η p).snd =
-      G.map (eqToHom (by rw [YonedaCollection.map₁_fst])) (η.app _ p.snd) := by
+      G.map (CostructuredArrow.homMk (by exact 𝟙 _)).op (η.app _ p.snd) := by
   simp [map₁]
 
 /-- Functoriality of `YonedaCollection F X` in `X`. -/
@@ -333,11 +335,12 @@ lemma map₂_yonedaEquivFst {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
 
 @[simp]
 lemma map₂_snd {Y : C} (f : X ⟶ Y) (p : YonedaCollection F Y) :
-    (YonedaCollection.map₂ F f p).snd = F.map ((CostructuredArrow.mkPrecomp p.fst f).op ≫
-      eqToHom (by rw [YonedaCollection.map₂_fst f])) p.snd := by
-  simp [map₂]
-
-attribute [local simp] CostructuredArrow.mkPrecomp_id CostructuredArrow.mkPrecomp_comp
+    (YonedaCollection.map₂ F f p).snd = F.map (CostructuredArrow.homMk (by exact f)).op p.snd := by
+  dsimp [map₂]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  apply congr_fun
+  congr 2
+  simp
 
 @[simp]
 lemma map₁_id : YonedaCollection.map₁ (𝟙 F) (X := X) = id := by
@@ -347,7 +350,14 @@ lemma map₁_id : YonedaCollection.map₁ (𝟙 F) (X := X) = id := by
 lemma map₁_comp {G H : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) (μ : G ⟶ H) :
     YonedaCollection.map₁ (η ≫ μ) (X := X) =
       YonedaCollection.map₁ μ (X := X) ∘ YonedaCollection.map₁ η (X := X) := by
-  ext; all_goals simp
+  ext p Y x
+  · simp
+  · dsimp
+    simp only [map₁_snd, CostructuredArrow.mk_left, FunctorToTypes.naturality,
+      ← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    simp
 
 @[simp]
 lemma map₂_id : YonedaCollection.map₂ F (𝟙 X) = id := by
@@ -356,14 +366,27 @@ lemma map₂_id : YonedaCollection.map₂ F (𝟙 X) = id := by
 @[simp]
 lemma map₂_comp {Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     YonedaCollection.map₂ F (f ≫ g) = YonedaCollection.map₂ F f ∘ YonedaCollection.map₂ F g := by
-  ext; all_goals simp
+  ext p Y x
+  · simp
+  · dsimp
+    simp only [map₂_snd, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    simp
 
 @[simp]
 lemma map₁_map₂ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G) {Y : C} (f : X ⟶ Y)
     (p : YonedaCollection F Y) :
     YonedaCollection.map₂ G f (YonedaCollection.map₁ η p) =
       YonedaCollection.map₁ η (YonedaCollection.map₂ F f p) := by
-  ext; all_goals simp
+  ext Y x
+  · simp
+  · dsimp
+    simp only [map₂_snd, map₁_snd, CostructuredArrow.mk_left, FunctorToTypes.naturality,
+      ← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    simp
 
 end YonedaCollection
 
@@ -495,38 +518,57 @@ lemma counitForward_val_fst (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
 
 @[simp]
 lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) :
-    (counitForward F s x).val.snd = F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) x :=
+    (counitForward F s x).val.snd = F.map (CostructuredArrow.homMk (by exact 𝟙 _)).op x :=
   YonedaCollection.mk_snd _ _
 
 @[simp]
 lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} (η : F ⟶ G)
     (s : (CostructuredArrow yoneda A)ᵒᵖ) (x : F.obj s) : counitForward G s.unop (η.app s x) =
       OverArrows.map₁ (counitForward F s.unop x) (yonedaCollectionPresheafMap₁ η) (by aesop_cat) :=
-  OverArrows.ext <| YonedaCollection.ext (by simp) (by simp)
+  OverArrows.ext <| YonedaCollection.ext (by simp) (by
+    dsimp
+    simp only [YonedaCollection.map₁_snd, CostructuredArrow.mk_left, counitForward_val_snd,
+      op_unop, unop_op, FunctorToTypes.naturality, ← op_comp,
+      ← FunctorToTypes.map_comp_apply]
+    apply congr_fun
+    congr 2
+    simp)
+
+lemma _root_.CategoryTheory.FunctorToTypes.congr_map_apply
+    (F : C ⥤ Type w) {X Y : C} (f g : X ⟶ Y) (x : F.obj X) (h : f = g) :
+    F.map f x = F.map g x := by
+  subst h
+  rfl
 
 @[simp]
 lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f : t ⟶ s) (x : F.obj t) :
     counitForward F s.unop (F.map f x) =
       OverArrows.map₂ (counitForward F t.unop x) f.unop.left (by simp) := by
   refine OverArrows.ext <| YonedaCollection.ext (by simp) ?_
-  have : (CostructuredArrow.mkPrecomp t.unop.hom f.unop.left).op =
-      f ≫ eqToHom (by simp [← CostructuredArrow.eq_mk]) := by
-    apply Quiver.Hom.unop_inj
-    aesop_cat
-  aesop_cat
+  dsimp
+  simp only [YonedaCollection.map₂_snd, counitForward_val_snd, op_unop, unop_op,
+    CostructuredArrow.mk_left, ← op_comp, ← FunctorToTypes.map_comp_apply]
+  apply FunctorToTypes.congr_map_apply
+  exact Quiver.Hom.unop_inj (by simp)
 
 /-- Backward direction of the counit. -/
 def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : CostructuredArrow yoneda A) :
     OverArrows (yonedaCollectionPresheafToA F) s.hom → F.obj (op s) :=
-  fun p => F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) p.val.snd
+  fun p => F.map (CostructuredArrow.homMk (by exact 𝟙 _)).op p.val.snd
 
 lemma counitForward_counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) : counitForward F s ∘ counitBackward F s = id :=
-  funext fun p => OverArrows.ext <| YonedaCollection.ext (by simp) (by simp [counitBackward])
+  funext fun p => OverArrows.ext <| YonedaCollection.ext (by simp) (by
+    dsimp [YonedaCollection.snd, counitBackward]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun
+    congr 2
+    simp)
 
 lemma counitBackward_counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) : counitBackward F s ∘ counitForward F s = id :=
-  funext fun x => by simp [counitBackward]
+  funext fun x => by
+    simp [counitBackward, ← FunctorToTypes.map_comp_apply, ← op_comp]
 
 /-- Intermediate stage of assembling the counit. -/
 @[simps]

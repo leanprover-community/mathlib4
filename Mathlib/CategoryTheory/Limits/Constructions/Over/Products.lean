@@ -177,12 +177,8 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
         { lift := fun s => Over.homMk _
           fac := fun _ j => j.as.elim
           uniq := fun s m _ => by
-            simp only
             ext
-            rw [Over.homMk_left _]
-            have := m.w
-            dsimp at this
-            rwa [Category.comp_id, Category.comp_id] at this } }
+            simpa using m.w } }
 #align category_theory.over.over_has_terminal CategoryTheory.Over.over_hasTerminal
 
 end CategoryTheory.Over
