@@ -26,7 +26,8 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 ## Main results
 
-- `PerfectClosure.isPerfectClosure`: the absolute perfect closure `PerfectClosure` is a perfect closure.
+- `PerfectClosure.isPerfectClosure`: the absolute perfect closure `PerfectClosure` is a
+  perfect closure.
 
 ## Tags
 
