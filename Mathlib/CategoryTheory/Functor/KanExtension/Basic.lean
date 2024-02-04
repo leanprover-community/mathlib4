@@ -129,7 +129,7 @@ variable [F'.IsLeftKanExtension α]
 /-- If `(F', α)` is a left Kan extension of `F` along `L`, then `(F', α)` is an initial object
 in the category `LeftExtension L F`. -/
 noncomputable def isUniversalOfIsLeftKanExtension : (LeftExtension.mk F' α).IsUniversal :=
-    IsLeftKanExtension.nonempty_isUniversal.some
+  IsLeftKanExtension.nonempty_isUniversal.some
 
 /-- If `(F', α)` is a left Kan extension of `F` along `L` and `β : F ⟶ L ⋙ G` is
 a natural transformation, this is the induced morphisms `F' ⟶ G`. -/
