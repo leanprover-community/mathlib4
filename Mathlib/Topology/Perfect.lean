@@ -237,39 +237,12 @@ section PerfectSpace
 
 variable {X : Type*} [TopologicalSpace X]
 
-theorem perfectSpace_of_forall_not_isolated (h_forall : ∀ x : X, Filter.NeBot (𝓝[≠] x)) :
-    PerfectSpace X := ⟨⟨isClosed_univ, fun x _ => by
-  rw [AccPt, Filter.principal_univ, inf_top_eq]
-  exact h_forall x⟩⟩
-
-variable [PerfectSpace X]
-
+variable [PerfectSpace X] in
 instance PerfectSpace.not_isolated (x : X): Filter.NeBot (𝓝[≠] x) := by
   have := (PerfectSpace.univ_perfect X).acc _ (Set.mem_univ x)
   rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
 
-section Prod
-
-variable {Y : Type*} [TopologicalSpace Y]
-
-theorem nhdsWithin_punctured_prod_neBot_iff {p : X} {q : Y} : Filter.NeBot (𝓝[≠] (p, q)) ↔
-    Filter.NeBot (𝓝[≠] p) ∨ Filter.NeBot (𝓝[≠] q) := by
-  simp_rw [← Set.singleton_prod_singleton, Set.compl_prod_eq_union, nhdsWithin_union,
-    nhdsWithin_prod_eq, nhdsWithin_univ, Filter.neBot_iff, ne_eq, sup_eq_bot_iff,
-    Filter.prod_eq_bot, Filter.NeBot.ne <| nhds_neBot, or_false, false_or, not_and_or]
-
-variable (X Y) in
-instance PerfectSpace.prod_left [PerfectSpace X] : PerfectSpace (X × Y) :=
-  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
-    rw [nhdsWithin_punctured_prod_neBot_iff]
-    left
-    exact PerfectSpace.not_isolated p
-
-variable (X Y) in
-instance PerfectSpace.prod_right [PerfectSpace Y] : PerfectSpace (X × Y) :=
-  perfectSpace_of_forall_not_isolated fun ⟨p, q⟩ => by
-    rw [nhdsWithin_punctured_prod_neBot_iff]
-    right
-    exact PerfectSpace.not_isolated q
-
-end Prod
+theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) :=
+  ⟨fun perfect x => perfect.not_isolated x, fun h_forall => ⟨⟨isClosed_univ, fun x _ => by
+    rw [AccPt, Filter.principal_univ, inf_top_eq]
+    exact h_forall x⟩⟩⟩
