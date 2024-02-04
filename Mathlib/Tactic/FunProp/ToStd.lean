@@ -7,7 +7,6 @@ import Lean
 
 import Std.Data.Array.Init.Basic
 
-
 /-!
 ## `funProp` missing function from standard library
 -/

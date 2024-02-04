@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+import Mathlib.Data.FunLike.Basic
 
 import Mathlib.Tactic.FunProp.ToStd
 

@@ -3,10 +3,14 @@ Copyright (c) 2024 Tomáš Skřivan All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp.Continuous
+import Mathlib.Tactic.FunProp.Differentiable
 
 /-!
 ## `funProp` minimal setup for ContDiff(At/On)
