@@ -102,12 +102,6 @@ def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree
 
-theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
-    restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
-  restrictSupport_mono R fun n hn i ↦ (eq_or_ne (n i) 0).elim
-    (fun h ↦ h.trans_le m.zero_le) fun h ↦
-      (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
-
 variable {R}
 
 theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
@@ -130,6 +124,11 @@ theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n :
 #align mv_polynomial.mem_restrict_degree_iff_sup MvPolynomial.mem_restrictDegree_iff_sup
 
 variable (R)
+
+theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
+    restrictTotalDegree σ R m ≤ restrictDegree σ R m :=
+  fun p hp ↦ (mem_restrictDegree _ _ _).mpr fun s hs i ↦ (degreeOf_le_iff.mp
+    (degreeOf_le_totalDegree p i) s hs).trans ((mem_restrictTotalDegree _ _ _).mp hp)
 
 /-- The monomials form a basis on `MvPolynomial σ R`. -/
 def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=

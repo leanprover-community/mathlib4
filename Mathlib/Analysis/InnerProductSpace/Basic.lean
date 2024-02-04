@@ -1234,8 +1234,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
   constructor
   · intro hT
     ext x
-    simp only [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V]
-    simp (config := {singlePass := true}) only [inner_map_polarization]
+    rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
     norm_num
   · rintro rfl x
@@ -2289,7 +2288,7 @@ theorem ContinuousLinearMap.reApplyInnerSelf_apply (T : E →L[𝕜] E) (x : E) 
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=
-  reClm.continuous.comp <| T.continuous.inner continuous_id
+  reCLM.continuous.comp <| T.continuous.inner continuous_id
 #align continuous_linear_map.re_apply_inner_self_continuous ContinuousLinearMap.reApplyInnerSelf_continuous
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :

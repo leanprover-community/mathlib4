@@ -315,9 +315,9 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
-    · have : (↑(s (n + 1)) : Set α) = ↑(s (n + 1)) \ ↑(s n) ∪ ↑(s n) := by
-        simp only [Function.iterate_succ', union_comm, union_diff_self, Subtype.coe_mk,
-          union_diff_left, Function.comp]
+    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+        simpa only [Function.iterate_succ', union_diff_self]
+          using (diff_union_of_subset <| subset_union_left _ _).symm
       rw [Nat.succ_eq_add_one, this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -439,16 +439,16 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
 @[simp]
-theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
-    (x : α) : (evalClm ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
-  let f := (evalClm ℝ x).toBoundedAdditiveMeasure
+theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
+    (x : α) : (evalCLM ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
+  let f := (evalCLM ℝ x).toBoundedAdditiveMeasure
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
     _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
-#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalClm_eq_zero
+#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalCLM_eq_zero
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
@@ -638,7 +638,7 @@ theorem no_pettis_integral (Hcont : #ℝ = aleph 1) :
   simp only [integral_comp] at h
   have : g = 0 := by
     ext x
-    have : g x = evalClm ℝ x g := rfl
+    have : g x = evalCLM ℝ x g := rfl
     rw [this, ← h]
     simp
   simp only [this, ContinuousLinearMap.map_zero] at h

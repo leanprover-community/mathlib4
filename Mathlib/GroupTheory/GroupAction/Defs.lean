@@ -432,6 +432,12 @@ theorem smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (
 #align smul_mul_assoc smul_mul_assoc
 #align vadd_add_assoc vadd_add_assoc
 
+/-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/
+@[to_additive]
+lemma smul_div_assoc [DivInvMonoid β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
+    r • x / y = r • (x / y) := by simp [div_eq_mul_inv, smul_mul_assoc]
+
 @[to_additive]
 theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
@@ -653,6 +659,19 @@ theorem isPretransitive_compHom
   obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
   exact ⟨e, rfl⟩
 
+@[to_additive]
+theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
+    [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
+    IsPretransitive N α :=
+  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩⟩
+
+@[to_additive]
+theorem IsPretransitive.of_compHom
+    {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
+    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] :
+    IsPretransitive N α :=
+  letI := compHom α f; h.of_smul_eq f rfl
+
 end MulAction
 
 end
@@ -665,6 +684,12 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 #align vadd_zero_vadd vadd_zero_vadd
+
+@[to_additive]
+theorem MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] :
+    IsPretransitive N α :=
+  of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 @[to_additive (attr := simp)]
 theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
