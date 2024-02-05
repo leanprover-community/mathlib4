@@ -18,9 +18,8 @@ We establish integrability of `f` from `f = O(g)`.
 
 open Asymptotics MeasureTheory Set Filter
 
-variable {α E F : Type*} [MeasurableSpace α] [NormedDivisionRing E] [NormedSpace ℝ E]
-  [NormedDivisionRing F] [NormedSpace ℝ F] {f : α → E} {g : α → F} {a b : α} {μ : Measure α}
-  {l : Filter α}
+variable {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedDivisionRing F]
+  [NormedSpace ℝ F] {f : α → E} {g : α → F} {a b : α} {μ : Measure α} {l : Filter α}
 
 /-- Given `f = O[l] g` on measurably generated `l`,
 `IntegrableAtFilter g l μ`, and `f` `AEStronglyMeasurable` at `l`, `IntegrableAtFilter f l μ`. -/
