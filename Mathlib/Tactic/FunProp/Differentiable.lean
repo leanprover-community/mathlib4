@@ -140,21 +140,3 @@ attribute [fun_prop]
   DifferentiableOn.exp
   DifferentiableOn.log
   DifferentiableOn.pow
-
-
-example : DifferentiableOn ℝ (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fun_prop (disch:=aesop)
-
-example (y : ℝ) (hy : y≠0) :
-    DifferentiableAt ℝ (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fun_prop (disch:=aesop)
-
-private noncomputable def S (a b c d : ℝ) : ℝ :=
-    a / (a + b + d) + b / (a + b + c) +
-    c / (b + c + d) + d / (a + c + d)
-
-private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
-
-example : DifferentiableOn ℝ T (Set.Icc 0 1) := by
-  unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
