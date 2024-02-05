@@ -231,8 +231,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   exact minpoly.degree_pos ha
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
-  refine ⟨Separable.squarefree,
-    fun sqf ↦ isCoprime_of_irreducible_dvd (not_and_of_not_left _ sqf.ne_zero) ?_⟩
+  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
   rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
