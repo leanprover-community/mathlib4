@@ -45,8 +45,8 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
   test declName := do
     if (← isAutoDecl declName) then return none
-    let type := (← getConstInfo declName).type
-    unless (← isProp type) do return none
+    let info ← getConstInfo declName
+    let type := info.type
     let names :=
       if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
       else if Name.isPrefixOf `Fintype declName
@@ -54,14 +54,19 @@ but don't use this assumption in the type.
         else if Name.isPrefixOf `Encodable declName
         then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
         else #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
-    forallTelescopeReducing type fun args ty => do
+    let impossibleArgs ← forallTelescopeReducing type fun args ty => do
       let argTys ← args.mapM inferType
       let ty ← ty.eraseProofs
-      let impossibleArgs ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) => do
+      return ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) => do
         unless names.any t.cleanupAnnotations.getForallBody.isAppOf do return none
         let fv := arg.fvarId!
         if ty.containsFVar fv then return none
         if argTys[i+1:].any (·.containsFVar fv) then return none
-        return some m!"argument {i+1} {arg} : {t}"
-      if impossibleArgs.isEmpty then return none
-      addMessageContextFull <| .joinSep impossibleArgs.toList ", "
+        return some (i, (← addMessageContextFull m!"argument {i+1} {arg} : {t}"))
+    let impossibleArgs :=
+      if (← isProp type) then impossibleArgs
+      else ← lambdaTelescope info.value! fun args e => do
+        let e ← e.eraseProofs
+        return impossibleArgs.filter fun (k, _) => !e.containsFVar args[k]!.fvarId!
+    if impossibleArgs.isEmpty then return none
+    return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
