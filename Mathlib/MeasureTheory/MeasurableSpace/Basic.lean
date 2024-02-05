@@ -1369,11 +1369,6 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   right_inv e := e.toEquiv.right_inv
   coe_injective' _ _ he _ := toEquiv_injective <| DFunLike.ext' he
 
-/-- Helper instance for when the `EquivLike` instance is too hard to find. -/
--- instance instFunLike : FunLike (α ≃ᵐ β) α β where
---   coe e := e.toEquiv
---   coe_injective' := DFunLike.coe_injective
-
 @[simp]
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
