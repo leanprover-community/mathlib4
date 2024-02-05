@@ -2001,6 +2001,43 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
     contradiction
 #align fin.pred_above_succ_above Fin.predAbove_succAbove
 
+@[simp]
+theorem succ_succAbove_predAbove {n:ℕ} ( i : Fin (n+1))  (x: Fin (n+2)) (hx : x ≠ Fin.succ i) :
+    i.succ.succAbove (i.predAbove x) = x:= by
+  dsimp [predAbove, succAbove]
+  have ht: x< i.succ ∨ i.succ ≤ x := by exact lt_or_ge x i.succ
+  cases' ht with H H
+  · rw [dif_neg,if_pos]
+    rfl
+    exact H
+    simp only [not_lt]
+    exact le_castSucc_iff.mpr H
+  · rw [dif_pos, if_neg]
+    exact succ_pred x _
+    rw [lt_def]
+    simp only [coe_castSucc, coe_pred, val_succ, not_lt]
+    rw [le_def] at H
+    simp only [val_succ] at H
+    rw [ne_iff_vne] at hx
+    simp only [val_succ, ne_eq] at hx
+    rw [le_iff_lt_or_eq] at H
+    exact Nat.le_sub_one_of_lt (by tauto :i.val+1<x.val)
+    rw [lt_def]
+    simp only [coe_castSucc]
+    exact H
+
+@[simp]
+theorem succAbove_predAbove_zero_predAbove {n: ℕ} {x i : Fin (n+2)} (hx : x ≠ i) :
+    i.succAbove ((Fin.predAbove 0 i).predAbove x)=x := by
+  by_cases hi: i = 0
+  · subst hi
+    rw [Fin.eq_iff_veq,show Fin.predAbove 0 0 = 0 by rfl,Fin.predAbove_zero hx]
+    simp only [Fin.zero_succAbove, Fin.succ_pred]
+  · rw [Fin.predAbove_zero hi]
+    rw [← Fin.succ_pred i hi] at hx
+    nth_rewrite 1 [← Fin.succ_pred i hi]
+    refine succ_succAbove_predAbove (Fin.pred i hi) x hx
+
 /-- `succ` commutes with `predAbove`. -/
 @[simp]
 theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
