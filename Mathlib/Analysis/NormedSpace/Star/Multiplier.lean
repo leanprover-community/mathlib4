@@ -594,11 +594,11 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     intro f C h
     have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
       intro b
-      convert mul_le_mul_right' (mul_le_mul_left' (f.le_op_nnnorm b) C) ‖b‖₊ using 1
+      convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
       ring
     have :=
       NNReal.div_le_of_le_mul
-        (f.op_nnnorm_le_bound _
+        (f.opNNNorm_le_bound _
           (by
             simpa only [sqrt_sq, sqrt_mul] using fun b =>
               sqrt_le_sqrt_iff.mpr ((h b).trans (h1 b))))
@@ -613,7 +613,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_star_mul_self.symm
       _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_op_nnnorm _) _
+        nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_opNNNorm _) _
 
   have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
@@ -624,7 +624,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
       _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := (mul_comm _ _)
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_op_nnnorm _) _
+        nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
 
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 #align double_centralizer.norm_fst_eq_snd DoubleCentralizer.norm_fst_eq_snd
@@ -686,12 +686,12 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           ‖star (a.fst (star x)) * a.fst y‖₊ ≤ ‖a.fst (star x)‖₊ * ‖a.fst y‖₊ :=
             nnnorm_star (a.fst (star x)) ▸ nnnorm_mul_le _ _
           _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
-            (mul_le_mul' (a.fst.le_op_norm_of_le ((nnnorm_star x).trans_le hx))
-              (a.fst.le_op_norm_of_le hy))
+            (mul_le_mul' (a.fst.le_opNorm_of_le ((nnnorm_star x).trans_le hx))
+              (a.fst.le_opNorm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @op_nnnorm_mul_apply 𝕜 _ A]
+      simp only [← @opNNNorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
       · rintro - ⟨x, hx, rfl⟩

@@ -215,9 +215,8 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Basic":
-  ["Mathlib.Algebra.Order.Field.Power",
-   "Mathlib.Data.Nat.Factorial.Basic",
-   "Mathlib.Data.Rat.Cast.Order"],
+  ["Mathlib.Data.Int.CharZero",
+   "Mathlib.Data.Nat.Factorial.Basic"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
@@ -229,6 +228,40 @@
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
+  "Mathlib.Tactic.FunProp.Types": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
+  "Mathlib.Tactic.FunProp.Measurable":
+  ["Mathlib.Analysis.Calculus.ContDiff.Basic",
+   "Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap",
+   "Mathlib.MeasureTheory.MeasurableSpace.Basic"],
+  "Mathlib.Tactic.FunProp.Differentiable":
+  ["Mathlib.Analysis.Calculus.Deriv.Inv",
+   "Mathlib.Analysis.Calculus.FDeriv.Add",
+   "Mathlib.Analysis.Calculus.FDeriv.Mul",
+   "Mathlib.Analysis.Calculus.FDeriv.Pi",
+   "Mathlib.Analysis.Calculus.FDeriv.Prod",
+   "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
+   "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
+   "Mathlib.Tactic.FunProp",
+   "Mathlib.Tactic.FunProp.Continuous"],
+  "Mathlib.Tactic.FunProp.Continuous":
+  ["Mathlib.Analysis.SpecialFunctions.Log.Basic",
+   "Mathlib.Tactic.FunProp",
+   "Mathlib.Topology.Algebra.Field",
+   "Mathlib.Topology.Algebra.Group.Basic"],
+  "Mathlib.Tactic.FunProp.ContDiff":
+  ["Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas",
+   "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
+   "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
+   "Mathlib.Tactic.FunProp",
+   "Mathlib.Tactic.FunProp.Continuous",
+   "Mathlib.Tactic.FunProp.Differentiable"],
+  "Mathlib.Tactic.FunProp.AEMesurable":
+  ["Mathlib.MeasureTheory.Constructions.Pi",
+   "Mathlib.MeasureTheory.Constructions.Prod.Basic",
+   "Mathlib.MeasureTheory.Measure.Haar.OfBasis",
+   "Mathlib.Tactic.FunProp",
+   "Mathlib.Tactic.FunProp.Measurable"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",

@@ -238,7 +238,7 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
-      add_zero, ge_iff_le, sup_eq_left] using op_norm_le_bound _ zero_le_one fun x => by simp
+      add_zero, ge_iff_le, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
 
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]

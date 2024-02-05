@@ -1195,11 +1195,11 @@ protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[
   LinearMap.mkContinuous
     { toFun := fun f =>
         ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x =>
-          g.le_op_norm_of_le (f.norm_coe_le_norm x)
+          g.le_opNorm_of_le (f.norm_coe_le_norm x)
       map_add' := fun f g => by ext; simp
       map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
-          (fun x => by exact g.le_op_norm_of_le (f.norm_coe_le_norm x))
+          (fun x => by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
 #align continuous_linear_map.comp_left_continuous_bounded ContinuousLinearMap.compLeftContinuousBounded
 
 @[simp]

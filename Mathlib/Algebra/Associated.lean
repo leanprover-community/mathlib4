@@ -729,6 +729,14 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 #align associated.of_pow_associated_of_prime' Associated.of_pow_associated_of_prime'
 
+/-- See also `Irreducible.coprime_iff_not_dvd`. -/
+lemma Irreducible.coprime_iff_not_dvd' [Monoid α] {p n : α} (hp : Irreducible p) :
+    (∀ d, d ∣ p → d ∣ n → IsUnit d) ↔ ¬ p ∣ n := by
+  refine ⟨fun h contra ↦ hp.not_unit (h p (refl _) contra), fun hpn d hdp hdn ↦ ?_⟩
+  contrapose! hpn
+  suffices Associated p d from this.dvd.trans hdn
+  exact (hp.dvd_iff.mp hdp).resolve_left hpn
+
 section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
