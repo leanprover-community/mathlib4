@@ -957,7 +957,16 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
       simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 #align schwartz_map.iterated_pderiv_succ_right SchwartzMap.iteratedPDeriv_succ_right
 
--- Todo: `iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ f x m`
+theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
+    iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih =>
+    simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
+    rw [← fderiv_continuousMultilinear_apply_const_apply]
+    · simp [← ih]
+    · exact f.smooth'.differentiable_iteratedFDeriv (WithTop.coe_lt_top n) _
+
 end Derivatives
 
 section BoundedContinuousFunction
