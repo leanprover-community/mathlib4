@@ -54,7 +54,7 @@ but don't use this assumption in the type.
         else if Name.isPrefixOf `Encodable declName
         then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
         else #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
-    let impossibleArgs ← forallTelescopeReducing type fun args ty => do
+    let mut impossibleArgs ← forallTelescopeReducing type fun args ty => do
       let argTys ← args.mapM inferType
       let ty ← ty.eraseProofs
       return ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) => do
@@ -63,10 +63,10 @@ but don't use this assumption in the type.
         if ty.containsFVar fv then return none
         if argTys[i+1:].any (·.containsFVar fv) then return none
         return some (i, (← addMessageContextFull m!"argument {i+1} {arg} : {t}"))
-    let impossibleArgs :=
-      if (← isProp type) then impossibleArgs
-      else ← lambdaTelescope info.value! fun args e => do
-        let e ← e.eraseProofs
-        return impossibleArgs.filter fun (k, _) => !e.containsFVar args[k]!.fvarId!
+    if !(← isProp type) then
+      if let some e := info.value? then
+        impossibleArgs ← lambdaTelescope e fun args e => do
+          let e ← e.eraseProofs
+          return impossibleArgs.filter fun (k, _) => !e.containsFVar args[k]!.fvarId!
     if impossibleArgs.isEmpty then return none
     return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
