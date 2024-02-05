@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Algebra.Squarefree.UniqueFactorizationDomain
 
 /-!
 
@@ -232,21 +231,12 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   exact minpoly.degree_pos ha
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
-  refine ⟨Separable.squarefree, ?_⟩
-  induction' g using UniqueFactorizationMonoid.induction_on_coprime with p hp p n hp p q _ ihp ihq
-  · simp
-  · obtain ⟨x, hx, rfl⟩ := isUnit_iff.mp hp
-    exact fun _ ↦ (separable_C x).mpr hx
-  · intro hpn
-    rcases hpn.eq_zero_or_one_of_pow_of_not_isUnit hp.not_unit with rfl | rfl; · simp
-    exact (pow_one p).symm ▸ PerfectField.separable_of_irreducible hp.irreducible
-  · intro hpq'
-    obtain ⟨h, hp, hq⟩ := squarefree_mul_iff.mp hpq'
-    apply (ihp hp).mul (ihq hq)
-    classical
-    apply EuclideanDomain.isCoprime_of_dvd
-    · rintro ⟨rfl, rfl⟩; simp at hp
-    · exact fun d hd _ hdp hdq ↦ mem_nonunits_iff.mpr hd <| h d hdp hdq
+  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
+  rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
+  replace dvd : p ∣ q := by
+    rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
+    exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
+  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 
