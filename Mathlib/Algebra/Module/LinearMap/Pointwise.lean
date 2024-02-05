@@ -20,7 +20,10 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₁] [Module R M₂] [Module S N]
 variable {F : Type*} (h : F)
 
--- @[simp] Not longer applies to itself #8386
+-- @[simp] -- In #8386, the `simp_nf` linter complains:
+-- "Left-hand side does not simplify, when using the simp lemma on itself."
+-- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
+-- TODO: when lean4#3107 is fixed, mark this as `@[simp]`.
 theorem image_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
   apply Set.Subset.antisymm
@@ -45,6 +48,7 @@ theorem preimage_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] {c
 
 variable (R)
 
+@[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
 theorem image_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂] (c : R) (s : Set M₁) :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
