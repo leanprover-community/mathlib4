@@ -202,7 +202,7 @@ instance instRing (X : RingCat) : Ring X := X.str
 instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
 
 instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
@@ -308,7 +308,7 @@ instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommS
   X.str
 
 instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
@@ -428,7 +428,7 @@ instance instCommRing (X : CommRingCat) : CommRing X := X.str
 instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
 instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
@@ -455,17 +455,17 @@ set_option linter.uppercaseLean3 false in
 
 instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
     FunLike (CommRingCat.of X ⟶ Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
     FunLike (X ⟶ CommRingCat.of Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
     FunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
-  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
