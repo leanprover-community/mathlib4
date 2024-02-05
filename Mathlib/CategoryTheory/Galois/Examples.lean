@@ -99,15 +99,6 @@ noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
-instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V := Action.instMulAction X
-
-instance : ReflectsIsomorphisms (forget FintypeCat) := by
-  show ReflectsIsomorphisms FintypeCat.incl
-  infer_instance
-
-noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
-  FintypeCat.inclusionPreservesFiniteLimits
-
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
     [ConnectedObject X] : MulAction.IsPretransitive G X.V where
@@ -125,7 +116,7 @@ theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
       apply (not_initial_iff_fibre_nonempty (Action.forget _ _) T').mpr
       exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
     have hb : Function.Bijective i.hom := by
-      apply (ConcreteCategory.isIso_iff_bijective_of_reflectsIso i.hom).mp
+      apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
       exact map_isIso (forget₂ _ FintypeCat) i
     obtain ⟨⟨y', ⟨g, (hg : g • x = y')⟩⟩, (hy' : y' = y)⟩ := hb.surjective y
     use g
@@ -135,17 +126,17 @@ theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
 theorem Action.connected_of_transitive (X : FintypeCat) [MulAction G X]
     [MulAction.IsPretransitive G X] [h : Nonempty X] :
     ConnectedObject (Action.FintypeCat.ofMulAction G X) where
-  notInitial := h.elim (fun x ↦ not_initial_of_inhabited (Action.forget _ _) x)
+  notInitial := not_initial_of_inhabited (Action.forget _ _) h.some
   noTrivialComponent Y i hm hni := by
     /- We show that the induced inclusion `i.hom` of finite sets is surjective, using the
     transitivity of the `G`-action. -/
     obtain ⟨(y : Y.V)⟩ := (not_initial_iff_fibre_nonempty (Action.forget _ _) Y).mp hni
-    letI x : X := i.hom y
     have : IsIso i.hom := by
-      refine (ConcreteCategory.isIso_iff_bijective_of_reflectsIso i.hom).mpr ⟨?_, fun x' ↦ ?_⟩
+      refine (ConcreteCategory.isIso_iff_bijective i.hom).mpr ⟨?_, fun x' ↦ ?_⟩
       · haveI : Mono i.hom := map_mono (forget₂ _ _) i
         exact ConcreteCategory.injective_of_mono_of_preservesPullback i.hom
-      · obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
+      · letI x : X := i.hom y
+        obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
         use σ • y
         show (Y.ρ σ ≫ i.hom) y = x'
         rw [i.comm, FintypeCat.comp_apply]
