@@ -45,12 +45,9 @@ class GaloisObject {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] 
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]
 
-section
-
-variable [PreGaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FibreFunctor F]
-
 /-- The natural action of `Aut X` on `F.obj X`. -/
-instance autMulFibre (X : C) : MulAction (Aut X) (F.obj X) where
+instance autMulFibre [PreGaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FibreFunctor F] (X : C) :
+    MulAction (Aut X) (F.obj X) where
   smul σ a := F.map σ.hom a
   one_smul a := by
     show F.map (𝟙 X) a = a
@@ -58,8 +55,6 @@ instance autMulFibre (X : C) : MulAction (Aut X) (F.obj X) where
   mul_smul g h a := by
     show F.map (h.hom ≫ g.hom) a = (F.map h.hom ≫ F.map g.hom) a
     simp only [map_comp, FintypeCat.comp_apply]
-
-end
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FibreFunctor F]
 
