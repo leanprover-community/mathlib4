@@ -385,17 +385,16 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
 open Filter
 
 theorem integrable_iff_integrableAtFilter_cocompact :
-     Integrable f μ ↔ (IntegrableAtFilter f (cocompact X) μ ∧ LocallyIntegrable f μ) := by
+    Integrable f μ ↔ (IntegrableAtFilter f (cocompact X) μ ∧ LocallyIntegrable f μ) := by
   refine ⟨fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩, fun ⟨⟨s, hsc, hs⟩, hloc⟩ ↦ ?_⟩
   obtain ⟨t, htc, ht⟩ := mem_cocompact'.mp hsc
   rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
   exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
-
 theorem integrable_of_integrableAtFilter_atTop_atBot {f : ℝ → E} {μ : Measure ℝ} :
     Integrable f μ ↔
-    IntegrableAtFilter f atTop μ ∧ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
-  sorry
+    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
+  rw [integrable_iff_integrableAtFilter_cocompact, Real.cocompact_eq, IntegrableAtFilter.sup_iff]
 
 end MeasureTheory
 
