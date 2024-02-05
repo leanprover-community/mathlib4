@@ -429,10 +429,15 @@ theorem integrable_iff_integrableAtFilter_atTop_atBot [LinearOrder X] [CompactIc
     exact Iic_union_Ici.symm
 
 /-- Special case for e.g. `NNReal` -/
-theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X]
-    {f : Subtype (fun (x : X) => x ≥ a) → E} {μ : Measure (Subtype (fun (x : X) => x ≥ a))} :
+theorem integrable_iff_integrableAtFilter_atTop [ConditionallyCompleteLinearOrder X]
+    [OrderTopology X] {f : Subtype (Ici a) → E} {μ : Measure (Subtype (Ici a))} :
     Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
-  sorry
+  have : Ici (Subtype.mk a (le_refl a)) = univ := by ext ⟨_, _⟩; simp_all
+  rewrite [← integrableOn_univ, ← this, ← locallyIntegrableOn_univ, ← this]
+  haveI : OrderTopology { x // a ≤ x } := orderTopology_of_ordConnected (t := Ici a)
+  haveI : CompactIccSpace (Subtype (Ici a)) := Nonneg.conditionallyCompleteLinearOrderBot a
+    |>.toConditionallyCompleteLinearOrder.toCompactIccSpace
+  exact integrableOn_Ici_iff_integrableAtFilter_atTop
 
 end MeasureTheory
 
