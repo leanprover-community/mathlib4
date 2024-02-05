@@ -144,11 +144,11 @@ lemma mkHom_ext_right {A B : Rep k G} (f : A ⟶ B) (g : A →ₗ[k] B)
     {hg : ∀ x, g ∘ₗ A.ρ x = B.ρ x ∘ₗ g} (h : f.hom = g) :
     f = mkHom g hg := by ext : 1; exact h
 
-@[simps] def homLEquiv (A B : Rep k G) : (A ⟶ B) ≃ₗ[k] A.ρ.hom B.ρ where
-  toFun := fun f => ⟨f.hom, f.comm⟩
+@[simps] def homLEquiv (A B : Rep k G) : (A ⟶ B) ≃ₗ[k] A.ρ.Hom B.ρ where
+  toFun := fun f => Representation.Hom.mk' f.hom f.comm
   map_add' := fun x y => rfl
   map_smul' := fun r x => rfl
-  invFun := fun f => ⟨f.hom, f.comm⟩
+  invFun := fun f => ⟨f.toLinearMap, f.comm⟩
   left_inv := fun f => by ext; rfl
   right_inv := fun f => by ext; rfl
 
@@ -571,7 +571,7 @@ variable {k G : Type u} [CommRing k] [Monoid G] {V W : Type u} [AddCommGroup V] 
 
 /-- Tautological isomorphism to help Lean in typechecking. -/
 def repOfTprodIso : Rep.of (ρ.tprod τ) ≅ Rep.of ρ ⊗ Rep.of τ :=
-  Iso.refl _
+  CategoryTheory.Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align representation.Rep_of_tprod_iso Representation.repOfTprodIso
 
