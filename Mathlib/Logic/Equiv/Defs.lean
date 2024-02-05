@@ -103,7 +103,10 @@ instance : EquivLike (α ≃ β) α β where
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → FunLike. -/
+`EquivLike → FunLike`.
+
+TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
+-/
 instance : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
   coe_injective' := DFunLike.coe_injective
