@@ -367,7 +367,7 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneC
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
-instance MonoidHom.funLike : FunLike (M →* N) M N where
+instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -377,11 +377,11 @@ instance MonoidHom.funLike : FunLike (M →* N) M N where
     exact h
 
 @[to_additive]
-instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
+instance MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
-#align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
-#align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
+#align monoid_hom.monoid_hom_class MonoidHom.instMonoidHomClass
+#align add_monoid_hom.add_monoid_hom_class AddMonoidHom.instAddMonoidHomClass
 
 @[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
 
@@ -1328,9 +1328,9 @@ instance : Monoid (Monoid.End M) where
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
-instance : FunLike (Monoid.End M) M M := MonoidHom.funLike
+instance : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
 
-instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.monoidHomClass
+instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
 
 end End
 
@@ -1363,9 +1363,9 @@ instance monoid : Monoid (AddMonoid.End A) where
 
 instance : Inhabited (AddMonoid.End A) := ⟨1⟩
 
-instance : FunLike (AddMonoid.End A) A A := AddMonoidHom.funLike
+instance : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
 
-instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
+instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.instAddMonoidHomClass
 
 end End
 

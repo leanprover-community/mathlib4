@@ -151,7 +151,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
-instance (priority := 100) addMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_zero := fun f ↦
@@ -161,7 +161,7 @@ instance (priority := 100) addMonoidHomClass [FunLike F M M₃] [SemilinearMapCl
 
 instance (priority := 100) distribMulActionHomClass [FunLike F M M₂] [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
-  { SemilinearMapClass.addMonoidHomClass F with
+  { SemilinearMapClass.instAddMonoidHomClass F with
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
