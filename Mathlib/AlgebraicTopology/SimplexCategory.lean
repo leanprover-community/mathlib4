@@ -415,69 +415,36 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
+open Fin Nat in
 lemma factor_δ_comp_lt {n m : ℕ } (f : ([m] : SimplexCategory) ⟶ [n+2])
-    (i1 i2 : Fin (n+3)) (i1_lt_i2 : i1<i2):
-    factor_δ (factor_δ f i2) ((Fin.last (n+1)).predAbove i1) =
-    factor_δ (factor_δ f i1) ((0 : Fin (n+2)).predAbove i2) := by
-      unfold factor_δ
-      rw [Category.assoc,Category.assoc]
-      congr 1
-      have hi2: 0<i2 := Nat.zero_lt_of_lt i1_lt_i2
-      have hi1: i1≤ Fin.castSucc (Fin.last (n+1)) := (Fin.le_castSucc_iff.mpr
-       (LT.lt.trans_le i1_lt_i2 (Fin.le_last i2)))
-      rw [Fin.predAbove_above 0 i2 hi2,Fin.predAbove_below (Fin.last (n+1)) i1 hi1]
-      -- (H : i ≤ j) :
-      -- σ (Fin.castSucc i) ≫ σ j = σ j.succ ≫ σ i
-      -- j=Fin.predAbove 0 (Fin.pred i2 _)
-      let j:= Fin.predAbove 0 (Fin.pred i2 ((Fin.pos_iff_ne_zero' i2).mp hi2))
-      let i:= Fin.predAbove 0 (Fin.castPred i1 (@LT.lt.ne (Fin (n + 1 + 1 + 1)) PartialOrder.toPreorder i1 (Fin.last (n + 1 + 1))
-  (LE.le.trans_lt hi1 (Fin.castSucc_lt_last (Fin.last (n + 1)))) ))
-      have H: i≤ j := by
-        sorry
-      by_cases hi22: i2=1
-      · subst hi22
-        have hi11 : i1=0:=by
-          rw [Fin.eq_iff_veq]
-          exact Nat.lt_one_iff.mp i1_lt_i2
-        subst hi11
-        rfl
-      · let l' := Fin.pred i2 (Fin.pos_iff_ne_zero.mp hi2)
-        have hl': 0< l':= by
-            rw [Fin.lt_def] at hi2
-            rw [Fin.eq_iff_veq,Fin.val_one] at hi22
-            rw [Fin.lt_def,Fin.val_zero, Fin.coe_pred, tsub_pos_iff_lt]
-            contrapose! hi22
-            exact Nat.le_antisymm hi22 hi2
-        have h12: l' = Fin.succ (Fin.predAbove 0 l'):= by
-          rw [Fin.eq_iff_veq,Fin.coe_pred, Fin.val_succ,Fin.predAbove_above 0 l' hl',Fin.coe_pred
-          ,Fin.coe_pred,tsub_add_cancel_of_le]
-          exact hl'
-        change σ l' ≫ _ =_
-        rw [h12,← σ_comp_σ]
-        congr 2
-        · rw [Fin.eq_iff_veq,Fin.coe_castSucc]
-          unfold Fin.predAbove
-          split <;> split
-          any_goals simp only [Fin.coe_castPred, Fin.coe_pred]
-          all_goals
-            rename_i h1 h2
-            simp only [Fin.castSucc_zero, Fin.lt_def, Fin.val_zero, Fin.coe_castPred, not_lt,
-              nonpos_iff_eq_zero] at h1 h2
-            simp only [h1,h2, ge_iff_le, zero_le, tsub_eq_zero_of_le]
-        · rw [Fin.le_def,Fin.predAbove_above 0 l' hl',Fin.coe_pred]
-          unfold Fin.predAbove
-          split
-          · simp
-            rw [Fin.le_def] at hi1
-            rw [Fin.lt_def] at hi2
-            rw [tsub_add_cancel_of_le]
-            exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2
-            exact hl'
-          · rename_i h1
-            rw [Fin.lt_def,Fin.castSucc_zero, Fin.val_zero, Fin.coe_castPred, not_lt,
-            nonpos_iff_eq_zero] at h1
-            simp only [Fin.coe_castPred,h1]
-            exact Nat.zero_le (↑i2 - 1 - 1)
+    (i j : Fin (n+3)) (i_lt_j : i<j):
+    factor_δ (factor_δ f j) ((last (n+1)).predAbove i) =
+    factor_δ (factor_δ f i) ((0 : Fin (n+2)).predAbove j) := by
+  rw [factor_δ,factor_δ,factor_δ,factor_δ,Category.assoc,Category.assoc]
+  congr 1
+  have h1: i ≤ (last (n+1)).castSucc:= le_castSucc_iff.mpr (lt_of_lt_of_le i_lt_j (j.le_last))
+  rw [predAbove_above 0 j (zero_lt_of_lt i_lt_j), (last (n+1)).predAbove_below i h1]
+  by_cases hj: j=1
+  · subst hj
+    have: i=0 :=eq_of_val_eq (lt_one_iff.mp i_lt_j)
+    subst this
+    rfl
+  · symm
+    nth_rewrite 2 [← show (predAbove 0 (j.pred ((pos_iff_ne_zero' j).mp
+        (zero_lt_of_lt i_lt_j)))).succ= j.pred ((pos_iff_ne_zero' j).mp (zero_lt_of_lt i_lt_j)) by
+      rw [eq_iff_veq,val_succ,coe_pred,predAbove_zero ?_]
+      refine Nat.succ_pred ?_
+      all_goals simp only [coe_pred, Nat.sub_eq, tsub_zero, ne_eq, tsub_eq_zero_iff_le, not_le,
+      eq_iff_veq, coe_pred, val_zero]
+      all_goals exact lt_of_le_of_ne (zero_lt_of_lt i_lt_j) (Ne.symm ((ne_iff_vne j 1).mp hj))]
+    rw [show predAbove 0 i =(predAbove 0 (i.castPred
+            (ne_of_lt (lt_of_le_of_lt h1 (last (n + 1)).castSucc_lt_last)))).castSucc by
+          by_cases  hi : i =0
+          case' pos => subst hi
+          case' neg => rw [predAbove_zero hi,
+            predAbove_zero ((castSucc_ne_zero_iff (i.castPred _)).mp hi)]
+          all_goals rfl]
+    exact σ_comp_σ (by apply predAbove_right_monotone 0; exact Nat.le_sub_one_of_lt i_lt_j)
 
 lemma factor_δ_comp_spec_lt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
     {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
@@ -494,7 +461,6 @@ lemma factor_δ_comp_spec_lt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]
   Fin.predAbove_above 0 i2 (hi2),
   Fin.succAbove_above i1 _ (by exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2)]
   exact Fin.succ_pred i2 (LT.lt.ne' (LE.le.trans_lt (Fin.zero_le (Fin.castSucc 0)) hi2))
-
 
 lemma factor_δ_comp_spec_lt' {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
     {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
