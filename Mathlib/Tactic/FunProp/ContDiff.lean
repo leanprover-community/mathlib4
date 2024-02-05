@@ -79,7 +79,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`
-and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitely
+and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitly
 the smallest possible value i.e. `n=m+1`.
 
 In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem.  -/
