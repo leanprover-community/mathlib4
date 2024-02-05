@@ -30,23 +30,23 @@ section
 
 variable {T}
 
-abbrev StructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : X₂ ⟶ T.obj X₁) : StructuredArrow X₂ T :=
-  StructuredArrow.mk g
+--abbrev StructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : X₂ ⟶ T.obj X₁) : StructuredArrow X₂ T :=
+--  StructuredArrow.mk g
 
-theorem StructuredArrow.cases {X₂ : C₂} (f : StructuredArrow X₂ T) :
+theorem StructuredArrow.mk_surjective {X₂ : C₂} (f : StructuredArrow X₂ T) :
     ∃ (X₁ : C₁) (g : X₂ ⟶ T.obj X₁), f = mk g := ⟨_, _, eq_mk f⟩
 
-theorem StructuredArrow.hom_cases {X₂ : C₂} {f g : StructuredArrow X₂ T} (φ : f ⟶ g) :
+theorem StructuredArrow.homMk_surjective {X₂ : C₂} {f g : StructuredArrow X₂ T} (φ : f ⟶ g) :
     ∃ (ψ : f.right ⟶ g.right) (hψ : f.hom ≫ T.map ψ = g.hom),
       φ = StructuredArrow.homMk ψ hψ := ⟨φ.right, StructuredArrow.w φ, rfl⟩
 
-abbrev CostructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : T.obj X₁ ⟶ X₂) : CostructuredArrow T X₂ :=
-  CostructuredArrow.mk g
+--abbrev CostructuredArrow.mk' {X₂ : C₂} (X₁ : C₁) (g : T.obj X₁ ⟶ X₂) : CostructuredArrow T X₂ :=
+--  CostructuredArrow.mk g
 
-theorem CostructuredArrow.cases {X₂ : C₂} (f : CostructuredArrow T X₂) :
+theorem CostructuredArrow.mk_surjective {X₂ : C₂} (f : CostructuredArrow T X₂) :
     ∃ (X₁ : C₁) (g :T.obj X₁ ⟶ X₂), f = mk g := ⟨_, _, eq_mk f⟩
 
-theorem CostructuredArrow.hom_cases {X₂ : C₂} {f g : CostructuredArrow T X₂} (φ : f ⟶ g) :
+theorem CostructuredArrow.homMk_surjective {X₂ : C₂} {f g : CostructuredArrow T X₂} (φ : f ⟶ g) :
     ∃ (ψ : f.left ⟶ g.left) (hψ : T.map ψ ≫ g.hom = f.hom),
       φ = CostructuredArrow.homMk ψ hψ := ⟨φ.left, CostructuredArrow.w φ, rfl⟩
 
@@ -92,17 +92,17 @@ section
 def JDownwards.mk
     (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
       w.JDownwards g :=
-  CostructuredArrow.mk' (StructuredArrow.mk a) (StructuredArrow.homMk b (by simpa using comm))
+  CostructuredArrow.mk (Y := StructuredArrow.mk a) (StructuredArrow.homMk b (by simpa using comm))
 
 variable {g}
 
-lemma JDownwards.cases
+lemma JDownwards.mk_surjective
     (f : w.JDownwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
       f = mk w g X₁ a b comm := by
-  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.cases f
-  obtain ⟨X₁, a, rfl⟩ := g.cases
-  obtain ⟨b, hb, rfl⟩ := StructuredArrow.hom_cases φ
+  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.mk_surjective f
+  obtain ⟨X₁, a, rfl⟩ := g.mk_surjective
+  obtain ⟨b, hb, rfl⟩ := StructuredArrow.homMk_surjective φ
   exact ⟨X₁, a, b, by simpa using hb, rfl⟩
 
 variable (g)
@@ -111,17 +111,17 @@ variable (g)
 def JRightwards.mk
     (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
       w.JRightwards g :=
-  StructuredArrow.mk' (CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
+  StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 variable {g}
 
-lemma JRightwards.cases
+lemma JRightwards.mk_surjective
     (f : w.JRightwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃) (comm : R.map a ≫ w.app X₁ ≫ B.map b = g),
       f = mk w g X₁ a b comm := by
-  obtain ⟨g, φ, rfl⟩ := StructuredArrow.cases f
-  obtain ⟨X₁, b, rfl⟩ := g.cases
-  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.hom_cases φ
+  obtain ⟨g, φ, rfl⟩ := StructuredArrow.mk_surjective f
+  obtain ⟨X₁, b, rfl⟩ := g.mk_surjective
+  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
   exact ⟨X₁, a, b, by simpa using ha, rfl⟩
 
 end
@@ -380,7 +380,7 @@ instance id (F : C₁ ⥤ C₂) : TwoSquare.GuitartExact (show TwoSquare (𝟭 C
   rw [guitartExact_iff_isConnected_rightwards]
   intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
   let Z := JRightwards (show TwoSquare (𝟭 C₁) F F (𝟭 C₂) from 𝟙 F) g
-  let X₀ : Z := StructuredArrow.mk' (CostructuredArrow.mk' X₂ g) (CostructuredArrow.homMk (𝟙 _))
+  let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
   have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
       (by simpa using CostructuredArrow.w X.hom))

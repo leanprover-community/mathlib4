@@ -14,8 +14,8 @@ lemma Localization.isoOfHom_id (L : C₁ ⥤ C₂) (W : MorphismProperty C₁)
     [L.IsLocalization W] (X : C₁) (hX : W (𝟙 X)) :
     isoOfHom L W (𝟙 X) hX = Iso.refl _ := by aesop_cat
 
-lemma Arrow.cases (f : Arrow C₁) : ∃ (X Y : C₁) (g : X ⟶ Y), f = Arrow.mk g := ⟨_, _, f.hom, rfl⟩
-lemma Arrow.hom_cases {f g : Arrow C₁} (φ : f ⟶ g) :
+lemma Arrow.mk_surjective (f : Arrow C₁) : ∃ (X Y : C₁) (g : X ⟶ Y), f = Arrow.mk g := ⟨_, _, f.hom, rfl⟩
+lemma Arrow.homMk_surjective {f g : Arrow C₁} (φ : f ⟶ g) :
   ∃ (φ₁ : f.left ⟶ g.left) (φ₂ : f.right ⟶ g.right) (comm : φ₁ ≫ g.hom = f.hom ≫ φ₂),
     φ = Arrow.homMk comm := ⟨φ.left, φ.right, Arrow.w φ, rfl⟩
 
@@ -76,7 +76,7 @@ set_option maxHeartbeats 1600000 in
 @[simps]
 def precompJDownwards (γ : X₂' ⟶ X₂) (g' : L₂.obj X₂' ⟶ F.obj X₃) (hg' : L₂.map γ ≫ g = g'):
     TwoSquare.JDownwards e.hom g ⥤ TwoSquare.JDownwards e.hom g' where
-  obj f := CostructuredArrow.mk' (StructuredArrow.mk' f.left.right (γ ≫ f.left.hom))
+  obj f := CostructuredArrow.mk (Y := StructuredArrow.mk (Y := f.left.right) (γ ≫ f.left.hom))
       (StructuredArrow.homMk f.hom.right (by
         have eq := L₂.map γ ≫= StructuredArrow.w f.hom
         dsimp at eq ⊢
@@ -109,11 +109,11 @@ lemma isConnected_JDownwards :
   -- L₂ is named Q
   -- Φ.functor is named K
   -- F is named K bar
-  obtain ⟨c, γ, x, comm, hγ₀⟩ := γ₀.cases
+  obtain ⟨c, γ, x, comm, hγ₀⟩ := γ₀.mk_surjective
   have R : Φ.arrow.RightResolution (Arrow.mk γ) := Classical.arbitrary _
-  obtain ⟨ρ, w, ⟨ht'', ht'⟩, rfl⟩ := R.cases
-  obtain ⟨c'', c', f, rfl⟩ := ρ.cases
-  obtain ⟨t'', t', commf, rfl⟩ := Arrow.hom_cases w
+  obtain ⟨ρ, w, ⟨ht'', ht'⟩, rfl⟩ := R.mk_surjective
+  obtain ⟨c'', c', f, rfl⟩ := ρ.mk_surjective
+  obtain ⟨t'', t', commf, rfl⟩ := Arrow.homMk_surjective w
   dsimp at commf t' t'' ht' ht''
   obtain ⟨z, hz⟩ : ∃ (z : L₁.obj c ⟶ L₁.obj c'), F.map z = e.inv.app c ≫ L₂.map t' ≫ e.hom.app c' :=
     F.map_surjective _

@@ -23,7 +23,7 @@ section
 
 variable {Φ X₂}
 
-lemma RightResolution.cases (R : Φ.RightResolution X₂) :
+lemma RightResolution.mk_surjective (R : Φ.RightResolution X₂) :
     ∃ (X₁ : C₁) (w : X₂ ⟶ Φ.functor.obj X₁) (hw : W₂ w), R = RightResolution.mk w hw :=
   ⟨_, R.w, R.hw, rfl⟩
 
