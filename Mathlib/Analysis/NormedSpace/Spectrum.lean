@@ -538,7 +538,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 @[simp]
 theorem toContinuousLinearMap_norm [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
     ‖φ.toContinuousLinearMap‖ = 1 :=
-  ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one
+  ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one
     (fun a => (one_mul ‖a‖).symm ▸ spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _))
     fun _ _ h => by simpa only [coe_toContinuousLinearMap, map_one, norm_one, mul_one] using h 1
 #align alg_hom.to_continuous_linear_map_norm AlgHom.toContinuousLinearMap_norm
