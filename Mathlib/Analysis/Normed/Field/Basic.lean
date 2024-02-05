@@ -19,8 +19,6 @@ In this file we define (semi)normed rings and fields. We also prove some theorem
 definitions.
 -/
 
-set_option profiler true
-
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 open Filter Metric Bornology

@@ -305,7 +305,7 @@ theorem linfty_opNorm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
 alias linfty_op_norm_col :=
   linfty_opNorm_col -- deprecated on 2024-02-02
 
-@[simp]
+@[simp, nolint simpNF] -- Timesout
 theorem linfty_opNNNorm_row (v : n → α) : ‖row v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_opNNNorm_def]
 #align matrix.linfty_op_nnnorm_row Matrix.linfty_opNNNorm_row
 

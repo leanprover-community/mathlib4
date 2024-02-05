@@ -146,6 +146,8 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
+    ext -- Timeout with AddMonoid (E →L[ℝ] ℝ) instance
+    dsimp
     simp
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
