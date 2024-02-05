@@ -66,6 +66,10 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter (hfm : Measurable f) (hgm :
 
 section Real
 
-variable {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable {f g g' : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+
+theorem _root_.Asymptotics.IsBigO.integrable_of_integrableAtFilter_atTop_atBot
+    (htop : f =O[atTop] g) (hbot : f =O[atBot] g') (IntegrableOn): True := by
+  sorry
 
 end Real
