@@ -200,7 +200,7 @@ variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
-instance ndFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
+instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f

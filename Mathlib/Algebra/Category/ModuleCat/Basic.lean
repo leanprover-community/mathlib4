@@ -99,7 +99,7 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
 #align Module.Module_category ModuleCat.moduleCategory
 
 instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
-  LinearMap.ndFunLike
+  LinearMap.instFunLike
 
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
