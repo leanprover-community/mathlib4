@@ -741,7 +741,7 @@ namespace StarAlgEquivClass
 -- See note [lower instance priority]
 instance (priority := 50) {F R A B : Type*} {_ : Add A} {_ : Mul A} [SMul R A] {_ : Star A}
     {_ : Add B} {_ : Mul B} [SMul R B] {_ : Star B}
-    [EquivLike F A B]  [NonUnitalAlgEquivClass F R A B]
+    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
     [hF : StarAlgEquivClass F R A B] :
     StarHomClass F A B :=
   { hF with }

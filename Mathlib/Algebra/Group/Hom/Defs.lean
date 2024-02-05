@@ -507,8 +507,7 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F : Type*) (M N : outParam Type*)
-  [MulZeroOneClass M] [MulZeroOneClass N]
-  [FunLike F M N]
+  [MulZeroOneClass M] [MulZeroOneClass N] [FunLike F M N]
   extends MonoidHomClass F M N, ZeroHomClass F M N : Prop
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 

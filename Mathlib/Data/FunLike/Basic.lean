@@ -59,7 +59,7 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F: Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
+class MyHomClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
   [FunLike F A B] : Prop :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 

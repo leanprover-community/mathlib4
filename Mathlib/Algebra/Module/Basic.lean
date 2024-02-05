@@ -473,7 +473,7 @@ theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunL
 #align map_rat_cast_smul map_rat_cast_smul
 
 theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
-    [_instM : Module ℚ M] [_instM₂ : Module ℚ M₂]
+    [Module ℚ M] [Module ℚ M₂]
     {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂]
     (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_rat_cast_smul f ℚ ℚ c x
