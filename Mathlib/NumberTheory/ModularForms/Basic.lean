@@ -40,7 +40,7 @@ variable (F : Type*) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
 
 open scoped ModularForm
 
-/-- These are `SlashInvariantForm`'s that are holomophic and bounded at infinity. -/
+/-- These are `SlashInvariantForm`'s that are holomorphic and bounded at infinity. -/
 structure ModularForm extends SlashInvariantForm Γ k where
   holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
   bdd_at_infty' : ∀ A : SL(2, ℤ), IsBoundedAtImInfty (toSlashInvariantForm ∣[k] A)
@@ -49,7 +49,7 @@ structure ModularForm extends SlashInvariantForm Γ k where
 /-- The `SlashInvariantForm` associated to a `ModularForm`. -/
 add_decl_doc ModularForm.toSlashInvariantForm
 
-/-- These are `SlashInvariantForm`s that are holomophic and zero at infinity. -/
+/-- These are `SlashInvariantForm`s that are holomorphic and zero at infinity. -/
 structure CuspForm extends SlashInvariantForm Γ k where
   holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
   zero_at_infty' : ∀ A : SL(2, ℤ), IsZeroAtImInfty (toSlashInvariantForm ∣[k] A)
