@@ -193,6 +193,42 @@ theorem IsCompact.exists_isLUB [ClosedIciTopology α] {s : Set α} (hs : IsCompa
   IsCompact.exists_isGLB (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_is_lub IsCompact.exists_isLUB
 
+theorem cocompact_le [LinearOrder α] [CompactIccSpace α] :
+    cocompact α ≤ atTop ⊔ atBot := by
+  refine fun s hs ↦ mem_cocompact.mpr ?_
+  cases isEmpty_or_nonempty α with
+  | inl _ => exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  | inr _ =>
+    obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs.1
+    obtain ⟨u, hu⟩ := mem_atBot_sets.mp hs.2
+    refine ⟨Icc u t, isCompact_Icc, fun x hx ↦ (not_and_or.mp hx).casesOn ?_ ?_ (Eq.refl hx)⟩
+    exact fun hx _ ↦ hu x (le_of_not_le hx)
+    exact fun hx _ ↦ ht x (le_of_not_le hx)
+
+theorem cocompact_eq [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
+    [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atTop ⊔ atBot := by
+  cases isEmpty_or_nonempty α with
+  | inl hX => simp_rw [filter_eq_bot_of_isEmpty]
+  | inr hX =>
+    refine cocompact_le.antisymm (fun s hs ↦ ?_)
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    cases Set.eq_empty_or_nonempty t with
+    | inl h_empty =>
+      rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
+      convert univ_mem
+    | inr h_nonempty =>
+      constructor
+      · refine Filter.mem_atTop_sets.mpr ?_
+        obtain ⟨a, ha⟩ := ht.exists_isGreatest h_nonempty
+        obtain ⟨b, hb⟩ := exists_gt a
+        exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
+          ha.2 (not_not_mem.mp hc) |>.trans_lt hb |>.trans_le hb' |>.false⟩
+      · refine Filter.mem_atBot_sets.mpr ?_
+        obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
+        obtain ⟨b, hb⟩ := exists_lt a
+        exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
+          LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
+
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
