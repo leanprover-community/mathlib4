@@ -24,10 +24,11 @@ Noether's generalization also holds for infinite Galois extensions.
 
 ## Main statements
 
-* `groupCohomology.isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units`: for all
-$f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
+* `groupCohomology.isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units`: Noether's generalization
+of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
 condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
-* `groupCohomology.H1ofAutOnUnitsUnique`: $H^1(Aut_K(L), L^\times)$ is trivial.
+* `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
+$H^1(Aut_K(L), L^\times)$ is trivial.
 
 ## Implementation notes
 
@@ -73,9 +74,9 @@ section
 open Hilbert90
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- Given a finite extension of fields and a function `f : Aut_K(L) → Lˣ` satisfying
-`f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there exists `β : Lˣ` such that
-`g(β)/β = f(g)` for all `g : Aut_K(L).` -/
+/-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields and a
+function `f : Aut_K(L) → Lˣ` satisfying `f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there
+exists `β : Lˣ` such that `g(β)/β = f(g)` for all `g : Aut_K(L).` -/
 theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
     (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulOneCocycle f) :
     IsMulOneCoboundary f := by
@@ -97,8 +98,8 @@ theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- Given a finite extension of fields `L/K`, the first group cohomology `H¹(Aut_K(L), Lˣ)` is
-trivial. -/
+/-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields `L/K`, the
+first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
   uniq := fun a => Quotient.inductionOn' a fun x => (Submodule.Quotient.mk_eq_zero _).2 <| by
