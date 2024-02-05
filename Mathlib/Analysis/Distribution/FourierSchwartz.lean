@@ -9,6 +9,13 @@ import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 /-!
 # Fourier transform on Schwarz functions
+
+This file will construct the Fourier transform as a continuous linear map acting on Schwarz
+functions.
+
+For now, it only contains the fact that the Fourier transform of a Schwartz function is
+differentiable, with an explicit derivative given by a Fourier transform. See
+`SchwartzMap.hasFDerivAt_fourier`.
 -/
 
 open Real Complex MeasureTheory Filter TopologicalSpace SchwartzSpace SchwartzMap MeasureTheory
@@ -19,7 +26,7 @@ noncomputable section
 variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {V : Type*} [NormedAddCommGroup V] [NormedSpace ℂ V]
-variable (L : D →L[ℝ] E →L[ℝ] ℝ)
+  (L : D →L[ℝ] E →L[ℝ] ℝ)
 
 /-- Multiplication by a linear map on Schwartz space: for `f : D → V` a Schwartz function and `L` a
 bilinear map from `D × E` to `ℝ`, we define a new Schwartz function on `D` taking values in the
