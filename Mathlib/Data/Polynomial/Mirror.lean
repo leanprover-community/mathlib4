@@ -218,7 +218,7 @@ variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)
-    (h3 : ∀ g, g ∣ f → g ∣ f.mirror → IsUnit g) : Irreducible f := by
+    (h3 : IsRelPrime f f.mirror) : Irreducible f := by
   constructor
   · exact h1
   · intro g h fgh

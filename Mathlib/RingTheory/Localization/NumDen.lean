@@ -37,7 +37,7 @@ variable (A : Type*) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
 variable {K : Type*} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :
-    ∃ (a : A) (b : nonZeroDivisors A), (∀ {d}, d ∣ a → d ∣ b → IsUnit d) ∧ mk' K a b = x := by
+    ∃ (a : A) (b : nonZeroDivisors A), IsRelPrime a b ∧ mk' K a b = x := by
   obtain ⟨⟨b, b_nonzero⟩, a, hab⟩ := exists_integer_multiple (nonZeroDivisors A) x
   obtain ⟨a', b', c', no_factor, rfl, rfl⟩ :=
     UniqueFactorizationMonoid.exists_reduced_factors' a b
@@ -59,8 +59,8 @@ noncomputable def den (x : K) : nonZeroDivisors A :=
   Classical.choose (Classical.choose_spec (exists_reduced_fraction A x))
 #align is_fraction_ring.denom IsFractionRing.den
 
-theorem num_den_reduced (x : K) {d} : d ∣ num A x → d ∣ den A x → IsUnit d :=
-  (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
+theorem num_den_reduced (x : K) : IsRelPrime (num A x) (den A x) :=
+  fun _ ↦ (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 #align is_fraction_ring.num_denom_reduced IsFractionRing.num_den_reduced
 
 -- @[simp] -- Porting note: LHS reduces to give the simp lemma below
