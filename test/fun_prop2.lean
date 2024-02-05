@@ -4,6 +4,8 @@ import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Measurable
 import Mathlib.Tactic.FunProp.AEMeasurable
 
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
 
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
