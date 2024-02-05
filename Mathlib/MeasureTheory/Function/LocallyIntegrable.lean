@@ -391,6 +391,25 @@ theorem integrable_iff_integrableAtFilter_cocompact :
   rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
   exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
+theorem integrable_iff_integrableAtFilter_atTop_atBot [LinearOrder X] [CompactIccSpace X] :
+    Integrable f μ ↔
+    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
+  use fun hf ↦ ⟨⟨hf.integrableAtFilter _, hf.integrableAtFilter _⟩, hf.locallyIntegrable⟩
+  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+  exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono CompactIccSpace.cocompact_le
+
+theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
+    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
+  use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
+  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+  exact h.1.filter_mono CompactIccSpace.cocompact_le_atTop
+
+theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
+    Integrable f μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrable f μ := by
+  use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
+  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+  exact h.1.filter_mono CompactIccSpace.cocompact_le_atBot
+
 variable {a : X}
 
 theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
@@ -412,32 +431,6 @@ theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIc
     h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
   have h_int_Iic : IntegrableOn f (Iic a') μ := hs.mono ha' le_rfl
   exact (integrableOn_union.mpr ⟨h_int_Iic, h_int_Icc⟩).mono Iic_subset_Iic_union_Icc le_rfl
-
-theorem integrable_iff_integrableAtFilter_atTop_atBot [LinearOrder X] [CompactIccSpace X] :
-    Integrable f μ ↔
-    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
-  use fun h ↦ ⟨⟨h.integrableAtFilter atBot, h.integrableAtFilter atTop⟩, h.locallyIntegrable⟩
-  intro h
-  cases isEmpty_or_nonempty X with
-  | inl hX => exact integrableOn_univ.mp (by convert integrableOn_empty)
-  | inr hX =>
-    have a : X := Classical.arbitrary X
-    apply integrableOn_univ.mp
-    convert integrableOn_union.mpr
-      ⟨integrableOn_Iic_iff_integrableAtFilter_atBot.mpr ⟨h.1.1, h.2.locallyIntegrableOn (Iic a)⟩,
-      integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨h.1.2, h.2.locallyIntegrableOn (Ici a)⟩⟩
-    exact Iic_union_Ici.symm
-
-/-- Special case for e.g. `NNReal` -/
-theorem integrable_iff_integrableAtFilter_atTop [ConditionallyCompleteLinearOrder X]
-    [OrderTopology X] {f : Subtype (Ici a) → E} {μ : Measure (Subtype (Ici a))} :
-    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
-  have : Ici (Subtype.mk a (le_refl a)) = univ := by ext ⟨_, _⟩; simp_all
-  rewrite [← integrableOn_univ, ← this, ← locallyIntegrableOn_univ, ← this]
-  haveI : OrderTopology { x // a ≤ x } := orderTopology_of_ordConnected (t := Ici a)
-  haveI : CompactIccSpace (Subtype (Ici a)) := Nonneg.conditionallyCompleteLinearOrderBot a
-    |>.toConditionallyCompleteLinearOrder.toCompactIccSpace
-  exact integrableOn_Ici_iff_integrableAtFilter_atTop
 
 end MeasureTheory
 
