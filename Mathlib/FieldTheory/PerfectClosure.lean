@@ -401,7 +401,7 @@ theorem iterate_frobenius_mk (n : ℕ) (x : K) :
   induction' n with n ih; rfl
   rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
-/-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
+/-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
 noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
