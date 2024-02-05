@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Ring.Pi
 
 #align_import algebra.char_p.pi from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"

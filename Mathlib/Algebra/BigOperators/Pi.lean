@@ -3,10 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Data.Fintype.Card
 
 #align_import algebra.big_operators.pi from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 

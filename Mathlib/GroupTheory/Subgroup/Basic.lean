@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer

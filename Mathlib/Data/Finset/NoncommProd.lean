@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Group.Commute.Hom
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.noncomm_prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
