@@ -377,21 +377,23 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
   rfl
 #align perfect_closure.of_apply PerfectClosure.of_apply
 
+instance instReduced : IsReduced (PerfectClosure K p) where
+  eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
+    replace h : mk K p x ^ p ^ n = 0 := by
+      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+        pow_add, h, mul_zero]
+    simp only [zero_def, mk_pow, eq_iff', zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
+    obtain ⟨m, h⟩ := h
+    exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
+
 instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
       liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
-    have hl : LeftInverse f (frobenius (PerfectClosure K p) p) := fun e ↦
-      induction_on e fun ⟨n, x⟩ => by
-        simp only [liftOn_mk, frobenius_mk]
-        exact (Quot.sound <| R.intro _ _).symm
-    have hr : RightInverse f (frobenius (PerfectClosure K p) p) := fun e ↦
-      induction_on e fun ⟨n, x⟩ => by
-        simp only [liftOn_mk, frobenius_mk]
-        exact (Quot.sound <| R.intro _ _).symm
-    exact bijective_iff_has_inverse.mpr ⟨f, hl, hr⟩
+    refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
+      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;> simp only [liftOn_mk, frobenius_mk, mk_succ_pow]
 
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
