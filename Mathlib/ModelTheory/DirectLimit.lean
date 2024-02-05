@@ -356,6 +356,17 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
+theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
+    ∃ i, ∃ T : L.Substructure (G i), T.map (of L ι G f i).toHom = S := by
+  let ⟨A, A_closure⟩ := S_fg
+  let ⟨i, y, eq_y⟩ := exists_quotient_mk'_sigma_mk'_eq G _ (fun a : A ↦ a.1)
+  use i
+  use (Substructure.closure L (range y))
+  rw [Substructure.map_closure]
+  simp only [Embedding.coe_toHom, of_apply]
+  rw [← image_univ, image_image, image_univ, ← eq_y,
+    Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
+
 variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
 
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -677,7 +688,6 @@ theorem back_iff_symm_of_forth :
     use g.symm
     convert g_prop
     exact (symm_le_iff f g).symm
-
 
 /-- For a countably generated structure `M` and a structure `N`, if any subequivalence
 between finitely generated substructures can be extended to any element in the domain,
