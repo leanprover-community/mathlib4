@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 #align_import category_theory.sites.subsheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
