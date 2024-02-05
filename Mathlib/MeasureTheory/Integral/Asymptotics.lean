@@ -12,8 +12,8 @@ We establish integrability of `f` from `f = O(g)`.
 
 ## Main results
 
-* `Asymptotics.IsBigO.integrableAtFilter`: Given `f = O[l] g` on measurably generated `l`,
-  `IntegrableAtFilter g l μ`, and `f` `AEStronglyMeasurable` at `l`, `IntegrableAtFilter f l μ`.
+* `Asymptotics.IsBigO.integrableAtFilter`: If `f = O[l] g` on measurably generated `l`,
+  `f` is strongly measurable at `l`, and `g` is integrable at `l`, then `f` is integrable at `l`.
 -/
 
 open Asymptotics MeasureTheory Set Filter
@@ -21,11 +21,11 @@ open Asymptotics MeasureTheory Set Filter
 variable {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NontriviallyNormedField F]
   {f : α → E} {g : α → F} {a b : α} {μ : Measure α} {l : Filter α}
 
-/-- Given `f = O[l] g` on measurably generated `l`,
-`IntegrableAtFilter g l μ`, and `f` `AEStronglyMeasurable` at `l`, `IntegrableAtFilter f l μ`. -/
+/-- If `f = O[l] g` on measurably generated `l`, `f` is strongly measurable at `l`,
+and `g` is integrable at `l`, then `f` is integrable at `l`. -/
 theorem _root_.Asymptotics.IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
-    (hfm : ∃ s ∈ l, AEStronglyMeasurable f (μ.restrict s))
-    (hf : f =O[l] g) (hg : IntegrableAtFilter g l μ) : IntegrableAtFilter f l μ := by
+    (hf : f =O[l] g) (hfm : StronglyMeasurableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
+    IntegrableAtFilter f l μ := by
   obtain ⟨C, hC⟩ := hf.bound
   obtain ⟨C', hC'⟩ := NormedField.exists_lt_norm F C
   obtain ⟨s, hsl, hs⟩ := hC.exists_mem
