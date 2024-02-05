@@ -108,7 +108,7 @@ infixl:25 " ≃o " => OrderIso
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F α β : Type*) [LE α] [LE β] [FunLike F α β] :=
+abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 #align order_hom_class OrderHomClass
 
