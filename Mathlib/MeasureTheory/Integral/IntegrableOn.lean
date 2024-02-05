@@ -491,7 +491,7 @@ alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
 
 @[simp]
-theorem IntegrableAtFilter.top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
