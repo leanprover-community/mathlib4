@@ -12,7 +12,7 @@ import Mathlib.Logic.Function.Basic
 /-!
 ## `funProp`
 
-this file defines enviroment extension for `funProp`
+this file defines environment extension for `funProp`
 -/
 
 
@@ -39,7 +39,7 @@ structure Config where
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
-  e.g. infering differentiability from linearity -/
+  e.g. inferring differentiability from linearity -/
   maxTransitionDepth := 20
   /-- Stack of used theorem, used to prevent trivial loops. -/
   thmStack    : List Origin := []
