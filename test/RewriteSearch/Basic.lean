@@ -16,7 +16,7 @@ example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
 -- It seems that these tests are quite fragile,
 -- and `rw_search` often changes which sequence of rewrites it finds, as the library changes.
 -- It's enough to check that `rw_search` is closing the goal,
--- but we don't need to verify that the exact sequence is
+-- but we don't need to verify that the exact sequence is always the same.
 /-
 info: Try this: rw [@add_right_comm, ← @add_assoc, @add_assoc, @add_add_add_comm, ← @add_assoc]
 -/
