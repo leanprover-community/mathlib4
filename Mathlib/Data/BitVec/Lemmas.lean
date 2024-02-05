@@ -5,6 +5,7 @@ Authors: Simon Hudon, Harun Khan
 -/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.BitVec.Defs
+import Mathlib.Tactic.Abel
 
 /-!
 # Basic Theorems About Bitvectors
@@ -215,25 +216,25 @@ lemma toNat_neg : (-x).toNat = (2 ^ w - x.toNat) % 2 ^ w := by
 
 end
 
-/-!
-### `IntCast`
--/
-
--- Either of these follows trivially from the other. Which one to
--- prove is not yet clear.
-proof_wanted ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z
-
-proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
+@[simp] lemma toNat_neg_ofNat_one : (-1#w).toNat = 2^w - 1 := by
+  simp only [ofNat_eq_ofNat, toNat_neg, toNat_ofNat]
+  cases' w with w
+  · rfl
+  · rw [mod_eq_of_lt (a:=1) (by simp), mod_eq_of_lt (sub_lt (two_pow_pos _) Nat.one_pos)]
 
 /-!
-## Ring
+## `CommSemiring` and `AddCommGroup`
+These are precursors to proving that bitvectors are a commutative ring
 -/
 
--- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
 instance : CommSemiring (BitVec w) :=
   toFin_injective.commSemiring _
     toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
     toFin_pow toFin_natCast
+
+instance : AddCommGroup (BitVec w) :=
+  toFin_injective.addCommGroup _
+    toFin_zero toFin_add toFin_neg toFin_sub (Function.swap toFin_nsmul) (Function.swap toFin_zsmul)
 
 /-!
 ## Extensionality
@@ -293,7 +294,10 @@ variable (x y : BitVec w) (i : Fin w)
 @[simp] lemma getLsb'_ofNat_zero : getLsb' 0#w i = false := by
   simp only [getLsb', getLsb, toNat_ofNat, zero_mod, zero_testBit]
 
-proof_wanted getLsb'_negOne : getLsb' (-1) i = true
+@[simp] lemma getLsb'_neg_ofNat_one : getLsb' (-1#w) i = true := by
+  simp only [getLsb', getLsb, toNat_neg_ofNat_one, testBit_two_pow_sub_one, Fin.is_lt, decide_True]
+
+@[simp] lemma getLsb_val_eq_getLsb' : x.getLsb i.val = x.getLsb' i := rfl
 
 end
 
@@ -319,10 +323,67 @@ variable (x y : BitVec w) (i : Fin w)
 @[simp] lemma getMsb'_ofNat_zero : getMsb' 0#w i = false := by
   simp only [← getLsb'_rev, getLsb'_ofNat_zero]
 
-proof_wanted getMsb'_negOne : getMsb' (-1) i = true
-  -- Once we have `getLsb'_negOne`, this lemma trivially follows by
-  --   `simp only [← getLsb'_rev, getLsb'_negOne]`
+@[simp] lemma getMsb'_neg_ofNat_one : getMsb' (-1#w) i = true := by
+  simp only [← getLsb'_rev, getLsb'_neg_ofNat_one]
 
 end
+
+/-!
+### `Unique`
+There is exactly one zero-width bitvector
+-/
+
+/-- Every zero-width bitvector is equal to the canonical zero-width bitvector `0#0` -/
+theorem eq_ofNat_zero_of_width_zero (x : BitVec 0) : x = 0#0 := eq_of_getMsb_eq (congrFun rfl)
+
+instance : Unique (BitVec 0) where
+  uniq := eq_ofNat_zero_of_width_zero
+
+/-!
+### `IntCast` & `CommRing`
+Show that casting `z : Int` to a bitvector is the same as casting `z` to `Fin 2^w`, and
+using the result as argument to `ofFin` to construct a bitvector.
+This result ist the final piece needed to show that bitvectors form a commutative ring.
+-/
+
+/-- Adding a bitvector to its own complement yields the all ones bitpattern -/
+@[simp] lemma add_not_self (x : BitVec w) : x + ~~~x = -1#w := by
+  rw [add_as_adc, adc, iunfoldr_replace (fun _ => false) (-1#w)]
+  · rfl
+  · simp [adcb]
+
+/-- Subtracting `x` from the all ones bitvector is equivalent to taking its complement -/
+lemma negOne_sub_eq_not (x : BitVec w) : -1#w - x = ~~~x := by
+  rw [← add_not_self x]; abel
+
+/-- Negating every bit of `x` is the same as subtracting `x` from the all-ones bitvector -/
+lemma not_eq_sub (x : BitVec w) :
+    ~~~x = (-1#w) - x := by
+  suffices ~~~x + x = -1#w from eq_sub_of_add_eq this
+  rw [add_comm, add_not_self]
+
+@[simp] lemma natCast_eq (x w : Nat) :
+    Nat.cast x = x#w := rfl
+
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
+  cases w
+  case zero =>
+    simp only [eq_ofNat_zero_of_width_zero]
+  case succ w =>
+    simp only [Int.cast, IntCast.intCast, BitVec.ofInt]
+    unfold Int.castDef
+    cases' z with z z
+    · rfl
+    · simp only [cast_add, cast_one, neg_add_rev]
+      rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
+        natCast_eq, ← sub_eq_add_neg (G := BitVec _), not_eq_sub]
+
+theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  apply toFin_inj.mpr <| (ofFin_intCast z).symm
+
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
+    (Function.swap toFin_nsmul) (Function.swap toFin_zsmul) toFin_pow toFin_natCast toFin_intCast
 
 end Std.BitVec
