@@ -3,10 +3,7 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Small.Basic
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.TensorProductBasis
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
@@ -117,6 +114,9 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
 
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
+
+theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
+  (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 variable {R M N}
 

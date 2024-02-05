@@ -149,7 +149,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
       /- We could write this `snd` term in a point-free style as follows, but it wouldn't help as we
         don't have any prod or subtype combinators to deal with n-linear maps of this degree.
         ```lean
-        (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp $
+        (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp <|
           (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
         ```
         -/

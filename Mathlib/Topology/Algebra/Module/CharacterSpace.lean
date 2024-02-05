@@ -23,7 +23,7 @@ C⋆-algebras.
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the
 correct topology on the space. We then define `WeakDual.CharacterSpace.toAlgHom` which provides the
-algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toClm`
+algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toCLM`
 which provides the element as a continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of
 `A →L[𝕜] 𝕜`, this is often more convenient.)
 
@@ -57,12 +57,12 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [Conti
 /-- Elements of the character space are continuous linear maps. -/
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
-  coe_injective' φ ψ h := by ext1; apply FunLike.ext; exact congr_fun h
+  coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- porting note: moved because Lean 4 doesn't see the `FunLike` instance on `characterSpace 𝕜 A`
+-- porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
@@ -71,18 +71,18 @@ protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 
 
 @[ext]
 theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
 /-- An element of the character space, as a continuous linear map. -/
-def toClm (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
+def toCLM (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
   (φ : WeakDual 𝕜 A)
-#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toClm
+#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toCLM
 
 @[simp]
-theorem coe_toClm (φ : characterSpace 𝕜 A) : ⇑(toClm φ) = φ :=
+theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
   rfl
-#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toClm
+#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=

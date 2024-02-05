@@ -215,7 +215,7 @@ theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
     exact card_congr (Equiv.symm e)
-  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := even_iff_two_dvd.1 (Nat.even_mul_self_pred _)
+  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, FiniteDimensional.finrank_pos_iff]
@@ -266,11 +266,11 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       implies_true, forall_const, Equiv.symm_apply_apply, Sigma.ext_iff, Equiv.symm_apply_eq,
       heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
-  · exact fun a b hba ↦ ⟨fun h ↦ hba $ e.injective $ pb.algHom_ext h.symm, hroots _⟩
+  · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
   · rintro a b hba ha
     rw [ha, PowerBasis.lift_gen] at hba
     exact hba.1 rfl
-  · exact fun a b _ ↦ pb.algHom_ext $ pb.lift_gen _ _
+  · exact fun a b _ ↦ pb.algHom_ext <| pb.lift_gen _ _
 #align algebra.discr_power_basis_eq_norm Algebra.discr_powerBasis_eq_norm
 
 section Integral

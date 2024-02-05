@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import algebra.category.Group.biproducts from "leanprover-community/mathlib"@"234ddfeaa5572bc13716dd215c6444410a679a8e"
 

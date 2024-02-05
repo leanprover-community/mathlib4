@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
@@ -374,27 +374,6 @@ theorem FiniteDimensional.finrank_tensorProduct :
 
 end TensorProduct
 
-section Span
-
-variable [StrongRankCondition R]
-
-theorem rank_span_le_of_finite {s : Set M} (hs : s.Finite) : Module.rank R (span R s) ≤ #s := by
-  rw [Module.rank_def]
-  apply ciSup_le'
-  rintro ⟨t, ht⟩
-  letI := hs.fintype
-  simpa [Cardinal.mk_image_eq Subtype.val_injective] using linearIndependent_le_span' _
-    (ht.map (f := Submodule.subtype _) (by simp)).image s (fun x ↦ by aesop)
-
-theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
-  simpa using rank_span_le_of_finite s.finite_toSet
-
-theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
-  (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
-#align rank_span_of_finset rank_span_of_finset
-
-end Span
-
 section SubmoduleRank
 
 section
@@ -449,8 +428,92 @@ theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite 
 
 end
 
-
 end SubmoduleRank
+
+section Span
+
+variable [StrongRankCondition R]
+
+theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
+  rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
+  refine (lift_rank_range_le _).trans ?_
+  rw [rank_finsupp_self]
+  simp only [lift_lift, ge_iff_le, le_refl]
+#align rank_span_le rank_span_le
+
+theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
+  simpa using rank_span_le s.toSet
+
+theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
+  (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
+#align rank_span_of_finset rank_span_of_finset
+
+open Submodule FiniteDimensional
+
+variable (R)
+
+/-- The rank of a set of vectors as a natural number. -/
+protected noncomputable def Set.finrank (s : Set M) : ℕ :=
+  finrank R (span R s)
+#align set.finrank Set.finrank
+
+variable {R}
+
+theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
+  finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)
+#align finrank_span_le_card finrank_span_le_card
+
+theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s.card :=
+  calc
+    (s : Set M).finrank R ≤ (s : Set M).toFinset.card := finrank_span_le_card (M := M) s
+    _ = s.card := by simp
+#align finrank_span_finset_le_card finrank_span_finset_le_card
+
+theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
+    (Set.range b).finrank R ≤ Fintype.card ι := by
+  classical
+  refine (finrank_span_le_card _).trans ?_
+  rw [Set.toFinset_range]
+  exact Finset.card_image_le
+#align finrank_range_le_card finrank_range_le_card
+
+theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+    (hb : LinearIndependent R b) :
+    finrank R (span R (Set.range b)) = Fintype.card ι :=
+  finrank_eq_of_rank_eq
+    (by
+      have : Module.rank R (span R (Set.range b)) = #(Set.range b) := rank_span hb
+      rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
+        lift_eq_nat_iff] at this)
+#align finrank_span_eq_card finrank_span_eq_card
+
+theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
+    finrank R (span R s) = s.toFinset.card :=
+  finrank_eq_of_rank_eq
+    (by
+      have : Module.rank R (span R s) = #s := rank_span_set hs
+      rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
+#align finrank_span_set_eq_card finrank_span_set_eq_card
+
+theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
+    finrank R (span R (s : Set M)) = s.card := by
+  convert finrank_span_set_eq_card (s := (s : Set M)) hs
+  ext
+  simp
+#align finrank_span_finset_eq_card finrank_span_finset_eq_card
+
+theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submodule R M}
+    (subset : s ⊆ t) (card_lt : s.toFinset.card < finrank R t) : span R s < t :=
+  lt_of_le_of_finrank_lt_finrank (span_le.mpr subset)
+    (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+#align span_lt_of_subset_of_card_lt_finrank span_lt_of_subset_of_card_lt_finrank
+
+theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
+    (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
+  lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+#align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
+
+end Span
 
 section SubalgebraRank
 

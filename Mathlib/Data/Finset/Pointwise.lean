@@ -65,7 +65,6 @@ namespace Finset
 
 /-! ### `0`/`1` as finsets -/
 
-
 section One
 
 variable [One α] {s : Finset α} {a : α}
@@ -169,17 +168,40 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
 
 /-- Lift a `OneHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) "Lift a `ZeroHom` to `Finset` via `image`"]
-def imageOneHom [DecidableEq β] [One β] [OneHomClass F α β] (f : F) : OneHom (Finset α) (Finset β)
-    where
+def imageOneHom [DecidableEq β] [One β] [OneHomClass F α β] (f : F) :
+    OneHom (Finset α) (Finset β) where
   toFun := Finset.image f
   map_one' := by rw [image_one, map_one, singleton_one]
 #align finset.image_one_hom Finset.imageOneHom
 #align finset.image_zero_hom Finset.imageZeroHom
 
+@[to_additive (attr := simp)]
+lemma sup_one [SemilatticeSup β] [OrderBot β] (f : α → β) : sup 1 f = f 1 := sup_singleton
+
+@[to_additive (attr := simp)]
+lemma sup'_one [SemilatticeSup β] (f : α → β) : sup' 1 one_nonempty f = f 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma inf_one [SemilatticeInf β] [OrderTop β] (f : α → β) : inf 1 f = f 1 := inf_singleton
+
+@[to_additive (attr := simp)]
+lemma inf'_one [SemilatticeInf β] (f : α → β) : inf' 1 one_nonempty f = f 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma max_one [LinearOrder α] : (1 : Finset α).max = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma min_one [LinearOrder α] : (1 : Finset α).min = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma max'_one [LinearOrder α] : (1 : Finset α).max' one_nonempty = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma min'_one [LinearOrder α] : (1 : Finset α).min' one_nonempty = 1 := rfl
+
 end One
 
 /-! ### Finset negation/inversion -/
-
 
 section Inv
 
@@ -232,8 +254,7 @@ theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
 #align finset.neg_empty Finset.neg_empty
 
 @[to_additive (attr := simp)]
-theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
-  Nonempty.image_iff _
+theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
@@ -260,6 +281,26 @@ theorem inv_insert (a : α) (s : Finset α) : (insert a s)⁻¹ = insert a⁻¹ 
   image_insert _ _ _
 #align finset.inv_insert Finset.inv_insert
 #align finset.neg_insert Finset.neg_insert
+
+@[to_additive (attr := simp)]
+lemma sup_inv [SemilatticeSup β] [OrderBot β] (s : Finset α) (f : α → β) :
+    sup s⁻¹ f = sup s (f ·⁻¹) :=
+  sup_image ..
+
+@[to_additive (attr := simp)]
+lemma sup'_inv [SemilatticeSup β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : α → β) :
+    sup' s⁻¹ hs f = sup' s hs.of_inv (f ·⁻¹) :=
+  sup'_image ..
+
+@[to_additive (attr := simp)]
+lemma inf_inv [SemilatticeInf β] [OrderTop β] (s : Finset α) (f : α → β) :
+    inf s⁻¹ f = inf s (f ·⁻¹) :=
+  inf_image ..
+
+@[to_additive (attr := simp)]
+lemma inf'_inv [SemilatticeInf β] {s : Finset α} (hs : s⁻¹.Nonempty) (f : α → β) :
+    inf' s⁻¹ hs f = inf' s hs.of_inv (f ·⁻¹) :=
+  inf'_image ..
 
 @[to_additive] lemma image_op_inv (s : Finset α) : s⁻¹.image op = (s.image op)⁻¹ :=
   image_comm op_inv
@@ -521,10 +562,39 @@ def imageMulHom : Finset α →ₙ* Finset β where
 #align finset.image_mul_hom Finset.imageMulHom
 #align finset.image_add_hom Finset.imageAddHom
 
+@[to_additive (attr := simp (default + 1))]
+lemma sup_mul_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
+    sup (s * t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x * y) ≤ a :=
+  sup_image₂_le
+
+@[to_additive]
+lemma sup_mul_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+    sup (s * t) f = sup s fun x ↦ sup t (f <| x * ·) :=
+  sup_image₂_left ..
+
+@[to_additive]
+lemma sup_mul_right [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+    sup (s * t) f = sup t fun y ↦ sup s (f <| · * y) :=
+  sup_image₂_right ..
+
+@[to_additive (attr := simp (default + 1))]
+lemma le_inf_mul [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+    a ≤ inf (s * t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x * y) :=
+  le_inf_image₂
+
+@[to_additive]
+lemma inf_mul_left [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+    inf (s * t) f = inf s fun x ↦ inf t (f <| x * ·) :=
+  inf_image₂_left ..
+
+@[to_additive]
+lemma inf_mul_right [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+    inf (s * t) f = inf t fun y ↦ inf s (f <| · * y) :=
+  inf_image₂_right ..
+
 end Mul
 
 /-! ### Finset subtraction/division -/
-
 
 section Div
 
@@ -709,6 +779,36 @@ theorem subset_div {s t : Set α} :
   subset_image₂
 #align finset.subset_div Finset.subset_div
 #align finset.subset_sub Finset.subset_sub
+
+@[to_additive (attr := simp (default + 1))]
+lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+  sup_image₂_le
+
+@[to_additive]
+lemma sup_div_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+    sup (s / t) f = sup s fun x ↦ sup t (f <| x / ·) :=
+  sup_image₂_left ..
+
+@[to_additive]
+lemma sup_div_right [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
+    sup (s / t) f = sup t fun y ↦ sup s (f <| · / y) :=
+  sup_image₂_right ..
+
+@[to_additive (attr := simp (default + 1))]
+lemma le_inf_div [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+    a ≤ inf (s / t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x / y) :=
+  le_inf_image₂
+
+@[to_additive]
+lemma inf_div_left [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+    inf (s / t) f = inf s fun x ↦ inf t (f <| x / ·) :=
+  inf_image₂_left ..
+
+@[to_additive]
+lemma inf_div_right [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α → β) :
+    inf (s / t) f = inf t fun y ↦ inf s (f <| · / y) :=
+  inf_image₂_right ..
 
 end Div
 
@@ -1639,7 +1739,7 @@ theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  Nonempty.image_iff _
+  image_nonempty
 #align finset.smul_finset_nonempty Finset.smul_finset_nonempty
 #align finset.vadd_finset_nonempty Finset.vadd_finset_nonempty
 
@@ -2016,6 +2116,7 @@ theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
 #align finset.smul_finset_sdiff Finset.smul_finset_sdiff
 #align finset.vadd_finset_sdiff Finset.vadd_finset_sdiff
 
+open scoped symmDiff in
 @[to_additive]
 theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff _ _ <| MulAction.injective a
@@ -2119,16 +2220,16 @@ lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp 
 #align finset.zero_smul_subset Finset.zero_smul_subset
 
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm $ by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
 #align finset.nonempty.zero_smul Finset.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing zero. -/
 @[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=
-  coe_injective $ by simpa using @Set.zero_smul_set α _ _ _ _ _ h
+  coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
 #align finset.zero_smul_finset Finset.zero_smul_finset
 
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ ↦ mem_zero.2 $ zero_smul α x
+  image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
 #align finset.zero_smul_finset_subset Finset.zero_smul_finset_subset
 
 variable [NoZeroSMulDivisors α β] {a : α}
@@ -2178,12 +2279,13 @@ theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t 
   image_sdiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_sdiff₀ Finset.smul_finset_sdiff₀
 
+open scoped symmDiff in
 theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_set_univ₀ ha
+  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 #align finset.smul_finset_univ₀ Finset.smul_finset_univ₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
@@ -2194,7 +2296,7 @@ theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ
 #align finset.smul_univ₀ Finset.smul_univ₀
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective $ by push_cast; exact Set.smul_univ₀' hs
+  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
 
 variable [DecidableEq α]
 
@@ -2253,10 +2355,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image $ inv_injective.injOn _
+    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image $ neg_injective.injOn _
+    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2264,7 +2366,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image $ inv_injective.injOn _
+    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps
@@ -2446,5 +2548,5 @@ end Set
 
 instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
     DecidablePred (· ∈ a +ᵥ s) :=
-  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) $ by
+  fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop

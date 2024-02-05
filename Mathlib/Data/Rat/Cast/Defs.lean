@@ -199,7 +199,7 @@ variable {M₀ : Type*} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
-  (FunLike.ext f g) fun r => by
+  (DFunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
       eq_on_inv₀ f g]
     apply h
@@ -211,14 +211,14 @@ See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
-  ext_rat' <| FunLike.congr_fun h
+  ext_rat' <| DFunLike.congr_fun h
 #align monoid_with_zero_hom.ext_rat MonoidWithZeroHom.ext_rat
 
 /-- Positive integer values of a morphism `φ` and its value on `-1` completely determine `φ`. -/
 theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_rat' <|
-    FunLike.congr_fun <|
+    DFunLike.congr_fun <|
       show
         (f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) =
           (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -21,8 +21,9 @@ def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n �
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
     rw [Nat.mod_add_div']
-  cases n; cases NeZero.ne 0 rfl
-  exact {
+  have := NeZero.ne n
+  match n with
+  | n + 1 => exact {
     smul := fun (c : Fin _) x ↦ c.val • x
     smul_zero := fun _ ↦ nsmul_zero _
     zero_smul := fun _ ↦ zero_nsmul _
@@ -48,11 +49,11 @@ namespace ZMod
 
 theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   rw [← ZMod.int_cast_zmod_cast c]
-  exact map_int_cast_smul f _ _ c x
+  exact map_int_cast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
   rw [← ZMod.int_cast_zmod_cast c, ← zsmul_eq_smul_cast]
-  exact zsmul_mem hx c
+  exact zsmul_mem hx (cast c)
 
 end ZMod
 

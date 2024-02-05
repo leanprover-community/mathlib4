@@ -107,7 +107,7 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
 
 @[ext]
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
 
 theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by

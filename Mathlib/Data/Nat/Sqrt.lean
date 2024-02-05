@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
 
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -57,9 +56,9 @@ private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     rw [lt_add_one_iff, add_assoc, ← mul_two]
     refine le_trans (div_add_mod' (n + 2) 2).ge ?_
     rw [add_comm, add_le_add_iff_right, add_mod_right]
-    simp only [zero_lt_two, add_div_right, succ_mul_succ_eq]
+    simp only [zero_lt_two, add_div_right, succ_mul_succ]
     refine le_trans (b := 1) ?_ ?_
-    · exact (lt_succ.1 $ mod_lt n zero_lt_two)
+    · exact (lt_succ.1 <| mod_lt n zero_lt_two)
     · simp only [le_add_iff_nonneg_left]; exact zero_le _
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=

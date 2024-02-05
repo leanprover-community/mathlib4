@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Ker
 
 #align_import order.filter.bases from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
@@ -829,7 +830,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans $ h.biInter_mem monotone_id
+  l.ker_def.trans <| h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.ker
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)

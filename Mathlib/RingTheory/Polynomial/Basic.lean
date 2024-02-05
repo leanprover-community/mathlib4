@@ -3,13 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -47,6 +46,9 @@ variable [Semiring R]
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
+
+instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
+  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)
 
@@ -1176,22 +1178,15 @@ theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Fi
 #align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
 
 instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
-    NoZeroDivisors (MvPolynomial σ R) :=
-  ⟨fun {p} {q} h => by
-    classical
-    obtain ⟨s, p, rfl⟩ := exists_finset_rename p
-    obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have :
-        rename (Subtype.map id (Finset.subset_union_left s t) :
-          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
-        rename (Subtype.map id (Finset.subset_union_right s t) :
-          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
-        0 := by
+    NoZeroDivisors (MvPolynomial σ R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
+    obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
+    let _nzd := MvPolynomial.noZeroDivisors_of_finite R s
+    have : p * q = 0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
-    letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }
     rw [mul_eq_zero] at this
-    apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
+    apply this.imp <;> rintro rfl <;> simp
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :

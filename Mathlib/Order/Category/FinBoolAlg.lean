@@ -8,6 +8,7 @@ import Mathlib.Order.Category.BoolAlg
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.Set.Basic
 
 #align_import order.category.FinBoolAlg from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
@@ -113,12 +114,12 @@ instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd)
   -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h
-  --   FunLike.coe_injective this⟩
+  --   DFunLike.coe_injective this⟩
   -- Porting note: the coercions to functions for the various bundled order categories
   -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
     dsimp at *
-    apply FunLike.coe_injective
+    apply DFunLike.coe_injective
     dsimp
     ext x
     apply_fun (fun f => f x) at h

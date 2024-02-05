@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.Fintype.Card
-import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 
 #align_import data.fintype.small from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 

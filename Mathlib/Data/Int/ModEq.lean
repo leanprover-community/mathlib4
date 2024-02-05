@@ -223,14 +223,13 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
-  have hmd := gcd_dvd_left m c
-  have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd] at h ⊢
   -- porting note: removed `show` due to leanprover-community/mathlib4#3305
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) hcd, sub_mul]
-    exact Int.ediv_dvd_ediv hmd h
-  · rw [gcd_div hmd hcd, natAbs_ofNat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, sub_mul]
+    exact Int.ediv_dvd_ediv gcd_dvd_left h
+  · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
+      Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 #align int.modeq.cancel_right_div_gcd Int.ModEq.cancel_right_div_gcd
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/

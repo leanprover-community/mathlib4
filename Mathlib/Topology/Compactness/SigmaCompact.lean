@@ -290,7 +290,7 @@ protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set
 `x` of a closed set `s` to a neighborhood of `x` within `s`, then for some countable set `t ⊆ s`,
 the neighborhoods `f x`, `x ∈ t`, cover the whole set `s`. -/
 theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X} (hs : IsClosed s)
-    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ (t : _) (_ : t ⊆ s), t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
+    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right

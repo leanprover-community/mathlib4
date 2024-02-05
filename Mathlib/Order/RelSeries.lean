@@ -3,8 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
@@ -232,7 +233,7 @@ is another `r`-series
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1

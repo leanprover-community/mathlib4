@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Group.InjSurj
-import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
@@ -133,7 +131,7 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
 
-@[simp] theorem abs_mem_iff {S G} [InvolutiveNeg G] [LinearOrder G] {_ : SetLike S G}
+@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
     [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
   cases abs_choice x <;> simp [*]
 
@@ -187,7 +185,28 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 #align mul_mem_cancel_left mul_mem_cancel_left
 #align add_mem_cancel_left add_mem_cancel_left
 
+namespace InvMemClass
+
+/-- A subgroup of a group inherits an inverse. -/
+@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
+instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
+  [InvMemClass S G] {H : S} : Inv H :=
+  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+#align subgroup_class.has_inv InvMemClass.inv
+#align add_subgroup_class.has_neg NegMemClass.neg
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
+  rfl
+#align subgroup_class.coe_inv InvMemClass.coe_inv
+#align add_subgroup_class.coe_neg NegMemClass.coe_neg
+
+end InvMemClass
+
 namespace SubgroupClass
+
+-- deprecated since 15 January 2024
+@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -200,14 +219,6 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
-
-/-- A subgroup of a group inherits an inverse. -/
-@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
-  [SubgroupClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
-#align subgroup_class.has_inv SubgroupClass.inv
-#align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
@@ -229,12 +240,6 @@ instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} :
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.zpow
 -- Porting note: additive align statement is given above
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
-  rfl
-#align subgroup_class.coe_inv SubgroupClass.coe_inv
-#align add_subgroup_class.coe_neg AddSubgroupClass.coe_neg
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
@@ -1286,7 +1291,7 @@ theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, c
 #align add_subgroup.closure_Union AddSubgroup.closure_iUnion
 
 @[to_additive (attr := simp)]
-theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans $ closure_le _
+theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans <| closure_le _
 #align subgroup.closure_eq_bot_iff Subgroup.closure_eq_bot_iff
 #align add_subgroup.closure_eq_bot_iff AddSubgroup.closure_eq_bot_iff
 
@@ -2400,7 +2405,7 @@ end Centralizer
 /-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
-  is_comm : IsCommutative H (· * ·)
+  is_comm : Std.Commutative (α := H) (· * ·)
 #align subgroup.is_commutative Subgroup.IsCommutative
 
 attribute [class] IsCommutative
@@ -2408,7 +2413,7 @@ attribute [class] IsCommutative
 /-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
-  is_comm : _root_.IsCommutative H (· + ·)
+  is_comm : Std.Commutative (α := H) (· + ·)
 #align add_subgroup.is_commutative AddSubgroup.IsCommutative
 
 attribute [to_additive] Subgroup.IsCommutative
@@ -2963,7 +2968,7 @@ theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* 
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact FunLike.congr_fun h y⟩
+  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
@@ -3213,7 +3218,7 @@ theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {
 @[to_additive (attr := simp)]
 theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
-  map_le_map_iff_of_injective $ by apply Subtype.coe_injective
+  map_le_map_iff_of_injective <| by apply Subtype.coe_injective
 #align subgroup.map_subtype_le_map_subtype Subgroup.map_subtype_le_map_subtype
 #align add_subgroup.map_subtype_le_map_subtype AddSubgroup.map_subtype_le_map_subtype
 
@@ -3697,7 +3702,7 @@ instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.N
 theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G) (hB : B' ≤ B)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal :=
   { conj_mem := fun {n} hn g =>
-      ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) $
+      ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) <|
         show ↑g⁻¹ ∈ A from (inv_mem (mem_inf.1 g.2).1),
         (normal_subgroupOf_iff hB).mp hN n g hn.2 (mem_inf.mp g.2).2⟩ }
 #align subgroup.inf_subgroup_of_inf_normal_of_right Subgroup.inf_subgroupOf_inf_normal_of_right
@@ -3708,7 +3713,7 @@ theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal :=
   { conj_mem := fun n hn g =>
       ⟨(normal_subgroupOf_iff hA).mp hN n g hn.1 (mem_inf.mp g.2).1,
-        mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) $
+        mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) <|
         show ↑g⁻¹ ∈ B from (inv_mem (mem_inf.1 g.2).2)⟩ }
 #align subgroup.inf_subgroup_of_inf_normal_of_left Subgroup.inf_subgroupOf_inf_normal_of_left
 #align add_subgroup.inf_add_subgroup_of_inf_normal_of_left AddSubgroup.inf_addSubgroupOf_inf_normal_of_left

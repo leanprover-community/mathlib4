@@ -674,7 +674,7 @@ theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
-  refine FunLike.ext φ ψ (fun x ↦ ?_)
+  refine DFunLike.ext φ ψ (fun x ↦ ?_)
   induction x using Unitization.ind
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
@@ -759,7 +759,7 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
     (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
       (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
-  Unitization.algHom_ext'' <| FunLike.congr_fun h
+  Unitization.algHom_ext'' <| DFunLike.congr_fun h
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/

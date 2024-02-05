@@ -109,16 +109,16 @@ instance ContinuousMonoidHom.ContinuousMonoidHomClass :
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`."]
+      "Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`."]
 instance : CoeFun (ContinuousMonoidHom A B) fun _ => A → B :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_monoid_hom.ext ContinuousMonoidHom.ext
 #align continuous_add_monoid_hom.ext ContinuousAddMonoidHom.ext
 
@@ -131,7 +131,7 @@ def toContinuousMap (f : ContinuousMonoidHom A B) : C(A, B) :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert FunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 #align continuous_monoid_hom.to_continuous_map_injective ContinuousMonoidHom.toContinuousMap_injective
 #align continuous_add_monoid_hom.to_continuous_map_injective ContinuousAddMonoidHom.toContinuousMap_injective
 

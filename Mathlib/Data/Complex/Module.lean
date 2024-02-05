@@ -472,7 +472,7 @@ theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
   -- Porting note: was
   -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-  rw [realPart_apply_coe, AddSubgroupClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
+  rw [realPart_apply_coe, NegMemClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
     smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align real_part_I_smul realPart_I_smul

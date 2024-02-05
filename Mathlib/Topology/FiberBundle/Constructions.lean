@@ -326,7 +326,8 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
-variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [ContinuousMapClass K B' B]
+variable {E F}
+variable [∀ b, Zero (E b)] {K : Type U} [ContinuousMapClass K B' B]
 
 -- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/

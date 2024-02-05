@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -157,7 +158,7 @@ theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
 #align nat.factorization_one_right Nat.factorization_one_right
 
 theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p ∣ n :=
-  dvd_of_mem_factors $ mem_primeFactors_iff_mem_factors.1 $ mem_support_iff.2 hn
+  dvd_of_mem_factors <| mem_primeFactors_iff_mem_factors.1 <| mem_support_iff.2 hn
 #align nat.dvd_of_factorization_pos Nat.dvd_of_factorization_pos
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
@@ -390,7 +391,8 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
   by_cases pp : p.Prime
-  · exact (pow_lt_pow_iff_right pp.one_lt).1 $ (ord_proj_le p hn).trans_lt $ lt_pow_self pp.one_lt _
+  · exact (pow_lt_pow_iff_right pp.one_lt).1 <| (ord_proj_le p hn).trans_lt <|
+      lt_pow_self pp.one_lt _
   · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
 #align nat.factorization_lt Nat.factorization_lt
 
@@ -690,8 +692,8 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   ext x
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
-  exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) $
-    (pow_le_pow_iff_right pp.one_lt).1 $ (le_of_dvd hn.bot_lt h1).trans hb
+  exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
+    (pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
 #align nat.Ico_filter_pow_dvd_eq Nat.Ico_filter_pow_dvd_eq
 
 /-! ### Factorization and coprimes -/

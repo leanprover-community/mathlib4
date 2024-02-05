@@ -119,12 +119,12 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
 
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
--- Porting note: Replaced with FunLike instance
+-- Porting note: Replaced with DFunLike instance
 -- /-- see Note [function coercion] -/
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
 
-instance : FunLike (A →ₙₐ[R] B) A fun _ => B where
+instance : FunLike (A →ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
@@ -217,7 +217,7 @@ theorem to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
 
 theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
 
 @[norm_cast]

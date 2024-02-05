@@ -6,6 +6,7 @@ Authors: Benjamin Davidson
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 #align_import analysis.special_functions.integrals from "leanprover-community/mathlib"@"011cafb4a5bc695875d186e245d6b3df03bf6c40"
 
@@ -81,7 +82,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
       field_simp [(by linarith : r + 1 ≠ 0)]; ring
     apply integrableOn_deriv_of_nonneg _ hderiv
-    · intro x hx; apply rpow_nonneg_of_nonneg hx.1.le
+    · intro x hx; apply rpow_nonneg hx.1.le
     · refine' (continuousOn_id.rpow_const _).div_const _; intro x _; right; linarith
   intro c; rcases le_total 0 c with (hc | hc)
   · exact this c hc
@@ -385,7 +386,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
   apply_fun Complex.re at this; convert this
-  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.ofReal_mul_re]
+  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
     · -- Porting note: was `change ... with ...`
       have : Complex.re = IsROrC.re := rfl
       rw [this, ← integral_re]; rfl
@@ -394,7 +395,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
       · exact intervalIntegrable_cpow' h'
       · exact intervalIntegrable_cpow (Or.inr h'.2)
   · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
-    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.ofReal_mul_re, Complex.sub_re]
+    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.re_ofReal_mul, Complex.sub_re]
     rfl
 #align integral_rpow integral_rpow
 
@@ -565,20 +566,18 @@ theorem integral_cos_sq_sub_sin_sq :
       continuousOn_cos.intervalIntegrable continuousOn_sin.neg.intervalIntegrable
 #align integral_cos_sq_sub_sin_sq integral_cos_sq_sub_sin_sq
 
-@[simp]
-theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
-  simp only [← one_div]
-  refine' integral_deriv_eq_sub' _ _ _ (continuous_const.div _ fun x => _).continuousOn
-  · norm_num
-  · exact fun _ _ => differentiableAt_arctan _
-  · continuity
-  · nlinarith
-#align integral_inv_one_add_sq integral_inv_one_add_sq
-
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  simp only [one_div, integral_inv_one_add_sq]
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
+    (continuous_const.div ?_ fun x => ?_).continuousOn
+  · continuity
+  · nlinarith
 #align integral_one_div_one_add_sq integral_one_div_one_add_sq
+
+@[simp]
+theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
+  simp only [← one_div, integral_one_div_one_add_sq]
+#align integral_inv_one_add_sq integral_inv_one_add_sq
 
 section RpowCpow
 

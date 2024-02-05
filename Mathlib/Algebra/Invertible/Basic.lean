@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Defs
 
@@ -158,6 +159,21 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
 #align invertible.mul_right Invertible.mulRight
 #align invertible.mul_right_apply Invertible.mulRight_apply
 #align invertible.mul_right_symm_apply Invertible.mulRight_symm_apply
+
+instance invertiblePow (m : α) [Invertible m] (n : ℕ) : Invertible (m ^ n) where
+  invOf := ⅟ m ^ n
+  invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
+  mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
+#align invertible_pow invertiblePow
+
+lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m ^ n) = ⅟ m ^ n :=
+  @invertible_unique _ _ _ _ _ (invertiblePow m n) rfl
+#align inv_of_pow invOf_pow
+
+/-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
+def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
+  (Units.ofPowEqOne x n hx hn).invertible
+#align invertible_of_pow_eq_one invertibleOfPowEqOne
 
 end Monoid
 

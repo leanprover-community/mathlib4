@@ -134,4 +134,4 @@ in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
-   (pure $ json% { replaceRange: $(replaceRange) }) stx
+   (pure <| json% { replaceRange: $(replaceRange) }) stx

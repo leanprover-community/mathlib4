@@ -9,6 +9,7 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Set.Basic
 
 #align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
@@ -201,7 +202,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [FunLike.coe] at h
+    simp [DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 set_option linter.uppercaseLean3 false in

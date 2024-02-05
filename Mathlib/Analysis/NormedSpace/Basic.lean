@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
@@ -69,10 +68,6 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-@[simp]
-theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
-#align abs_norm abs_norm
-
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
@@ -86,6 +81,17 @@ theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : �
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
+
+theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
+    dist (r • x + (1 - r) • y) x ≤ dist y x :=
+  calc
+    dist (r • x + (1 - r) • y) x = ‖1 - r‖ * ‖x - y‖ := by
+      simp_rw [dist_eq_norm', ← norm_smul, sub_smul, one_smul, smul_sub, ← sub_sub, ← sub_add,
+        sub_right_comm]
+    _ = (1 - r) * dist y x := by
+      rw [Real.norm_eq_abs, abs_eq_self.mpr (sub_nonneg.mpr h.2), dist_eq_norm']
+    _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
+    _ = dist y x := by rw [sub_zero, one_mul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=

@@ -815,15 +815,15 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
 
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
-  (lintegral_indicator_const_le _ _).trans $ (one_mul _).le
+  (lintegral_indicator_const_le _ _).trans <| (one_mul _).le
 
 @[simp]
 theorem lintegral_indicator_one₀ (hs : NullMeasurableSet s μ) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const₀ hs _).trans $ one_mul _
+  (lintegral_indicator_const₀ hs _).trans <| one_mul _
 
 @[simp]
 theorem lintegral_indicator_one (hs : MeasurableSet s) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const hs _).trans $ one_mul _
+  (lintegral_indicator_const hs _).trans <| one_mul _
 #align measure_theory.lintegral_indicator_one MeasureTheory.lintegral_indicator_one
 
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
@@ -883,8 +883,8 @@ theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf :
 
 theorem setLintegral_eq_top_of_measure_eq_top_ne_zero (hf : AEMeasurable f (μ.restrict s))
     (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) : ∫⁻ x in s, f x ∂μ = ∞ :=
-  lintegral_eq_top_of_measure_eq_top_ne_zero hf $
-    mt (eq_bot_mono $ by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+  lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
+    mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 #align measure_theory.set_lintegral_eq_top_of_measure_eq_top_ne_zero MeasureTheory.setLintegral_eq_top_of_measure_eq_top_ne_zero
 
 theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) :
@@ -894,7 +894,7 @@ theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫�
 
 theorem measure_eq_top_of_setLintegral_ne_top (hf : AEMeasurable f (μ.restrict s))
     (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) : μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf $ setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 #align measure_theory.measure_eq_top_of_set_lintegral_ne_top MeasureTheory.measure_eq_top_of_setLintegral_ne_top
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
@@ -1053,6 +1053,44 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
     (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) : ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ :=
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
+
+/-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
+theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
+    {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
+    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
+    ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+  cases nonempty_encodable β
+  cases isEmpty_or_nonempty β
+  · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
+    -- simp only [WithTop.iInf_empty, lintegral_const]
+    conv =>
+      lhs
+      congr
+      · skip
+      · ext x
+        rw [WithTop.iInf_empty]
+    rw [WithTop.iInf_empty, lintegral_const]
+    rw [ENNReal.top_mul', if_neg]
+    simp only [Measure.measure_univ_eq_zero, hμ, not_false_iff]
+  inhabit β
+  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
+    refine' fun a =>
+      le_antisymm (le_iInf fun n => iInf_le _ _)
+        (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) _)
+    exact h_directed.sequence_le b a
+  -- Porting note: used `∘` below to deal with its reduced reducibility
+  calc
+    ∫⁻ a, ⨅ b, f b a ∂μ
+    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
+    _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
+      rw [lintegral_iInf ?_ h_directed.sequence_anti]
+      · exact hf_int _
+      · exact (fun n => hf _)
+    _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+      refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
+      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
+      · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
+#align lintegral_infi_directed_of_measurable MeasureTheory.lintegral_iInf_directed_of_measurable
 
 /-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :

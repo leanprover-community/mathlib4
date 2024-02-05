@@ -408,7 +408,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       exact disjoint_sdiff
     convert this using 1
     rw [insert_union_comm, insert_erase ‹w ∈ u›,
-      sdiff_union_of_subset (hus.trans $ subset_union_left _ _),
+      sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
   -- If `w ∉ u`, we contradict `m` again
   rw [mem_sdiff, ← not_imp, Classical.not_not] at hwB

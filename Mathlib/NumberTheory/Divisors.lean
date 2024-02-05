@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Interval
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -126,7 +127,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
       true_and_iff]
     exact
-      ⟨le_mul_of_pos_right (Nat.pos_of_ne_zero h.2), le_mul_of_pos_left (Nat.pos_of_ne_zero h.1)⟩
+      ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
+        Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
 -- Porting note: Redundant binder annotation update

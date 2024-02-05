@@ -376,8 +376,7 @@ end PointwiseLimits
 theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M N]
     [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F) (hf : Inducing f) :
     ContinuousMul M :=
-  ⟨hf.continuous_iff.2 <| by
-      simpa only [(· ∘ ·), map_mul f] using hf.continuous.fst'.mul hf.continuous.snd'⟩
+  ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
 #align inducing.has_continuous_mul Inducing.continuousMul
 #align inducing.has_continuous_add Inducing.continuousAdd
 

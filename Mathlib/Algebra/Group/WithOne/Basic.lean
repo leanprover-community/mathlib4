@@ -58,8 +58,8 @@ section lift
 
 variable [Mul α] [MulOneClass β]
 
-/-- Lift a semigroup homomorphism `f` to a bundled monoid homorphism. -/
-@[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homorphism."]
+/-- Lift a semigroup homomorphism `f` to a bundled monoid homomorphism. -/
+@[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism."]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,

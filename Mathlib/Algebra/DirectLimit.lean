@@ -213,7 +213,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
-  FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -225,7 +225,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
     (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
         rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
-  FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 open LinearEquiv LinearMap in
@@ -474,7 +474,7 @@ def map (g : (i : ι) → G i →+ G' i)
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
     cases isEmpty_or_nonempty ι
     · exact Subsingleton.elim _ _
-    · have eq1 := FunLike.congr_fun (hg i j h) g
+    · have eq1 := DFunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
@@ -486,7 +486,7 @@ def map (g : (i : ι) → G i →+ G' i)
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
-  FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -499,7 +499,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
       DirectLimit G f →+ DirectLimit G'' f'') :=
-  FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 /--
@@ -512,8 +512,8 @@ def congr [IsDirected ι (· ≤ ·)]
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i)) :
     DirectLimit G f ≃+ DirectLimit G' f' :=
   AddMonoidHom.toAddEquiv (map (e ·) he)
-    (map (fun i ↦ (e i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
-      have eq1 := FunLike.congr_fun (he i j h) ((e i).symm x)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
+      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
         AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1, of_f])
@@ -719,7 +719,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
         rw [this]
         exact sub_self _
-        exacts [Or.inr rfl, Or.inl rfl]
+        exacts [Or.inl rfl, Or.inr rfl]
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl
@@ -863,7 +863,7 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
     F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x := by
   cases isEmpty_or_nonempty ι
-  · apply FunLike.congr_fun
+  · apply DFunLike.congr_fun
     apply Ideal.Quotient.ringHom_ext
     refine FreeCommRing.hom_ext fun ⟨i, _⟩ ↦ ?_
     exact IsEmpty.elim' inferInstance i
@@ -898,7 +898,7 @@ def map (g : (i : ι) → G i →+* G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
-      have eq1 := FunLike.congr_fun (hg i j h) g
+      have eq1 := DFunLike.congr_fun (hg i j h) g
       simp only [RingHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
@@ -911,7 +911,7 @@ def map (g : (i : ι) → G i →+* G' i)
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
     RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
-  FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
+  DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
     (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i →+* G'' i)
@@ -922,7 +922,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
     (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
       rw [RingHom.comp_assoc, hg₁ i, ← RingHom.comp_assoc, hg₂ i, RingHom.comp_assoc] :
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) :=
-  FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
+  DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
@@ -935,13 +935,13 @@ def congr [IsDirected ι (· ≤ ·)]
     DirectLimit G (fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   RingEquiv.ofHomInv
     (map (e ·) he)
-    (map (fun i ↦ (e i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
-      have eq1 := FunLike.congr_fun (he i j h) ((e i).symm x)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
+      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         RingEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1, of_f])
-    (FunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
-    (FunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
+    (DFunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
+    (DFunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃+* G' i)

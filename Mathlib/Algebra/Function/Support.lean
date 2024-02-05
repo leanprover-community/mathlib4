@@ -138,7 +138,7 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovby_insert _ _).eq_or_eq (image_subset_range _ _)
+  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
   exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
 
 @[to_additive (attr := simp)]
@@ -285,30 +285,58 @@ theorem mulSupport_zero : mulSupport (0 : α → R) = univ :=
 
 end ZeroOne
 
-@[simp]
-theorem support_mul [MulZeroClass R] [NoZeroDivisors R] (f g : α → R) :
-    (support fun x => f x * g x) = support f ∩ support g := ext fun x ↦ by simp [not_or]
-#align function.support_mul Function.support_mul
+section MulZeroClass
+variable [MulZeroClass M]
 
 --@[simp] Porting note: removing simp, bad lemma LHS not in normal form
-theorem support_mul_subset_left [MulZeroClass R] (f g : α → R) :
+theorem support_mul_subset_left (f g : α → M) :
     (support fun x => f x * g x) ⊆ support f := fun x hfg hf => hfg <| by simp only [hf, zero_mul]
 #align function.support_mul_subset_left Function.support_mul_subset_left
 
 --@[simp] Porting note: removing simp, bad lemma LHS not in normal form
-theorem support_mul_subset_right [MulZeroClass R] (f g : α → R) :
+theorem support_mul_subset_right (f g : α → M) :
     (support fun x => f x * g x) ⊆ support g := fun x hfg hg => hfg <| by simp only [hg, mul_zero]
 #align function.support_mul_subset_right Function.support_mul_subset_right
 
-@[simp]
-theorem support_inv [GroupWithZero G₀] (f : α → G₀) : (support fun x => (f x)⁻¹) = support f :=
+variable [NoZeroDivisors M]
+
+@[simp] lemma support_mul (f g : α → M) :
+    (support fun x => f x * g x) = support f ∩ support g := ext fun x ↦ by simp [not_or]
+#align function.support_mul Function.support_mul
+
+@[simp] lemma support_mul' (f g : α → M) : support (f * g) = support f ∩ support g :=
+  support_mul _ _
+
+end MulZeroClass
+
+section MonoidWithZero
+variable [MonoidWithZero M] [NoZeroDivisors M] {n : ℕ}
+
+@[simp] lemma support_pow (f : α → M) (hn : n ≠ 0) : support (fun a ↦ f a ^ n) = support f := by
+  ext; exact (pow_eq_zero_iff hn).not
+
+@[simp] lemma support_pow' (f : α → M) (hn : n ≠ 0) : support (f ^ n) = support f :=
+  support_pow _ hn
+
+end MonoidWithZero
+
+section GroupWithZero
+variable [GroupWithZero G₀]
+
+@[simp] lemma support_inv (f : α → G₀) : support (fun a ↦ (f a)⁻¹) = support f :=
   Set.ext fun _ => not_congr inv_eq_zero
 #align function.support_inv Function.support_inv
 
-@[simp]
-theorem support_div [GroupWithZero G₀] (f g : α → G₀) :
-    (support fun x => f x / g x) = support f ∩ support g := by simp [div_eq_mul_inv]
+@[simp] lemma support_inv' (f : α → G₀) : support f⁻¹ = support f := support_inv _
+
+@[simp] lemma support_div (f g : α → G₀) : support (fun a ↦ f a / g a) = support f ∩ support g := by
+  simp [div_eq_mul_inv]
 #align function.support_div Function.support_div
+
+@[simp] lemma support_div' (f g : α → G₀) : support (f / g) = support f ∩ support g :=
+  support_div _ _
+
+end GroupWithZero
 
 theorem mulSupport_one_add [One R] [AddLeftCancelMonoid R] (f : α → R) :
     (mulSupport fun x => 1 + f x) = support f :=

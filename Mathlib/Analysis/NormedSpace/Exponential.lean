@@ -137,7 +137,7 @@ theorem expSeries_apply_zero (n : ℕ) :
   rw [expSeries_apply_eq]
   cases' n with n
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
-  · rw [zero_pow (Nat.succ_pos _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
+  · rw [zero_pow (Nat.succ_ne_zero _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
 #align exp_series_apply_zero NormedSpace.expSeries_apply_zero
 
 @[simp]
@@ -569,20 +569,20 @@ theorem _root_.Prod.snd_exp [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp 𝕂 
 #align prod.snd_exp Prod.snd_exp
 
 @[simp]
-theorem _root_.Pi.exp_apply {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.exp_apply {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp 𝕂 x i = exp 𝕂 (x i) :=
+  let ⟨_⟩ := nonempty_fintype ι
   map_exp _ (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
-  -- porting note: Lean can now handle Π-types in type class inference!
 #align pi.exp_apply Pi.exp_apply
 
-theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp 𝕂 x = fun i => exp 𝕂 (x i) :=
   funext <| Pi.exp_apply 𝕂 x
 #align pi.exp_def Pi.exp_def
 
-theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [DecidableEq ι]
+theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
     [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) := by

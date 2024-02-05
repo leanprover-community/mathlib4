@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.Hom.Basic
+import Mathlib.Util.AssertExists
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
@@ -1195,7 +1195,11 @@ This is useful for constructing an `OrderedAddCommGroup`
 by choosing a positive cone in an existing `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type*) [AddCommGroup α] where
+  /-- The characteristic predicate of a positive cone. `nonneg a` means that `0 ≤ a` according to
+  the cone. -/
   nonneg : α → Prop
+  /-- The characteristic predicate of a positive cone. `pos a` means that `0 < a` according to
+  the cone. -/
   pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
   pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
   zero_nonneg : nonneg 0
