@@ -2,7 +2,7 @@ import Mathlib.Tactic.FunProp.Continuous
 import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Measurable
-import Mathlib.Tactic.FunProp.AEMesurable
+import Mathlib.Tactic.FunProp.AEMeasurable
 
 
 noncomputable
