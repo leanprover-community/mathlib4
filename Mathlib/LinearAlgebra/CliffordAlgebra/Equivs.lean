@@ -498,7 +498,7 @@ theorem quaternionBasis_liftHom_eq :
 local notation3 "i" => QuaternionAlgebra.Basis.i (quaternionBasis c₁ c₂)
 local notation3 "j" => QuaternionAlgebra.Basis.j (quaternionBasis c₁ c₂)
 local notation3 "k" => QuaternionAlgebra.Basis.k (quaternionBasis c₁ c₂)
-local notation3 "e" => ι (Q c₁ c₂) ((0, 0), 1)
+local notation3 "e" => ι (Q c₁ c₂) (0, 1)
 
 theorem e_mul_i : e * i = -(i * e) := by
   rw [quaternionBasis_i, ι_mul_ι_comm_of_isOrtho (.inr_inl _ _)]
@@ -534,7 +534,7 @@ theorem commute_eps_k [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c�
 theorem eps_mul_eps [Invertible c₁] [Invertible c₂] : eps c₁ c₂ * eps c₁ c₂ = 0 := by
   rw [eps]
   conv_lhs => enter [2]; rw [← e_mul_k]
-  rw [smul_mul_smul, mul_assoc k, ← mul_assoc _ _ k, ι_sq_scalar, Q_apply, ← Prod.zero_eq_mk,
+  rw [smul_mul_smul, mul_assoc k, ← mul_assoc _ _ k, ι_sq_scalar, Q_apply,
     map_zero, map_zero, zero_mul, mul_zero, smul_zero]
 
 /-- Build a quaternion from the vector space that we built `CliffordAlgebraDualQuaternion.Q` upon.
@@ -551,7 +551,7 @@ lemma mkDualQuaternion_fst (v : (R × R) × R) :
 
 @[simp]
 lemma mkDualQuaternion_snd (v : (R × R) × R) :
-    (mkDualQuaternion c₁ c₂ v).snd = ⟨0, 0, 0, -v.2⟩ :=  rfl
+    (mkDualQuaternion c₁ c₂ v).snd = ⟨0, 0, 0, -v.2⟩ := rfl
 
 @[simp]
 lemma mkDualQuaternion_inl (v : R × R) :
@@ -648,14 +648,11 @@ theorem toDualQuaternion_comp_ofDualQuaternion :
       <;> dsimp
       <;> rw [ofDualQuaternion_inl, QuaternionAlgebra.Basis.lift]
       <;> dsimp
-    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_i]
-      rfl
-    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_j]
-      rfl
+    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_i, self_i]
+    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_j, self_j]
   · ext : 1
     dsimp
-    rw [ofDualQuaternion_smul_eps, map_mul, toDualQuaternion_eps,
-      ← QuaternionAlgebra.Basis.liftHom_apply, liftHom_apply, QuaternionAlgebra.Basis.lift]
+    rw [ofDualQuaternion_smul_eps, map_mul, toDualQuaternion_eps, QuaternionAlgebra.Basis.lift]
     simp_rw [map_add, map_smul _ (_ : R), AlgHom.commutes,
       toDualQuaternion_i, toDualQuaternion_j, toDualQuaternion_k,
       TrivSqZeroExt.algebraMap_eq_inl', ← TrivSqZeroExt.inl_smul, ← TrivSqZeroExt.inl_add,
@@ -673,10 +670,10 @@ theorem ofDualQuaternion_comp_toDualQuaternion :
     rw [toDualQuaternion_ι, mkDualQuaternion_inl, ofDualQuaternion_inl,
       ← QuaternionAlgebra.Basis.liftHom_apply, quaternionBasis_liftHom_eq]
     dsimp
-    rw [CliffordAlgebraQuaternion.quaternionBasis_lift_mkQuaternion, map_apply_ι]
-    rfl
+    rw [CliffordAlgebraQuaternion.quaternionBasis_lift_mkQuaternion, map_apply_ι,
+      QuadraticForm.Isometry.inl_apply]
   · ext : 1
-    dsimp [Prod.zero_eq_mk]
+    dsimp
     rw [toDualQuaternion_e, map_neg]
     simp [ofDualQuaternion_smul_eps, QuaternionAlgebra.Basis.lift, e_eq]
 
