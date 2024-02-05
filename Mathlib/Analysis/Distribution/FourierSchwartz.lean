@@ -8,9 +8,9 @@ import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 /-!
-# Fourier transform on Schwarz functions
+# Fourier transform on Schwartz functions
 
-This file will construct the Fourier transform as a continuous linear map acting on Schwarz
+This file will construct the Fourier transform as a continuous linear map acting on Schwartz
 functions.
 
 For now, it only contains the fact that the Fourier transform of a Schwartz function is
