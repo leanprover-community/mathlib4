@@ -107,12 +107,12 @@ variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [B
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural
     linear isometry equivalence from `E` to the span of `x`.-/
 noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :
-    𝕜 ≃ₗᵢ[𝕜] Submodule.span 𝕜 {x} where
+    𝕜 ≃ₗᵢ[𝕜]  𝕜 ∙ x where
   toLinearEquiv := LinearEquiv.toSpanNonzeroSingleton 𝕜 E x (by aesop)
   norm_map' := by
     intro
     rw [LinearEquiv.toSpanNonzeroSingleton_homothety, hx, one_mul]
 
 @[simp] theorem toSpanUnitSingleton_apply (x : E) (hx : ‖x‖ = 1) (r : 𝕜) :
-    toSpanUnitSingleton x hx r = (⟨r • x, by aesop⟩ : Submodule.span 𝕜 {x}) := by
+    toSpanUnitSingleton x hx r = (⟨r • x, by aesop⟩ :  𝕜 ∙ x) := by
   rfl
