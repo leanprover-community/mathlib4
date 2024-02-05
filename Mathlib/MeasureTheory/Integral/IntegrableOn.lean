@@ -490,6 +490,12 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
 
+@[simp]
+theorem IntegrableAtFilter.top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
+  obtain ⟨s, hsf, hs⟩ := h
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
+
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
 theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyGenerated l]
