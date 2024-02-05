@@ -63,13 +63,3 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter (hfm : Measurable f) (hgm :
   refine ae_restrict_iff (measurableSet_le hfm.norm ?_)
   convert hgm.norm.const_mul ‖C'‖
   exact norm_mul C' _
-
-section Real
-
-variable {f g g' : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
-
-theorem _root_.Asymptotics.IsBigO.integrable_of_integrableAtFilter_atTop_atBot
-    (htop : f =O[atTop] g) (hbot : f =O[atBot] g') (IntegrableOn): True := by
-  sorry
-
-end Real
