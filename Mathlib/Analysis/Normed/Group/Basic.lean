@@ -77,7 +77,7 @@ notation "‖" e "‖₊" => nnnorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
+class SeminormedAddGroup (E : Type*) extends AddGroup E, Norm E, PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -86,7 +86,7 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
-class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
+class SeminormedGroup (E : Type*) extends Group E, Norm E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -94,7 +94,7 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
+class NormedAddGroup (E : Type*) extends AddGroup E, Norm E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -103,7 +103,7 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
+class NormedGroup (E : Type*) extends Group E, Norm E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -111,7 +111,7 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
-class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
+class SeminormedAddCommGroup (E : Type*) extends AddCommGroup E, Norm E,
   PseudoMetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
@@ -121,7 +121,7 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
 @[to_additive]
-class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricSpace E where
+class SeminormedCommGroup (E : Type*) extends CommGroup E, Norm E, PseudoMetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -129,7 +129,7 @@ class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricS
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
-class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
+class NormedAddCommGroup (E : Type*) extends AddCommGroup E, Norm E, MetricSpace E where
   dist := fun x y => ‖x - y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -138,7 +138,7 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
-class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E where
+class NormedCommGroup (E : Type*) extends CommGroup E, Norm E, MetricSpace E where
   dist := fun x y => ‖x / y‖
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
