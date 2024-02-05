@@ -337,7 +337,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : U
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`UniqueSums` is preserved under additive equivalences."]
-theorem mulHom_image_iff (f : G ≃* H) : UniqueProds G ↔ UniqueProds H :=
+theorem _root_.MulEquiv.uniqueProds_iff (f : G ≃* H) : UniqueProds G ↔ UniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
 open Finset MulOpposite in
@@ -349,7 +349,7 @@ theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
     ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩
 
 @[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
-  of_mulOpposite <| (mulHom_image_iff <| MulEquiv.opOp G).mp h
+  of_mulOpposite <| (MulEquiv.opOp G).uniqueProds_iff.mp h
 
 @[to_additive] private theorem toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
   mul_left_cancel a b1 b2 he := by
@@ -515,7 +515,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
 
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
 @[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
-theorem mulHom_image_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
+theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
 @[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
@@ -572,7 +572,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     exacts [h1.2, h1.1, h2.2, h2.1]
 
 @[to_additive] instance [h : TwoUniqueProds G] : TwoUniqueProds Gᵐᵒᵖ :=
-  of_mulOpposite <| (mulHom_image_iff <| MulEquiv.opOp G).mp h
+  of_mulOpposite <| (MulEquiv.opOp G).twoUniqueProds_iff.mp h
 
 -- see Note [lower instance priority]
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
@@ -623,6 +623,16 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
   of_mulOpposite of_covariant_right
 
 end TwoUniqueProds
+
+-- deprecated 2024-02-04
+@[deprecated] alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
+@[deprecated] alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
+@[deprecated] alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
+@[deprecated] alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
+@[deprecated] alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
+@[deprecated] alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
+@[deprecated] alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
+@[deprecated] alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
