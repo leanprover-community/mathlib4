@@ -177,8 +177,8 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         rintro - ⟨a, rfl⟩
         use star a
         ext1 φ
-        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply, map_star,
-          IsROrC.star_def, ContinuousMap.star_apply] }
+        dsimp
+        simp only [map_star, IsROrC.star_def] }
   suffices rng = ⊤ from
     fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the

@@ -77,6 +77,9 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
+instance {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
+  LinearMap.instFunLike
+
 instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 

@@ -119,7 +119,8 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
   rw [gradedComm]
   dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
-    zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
+    -- Note: #8386 specialized `map_smul` to `LinearEquiv.map_smul` to avoid timeouts.
+    zsmul_eq_smul_cast R, LinearEquiv.map_smul, TensorProduct.directSum_symm_lof_tmul,
     ← zsmul_eq_smul_cast, ← Units.smul_def]
 
 theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
@@ -190,7 +191,8 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, zsmul_eq_smul_cast R, zsmul_eq_smul_cast R]
-  rw [← smul_tmul', map_smul, tmul_smul, map_smul, map_smul]
+  -- Note: #8386 had to specialize `map_smul` to avoid timeouts.
+  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, LinearMap.map_smul]
   dsimp
 
 variable {R}
@@ -207,7 +209,8 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
 
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by
-  simpa only [_root_.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
+  -- Note: #8386 had to specialize `map_one` to avoid timeouts.
+  simpa only [RingHom.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
 
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
@@ -222,7 +225,8 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
 
 theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
-  simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
+  -- Note: #8386 had to specialize `map_one` to avoid timeouts.
+  simpa only [RingHom.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
@@ -251,7 +255,9 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   ext i₁ a₁ j₁ b₁ i₂ a₂ j₂ b₂
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
-  simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul, LinearMap.smul_apply]
+  -- Note: #8386 had to specialize `map_smul` to avoid timeouts.
+  simp_rw [Units.smul_def, zsmul_eq_smul_cast R, LinearEquiv.map_smul, LinearMap.map_smul,
+    LinearMap.smul_apply]
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
     DirectSum.lof_eq_of, ← DirectSum.of_mul_of, ← DirectSum.lof_eq_of R]

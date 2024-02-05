@@ -20,8 +20,11 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₁] [Module R M₂] [Module S N]
 variable {F : Type*} (h : F)
 
-@[simp]
-theorem image_smul_setₛₗ [SemilinearMapClass F σ M N] (c : R) (s : Set M) :
+-- @[simp] -- In #8386, the `simp_nf` linter complains:
+-- "Left-hand side does not simplify, when using the simp lemma on itself."
+-- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
+-- TODO: when lean4#3107 is fixed, mark this as `@[simp]`.
+theorem image_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
   apply Set.Subset.antisymm
   · rintro x ⟨y, ⟨z, zs, rfl⟩, rfl⟩
@@ -30,7 +33,7 @@ theorem image_smul_setₛₗ [SemilinearMapClass F σ M N] (c : R) (s : Set M) :
     exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, map_smulₛₗ _ _ _⟩
 #align image_smul_setₛₗ image_smul_setₛₗ
 
-theorem preimage_smul_setₛₗ [SemilinearMapClass F σ M N] {c : R} (hc : IsUnit c)
+theorem preimage_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] {c : R} (hc : IsUnit c)
     (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
   apply Set.Subset.antisymm
@@ -45,12 +48,13 @@ theorem preimage_smul_setₛₗ [SemilinearMapClass F σ M N] {c : R} (hc : IsUn
 
 variable (R)
 
-theorem image_smul_set [LinearMapClass F R M₁ M₂] (c : R) (s : Set M₁) :
+@[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
+theorem image_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂] (c : R) (s : Set M₁) :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
 #align image_smul_set image_smul_set
 
-theorem preimage_smul_set [LinearMapClass F R M₁ M₂] {c : R} (hc : IsUnit c) (s : Set M₂) :
-    h ⁻¹' (c • s) = c • h ⁻¹' s :=
-  preimage_smul_setₛₗ _ _ _ h hc s
+theorem preimage_smul_set [FunLike F M₁ M₂] [LinearMapClass F R M₁ M₂]
+    {c : R} (hc : IsUnit c) (s : Set M₂) :
+    h ⁻¹' (c • s) = c • h ⁻¹' s := preimage_smul_setₛₗ _ _ _ h hc s
 #align preimage_smul_set preimage_smul_set

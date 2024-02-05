@@ -137,7 +137,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
-  refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
+  refine' ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
   · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp

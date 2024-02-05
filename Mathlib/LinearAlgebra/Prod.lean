@@ -882,7 +882,8 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp, and_imp,
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl
-  simp only [Prod.mk.inj_iff, ← sub_mem_ker_iff]
+  -- Note: #8386 had to specify `(f := f)`
+  simp only [Prod.mk.inj_iff, ← sub_mem_ker_iff (f := f)]
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine' ⟨x' + x, _, _⟩
@@ -948,7 +949,8 @@ def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule
 all isomorphic to `M`.
 -/
 def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
-  ⟨fun n => OrderDual.toDual (tunnel' f i n).1,
+  -- Note: the hint `(α := _)` had to be added in #8386
+  ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
     monotone_nat_of_le_succ fun n => by
       dsimp [tunnel', tunnelAux]
       rw [Submodule.map_comp, Submodule.map_comp]
@@ -969,14 +971,14 @@ def tailingLinearEquiv (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : ta
 #align linear_map.tailing_linear_equiv LinearMap.tailingLinearEquiv
 
 theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ≤ OrderDual.ofDual (tunnel f i n) := by
+    tailing f i n ≤ OrderDual.ofDual (α := Submodule R M) (tunnel f i n) := by
   dsimp [tailing, tunnelAux]
   rw [Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
 #align linear_map.tailing_le_tunnel LinearMap.tailing_le_tunnel
 
 theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailing f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
+    Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   rw [disjoint_iff]
   dsimp [tailing, tunnel, tunnel']
   erw [Submodule.map_inf_eq_map_inf_comap,
@@ -985,8 +987,8 @@ theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) 
 #align linear_map.tailing_disjoint_tunnel_succ LinearMap.tailing_disjoint_tunnel_succ
 
 theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ⊔ (OrderDual.ofDual <| tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual <| tunnel f i n) := by
+    tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) ≤
+      (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
   dsimp [tailing, tunnel, tunnel', tunnelAux]
   erw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
@@ -1008,7 +1010,7 @@ theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
 #align linear_map.tailings_succ LinearMap.tailings_succ
 
 theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (OrderDual.ofDual <| tunnel f i (n + 1)) := by
+    Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   induction' n with n ih
   · simp only [tailings_zero]
     apply tailing_disjoint_tunnel_succ

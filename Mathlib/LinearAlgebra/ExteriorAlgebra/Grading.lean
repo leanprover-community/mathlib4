@@ -73,7 +73,8 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
   -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
   | hr => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-  | hadd _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
+  -- FIXME: specialized `map_add` to avoid a (whole-declaration) timeout
+  | hadd _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
   | hmul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
       simp_rw [AlgHom.map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,

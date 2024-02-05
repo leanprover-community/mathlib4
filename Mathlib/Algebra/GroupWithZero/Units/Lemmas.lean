@@ -221,8 +221,9 @@ end CommGroupWithZero
 
 section MonoidWithZero
 
-variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWithZeroHomClass F G₀ M₀]
-  [MonoidWithZeroHomClass F' G₀ M₀'] (f : F) {a : G₀}
+variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
+  [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀'] [MonoidWithZeroHomClass F' G₀ M₀']
+  (f : F) {a : G₀}
 
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
@@ -245,7 +246,8 @@ end MonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
+variable [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
+  [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
 
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
@@ -306,7 +308,7 @@ end Units
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀

@@ -159,7 +159,7 @@ instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
-@[simp]
+-- Before #8386 this was `@[simp]` but it times out when we try to apply it.
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
@@ -192,7 +192,8 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
-  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
+  -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
+  rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, LinearEquiv.map_smul, map_smul,
     ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
@@ -252,8 +253,10 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
       gradedMul_algebraMap]
   smul_def' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
-    simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
-      map_smul, LinearEquiv.symm_apply_apply]
+    simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
+    -- Qualified `map_smul` to avoid a TC timeout #8386
+    erw [LinearMap.map_smul]
+    erw [LinearEquiv.symm_apply_apply]
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
 
@@ -375,7 +378,9 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
-      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, auxEquiv_tmul, decompose_coe,
-      lof_eq_of]
+      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R]
+    -- Qualified `map_smul` to avoid a TC timeout #8386
+    erw [LinearMap.map_smul, auxEquiv_tmul]
+    simp_rw [decompose_coe, lof_eq_of]
 
 end GradedTensorProduct

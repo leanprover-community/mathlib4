@@ -454,7 +454,9 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
     exact (Submodule.span K _).smul_mem _ hy
   refine' Submodule.span_subset_span R K _ _
   rw [Submodule.span_algebraMap_image_of_tower]
-  exact Submodule.mem_map_of_mem (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
+  -- Note: #8386 had to specify the value of `f` here:
+  exact Submodule.mem_map_of_mem (f := LinearMap.restrictScalars _ _)
+    (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
 #align is_fraction_ring.ideal_span_singleton_map_subset IsFractionRing.ideal_span_singleton_map_subset
 
 end IsFractionRing

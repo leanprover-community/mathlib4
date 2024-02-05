@@ -873,7 +873,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M 
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
   toFun x := ⟨f x, x.prop⟩
-  map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 #align add_hom.subsemigroup_comap AddHom.subsemigroupComap
 #align mul_hom.subsemigroup_comap_apply_coe MulHom.subsemigroupComap_apply_coe
@@ -887,7 +887,7 @@ See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
   toFun x := ⟨f x, ⟨x, x.prop, rfl⟩⟩
-  map_mul' x y := Subtype.eq <| @map_mul M N _ _ _ _ f x y
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 #align add_hom.subsemigroup_map AddHom.subsemigroupMap
 #align mul_hom.subsemigroup_map_apply_coe MulHom.subsemigroupMap_apply_coe
