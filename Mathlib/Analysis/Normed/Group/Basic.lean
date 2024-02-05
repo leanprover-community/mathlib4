@@ -523,6 +523,10 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
+@[to_additive (attr := simp) abs_norm]
+theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
+#align abs_norm abs_norm
+
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
