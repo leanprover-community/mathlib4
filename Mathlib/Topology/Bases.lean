@@ -470,7 +470,7 @@ theorem isSeparable_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
 #align topological_space.is_separable_Union TopologicalSpace.isSeparable_iUnion
 
-lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : ∀ i, Set (α i)}
+lemma isSeparable_pi {ι : Type*} [Finite ι] {α : ι → Type*} {s : ∀ i, Set (α i)}
     [∀ i, TopologicalSpace (α i)] (h : ∀ i, IsSeparable (s i)) :
     IsSeparable {f : ∀ i, α i | ∀ i, f i ∈ s i} := by
   choose c c_count hc using h
