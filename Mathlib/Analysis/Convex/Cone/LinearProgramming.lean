@@ -56,7 +56,7 @@ variable (A : Set V) [Finite A] [LinearOrder A] (v : V)
     (hv : ∀ (t : V →₀ R)
       (_ : (t.support : Set V) ⊆ A)
       (_ : LinearIndependent R (fun (x : t.support) ↦ (x : V)))
-      (_ : v = t.sum (fun x s ↦ s • x)), ∃ x, t x < 0)
+      (_ : v = t.sum (fun x s ↦ s • (x : V))), ∃ x, t x < 0)
 
 lemma memspan : v ∈ Submodule.span R A := by
   by_contra hv'
@@ -191,16 +191,22 @@ example (R : Type*) [Semiring R] (V : Type*) [AddCommGroup V] [Module R V] (A : 
     exact hr hx
 -/
 
-def iterate (B : D R A v) : D R A v := by
+def getcoeff (B : D R A v) :
+  ∃ (r : V →₀ R),
+    ((r.support : Set V) ⊆ B.basis) ∧
+    (v = Finsupp.sum r fun x s ↦ s • x) ∧
+    ∃ a, IsLeast { a : A |  r (a : V) < 0 } a := by
   classical
   have hr := (Finsupp.mem_span_iff_total _ _ _).mp B.mem
   set r := Finsupp.extendDomain hr.choose with r_eq
+  use r
   have hrsupp : (r.support : Set V) ⊆ B.basis
   · intro x hx
     simp only [Finsupp.extendDomain_support, Finset.coe_map,
       Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe] at hx
-    obtain ⟨⟨x, hx'⟩, hx, rfl⟩ := hx
+    obtain ⟨⟨x, hx'⟩, _, rfl⟩ := hx
     exact hx'
+  use hrsupp
   have hr' : v = Finsupp.sum r fun x s ↦ s • x
   · suffices : v = Finsupp.sum hr.choose (fun x s ↦ s • (x : V))
     rw [this, r_eq]
@@ -209,23 +215,42 @@ def iterate (B : D R A v) : D R A v := by
       Finset.sum_map, Function.Embedding.coe_subtype, Subtype.coe_prop, Subtype.coe_eta,
       dite_eq_ite, ite_true]
     exact hr.choose_spec.symm
-  have : ∃ a ∈ B.basis, r a < 0
+  use hr'
+  have hne : { a : V | r a < 0}.Nonempty
   · by_contra this
     push_neg at this
     obtain ⟨x, hx⟩ := hv r (subset_trans hrsupp B.subset)
       (LinearIndependent.mono hrsupp (R := R) B.indep) hr'
-    suffices hx' : x ∈ B.basis
-    exact LT.lt.false (lt_of_le_of_lt (this x hx') hx)
-    · apply hrsupp
-      rw [Finset.mem_coe, Finsupp.mem_support_iff]
-      exact ne_of_lt hx
+    apply Set.not_mem_empty x
+    rw [← this, Set.mem_setOf_eq]
+    exact hx
+  set Ad : TopologicalSpace A := ⊥
+  have : DiscreteTopology A := { eq_bot := rfl }
+  have : ClosedIicTopology A := { isClosed_le' := fun a => isClosed_discrete _ }
+  apply IsCompact.exists_isLeast
+  exact isCompact_iff_finite.mpr (Set.toFinite _)
+  obtain ⟨a, haneg⟩ := hne
+  dsimp at haneg
+  use ⟨a, ?_⟩, haneg
+  apply B.subset
+  apply hrsupp
+  simp only [Finset.mem_coe, Finsupp.mem_support_iff]
+  exact ne_of_lt haneg
 
+example (s : Set V) [LinearOrder V] [Finite s] (hs : s.Nonempty) :
+    ∃ a : V, IsLeast s a := by
+  set Vd : TopologicalSpace V := ⊥
+  have : DiscreteTopology V := { eq_bot := rfl }
+  have : ClosedIicTopology V := { isClosed_le' := fun a => isClosed_discrete _ }
+  refine (isCompact_iff_finite.mpr s.toFinite).exists_isLeast hs
 
-
-
-
-
+def iterate (B : D R A v) : D R A v := by
+  have ⟨hsupp, hv_eq, hneg⟩ := (getcoeff R A v hv B).choose_spec
+  set r := (getcoeff R A v hv B).choose
+  have ha := hneg.choose_spec
+  set a := hneg.choose
   sorry
+
 
 lemma lpAux' (A : Set V) [Finite A] [LinearOrder A]
     (v : V) (hvA : v ∈ Submodule.span R A)
@@ -265,7 +290,7 @@ theorem lp (A : Set V) [Finite A] (v : V) : List.TFAE [
       (Module.rank R (Submodule.span R (A ∪ {v}))
         > Module.rank R (Submodule.span R (LinearMap.ker f ∩ (A : Set V))) + 1)] := by
   apply List.tfae_of_cycle _
-  · apply lpAux
+  · apply lpAux.lpAux
   rw [List.chain_cons]
   constructor
   · rintro ⟨t, hsupp, _, hpos, ht⟩
