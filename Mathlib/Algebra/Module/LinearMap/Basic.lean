@@ -164,7 +164,7 @@ instance (priority := 100) distribMulActionHomClass [FunLike F M M₂] [LinearMa
   { SemilinearMapClass.addMonoidHomClass F with
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
-variable {F} (f : F) [i : FunLike F M M₃] [i : SemilinearMapClass F σ M M₃]
+variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
