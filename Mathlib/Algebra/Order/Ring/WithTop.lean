@@ -20,54 +20,6 @@ variable {α : Type*}
 
 namespace WithTop
 
-section map
-variable {α β γ : Type*} {f : α → β → γ} {a : WithTop α} {b : WithTop β}
-
-/-- The image of a binary function `f : α → β → γ` as a function
-`WithTop α → WithTop β → WithTop γ`.
-
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ : (α → β → γ) → WithTop α → WithTop β → WithTop γ := Option.map₂
-
-@[simp] lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-@[simp] lemma map₂_top_left (f : α → β → γ) (b) : map₂ f ⊤ b = ⊤ := rfl
-@[simp] lemma map₂_top_right (f : α → β → γ) (a) : map₂ f a ⊤ = ⊤ := by cases a <;> rfl
-@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
-@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
-  cases a <;> rfl
-
-@[simp] lemma map₂_eq_top_iff : map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := Option.map₂_eq_none_iff
-
-end map
-
-end WithTop
-
-namespace WithBot
-
-section map
-variable {α β γ : Type*} {f : α → β → γ} {a : WithBot α} {b : WithBot β}
-
-/-- The image of a binary function `f : α → β → γ` as a function
-`WithBot α → WithBot β → WithBot γ`.
-
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
-
-@[simp] lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-@[simp] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
-@[simp] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
-@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
-@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
-  cases a <;> rfl
-
-@[simp] lemma map₂_eq_bot_iff : map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
-
-end map
-
-end WithBot
-
-namespace WithTop
-
 variable [DecidableEq α]
 
 instance : DecidableEq (WithTop α) := instDecidableEqOption

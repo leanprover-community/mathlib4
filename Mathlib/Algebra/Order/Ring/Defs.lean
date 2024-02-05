@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Nontriviality
