@@ -132,5 +132,6 @@ register_hint aesop
 register_hint simp_all?
 register_hint exact?
 register_hint decide
+register_hint omega
 
 end Hint
