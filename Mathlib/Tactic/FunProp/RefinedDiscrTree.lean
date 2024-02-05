@@ -35,7 +35,7 @@ I document here what is not in the original.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 3,
   since the pattern of commutativity is [⟨Hadd.hadd, 6⟩, *0, *0, *0, *1, *2, *3],
   so matching `⟨Hadd.hadd, 6⟩` gives 1 point,
-  and matching `*0` two times after its first appearence gives another 2 points.
+  and matching `*0` two times after its first appearance gives another 2 points.
   Similarly, matching it with `add_assoc` gives a score of 7.
 
   TODO?: the third type parameter of `Hadd.hadd` is an outparam,
@@ -146,7 +146,7 @@ private def Key.format : Key → Format
 
 instance : ToFormat Key := ⟨Key.format⟩
 
-/-- Return the number of argumets that the `Key` takes. -/
+/-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
   | .const _ a  => a
   | .fvar _ a   => a

@@ -552,7 +552,7 @@ theorem pdiv_apply [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ) :
     pdiv f g n = f n / g n := rfl
 
 /-- This result only holds for `DivisionSemiring`s instead of `GroupWithZero`s because zeta takes
-values in ℕ, and hence the coersion requires an `AddMonoidWithOne`. TODO: Generalise zeta -/
+values in ℕ, and hence the coercion requires an `AddMonoidWithOne`. TODO: Generalise zeta -/
 @[simp]
 theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
     pdiv f zeta = f := by

@@ -70,7 +70,7 @@ attribute [fun_prop]
   Measurable.aemeasurable
 
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no theorems about measurability of log are used. It is inferred from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
