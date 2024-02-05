@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Basic
 
 #align_import topology.order from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -373,23 +374,6 @@ section GaloisConnection
 
 variable {α β γ : Type*}
 
-/-- Given `f : α → β` and a topology on `β`, the induced topology on `α` is the collection of
-  sets that are preimages of some open set in `β`. This is the coarsest topology that
-  makes `f` continuous. -/
-def TopologicalSpace.induced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace β) :
-    TopologicalSpace α where
-  IsOpen s := ∃ s', IsOpen s' ∧ f ⁻¹' s' = s
-  isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
-  isOpen_inter := by
-    rintro s₁ s₂ ⟨s'₁, hs₁, rfl⟩ ⟨s'₂, hs₂, rfl⟩
-    exact ⟨s'₁ ∩ s'₂, hs₁.inter hs₂, preimage_inter⟩
-  isOpen_sUnion S h := by
-    choose! g hgo hfg using h
-    refine ⟨⋃ s ∈ S, g s, isOpen_biUnion fun s hs => hgo s hs, ?_⟩
-    rw [preimage_iUnion₂, sUnion_eq_biUnion]
-    exact iUnion₂_congr hfg
-#align topological_space.induced TopologicalSpace.induced
-
 theorem isOpen_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β} :
     IsOpen[t.induced f] s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s :=
   Iff.rfl
@@ -401,17 +385,6 @@ theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → 
   simp only [← isOpen_compl_iff, isOpen_induced_iff]
   exact compl_surjective.exists.trans (by simp only [preimage_compl, compl_inj_iff])
 #align is_closed_induced_iff isClosed_induced_iff
-
-/-- Given `f : α → β` and a topology on `α`, the coinduced topology on `β` is defined
-  such that `s : Set β` is open if the preimage of `s` is open. This is the finest topology that
-  makes `f` continuous. -/
-def TopologicalSpace.coinduced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace α) :
-    TopologicalSpace β where
-  IsOpen s := IsOpen[t] (f ⁻¹' s)
-  isOpen_univ := t.isOpen_univ
-  isOpen_inter s₁ s₂ h₁ h₂ := h₁.inter h₂
-  isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
-#align topological_space.coinduced TopologicalSpace.coinduced
 
 theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
     IsOpen[t.coinduced f] s ↔ IsOpen (f ⁻¹' s) :=
