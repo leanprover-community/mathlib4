@@ -6,8 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Clopen
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Alexandrov-discrete topological spaces

@@ -32,13 +32,6 @@ open Set Filter Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
-/-- The filter of neighborhoods of a set in a topological space. -/
-def nhdsSet (s : Set X) : Filter X :=
-  sSup (nhds '' s)
-#align nhds_set nhdsSet
-
-@[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
-
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
     𝓝ˢ (diagonal X) = ⨆ (x : X), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]

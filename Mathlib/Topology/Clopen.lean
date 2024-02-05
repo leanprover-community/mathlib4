@@ -22,11 +22,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Clopen
 
-/-- A set is clopen if it is both closed and open. -/
-def IsClopen (s : Set X) : Prop :=
-  IsClosed s ∧ IsOpen s
-#align is_clopen IsClopen
-
 protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.2
 #align is_clopen.is_open IsClopen.isOpen
 
