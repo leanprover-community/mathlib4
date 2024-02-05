@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Set.Basic
