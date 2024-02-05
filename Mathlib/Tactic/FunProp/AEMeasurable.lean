@@ -5,10 +5,7 @@ Authors: Tomáš Skřivan
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
-import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.Measurable
 
 /-!
@@ -68,18 +65,3 @@ attribute [fun_prop]
 attribute [fun_prop]
   AEMeasurable.mono'
   Measurable.aemeasurable
-
-
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
-example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
-  by fun_prop
-
-private noncomputable def S (a b c d : ℝ) : ℝ :=
-    a / (a + b + d) + b / (a + b + c) +
-    c / (b + c + d) + d / (a + c + d)
-
-private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
-
-example : AEMeasurable T := by
-  unfold T S
-  fun_prop

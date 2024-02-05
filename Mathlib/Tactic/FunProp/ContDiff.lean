@@ -79,7 +79,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`
-and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitely
+and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitly
 the smallest possible value i.e. `n=m+1`.
 
 In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem.  -/
@@ -185,26 +185,3 @@ attribute [fun_prop]
   ContDiffOn.pow
 
   ContDiff.differentiable_iteratedDeriv'
-
-example {n} : ContDiffOn ℝ n (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fun_prop (disch:=aesop)
-
-example {n} (y : ℝ) (hy : y≠0) :
-    ContDiffAt ℝ n (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fun_prop (disch:=aesop)
-
-private noncomputable def S (a b c d : ℝ) : ℝ :=
-    a / (a + b + d) + b / (a + b + c) +
-    c / (b + c + d) + d / (a + c + d)
-
-private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
-
-example {n}: ContDiffOn ℝ n T (Set.Icc 0 1) := by
-  unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
-
-private axiom t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞)
-
-example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
-    Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) :=
-  by fun_prop (disch:=(exact t1))

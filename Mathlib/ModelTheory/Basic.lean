@@ -455,7 +455,7 @@ end Structure
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+class HomClass (L : outParam Language) (F M N : Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
@@ -463,7 +463,7 @@ class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
+class StrongHomClass (L : outParam Language) (F M N : Type*)
   [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
@@ -603,15 +603,17 @@ def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
 
 namespace Embedding
 
-instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
+instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  injective' f := f.toEmbedding.injective
   coe_injective' f g h := by
     cases f
     cases g
     congr
     ext x
     exact Function.funext_iff.1 h x
+
+instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
+  injective' f := f.toEmbedding.injective
 #align first_order.language.embedding.embedding_like FirstOrder.Language.Embedding.embeddingLike
 
 instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
@@ -619,9 +621,7 @@ instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
   map_rel := map_rel'
 #align first_order.language.embedding.strong_hom_class FirstOrder.Language.Embedding.strongHomClass
 
-instance hasCoeToFun : CoeFun (M ↪[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
-#align first_order.language.embedding.has_coe_to_fun FirstOrder.Language.Embedding.hasCoeToFun
+#noalign first_order.language.embedding.has_coe_to_fun -- Porting note: replaced by funLike instance
 
 @[simp]
 theorem map_fun (φ : M ↪[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
@@ -768,8 +768,8 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
-def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [EmbeddingLike F M N]
-    [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
+def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+    [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 #align first_order.language.strong_hom_class.to_embedding FirstOrder.Language.StrongHomClass.toEmbedding
 
