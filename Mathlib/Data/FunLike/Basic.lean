@@ -76,6 +76,11 @@ instance : MyHomClass (MyHom A B) A B :=
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
+Note that `A B` are marked as `outParam` even though they are not purely required to be so
+due to the `FunLike` parameter already filling them in. This is required to see through
+type synonyms, which is important in the category theory library. Also, it appears having them as
+`outParam` is slightly faster.
+
 The second step is to add instances of your new `MyHomClass` for all types extending `MyHom`.
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
@@ -108,7 +113,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
-lemma do_something {F : Type*} [FunLike F A (fun _ => B)] [MyHomClass F A B] (f : F) : sorry :=
+lemma do_something {F : Type*} [FunLike F A B] [MyHomClass F A B] (f : F) : sorry :=
   sorry
 ```
 
@@ -116,6 +121,14 @@ This means anything set up for `MyHom`s will automatically work for `CoolerHomCl
 and defining `CoolerHomClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyHom`-related declaration.
 
+## Design rationale
+
+The current form of FunLike was set up in pull request #8386:
+https://github.com/leanprover-community/mathlib4/pull/8386
+We made `FunLike` *unbundled*: child classes don't extend `FunLike`, they take a `[FunLike F A B]`
+parameter instead. This suits the instance synthesis algorithm better: it's easy to verify a type
+does **not** have a `FunLike` instance by checking the discrimination tree once instead of searching
+the entire `extends` hierarchy.
 -/
 
 -- This instance should have low priority, to ensure we follow the chain
