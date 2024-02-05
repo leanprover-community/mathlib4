@@ -58,7 +58,7 @@ def unfoldFunHeadRec? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 /-- Synthesize instance of type `type` and
-  1. assign it to `x` if `x` is meta veriable
+  1. assign it to `x` if `x` is meta variable
   2. check it is equal to `x` -/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
@@ -388,7 +388,7 @@ For example:
  - for `Continuous fun xy => f xy.1 xy.2` this function returns fvar id of `f` and `#[0,1]`
 
 This function is assuming:
- - that `e` is taling about function property `funPropDecl`
+ - that `e` is talking about function property `funPropDecl`
  - the function `f` in `e` can't be expressed as composition of two non-trivial functions
    this means that `f == (← splitLambdaToComp f).1` is true -/
 def isFVarFunProp (funPropDecl : FunPropDecl) (e : Expr) :
