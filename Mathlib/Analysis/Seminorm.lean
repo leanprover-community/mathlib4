@@ -560,7 +560,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
         add_le' := fun x y => by
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
-          · simp [Real.ciSup_empty]
+          · simp [Real.iSup_of_isEmpty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
           refine' ciSup_le fun i =>
@@ -626,7 +626,7 @@ protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
 
 protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   ext
-  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.iSup_of_isEmpty]
   rfl
 
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
@@ -963,9 +963,8 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   exact (norm_nonneg _).trans ha
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
--- Porting note: TODO: make that an `iff`
-theorem neg_mem_ball_zero (r : ℝ) {x : E} (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
-  simpa only [mem_ball_zero, map_neg_eq_map] using hx
+theorem neg_mem_ball_zero {r : ℝ} {x : E} : -x ∈ ball p 0 r ↔ x ∈ ball p 0 r := by
+  simp only [mem_ball_zero, map_neg_eq_map]
 #align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
 @[simp]
