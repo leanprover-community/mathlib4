@@ -433,7 +433,7 @@ namespace Basis
 
 set_option linter.uppercaseLean3 false
 
-variable {ι : Type*} [Fintype ι] [T2Space E]
+variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
@@ -465,7 +465,7 @@ lemma equivFunL_symm_apply_repr (v : Basis ι 𝕜 E) (x : E) :
   v.equivFunL.symm_apply_apply x
 
 @[simp]
-theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
+theorem constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
     v.constrL f e = ∑ i, v.equivFun e i • f i :=
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
