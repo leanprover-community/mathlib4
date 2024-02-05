@@ -61,67 +61,63 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
   exact PerfectRing.toPerfectField F p
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_apply_iterate_frobenius (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (x : R) (n : ℕ) :
-    (frobeniusEquiv R p).symm^[n] ((frobenius R p)^[n] x) = x := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rwa [Function.iterate_succ_apply, Function.iterate_succ_apply',
-    frobeniusEquiv_symm_apply_frobenius]
+theorem iterateFrobenius_add_apply (R : Type*) [CommSemiring R] (p m n : ℕ) [ExpChar R p] (x : R) :
+    iterateFrobenius R p (m + n) x = iterateFrobenius R p m (iterateFrobenius R p n x) :=
+  congr($(iterateFrobenius_add R p m n) x)
 
 -- TODO: move to suitable location
-theorem iterate_frobenius_apply_iterate_frobeniusEquiv_symm (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (x : R) (n : ℕ) :
-    (frobenius R p)^[n] ((frobeniusEquiv R p).symm^[n] x) = x := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rwa [Function.iterate_succ_apply, Function.iterate_succ_apply',
-    frobenius_apply_frobeniusEquiv_symm]
+theorem frobeniusEquiv_def (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : frobeniusEquiv R p x = x ^ p := rfl
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_mul (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (x y : R) (n : ℕ) :
-    (frobeniusEquiv R p).symm^[n] (x * y) =
-    (frobeniusEquiv R p).symm^[n] x * (frobeniusEquiv R p).symm^[n] y := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Function.iterate_succ_apply', ih, map_mul,
-    Function.iterate_succ_apply', Function.iterate_succ_apply']
+theorem iterateFrobeniusEquiv_def (R : Type*) (p n : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : iterateFrobeniusEquiv R p n x = x ^ p ^ n := rfl
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_add (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (x y : R) (n : ℕ) :
-    (frobeniusEquiv R p).symm^[n] (x + y) =
-    (frobeniusEquiv R p).symm^[n] x + (frobeniusEquiv R p).symm^[n] y := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Function.iterate_succ_apply', ih, map_add,
-    Function.iterate_succ_apply', Function.iterate_succ_apply']
+theorem iterateFrobeniusEquiv_add_apply (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : iterateFrobeniusEquiv R p (m + n) x =
+    iterateFrobeniusEquiv R p m (iterateFrobeniusEquiv R p n x) :=
+  congr($(iterateFrobenius_add R p m n) x)
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_pow (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (x : R) (n m : ℕ) :
-    (frobeniusEquiv R p).symm^[n] (x ^ m) =
-    (frobeniusEquiv R p).symm^[n] x ^ m := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Function.iterate_succ_apply', ih, map_pow, Function.iterate_succ_apply']
+theorem iterateFrobeniusEquiv_add (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] : iterateFrobeniusEquiv R p (m + n) =
+    (iterateFrobeniusEquiv R p n).trans (iterateFrobeniusEquiv R p m) :=
+  RingEquiv.ext (iterateFrobeniusEquiv_add_apply R p m n)
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_zero (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (n : ℕ) :
-    (frobeniusEquiv R p).symm^[n] 0 = 0 := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Function.iterate_succ_apply', ih, map_zero]
+theorem iterateFrobeniusEquiv_symm_add_apply (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : (iterateFrobeniusEquiv R p (m + n)).symm x =
+    (iterateFrobeniusEquiv R p m).symm ((iterateFrobeniusEquiv R p n).symm x) := by
+  refine (iterateFrobeniusEquiv R p (m + n)).injective ?_
+  rw [RingEquiv.apply_symm_apply, add_comm, iterateFrobeniusEquiv_add_apply,
+    RingEquiv.apply_symm_apply, RingEquiv.apply_symm_apply]
 
 -- TODO: move to suitable location
-theorem iterate_frobeniusEquiv_symm_one (R : Type*) (p : ℕ)
-    [CommSemiring R] [ExpChar R p] [PerfectRing R p] (n : ℕ) :
-    (frobeniusEquiv R p).symm^[n] 1 = 1 := by
-  induction n with
-  | zero => rfl
-  | succ n ih => rw [Function.iterate_succ_apply', ih, map_one]
+theorem iterateFrobeniusEquiv_symm_add (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] : (iterateFrobeniusEquiv R p (m + n)).symm =
+    (iterateFrobeniusEquiv R p n).symm.trans (iterateFrobeniusEquiv R p m).symm :=
+  RingEquiv.ext (iterateFrobeniusEquiv_symm_add_apply R p m n)
+
+-- TODO: move to suitable location
+theorem iterateFrobeniusEquiv_zero_apply (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : iterateFrobeniusEquiv R p 0 x = x := by
+  rw [iterateFrobeniusEquiv_def, pow_zero, pow_one]
+
+-- TODO: move to suitable location
+theorem iterateFrobeniusEquiv_one_apply (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] (x : R) : iterateFrobeniusEquiv R p 1 x = x ^ p := by
+  rw [iterateFrobeniusEquiv_def, pow_one]
+
+-- TODO: move to suitable location
+theorem iterateFrobeniusEquiv_zero (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+  RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
+
+-- TODO: move to suitable location
+theorem iterateFrobeniusEquiv_one (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p]
+    [PerfectRing R p] : iterateFrobeniusEquiv R p 1 = frobeniusEquiv R p :=
+  RingEquiv.ext (iterateFrobeniusEquiv_one_apply R p)
 
 /-- The `p`-nilradical of a ring is an ideal consists of elements `x` such that `x ^ p ^ n = 0`
 for some `n` (`mem_pNilradical`). It is equal to the nilradical if `p > 1`
@@ -136,6 +132,12 @@ theorem pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p
 
 theorem pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
     pNilradical R p = ⊥ := pNilradical_eq_bot (not_lt.2 hp)
+
+theorem pNilradical_prime {R : Type*} [CommSemiring R] {p : ℕ} (hp : p.Prime) :
+    pNilradical R p = nilradical R := pNilradical_eq_nilradical hp.one_lt
+
+theorem pNilradical_one {R : Type*} [CommSemiring R] :
+    pNilradical R 1 = ⊥ := pNilradical_eq_bot' rfl.le
 
 theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
@@ -172,7 +174,7 @@ a perfect closure of `K` if the following conditions are satisfied:
   the `p`-nilradical of `K`. -/
 @[mk_iff]
 class IsPerfectClosure : Prop where
-  perfectRing' : PerfectRing L p
+  [perfectRing' : PerfectRing L p]
   pow_mem' : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n
   ker_le' : RingHom.ker i ≤ pNilradical K p
 
@@ -190,9 +192,9 @@ is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
 theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
     pNilradical K p ≤ RingHom.ker i := fun x h ↦ by
   obtain ⟨n, h⟩ := mem_pNilradical.1 h
-  replace h := congr((frobeniusEquiv L p).symm^[n] (i $h))
-  rwa [map_pow, ← iterate_frobenius, iterate_frobeniusEquiv_symm_apply_iterate_frobenius,
-    map_zero, iterate_frobeniusEquiv_symm_zero] at h
+  replace h := congr((iterateFrobeniusEquiv L p n).symm (i $h))
+  rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
+    map_zero, map_zero] at h
 
 theorem IsPerfectClosure.ker_eq [IsPerfectClosure i p] : RingHom.ker i = pNilradical K p :=
   ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
@@ -200,7 +202,6 @@ theorem IsPerfectClosure.ker_eq [IsPerfectClosure i p] : RingHom.ker i = pNilrad
 /-- A perfect ring is its perfect closure. -/
 instance IsPerfectClosure.self_of_perfect [PerfectRing M p] :
     IsPerfectClosure (RingHom.id M) p where
-  perfectRing' := ‹_›
   pow_mem' x := ⟨0, x, by simp⟩
   ker_le' x hx := by convert Ideal.zero_mem _
 
@@ -217,12 +218,12 @@ theorem PerfectRing.lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := 
 `L → M` which maps an element `x` of `L` to `y ^ (p ^ -n)` if `x ^ (p ^ n)` is equal to some
 element `y` of `K`. -/
 def PerfectRing.liftAux (x : L) : M :=
-  (frobeniusEquiv M p).symm^[(Classical.choose (lift_aux i p H x)).1]
+  (iterateFrobeniusEquiv M p (Classical.choose (lift_aux i p H x)).1).symm
     (j (Classical.choose (lift_aux i p H x)).2)
 
 theorem PerfectRing.liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p H x = x := by
-  rw [liftAux, Classical.choose_spec (lift_aux i p H x), ← iterate_frobenius,
-    iterate_frobeniusEquiv_symm_apply_iterate_frobenius]
+  rw [liftAux, Classical.choose_spec (lift_aux i p H x), ← iterateFrobenius_def,
+    ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
 theorem PerfectRing.liftAux_self [PerfectRing L p] : liftAux i i p H = id :=
   funext (liftAux_self_apply i p H)
@@ -245,7 +246,7 @@ variable [PerfectRing M p] (H : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ 
 `i` is "purely inseparable" and whose kernel is contained in the `p`-nilradical of `K`, and `M` is a
 perfect ring, then `PerfectRing.liftAux` is well-defined. -/
 theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    liftAux i j p H x = (frobeniusEquiv M p).symm^[n] (j y) := by
+    liftAux i j p H x = (iterateFrobeniusEquiv M p n).symm (j y) := by
   rw [liftAux]
   have h' := Classical.choose_spec (lift_aux i p H x)
   set n' := (Classical.choose (lift_aux i p H x)).1
@@ -253,11 +254,12 @@ theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n
   rw [← pow_mul, mul_comm, pow_mul, ← h', ← map_pow, ← map_pow, ← sub_eq_zero, ← map_sub,
     ← RingHom.mem_ker] at h
   obtain ⟨m, h⟩ := mem_pNilradical.1 (hk h)
-  apply_fun _ using (injective_frobenius M p).iterate (m + n + n')
-  conv_lhs => rw [Function.iterate_add_apply, iterate_frobenius_apply_iterate_frobeniusEquiv_symm]
+  refine (iterateFrobeniusEquiv M p (m + n + n')).injective ?_
+  conv_lhs => rw [iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply]
   rw [add_assoc, add_comm n n', ← add_assoc,
-    Function.iterate_add_apply _ (m + n') n, iterate_frobenius_apply_iterate_frobeniusEquiv_symm,
-    iterate_frobenius, iterate_frobenius, ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
+    iterateFrobeniusEquiv_add_apply (m := m + n'), RingEquiv.apply_symm_apply,
+    iterateFrobeniusEquiv_def, iterateFrobeniusEquiv_def,
+    ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
@@ -273,10 +275,10 @@ def PerfectRing.lift : L →+* M where
       liftAux_apply i j p H hk (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, mul_pow]),
-      map_mul, map_pow, map_pow, iterate_frobeniusEquiv_symm_mul, ← iterate_frobenius]
-    nth_rw 1 [Function.iterate_add_apply]
-    rw [iterate_frobeniusEquiv_symm_apply_iterate_frobenius, add_comm, Function.iterate_add_apply,
-      ← iterate_frobenius, iterate_frobeniusEquiv_symm_apply_iterate_frobenius]
+      map_mul, map_pow, map_pow, map_mul, ← iterateFrobeniusEquiv_def]
+    nth_rw 1 [iterateFrobeniusEquiv_symm_add_apply]
+    rw [RingEquiv.symm_apply_apply, add_comm n1, iterateFrobeniusEquiv_symm_add_apply,
+      ← iterateFrobeniusEquiv_def, RingEquiv.symm_apply_apply]
   map_zero' := by simp [liftAux_apply i j p H hk 0 0 0 (by rw [pow_zero, pow_one, map_zero])]
   map_add' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := H x1
@@ -285,14 +287,13 @@ def PerfectRing.lift : L →+* M where
       liftAux_apply i j p H hk (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, add_pow_expChar_pow]),
-      map_add, map_pow, map_pow, iterate_frobeniusEquiv_symm_add, ← iterate_frobenius]
-    nth_rw 1 [Function.iterate_add_apply]
-    rw [iterate_frobeniusEquiv_symm_apply_iterate_frobenius, add_comm n1,
-      Function.iterate_add_apply, ← iterate_frobenius,
-      iterate_frobeniusEquiv_symm_apply_iterate_frobenius]
+      map_add, map_pow, map_pow, map_add, ← iterateFrobeniusEquiv_def]
+    nth_rw 1 [iterateFrobeniusEquiv_symm_add_apply]
+    rw [RingEquiv.symm_apply_apply, add_comm n1, iterateFrobeniusEquiv_symm_add_apply,
+      ← iterateFrobeniusEquiv_def, RingEquiv.symm_apply_apply]
 
 theorem PerfectRing.lift_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    lift i j p H hk x = (frobeniusEquiv M p).symm^[n] (j y) :=
+    lift i j p H hk x = (iterateFrobeniusEquiv M p n).symm (j y) :=
   liftAux_apply i j p H hk _ _ _ h
 
 theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p H hk x = x :=
@@ -302,7 +303,7 @@ theorem PerfectRing.lift_self [PerfectRing L p] : lift i i p H hk = RingHom.id L
   RingHom.ext (liftAux_self_apply i p H)
 
 theorem PerfectRing.lift_comp_apply (x : K) : lift i j p H hk (i x) = j x := by
-  rw [lift_apply i j p H hk _ 0 x (by rw [pow_zero, pow_one])]; rfl
+  rw [lift_apply i j p H hk _ 0 x (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]; rfl
 
 theorem PerfectRing.lift_comp : (lift i j p H hk).comp i = j :=
   RingHom.ext (lift_comp_apply i j p H hk)
@@ -317,9 +318,10 @@ theorem PerfectRing.lift_comp_lift_apply (x : L) :
     lift j k p H' hk' (lift i j p H hk x) = lift i k p H hk x := by
   obtain ⟨n, y, h⟩ := H x
   rw [lift_apply i j p H hk _ _ _ h, lift_apply i k p H hk _ _ _ h]
-  apply_fun _ using (injective_frobenius N p).iterate n
-  rw [← RingHom.map_iterate_frobenius, iterate_frobenius_apply_iterate_frobeniusEquiv_symm,
-    iterate_frobenius_apply_iterate_frobeniusEquiv_symm, lift_comp_apply]
+  refine (injective_frobenius N p).iterate n ?_
+  rw [← RingHom.map_iterate_frobenius, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
+    RingEquiv.apply_symm_apply, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
+    RingEquiv.apply_symm_apply, lift_comp_apply]
 
 theorem PerfectRing.lift_comp_lift :
     (lift j k p H' hk').comp (lift i j p H hk) = lift i k p H hk :=
@@ -359,11 +361,11 @@ theorem IsPerfectClosure.equiv_symm_toRingHom : haveI := perfectRing i p;
     (equiv i j p).symm.toRingHom = PerfectRing.lift j i p pow_mem' ker_le' := rfl
 
 theorem IsPerfectClosure.equiv_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    haveI := perfectRing j p; equiv i j p x = (frobeniusEquiv M p).symm^[n] (j y) :=
+    haveI := perfectRing j p; equiv i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
   haveI := perfectRing j p; PerfectRing.liftAux_apply i j p pow_mem' ker_le' _ _ _ h
 
 theorem IsPerfectClosure.equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x ^ p ^ n) :
-    haveI := perfectRing i p; (equiv i j p).symm x = (frobeniusEquiv L p).symm^[n] (i y) := by
+    haveI := perfectRing i p; (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
   rw [equiv_symm, equiv_apply j i p _ _ _ h]
 
 theorem IsPerfectClosure.equiv_self_apply (x : L) : equiv i i p x = x :=
@@ -409,7 +411,6 @@ variable (K) in
 /-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
 instance PerfectClosure.isPerfectClosure [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] :
     IsPerfectClosure (PerfectClosure.of K p) p where
-  perfectRing' := inferInstance
   pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
     rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
   ker_le' x h := by
