@@ -209,7 +209,7 @@ end PreGaloisCategory
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fibre functor. -/
 class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
     extends PreGaloisCategory C : Prop where
-  hasFibreFunctor : ∃ F : C ⥤ FintypeCat.{w}, Nonempty (PreGaloisCategory.FibreFunctor F)
+  hasFibreFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FibreFunctor F)
 
 namespace PreGaloisCategory
 
@@ -217,14 +217,14 @@ variable {C : Type u₁} [Category.{u₂, u₁} C]
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [ConnectedObject A] [GaloisCategory C] : Finite (A ⟶ X) := by
-  obtain ⟨(F : C ⥤ FintypeCat.{w}), ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
+  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
   obtain ⟨a⟩ := nonempty_fibre_of_connected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluationInjective_of_connected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance [GaloisCategory C] (A : C) [ConnectedObject A] : Finite (Aut A) := by
-  obtain ⟨(F : C ⥤ FintypeCat.{w}), ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
+  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
   obtain ⟨a⟩ := nonempty_fibre_of_connected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_connected F A a
