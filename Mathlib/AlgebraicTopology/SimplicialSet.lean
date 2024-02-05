@@ -118,7 +118,7 @@ def binaryProductLift {X Y : SSet.{0}} (s : BinaryFan X Y) : s.pt ⟶ prod X Y w
 @[simps]
 def binaryProductLimit (X Y : SSet) : IsLimit (binaryProductCone X Y) where
   lift (s : BinaryFan X Y) := binaryProductLift s
-  fac _ j := Discrete.recOn j fun j ↦ WalkingPair.casesOn j rfl rfl
+  fac _ := fun ⟨j⟩ ↦ WalkingPair.casesOn j rfl rfl
   uniq _ _ ht := by
     simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩, binaryProductLift]
     congr
@@ -145,15 +145,42 @@ lemma binaryProductIso_inv_comp_fst (X Y : SSet) :
   simp [binaryProductIso, binaryProductLimitCone]
 
 @[simp]
+lemma binaryProductIso_inv_comp_fst_apply (X Y : SSet) (n : SimplexCategoryᵒᵖ)
+    (z : (prod X Y).obj n) : ((binaryProductIso X Y).inv ≫ Limits.prod.fst).app n z = z.1 := by
+  simp only [binaryProductIso_inv_comp_fst, prod.fst_app]
+
+@[simp]
 lemma binaryProductIso_inv_comp_snd (X Y : SSet) :
     (binaryProductIso X Y).inv ≫ Limits.prod.snd = prod.snd := by
   simp [binaryProductIso, binaryProductLimitCone]
 
-/-- Constructing an n-simplex in X ⨯ Y from an n-simplex in X and an n-simplex in Y. -/
 @[simp]
+lemma binaryProductIso_inv_comp_snd_apply (X Y : SSet) (n : SimplexCategoryᵒᵖ)
+    (z : (prod X Y).obj n) : ((binaryProductIso X Y).inv ≫ Limits.prod.snd).app n z = z.2 := by
+  simp only [binaryProductIso_inv_comp_snd, prod.snd_app]
+
+/-- Constructing an n-simplex in `X ⨯ Y` from an n-simplex in `X` and an n-simplex in `Y`. -/
 noncomputable
 def prodMk {X Y : SSet} {n : SimplexCategoryᵒᵖ} (x : X.obj n) (y : Y.obj n) :
     (X ⨯ Y).obj n := ((binaryProductIso X Y).inv).app n ⟨x, y⟩
+
+@[simp]
+lemma prodMk_fst {X Y : SSet} {n : SimplexCategoryᵒᵖ} (x : X.obj n) (y : Y.obj n) :
+    (Limits.prod.fst (X := X) (Y := Y)).app n (prodMk x y) = x := by
+  change ((binaryProductIso _ _).inv ≫ Limits.prod.fst).app _ _ = _
+  rw [binaryProductIso_inv_comp_fst_apply]
+
+@[simp]
+lemma prodMk_snd {X Y : SSet} {n : SimplexCategoryᵒᵖ} (x : X.obj n) (y : Y.obj n) :
+    (Limits.prod.snd (X := X) (Y := Y)).app n (prodMk x y) = y := by
+  change ((binaryProductIso _ _).inv ≫ Limits.prod.snd).app _ _ = _
+  rw [binaryProductIso_inv_comp_snd_apply]
+
+@[ext]
+lemma prod_ext {X Y : SSet} {n : SimplexCategoryᵒᵖ} (z w : (prod X Y).obj n)
+    (h1 : z.1 = w.1) (h2 : z.2 = w.2) : z = w := by
+  dsimp [prod] at z
+  aesop
 
 /-- The n-simplices of `X ⨯ Y` are in bijection with the
 product of the n-simplices of `X` and the n-simplices of `Y`.-/
@@ -163,10 +190,16 @@ def binaryProductEquiv (X Y : SSet) (n : SimplexCategoryᵒᵖ) :
     (X ⨯ Y).obj n ≃ (X.obj n) × (Y.obj n) where
   toFun z := ⟨(((binaryProductIso _ _).hom).app n z).1, (((binaryProductIso _ _).hom).app n z).2⟩
   invFun z := prodMk z.1 z.2
-  left_inv _ := by simp
-  right_inv _ := by simp
+  left_inv _ := by simp [prodMk]
+  right_inv _ := by simp [prodMk]
 
-/- TODO, ext lemma, more simp lemmas? -/
+@[ext]
+lemma Limits.prod_ext (X Y : SSet) (z w : (X ⨯ Y).obj n)
+    (h1 : (Limits.prod.fst (X := X)).app n z = (Limits.prod.fst (X := X)).app n w)
+    (h2 : (Limits.prod.snd (X := X)).app n z = (Limits.prod.snd (X := X)).app n w) :
+    z = w := by
+  apply Equiv.injective (binaryProductEquiv X Y n)
+  aesop
 
 end Product
 
