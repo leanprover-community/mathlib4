@@ -22,7 +22,7 @@ noncomputable section
 
 open Classical Real NNReal ENNReal BigOperators ComplexConjugate
 
-open Finset Set
+open Finset Function Set
 
 namespace NNReal
 
@@ -559,6 +559,11 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
   rpow_nat_cast x n
 
+@[simp, norm_cast]
+lemma rpow_int_cast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_coe_nat,
+    Int.cast_negSucc, rpow_neg, zpow_negSucc]
+
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two
 
@@ -858,14 +863,36 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   exact ofReal_rpow_of_pos (hx_nonneg.lt_of_ne hx0.symm)
 #align ennreal.of_real_rpow_of_nonneg ENNReal.ofReal_rpow_of_nonneg
 
-theorem rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Function.Injective fun y : ℝ≥0∞ => y ^ x := by
-  intro y z hyz
-  dsimp only at hyz
-  rw [← rpow_one y, ← rpow_one z, ← _root_.mul_inv_cancel hx, rpow_mul, rpow_mul, hyz]
+@[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y) ^ y⁻¹ = x := by
+  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+
+@[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y⁻¹) ^ y = x := by
+  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+
+lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
+  rw [← rpow_nat_cast, ← rpow_mul, mul_inv_cancel (by positivity), rpow_one]
+
+lemma rpow_inv_natCast_pow {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
+  rw [← rpow_nat_cast, ← rpow_mul, inv_mul_cancel (by positivity), rpow_one]
+
+lemma rpow_natCast_mul (x : ℝ≥0∞) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
+  rw [rpow_mul, rpow_nat_cast]
+
+lemma rpow_mul_natCast (x : ℝ≥0∞) (y : ℝ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [rpow_mul, rpow_nat_cast]
+
+lemma rpow_intCast_mul (x : ℝ≥0∞) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
+  rw [rpow_mul, rpow_int_cast]
+
+lemma rpow_mul_intCast (x : ℝ≥0∞) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [rpow_mul, rpow_int_cast]
+
+lemma rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Injective fun y : ℝ≥0∞ ↦ y ^ x :=
+  HasLeftInverse.injective ⟨fun y ↦ y ^ x⁻¹, rpow_rpow_inv hx⟩
 #align ennreal.rpow_left_injective ENNReal.rpow_left_injective
 
 theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0∞ => y ^ x :=
-  fun y => ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, _root_.inv_mul_cancel hx, rpow_one]⟩
+  HasRightInverse.surjective ⟨fun y ↦ y ^ x⁻¹, rpow_inv_rpow hx⟩
 #align ennreal.rpow_left_surjective ENNReal.rpow_left_surjective
 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=
