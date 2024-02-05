@@ -459,8 +459,7 @@ end CliffordAlgebraDualNumber
 
 /-! ### The clifford algebra isomorphic to the dual quaternions
 
-We use a basis of `((i, j), e)` where `e = εk` (and so ε = -ke)
-TODO: check sign on e
+We use a basis of `((i, j), e)` where $e = -kε$ (and so $ε = ke$)
 -/
 
 namespace CliffordAlgebraDualQuaternion
