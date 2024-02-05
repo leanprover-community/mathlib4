@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.OrderEmbedding
-import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+import Mathlib.Order.SetNotation
 
 #align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
