@@ -328,9 +328,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   · intro m hm
     rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
     rw [f.changeOriginSeries_support hm, zero_apply]
-  have heq : Fin.snoc 0 y = fun _ : Fin 1 ↦ y := by
-    ext; rw [Fin.snoc, dif_neg (Nat.not_lt_zero _)]; rfl
-  rw [sum_apply, ContinuousMultilinearMap.sum_apply, heq]
+  rw [sum_apply, ContinuousMultilinearMap.sum_apply, Fin.snoc_zero]
   simp_rw [changeOriginSeriesTerm_apply]
   refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
     Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
@@ -396,7 +394,7 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
   convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
   · rw [iteratedFDeriv_zero_apply, add_zero]
-  · rw [tsum_eq_single 0 <| fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
+  · rw [tsum_eq_single 0 fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
     exact congr(p 0 $(Subsingleton.elim _ _))
 
 open ContinuousLinearMap
