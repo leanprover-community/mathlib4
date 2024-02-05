@@ -226,7 +226,7 @@ structure Transversal : Type _ where
   /-- The chosen element of the base group itself is the identity -/
   one_mem : ∀ i, 1 ∈ set i
   /-- We have exactly one element of each coset of the base group -/
-  compl : ∀ i, IsComplement (φ i).range (set i)
+  compl : ∀ i, IsComplement (MonoidHom.range (φ i)) (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
   choose t ht using fun i => (φ i).range.exists_right_transversal 1
@@ -347,7 +347,7 @@ theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
 sure the underlying list does get longer.  -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : NormalWord d :=
+    (hgr : g ∉ MonoidHom.range (φ i)) : NormalWord d :=
   letI n := (d.compl i).equiv (g * (φ i w.head))
   letI w' := Word.cons (n.2 : G i) w.toWord hmw
     (mt (coe_equiv_snd_eq_one_iff_mem _ (d.one_mem _)).1
@@ -480,7 +480,7 @@ the underlying list. -/
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
     (h_empty : motive empty)
     (h_cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-      (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
+      (_hgn : g ∈ d.set i) (hgr : g ∉ MonoidHom.range (φ i)) (_hw1 : w.head = 1),
       motive w →  motive (cons g w hmw hgr))
     (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
@@ -513,7 +513,7 @@ def prod (w : NormalWord d) : PushoutI φ :=
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ MonoidHom.range (φ i)) : cons g w hmw hgr = of (φ := φ) i g  • w := by
   apply ext_smul i
   simp only [cons, ne_eq, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
@@ -548,7 +548,7 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
 
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
+    (hgr : g ∉ MonoidHom.range (φ i)) : (cons g w hmw hgr).prod = of i g * w.prod := by
   simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
     mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
     ofCoprodI_of, inv_mul_cancel_left]
@@ -621,7 +621,7 @@ variable (φ)
 
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=
-  ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
+  ∀ g, g ∈ w.toList → g.2 ∉ MonoidHom.range (φ g.1)
 
 variable {φ}
 
@@ -644,7 +644,7 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 `w` itself is not in the image of the base group. -/
 theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
     {w : Word G} (hw : Reduced φ w)
-    (h : ofCoprodI w.prod ∈ (base φ).range) : w = .empty := by
+    (h : ofCoprodI w.prod ∈ MonoidHom.range (base φ)) : w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
   rcases h with ⟨h, heq⟩
@@ -659,10 +659,11 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
 
 end Reduced
 
+open MonoidHom in
 /-- The intersection of the images of the maps from any two distinct groups in the diagram
 into the amalgamated product is the image of the map from the base group in the diagram. -/
 theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
-    (of i).range ⊓ (of j).range = (base φ).range :=
+    (range (of i) : Subgroup (PushoutI φ)) ⊓ (range (of j)) = range (base φ) :=
   le_antisymm
     (by
       intro x ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
@@ -672,11 +673,11 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
         ne_of_apply_ne (of (φ := φ) i) (by simp_all)
       have hg₂1 : g₂ ≠ 1 :=
         ne_of_apply_ne (of (φ := φ) j) (by simp_all)
-      have hg₁r : g₁ ∉ (φ i).range := by
+      have hg₁r : g₁ ∉ range (φ i) := by
         rintro ⟨y, rfl⟩
         subst hg₁
         exact hx (of_apply_eq_base φ i y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
-      have hg₂r : g₂ ∉ (φ j).range := by
+      have hg₂r : g₂ ∉ range (φ j) := by
         rintro ⟨y, rfl⟩
         subst hg₂
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)

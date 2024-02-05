@@ -63,7 +63,7 @@ class group, selmer group, unit group
 -/
 
 set_option quotPrecheck false
-local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
+local notation K "/" n => Kˣ ⧸ MonoidHom.range (powMonoidHom n : Kˣ →* Kˣ)
 
 namespace IsDedekindDomain
 
@@ -136,7 +136,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
-    QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
+    QuotientGroup.map (MonoidHom.range (powMonoidHom n : Kˣ →* Kˣ))
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
       v.valuationOfNeZero
       (by
@@ -184,13 +184,14 @@ def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   map_mul' x y := by simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; rfl
 #align is_dedekind_domain.selmer_group.valuation IsDedekindDomain.selmerGroup.valuation
 
+open MonoidHom in
 theorem valuation_ker_eq :
-    valuation.ker = K⟮(∅ : Set <| HeightOneSpectrum R),n⟯.subgroupOf (K⟮S,n⟯) := by
+    ker valuation = K⟮(∅ : Set <| HeightOneSpectrum R),n⟯.subgroupOf (K⟮S,n⟯) := by
   ext ⟨_, hx⟩
   constructor
   · intro hx' v _
     by_cases hv : v ∈ S
-    · exact congr_fun hx' ⟨v, hv⟩
+    · exact _root_.congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
   · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
 #align is_dedekind_domain.selmer_group.valuation_ker_eq IsDedekindDomain.selmerGroup.valuation_ker_eq
@@ -205,14 +206,15 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
     powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit
 
+open MonoidHom in
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
-    (@fromUnit R _ _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
+    ker (fromUnit (K := K) (n := n)) = range (powMonoidHom n : Rˣ →* Rˣ) := by
   ext ⟨_, _, _, _⟩
   constructor
   · intro hx
     rcases (QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
-    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact congr_arg Units.val hx
-    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
+    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact _root_.congr_arg Units.val hx
+    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact _root_.congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out

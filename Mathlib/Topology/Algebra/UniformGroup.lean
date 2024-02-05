@@ -420,7 +420,7 @@ its kernel is open. -/
 continuous if and only if its kernel is open."]
 theorem UniformGroup.uniformContinuous_iff_open_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [UniformGroup β] [MonoidHomClass hom α β] {f : hom} :
-    UniformContinuous f ↔ IsOpen ((f : α →* β).ker : Set α) := by
+    UniformContinuous f ↔ IsOpen (MonoidHom.ker (f : α →* β) : Set α) := by
   refine' ⟨fun hf => _, fun hf => _⟩
   · apply (isOpen_discrete ({1} : Set β)).preimage hf.continuous
   · apply uniformContinuous_of_continuousAt_one
@@ -618,7 +618,7 @@ lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [Di
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
+    (hf : Function.Injective f) (hf' : DiscreteTopology (range f)) :
     Tendsto f cofinite (cocompact _) := by
   replace hf : Function.Injective f.rangeRestrict := by simpa
   exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite

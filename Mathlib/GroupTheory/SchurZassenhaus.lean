@@ -223,7 +223,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
   conv at key =>
     rhs
     rhs
-    rw [← N.subtype_range, N.subtype.range_eq_map]
+    rw [← N.subtype_range, MonoidHom.range_eq_map N.subtype]
   have inj := map_injective N.subtype_injective
   rwa [inj.eq_iff, inj.eq_iff] at key
 

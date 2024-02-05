@@ -103,9 +103,11 @@ lemma ab_exact_iff :
     obtain ⟨x₁, rfl⟩ := h x₂ hx₂
     exact ⟨x₁, rfl⟩
 
-lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.ker ≤ S.f.range := S.ab_exact_iff
+open AddMonoidHom in
+lemma ab_exact_iff_ker_le_range : S.Exact ↔ ker S.g ≤ range S.f := S.ab_exact_iff
 
-lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
+open AddMonoidHom in
+lemma ab_exact_iff_range_eq_ker : S.Exact ↔ range S.f = ker S.g := by
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h

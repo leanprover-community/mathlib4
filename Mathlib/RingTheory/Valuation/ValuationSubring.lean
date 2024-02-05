@@ -456,6 +456,8 @@ end Valuation
 
 namespace ValuationSubring
 
+open MonoidHom
+
 variable {K}
 variable (A : ValuationSubring K)
 
@@ -468,7 +470,7 @@ section UnitGroup
 
 /-- The unit group of a valuation subring, as a subgroup of `Kˣ`. -/
 def unitGroup : Subgroup Kˣ :=
-  (A.valuation.toMonoidWithZeroHom.toMonoidHom.comp (Units.coeHom K)).ker
+  ker (A.valuation.toMonoidWithZeroHom.toMonoidHom.comp (Units.coeHom K))
 #align valuation_subring.unit_group ValuationSubring.unitGroup
 
 @[simp]
@@ -688,7 +690,7 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
 
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
-      A.unitGroupMulEquiv x ∈ (Units.map (LocalRing.residue A).toMonoidHom).ker := by
+      A.unitGroupMulEquiv x ∈ ker (Units.map (LocalRing.residue A).toMonoidHom) := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
   let π := Ideal.Quotient.mk (LocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
@@ -698,7 +700,7 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
 /-- The principal unit group agrees with the kernel of the canonical map from
 the units of `A` to the units of the residue field of `A`. -/
 def principalUnitGroupEquiv :
-    A.principalUnitGroup ≃* (Units.map (LocalRing.residue A).toMonoidHom).ker where
+    A.principalUnitGroup ≃* ker (Units.map (LocalRing.residue A).toMonoidHom) where
   toFun x :=
     ⟨A.unitGroupMulEquiv ⟨_, A.principal_units_le_units x.2⟩,
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
@@ -719,7 +721,7 @@ theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
 
 -- This was always a bad simp lemma, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem principalUnitGroup_symm_apply (a : (Units.map (LocalRing.residue A).toMonoidHom).ker) :
+theorem principalUnitGroup_symm_apply (a : ker (Units.map (LocalRing.residue A).toMonoidHom)) :
     ((A.principalUnitGroupEquiv.symm a : Kˣ) : K) = ((a : Aˣ) : A) :=
   rfl
 #align valuation_subring.principal_unit_group_symm_apply ValuationSubring.principalUnitGroup_symm_apply
@@ -737,7 +739,7 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
 #align valuation_subring.coe_unit_group_to_residue_field_units_apply ValuationSubring.coe_unitGroupToResidueFieldUnits_apply
 
 theorem ker_unitGroupToResidueFieldUnits :
-    A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
+    ker A.unitGroupToResidueFieldUnits = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
   -- Porting note: simp fails but rw works
   -- See https://github.com/leanprover-community/mathlib4/issues/5026

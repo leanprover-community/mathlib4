@@ -286,8 +286,9 @@ theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G �
   exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
 #align is_p_group.map IsPGroup.map
 
+open MonoidHom in
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
-    (ϕ : K →* G) (hϕ : IsPGroup p ϕ.ker) : IsPGroup p (H.comap ϕ) := by
+    (ϕ : K →* G) (hϕ : IsPGroup p (ker ϕ)) : IsPGroup p (H.comap ϕ) := by
   intro g
   obtain ⟨j, hj⟩ := hH ⟨ϕ g.1, g.2⟩
   rw [Subtype.ext_iff, H.coe_pow, Subtype.coe_mk, ← ϕ.map_pow] at hj
@@ -296,9 +297,11 @@ theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [
   exact ⟨j + k, by rwa [Subtype.ext_iff, (H.comap ϕ).coe_pow]⟩
 #align is_p_group.comap_of_ker_is_p_group IsPGroup.comap_of_ker_isPGroup
 
+open MonoidHom in
 theorem ker_isPGroup_of_injective {K : Type*} [Group K] {ϕ : K →* G} (hϕ : Function.Injective ϕ) :
-    IsPGroup p ϕ.ker :=
-  (congr_arg (fun Q : Subgroup K => IsPGroup p Q) (ϕ.ker_eq_bot_iff.mpr hϕ)).mpr IsPGroup.of_bot
+    IsPGroup p (ker ϕ) :=
+  (_root_.congr_arg (fun Q : Subgroup K => IsPGroup p Q) (ϕ.ker_eq_bot_iff.mpr hϕ)).mpr
+    IsPGroup.of_bot
 #align is_p_group.ker_is_p_group_of_injective IsPGroup.ker_isPGroup_of_injective
 
 theorem comap_of_injective {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : K →* G)

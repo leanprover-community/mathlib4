@@ -202,9 +202,10 @@ theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G)
   Function.surjective_iff_hasRightInverse.2 ⟨inr, rightHom_inr⟩
 #align semidirect_product.right_hom_surjective SemidirectProduct.rightHom_surjective
 
-theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
-  le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
-    fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
+open MonoidHom in
+theorem range_inl_eq_ker_rightHom : range (inl : N →* N ⋊[φ] G) = ker rightHom :=
+  le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [mem_ker, eq_comm])
+    fun x hx ↦ ⟨x.left, by ext <;> simp_all [mem_ker]⟩
 #align semidirect_product.range_inl_eq_ker_right_hom SemidirectProduct.range_inl_eq_ker_rightHom
 
 section lift

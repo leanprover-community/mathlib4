@@ -64,7 +64,7 @@ namespace AddSubgroup
 theorem ker_saturated {A₁ A₂ : Type*} [AddCommGroup A₁] [AddCommGroup A₂] [NoZeroSMulDivisors ℕ A₂]
     (f : A₁ →+ A₂) : f.ker.Saturated := by
   intro n g hg
-  simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg
+  simpa only [AddMonoidHom.mem_ker f, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg
 #align add_subgroup.ker_saturated AddSubgroup.ker_saturated
 
 end AddSubgroup

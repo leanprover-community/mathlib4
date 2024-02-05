@@ -489,7 +489,7 @@ end Cyclic
 
 section QuotientCenter
 
-open Subgroup
+open Subgroup MonoidHom
 
 variable {G : Type*} {H : Type*} [Group G] [Group H]
 
@@ -498,18 +498,18 @@ variable {G : Type*} {H : Type*} [Group G] [Group H]
 @[to_additive commutative_of_add_cyclic_center_quotient
       "A group is commutative if the quotient by the center is cyclic.
       Also see `addCommGroup_of_cycle_center_quotient` for the `AddCommGroup` instance."]
-theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G)
+theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : ker f ≤ center G)
     (a b : G) : a * b = b * a :=
-  let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
-    IsCyclic.exists_generator (α := f.range)
+  let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : range f, a ∈ zpowers _)⟩ :=
+    IsCyclic.exists_generator (α := range f)
   let ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
   let ⟨n, hn⟩ := hx ⟨f b, b, rfl⟩
   have hm : x ^ m = f a := by simpa [Subtype.ext_iff] using hm
   have hn : x ^ n = f b := by simpa [Subtype.ext_iff] using hn
   have ha : y ^ (-m) * a ∈ center G :=
-    hf (by rw [f.mem_ker, f.map_mul, f.map_zpow, hxy, zpow_neg x m, hm, inv_mul_self])
+    hf (by rw [mem_ker f, f.map_mul, f.map_zpow, hxy, zpow_neg x m, hm, inv_mul_self])
   have hb : y ^ (-n) * b ∈ center G :=
-    hf (by rw [f.mem_ker, f.map_mul, f.map_zpow, hxy, zpow_neg x n, hn, inv_mul_self])
+    hf (by rw [mem_ker f, f.map_mul, f.map_zpow, hxy, zpow_neg x n, hn, inv_mul_self])
   calc
     a * b = y ^ m * (y ^ (-m) * a * y ^ n) * (y ^ (-n) * b) := by simp [mul_assoc]
     _ = y ^ m * (y ^ n * (y ^ (-m) * a)) * (y ^ (-n) * b) := by rw [mem_center_iff.1 ha]
@@ -522,7 +522,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive commutativeOfAddCycleCenterQuotient
       "A group is commutative if the quotient by the center is cyclic."]
-def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
+def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : ker f ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
 #align comm_group_of_cycle_center_quotient commGroupOfCycleCenterQuotient

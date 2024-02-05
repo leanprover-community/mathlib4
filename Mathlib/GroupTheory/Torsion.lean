@@ -102,9 +102,10 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 #align is_torsion.of_surjective IsTorsion.of_surjective
 #align add_is_torsion.of_surjective AddIsTorsion.of_surjective
 
+open MonoidHom in
 /-- Torsion groups are closed under extensions. -/
 @[to_additive AddIsTorsion.extension_closed "Additive torsion groups are closed under extensions."]
-theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
+theorem IsTorsion.extension_closed {f : G →* H} (hN : N = ker f) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
   have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
@@ -115,10 +116,11 @@ theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsi
 #align is_torsion.extension_closed IsTorsion.extension_closed
 #align add_is_torsion.extension_closed AddIsTorsion.extension_closed
 
+open MonoidHom in
 /-- The image of a quotient is torsion iff the group is torsion. -/
 @[to_additive AddIsTorsion.quotient_iff
       "The image of a quotient is additively torsion iff the group is torsion."]
-theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = f.ker)
+theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N = ker f)
     (tN : IsTorsion N) : IsTorsion H ↔ IsTorsion G :=
   ⟨fun tH => IsTorsion.extension_closed hN tH tN, fun tG => IsTorsion.of_surjective hf tG⟩
 #align is_torsion.quotient_iff IsTorsion.quotient_iff

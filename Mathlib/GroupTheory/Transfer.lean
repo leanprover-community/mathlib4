@@ -244,7 +244,7 @@ theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : S
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
 complement. -/
-theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
+theorem ker_transferSylow_isComplement' : IsComplement' (ker (transferSylow P hP)) P := by
   have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
     (transferSylow_restrict_eq_pow P hP).symm ▸
       (P.2.powEquiv'
@@ -259,13 +259,13 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 #align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
-theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=
+theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (ker (transferSylow P hP)) :=
   (ker_transferSylow_isComplement' P hP).index_eq_card ▸ not_dvd_index_sylow P <|
     mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite
 #align monoid_hom.not_dvd_card_ker_transfer_sylow MonoidHom.not_dvd_card_ker_transferSylow
 
 theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
-    Disjoint (transferSylow P hP).ker Q :=
+    Disjoint (ker (transferSylow P hP)) Q :=
   disjoint_iff.mpr <|
     card_eq_one.mp <|
       (hQ.to_le inf_le_right).card_eq_or_dvd.resolve_right fun h =>

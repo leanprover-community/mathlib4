@@ -286,7 +286,8 @@ variable {N : Type*} [Group N]
 open Subgroup
 
 @[to_additive]
-instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : DecidablePred (· ∈ f.range) :=
+instance decidableMemRange {F : Type*} [MonoidHomClass F G N] (f : F) [Fintype G] [DecidableEq N] :
+    DecidablePred (· ∈ range f) :=
   fun _ => Fintype.decidableExistsFintype
 #align monoid_hom.decidable_mem_range MonoidHom.decidableMemRange
 #align add_monoid_hom.decidable_mem_range AddMonoidHom.decidableMemRange
@@ -301,8 +302,8 @@ presence of `Fintype N`. -/
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the presence
 of `Fintype N`."]
-instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
-    (f : M →* N) : Fintype (mrange f) :=
+instance fintypeMrange {M N F : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
+    [MonoidHomClass F M N] (f : F) : Fintype (mrange f) :=
   Set.fintypeRange f
 #align monoid_hom.fintype_mrange MonoidHom.fintypeMrange
 #align add_monoid_hom.fintype_mrange AddMonoidHom.fintypeMrange
@@ -315,7 +316,8 @@ presence of `Fintype N`. -/
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
  presence of `Fintype N`."]
-instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
+instance fintypeRange {F : Type*} [Fintype G] [DecidableEq N] [MonoidHomClass F G N] (f : F) :
+    Fintype (range f) :=
   Set.fintypeRange f
 #align monoid_hom.fintype_range MonoidHom.fintypeRange
 #align add_monoid_hom.fintype_range AddMonoidHom.fintypeRange

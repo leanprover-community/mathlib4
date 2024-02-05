@@ -100,6 +100,8 @@ end CommutatorMap
 
 section Solvable
 
+open MonoidHom
+
 variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
@@ -133,14 +135,14 @@ instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolva
 variable {G}
 
 theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
-    (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
+    (g : G →* G'') (hfg : ker g ≤ range f) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
   refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
-  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+  · exact (range_eq_map f) ▸ ((derivedSeries G n).map_eq_bot_iff.mp
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
   · exact commutator_le_map_commutator hm hm
 #align solvable_of_ker_le_range solvable_of_ker_le_range
@@ -155,7 +157,7 @@ instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolva
 #align subgroup_solvable_of_solvable subgroup_solvable_of_solvable
 
 theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
-  solvable_of_ker_le_range f (1 : G' →* G) ((f.range_top_of_surjective hf).symm ▸ le_top)
+  solvable_of_ker_le_range f (1 : G' →* G) ((range_top_of_surjective f hf).symm ▸ le_top)
 #align solvable_of_surjective solvable_of_surjective
 
 instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :

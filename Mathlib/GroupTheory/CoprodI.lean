@@ -249,7 +249,7 @@ instance : Group (CoprodI G) :=
           ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
-    (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
+    (h : ∀ i, MonoidHom.range (f i) ≤ s) : MonoidHom.range (lift f) ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction' x using CoprodI.induction_on with i x x y hx hy
   · exact s.one_mem
@@ -259,7 +259,8 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 #align free_product.lift_range_le Monoid.CoprodI.lift_range_le
 
-theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
+theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) :
+    MonoidHom.range (lift f) = ⨆ i, MonoidHom.range (f i) := by
   apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
   apply iSup_le _
   rintro i _ ⟨x, rfl⟩

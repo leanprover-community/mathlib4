@@ -365,7 +365,8 @@ namespace Subgroup
 
 variable {G : Type*} [Group G] (H : Subgroup G)
 
-theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
+open MonoidHom in
+theorem normalCore_eq_ker : H.normalCore = ker (MulAction.toPermHom G (G ⧸ H)) := by
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
