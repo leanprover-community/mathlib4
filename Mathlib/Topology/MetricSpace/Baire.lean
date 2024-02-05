@@ -207,7 +207,7 @@ theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ 
 #align dense_bInter_of_open dense_biInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
-an index set which is an encodable type. -/
+an index set which is a countable type. -/
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
   dense_sInter_of_isOpen (forall_range_iff.2 ho) (countable_range _) (forall_range_iff.2 hd)
@@ -245,7 +245,7 @@ set_option linter.uppercaseLean3 false in
 #align dense_sInter_of_Gδ dense_sInter_of_Gδ
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with
-an index set which is an encodable type. -/
+an index set which is a countable type. -/
 theorem dense_iInter_of_Gδ [Countable ι] {f : ι → Set X} (ho : ∀ s, IsGδ (f s))
     (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) :=
   dense_sInter_of_Gδ (forall_range_iff.2 ‹_›) (countable_range _) (forall_range_iff.2 ‹_›)
@@ -324,7 +324,7 @@ theorem dense_sUnion_interior_of_closed {S : Set (Set X)} (hc : ∀ s ∈ S, IsC
 #align dense_sUnion_interior_of_closed dense_sUnion_interior_of_closed
 
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
-are dense. Formulated here with an index set which is an encodable type. -/
+are dense. Formulated here with an index set which is a countable type. -/
 theorem dense_iUnion_interior_of_closed [Countable ι] {f : ι → Set X} (hc : ∀ i, IsClosed (f i))
     (hU : ⋃ i, f i = univ) : Dense (⋃ i, interior (f i)) :=
   isGδ_univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
