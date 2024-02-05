@@ -459,6 +459,10 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
 
+protected theorem IntegrableAtFilter.norm (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (fun x => ‖f x‖) l μ :=
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.norm⟩
+
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
   let ⟨s, hs, hsf⟩ := hl'
