@@ -920,11 +920,11 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
     replace hi : i < n := lt_of_lt_of_le (by norm_cast; simp) hi
     have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
       (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
-    have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ c y) s) s :=
+    have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=
       hc.differentiableOn_iteratedFDerivWithin hi hs
     simp only [iteratedFDerivWithin_succ_apply_left]
     rw [← fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv_apply x hx)]
-    rw [fderivWithin_congr' (fun x hx ↦ ih (le_of_lt hi) hx) hx]
+    rw [fderivWithin_congr' (fun x hx ↦ ih hi.le hx) hx]
     rw [fderivWithin_clm_apply (hs x hx) (h_deriv.continuousMultilinear_apply_const _ x hx)
       (differentiableWithinAt_const u)]
     rw [fderivWithin_const_apply _ (hs x hx)]
@@ -937,7 +937,7 @@ theorem iteratedFDeriv_clm_apply_const_apply
     {i : ℕ} (hi : i ≤ n) {x : E} {u : F} {m : Fin i → E} :
     (iteratedFDeriv 𝕜 i (fun y ↦ (c y) u) x) m = (iteratedFDeriv 𝕜 i c x) m u := by
   simp only [← iteratedFDerivWithin_univ]
-  exact iteratedFDerivWithin_clm_apply_const_apply uniqueDiffOn_univ hc.contDiffOn hi trivial
+  exact iteratedFDerivWithin_clm_apply_const_apply uniqueDiffOn_univ hc.contDiffOn hi (mem_univ _)
 
 end ClmApplyConst
 
