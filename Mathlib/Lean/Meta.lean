@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
 import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
