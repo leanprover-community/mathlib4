@@ -20,7 +20,7 @@ open Set Filter Bornology Function
 
 open Filter
 
-variable {α β ι : Type*} {π : ι → Type*} [Fintype ι] [Bornology α] [Bornology β]
+variable {α β ι : Type*} {π : ι → Type*} [Finite ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
 instance Prod.instBornology : Bornology (α × β) where

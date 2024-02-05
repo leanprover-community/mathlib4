@@ -270,7 +270,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
-theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
+theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
   haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
@@ -433,7 +433,7 @@ namespace Basis
 
 set_option linter.uppercaseLean3 false
 
-variable {ι : Type*} [Fintype ι] [T2Space E]
+variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
@@ -465,7 +465,7 @@ lemma equivFunL_symm_apply_repr (v : Basis ι 𝕜 E) (x : E) :
   v.equivFunL.symm_apply_apply x
 
 @[simp]
-theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
+theorem constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
     v.constrL f e = ∑ i, v.equivFun e i • f i :=
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
