@@ -401,32 +401,28 @@ theorem integrableOn_Ici_iff_integrableAtFilter_atTop {f : ℝ → E} {μ : Meas
   rewrite [IntegrableOn, integrable_iff_integrableAtFilter_atTop_atBot,
     locallyIntegrableOn_iff_locallyIntegrable_restrict isClosed_Ici]
   refine and_congr_left' <| ⟨fun ⟨_, s, hs_top, hs⟩ ↦ ?_, fun ⟨s, hs_top, hs⟩ ↦ ?_⟩
-  all_goals obtain ⟨a', ha'⟩ := mem_atTop_sets.mp hs_top
-  · replace hs := hs.mono ha' le_rfl
-    rewrite [IntegrableOn, Measure.restrict_restrict, ← IntegrableOn] at hs
+  all_goals obtain ⟨a', ha'⟩ := mem_atTop_sets.mp hs_top; replace hs := hs.mono ha' le_rfl
+  · rewrite [IntegrableOn, Measure.restrict_restrict, ← IntegrableOn] at hs
     · exact ⟨(Ici a') ∩ (Ici a), inter_mem (Ici_mem_atTop a') (Ici_mem_atTop a), hs⟩
     · exact measurableSet_Ici
-  · refine ⟨⟨Iio a, Iio_mem_atBot a, ?_⟩, ⟨Ici a', Ici_mem_atTop a', ?_⟩⟩
-    · rewrite [IntegrableOn, Measure.restrict_restrict measurableSet_Iio, ← IntegrableOn,
-        Iio_inter_Ici, Ico_self]
-      exact integrableOn_empty
-    · exact (hs.mono ha' le_rfl).restrict measurableSet_Ici
+  · refine ⟨⟨Iio a, Iio_mem_atBot a, ?_⟩, ⟨Ici a', Ici_mem_atTop a', hs.restrict measurableSet_Ici⟩⟩
+    rewrite [IntegrableOn, Measure.restrict_restrict measurableSet_Iio, ← IntegrableOn,
+      Iio_inter_Ici, Ico_self]
+    exact integrableOn_empty
 
 theorem integrableOn_Iic_iff_integrableAtFilter_atBot {f : ℝ → E} {μ : Measure ℝ} {a : ℝ} :
     IntegrableOn f (Iic a) μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrableOn f (Iic a) μ := by
   rewrite [IntegrableOn, integrable_iff_integrableAtFilter_atTop_atBot,
     locallyIntegrableOn_iff_locallyIntegrable_restrict isClosed_Iic]
   refine and_congr_left' <| ⟨fun ⟨⟨s, hs_bot, hs⟩, _⟩ ↦ ?_, fun ⟨s, hs_bot, hs⟩ ↦ ?_⟩
-  all_goals obtain ⟨a', ha'⟩ := mem_atBot_sets.mp hs_bot
-  · replace hs := hs.mono ha' le_rfl
-    rewrite [IntegrableOn, Measure.restrict_restrict, ← IntegrableOn] at hs
+  all_goals obtain ⟨a', ha'⟩ := mem_atBot_sets.mp hs_bot; replace hs := hs.mono ha' le_rfl
+  · rewrite [IntegrableOn, Measure.restrict_restrict, ← IntegrableOn] at hs
     · exact ⟨(Iic a') ∩ (Iic a), inter_mem (Iic_mem_atBot a') (Iic_mem_atBot a), hs⟩
     · exact measurableSet_Iic
-  · refine ⟨⟨Iic a', Iic_mem_atBot a', ?_⟩, ⟨Ioi a, Ioi_mem_atTop a, ?_⟩⟩
-    · exact hs.mono ha' le_rfl |>.restrict measurableSet_Iic
-    · rewrite [IntegrableOn, Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn,
-        Ioi_inter_Iic, Ioc_self]
-      exact integrableOn_empty
+  · refine ⟨⟨Iic a', Iic_mem_atBot a', hs.restrict measurableSet_Iic⟩, ⟨Ioi a, Ioi_mem_atTop a, ?_⟩⟩
+    rewrite [IntegrableOn, Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn,
+      Ioi_inter_Iic, Ioc_self]
+    exact integrableOn_empty
 
 end MeasureTheory
 
