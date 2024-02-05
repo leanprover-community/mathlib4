@@ -391,28 +391,48 @@ theorem integrable_iff_integrableAtFilter_cocompact :
   rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
   exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
-theorem integrable_iff_integrableAtFilter_atTop_atBot {f : ℝ → E} {μ : Measure ℝ} :
-    Integrable f μ ↔
-    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
-  rw [integrable_iff_integrableAtFilter_cocompact, Real.cocompact_eq, IntegrableAtFilter.sup_iff]
+variable {a : X}
 
-theorem integrableOn_Ici_iff_integrableAtFilter_atTop {f : ℝ → E} {μ : Measure ℝ} {a : ℝ} :
+theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
     IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ := by
   refine ⟨fun h ↦ ⟨⟨Ici a, Ici_mem_atTop a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
+  haveI : Nonempty X := Nonempty.intro a
   obtain ⟨a', ha'⟩ := mem_atTop_sets.mp hsl
   have h_int_Icc : IntegrableOn f (Icc a a') μ :=
     h.integrableOn_compact_subset Icc_subset_Ici_self isCompact_Icc
   have h_int_Ici : IntegrableOn f (Ici a') μ := hs.mono ha' le_rfl
-  exact (integrableOn_union.mpr ⟨h_int_Icc, h_int_Ici⟩).mono Ici_subset_Icc_union_Ici le_rfl
+  refine (integrableOn_union.mpr ⟨h_int_Icc, h_int_Ici⟩).mono Ici_subset_Icc_union_Ici le_rfl
 
-theorem integrableOn_Iic_iff_integrableAtFilter_atBot {f : ℝ → E} {μ : Measure ℝ} {a : ℝ} :
+theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIccSpace X] :
     IntegrableOn f (Iic a) μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrableOn f (Iic a) μ := by
   refine ⟨fun h ↦ ⟨⟨Iic a, Iic_mem_atBot a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
+  haveI : Nonempty X := Nonempty.intro a
   obtain ⟨a', ha'⟩ := mem_atBot_sets.mp hsl
   have h_int_Icc : IntegrableOn f (Icc a' a) μ :=
     h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
   have h_int_Iic : IntegrableOn f (Iic a') μ := hs.mono ha' le_rfl
   exact (integrableOn_union.mpr ⟨h_int_Iic, h_int_Icc⟩).mono Iic_subset_Iic_union_Icc le_rfl
+
+theorem integrable_iff_integrableAtFilter_atTop_atBot [LinearOrder X] [CompactIccSpace X] :
+    Integrable f μ ↔
+    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
+  use fun h ↦ ⟨⟨h.integrableAtFilter atBot, h.integrableAtFilter atTop⟩, h.locallyIntegrable⟩
+  intro h
+  cases isEmpty_or_nonempty X with
+  | inl hX => exact integrableOn_univ.mp (by convert integrableOn_empty)
+  | inr hX =>
+    have a : X := Classical.arbitrary X
+    apply integrableOn_univ.mp
+    convert integrableOn_union.mpr
+      ⟨integrableOn_Iic_iff_integrableAtFilter_atBot.mpr ⟨h.1.1, h.2.locallyIntegrableOn (Iic a)⟩,
+      integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨h.1.2, h.2.locallyIntegrableOn (Ici a)⟩⟩
+    exact Iic_union_Ici.symm
+
+/-- Special case for e.g. `NNReal` -/
+theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X]
+    {f : Subtype (fun (x : X) => x ≥ a) → E} {μ : Measure (Subtype (fun (x : X) => x ≥ a))} :
+    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
+  sorry
 
 end MeasureTheory
 
