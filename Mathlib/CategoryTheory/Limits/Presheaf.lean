@@ -5,9 +5,14 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Types
 
@@ -480,6 +485,49 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
+
+variable {I : Type v₁} [SmallCategory I] (α : I ⥤ C)
+
+open Functor
+
+theorem final_toCostructuredArrow_comp_pre {c : Cocone (α ⋙ yoneda)} (hc : IsColimit c) :
+    Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre α yoneda c.pt) := by
+  refine' cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => _)
+  refine' Types.isTerminalEquivIsoPUnit _ _
+  suffices IsTerminal (colimit (c.toCostructuredArrow ⋙ CostructuredArrow.pre α _ _ ⋙ yoneda)) by
+    let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ this
+    apply IsTerminal.ofIso b
+    let e := preservesColimitIso
+      ((evaluation (CostructuredArrow yoneda c.pt)ᵒᵖ (Type v₁)).obj (Opposite.op d))
+      (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt ⋙ yoneda)
+    exact e
+  refine' IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
+    (colimit (c.toCostructuredArrow ⋙ CostructuredArrow.pre α _ _  ⋙ yoneda)) _
+  apply IsTerminal.ofIso (Over.mkIdTerminal)
+  let i := preservesColimitIso ((overEquivPresheafCostructuredArrow c.pt).inverse) (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt ⋙ yoneda)
+  refine' _ ≪≫ i.symm
+  let j := CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt
+
+  -- TODO: Extract this out
+  let k : CostructuredArrow.toOver yoneda c.pt ≅ yoneda ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse := by
+    calc
+      CostructuredArrow.toOver yoneda c.pt ≅ CostructuredArrow.toOver yoneda c.pt ⋙ (overEquivPresheafCostructuredArrow c.pt).functor ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse
+        := isoWhiskerLeft (CostructuredArrow.toOver _ _) ((overEquivPresheafCostructuredArrow c.pt).unitIso)
+      _ ≅ yoneda ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse := isoWhiskerRight j (overEquivPresheafCostructuredArrow c.pt).inverse
+
+  let k' := isoWhiskerLeft (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt) k
+  let k'' := HasColimit.isoOfNatIso k'
+  refine' _ ≪≫ k''
+  let u : colimit ((Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt) ⋙ CostructuredArrow.toOver yoneda c.pt ⋙ Over.forget _) ≅ c.pt :=
+    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) hc
+  let v := preservesColimitIso (Over.forget _) ((Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt) ⋙ CostructuredArrow.toOver yoneda c.pt)
+  let w := v ≪≫ u
+  refine' Over.isoMk w.symm _
+  apply hc.hom_ext
+  intro i
+  simp [preservesColimitIso, IsColimit.coconePointUniqueUpToIso]
+  erw [colimit.ι_desc_assoc]
+  simp
 
 end ArbitraryUniverses
 
