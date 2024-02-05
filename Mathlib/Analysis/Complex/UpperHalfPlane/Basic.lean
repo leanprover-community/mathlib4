@@ -32,8 +32,6 @@ open Matrix Matrix.SpecialLinearGroup
 
 open scoped Classical BigOperators MatrixGroups
 
-attribute [local instance] Fintype.card_fin_even
-
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
@@ -384,9 +382,6 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
     (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
-
--- Porting note FIXME: this instance isn't being found, but is needed here.
-instance : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
 
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
