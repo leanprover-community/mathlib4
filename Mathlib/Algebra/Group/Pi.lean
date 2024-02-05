@@ -51,51 +51,6 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
-@[to_additive]
-instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
-  { mul := (· * ·)
-    --pi_instance
-    mul_assoc := by intros; ext; exact mul_assoc _ _ _ }
-#align pi.semigroup Pi.semigroup
-#align pi.add_semigroup Pi.addSemigroup
-
-@[to_additive]
-instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
-  { semigroup with
-    --pi_instance
-    mul_comm := by intros; ext; exact mul_comm _ _
-  }
-#align pi.comm_semigroup Pi.commSemigroup
-#align pi.add_comm_semigroup Pi.addCommSemigroup
-
-@[to_additive]
-instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) :=
-  { one := (1 : ∀ i, f i)
-    mul := (· * ·)
-    --pi_instance
-    one_mul := by intros; ext; exact one_mul _
-    mul_one := by intros; ext; exact mul_one _
-  }
-#align pi.mul_one_class Pi.mulOneClass
-#align pi.add_zero_class Pi.addZeroClass
-
-@[to_additive]
-instance invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) :=
-  { one := (1 : ∀ i, f i)
-    inv := (· ⁻¹)
-    inv_one := by intros; ext; exact inv_one }
-
-@[to_additive]
-instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
-  { semigroup, mulOneClass with
-    npow := fun n x i => x i ^ n
-    --pi_instance
-    npow_zero := by intros; ext; exact Monoid.npow_zero _
-    npow_succ := by intros; ext; exact Monoid.npow_succ _ _
-  }
-#align pi.monoid Pi.monoid
-#align pi.add_monoid Pi.addMonoid
-
 instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
   { addMonoid with
     natCast := fun n _ => n
@@ -103,120 +58,12 @@ instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (�
     natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
   }
 
-@[to_additive]
-instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
-  { monoid, commSemigroup with }
-#align pi.comm_monoid Pi.commMonoid
-#align pi.add_comm_monoid Pi.addCommMonoid
-
-@[to_additive Pi.subNegMonoid]
-instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f i) :=
-  { monoid with
-    inv := Inv.inv
-    div := Div.div
-    zpow := fun z x i => x i ^ z
-    --pi_instance
-    div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
-    zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
-    zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
-    zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
-  }
-
-@[to_additive Pi.subNegZeroMonoid]
-instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
-  { divInvMonoid with
-    inv_one := by ext; exact inv_one }
-
-@[to_additive]
-instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
-  { inv := Inv.inv
-    --pi_instance
-    inv_inv := by intros; ext; exact inv_inv _
-  }
-
-@[to_additive Pi.subtractionMonoid]
-instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) :=
-  { divInvMonoid, involutiveInv with
-    --pi_instance
-    mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
-    inv_eq_of_mul := by
-      intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
-  }
-
-@[to_additive Pi.subtractionCommMonoid]
-instance [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
-  { divisionMonoid, commSemigroup with }
-
-@[to_additive]
-instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
-  { divInvMonoid with
-    --pi_instance
-    mul_left_inv := by intros; ext; exact mul_left_inv _
-    }
-#align pi.group Pi.group
-#align pi.add_group Pi.addGroup
-
 instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
   { addGroup, addMonoidWithOne with
     intCast := fun z _ => z
     intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
     intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
   }
-
-@[to_additive]
-instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
-  { group, commMonoid with }
-#align pi.comm_group Pi.commGroup
-#align pi.add_comm_group Pi.addCommGroup
-
-@[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
-  mul_left_cancel  _ _ _ h := funext fun _ => mul_left_cancel (congr_fun h _)
-
-@[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
-  mul_right_cancel  _ _ _ h := funext fun _ => mul_right_cancel (congr_fun h _)
-
-@[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
-
-@[to_additive]
-instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
-    LeftCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
-#align pi.left_cancel_semigroup Pi.leftCancelSemigroup
-#align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
-
-@[to_additive]
-instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
-    RightCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
-#align pi.right_cancel_semigroup Pi.rightCancelSemigroup
-#align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
-
-@[to_additive]
-instance leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) :=
-  { leftCancelSemigroup, monoid with }
-#align pi.left_cancel_monoid Pi.leftCancelMonoid
-#align pi.add_left_cancel_monoid Pi.addLeftCancelMonoid
-
-@[to_additive]
-instance rightCancelMonoid [∀ i, RightCancelMonoid <| f i] : RightCancelMonoid (∀ i : I, f i) :=
-  { rightCancelSemigroup, monoid with }
-#align pi.right_cancel_monoid Pi.rightCancelMonoid
-#align pi.add_right_cancel_monoid Pi.addRightCancelMonoid
-
-@[to_additive]
-instance cancelMonoid [∀ i, CancelMonoid <| f i] : CancelMonoid (∀ i : I, f i) :=
-  { leftCancelMonoid, rightCancelMonoid with }
-#align pi.cancel_monoid Pi.cancelMonoid
-#align pi.add_cancel_monoid Pi.addCancelMonoid
-
-@[to_additive]
-instance cancelCommMonoid [∀ i, CancelCommMonoid <| f i] : CancelCommMonoid (∀ i : I, f i) :=
-  { leftCancelMonoid, commMonoid with }
-#align pi.cancel_comm_monoid Pi.cancelCommMonoid
-#align pi.add_cancel_comm_monoid Pi.addCancelCommMonoid
 
 instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
   { zero := (0 : ∀ i, f i)
