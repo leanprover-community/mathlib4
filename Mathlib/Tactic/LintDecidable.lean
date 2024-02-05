@@ -35,6 +35,7 @@ but don't use this assumption in the type.
       if let some e := info.value? then
         impossibleArgs ← lambdaTelescope e fun args e => do
           let e ← e.eraseProofs
-          return impossibleArgs.filter fun (k, _) => !e.containsFVar args[k]!.fvarId!
+          return impossibleArgs.filter fun (k, _) =>
+            k < args.size && !e.containsFVar args[k]!.fvarId!
     if impossibleArgs.isEmpty then return none
     return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
