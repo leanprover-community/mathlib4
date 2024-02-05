@@ -149,7 +149,7 @@ def inverse : w.JDownwards g ⥤ w.JRightwards g where
 end EquivalenceJ
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
-the obvious equivlance of categories `w.JRightwards g ≌ w.JDownwards g`. -/
+the obvious equivalence of categories `w.JRightwards g ≌ w.JDownwards g`. -/
 @[simps functor inverse unitIso counitIso]
 def equivalenceJ : w.JRightwards g ≌ w.JDownwards g where
   functor := EquivalenceJ.functor w g
