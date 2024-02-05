@@ -383,13 +383,6 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
 
--- Porting note: we need to add an extra `to_additive`.
--- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-/-
--- Seems to be fixed by unbundling FunLike from MonoidHomClass
-attribute [to_additive existing] MonoidHomClass.toMulHomClass
--/
-
 @[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
 
 variable [FunLike F M N]
