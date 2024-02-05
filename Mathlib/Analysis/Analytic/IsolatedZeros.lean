@@ -148,11 +148,13 @@ theorem frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
   simpa [sub_eq_zero] using frequently_zero_iff_eventually_zero (hf.sub hg)
 #align analytic_at.frequently_eq_iff_eventually_eq AnalyticAt.frequently_eq_iff_eventually_eq
 
-/-- There exists at most one `n` such that locally around `z₀` we have `f z = (z - z₀) ^ n • g z`,
-with `g` analytic and nonvanishing at `z₀`. -/
-lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
-    (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z)
-    (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) :
+/-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a punctured
+neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
+`z₀`. We formulate this with `n : ℤ`, and deduce the case `n : ℕ` later, for applications to
+meromorphic functions. -/
+lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
+    (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
+    (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
   wlog h_le : n ≤ m generalizing m n
   · exact ((this hn hm) (not_le.mp h_le).le).symm
@@ -160,14 +162,29 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne
   have : ∃ᶠ z in 𝓝[≠] z₀, j z = (z - z₀) ^ (m - n) • g z
-  · refine (eventually_nhdsWithin_iff.mpr ?_).frequently
+  · apply Filter.Eventually.frequently
+    rw [eventually_nhdsWithin_iff] at hg_eq hj_eq ⊢
     filter_upwards [hg_eq, hj_eq] with z hfz hfz' hz
-    rwa [← Nat.add_sub_cancel' h_le, pow_add, mul_smul, hfz', smul_right_inj] at hfz
-    exact pow_ne_zero _ <| sub_ne_zero.mpr hz
+    rw [← add_sub_cancel' n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
+      hfz' hz, smul_right_inj <| zpow_ne_zero _ <| sub_ne_zero.mpr hz] at hfz
+    exact hfz hz
   rw [frequently_eq_iff_eventually_eq hj_an] at this
-  rw [EventuallyEq.eq_of_nhds this, sub_self, zero_pow, zero_smul]
-  · apply Nat.sub_ne_zero_of_lt (h_le.lt_of_ne' hj_ne)
-  · exact (((analyticAt_id 𝕜 _).sub analyticAt_const).pow _).smul hg_an
+  rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow, zero_smul]
+  · exact sub_ne_zero.mpr hj_ne
+  · conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_ofNat]
+    exact (((analyticAt_id _ _).sub analyticAt_const).pow _).smul hg_an
+
+/-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a
+neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
+`z₀`. -/
+lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
+    (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z)
+    (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) :
+    m = n := by
+  simp_rw [← zpow_ofNat] at hm hn
+  exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_nonzero
+    (let ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+    (let ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
 
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
 `f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`
