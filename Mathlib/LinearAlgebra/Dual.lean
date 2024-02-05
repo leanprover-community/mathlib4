@@ -340,7 +340,7 @@ theorem toDual_eq_repr (m : M) (i : ι) : b.toDual m (b i) = b.repr m i :=
   b.toDual_apply_left m i
 #align basis.to_dual_eq_repr Basis.toDual_eq_repr
 
-theorem toDual_eq_equivFun [Fintype ι] (m : M) (i : ι) : b.toDual m (b i) = b.equivFun m i := by
+theorem toDual_eq_equivFun [Finite ι] (m : M) (i : ι) : b.toDual m (b i) = b.equivFun m i := by
   rw [b.equivFun_apply, toDual_eq_repr]
 #align basis.to_dual_eq_equiv_fun Basis.toDual_eq_equivFun
 
@@ -461,7 +461,7 @@ theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
 
 end Finite
 
-theorem dualBasis_equivFun [Fintype ι] (l : Dual R M) (i : ι) :
+theorem dualBasis_equivFun [Finite ι] (l : Dual R M) (i : ι) :
     b.dualBasis.equivFun l i = l (b i) := by rw [Basis.equivFun_apply, dualBasis_repr]
 #align basis.dual_basis_equiv_fun Basis.dualBasis_equivFun
 
@@ -743,8 +743,8 @@ elab "use_finite_instance" : tactic => evalUseFiniteInstance
 -- @[nolint has_nonempty_instance] Porting note: removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
-  Total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
-  Finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
+  protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
+  protected finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
       use_finite_instance
 #align module.dual_bases Module.DualBases
 
@@ -763,10 +763,8 @@ variable {e : ι → M} {ε : ι → Dual R M}
 /-- The coefficients of `v` on the basis `e` -/
 def coeffs [DecidableEq ι] (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
-  support := (h.Finite m).toFinset
-  mem_support_toFun := by
-    intro i
-    rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  support := (h.finite m).toFinset
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
 #align module.dual_bases.coeffs Module.DualBases.coeffs
 
 @[simp]
@@ -807,12 +805,11 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
-  refine' eq_of_sub_eq_zero (h.Total _)
-  intro i
+  refine eq_of_sub_eq_zero <| h.total fun i ↦ ?_
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 #align module.dual_bases.lc_coeffs Module.DualBases.lc_coeffs
 
-/-- `(h : dual_bases e ε).basis` shows the family of vectors `e` forms a basis. -/
+/-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
 @[simps]
 def basis : Basis ι R M :=
   Basis.ofRepr
@@ -850,7 +847,7 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   rwa [← lc_def, h.dual_lc] at hi
 #align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span
 
-theorem coe_dualBasis [Fintype ι] : ⇑h.basis.dualBasis = ε :=
+theorem coe_dualBasis [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
   funext fun i =>
     h.basis.ext fun j => by
       rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval, if_congr eq_comm rfl rfl]

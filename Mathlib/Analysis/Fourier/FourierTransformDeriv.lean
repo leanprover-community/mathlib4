@@ -73,7 +73,7 @@ lemma norm_fderiv_fourier_transform_integrand_right_le (v : V) (w : W) :
   rw [norm_fderiv_fourier_transform_integrand_right]
   refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
   conv_rhs => rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (L.le_op_norm _) two_pi_pos.le
+  exact mul_le_mul_of_nonneg_left (L.le_opNorm _) two_pi_pos.le
 
 variable {f}
 
