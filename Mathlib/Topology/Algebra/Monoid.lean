@@ -424,7 +424,7 @@ theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
 #align exists_nhds_zero_half exists_nhds_zero_half
 
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
-such that `VV ⊆ U`. -/
+such that `V * V ⊆ U`. -/
 @[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
   such that `V + V ⊆ U`."]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
