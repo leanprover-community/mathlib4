@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.RingTheory.Localization.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Basic
-import Mathlib.RingTheory.Localization.Basic
 
 #align_import set_theory.surreal.dyadic from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

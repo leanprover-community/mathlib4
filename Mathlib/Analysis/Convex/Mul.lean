@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Tactic.FieldSimp
 
