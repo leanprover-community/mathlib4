@@ -248,7 +248,7 @@ open Module
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
-  Total := @epsilon_total _
+  total := @epsilon_total _
 #align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
