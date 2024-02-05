@@ -490,31 +490,27 @@ variable {I : Type v₁} [SmallCategory I] (α : I ⥤ C)
 
 open Functor
 
+/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+    the presheaf `colimit (F ⋙ yoneda)`. -/
+theorem cofinal_of_isTerminal_colimit_comp_yoneda (h : IsTerminal (colimit (α ⋙ yoneda))) : Final α := by
+  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine Types.isTerminalEquivIsoPUnit _ ?_
+  let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
+  exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (α ⋙ yoneda)
+
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (α ⋙ yoneda)} (hc : IsColimit c) :
     Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre α yoneda c.pt) := by
-  refine' cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => _)
-  refine' Types.isTerminalEquivIsoPUnit _ _
-  suffices IsTerminal (colimit (c.toCostructuredArrow ⋙ CostructuredArrow.pre α _ _ ⋙ yoneda)) by
-    let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ this
-    apply IsTerminal.ofIso b
-    let e := preservesColimitIso
-      ((evaluation (CostructuredArrow yoneda c.pt)ᵒᵖ (Type v₁)).obj (Opposite.op d))
-      (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt ⋙ yoneda)
-    exact e
-  refine' IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
-    (colimit (c.toCostructuredArrow ⋙ CostructuredArrow.pre α _ _  ⋙ yoneda)) _
+  apply cofinal_of_isTerminal_colimit_comp_yoneda
+  apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
   apply IsTerminal.ofIso (Over.mkIdTerminal)
-  let i := preservesColimitIso ((overEquivPresheafCostructuredArrow c.pt).inverse) (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt ⋙ yoneda)
+
+
+
+  let i := preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt ⋙ yoneda)
   refine' _ ≪≫ i.symm
-  let j := CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt
 
-  -- TODO: Extract this out
-  let k : CostructuredArrow.toOver yoneda c.pt ≅ yoneda ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse := by
-    calc
-      CostructuredArrow.toOver yoneda c.pt ≅ CostructuredArrow.toOver yoneda c.pt ⋙ (overEquivPresheafCostructuredArrow c.pt).functor ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse
-        := isoWhiskerLeft (CostructuredArrow.toOver _ _) ((overEquivPresheafCostructuredArrow c.pt).unitIso)
-      _ ≅ yoneda ⋙ (overEquivPresheafCostructuredArrow c.pt).inverse := isoWhiskerRight j (overEquivPresheafCostructuredArrow c.pt).inverse
-
+  let k := (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
   let k' := isoWhiskerLeft (Cocone.toCostructuredArrow c ⋙ CostructuredArrow.pre α yoneda c.pt) k
   let k'' := HasColimit.isoOfNatIso k'
   refine' _ ≪≫ k''
