@@ -25,8 +25,6 @@ See also `RingTheory.Coprime.Lemmas` for further development of coprime elements
 -/
 
 
-open Classical
-
 universe u v
 
 section CommSemiring
@@ -129,7 +127,7 @@ theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprim
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
-/-- See also `UniqueFactorizationMonoid.mul_dvd`. -/
+/-- See also `UniqueFactorizationMonoid.mul_dvd_of_coprime`. -/
 theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
   obtain ⟨a, b, h⟩ := H
   rw [← mul_one z, ← h, mul_add]
@@ -186,6 +184,9 @@ theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) 
     IsUnit x :=
   (h.of_isCoprime_of_dvd_left ha).isUnit_of_dvd hb
 #align is_coprime.is_unit_of_dvd' IsCoprime.isUnit_of_dvd'
+
+theorem IsCoprime.isRelPrime {a b : R} (h : IsCoprime a b) : IsRelPrime a b :=
+  fun _ ↦ h.isUnit_of_dvd'
 
 theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=

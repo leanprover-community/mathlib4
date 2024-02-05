@@ -112,6 +112,18 @@ theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b �
 
 end map_dvd
 
+/-- An element `a` in a semigroup is primal if whenever `a` divides a product `b * c`, it can be
+factored into a product such that the factors divides `b` and `c` respectively. -/
+def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
+
+variable (α) in
+class DecompositionMonoid : Prop where
+  primal (a : α) : IsPrimal a
+
+theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H : a ∣ b * c) :
+    ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂ := DecompositionMonoid.primal a H
+#align exists_dvd_and_dvd_of_dvd_mul exists_dvd_and_dvd_of_dvd_mul
+
 end Semigroup
 
 section Monoid

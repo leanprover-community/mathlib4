@@ -312,42 +312,34 @@ theorem IsSquare.not_irreducible (ha : IsSquare a) : ¬Irreducible a := fun h =>
 
 end CommMonoid
 
+section CommMonoidWithZero
+
+variable [CommMonoidWithZero α] {a : α} (irr : Irreducible a)
+
+theorem Irreducible.prime_of_isPrimal (primal : IsPrimal a) : Prime a :=
+  ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
+    obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
+    obtain h | h := of_irreducible_mul irr
+    refine .inr (h.mul_left_dvd.mpr h₂)
+    refine .inl (h.mul_right_dvd.mpr h₁)⟩
+
+theorem Irreducible.prime [DecompositionMonoid α] : Prime a :=
+  irr.prime_of_isPrimal (DecompositionMonoid.primal a)
+
+end CommMonoidWithZero
+
 section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α] {a p : α}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
-  ⟨hp.not_unit, fun a b hab =>
-    (show a * b ∣ a ∨ a * b ∣ b from hab ▸ hp.dvd_or_dvd (hab ▸ dvd_rfl)).elim
-      (fun ⟨x, hx⟩ =>
-        Or.inr
-          (isUnit_iff_dvd_one.2
-            ⟨x,
-              mul_right_cancel₀ (show a ≠ 0 from fun h => by
-                simp only [Prime, ne_eq, IsUnit.mul_iff] at *
-                rw [h, zero_mul] at hab
-                have := hp.left
-                contradiction
-                ) <| by
-                conv =>
-                    lhs
-                    rw [hx]
-                · simp [mul_comm, mul_assoc, mul_left_comm]
-                ⟩))
-      fun ⟨x, hx⟩ =>
-      Or.inl
-        (isUnit_iff_dvd_one.2
-          ⟨x,
-            mul_right_cancel₀ (show b ≠ 0 from fun h => by
-            simp only [Prime, ne_eq, IsUnit.mul_iff] at *
-            rw [h, mul_zero] at hab
-            have := hp.left
-            contradiction
-            ) <| by
-              conv =>
-                  lhs
-                  rw [hx]
-              · simp [mul_comm, mul_assoc, mul_left_comm]⟩)⟩
+  ⟨hp.not_unit, fun a b ↦ by
+    rintro rfl
+    exact (hp.dvd_or_dvd dvd_rfl).symm.imp
+      (isUnit_of_dvd_one <| (mul_dvd_mul_iff_right <| right_ne_zero_of_mul hp.ne_zero).mp <|
+        dvd_mul_of_dvd_right · _)
+      (isUnit_of_dvd_one <| (mul_dvd_mul_iff_left <| left_ne_zero_of_mul hp.ne_zero).mp <|
+        dvd_mul_of_dvd_left · _)⟩
 #align prime.irreducible Prime.irreducible
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : α} {k l : ℕ} :
@@ -728,12 +720,12 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 #align associated.of_pow_associated_of_prime' Associated.of_pow_associated_of_prime'
 
-lemma Prime.coprime_iff_not_dvd' [CancelCommMonoidWithZero α] {p n : α} (hp : Prime p) :
+lemma Irreducible.coprime_iff_not_dvd [Monoid α] {p n : α} (hp : Irreducible p) :
     (∀ d, d ∣ p → d ∣ n → IsUnit d) ↔ ¬ p ∣ n := by
   refine ⟨fun h contra ↦ hp.not_unit (h p (refl _) contra), fun hpn d hdp hdn ↦ ?_⟩
   contrapose! hpn
-  suffices Associated p d by exact dvd_trans this.dvd hdn
-  exact (hp.irreducible.dvd_iff.mp hdp).resolve_left hpn
+  suffices Associated p d from this.dvd.trans hdn
+  exact (hp.dvd_iff.mp hdp).resolve_left hpn
 
 section UniqueUnits
 

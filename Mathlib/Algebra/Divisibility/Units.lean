@@ -10,10 +10,27 @@ import Mathlib.Algebra.Group.Units
 #align_import algebra.divisibility.units from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
 
 /-!
-# Lemmas about divisibility and units
+# Divisibility and units
+
+## Main definition
+
+* `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
+divisors of `x` and `y` are the units.
+
 -/
 
 variable {α : Type*}
+
+section RelPrime
+
+variable [Monoid α] {x y : α}
+
+/-- `x` and `y` are relatively prime if every common divisor is a unit. -/
+def IsRelPrime (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
+
+-- TODO: more lemmas
+
+end RelPrime
 
 namespace Units
 
@@ -94,7 +111,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] (a b u : α) (hu : IsUnit u)
+variable [CommMonoid α] {a b u : α} (hu : IsUnit u)
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
     associates of `b`. -/

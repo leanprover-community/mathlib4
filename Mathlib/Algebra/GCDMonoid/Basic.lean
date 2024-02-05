@@ -309,6 +309,11 @@ section GCDMonoid
 
 variable [CancelCommMonoidWithZero α]
 
+theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
+    IsUnit (gcd a b) ↔ IsRelPrime a b :=
+  ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h,
+    (· _ (gcd_dvd_left a b) <| gcd_dvd_right a b)⟩
+
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
 theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
@@ -520,29 +525,28 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
-In other words, the nonzero elements of a `GCDMonoid` form a decomposition monoid
+In other words, a `GCDMonoid` is a decomposition monoid
 (more widely known as a pre-Schreier domain in the context of rings).
 
 Note: In general, this representation is highly non-unique.
 
 See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/
-theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) :
-    ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
-  by_cases h0 : gcd k m = 0
-  · rw [gcd_eq_zero_iff] at h0
-    rcases h0 with ⟨rfl, rfl⟩
-    refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
-    simp
-  · obtain ⟨a, ha⟩ := gcd_dvd_left k m
-    refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-    suffices h : gcd k m * a ∣ gcd k m * n by
-      cases' h with b hb
-      use b
-      rw [mul_assoc] at hb
-      apply mul_left_cancel₀ h0 hb
-    rw [← ha]
-    exact dvd_gcd_mul_of_dvd_mul H
-#align exists_dvd_and_dvd_of_dvd_mul exists_dvd_and_dvd_of_dvd_mul
+instance [GCDMonoid α] : DecompositionMonoid α where
+  primal k m n H := by
+    by_cases h0 : gcd k m = 0
+    · rw [gcd_eq_zero_iff] at h0
+      rcases h0 with ⟨rfl, rfl⟩
+      refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
+      simp
+    · obtain ⟨a, ha⟩ := gcd_dvd_left k m
+      refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
+      suffices h : gcd k m * a ∣ gcd k m * n by
+        cases' h with b hb
+        use b
+        rw [mul_assoc] at hb
+        apply mul_left_cancel₀ h0 hb
+      rw [← ha]
+      exact dvd_gcd_mul_of_dvd_mul H
 
 theorem dvd_mul [GCDMonoid α] {k m n : α} : k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
   refine' ⟨exists_dvd_and_dvd_of_dvd_mul, _⟩
@@ -604,7 +608,7 @@ theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 
   rw [mul_comm] at h2
   have h3 : d₁ ^ k ∣ a := by
     apply (dvd_gcd_mul_of_dvd_mul h2).trans
-    rw [IsUnit.mul_left_dvd _ _ _ h1]
+    rw [h1.mul_left_dvd]
   have h4 : d₁ ^ k ≠ 0 := by
     intro hdk
     rw [hdk] at h3

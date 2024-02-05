@@ -210,8 +210,8 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
       · rw [ha]
         simp only [true_or_iff, dvd_zero]
       obtain ⟨m, u, rfl⟩ := spec.2 ha
-      rw [mul_assoc, mul_left_comm, IsUnit.dvd_mul_left _ _ _ (Units.isUnit _)] at h
-      rw [IsUnit.dvd_mul_right (Units.isUnit _)]
+      rw [mul_assoc, mul_left_comm, Units.dvd_mul_left] at h
+      rw [Units.dvd_mul_right]
       by_cases hm : m = 0
       · simp only [hm, one_mul, pow_zero] at h ⊢
         right

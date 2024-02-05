@@ -37,6 +37,9 @@ def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 #align squarefree Squarefree
 
+theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m * n)) :
+    IsRelPrime m n := fun c hca hcb ↦ h c (mul_dvd_mul hca hcb)
+
 @[simp]
 theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)

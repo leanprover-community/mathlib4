@@ -200,11 +200,8 @@ theorem exists_prime_factors (a : α) :
 lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
   refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
-  obtain ⟨f, hf, hf'⟩ := exists_prime_factors x hx₀
-  rcases f.empty_or_exists_mem with rfl | h
-  · have := associated_one_iff_isUnit.mp hf'.symm; contradiction
-  · obtain ⟨p, hp⟩ := h
-    exact ⟨p, hf _ hp⟩
+  obtain ⟨f, hf, -⟩ := WfDvdMonoid.exists_irreducible_factor hxu hx₀
+  exact ⟨f, irreducible_iff_prime.mp hf⟩
 
 @[elab_as_elim]
 theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x : α, IsUnit x → P x)
@@ -888,7 +885,7 @@ namespace UniqueFactorizationMonoid
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 theorem no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
-    (h : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : ∀ {d}, d ∣ a → d ∣ b → IsUnit d := fun {d} =>
+    (h : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : IsRelPrime a b := fun {d} =>
   induction_on_prime d
     (by
       simp only [zero_dvd_iff]
@@ -929,7 +926,7 @@ theorem dvd_of_dvd_mul_right_of_no_prime_factors {a b c : R} (ha : a ≠ 0)
 out their common factor `c'` gives `a'` and `b'` with no factors in common. -/
 theorem exists_reduced_factors :
     ∀ a ≠ (0 : R), ∀ b,
-      ∃ a' b' c', (∀ {d}, d ∣ a' → d ∣ b' → IsUnit d) ∧ c' * a' = a ∧ c' * b' = b := by
+      ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b := by
   haveI := Classical.propDecidable
   intro a
   refine' induction_on_prime a _ _ _
@@ -958,7 +955,7 @@ theorem exists_reduced_factors :
 #align unique_factorization_monoid.exists_reduced_factors UniqueFactorizationMonoid.exists_reduced_factors
 
 theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
-    ∃ a' b' c', (∀ {d}, d ∣ a' → d ∣ b' → IsUnit d) ∧ c' * a' = a ∧ c' * b' = b :=
+    ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b :=
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun hpb hpa => no_factor hpa hpb, ha, hb⟩
 #align unique_factorization_monoid.exists_reduced_factors' UniqueFactorizationMonoid.exists_reduced_factors'
@@ -1085,7 +1082,7 @@ open BigOperators
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
     (is_coprime : ∀ᵉ (q ∈ insert p s) (q' ∈ insert p s), q ∣ q' → q = q') :
-    ∀ q : α, q ∣ p ^ i p → (q ∣ ∏ p' in s, p' ^ i p') → IsUnit q := by
+    IsRelPrime (p ^ i p) (∏ p' in s, p' ^ i p') := by
   have hp := is_prime _ (Finset.mem_insert_self _ _)
   refine' fun _ => no_factors_of_no_prime_factors (pow_ne_zero _ hp.ne_zero) _
   intro d hdp hdprod hd
@@ -1107,7 +1104,7 @@ then `P` holds on a product of powers of distinct primes. -/
 theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
-    (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → P x → P y → P (x * y)) :
+    (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p in s, p ^ i p) := by
   letI := Classical.decEq α
   induction' s using Finset.induction_on with p f' hpf' ih
@@ -1126,7 +1123,7 @@ then `P` holds on all `a : α`. -/
 @[elab_as_elim]
 theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}, IsUnit x → P x)
     (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
-    (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → P x → P y → P (x * y)) : P a := by
+    (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) : P a := by
   letI := Classical.decEq α
   have P_of_associated : ∀ {x y}, Associated x y → P x → P y := by
     rintro x y ⟨u, rfl⟩ hx
@@ -1149,7 +1146,7 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
-    (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → f (x * y) = f x * f y) :
+    (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (∏ p in s, p ^ (i p + j p)) = f (∏ p in s, p ^ i p) * f (∏ p in s, p ^ j p) := by
   letI := Classical.decEq α
   induction' s using Finset.induction_on with p s hps ih
@@ -1169,7 +1166,7 @@ is multiplicative on coprime elements, then `f` is multiplicative everywhere. -/
 theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
-    (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → f (x * y) = f x * f y) :
+    (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (a * b) = f a * f b := by
   letI := Classical.decEq α
   by_cases ha0 : a = 0
@@ -1226,8 +1223,11 @@ section Coprime
 variable {x y d : R}
 
 /-- See also `IsCoprime.dvd_of_dvd_mul_left`. -/
+-- TODO: generalize to DecompositionMonoid; same for the next two.
+-- Reference: https://link.springer.com/article/10.1007/s00233-019-10022-3 Lemma 6.3 (a)(d)
+-- also add coprime_mul corresponding to (b), and move to appropriate file
 theorem dvd_of_coprime_of_dvd_mul_left
-    (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (h' : y ∣ x * d) : y ∣ d := by
+    (h : IsRelPrime x y) (h' : y ∣ x * d) : y ∣ d := by
   rcases eq_or_ne x 0 with rfl | hx
   · replace h : IsUnit y := h y (dvd_zero y) (refl _); exact h.dvd
   rcases eq_or_ne y 0 with rfl | hy
@@ -1240,6 +1240,7 @@ theorem dvd_of_coprime_of_dvd_mul_left
     replace h : ¬ p ∣ x := fun contra ↦ hp.not_unit <| h p contra (dvd_pow_self p hk)
     exact Prime.pow_dvd_of_dvd_mul_left hp k h h'
   · rw [ne_eq, mul_eq_zero, not_or] at hy
+    -- TODO: extract IsRelPrime lemmas
     have hxa : ∀ p, p ∣ x → p ∣ a → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_right b)
     have hxb : ∀ p, p ∣ x → p ∣ b → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_left a)
     obtain ⟨a', rfl⟩ := @ha x d hxa (dvd_of_mul_right_dvd h') hx hy.1
@@ -1248,14 +1249,14 @@ theorem dvd_of_coprime_of_dvd_mul_left
 
 /-- See also `IsCoprime.dvd_of_dvd_mul_right`. -/
 theorem dvd_of_coprime_of_dvd_mul_right
-    (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (h' : y ∣ d * x) : y ∣ d := by
+    (h : IsRelPrime x y) (h' : y ∣ d * x) : y ∣ d := by
   rw [mul_comm] at h'; exact dvd_of_coprime_of_dvd_mul_left h h'
 
 /-- See also `IsCoprime.mul_dvd`. -/
-theorem mul_dvd_of_coprime (h : ∀ p, p ∣ x → p ∣ y → IsUnit p) (hx : x ∣ d) (hy : y ∣ d) :
+theorem mul_dvd_of_coprime (h : IsRelPrime x y) (hx : x ∣ d) (hy : y ∣ d) :
     x * y ∣ d := by
   obtain ⟨x', rfl⟩ := hx
-  suffices y ∣ x' by exact mul_dvd_mul_left x this
+  suffices y ∣ x' from mul_dvd_mul_left x this
   exact dvd_of_coprime_of_dvd_mul_left h hy
 
 end Coprime
