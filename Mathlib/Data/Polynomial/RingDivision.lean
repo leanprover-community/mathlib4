@@ -596,7 +596,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _), by
         intro a
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
-termination_by _ p _ => natDegree p
+termination_by p => natDegree p
 decreasing_by {
   simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
@@ -1338,6 +1338,16 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R
     p = 0 :=
   eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
+
+open Cardinal in
+lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
+    ∃ r, f.eval r ≠ 0 := by
+  contrapose! hf
+  obtain hR|hR := finite_or_infinite R
+  · have := Fintype.ofFinite R
+    apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
+    aesop
+  · exact zero_of_eval_zero _ hf
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

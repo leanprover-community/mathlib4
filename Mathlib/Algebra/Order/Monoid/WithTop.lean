@@ -113,7 +113,7 @@ instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
-@[norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
+@[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 #align with_top.coe_add WithTop.coe_add
 
 section deprecated
@@ -142,7 +142,10 @@ theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
 
 @[simp]
 theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  cases a <;> cases b <;> simp [none_eq_top, some_eq_coe, ← WithTop.coe_add]
+  match a, b with
+  | ⊤, _ => simp
+  | _, ⊤ => simp
+  | (a : α), (b : α) => simp only [← coe_add, coe_ne_top, or_false]
 #align with_top.add_eq_top WithTop.add_eq_top
 
 theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
@@ -580,7 +583,7 @@ section Add
 
 variable [Add α] {a b c d : WithBot α} {x y : α}
 
--- `norm_cast` proves those lemmas, because `WithTop`/`WithBot` are reducible
+@[simp, norm_cast]
 theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add

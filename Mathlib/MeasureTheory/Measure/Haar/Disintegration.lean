@@ -48,7 +48,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   follows from these two and linear algebra, as `L` can be interpreted as the composition of the
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
   have : ProperSpace E := .of_locallyCompactSpace 𝕜
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
     rcases subsingleton_or_nontrivial E with hE|hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
@@ -115,7 +115,7 @@ namespace MeasureTheory
 in the source or the target spaces of `L`, with respect to additive Haar measures there. -/
 lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : MeasurableSet s) :
     (∀ᵐ x ∂μ, L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : AEMeasurable L μ := L.continuous_of_finiteDimensional.aemeasurable
   apply (ae_map_iff this hs).symm.trans
   rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
@@ -127,8 +127,8 @@ almost everywhere in `F`, it holds almost everywhere along the subspace spanned 
 image of `L`. This is an instance of a disintegration argument for additive Haar measures.-/
 lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s) :
     (∀ᵐ y ∂ν, ∀ᵐ x ∂μ, y + L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
-  have : FiniteDimensional 𝕜 F := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 F := .of_locallyCompactSpace 𝕜
   have : ProperSpace E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := .of_locallyCompactSpace 𝕜
   let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
