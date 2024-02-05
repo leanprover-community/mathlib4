@@ -2,6 +2,7 @@ import Mathlib.Algebra.Lie.CharPolyPoly
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Data.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 open BigOperators
@@ -185,9 +186,9 @@ lemma rank_le_card : rank R L ≤ Fintype.card (ChooseBasisIndex R L) := by
     (adCharpoly_monic _).leadingCoeff]
   apply one_ne_zero
 
-lemma rank_le_rank [StrongRankCondition R] : rank R L ≤ Module.rank R L := by
-  rw [rank_eq_card_chooseBasisIndex R L, Cardinal.mk_fintype, Nat.cast_le]
-  apply rank_le_card
+open FiniteDimensional
+lemma rank_le_finrank [StrongRankCondition R] : rank R L ≤ finrank R L := by
+  simpa only [finrank_eq_card_chooseBasisIndex R L] using rank_le_card R L
 
 variable {L}
 
@@ -215,8 +216,8 @@ variable [IsDomain R] [Module.Finite R L] [Module.Free R L]
 
 open Module.Free
 
-open Cardinal MvPolynomial in
-lemma exists_isRegular' (h : Cardinal.lift.{u} (Module.rank R L) ≤ Cardinal.lift.{v} #R) :
+open Cardinal FiniteDimensional MvPolynomial in
+lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     ∃ x : L, IsRegular R x := by
   let b := chooseBasis R L
   let n := Fintype.card (ChooseBasisIndex R L)
@@ -224,10 +225,7 @@ lemma exists_isRegular' (h : Cardinal.lift.{u} (Module.rank R L) ≤ Cardinal.li
   have aux₂ : ↑(n - rank R L) ≤ #R := by
     trans ↑n
     · simp only [Nat.cast_le, tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
-    rw [← Cardinal.lift_le.{v}]
-    apply le_trans _ h
-    rw [rank_eq_card_chooseBasisIndex R L]
-    simp
+    rwa [finrank_eq_card_chooseBasisIndex R L] at h
   obtain ⟨x, hx⟩ :=
     aux₁.exists_eval_ne_zero_of_totalDegree_le_card (adCharpoly_coeff_rank_ne_zero R L) aux₂
   let c := Finsupp.equivFunOnFinite.symm x
@@ -235,9 +233,7 @@ lemma exists_isRegular' (h : Cardinal.lift.{u} (Module.rank R L) ≤ Cardinal.li
   rwa [isRegular_iff, LinearEquiv.apply_symm_apply]
 
 lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
-  apply exists_isRegular'
-  rw [rank_eq_card_chooseBasisIndex R L, Cardinal.mk_fintype]
-  simp only [Cardinal.lift_natCast, Cardinal.nat_le_lift_iff]
+  apply exists_isRegular_of_finrank_le_card
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end base_domain

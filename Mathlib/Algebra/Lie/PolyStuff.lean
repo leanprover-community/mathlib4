@@ -24,12 +24,11 @@ variable (f : R →+* S) (k : σ → τ) (g : τ → R) (p : MvPolynomial σ R)
 
 -- move later??
 lemma IsHomogeneous.finSuccEquiv_coeff_isHomogeneous {N : ℕ}
-    (φ : MvPolynomial (Fin (N+1)) R) (n : ℕ) (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
+    {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ} (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
-  have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by
-    simp [Fin.succ_ne_zero]
+  have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by simp [Fin.succ_ne_zero]
   simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
     (d.cons_support i) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
 
@@ -40,58 +39,52 @@ namespace MvPolynomial.IsHomogeneous
 open Polynomial in
 private
 lemma exists_eval_ne_zero_of_totalDegree_le_card_aux₀
-    (N : ℕ) (F : MvPolynomial (Fin (Nat.succ N)) R) (n : ℕ) (hF : IsHomogeneous F n)
-    (aux : natDegree ((finSuccEquiv R N) F) < n + 1) (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
+    {N : ℕ} {F : MvPolynomial (Fin (Nat.succ N)) R} {n : ℕ} (hF : IsHomogeneous F n)
+    (hdeg : natDegree ((finSuccEquiv R N) F) < n + 1) (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
     ∃ r, (eval r) F ≠ 0 := by
   use Fin.cons 1 0
-  rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' aux]
-  simp only [eval_zero, one_pow, mul_one, map_sum]
-  rw [Finset.sum_range_succ, Finset.sum_eq_zero, zero_add]
-  · contrapose! hFn
-    have := hF.finSuccEquiv_coeff_isHomogeneous _ _ n 0 (add_zero _)
-    ext d
-    rw [coeff_zero]
-    obtain rfl | hd := eq_or_ne d 0
-    · apply hFn
-    · contrapose! hd
-      specialize this hd
-      push_neg at this
-      ext i
-      rw [Finsupp.coe_zero, Pi.zero_apply]
-      if hi : i ∈ d.support
-      then
-        rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le')] at this
-        exact this i hi
-      else
-        simpa using hi
-  · intro i hi
+  have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
+    intro i hi
     rw [Finset.mem_range] at hi
-    have := hF.finSuccEquiv_coeff_isHomogeneous _ _ i (n-i) (by omega)
-    apply this.coeff_eq_zero
+    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by omega)).coeff_eq_zero
     simp only [Finsupp.support_zero, Finsupp.coe_zero, Pi.zero_apply, Finset.sum_const_zero]
     omega
+  simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
+    eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
+  contrapose! hFn
+  ext d
+  rw [coeff_zero]
+  obtain rfl | hd := eq_or_ne d 0
+  · apply hFn
+  · contrapose! hd
+    ext i
+    rw [Finsupp.coe_zero, Pi.zero_apply]
+    by_cases hi : i ∈ d.support
+    · have := hF.finSuccEquiv_coeff_isHomogeneous n 0 (add_zero _) hd
+      rw [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ zero_le')] at this
+      exact this i hi
+    · simpa using hi
+
+variable {σ : Type*} [IsDomain R] {F : MvPolynomial σ R} {n : ℕ}
 
 open Cardinal Polynomial
 private
-lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
-    [IsDomain R] {N : ℕ} (F : MvPolynomial (Fin N) R) (n : ℕ)
-    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (hnR : n ≤ #R) :
+lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial (Fin N) R} {n : ℕ}
+    (hF : F.IsHomogeneous n) (hF₀ : F ≠ 0) (hnR : n ≤ #R) :
     ∃ r, eval r F ≠ 0 := by
   induction N generalizing n with
   | zero =>
     use 0
     contrapose! hF₀
     ext d
-    obtain rfl : d = 0 := Subsingleton.elim _ _
-    simpa only [eval_zero, coeff_zero] using hF₀
+    simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using hF₀
   | succ N IH =>
-    have aux :=
-      calc natDegree ((finSuccEquiv R N) F)
-          = degreeOf 0 F  := natDegree_finSuccEquiv _
-        _ ≤ F.totalDegree := degreeOf_le_totalDegree _ _
-        _ = n             := hF.totalDegree hF₀
-        _ < n + 1         := Nat.lt_succ_self n
-    obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv _ _ F).coeff i ≠ 0 := by
+    have aux : natDegree (finSuccEquiv R N F) < n + 1 :=
+      calc _ = degreeOf 0 F  := natDegree_finSuccEquiv _
+           _ ≤ F.totalDegree := degreeOf_le_totalDegree _ _
+           _ = n             := hF.totalDegree hF₀
+           _ < n + 1         := Nat.lt_succ_self n
+    obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv R N F).coeff i ≠ 0 := by
       contrapose! hF₀
       apply (finSuccEquiv _ _).injective
       apply Polynomial.ext
@@ -100,18 +93,14 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
       contrapose! hi
       apply coeff_eq_zero_of_natDegree_lt
       omega
-    by_cases hFn : ((finSuccEquiv R N) F).coeff n = 0
-    swap
-    · apply hF.exists_eval_ne_zero_of_totalDegree_le_card_aux₀ <;> assumption
+    obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
+    · exact hF.exists_eval_ne_zero_of_totalDegree_le_card_aux₀ aux hFn
     have hin : i < n := by
-      contrapose! hi
-      obtain rfl : i = n := le_antisymm hin hi
-      exact hFn
-    obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_lt hin
-    rw [add_assoc] at hj
-    specialize IH _ _ hi (hF.finSuccEquiv_coeff_isHomogeneous _ _ _ _ hj.symm) (le_trans _ hnR)
-    · norm_cast; omega
-    rcases IH with ⟨r, hr⟩
+      suffices i ≠ n by omega
+      aesop
+    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
+    obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
+      IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
     let φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F)
     have hφ₀ : φ ≠ 0 := by
       contrapose! hr with hφ₀
@@ -125,23 +114,35 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀
-    obtain ⟨r₀, hr₀⟩ := φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
+    obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
+      φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR
     use Fin.cons r₀ r
     rwa [eval_eq_eval_mv_eval']
 
 open Cardinal in
 lemma exists_eval_ne_zero_of_totalDegree_le_card
-    {σ : Type*} [IsDomain R]
-    (F : MvPolynomial σ R) (n : ℕ)
-    (hF₀ : F ≠ 0) (hF : F.IsHomogeneous n) (h : n ≤ #R) :
+    (hF : F.IsHomogeneous n) (hF₀ : F ≠ 0) (h : n ≤ #R) :
     ∃ r : σ → R, eval r F ≠ 0 := by
   -- reduce to the case where σ is finite
   obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
   have hF₀ : F ≠ 0 := by rintro rfl; simp at hF₀
   have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous_iff hf] at hF
-  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux F n hF₀ hF h
+  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux hF hF₀ h
   obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
   use r
   rwa [eval_rename]
+
+open Cardinal in
+/-- See `MvPolynomial.IsHomogeneous.funext` for a version that assumes `Infinite R`. -/
+lemma funext_of_le_card (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) (h : n ≤ #R) :
+    F = 0 := by
+  contrapose! hF₀
+  exact exists_eval_ne_zero_of_totalDegree_le_card hF hF₀ h
+
+/-- See `MvPolynomial.IsHomogeneous.funext_of_le_card` for a version that assumes `n ≤ #R`. -/
+lemma funext [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
+    (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) : F = 0 := by
+  apply funext_of_le_card hF hF₀
+  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end MvPolynomial.IsHomogeneous
