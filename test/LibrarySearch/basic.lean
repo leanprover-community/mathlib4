@@ -38,13 +38,13 @@ example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
 
-/-- info: Try this: exact fun a ↦ Nat.add_le_add_right a k -/
-#guard_msgs in
-example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
+/- info: Try this: exact fun a ↦ Nat.add_le_add a Nat.le.refl -/
+#guard_msgs (drop info) in
+example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by exact?
 
-/-- info: Try this: exact (Nat.mul_dvd_mul_iff_left ha).mpr w -/
-#guard_msgs in
-example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
+/- info: Try this: exact Nat.mul_dvd_mul_left a w -/
+#guard_msgs (drop info) in
+example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by exact?
 
 -- Could be any number of results (`Int.one`, `Int.zero`, etc)
 #guard_msgs (drop info) in
@@ -92,21 +92,21 @@ by apply?
 #guard_msgs in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
-#guard_msgs in
-example (a b : ℕ) (_ha : 0 < a) (hb : 0 < b) : 0 < a + b := by apply?
+/- info: Try this: exact Nat.add_pos_right a hb -/
+#guard_msgs (drop info) in
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
-#guard_msgs in
+/- info: Try this: exact Nat.add_pos_left ha b -/
+#guard_msgs (drop info) in
 -- Verify that if maxHeartbeats is 0 we don't stop immediately.
 set_option maxHeartbeats 0 in
-example (a b : ℕ) (_ha : 0 < a) (hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 section synonym
 
-/-- info: Try this: exact Nat.add_pos_right a hb -/
-#guard_msgs in
-example (a b : ℕ) (_ha : a > 0) (hb : 0 < b) : 0 < a + b := by apply?
+/- info: Try this: exact Nat.add_pos_left ha b -/
+#guard_msgs (drop info) in
+example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
@@ -158,8 +158,8 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact (Nat.dvd_add_iff_left h₁).mpr h₂ -/
-#guard_msgs in
+/- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
+#guard_msgs (drop info) in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
