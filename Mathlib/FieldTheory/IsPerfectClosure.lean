@@ -261,8 +261,8 @@ theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
-`i` is "purely inseparable" and whose kernel is contained in the `p`-nilradical of `K`, and `M` is a
-perfect ring, then `PerfectRing.liftAux` is a ring homomorphism. -/
+`i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`, and `M` is
+a perfect ring, then `PerfectRing.liftAux` is a ring homomorphism. -/
 def PerfectRing.lift : L →+* M where
   toFun := liftAux i j p H
   map_one' := by simp [liftAux_apply i j p H hk 1 0 1 (by rw [one_pow, map_one])]
