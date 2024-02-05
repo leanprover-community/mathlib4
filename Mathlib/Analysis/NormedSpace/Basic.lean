@@ -67,10 +67,6 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-@[simp]
-theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
-#align abs_norm abs_norm
-
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]

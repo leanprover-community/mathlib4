@@ -24,6 +24,8 @@ prime characteristic.
    sense of Serre.
  * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
  * `PerfectField.ofFinite`: all finite fields are perfect.
+ * `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
+   it is square-free.
  * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
    if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
    and `L` is also a perfect field.
@@ -186,7 +188,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
 
 namespace PerfectField
 
-variable (K : Type*) [Field K]
+variable {K : Type*} [Field K]
 
 instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
 
@@ -227,6 +229,14 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
+
+theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
+  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
+  rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
+  replace dvd : p ∣ q := by
+    rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
+    exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
+  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 

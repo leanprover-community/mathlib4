@@ -290,6 +290,7 @@ import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
+import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Killing
@@ -479,7 +480,8 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Squarefree
+import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.Algebra.Squarefree.UniqueFactorizationDomain
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.CHSH
@@ -1159,6 +1161,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
@@ -2656,6 +2659,7 @@ import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Function.LpOrder
 import Mathlib.MeasureTheory.Function.LpSeminorm
+import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.SimpleFunc
@@ -3385,6 +3389,23 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp.AEMesurable
+import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.FunProp.ContDiff
+import Mathlib.Tactic.FunProp.Continuous
+import Mathlib.Tactic.FunProp.Core
+import Mathlib.Tactic.FunProp.Decl
+import Mathlib.Tactic.FunProp.Differentiable
+import Mathlib.Tactic.FunProp.Elab
+import Mathlib.Tactic.FunProp.FunctionData
+import Mathlib.Tactic.FunProp.Measurable
+import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Mathlib.Tactic.FunProp.StateList
+import Mathlib.Tactic.FunProp.Theorems
+import Mathlib.Tactic.FunProp.ToStd
+import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr

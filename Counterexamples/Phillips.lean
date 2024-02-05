@@ -315,9 +315,9 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
-    · have : (↑(s (n + 1)) : Set α) = ↑(s (n + 1)) \ ↑(s n) ∪ ↑(s n) := by
-        simp only [Function.iterate_succ', union_comm, union_diff_self, Subtype.coe_mk,
-          union_diff_left, Function.comp]
+    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+        simpa only [Function.iterate_succ', union_diff_self]
+          using (diff_union_of_subset <| subset_union_left _ _).symm
       rw [Nat.succ_eq_add_one, this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -434,7 +434,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
       have I :
         ‖ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_ofNormedAddCommGroup_le _ zero_le_one
-      apply le_trans (f.le_op_norm _)
+      apply le_trans (f.le_opNorm _)
       simpa using mul_le_mul_of_nonneg_left I (norm_nonneg f)⟩
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
