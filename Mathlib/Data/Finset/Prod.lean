@@ -142,9 +142,9 @@ theorem card_product (s : Finset α) (t : Finset β) : card (s ×ˢ t) = card s 
 
 /-- The product of two Finsets is nontrivial iff both are nonempty
   at least one of them is nontrivial. -/
-lemma nontrivial_prod_iff : Nontrivial (s ×ˢ t) ↔
-    s.Nonempty ∧ t.Nonempty ∧ (Nontrivial s ∨ Nontrivial t) := by
-  simp_rw [← card_pos, ← one_lt_card_iff_nontrivial_coe, card_product]; apply Nat.one_lt_mul_iff
+lemma nontrivial_prod_iff : (s ×ˢ t).Nontrivial ↔
+    s.Nonempty ∧ t.Nonempty ∧ (s.Nontrivial ∨ t.Nontrivial) := by
+  simp_rw [← card_pos, ← one_lt_card_iff_nontrivial, card_product]; apply Nat.one_lt_mul_iff
 
 theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ˢ t.filter q := by

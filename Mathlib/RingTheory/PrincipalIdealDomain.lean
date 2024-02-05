@@ -454,6 +454,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (pp : Prime p) : IsCoprime p n ↔ �
   pp.irreducible.coprime_iff_not_dvd
 #align prime.coprime_iff_not_dvd Prime.coprime_iff_not_dvd
 
+/-- See also `Irreducible.coprime_iff_not_dvd'`. -/
 theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
   iff_not_comm.2 hp.coprime_iff_not_dvd
 #align irreducible.dvd_iff_not_coprime Irreducible.dvd_iff_not_coprime
