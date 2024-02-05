@@ -107,4 +107,4 @@ lemma exists_squarefree_dvd_pow_of_ne_zero (hx : x ≠ 0) :
     · exact ⟨y, n + 1, hy, mul_comm p z ▸ pow_succ' y n ▸ mul_dvd_mul hy' hp'⟩
     · suffices Squarefree (p * y) by
         exact ⟨p * y, n, this, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
-      exact squarefree_mul_iff.mpr ⟨hp.coprime_iff_not_dvd'.mpr hp', hp.squarefree, hy⟩
+      exact squarefree_mul_iff.mpr ⟨hp.irreducible.coprime_iff_not_dvd'.mpr hp', hp.squarefree, hy⟩
