@@ -644,9 +644,7 @@ theorem ofDualQuaternion_smul_eps (q : ℍ[R,c₁,c₂]) :
 theorem toDualQuaternion_comp_ofDualQuaternion :
     (toDualQuaternion c₁ c₂).comp (ofDualQuaternion c₁ c₂) = AlgHom.id R ℍ[R,c₁,c₂][ε] := by
   ext : 1
-  · apply QuaternionAlgebra.lift.symm.injective
-    simp
-    ext : 1
+  · ext : 1
       <;> dsimp
       <;> rw [ofDualQuaternion_inl, QuaternionAlgebra.Basis.lift]
       <;> dsimp
