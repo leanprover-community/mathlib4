@@ -14,7 +14,7 @@ import Mathlib.Tactic.FunProp.ToStd
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
 morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib the convention is that `coe`
-is aplication of `DFunLike.coe` and this is assumed through out this file. It does not work with
+is application of `DFunLike.coe` and this is assumed through out this file. It does not work with
 Lean's `CoeFun.coe`.
 
 The main difference when working with expression involving morphisms is that the notion the head of
@@ -32,7 +32,7 @@ namespace Meta.FunProp
 
 namespace Mor
 
-/-- Argument of morphism aplication that stores corresponding coercion if necessary -/
+/-- Argument of morphism application that stores corresponding coercion if necessary -/
 structure Arg where
   /-- argument of type `α` -/
   expr : Expr
@@ -126,7 +126,7 @@ def constArity (decl : Name) : MetaM Nat := do
 
 /-- `(fun x => e) a` ==> `e[x/a]`
 
-An example when coersions are involved:
+An example when coercions are involved:
 `(fun x => ⇑((fun y => e) a)) b` ==> `e[y/a, x/b]`. -/
 def headBeta (e : Expr) : Expr :=
   Mor.withApp e fun f xs =>
@@ -140,7 +140,7 @@ end Mor
 
 
 /--
-Split morphism function into composition by specifying over which auguments in the lambda body this
+Split morphism function into composition by specifying over which arguments in the lambda body this
 split should be done.
  -/
 def splitMorToCompOverArgs (e : Expr) (argIds : Array Nat) : MetaM (Option (Expr × Expr)) := do
@@ -199,7 +199,7 @@ def splitMorToCompOverArgs (e : Expr) (argIds : Array Nat) : MetaM (Option (Expr
 
 
 /--
-Split morphism function into composition by specifying over which auguments in the lambda body this
+Split morphism function into composition by specifying over which arguments in the lambda body this
 split should be done.
  -/
 def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
