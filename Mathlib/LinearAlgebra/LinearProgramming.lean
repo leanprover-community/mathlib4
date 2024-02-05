@@ -20,8 +20,8 @@ TODO
 section LP_general
 
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
-structure LinearProgram (R : Type*) (M : Type*) (N : Type*)
-    [OrderedSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] where
+structure ConeProgram (R M N : Type*) [OrderedSemiring R]
+    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] where
   /-- Linear map -/
   linmap : M →ₗ[R] N
   /-- Right-hand side -/
@@ -31,33 +31,45 @@ structure LinearProgram (R : Type*) (M : Type*) (N : Type*)
   /-- Cone defines nonnegative elements -/
   cone : PointedCone R N
 
+abbrev LinearProgram {R M N : Type*} [OrderedSemiring R]
+    [AddCommMonoid M] [Module R M] [OrderedAddCommGroup N] [Module R N] [OrderedSMul R N]
+    (l : M →ₗ[R] N) (u : N) (o : M →ₗ[R] R) :=
+  ConeProgram.mk l u o (PointedCone.positive R N)
+
 variable {R M N : Type*}
-  [OrderedSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [LinearOrderedSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 /-- `LP.primal = { x : M | LP.linmap x ≤ LP.upper }` -/
-def LinearProgram.primal (LP : LinearProgram R M N) :=
+def ConeProgram.primal (LP : ConeProgram R M N) :=
   { x : M | ∃ c ∈ LP.cone, LP.linmap x + c = LP.upper }
 
 /-- `LP.dual = { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ 0 ≤ g }` -/
-def LinearProgram.dual (LP : LinearProgram R M N) :=
+def ConeProgram.dual (LP : ConeProgram R M N) :=
   { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ ∀ a ∈ LP.cone, 0 ≤ g a }
 
 -- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
 
-theorem LinearProgram.weakDuality (LP : LinearProgram R M N)
+theorem ConeProgram.weakDuality (LP : ConeProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) :
-    LP.objective c ≤ d LP.upper :=
-  sorry
+    LP.objective c ≤ d LP.upper := by
+  unfold ConeProgram.primal at hc
+  unfold ConeProgram.dual at hd
+  rw [Set.mem_setOf_eq] at hc hd
+  obtain ⟨p, hp, hcp⟩ := hc
+  obtain ⟨hobj, hd'⟩ := hd
+  rw [← hcp, map_add, hobj, Function.comp_apply, le_add_iff_nonneg_right]
+  apply hd'
+  exact hp
 
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
-theorem LinearProgram.strongDuality (LP : LinearProgram R M N)
+theorem ConeProgram.strongDuality (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual.Nonempty) :
     ∃ c ∈ LP.primal, ∃ d ∈ LP.dual, LP.objective c = d LP.upper :=
   sorry
 
 /-- Theorem 1.4.1.b (TODO maybe add item (iii), which is easy,
     and item (iv), which holds when `N` is `ℝ^n` and `LP.cone` is the positive ortant) -/
-theorem LinearProgram.min_max (LP : LinearProgram R M N)
+theorem ConeProgram.min_max (LP : ConeProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) (hs : LP.cone.FG) :
     -- TODO maybe `hs` is not needed
     (∀ x ∈ LP.primal, LP.objective x ≤ LP.objective c) ∧ (∀ g ∈ LP.dual, d LP.upper ≤ g LP.upper) ↔
@@ -65,13 +77,13 @@ theorem LinearProgram.min_max (LP : LinearProgram R M N)
   sorry
 
 /-- Theorem 1.4.1.c(1) -/
-theorem LinearProgram.empty_dual (LP : LinearProgram R M N)
+theorem ConeProgram.empty_dual (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual = ∅) :
     ∀ r : R, ∃ d ∈ LP.dual, d LP.upper < r :=
   sorry
 
 /-- Theorem 1.4.1.c(2) -/
-theorem LinearProgram.empty_primal (LP : LinearProgram R M N)
+theorem ConeProgram.empty_primal (LP : ConeProgram R M N)
     (hC : LP.primal = ∅) (hD : LP.dual.Nonempty) :
     ∀ r : R, ∃ c ∈ LP.primal, r < LP.objective c :=
   sorry
@@ -101,21 +113,3 @@ lemma geometric_hahn_banach_point_closed' (ht₁ : Convex ℝ t) (disj : x ∉ t
   rw [ContinuousLinearMap.neg_apply, neg_le_neg_iff]
   sorry
 -/
-
-section LP_standard
-
-structure StandardLinearProgram (R V W : Type*)
-    [OrderedCommSemiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W] where
-  coneV : PointedCone R V
-  linmap : V →ₗ[R] W
-  coneW : PointedCone R W
-  objective : Module.Dual R W
-  target : W
-
-variable {R V W : Type*}
-    [OrderedCommSemiring R] [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
-
-def StandardLinearProgram.space (LP : StandardLinearProgram R V W) : Set V :=
-  { x ∈ LP.coneV | ∃ y ∈ LP.coneW, LP.linmap x + y = LP.target }
-
-end LP_standard
