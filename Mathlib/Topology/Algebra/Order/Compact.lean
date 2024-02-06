@@ -244,10 +244,14 @@ theorem _root_.cocompact_ge_atBot [LinearOrder α] [NoMinOrder α] [ClosedIicTop
   exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
     LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
 
+theorem _root_.cocompact_ge_atBot_atTop [LinearOrder α] [NoMinOrder α] [NoMaxOrder α]
+    [OrderClosedTopology α] : cocompact α ≥ atBot ⊔ atTop :=
+  sup_le cocompact_ge_atBot cocompact_ge_atTop
+
 @[simp]
 theorem _root_.cocompact_eq_atBot_atTop [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
     [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
-  cocompact_le_atBot_atTop.antisymm (sup_le cocompact_ge_atBot cocompact_ge_atTop)
+  cocompact_le_atBot_atTop.antisymm cocompact_ge_atBot_atTop
 
 @[simp]
 theorem _root_.cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
