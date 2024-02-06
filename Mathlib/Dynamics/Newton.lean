@@ -109,7 +109,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     have : IsUnit (aeval r₁ (derivative P)) :=
       isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' hr₁
     rw [← sub_sub_sub_cancel_right r₂ r₁ x]
-    refine IsNilpotent.isUnit_add_of_commute ?_ this (Commute.all _ _)
+    refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
 end Polynomial

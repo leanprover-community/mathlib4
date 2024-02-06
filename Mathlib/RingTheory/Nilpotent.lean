@@ -118,35 +118,35 @@ theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
     IsNilpotent (u * r) ↔ IsNilpotent r :=
   h_comm ▸ hu.isNilpotent_mul_unit_of_commute_iff h_comm
 
-theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
+theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
   refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
   · simp [mul_geom_sum, hn]
   · simp [geom_sum_mul, hn]
 
-theorem IsNilpotent.one_sub_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 - r) := by
+theorem IsNilpotent.isUnit_one_sub [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 - r) := by
   rw [← IsUnit.neg_iff, neg_sub]
-  exact sub_one_isUnit hnil
+  exact isUnit_sub_one hnil
 
-theorem IsNilpotent.add_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r + 1) := by
+theorem IsNilpotent.isUnit_add_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r + 1) := by
   rw [← IsUnit.neg_iff, neg_add']
-  exact sub_one_isUnit hnil.neg
+  exact isUnit_sub_one hnil.neg
 
-theorem IsNilpotent.one_add_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 + r) :=
-  add_comm r 1 ▸ add_one_isUnit hnil
+theorem IsNilpotent.isUnit_one_add [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 + r) :=
+  add_comm r 1 ▸ isUnit_add_one hnil
 
-theorem IsNilpotent.isUnit_add_of_commute [Ring R] {r u : R}
+theorem IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
     (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
     IsUnit (u + r) := by
   rw [← Units.isUnit_mul_units _ hu.unit⁻¹, add_mul, IsUnit.mul_val_inv]
   replace h_comm : Commute r (↑hu.unit⁻¹) := Commute.units_inv_right h_comm
-  refine IsNilpotent.one_add_isUnit ?_
+  refine IsNilpotent.isUnit_one_add ?_
   exact (hu.unit⁻¹.isUnit.isNilpotent_mul_unit_of_commute_iff h_comm).mpr hnil
 
-theorem IsNilpotent.add_isUnit_of_commute [Ring R] {r u : R}
+theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
     (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
     IsUnit (r + u) :=
-  add_comm r u ▸ hnil.isUnit_add_of_commute hu h_comm
+  add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
 
 section NilpotencyClass
 

@@ -112,7 +112,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   set P₁ := P.eraseLead with hP₁
   suffices IsUnit P₁ by
     rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial, ← hP₁]
-    refine IsNilpotent.isUnit_add_of_commute ?_ this (Commute.all _ _)
+    refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
     exact isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg)
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
@@ -187,7 +187,7 @@ lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
     (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
     IsUnit (aeval a P) := by
   rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
-  refine IsNilpotent.isUnit_add_of_commute ?_ hb (Commute.all _ _)
+  refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
   exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
 
 end CommAlgebra
