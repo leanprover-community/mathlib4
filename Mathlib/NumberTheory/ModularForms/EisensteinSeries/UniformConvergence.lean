@@ -157,7 +157,7 @@ theorem summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ
   constructor
   · intro H
     convert H.2
-    rw [←Finset.tsum_subtype]
+    rw [← Finset.tsum_subtype]
     rfl
   · intro H
     constructor
