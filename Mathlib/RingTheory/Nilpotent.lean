@@ -242,6 +242,13 @@ def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
 #align is_radical IsRadical
 
+theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadical y :=
+  fun _ _ ↦ hy.dvd_of_dvd_pow
+
+theorem IsRadical.of_dvd [CommMonoidWithZero R] {x y : R} (hy : IsRadical y) (dvd : x ∣ y) :
+    IsRadical x := by
+  sorry
+
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
   exact forall_swap
