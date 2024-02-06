@@ -236,7 +236,7 @@ initialize registerTraceClass `Tactic.positivity.failure
 
 /- If the expression is of the form `$op 0 $rhs`, we return the expression. -/
 def literalZero (lhs rhs : Q($α)) (pred : Q($α → $α → Prop)) (h : Q($pred $lhs $rhs)) :
-  MetaM (Q($pred 0 $rhs)) := do
+    MetaM (Q($pred 0 $rhs)) := do
   match lhs with
   | ~q(0) => pure h
   | _ => throwError "not a literal zero"
