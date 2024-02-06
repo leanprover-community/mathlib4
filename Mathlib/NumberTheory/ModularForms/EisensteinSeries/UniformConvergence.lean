@@ -317,7 +317,7 @@ theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
     apply Eis_bound_2 k z n x hnn C2
 
 lemma  eisensteinSeries_TendstoLocallyUniformlyOn  (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
-  (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
   (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
   ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
