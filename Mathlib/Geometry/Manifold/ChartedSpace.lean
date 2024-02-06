@@ -1177,17 +1177,15 @@ protected instance instChartedSpace : ChartedSpace H s where
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  have : {PartialHomeomorph.subtypeRestr (chartAt H ↑x) hs} = xset := hx
-  exact ⟨x, mem_singleton_iff.mp (this ▸ he)⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
   every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
-lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H} (he' : e' ∈ atlas H t) :
-    ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
+lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
   rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  have : {PartialHomeomorph.subtypeRestr (chartAt H ↑x) ht} = xset := hx
-  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he')⟩
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
