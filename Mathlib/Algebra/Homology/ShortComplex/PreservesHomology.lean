@@ -400,6 +400,11 @@ noncomputable def mapCyclesIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S]
     (S.map F).cycles ≅ F.obj S.cycles :=
   (S.leftHomologyData.map F).cyclesIso
 
+@[reassoc (attr := simp)]
+lemma mapCyclesIso_hom_iCycles [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+    (S.mapCyclesIso F).hom ≫ F.map S.iCycles = (S.map F).iCycles := by
+  apply LeftHomologyData.cyclesIso_hom_comp_i
+
 /-- When a functor `F` preserves the left homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).leftHomology ≅ F.obj S.leftHomology`. -/
 noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
@@ -755,6 +760,18 @@ instance quasiIso_map_of_preservesLeftHomology
     infer_instance
   rw [(γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
   infer_instance
+
+lemma quasiIso_map_iff_of_preservesLeftHomology
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
+    [ReflectsIsomorphisms F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
+  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
+  constructor
+  · intro
+    exact isIso_of_reflects_iso _ F
+  · intro
+    infer_instance
 
 instance quasiIso_map_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]

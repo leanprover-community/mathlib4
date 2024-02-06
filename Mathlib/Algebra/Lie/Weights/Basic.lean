@@ -210,26 +210,37 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   exact ⟨k, by simp [hk x]⟩
 #align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
+theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
+    ∃ k : ℕ,
+      weightSpace M χ ≤ LinearMap.ker ((toEndomorphism R L M x - algebraMap R _ (χ x)) ^ k) := by
+  use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex (χ x)
+  intro m hm
+  replace hm : m ∈ (toEndomorphism R L M x).maximalGeneralizedEigenspace (χ x) :=
+    weightSpace_le_weightSpaceOf M x χ hm
+  rwa [Module.End.maximalGeneralizedEigenspace_eq] at hm
+
 variable (R) in
 theorem exists_weightSpace_zero_le_ker_of_isNoetherian
     [IsNoetherian R M] (x : L) :
     ∃ k : ℕ, weightSpace M (0 : L → R) ≤ LinearMap.ker (toEndomorphism R L M x ^ k) := by
-  use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex 0
-  simp only [weightSpace, weightSpaceOf, LieSubmodule.iInf_coe_toSubmodule, Pi.zero_apply, iInf_le,
-    ← Module.End.generalizedEigenspace_zero,
-    ← (toEndomorphism R L M x).maximalGeneralizedEigenspace_eq]
+  simpa using exists_weightSpace_le_ker_of_isNoetherian M (0 : L → R) x
+
+lemma isNilpotent_toEndomorphism_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L) :
+    _root_.IsNilpotent <| toEndomorphism R L (weightSpace M χ) x - algebraMap R _ (χ x) := by
+  have : toEndomorphism R L (weightSpace M χ) x - algebraMap R _ (χ x) =
+      (toEndomorphism R L M x - algebraMap R _ (χ x)).restrict
+        (fun m hm ↦ sub_mem (LieSubmodule.lie_mem _ hm) (Submodule.smul_mem _ _ hm)) := by
+    rfl
+  obtain ⟨k, hk⟩ := exists_weightSpace_le_ker_of_isNoetherian M χ x
+  use k
+  ext ⟨m, hm⟩
+  simpa [this, LinearMap.pow_restrict _, LinearMap.restrict_apply] using hk hm
 
 /-- A (nilpotent) Lie algebra acts nilpotently on the zero weight space of a Noetherian Lie
 module. -/
-theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M]
-    (x : L) : _root_.IsNilpotent <| toEndomorphism R L (weightSpace M (0 : L → R)) x := by
-  obtain ⟨k, hk⟩ := exists_weightSpace_zero_le_ker_of_isNoetherian R M x
-  use k
-  ext ⟨m, hm⟩
-  rw [LinearMap.zero_apply, LieSubmodule.coe_zero, Submodule.coe_eq_zero, ←
-    LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism, LinearMap.pow_restrict, ←
-    SetLike.coe_eq_coe, LinearMap.restrict_apply, Submodule.coe_mk, Submodule.coe_zero]
-  exact hk hm
+theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M] (x : L) :
+    _root_.IsNilpotent <| toEndomorphism R L (weightSpace M (0 : L → R)) x := by
+  simpa using isNilpotent_toEndomorphism_sub_algebraMap M (0 : L → R) x
 #align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEndomorphism_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
@@ -444,7 +455,8 @@ lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R
     (eventually_iInf_lowerCentralSeries_eq R L M)
   obtain ⟨hl₁, hl₂, hl₃⟩ := hl l (le_refl _)
   simp_rw [← iInf_lowerCentralSeries_eq_posFittingComp, hl₁, hl₂, hl₃,
-    LieSubmodule.lowerCentralSeries_map_eq_lcs, ←LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
+    LieSubmodule.lowerCentralSeries_map_eq_lcs, ← LieSubmodule.lcs_sup, lowerCentralSeries,
+    h.eq_top]
 
 lemma weightSpace_weightSpaceOf_map_incl (x : L) (χ : L → R) :
     (weightSpace (weightSpaceOf M (χ x) x) χ).map (weightSpaceOf M (χ x) x).incl =
@@ -574,6 +586,25 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
     rintro - ⟨u, hu, rfl⟩
     exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hu
 
+lemma independent_weightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
+    CompleteLattice.Independent fun (χ : R) ↦ weightSpaceOf M χ x := by
+  rw [LieSubmodule.independent_iff_coe_toSubmodule]
+  exact (toEndomorphism R L M x).independent_generalizedEigenspace
+
+lemma finite_weightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
+    {χ : R | weightSpaceOf M χ x ≠ ⊥}.Finite :=
+  CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpaceOf R L M x)
+
+lemma finite_weightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    {χ : L → R | weightSpace M χ ≠ ⊥}.Finite :=
+  CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpace R L M)
+
+/-- The collection of weights of a Noetherian Lie module, bundled as a `Finset`. -/
+noncomputable abbrev weight [NoZeroSMulDivisors R M] [IsNoetherian R M] :=
+  (finite_weightSpace_ne_bot R L M).toFinset
+
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
@@ -631,7 +662,8 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
         rw [← hχ, weightSpace_weightSpaceOf_map_incl]
       simp_rw [biSup_congr this, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
         LieSubmodule.range_incl]
-    simpa only [←ih, iSup_comm (ι := K), iSup_iSup_eq_right] using iSup_weightSpaceOf_eq_top K L M y
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using
+      iSup_weightSpaceOf_eq_top K L M y
 
 end field
 

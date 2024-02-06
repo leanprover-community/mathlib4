@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Subobject
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 #align_import algebra.homology.Module from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -42,7 +42,7 @@ theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f
         h (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x)) =
           k (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x))) :
     h = k := by
-  refine' cokernel_funext fun n => _
+  refine' Concrete.cokernel_funext fun n => _
   -- porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
   -- Gosh it would be nice if `equiv_rw` could directly use an isomorphism, or an enriched `≃`.
   obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫

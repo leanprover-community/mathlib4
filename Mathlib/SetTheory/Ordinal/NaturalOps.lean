@@ -203,7 +203,7 @@ corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
 noncomputable def nadd : Ordinal → Ordinal → Ordinal
   | a, b =>
     max (blsub.{u, u} a fun a' _ => nadd a' b) (blsub.{u, u} b fun b' _ => nadd a b')
-  termination_by nadd o₁ o₂ => (o₁, o₂)
+  termination_by o₁ o₂ => (o₁, o₂)
 #align ordinal.nadd Ordinal.nadd
 
 @[inherit_doc]
@@ -221,7 +221,7 @@ the Cantor normal forms of `a` and `b` as if they were polynomials in `ω`. Addi
 done via natural addition. -/
 noncomputable def nmul : Ordinal.{u} → Ordinal.{u} → Ordinal.{u}
   | a, b => sInf {c | ∀ a' < a, ∀ b' < b, nmul a' b ♯ nmul a b' < c ♯ nmul a' b'}
-termination_by nmul a b => (a, b)
+termination_by a b => (a, b)
 #align ordinal.nmul Ordinal.nmul
 
 @[inherit_doc]
@@ -271,7 +271,7 @@ theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
     rw [nadd_def, nadd_def, max_comm]
     congr <;> ext <;> apply nadd_comm
     -- porting note: below was decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
-  termination_by nadd_comm a b => (a,b)
+  termination_by a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
@@ -296,7 +296,7 @@ theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   · congr <;> ext (d hd) <;> apply nadd_assoc
   · exact fun _ _ h => nadd_le_nadd_left h a
   · exact fun _ _ h => nadd_le_nadd_right h c
-termination_by _ => (a, b, c)
+termination_by (a, b, c)
 -- Porting note: above lines replaces
 -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
@@ -373,7 +373,7 @@ instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (�
 instance add_contravariantClass_le :
     ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
-    by_contra' h'
+    by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 
@@ -560,7 +560,7 @@ theorem nmul_comm : ∀ a b, a ⨳ b = b ⨳ a
       exact H _ hd _ hc
     · rw [nadd_comm, nmul_comm a d, nmul_comm c, nmul_comm c]
       exact H _ hd _ hc
-termination_by nmul_comm a b => (a, b)
+termination_by a b => (a, b)
 #align ordinal.nmul_comm Ordinal.nmul_comm
 
 @[simp]
@@ -587,7 +587,7 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   -- for the termination checker.
   · simpa only [nmul_one c] using H c hc
   · simpa only [nmul_one c] using hc.trans_le ha
-termination_by nmul_one a => a
+termination_by a
 #align ordinal.nmul_one Ordinal.nmul_one
 
 @[simp]
@@ -653,7 +653,7 @@ theorem nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
         nadd_left_comm _ (a' ⨳ c), nadd_lt_nadd_iff_left, nadd_left_comm, nadd_comm (a' ⨳ c'),
         nadd_left_comm _ (a ⨳ c'), nadd_lt_nadd_iff_left, nadd_comm _ (a' ⨳ c'),
         nadd_comm _ (a' ⨳ c'), nadd_left_comm, nadd_lt_nadd_iff_left] at this
-termination_by nmul_nadd a b c => (a, b, c)
+termination_by a b c => (a, b, c)
 #align ordinal.nmul_nadd Ordinal.nmul_nadd
 
 theorem nadd_nmul (a b c) : (a ♯ b) ⨳ c = a ⨳ c ♯ b ⨳ c := by
@@ -757,7 +757,7 @@ theorem nmul_assoc : ∀ a b c, a ⨳ b ⨳ c = a ⨳ (b ⨳ c)
       rw [← nmul_assoc a' b c, ← nmul_assoc a b' c, ← nmul_assoc a b c', ← nmul_assoc a' b' c',
         ← nmul_assoc a' b' c, ← nmul_assoc a' b c', ← nmul_assoc a b' c']
       exact nmul_nadd_lt₃ ha hb hc
-termination_by nmul_assoc a b c => (a, b, c)
+termination_by a b c => (a, b, c)
 #align ordinal.nmul_assoc Ordinal.nmul_assoc
 
 end Ordinal
@@ -829,10 +829,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · -- Porting note: `this` was inline in the `rw`, but now needs a preliminary `dsimp at this`.
-      have := IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc
-      dsimp at this
-      rw [← this, blsub_le_iff]
+    · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 #align nat_ordinal.mul_le_nmul NatOrdinal.mul_le_nmul
 

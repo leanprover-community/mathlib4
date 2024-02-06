@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
-  cases' p.eq_zero_or_pos with hp hp
+  rcases p.eq_zero_or_pos with hp | hp
   · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
   · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
@@ -170,9 +170,14 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
     exact mt leadingCoeff_eq_zero.1 hf
 #align polynomial.nat_degree_expand Polynomial.natDegree_expand
 
-theorem Monic.expand {p : ℕ} {f : R[X]} (hp : 0 < p) (h : f.Monic) : (expand R p f).Monic := by
-  rw [Monic.def, Polynomial.leadingCoeff, natDegree_expand, coeff_expand hp]
-  simp [hp, h]
+theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
+    (expand R p f).leadingCoeff = f.leadingCoeff := by
+  simp_rw [leadingCoeff, natDegree_expand, coeff_expand_mul hp]
+
+theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
+  simp only [Monic, leadingCoeff_expand hp]
+
+alias ⟨_, Monic.expand⟩ := monic_expand_iff
 #align polynomial.monic.expand Polynomial.Monic.expand
 
 theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
@@ -219,11 +224,12 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
   simp [coeff_contract hp, coeff_expand hp.bot_lt, Nat.mul_div_cancel _ hp.bot_lt]
 #align polynomial.contract_expand Polynomial.contract_expand
 
-section CharP
+theorem contract_one {f : R[X]} : contract 1 f = f :=
+  ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
 
-variable [CharP R p]
+section ExpChar
 
-theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
+theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
     (hp : p ≠ 0) : expand R p (contract p f) = f := by
   ext n
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
@@ -240,11 +246,17 @@ theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivativ
     exact absurd h' h
 #align polynomial.expand_contract Polynomial.expand_contract
 
-variable [hp : Fact p.Prime]
+variable [ExpChar R p]
+
+theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0) :
+    expand R p (contract p f) = f := by
+  obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  · rw [expand_one, contract_one]
+  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
 theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine' f.induction_on' (fun a b ha hb => _) fun n a => _
-  · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_char]
+  · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
@@ -259,7 +271,7 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
     expand_mul, ← map_expand]
 #align polynomial.map_expand_pow_char Polynomial.map_expand_pow_char
 
-end CharP
+end ExpChar
 
 end CommSemiring
 

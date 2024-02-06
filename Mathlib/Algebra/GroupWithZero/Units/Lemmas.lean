@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -23,7 +24,7 @@ variable [MonoidWithZero M₀]
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a b c d : G₀}
 
 @[simp]
 theorem div_self (h : a ≠ 0) : a / a = 1 :=
@@ -147,6 +148,13 @@ theorem divp_mk0 (a : G₀) {b : G₀} (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = 
   divp_eq_div _ _
 #align divp_mk0 divp_mk0
 
+namespace Commute
+
+/-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
+protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a / b = c / d ↔ a * d = c * b := hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
+
+end Commute
 end GroupWithZero
 
 section CommGroupWithZero
@@ -188,6 +196,12 @@ theorem div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d =
   IsUnit.div_eq_div_iff hb.isUnit hd.isUnit
 #align div_eq_div_iff div_eq_div_iff
 
+/-- The `CommGroupWithZero` version of `div_eq_div_iff_div_eq_div`. -/
+theorem div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d ↔ a / c = b / d := by
+  conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel _ hb]
+  conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel _ hc]
+  rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
+
 theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
   IsUnit.div_div_cancel ha.isUnit
 #align div_div_cancel' div_div_cancel'
@@ -207,8 +221,9 @@ end CommGroupWithZero
 
 section MonoidWithZero
 
-variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWithZeroHomClass F G₀ M₀]
-  [MonoidWithZeroHomClass F' G₀ M₀'] (f : F) {a : G₀}
+variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
+  [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀'] [MonoidWithZeroHomClass F' G₀ M₀']
+  (f : F) {a : G₀}
 
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
@@ -231,7 +246,8 @@ end MonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
+variable [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
+  [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
 
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
@@ -292,7 +308,7 @@ end Units
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀

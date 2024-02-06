@@ -332,7 +332,7 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
   { hf.addGroup f zero add neg sub nsmul zsmul with
     toAddMonoidWithOne := hf.addMonoidWithOne f zero one add nsmul nat_cast
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
+    intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
@@ -426,8 +426,10 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
   { hf.semigroup f mul with
     toMulOneClass := hf.mulOneClass f one mul
     npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; erw [←npow, pow_zero, ←one],
-    npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [←npow, pow_succ, ←npow, ←mul] }
+    npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
+    npow_succ := fun n => hf.forall.2 fun x => by
+      dsimp only
+      erw [← npow, pow_succ, ← npow, ← mul] }
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 

@@ -106,8 +106,12 @@ instance (n : ℤ) :
 variable {C}
 
 @[simp]
+lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).X p = K.X (p + n) := rfl
+
+@[simp]
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
-    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p+n) := rfl
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p + n) := rfl
 
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
@@ -282,5 +286,10 @@ noncomputable instance hasShift :
 noncomputable instance commShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
+
+instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
+  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
+    Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
 
 end HomotopyCategory

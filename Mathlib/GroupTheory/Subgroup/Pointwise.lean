@@ -39,6 +39,16 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
 #align inv_coe_set inv_coe_set
 #align neg_coe_set neg_coe_set
 
+@[to_additive (attr := simp)]
+lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
+
+@[to_additive (attr := simp)]
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    MulOpposite.op a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
 variable [Group G] [AddGroup A] {s : Set G}
 
 namespace Subgroup
@@ -138,7 +148,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
 
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
-  sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
+  sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 #align subgroup.closure_mul_le Subgroup.closure_mul_le
@@ -147,8 +157,8 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
-    (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
-      subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
+    (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
+      subset_closure ⟨1, H.one_mem, k, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 #align subgroup.sup_eq_closure Subgroup.sup_eq_closure_mul
 #align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure_add
@@ -156,10 +166,8 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
 @[to_additive]
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
     s * (N : Set G) = (N : Set G) * s := by
-  ext x
-  refine (exists_congr fun y => ?_).trans exists_swap
-  simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
-    ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
+  rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
+  simp only [image_mul_left, image_mul_right, Set.preimage, SetLike.mem_coe, hN.mem_comm_iff]
 
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
@@ -168,14 +176,14 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   refine closure_induction'' (p := fun x => x ∈ (H : Set G) * (N : Set G)) hx ?_ ?_ ?_ ?_
-  · rintro _ ⟨x, y, hx, hy, rfl⟩
+  · rintro _ ⟨x, hx, y, hy, rfl⟩
     exact mul_mem_mul hx hy
-  · rintro _ ⟨x, y, hx, hy, rfl⟩
+  · rintro _ ⟨x, hx, y, hy, rfl⟩
     simpa only [mul_inv_rev, mul_assoc, inv_inv, inv_mul_cancel_left]
       using mul_mem_mul (inv_mem hx) (hN.conj_mem _ (inv_mem hy) x)
-  · exact ⟨1, 1, one_mem _, one_mem _, mul_one 1⟩
-  · rintro _ _ ⟨x, y, hx, hy, rfl⟩ ⟨x', y', hx', hy', rfl⟩
-    refine ⟨x * x', x'⁻¹ * y * x' * y', mul_mem hx hx', mul_mem ?_ hy', ?_⟩
+  · exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
+  · rintro _ _ ⟨x, hx, y, hy, rfl⟩ ⟨x', hx', y', hy', rfl⟩
+    refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
     · simpa using hN.conj_mem _ hy x'⁻¹
     · simp only [mul_assoc, mul_inv_cancel_left]
 #align subgroup.mul_normal Subgroup.mul_normal
@@ -189,35 +197,33 @@ theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * 
 #align subgroup.normal_mul Subgroup.normal_mul
 #align add_subgroup.normal_add AddSubgroup.normal_add
 
--- porting note: todo: use `∩` in the RHS
 @[to_additive]
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
-    (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ⊓ C := by
+    (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ∩ C := by
   ext
-  simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
-  · rintro ⟨y, z, hy, ⟨hzB, hzC⟩, rfl⟩
+  · rintro ⟨y, hy, z, ⟨hzB, hzC⟩, rfl⟩
     refine' ⟨_, mul_mem (h hy) hzC⟩
-    exact ⟨y, z, hy, hzB, rfl⟩
-  rintro ⟨⟨y, z, hy, hz, rfl⟩, hyz⟩
-  refine' ⟨y, z, hy, ⟨hz, _⟩, rfl⟩
+    exact ⟨y, hy, z, hzB, rfl⟩
+  rintro ⟨⟨y, hy, z, hz, rfl⟩, hyz⟩
+  refine' ⟨y, hy, z, ⟨hz, _⟩, rfl⟩
   suffices y⁻¹ * (y * z) ∈ C by simpa
   exact mul_mem (inv_mem (h hy)) hyz
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
 #align add_subgroup.add_inf_assoc AddSubgroup.add_inf_assoc
 
--- porting note: todo: use `∩` in the RHS
 @[to_additive]
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
-    ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ⊓ ↑B * ↑C := by
+    ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ∩ (↑B * ↑C) := by
   ext
-  simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
-  · rintro ⟨y, z, ⟨hyA, hyB⟩, hz, rfl⟩
+  · rintro ⟨y, ⟨hyA, hyB⟩, z, hz, rfl⟩
     refine' ⟨A.mul_mem hyA (h hz), _⟩
-    exact ⟨y, z, hyB, hz, rfl⟩
-  rintro ⟨hyz, y, z, hy, hz, rfl⟩
-  refine' ⟨y, z, ⟨_, hy⟩, hz, rfl⟩
+    exact ⟨y, hyB, z, hz, rfl⟩
+  rintro ⟨hyz, y, hy, z, hz, rfl⟩
+  refine' ⟨y, ⟨_, hy⟩, z, hz, rfl⟩
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 #align subgroup.inf_mul_assoc Subgroup.inf_mul_assoc
@@ -227,8 +233,8 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
-    rcases hmem with ⟨h, k, hh, hk, rfl⟩
-    refine ⟨g * h * g⁻¹, g * k * g⁻¹, hH.conj_mem h hh g, hK.conj_mem k hk g, ?_⟩
+    rcases hmem with ⟨h, hh, k, hk, rfl⟩
+    refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, ?_⟩
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 

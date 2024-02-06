@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Tactic.Inhabit
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -109,24 +108,6 @@ def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
 
 instance : Unique True :=
   uniqueProp trivial
-
-theorem Fin.eq_zero : ∀ n : Fin 1, n = 0
-  | ⟨_, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
-#align fin.eq_zero Fin.eq_zero
-
-instance {n : ℕ} : Inhabited (Fin n.succ) :=
-  ⟨0⟩
-
-instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
-  ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
-
-@[simp]
-theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
-  rfl
-#align fin.default_eq_zero Fin.default_eq_zero
-
-instance Fin.unique : Unique (Fin 1) where
-  uniq := Fin.eq_zero
 
 namespace Unique
 

@@ -18,6 +18,10 @@ Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel
 by choosing appropriate filtrations. This file also contains the one sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
+**Note**: the usual Borel-Cantelli lemmas are not in this file. See
+`MeasureTheory.measure_limsup_eq_zero` for the first (which does not depend on the results here),
+and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
+
 ## Main results
 
 - `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one sided martingale bound: given
@@ -196,7 +200,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine' ⟨b + |f 0 ω|, fun y hy => _⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [sub_eq_add_neg]
-      exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs_self _)
+      exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs _)
     · exact sub_le_iff_le_add.1 (le_trans (sub_le_sub_left (le_abs_self _) _) (hb ⟨n, rfl⟩))
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨c, hc⟩ := h
     · exact ⟨c - f 0 ω, hc.sub_const _⟩

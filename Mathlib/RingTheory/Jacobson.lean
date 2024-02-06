@@ -248,7 +248,7 @@ theorem isJacobson_localization [H : IsJacobson R] : IsJacobson S := by
     have hxy : x * y ∈ (comap (algebraMap R S) P').jacobson := by
       rw [Ideal.jacobson, mem_sInf]
       intro J hJ
-      by_cases y ∈ J
+      by_cases h : y ∈ J
       · exact J.mul_mem_left x h
       · exact J.mul_mem_right y ((mem_sInf.1 hx) ⟨hJ.left, ⟨hJ.right, h⟩⟩)
     rw [hP] at hxy

@@ -199,7 +199,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
 theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     (hs : s ⊆ closedBall x (|p| / 2)) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s := by
-  cases' le_or_lt (|p| / 2) ε with hε hε
+  rcases le_or_lt (|p| / 2) ε with hε | hε
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
@@ -69,10 +68,6 @@ theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) 
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-@[simp]
-theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
-#align abs_norm abs_norm
-
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
@@ -86,6 +81,17 @@ theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : �
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
+
+theorem dist_smul_add_one_sub_smul_le [NormedSpace ℝ E] {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
+    dist (r • x + (1 - r) • y) x ≤ dist y x :=
+  calc
+    dist (r • x + (1 - r) • y) x = ‖1 - r‖ * ‖x - y‖ := by
+      simp_rw [dist_eq_norm', ← norm_smul, sub_smul, one_smul, smul_sub, ← sub_sub, ← sub_add,
+        sub_right_comm]
+    _ = (1 - r) * dist y x := by
+      rw [Real.norm_eq_abs, abs_eq_self.mpr (sub_nonneg.mpr h.2), dist_eq_norm']
+    _ ≤ (1 - 0) * dist y x := by gcongr; exact h.1
+    _ = dist y x := by rw [sub_zero, one_mul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -170,7 +176,7 @@ instance NormedSpace.discreteTopology_zmultiples
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     refine Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
-  · rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  · rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
     refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
     ext ⟨x, hx⟩
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
@@ -221,7 +227,8 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 See note [reducible non-instances] -/
 @[reducible]
 def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddCommGroup β] [Module α β]
-    [SeminormedAddCommGroup γ] [NormedSpace α γ] [LinearMapClass F α β γ] (f : F) :
+    [SeminormedAddCommGroup γ] [NormedSpace α γ] [FunLike F β γ] [LinearMapClass F α β γ]
+    (f : F) :
     @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
   -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
   -- unfolding the induced semi-norm is fiddly
@@ -396,8 +403,8 @@ section NormedAlgebra
 See the implementation notes for `Algebra` for a discussion about non-unital algebras. Following
 the strategy there, a non-unital *normed* algebra can be written as:
 ```lean
-variables [NormedField 𝕜] [NonunitalSeminormedRing 𝕜']
-variables [NormedModule 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
+variables [NormedField 𝕜] [NonUnitalSeminormedRing 𝕜']
+variables [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
 ```
 -/
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
@@ -526,7 +533,8 @@ end NormedAlgebra
 See note [reducible non-instances] -/
 @[reducible]
 def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring β] [Algebra α β]
-    [SeminormedRing γ] [NormedAlgebra α γ] [NonUnitalAlgHomClass F α β γ] (f : F) :
+    [SeminormedRing γ] [NormedAlgebra α γ] [FunLike F β γ] [NonUnitalAlgHomClass F α β γ]
+    (f : F) :
     @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
   -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm
   refine @NormedAlgebra.mk (𝕜 := α) (𝕜' := β) _ ?_ ?_ ?_
@@ -539,7 +547,7 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
 -- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val
+  NormedAlgebra.induced 𝕜 S A S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
 
 section RestrictScalars

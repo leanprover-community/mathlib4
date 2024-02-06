@@ -179,7 +179,7 @@ instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ 
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
-  single_op (fun i : I => ((· • ·) r : f i → f i)) (fun _ => smul_zero _) _ _
+  single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 #align pi.single_smul Pi.single_smul
 
 -- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
@@ -245,7 +245,7 @@ instance smulCommClass {ι α β M : Type*} [SMul α M] [SMul β M] [SMulCommCla
 @[to_additive]
 theorem update_smul {α : Type*} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
     (i : I) (x₁ : f i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
-  funext fun j => (apply_update (β := f) (fun _ => (· • ·) c) f₁ i x₁ j).symm
+  funext fun j => (apply_update (β := f) (fun _ => (c • ·)) f₁ i x₁ j).symm
 #align function.update_smul Function.update_smul
 #align function.update_vadd Function.update_vadd
 
@@ -256,7 +256,7 @@ namespace Set
 @[to_additive]
 theorem piecewise_smul {α : Type*} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op (δ' := f) f₁ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) f₁ _ fun _ => (c • ·)
 #align set.piecewise_smul Set.piecewise_smul
 #align set.piecewise_vadd Set.piecewise_vadd
 

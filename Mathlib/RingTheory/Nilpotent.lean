@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.GroupTheory.Submonoid.ZeroDivisors
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -28,7 +29,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 universe u v
 
-open BigOperators
+open BigOperators Function Set
 
 variable {R S : Type*} {x y : R}
 
@@ -45,9 +46,15 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨n, e⟩
 #align is_nilpotent.mk IsNilpotent.mk
 
+@[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
+  ⟨0, Subsingleton.elim _ _⟩
+
 @[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
+
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
 
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
@@ -55,31 +62,50 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
-lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
+lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
   obtain ⟨N,hN⟩ := hx
   use N
-  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+  rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+
+theorem  IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+    (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
+  obtain ⟨n, h⟩ := h
+  use (m*n)
+  rw [← h, pow_mul x m n]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
   cases n with
   | zero => contradiction
-  | succ => exact IsNilpotent.pow hx
+  | succ => exact  IsNilpotent.pow_succ _ hx
+
+@[simp]
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+ ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
 
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
+    IsNilpotent (t • a) := by
+  obtain ⟨k, ha⟩ := ha
+  use k
+  rw [smul_pow, ha, smul_zero]
+
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
+    [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
+    IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
 lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    [FunLike F R S] [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
     IsNilpotent (f r) ↔ IsNilpotent r :=
   ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
@@ -100,8 +126,76 @@ theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilp
   rw [neg_pow, hru.mul_pow, hn]
   simp
 
+section NilpotencyClass
+
+section ZeroPow
+
+variable [Zero R] [Pow R ℕ]
+
+variable (x) in
+/-- If `x` is nilpotent, the nilpotency class is the smallest natural number `k` such that
+`x ^ k = 0`. If `x` is not nilpotent, the nilpotency class takes the junk value `0`. -/
+noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
+
+@[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
+    nilpotencyClass x = 0 := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  suffices s = univ by change sInf _ = 0; simp [this]
+  exact eq_univ_iff_forall.mpr fun k ↦ Subsingleton.elim _ _
+
+lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
+    IsNilpotent x := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  change s.Nonempty
+  change 0 < sInf s at hx
+  by_contra contra
+  simp [not_nonempty_iff_eq_empty.mp contra] at hx
+
+lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
+  Nat.sInf_mem hx
+
+end ZeroPow
+
+section MonoidWithZero
+
+variable [MonoidWithZero R]
+
+lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
+    nilpotencyClass x = k + 1 ↔ x ^ (k + 1) = 0 ∧ x ^ k ≠ 0 := by
+  let s : Set ℕ := {k | x ^ k = 0}
+  have : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := fun k₁ k₂ h_le hk₁ ↦ pow_eq_zero_of_le h_le hk₁
+  simp [nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
+
+@[simp] lemma nilpotencyClass_zero [Nontrivial R] :
+    nilpotencyClass (0 : R) = 1 :=
+  nilpotencyClass_eq_succ_iff.mpr <| by constructor <;> simp
+
+@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
+    0 < nilpotencyClass x ↔ IsNilpotent x := by
+  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ ?_⟩
+  replace hx := pow_nilpotencyClass hx
+  rw [hx', pow_zero] at hx
+  exact one_ne_zero hx
+
+lemma pow_pred_nilpotencyClass [Nontrivial R] (hx : IsNilpotent x) :
+    x ^ (nilpotencyClass x - 1) ≠ 0 :=
+  (nilpotencyClass_eq_succ_iff.mp <| Nat.eq_add_of_sub_eq (pos_nilpotencyClass_iff.mpr hx) rfl).2
+
+lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
+    x = 0 := by
+  have : IsNilpotent x := isNilpotent_of_pos_nilpotencyClass (hx ▸ one_pos)
+  rw [← pow_nilpotencyClass this, hx, pow_one]
+
+@[simp] lemma nilpotencyClass_eq_one [Nontrivial R] :
+    nilpotencyClass x = 1 ↔ x = 0 :=
+  ⟨eq_zero_of_nilpotencyClass_eq_one, fun hx ↦ hx ▸ nilpotencyClass_zero⟩
+
+end MonoidWithZero
+
+end NilpotencyClass
+
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
-@[mk_iff isReduced_iff]
+@[mk_iff]
 class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
   /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0
@@ -127,7 +221,8 @@ theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x
 #align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
-    [MonoidWithZeroHomClass F R S] (f : F) (hf : Function.Injective f) [IsReduced S] :
+    [FunLike F R S] [MonoidWithZeroHomClass F R S]
+    (f : F) (hf : Function.Injective f) [IsReduced S] :
     IsReduced R := by
   constructor
   intro x hx
@@ -137,7 +232,7 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
 #align is_reduced_of_injective isReduced_of_injective
 
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
-    [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
+    [FunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
@@ -195,7 +290,9 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
-  induction' s using Finset.induction with j s hj ih; simp
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))

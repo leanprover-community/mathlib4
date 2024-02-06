@@ -30,7 +30,7 @@ protected def mulLeft₀ (a : G) (ha : a ≠ 0) : Perm G :=
 #align equiv.mul_left₀_symm_apply Equiv.mulLeft₀_symm_apply
 #align equiv.mul_left₀_apply Equiv.mulLeft₀_apply
 
-theorem _root_.mulLeft_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * ·) a : G → G) :=
+theorem _root_.mulLeft_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective (a * · : G → G) :=
   (Equiv.mulLeft₀ a ha).bijective
 #align mul_left_bijective₀ mulLeft_bijective₀
 

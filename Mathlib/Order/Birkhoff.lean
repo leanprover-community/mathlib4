@@ -52,16 +52,16 @@ variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 @[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
   refine ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ ?_⟩
   have := mem_Ici_iff.2 (le_refl a)
-  rw [←hst] at this
-  exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) fun ha ↦
-      le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_right
+  rw [← hst] at this
+  exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) <| hst.ge.trans inf_le_left) fun ha ↦
+      le_antisymm (le_Ici.2 ha) <| hst.ge.trans inf_le_right
 
 variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 $ erase_inf_Ici ha $ by simpa [eq_comm] using has).resolve_left
+    exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
       (lt_erase.2 ha).ne'⟩
   · rintro ⟨a, rfl⟩
     exact infIrred_Ici _
@@ -74,16 +74,16 @@ variable [SemilatticeSup α] {s : LowerSet α} {a : α}
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
   refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
   have := mem_Iic_iff.2 (le_refl a)
-  rw [←hst] at this
-  exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm $ Iic_le.2 ha) fun ha ↦
-    (le_sup_right.trans_eq hst).antisymm $ Iic_le.2 ha
+  rw [← hst] at this
+  exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm <| Iic_le.2 ha) fun ha ↦
+    (le_sup_right.trans_eq hst).antisymm <| Iic_le.2 ha
 
 variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
-    exact ⟨a, (hs.2 $ erase_sup_Iic ha $ by simpa [eq_comm] using has).resolve_left
+    exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
       (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
@@ -108,7 +108,7 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
         refine' le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) _
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a
         exact Finset.sup_le fun i hi ↦
-          le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 $ le_sup (f := id) hi) le_rfl
+          le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 <| le_sup (f := id) hi) le_rfl
       right_inv := fun s ↦ by
         ext a
         dsimp
@@ -117,7 +117,7 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp
           exact le_sup (Set.mem_toFinset.2 ha) }
-    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
+    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 -- We remove this instance locally to let `Set.toFinset_Iic` fire. When the instance is present,
 -- `simp` refuses to use that lemma because TC inference synthesizes `Set.fintypeIic`, which is not
@@ -139,7 +139,7 @@ noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrr
         rintro ⟨s, hs⟩
         obtain ⟨a, rfl⟩ := LowerSet.supIrred_iff_of_finite.1 hs
         simp }
-    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
+    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 end Fintype
 
@@ -151,7 +151,7 @@ variable [Fintype α] [@DecidablePred α SupIrred]
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
-  by_cases IsEmpty α
+  by_cases h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
   rw [not_isEmpty_iff] at h
   have := Fintype.toOrderBot α

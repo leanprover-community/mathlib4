@@ -199,14 +199,14 @@ theorem updateColumn_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
 
 theorem updateRow_apply [DecidableEq m] {i' : m} :
     updateRow M i b i' j = if i' = i then b j else M i' j := by
-  by_cases i' = i
+  by_cases h : i' = i
   · rw [h, updateRow_self, if_pos rfl]
   · rw [updateRow_ne h, if_neg h]
 #align matrix.update_row_apply Matrix.updateRow_apply
 
 theorem updateColumn_apply [DecidableEq n] {j' : n} :
     updateColumn M j c i j' = if j' = j then c i else M i j' := by
-  by_cases j' = j
+  by_cases h : j' = j
   · rw [h, updateColumn_self, if_pos rfl]
   · rw [updateColumn_ne h, if_neg h]
 #align matrix.update_column_apply Matrix.updateColumn_apply

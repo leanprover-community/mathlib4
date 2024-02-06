@@ -104,7 +104,8 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
 
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x * a + c ≤ x * b + d := by
   success_if_fail_with_msg
-    "rel failed, cannot prove goal by 'substituting' the listed relationships. The steps which could not be automatically justified were: \n0 ≤ x\nc ≤ d"
+    "rel failed, cannot prove goal by 'substituting' the listed relationships. \
+     The steps which could not be automatically justified were:\n0 ≤ x\nc ≤ d"
     (rel [h1])
   have : 0 ≤ x := by linarith
   rel [h1, h2]
@@ -197,3 +198,13 @@ example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i in s, f i 
   gcongr
   apply h
   assumption
+
+def dontUnfoldMe : Nat → List Bool → Nat
+  | 0, _ => 0
+  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+
+-- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
+example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
+  gcongr
+  guard_target = dontUnfoldMe 14 l ≤ 0
+  apply test_sorry

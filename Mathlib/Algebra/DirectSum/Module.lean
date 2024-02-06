@@ -103,7 +103,7 @@ variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
 def toModule : (⨁ i, M i) →ₗ[R] N :=
-  FunLike.coe (DFinsupp.lsum ℕ) φ
+  DFunLike.coe (DFinsupp.lsum ℕ) φ
 #align direct_sum.to_module DirectSum.toModule
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
@@ -432,7 +432,9 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
     (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
-    LinearMap.range_eq_top.1 <| (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
+    -- Note: #8386 had to specify value of `f`
+    (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
+      (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 #align direct_sum.is_internal_submodule_of_independent_of_supr_eq_top DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
 
 /-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,
@@ -452,6 +454,12 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
     Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
+
+@[simp]
+theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
+    IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
+  simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
+  exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 

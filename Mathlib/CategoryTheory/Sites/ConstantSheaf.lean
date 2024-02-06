@@ -37,10 +37,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
           simp }
       naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
 
-variable [ConcreteCategory D] [PreservesLimits (forget D)]
-  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+variable [HasWeakSheafify J D]
 
 /--
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the

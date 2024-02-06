@@ -31,7 +31,7 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
   refine' isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, _⟩
-  rintro z ⟨x, y, hx, hy, rfl⟩
+  rintro z ⟨x, hx, y, hy, rfl⟩
   exact norm_mul_le_of_le (hRs x hx) (hRt y hy)
 #align metric.bounded.mul Bornology.IsBounded.mul
 #align metric.bounded.add Bornology.IsBounded.add

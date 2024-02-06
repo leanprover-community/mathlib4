@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
 #align_import analysis.normed_space.triv_sq_zero_ext from "leanprover-community/mathlib"@"88a563b158f59f2983cfad685664da95502e8cdd"
@@ -12,7 +13,15 @@ import Mathlib.Topology.Instances.TrivSqZeroExt
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
 
-For now, this file contains results about `exp` for this type.
+This file contains results about `NormedSpace.exp` for `TrivSqZeroExt`.
+
+It also contains a definition of the $ℓ^1$ norm,
+which defines $\|r + m\| \coloneqq \|r\| + \|m\|$.
+This is not a particularly canonical choice of definition,
+but it is sufficient to provide a `NormedAlgebra` instance,
+and thus enables `NormedSpace.exp_add_of_commute` to be used on `TrivSqZeroExt`.
+If the non-canonicity becomes problematic in future,
+we could keep the collection of instances behind an `open scoped`.
 
 ## Main results
 
@@ -20,21 +29,29 @@ For now, this file contains results about `exp` for this type.
 * `TrivSqZeroExt.snd_exp`
 * `TrivSqZeroExt.exp_inl`
 * `TrivSqZeroExt.exp_inr`
+* The $ℓ^1$ norm on `TrivSqZeroExt`:
+  * `TrivSqZeroExt.instL1SeminormedAddCommGroup`
+  * `TrivSqZeroExt.instL1SeminormedRing`
+  * `TrivSqZeroExt.instL1SeminormedCommRing`
+  * `TrivSqZeroExt.instL1BoundedSMul`
+  * `TrivSqZeroExt.instL1NormedAddCommGroup`
+  * `TrivSqZeroExt.instL1NormedRing`
+  * `TrivSqZeroExt.instL1NormedCommRing`
+  * `TrivSqZeroExt.instL1NormedSpace`
+  * `TrivSqZeroExt.instL1NormedAlgebra`
 
 ## TODO
 
-* Actually define a sensible norm on `TrivSqZeroExt R M`, so that we have access to lemmas
-  like `exp_add`.
 * Generalize more of these results to non-commutative `R`. In principle, under sufficient conditions
   we should expect
- `(exp 𝕜 x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
+  `(exp 𝕜 x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 
 -/
 
 
-variable (𝕜 : Type*) {R M : Type*}
+variable (𝕜 : Type*) {S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
 
@@ -44,76 +61,70 @@ namespace TrivSqZeroExt
 
 section Topology
 
-variable [TopologicalSpace R] [TopologicalSpace M]
+section not_charZero
+variable [Field 𝕜] [Ring R] [AddCommGroup M]
+  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+  [TopologicalSpace R] [TopologicalSpace M]
+  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-/-- If `exp R x.fst` converges to `e` then `(exp R x).fst` converges to `e`. -/
-theorem hasSum_fst_expSeries [Field 𝕜] [Ring R] [AddCommGroup M] [Algebra 𝕜 R] [Module R M]
-    [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [Module 𝕜 M] [IsScalarTower 𝕜 R M]
-    [IsScalarTower 𝕜 Rᵐᵒᵖ M] [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M]
-    [ContinuousSMul Rᵐᵒᵖ M] (x : tsze R M) {e : R}
-    (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
-    HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
-  simpa [expSeries_apply_eq] using h
-#align triv_sq_zero_ext.has_sum_fst_exp_series TrivSqZeroExt.hasSum_fst_expSeries
+@[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
+    fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
+  simp [expSeries_apply_eq]
+
+end not_charZero
+
+section Ring
+variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
+  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+  [TopologicalSpace R] [TopologicalSpace M]
+  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+
+theorem snd_expSeries_of_smul_comm
+    (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
+    snd (expSeries 𝕜 (tsze R M) (n + 1) fun _ => x) = (expSeries 𝕜 R n fun _ => x.fst) • x.snd := by
+  simp_rw [expSeries_apply_eq, snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 (n + 1),
+    smul_smul, smul_assoc, Nat.factorial_succ, Nat.pred_succ, Nat.cast_mul, mul_inv_rev,
+    inv_mul_cancel_right₀ ((Nat.cast_ne_zero (R := 𝕜)).mpr <| Nat.succ_ne_zero n)]
 
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
-theorem hasSum_snd_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
-    [Algebra 𝕜 R] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [Module 𝕜 M]
-    [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M] [TopologicalRing R] [TopologicalAddGroup M]
-    [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] (x : tsze R M)
+theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
     (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) {e : R}
     (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => snd (expSeries 𝕜 (tsze R M) n fun _ => x)) (e • x.snd) := by
-  simp_rw [expSeries_apply_eq] at *
-  conv =>
-    congr
-    ext n
-    rw [snd_smul, snd_pow_of_smul_comm _ _ hx, nsmul_eq_smul_cast 𝕜 n, smul_smul, inv_mul_eq_div, ←
-      inv_div, ← smul_assoc]
-  apply HasSum.smul_const
   rw [← hasSum_nat_add_iff' 1]
-  rw [Finset.range_one, Finset.sum_singleton, Nat.cast_zero, div_zero, inv_zero, zero_smul,
-    sub_zero]
-  simp_rw [← Nat.succ_eq_add_one, Nat.pred_succ, Nat.factorial_succ, Nat.cast_mul, ←
-    Nat.succ_eq_add_one,
-    mul_div_cancel_left _ ((@Nat.cast_ne_zero 𝕜 _ _ _).mpr <| Nat.succ_ne_zero _)]
-  exact h
+  simp_rw [snd_expSeries_of_smul_comm _ _ hx]
+  simp_rw [expSeries_apply_eq] at *
+  rw [Finset.range_one, Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, pow_zero,
+    inv_one, one_smul, snd_one, sub_zero]
+  exact h.smul_const _
 #align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
 
 /-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
-theorem hasSum_expSeries_of_smul_comm [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M] [Algebra 𝕜 R]
-    [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] [Module 𝕜 M] [IsScalarTower 𝕜 R M]
-    [IsScalarTower 𝕜 Rᵐᵒᵖ M] [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M]
-    [ContinuousSMul Rᵐᵒᵖ M] (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd)
+theorem hasSum_expSeries_of_smul_comm
+    (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd)
     {e : R} (h : HasSum (fun n => expSeries 𝕜 R n fun _ => x.fst) e) :
     HasSum (fun n => expSeries 𝕜 (tsze R M) n fun _ => x) (inl e + inr (e • x.snd)) := by
+  have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
+    simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
-    (hasSum_inl _ <| hasSum_fst_expSeries 𝕜 x h).add
-      (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 #align triv_sq_zero_ext.has_sum_exp_series_of_smul_comm TrivSqZeroExt.hasSum_expSeries_of_smul_comm
 
-end Topology
-
-section NormedRing
-
-variable [IsROrC 𝕜] [NormedRing R] [AddCommGroup M]
-
-variable [NormedAlgebra 𝕜 R] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
-
-variable [Module 𝕜 M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
-
-variable [TopologicalSpace M] [TopologicalRing R]
-
-variable [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
-
-variable [CompleteSpace R] [T2Space R] [T2Space M]
+variable [T2Space R] [T2Space M]
 
 theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) :
     exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) := by
   simp_rw [exp, FormalMultilinearSeries.sum]
-  refine' (hasSum_expSeries_of_smul_comm 𝕜 x hx _).tsum_eq
-  exact expSeries_hasSum_exp _
-#align triv_sq_zero_ext.exp_def_of_smul_comm TrivSqZeroExt.exp_def_of_smul_comm
+  by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun x_1 ↦ fst x)
+  · refine (hasSum_expSeries_of_smul_comm 𝕜 x hx ?_).tsum_eq
+    exact h.hasSum
+  · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,
+      tsum_eq_zero_of_not_summable]
+    simp_rw [← fst_expSeries] at h
+    refine mt ?_ h
+    exact (Summable.map · (TrivSqZeroExt.fstHom 𝕜 R M).toLinearMap continuous_fst)
 
 @[simp]
 theorem exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by
@@ -127,21 +138,16 @@ theorem exp_inr (m : M) : exp 𝕜 (inr m : tsze R M) = 1 + inr m := by
   · rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
 #align triv_sq_zero_ext.exp_inr TrivSqZeroExt.exp_inr
 
-end NormedRing
+end Ring
 
-section NormedCommRing
+section CommRing
+variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [AddCommGroup M]
+  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
+  [TopologicalSpace R] [TopologicalSpace M]
+  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-variable [IsROrC 𝕜] [NormedCommRing R] [AddCommGroup M]
-
-variable [NormedAlgebra 𝕜 R] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-
-variable [Module 𝕜 M] [IsScalarTower 𝕜 R M]
-
-variable [TopologicalSpace M] [TopologicalRing R]
-
-variable [TopologicalAddGroup M] [ContinuousSMul R M]
-
-variable [CompleteSpace R] [T2Space R] [T2Space M]
+variable [T2Space R] [T2Space M]
 
 theorem exp_def (x : tsze R M) : exp 𝕜 x = inl (exp 𝕜 x.fst) + inr (exp 𝕜 x.fst • x.snd) :=
   exp_def_of_smul_comm 𝕜 x (op_smul_eq_smul _ _)
@@ -164,21 +170,16 @@ theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
     smul_smul, mul_invOf_self, one_smul, inl_fst_add_inr_snd_eq]
 #align triv_sq_zero_ext.eq_smul_exp_of_invertible TrivSqZeroExt.eq_smul_exp_of_invertible
 
-end NormedCommRing
+end CommRing
 
-section NormedField
+section Field
+variable [Field 𝕜] [CharZero 𝕜] [Field R] [AddCommGroup M]
+  [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+  [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
+  [TopologicalSpace R] [TopologicalSpace M]
+  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-variable [IsROrC 𝕜] [NormedField R] [AddCommGroup M]
-
-variable [NormedAlgebra 𝕜 R] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-
-variable [Module 𝕜 M] [IsScalarTower 𝕜 R M]
-
-variable [TopologicalSpace M] [TopologicalRing R]
-
-variable [TopologicalAddGroup M] [ContinuousSMul R M]
-
-variable [CompleteSpace R] [T2Space R] [T2Space M]
+variable [T2Space R] [T2Space M]
 
 /-- More convenient version of `TrivSqZeroExt.eq_smul_exp_of_invertible` for when `R` is a
 field. -/
@@ -188,6 +189,144 @@ theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
   eq_smul_exp_of_invertible _ _
 #align triv_sq_zero_ext.eq_smul_exp_of_ne_zero TrivSqZeroExt.eq_smul_exp_of_ne_zero
 
-end NormedField
+end Field
+
+end Topology
+
+/-!
+### The $ℓ^1$ norm on the trivial square zero extension
+-/
+
+noncomputable section Seminormed
+
+section Ring
+variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
+variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+
+instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+  inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
+
+example :
+    (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
+    PseudoMetricSpace.toUniformSpace := rfl
+
+theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
+  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  simp only [ENNReal.one_toReal, Real.rpow_one, div_one]
+  rfl
+
+theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
+  ext; simp [norm_def]
+
+@[simp] theorem norm_inl (r : R) : ‖(inl r : tsze R M)‖ = ‖r‖ := by simp [norm_def]
+@[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
+
+@[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+@[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+
+instance instL1SeminormedRing : SeminormedRing (tsze R M) where
+  norm_mul
+  | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
+    dsimp
+    rw [norm_def, norm_def, norm_def, add_mul, mul_add, mul_add, snd_mul, fst_mul]
+    dsimp [fst, snd]
+    rw [add_assoc]
+    gcongr
+    · exact norm_mul_le _ _
+    refine (norm_add_le _ _).trans ?_
+    gcongr
+    · exact norm_smul_le _ _
+    refine (_root_.norm_smul_le _ _).trans ?_
+    rw [mul_comm, MulOpposite.norm_op]
+    exact le_add_of_nonneg_right <| by positivity
+  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
+  __ : Ring (tsze R M) := inferInstance
+
+instance instL1BoundedSMul : BoundedSMul S (tsze R M) :=
+  inferInstanceAs <| BoundedSMul S (WithLp 1 <| R × M)
+
+instance [NormOneClass R] : NormOneClass (tsze R M) where
+  norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
+
+
+end Ring
+
+section CommRing
+
+variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+variable [BoundedSMul R M]
+
+instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
+  __ : CommRing (tsze R M) := inferInstance
+  __ : SeminormedRing (tsze R M) := inferInstance
+
+end CommRing
+
+end Seminormed
+
+noncomputable section Normed
+
+section Ring
+
+variable [NormedCommRing S] [NormedRing R] [NormedAddCommGroup M]
+variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
+variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+
+instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+  inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
+
+instance instL1NormedRing : NormedRing (tsze R M) where
+  __ : NormedAddCommGroup (tsze R M) := inferInstance
+  __ : SeminormedRing (tsze R M) := inferInstance
+
+end Ring
+
+section CommRing
+
+variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+variable [BoundedSMul R M]
+
+instance instL1NormedCommRing : NormedCommRing (tsze R M) where
+  __ : CommRing (tsze R M) := inferInstance
+  __ : NormedRing (tsze R M) := inferInstance
+
+end CommRing
+
+section Algebra
+
+variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+
+instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
+  inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
+
+instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
+  norm_smul_le := _root_.norm_smul_le
+
+end Algebra
+
+
+end Normed
+
+section
+
+variable [IsROrC 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
+variable [CompleteSpace R] [CompleteSpace M]
+
+-- Evidence that we have sufficient instances on `tsze R N` to make `exp_add_of_commute` usable
+example (a b : tsze R M) (h : Commute a b) : exp 𝕜 (a + b) = exp 𝕜 a * exp 𝕜 b :=
+  exp_add_of_commute h
+
+end
 
 end TrivSqZeroExt

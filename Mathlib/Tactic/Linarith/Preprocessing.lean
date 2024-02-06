@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
-import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
@@ -166,7 +165,7 @@ To avoid adding the same nonnegativity facts many times, it is a global preproce
 def natToInt : GlobalBranchingPreprocessor where
   name := "move nats to ints"
   transform g l := do
-    let l ← l.mapM $ fun h => do
+    let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
       if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
@@ -193,50 +192,31 @@ end natToInt
 section strengthenStrictInt
 
 /--
-`isStrictIntComparison tp` is true iff `tp` is a strict inequality between integers
-or the negation of a weak inequality between integers.
--/
-def isStrictIntComparison (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Int [], _, _, _]) => true
-  | (``Not, #[e]) => match e.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, _, _]) => true
-    | (``GE.ge, #[.const ``Int [], _, _, _]) => true
-    | _ => false
-  | _ => false
-
-/--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
-  match (← inferType pf).getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) =>
+def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
+  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
+  | (``LT.lt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (``GT.gt, #[_, _, a, b]) =>
+  | (``GT.gt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) =>
+    | (``LE.le, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | (``GE.ge, #[_, _, a, b]) =>
+    | (``GE.ge, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-  | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-
+    | _ => return none
+  | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
-  transform h := do
-    if isStrictIntComparison (← inferType h) then
-      return [← mkNonstrictIntProof h]
-    else
-      return [h]
+  transform h := return [(← mkNonstrictIntProof h).getD h]
 
 end strengthenStrictInt
 
@@ -318,7 +298,7 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
@@ -360,7 +340,7 @@ def nlinarithExtras : GlobalPreprocessor where
     let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
       ((do
         let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-        pure $ p::new_es) <|> pure new_es)) ([] : List Expr)
+        pure <| p::new_es) <|> pure new_es)) ([] : List Expr)
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
     trace[linarith] "{s.toList}"
@@ -371,7 +351,7 @@ def nlinarithExtras : GlobalPreprocessor where
         let ⟨ine, _⟩ ← parseCompAndExpr tp
         pure (ine, e)
       catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
@@ -398,14 +378,14 @@ This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← inferType e).ne?' | return none
+    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
   let do_goal : MVarId → MetaM (List Branch) := fun g => do
     let (f, h) ← g.intro1
     h.withContext do
-      let ls ← removeNe_aux h $ hs.removeAll [e]
+      let ls ← removeNe_aux h <| hs.removeAll [e]
       return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
   return ((← do_goal ng1) ++ (← do_goal ng2))
 
@@ -435,7 +415,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) :=
+    MetaM (List Branch) := g.withContext <|
   pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).join) [(g, l)]
 
 end Linarith

@@ -146,7 +146,7 @@ theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)
     refine Lex.acc_of_single hbot x fun j hj ↦ ?_
     obtain rfl | hij := eq_or_ne i j
     · exact ha _ hs
-    by_cases r j i
+    by_cases h : r j i
     · rw [hr j h, single_eq_of_ne hij, single_zero]
       exact Lex.acc_zero hbot
     · exact ih _ ⟨h, hij.symm⟩ _

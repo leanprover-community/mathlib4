@@ -53,7 +53,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 and outputs a set of orthogonal vectors which have the same span. -/
 noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
-termination_by _ n => n
+termination_by n
 decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
@@ -152,7 +152,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
-termination_by _ => j
+termination_by j => j
 decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 
@@ -186,7 +186,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
   · congr
     apply Finset.sum_eq_zero
     intro j hj
-    rw [coe_eq_zero]
+    rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
       rw [mem_orthogonal_singleton_iff_inner_left]
@@ -319,7 +319,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
   by_cases h : gramSchmidt 𝕜 f i = 0
   · simp [h]
   · refine' mem_span_singleton.2 ⟨‖gramSchmidt 𝕜 f i‖, smul_inv_smul₀ _ _⟩
-    exact_mod_cast norm_ne_zero_iff.2 h
+    exact mod_cast norm_ne_zero_iff.2 h
 #align span_gram_schmidt_normed span_gramSchmidtNormed
 
 theorem span_gramSchmidtNormed_range (f : ι → E) :
