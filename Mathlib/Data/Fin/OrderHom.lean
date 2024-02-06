@@ -728,6 +728,15 @@ theorem leftInvOn_succAbove_castSucc_predAbove (p : Fin n) :
 theorem leftInvOn_succAbove_succ_predAbove (p : Fin n) :
     Set.LeftInvOn p.succ.succAbove p.predAbove {p.succ}ᶜ := p.succAbove_succ_predAbove
 
+theorem invOn_succAbove_castSucc_predAbove (p : Fin n) (s : Set (Fin n)):
+    Set.InvOn p.castSucc.succAbove p.predAbove {p.castSucc}ᶜ s :=
+  ⟨p.leftInvOn_succAbove_castSucc_predAbove,
+  p.rightInverse_succAbove_castSucc_predAbove.rightInvOn s⟩
+
+theorem invOn_succAbove_succ_predAbove (p : Fin n) (s : Set (Fin n)):
+    Set.InvOn p.succ.succAbove p.predAbove {p.succ}ᶜ s :=
+  ⟨p.leftInvOn_succAbove_succ_predAbove, p.rightInverse_succAbove_succ_predAbove.rightInvOn s⟩
+
 theorem leftInvOn_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1)) :
     Set.LeftInvOn (succAbove j p).succAbove p.predAbove {p.castSucc, p.succ}ᶜ := fun _ h => by
   simp_rw [Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at h
