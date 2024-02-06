@@ -49,7 +49,8 @@ def Strictness.toString : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
-/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`. -/
+/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
+-/
 def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
   | .positive pf => some q(le_of_lt $pf)
   | .nonnegative pf => some pf
