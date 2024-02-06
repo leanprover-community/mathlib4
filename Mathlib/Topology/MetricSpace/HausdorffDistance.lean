@@ -35,14 +35,12 @@ This files introduces:
 * `IsOpen.exists_iUnion_isClosed`: every open set `U` can be written as the increasing union
   of countably many closed subsets of `U`
 
-* `hausdorffEdist_comm`: the Hausdorff edistance is symmetric
-* `hausdorffEdist_triangle`: the Hausdorff edistance satisfies the triangle inequality
+* `hausdorffEdist_closure`: replacing a set by its closure does not change the Hausdorff edistance
 * ``hausdorffEdist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
   iff their closures coincide.
+* the Hausdorff edistance is symmetric and satisfies the triangle inequality
 * in particular, closed sets in an emetric space are an emetric space
   (this is shown in `EMetricSpace.closeds.emetricspace`)
-
-* `hausdorffEdist_closure`: replacing a set by its closure does not change the Hausdorff edistance
 
 * versions of these notions on metric spaces
 * `hausdorffEdist_ne_top_of_nonempty_of_bounded`: if two sets in a metric space
