@@ -257,7 +257,7 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
     | ~q(0) =>
       assertInstancesCommute
       return .positive q($p)
-    | _ => compareHypLE zα pα lo e p
+    | _ => compareHypLT zα pα lo e p
   | ~q(@Eq.{u+1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
     let p : Q($lhs = $rhs) := .fvar ldecl.fvarId
