@@ -529,7 +529,7 @@ theorem snorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
       congr
       ext1 x
       conv_rhs => rw [← nnnorm_norm]
-      rw [ENNReal.coe_rpow_of_nonneg _ hq_pos.le, ENNReal.coe_eq_coe]
+      rw [ENNReal.coe_rpow_of_nonneg _ hq_pos.le, ENNReal.coe_inj]
       ext
       push_cast
       rw [Real.norm_rpow_of_nonneg (norm_nonneg _)]
@@ -737,7 +737,7 @@ theorem ae_eq_zero_of_snorm'_eq_zero {f : α → E} (hq0 : 0 ≤ q) (hf : AEStro
     cases hx with
     | inl hx =>
       cases' hx with hx _
-      rwa [← ENNReal.coe_zero, ENNReal.coe_eq_coe, nnnorm_eq_zero] at hx
+      rwa [← ENNReal.coe_zero, ENNReal.coe_inj, nnnorm_eq_zero] at hx
     | inr hx =>
       exact absurd hx.left ENNReal.coe_ne_top
   | inr h =>
