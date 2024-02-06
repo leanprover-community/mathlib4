@@ -57,5 +57,5 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   rw [hm, coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
     Finset.sum_range_succ, ← sub_eq_iff_eq_add, Nat.sub_self] at hc
   rw [← add_sub_cancel' 1 (-(_ * _)), ← sub_eq_add_neg, hc]
-  exact IsNilpotent.sub_one_isUnit <| show _ ∈ nilradical R from sum_mem fun i hi ↦
+  exact IsNilpotent.isUnit_sub_one <| show _ ∈ nilradical R from sum_mem fun i hi ↦
     Ideal.mul_mem_left _ _ <| hn _ <| Nat.sub_ne_zero_of_lt (List.mem_range.1 hi)
