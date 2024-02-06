@@ -218,9 +218,9 @@ theorem _root_.cocompact_le_atTop [LinearOrder α] [OrderBot α] [CompactIccSpac
     refine ⟨Icc ⊥ t, isCompact_Icc, fun _ hx ↦ ?_⟩
     exact (not_and_or.mp hx).casesOn (fun h ↦ (h bot_le).elim) (fun h ↦ ht _ (le_of_not_le h))
 
-private theorem _root_.cocompact_ge_aux {l : Filter α}
+private theorem _root_.le_cocompact_aux {l : Filter α}
     (h_aux : (s t : Set α) → t.Nonempty → Nonempty α → IsCompact t → tᶜ ⊆ s → s ∈ l) :
-    cocompact α ≥ l := by
+    l ≤ cocompact α := by
   refine fun s hs ↦ ?_
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
@@ -228,37 +228,37 @@ private theorem _root_.cocompact_ge_aux {l : Filter α}
     convert univ_mem
   · exact h_aux s t h_nonempty h_nonempty.nonempty ht hts
 
-theorem _root_.cocompact_ge_atTop [LinearOrder α] [NoMaxOrder α] [ClosedIciTopology α] :
-    cocompact α ≥ atTop := by
-  refine cocompact_ge_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atTop_sets.mpr ?_
-  obtain ⟨a, ha⟩ := ht.exists_isGreatest h_nonempty
-  obtain ⟨b, hb⟩ := exists_gt a
-  exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
-    ha.2 (not_not_mem.mp hc) |>.trans_lt hb |>.trans_le hb' |>.false⟩
-
-theorem _root_.cocompact_ge_atBot [LinearOrder α] [NoMinOrder α] [ClosedIicTopology α] :
-    cocompact α ≥ atBot := by
-  refine cocompact_ge_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atBot_sets.mpr ?_
+theorem _root_.atBot_le_cocompact [LinearOrder α] [NoMinOrder α] [ClosedIicTopology α] :
+    atBot ≤ cocompact α := by
+  refine le_cocompact_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atBot_sets.mpr ?_
   obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
   obtain ⟨b, hb⟩ := exists_lt a
   exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
     LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
 
-theorem _root_.cocompact_ge_atBot_atTop [LinearOrder α] [NoMinOrder α] [NoMaxOrder α]
-    [OrderClosedTopology α] : cocompact α ≥ atBot ⊔ atTop :=
-  sup_le cocompact_ge_atBot cocompact_ge_atTop
+theorem _root_.atTop_le_cocompact [LinearOrder α] [NoMaxOrder α] [ClosedIciTopology α] :
+    atTop ≤ cocompact α := by
+  refine le_cocompact_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atTop_sets.mpr ?_
+  obtain ⟨a, ha⟩ := ht.exists_isGreatest h_nonempty
+  obtain ⟨b, hb⟩ := exists_gt a
+  exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
+    ha.2 (not_not_mem.mp hc) |>.trans_lt hb |>.trans_le hb' |>.false⟩
+
+theorem _root_.atBot_atTop_le_cocompact [LinearOrder α] [NoMinOrder α] [NoMaxOrder α]
+    [OrderClosedTopology α] : atBot ⊔ atTop ≤ cocompact α :=
+  sup_le atBot_le_cocompact atTop_le_cocompact
 
 theorem _root_.cocompact_eq_atBot_atTop [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
     [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
-  cocompact_le_atBot_atTop.antisymm cocompact_ge_atBot_atTop
-
-theorem _root_.cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
-    [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
-  cocompact_le_atTop.antisymm cocompact_ge_atTop
+  cocompact_le_atBot_atTop.antisymm atBot_atTop_le_cocompact
 
 theorem _root_.cocompact_eq_atBot [LinearOrder α] [NoMinOrder α] [OrderTop α]
     [ClosedIicTopology α] [CompactIccSpace α] : cocompact α = atBot :=
-  cocompact_le_atBot.antisymm cocompact_ge_atBot
+  cocompact_le_atBot.antisymm atBot_le_cocompact
+
+theorem _root_.cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
+    [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
+  cocompact_le_atTop.antisymm atTop_le_cocompact
 
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
