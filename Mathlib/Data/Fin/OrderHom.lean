@@ -638,6 +638,9 @@ theorem rightInverse_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1))
 theorem rightInverse_succAbove_predAbove_zero [NeZero n] :
     RightInverse (0 : Fin (n + 1)).succAbove (0 : Fin n).predAbove := predAbove_zero_succAbove_zero
 
+theorem rightInverse_succAbove_predAbove_last [NeZero n] :
+    RightInverse (last (n + 1)).succAbove (last n).predAbove := predAbove_last_succAbove_last
+
 theorem hasRightInverse_predAbove (p : Fin n) : HasRightInverse p.predAbove :=
   ⟨_, p.rightInverse_succAbove_succAbove_predAbove default⟩
 
@@ -724,6 +727,10 @@ theorem leftInvOn_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1)) :
 theorem leftInvOn_succAbove_predAbove_zero [NeZero n] :
     Set.LeftInvOn (0 : Fin (n + 1)).succAbove (0 : Fin n).predAbove {0}ᶜ :=
   succAbove_zero_predAbove_zero
+
+theorem leftInvOn_succAbove_predAbove_last :
+    Set.LeftInvOn (last (n + 1)).succAbove (last n).predAbove {last (n + 1)}ᶜ :=
+  succAbove_last_predAbove_last
 
 theorem rightInvOn_succAbove_pred_predAbove (p : Fin (n + 1)) (h : p ≠ 0) :
     Set.RightInvOn (p.pred h).predAbove p.succAbove {p}ᶜ :=
