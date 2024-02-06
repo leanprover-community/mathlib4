@@ -79,33 +79,23 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     ext d
     simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using hF₀
   | succ N IH =>
-    have aux : natDegree (finSuccEquiv R N F) < n + 1 :=
-      calc _ = degreeOf 0 F  := natDegree_finSuccEquiv _
-           _ ≤ F.totalDegree := degreeOf_le_totalDegree _ _
-           _ = n             := hF.totalDegree hF₀
-           _ < n + 1         := Nat.lt_succ_self n
+    have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
+      linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
     obtain ⟨i, hi⟩ : ∃ i : ℕ, (finSuccEquiv R N F).coeff i ≠ 0 := by
       contrapose! hF₀
-      apply (finSuccEquiv _ _).injective
-      apply Polynomial.ext
-      simp only [hF₀, map_zero, Polynomial.coeff_zero, forall_const]
+      exact (finSuccEquiv _ _).injective <| Polynomial.ext <| by simpa using hF₀
     have hin : i ≤ n := by
       contrapose! hi
-      apply coeff_eq_zero_of_natDegree_lt
-      omega
+      exact coeff_eq_zero_of_natDegree_lt <| (Nat.le_of_lt_succ hdeg).trans_lt hi
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
-    · exact hF.exists_eval_ne_zero_of_totalDegree_le_card_aux₀ aux hFn
-    have hin : i < n := by
-      suffices i ≠ n by omega
-      aesop
+    · exact hF.exists_eval_ne_zero_of_totalDegree_le_card_aux₀ hdeg hFn
+    have hin : i < n := hin.lt_or_eq.elim id <| by aesop
     obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
       IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
-    let φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F)
-    have hφ₀ : φ ≠ 0 := by
-      contrapose! hr with hφ₀
-      dsimp only at hφ₀
-      rw [← coeff_eval_eq_eval_coeff, hφ₀, Polynomial.coeff_zero]
+    set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
+    have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by
+      rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
     have hφR : φ.natDegree < #R := by
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
