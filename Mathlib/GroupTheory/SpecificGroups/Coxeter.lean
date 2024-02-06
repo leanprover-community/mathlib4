@@ -256,12 +256,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
-      else (if i - j = 1 ∨ j - i = 1 then 3 else 2)
+      else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2)
 
-theorem AₙIsCoxeter [NeZero n] : IsCoxeter (Aₙ n) where
+theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -271,13 +271,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
-        else (if i - j = 1 ∨ j - i = 1 then 3 else 2))
+        else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2))
 
-theorem BₙIsCoxeter [NeZero n] : IsCoxeter (Bₙ n) where
+theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -290,13 +290,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if i - j = 1 ∨ j - i = 1 then 3 else 2))
+        else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2))
 
-theorem DₙIsCoxeter [NeZero n] : IsCoxeter (Dₙ n) where
+theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
