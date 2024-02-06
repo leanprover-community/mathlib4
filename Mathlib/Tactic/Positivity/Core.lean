@@ -6,9 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Qq

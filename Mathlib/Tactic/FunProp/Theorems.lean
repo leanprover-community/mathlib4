@@ -41,12 +41,12 @@ inductive LambdaTheoremArgs
 
 /-- There are 5(+1) basic lambda theorems
 
-- id      `Continous fun x => x`
-- const   `Continous fun x => y`
-- proj    `Continous fun (f : X → Y) => f x`
-- projDep `Continous fun (f : (x : X) → Y x => f x)`
-- comp    `Continous f → Continous g → Continous fun x => f (g x)`
-- pi      `∀ y, Continuous (f · y) → Continous fun x y => f x y` -/
+- id      `Continuous fun x => x`
+- const   `Continuous fun x => y`
+- proj    `Continuous fun (f : X → Y) => f x`
+- projDep `Continuous fun (f : (x : X) → Y x => f x)`
+- comp    `Continuous f → Continuous g → Continuous fun x => f (g x)`
+- pi      `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
 inductive LambdaTheoremType
   | id  | const | proj| projDep | comp  | pi
   deriving Inhabited, BEq, Repr, Hashable
@@ -165,7 +165,7 @@ inductive TheoremForm where
   deriving Inhabited, BEq, Repr
 
 
-/-- theorem about specific function (eiter declared constant or free variable) -/
+/-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
   funPropName : Name
@@ -232,7 +232,7 @@ structure GeneralTheorem where
   funPropName   : Name
   /-- theorem name -/
   thmName     : Name
-  /-- discreminatory tree keys used to index this theorem -/
+  /-- discriminatory tree keys used to index this theorem -/
   keys        : List RefinedDiscrTree.DTExpr
   /-- priority -/
   priority    : Nat  := eval_prio default
@@ -278,13 +278,13 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
 - lam - theorem about basic lambda calculus terms
 - function - theorem about a specific function(declared or free variable) in specific arguments
 - mor - special theorems talking about bundled morphisms/DFunLike.coe
-- transition - theorems infering one function property from another
+- transition - theorems inferring one function property from another
 
 Examples:
 - lam
 ```
-  theorem Continuous_id : Continous fun x => x
-  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continous fun x => f (g x)
+  theorem Continuous_id : Continuous fun x => x
+  theorem Continuous_comp (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f (g x)
 ```
 - function
 ```
@@ -302,7 +302,7 @@ Examples:
 - transition - the conclusion has to be in the form `P f` where `f` is a free variable
 ```
   theorem linear_is_continuous [FiniteDimensional ℝ E] {f : E → F} (hf : IsLinearMap 𝕜 f) :
-      Conttinuous f
+      Continuous f
 ```
 -/
 inductive Theorem where
@@ -357,7 +357,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         keys    := keys
         priority  := prio
       }
-      -- todo: maybe do a little bit more caraful detection of morphism and transition theorems
+      -- todo: maybe do a little bit more careful detection of morphism and transition theorems
       let lastArg := fData.args[fData.args.size-1]!
       if lastArg.coe.isSome then
         return .mor thm

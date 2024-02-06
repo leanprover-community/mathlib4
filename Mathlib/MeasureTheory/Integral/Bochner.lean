@@ -1825,7 +1825,7 @@ theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → 
     (hf : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
-  rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
+  rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
   simp only [Finset.coe_univ, Measure.restrict_univ, hf]
 
 theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
