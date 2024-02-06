@@ -396,19 +396,19 @@ theorem integrable_iff_integrableAtFilter_atBot_atTop [LinearOrder X] [CompactIc
     (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
   use fun hf ↦ ⟨⟨hf.integrableAtFilter _, hf.integrableAtFilter _⟩, hf.locallyIntegrable⟩
   refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono CompactIccSpace.cocompact_le
+  exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono cocompact_le_atBot_atTop
 
 theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrable f μ := by
   use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
   refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact h.1.filter_mono CompactIccSpace.cocompact_le_atBot
+  exact h.1.filter_mono cocompact_le_atBot
 
 theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
     Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
   use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
   refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact h.1.filter_mono CompactIccSpace.cocompact_le_atTop
+  exact h.1.filter_mono cocompact_le_atTop
 
 variable {a : X}
 
