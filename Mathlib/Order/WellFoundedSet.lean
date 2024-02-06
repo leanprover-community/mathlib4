@@ -642,7 +642,7 @@ namespace Set
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a : α}
+variable [Preorder α] {s t : Set α} {a : α}
 
 /-- `Set.IsWF.min` returns a minimal element of a nonempty well-founded set. -/
 noncomputable nonrec def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
@@ -656,6 +656,10 @@ theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
 nonrec theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
   hs.not_lt_min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ (⟨a, ha⟩ : s))
 #align set.is_wf.not_lt_min Set.IsWF.not_lt_min
+
+theorem IsWF.min_of_subset_not_lt_min {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
+    {htn : t.Nonempty} (hst : s ⊆ t) : ¬hs.min hsn < ht.min htn :=
+  ht.not_lt_min htn (hst (min_mem hs hsn))
 
 @[simp]
 theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).Nonempty} :
