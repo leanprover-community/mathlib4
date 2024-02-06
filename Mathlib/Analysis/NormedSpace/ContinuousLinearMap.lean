@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 #align_import analysis.normed_space.continuous_linear_map from "leanprover-community/mathlib"@"fe18deda804e30c594e75a6e5fe0f7d14695289f"
 
