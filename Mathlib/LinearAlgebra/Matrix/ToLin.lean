@@ -643,7 +643,7 @@ theorem LinearMap.toMatrix_transpose_apply' (f : M₁ →ₗ[R] M₂) (j : n) :
 #align linear_map.to_matrix_transpose_apply' LinearMap.toMatrix_transpose_apply'
 
 theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
-    Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ (v₁.repr v)) j • v₂ j :=
+    Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=
   show v₂.equivFun.symm (Matrix.toLin' M (v₁.repr v)) = _ by
     rw [Matrix.toLin'_apply, v₂.equivFun_symm_apply]
 #align matrix.to_lin_apply Matrix.toLin_apply
@@ -711,7 +711,7 @@ theorem LinearMap.toMatrix_algebraMap (x : R) :
 #align linear_map.to_matrix_algebra_map LinearMap.toMatrix_algebraMap
 
 theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
-    (LinearMap.toMatrix v₁ v₂ f) *ᵥ (v₁.repr x) = v₂.repr (f x) := by
+    LinearMap.toMatrix v₁ v₂ f *ᵥ v₁.repr x = v₂.repr (f x) := by
   ext i
   rw [← Matrix.toLin'_apply, LinearMap.toMatrix, LinearEquiv.trans_apply, Matrix.toLin'_toMatrix',
     LinearEquiv.arrowCongr_apply, v₂.equivFun_apply]
@@ -813,7 +813,7 @@ theorem LinearMap.toMatrixAlgEquiv_transpose_apply' (f : M₁ →ₗ[R] M₁) (j
 #align linear_map.to_matrix_alg_equiv_transpose_apply' LinearMap.toMatrixAlgEquiv_transpose_apply'
 
 theorem Matrix.toLinAlgEquiv_apply (M : Matrix n n R) (v : M₁) :
-    Matrix.toLinAlgEquiv v₁ M v = ∑ j, (M *ᵥ (v₁.repr v)) j • v₁ j :=
+    Matrix.toLinAlgEquiv v₁ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₁ j :=
   show v₁.equivFun.symm (Matrix.toLinAlgEquiv' M (v₁.repr v)) = _ by
     rw [Matrix.toLinAlgEquiv'_apply, v₁.equivFun_symm_apply]
 #align matrix.to_lin_alg_equiv_apply Matrix.toLinAlgEquiv_apply
@@ -945,7 +945,7 @@ theorem leftMulMatrix_eq_repr_mul (x : S) (i j) : leftMulMatrix b x i j = b.repr
 #align algebra.left_mul_matrix_eq_repr_mul Algebra.leftMulMatrix_eq_repr_mul
 
 theorem leftMulMatrix_mulVec_repr (x y : S) :
-    (leftMulMatrix b x) *ᵥ (b.repr y) = b.repr (x * y) :=
+    leftMulMatrix b x *ᵥ b.repr y = b.repr (x * y) :=
   (LinearMap.mulLeft R x).toMatrix_mulVec_repr b b y
 #align algebra.left_mul_matrix_mul_vec_repr Algebra.leftMulMatrix_mulVec_repr
 

@@ -1711,7 +1711,7 @@ def mulVec.addMonoidHomLeft [Fintype n] (v : n → α) : Matrix m n α →+ m �
 
 /-- The `i`th row of the multiplication is the same as the `vecMul` with the `i`th row of `A`. -/
 theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) (i : m) :
-    (A * B) i = (A i) ᵥ* B :=
+    (A * B) i = A i ᵥ* B :=
   rfl
 
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
@@ -1720,7 +1720,7 @@ theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
 #align matrix.mul_vec_diagonal Matrix.mulVec_diagonal
 
 theorem vecMul_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
-    (v ᵥ* (diagonal w)) x = v x * w x :=
+    (v ᵥ* diagonal w) x = v x * w x :=
   dotProduct_diagonal' v w x
 #align matrix.vec_mul_diagonal Matrix.vecMul_diagonal
 
@@ -1801,7 +1801,7 @@ theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (j : n) (x : R) : M *ᵥ (Pi.single j x) = fun i => M i j * x :=
+    (j : n) (x : R) : M *ᵥ Pi.single j x = fun i => M i j * x :=
   funext fun _ => dotProduct_single _ _ _
 #align matrix.mul_vec_single Matrix.mulVec_single
 
@@ -1813,7 +1813,7 @@ theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] 
 
 -- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
-    (j : n) (x : R) : (diagonal v) *ᵥ (Pi.single j x) = Pi.single j (v j * x) := by
+    (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
   exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
@@ -1842,29 +1842,29 @@ theorem vecMul_vecMul [Fintype n] [Fintype m] (v : m → α) (M : Matrix m n α)
 
 @[simp]
 theorem mulVec_mulVec [Fintype n] [Fintype o] (v : o → α) (M : Matrix m n α) (N : Matrix n o α) :
-    M *ᵥ (N *ᵥ v) = (M * N) *ᵥ v := by
+    M *ᵥ N *ᵥ v = (M * N) *ᵥ v := by
   ext
   symm
   apply dotProduct_assoc
 #align matrix.mul_vec_mul_vec Matrix.mulVec_mulVec
 
 theorem star_mulVec [Fintype n] [StarRing α] (M : Matrix m n α) (v : n → α) :
-    star (M *ᵥ v) = (star v) ᵥ* Mᴴ :=
+    star (M *ᵥ v) = star v ᵥ* Mᴴ :=
   funext fun _ => (star_dotProduct_star _ _).symm
 #align matrix.star_mul_vec Matrix.star_mulVec
 
 theorem star_vecMul [Fintype m] [StarRing α] (M : Matrix m n α) (v : m → α) :
-    star (v ᵥ* M) = Mᴴ *ᵥ (star v) :=
+    star (v ᵥ* M) = Mᴴ *ᵥ star v :=
   funext fun _ => (star_dotProduct_star _ _).symm
 #align matrix.star_vec_mul Matrix.star_vecMul
 
 theorem mulVec_conjTranspose [Fintype m] [StarRing α] (A : Matrix m n α) (x : m → α) :
-    Aᴴ *ᵥ x = star ((star x) ᵥ* A) :=
+    Aᴴ *ᵥ x = star (star x ᵥ* A) :=
   funext fun _ => star_dotProduct _ _
 #align matrix.mul_vec_conj_transpose Matrix.mulVec_conjTranspose
 
 theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : n → α) :
-    x ᵥ* Aᴴ = star (A *ᵥ (star x)) :=
+    x ᵥ* Aᴴ = star (A *ᵥ star x) :=
   funext fun _ => dotProduct_star _ _
 #align matrix.vec_mul_conj_transpose Matrix.vecMul_conjTranspose
 
@@ -2557,13 +2557,13 @@ theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] 
 
 theorem submatrix_mulVec_equiv [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α]
     (M : Matrix m n α) (v : o → α) (e₁ : l → m) (e₂ : o ≃ n) :
-    (M.submatrix e₁ e₂) *ᵥ v = (M *ᵥ (v ∘ e₂.symm)) ∘ e₁ :=
+    M.submatrix e₁ e₂ *ᵥ v = (M *ᵥ (v ∘ e₂.symm)) ∘ e₁ :=
   funext fun _ => Eq.symm (dotProduct_comp_equiv_symm _ _ _)
 #align matrix.submatrix_mul_vec_equiv Matrix.submatrix_mulVec_equiv
 
 theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (M : Matrix m n α) (v : l → α) (e₁ : l ≃ m) (e₂ : o → n) :
-    v ᵥ* (M.submatrix e₁ e₂) = ((v ∘ e₁.symm) ᵥ* M) ∘ e₂ :=
+    v ᵥ* M.submatrix e₁ e₂ = ((v ∘ e₁.symm) ᵥ* M) ∘ e₂ :=
   funext fun _ => Eq.symm (comp_equiv_symm_dotProduct _ _ _)
 #align matrix.submatrix_vec_mul_equiv Matrix.submatrix_vecMul_equiv
 
@@ -2709,12 +2709,12 @@ theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
 #align ring_hom.map_dot_product RingHom.map_dotProduct
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
-    (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* (M.map f)) i := by
+    (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by
   simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 #align ring_hom.map_vec_mul RingHom.map_vecMul
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
-    (v : n → R) (i : m) : f ((M *ᵥ v) i) = ((M.map f) *ᵥ (f ∘ v)) i := by
+    (v : n → R) (i : m) : f ((M *ᵥ v) i) = (M.map f *ᵥ (f ∘ v)) i := by
   simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 #align ring_hom.map_mul_vec RingHom.map_mulVec
 
