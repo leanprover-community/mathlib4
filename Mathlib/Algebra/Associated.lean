@@ -322,9 +322,7 @@ variable [CommMonoidWithZero α] {a : α} (irr : Irreducible a)
 theorem Irreducible.prime_of_isPrimal (primal : IsPrimal a) : Prime a :=
   ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
-    obtain h | h := of_irreducible_mul irr
-    refine .inr (h.mul_left_dvd.mpr h₂)
-    refine .inl (h.mul_right_dvd.mpr h₁)⟩
+    exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 
 theorem Irreducible.prime [DecompositionMonoid α] : Prime a :=
   irr.prime_of_isPrimal (DecompositionMonoid.primal a)
