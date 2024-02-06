@@ -66,7 +66,7 @@ We then show the two integrals equal their respective values `l - (l^2 - d^2).sq
 -/
 
 open MeasureTheory (MeasureSpace IsProbabilityMeasure pdf.IsUniform Measure)
-open ProbabilityTheory
+open ProbabilityTheory Real
 
 lemma set_integral_toReal_ofReal_nonneg_ae {α : Type _} [MeasureSpace α] {s : Set α} {f : α → ℝ}
     (hs : MeasurableSet s) (hf : ∀ᵐ x : α, x ∈ s → f x ≥ 0) :
@@ -77,8 +77,6 @@ lemma set_integral_toReal_ofReal_nonneg_ae {α : Type _} [MeasureSpace α] {s : 
     simp_rw [eq_comm (a := f _), ENNReal.toReal_ofReal_eq_iff, hf]
 
   rw [MeasureTheory.set_integral_congr_ae hs this]
-
-notation "π" => Real.pi
 
 variable
   /- Probability theory variables. -/
@@ -141,8 +139,7 @@ lemma B_range_volume : ℙ (B_range d) = ENNReal.ofReal (d * π) := by
   exact (ENNReal.ofReal_mul hd.le).symm
 
 lemma B_range_nonzero : ℙ (B_range d) ≠ 0 := by
-  rw [B_range_volume d hd, ne_eq, ENNReal.ofReal_eq_zero, not_le]
-  exact mul_pos hd Real.pi_pos
+  simp_rw [B_range_volume d hd, ne_eq, ENNReal.ofReal_eq_zero, not_le, mul_pos hd Real.pi_pos]
 
 lemma B_range_nontop : ℙ (B_range d) ≠ ⊤ := by
   rw [B_range_volume d hd]
@@ -157,46 +154,31 @@ instance instBHasPDF : MeasureTheory.HasPDF B ℙ :=
 
 lemma N'_measurable : Measurable (N' l) := by
   unfold N'
+  refine' Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
 
-  apply Measurable.indicator measurable_const
-  apply IsClosed.measurableSet
-  apply IsClosed.inter
-
-  case' h.h₁ =>
-    simp only [tsub_le_iff_right, zero_add]
-    apply isClosed_le continuous_fst _
-  case' h.h₂ =>
-    simp only [← neg_le_iff_add_nonneg']
-    apply isClosed_le _ _
-
-  · conv => arg 1; intro p; rw [← mul_one p.1, ← mul_neg]
-    exact Continuous.mul continuous_fst continuous_const
+  all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
+  case' l => refine' isClosed_le continuous_fst _
+  case' r => refine' isClosed_le (Continuous.neg continuous_fst) _
 
   all_goals
-  · simp_rw [mul_div_assoc]
-    apply Continuous.mul _ continuous_const
-    have : (fun (x : ℝ × ℝ) => Real.sin x.2) = Real.sin ∘ Prod.snd := by rfl
-    rw [this]
-    apply Continuous.comp Real.continuous_sin continuous_snd
+    refine' Continuous.mul (Continuous.mul _ continuous_const) continuous_const
+    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
+      Continuous.comp Real.continuous_sin continuous_snd]
 
 lemma N'_strongly_measurable : MeasureTheory.StronglyMeasurable (N' l) := by
-  apply stronglyMeasurable_iff_measurable_separable.mpr
-  apply And.intro
-  · exact N'_measurable l
-  · apply Exists.intro {0, 1}
-    have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-      simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
-    apply And.intro
-    · exact Set.Finite.countable range_finite
-    · rw [IsClosed.closure_eq (Set.Finite.isClosed range_finite)]
-      unfold N' Set.range
-      rw [Set.subset_def]
-      intro x ⟨p, hxp⟩
-      by_cases hp : 0 ∈ needle_x_proj l p.1 p.2
-      · simp_rw [Set.indicator_of_mem hp, Pi.one_apply] at hxp
-        apply Or.inr hxp.symm
-      · simp_rw [Set.indicator_of_not_mem hp] at hxp
-        apply Or.inl hxp.symm
+  refine' stronglyMeasurable_iff_measurable_separable.mpr ⟨N'_measurable l, {0, 1}, ?seperable⟩
+
+  have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
+    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+  refine' ⟨range_finite.countable, ?subset_closure⟩
+  rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
+
+  intro x ⟨p, hxp⟩
+  by_cases hp : 0 ∈ needle_x_proj l p.1 p.2
+  · simp_rw [N', Set.indicator_of_mem hp, Pi.one_apply] at hxp
+    apply Or.inr hxp.symm
+  · simp_rw [N', Set.indicator_of_not_mem hp] at hxp
+    apply Or.inl hxp.symm
 
 lemma N'_integrable_prod :
     MeasureTheory.Integrable (N' l)
@@ -214,61 +196,48 @@ lemma N'_integrable_prod :
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
     · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
 
-  apply And.intro (N'_strongly_measurable l).aestronglyMeasurable
-  · apply (MeasureTheory.hasFiniteIntegral_iff_norm (N' l)).mpr
-    apply lt_of_le_of_lt
-    apply MeasureTheory.lintegral_mono (g := 1)
-    · simp only [Real.norm_eq_abs, abs_of_nonneg (N'_nonneg _)]
-      intro p
-      simp only [ENNReal.ofReal_le_one, Pi.one_apply]
-      exact N'_le_one p
-    simp only [Pi.one_apply, MeasureTheory.lintegral_const, one_mul,
-      MeasureTheory.Measure.prod_restrict]
-    rw [MeasureTheory.Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
-      MeasureTheory.Measure.prod_prod]
-    simp_rw [Real.volume_Icc]
+  refine' And.intro
+    (N'_strongly_measurable l).aestronglyMeasurable
+    ((MeasureTheory.hasFiniteIntegral_iff_norm (N' l)).mpr _)
+  refine' lt_of_le_of_lt (MeasureTheory.lintegral_mono (g := 1) ?le_const) ?lt_top
+
+  case le_const =>
+    intro p
+    simp only [Real.norm_eq_abs, abs_of_nonneg (N'_nonneg _), ENNReal.ofReal_le_one, Pi.one_apply]
+    exact N'_le_one p
+
+  case lt_top =>
+    simp only [Pi.one_apply, MeasureTheory.lintegral_const, one_mul, Measure.prod_restrict,
+      Measure.restrict_apply MeasurableSet.univ, Set.univ_inter, Measure.prod_prod, Real.volume_Icc]
     ring_nf
-    rw [← ENNReal.ofReal_mul hd.le]
-    exact ENNReal.ofReal_lt_top
+    simp_rw [← ENNReal.ofReal_mul hd.le, ENNReal.ofReal_lt_top]
 
 lemma buffon_integral :
     𝔼[N l B] = (d * π) ⁻¹ *
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
-  simp_rw [N, Function.comp_apply]
 
+  simp_rw [N, Function.comp_apply]
   rw [
-    ← MeasureTheory.integral_map (f := N' l) hBₘ.aemeasurable
-      (N'_strongly_measurable l).aestronglyMeasurable,
-    hB,
-    MeasureTheory.integral_smul_measure,
-    B_range_volume d hd,
+    ← MeasureTheory.integral_map hBₘ.aemeasurable (N'_strongly_measurable l).aestronglyMeasurable,
+    hB, MeasureTheory.integral_smul_measure, B_range_volume d hd,
     ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
-    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)),
-    smul_eq_mul, mul_eq_mul_left_iff
+    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
   ]
 
-  apply Or.inl
+  refine' mul_eq_mul_left_iff.mpr (Or.inl _)
 
   have Real_measure_prod : (ℙ : Measure (ℝ × ℝ)) = Measure.prod ℙ ℙ := rfl
-
   have : MeasureTheory.IntegrableOn (N' l) (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by
     apply (MeasureTheory.integrableOn_def _ _ _).mpr
-    rw [Real_measure_prod, ← MeasureTheory.Measure.prod_restrict]
-    exact N'_integrable_prod d l hd
+    simp_rw [Real_measure_prod, ← Measure.prod_restrict, N'_integrable_prod d l hd]
 
-  rw [
-    Real_measure_prod,
-    MeasureTheory.set_integral_prod _ this,
-    MeasureTheory.integral_integral_swap ?integrable,
-  ]
+  rw [Real_measure_prod, MeasureTheory.set_integral_prod _ this,
+    MeasureTheory.integral_integral_swap ?integrable]
 
-  case integrable =>
-    simp_rw [Function.uncurry_def, Prod.mk.eta]
-    exact N'_integrable_prod d l hd
+  case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta, N'_integrable_prod d l hd]
 
-  unfold N' needle_x_proj
-  simp only [Set.mem_Icc]
+  simp only [N', needle_x_proj, Set.mem_Icc]
 
   have indicator_eq (x θ : ℝ) :
     Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
@@ -291,16 +260,10 @@ lemma buffon_integral :
   equals `(2 * l) / (d * π)`.
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
-  simp_rw [
-    buffon_integral d l hd B hBₘ hB,
-    short_needle_inter_eq d l hl h _,
-    MeasureTheory.set_integral_const,
-    Real.volume_Icc,
-    smul_eq_mul,
-    mul_one,
-  ]
+  simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
+    MeasureTheory.set_integral_const, Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
+    mul_eq_mul_right_iff]
 
-  rw [mul_comm, mul_eq_mul_right_iff]
   apply Or.inl
   ring_nf
 
@@ -308,19 +271,12 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
     intro θ hθ
     exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
 
-  rw [set_integral_toReal_ofReal_nonneg_ae measurableSet_Icc (MeasureTheory.ae_of_all _ this)]
+  simp_rw [set_integral_toReal_ofReal_nonneg_ae measurableSet_Icc (MeasureTheory.ae_of_all _ this),
+    ← smul_eq_mul, integral_smul_const, smul_eq_mul, mul_comm, mul_eq_mul_left_iff]
 
-  conv in (_ * l) => rw [← smul_eq_mul]
-  simp_rw [integral_smul_const, smul_eq_mul, mul_comm, mul_eq_mul_left_iff]
   apply Or.inl
-
-  rw [
-    MeasureTheory.integral_Icc_eq_integral_Ioc,
-    ← intervalIntegral.integral_of_le Real.pi_pos.le,
-    integral_sin,
-    Real.cos_zero,
-    Real.cos_pi
-  ]
+  rw [MeasureTheory.integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le Real.pi_pos.le,
+    integral_sin, Real.cos_zero, Real.cos_pi]
 
   ring_nf
 
@@ -333,14 +289,9 @@ lemma integral_min_eq_two_mul :
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
 
-  simp_rw [
-    intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l),
-    ← Real.sin_add_pi,
-    intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)),
-    add_left_neg,
-    (by ring : -(π/2) + π = π/2),
-    two_mul,
-  ]
+  simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
+    intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), add_left_neg,
+    (by ring : -(π/2) + π = π/2), two_mul]
 
   all_goals
     exact Continuous.intervalIntegrable (min_sin_mul_continuous d l) _ _
@@ -349,20 +300,13 @@ lemma integral_zero_to_arcsin_min :
     ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - (1 - (d / l) ^ 2).sqrt) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
-    have arcsin_nonneg : (d / l).arcsin ≥ 0 := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
-    simp only [sup_eq_max, inf_eq_min, min_eq_left arcsin_nonneg,
-      max_eq_right arcsin_nonneg] at hθ₁ hθ₂
-    have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
-      apply And.intro
-      · calc
-        -(π / 2) < 0 := neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)
-        _        ≤ θ := hθ₁
-      · calc
-        θ ≤ (d / l).arcsin := hθ₂
-        _ ≤ π / 2 := (d / l).arcsin_mem_Icc.right
+    have : (d / l).arcsin ≥ 0 := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
+    simp only [sup_eq_max, inf_eq_min, min_eq_left this, max_eq_right this] at hθ₁ hθ₂
 
-    have : θ.sin * l ≤ d := (le_div_iff hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂)
-    simp_rw [min_eq_right this]
+    have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
+      exact ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
+        le_trans hθ₂ (d / l).arcsin_mem_Icc.right⟩
+    simp_rw [min_eq_right ((le_div_iff hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
 
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_mul_const, integral_sin,
     Real.cos_zero, Real.cos_arcsin]
@@ -381,15 +325,8 @@ lemma integral_arcsin_to_pi_div_two_min (h : l ≥ d) :
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
 
     have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by
-      apply And.intro
-      · calc
-        -(π / 2) ≤ 0 := neg_nonpos.mpr (div_nonneg Real.pi_pos.le zero_le_two)
-        _        ≤ (d / l).arcsin := (Real.arcsin_pos.mpr (div_pos hd hl)).le
-        _        ≤ θ := hθ₁
-      · exact lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two
-
-    have : d ≤ θ.sin * l := (div_le_iff hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁)
-    simp_rw [min_eq_left this]
+      exact ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
+    simp_rw [min_eq_left ((div_le_iff hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
 
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
@@ -412,30 +349,27 @@ theorem buffon_long (h : l ≥ d) :
     · rw [min_eq_left h]; exact hd.le
     · rw [min_eq_right (not_le.mp h).le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
 
-  rw [
-    set_integral_toReal_ofReal_nonneg_ae measurableSet_Icc (MeasureTheory.ae_of_all _ this),
+  rw [set_integral_toReal_ofReal_nonneg_ae measurableSet_Icc (MeasureTheory.ae_of_all _ this),
     MeasureTheory.integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le Real.pi_pos.le, integral_min_eq_two_mul,
     ← intervalIntegral.integral_add_adjacent_intervals (b := (d / l).arcsin),
-    integral_zero_to_arcsin_min d l hd hl,
-    integral_arcsin_to_pi_div_two_min d l hd hl h
-  ]
+    integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
+
+  /-
+    the rest of the proof is annoying algebra, the goal is
+      (d * π)⁻¹ * (2 * ((1 - sqrt (1 - (d / l) ^ 2)) * l + (π / 2 - arcsin (d / l)) * d)) =
+      2 * l / (d * π) - 2 / (d * π) * (sqrt (l ^ 2 - d ^ 2) + d * arcsin (d / l)) + 1
+  -/
 
   have this₁ : (1 - Real.sqrt (1 - (d / l) ^ 2)) * l = l - (l ^ 2 - d ^ 2).sqrt := by
     rw [mul_comm, mul_sub, mul_one, div_pow, one_sub_div, Real.sqrt_div, Real.sqrt_sq hl.le,
       ← mul_div_assoc, mul_comm, mul_div_cancel _ (ne_of_gt hl)]
-    · rw [sub_nonneg]
-      apply sq_le_sq.mpr
-      rw [abs_of_pos hd, abs_of_pos hl]
-      exact h
-    · simp only [(pow_eq_zero_iff two_ne_zero).not]
-      exact (ne_of_gt hl)
-
+    · simp_rw [sub_nonneg, sq_le_sq, abs_of_pos hd, abs_of_pos hl, h]
+    · simp_rw [(pow_eq_zero_iff two_ne_zero).not, ne_of_gt hl, not_false_eq_true]
   have this₂ : 2 * d * (π / 2 - (d / l).arcsin) / (d * π) = 1 - (2 / π) * (d / l).arcsin := by
     rw [mul_sub, sub_div, mul_assoc, ← mul_comm_div, ← mul_assoc, ← mul_comm_div,
       div_self two_ne_zero, one_mul, div_self (ne_of_gt (mul_pos hd Real.pi_pos)), mul_div_assoc,
       ← mul_comm_div, mul_comm 2, mul_div_mul_left _ _ (ne_of_gt hd)]
-
   have this₃ : 2 * Real.sqrt (l^2 - d^2) / (d * π) = 2 / (d * π) * (l^2 - d^2).sqrt := by ring_nf
   have this₄ : 2 / π * d / d = 2 / (d * π) * d := by ring_nf
 
