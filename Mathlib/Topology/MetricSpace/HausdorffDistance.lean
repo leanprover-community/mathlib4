@@ -36,8 +36,8 @@ This files introduces:
   of countably many closed subsets of `U`
 
 * `hausdorffEdist_closure`: replacing a set by its closure does not change the Hausdorff edistance
-* ``hausdorffEdist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
-  iff their closures coincide.
+* `hausdorffEdist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
+  iff their closures coincide
 * the Hausdorff edistance is symmetric and satisfies the triangle inequality
 * in particular, closed sets in an emetric space are an emetric space
   (this is shown in `EMetricSpace.closeds.emetricspace`)
