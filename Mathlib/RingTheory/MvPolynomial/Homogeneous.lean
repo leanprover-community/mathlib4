@@ -232,21 +232,14 @@ theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
   · exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
 
-section
-
-variable [CommSemiring S]
-variable (f : R →+* S) (k : σ → τ) (g : τ → R) (p : MvPolynomial σ R)
-
-lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ}
-    {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ} (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
+lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ}
+    (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
   have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by simp [Fin.succ_ne_zero]
   simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
-    (d.cons_support i) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
-
-end section
+    (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
 
 open Polynomial in
 private
@@ -279,7 +272,8 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux₀
 
 section domain
 
-variable [IsDomain R] {F : MvPolynomial σ R} {n : ℕ}
+-- In this section we shadow the semiring `R` with a domain `R`.
+variable {R σ : Type*} [CommRing R] [IsDomain R] {F : MvPolynomial σ R} {n : ℕ}
 
 open Cardinal Polynomial
 private
