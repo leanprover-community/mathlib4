@@ -3,13 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
-import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
-import Mathlib.LinearAlgebra.Isomorphisms
 
 #align_import algebra.category.Group.injective from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
