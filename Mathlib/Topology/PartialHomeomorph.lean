@@ -1092,7 +1092,7 @@ end Prod
 /- finite product of partial homeomorphisms -/
 section Pi
 
-variable {ι : Type*} [Fintype ι] {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
+variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, PartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
