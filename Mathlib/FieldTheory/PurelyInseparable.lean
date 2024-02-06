@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Jz Pan. All rights reserved.
+Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
@@ -9,16 +9,16 @@ import Mathlib.FieldTheory.SeparableClosure
 
 # Purely inseparable extension and relative perfect closure
 
-This file contains basics about the purely inseparable extension and the relative perfect closure
+This file contains basics about purely inseparable extensions and the relative perfect closure
 of fields.
 
 ## Main definitions
 
-- `IsPurelyInseparable`: typeclass for purely inseparable field extension: an algebraic extension
+- `IsPurelyInseparable`: typeclass for purely inseparable field extensions: an algebraic extension
   `E / F` is purely inseparable if and only if the minimal polynomial of every element of `E ∖ F`
   is not separable.
 
-- `perfectClosure`: the relative perfect closure of `F` in `E`, consists of the elements `x` of `E`
+- `perfectClosure`: the relative perfect closure of `F` in `E`, it consists of the elements `x` of `E`
   such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in
   `F`, where `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal
   purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
@@ -109,8 +109,6 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open scoped Classical Polynomial
-
 open FiniteDimensional Polynomial IntermediateField Field
 
 noncomputable section
@@ -123,7 +121,7 @@ variable (K : Type w) [Field K] [Algebra F K]
 
 section IsPurelyInseparable
 
-/-- Typeclass for purely inseparable field extension: an algebraic extension `E / F` is purely
+/-- Typeclass for purely inseparable field extensions: an algebraic extension `E / F` is purely
 inseparable if and only if the minimal polynomial of every element of `E ∖ F` is not separable. -/
 class IsPurelyInseparable : Prop where
   isIntegral' (x : E) : IsIntegral F x
