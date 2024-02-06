@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.NumberTheory.Modular
 import Mathlib.Data.Int.Interval
@@ -9,6 +14,12 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Finset_Decomposition
+
+/-!
+# Uniform convergence of Eisenstein series
+
+We show that `eis` converges locally uniformly on `ℍ` to the Eisenstein series `E` of weight `k`
+-/
 
 noncomputable section
 
@@ -174,8 +185,7 @@ lemma summable_r_pow  (k : ℤ) (z : ℍ) (h : 3 ≤ k) :
     have : 1 < (k - 1 : ℤ) := by linarith
     norm_cast at *
   have riesum := Real.summable_nat_rpow_inv.2 hk
-  have nze : (8 / (r z) ^ k : ℝ) ≠ 0 :=
-    by
+  have nze : (8 / (r z) ^ k : ℝ) ≠ 0 := by
     apply div_ne_zero
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
     apply zpow_ne_zero k (ne_of_gt (r_pos z))
@@ -185,19 +195,19 @@ lemma summable_r_pow  (k : ℤ) (z : ℍ) (h : 3 ≤ k) :
 
 lemma summable_over_square (k : ℤ) (z : ℍ) (h : 3 ≤ k):
     Summable (fun n : ℕ => ∑ v in square n, (1 / (r z) ^ k) * ((n : ℝ) ^ k)⁻¹)  := by
-    simp only [one_div, Finset.sum_const, nsmul_eq_mul]
-    apply Summable.congr (summable_r_pow k z h)
-    intro b
-    by_cases b0 : b = 0
-    · rw [b0]
-      have hk0 :  k ≠ 0 := by linarith
-      have hk1 :  k - 1 ≠ 0 := by linarith
-      norm_cast
-      rw [zero_zpow k hk0, zero_zpow (k - 1) hk1]
-      simp only [inv_zero, mul_zero, square_zero, Finset.card_singleton, Nat.cast_one]
-    · rw [square_size' b0, zpow_sub_one₀ (a:= ( b: ℝ)) (Nat.cast_ne_zero.mpr b0)  k]
-      simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
-      ring_nf
+  simp only [one_div, Finset.sum_const, nsmul_eq_mul]
+  apply Summable.congr (summable_r_pow k z h)
+  intro b
+  by_cases b0 : b = 0
+  · rw [b0]
+    have hk0 :  k ≠ 0 := by linarith
+    have hk1 :  k - 1 ≠ 0 := by linarith
+    norm_cast
+    rw [zero_zpow k hk0, zero_zpow (k - 1) hk1]
+    simp only [inv_zero, mul_zero, square_zero, Finset.card_singleton, Nat.cast_one]
+  · rw [square_size' b0, zpow_sub_one₀ (a:= ( b: ℝ)) (Nat.cast_ne_zero.mpr b0)  k]
+    simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
+    ring_nf
 
 lemma summable_upper_bound (k : ℤ) (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
     (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹ := by
@@ -297,7 +307,7 @@ lemma Eis_bound_2 (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ) (hn : 1 ≤ 
 
 theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : ⟨x 0, x 1⟩ ∈ square n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
-  (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
+    (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
   by_cases hn : n = 0
   · rw [hn] at hx
     simp only [CharP.cast_eq_zero, square_zero, Finset.mem_singleton, Prod.mk.injEq] at hx
@@ -317,7 +327,7 @@ theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
     apply Eis_bound_2 k z n x hnn C2
 
 lemma  eisensteinSeries_TendstoLocallyUniformlyOn  (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
-    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
+      (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
   (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
   ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith

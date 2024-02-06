@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck, David Loeffler
+-/
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.IsROrC.Basic
 
