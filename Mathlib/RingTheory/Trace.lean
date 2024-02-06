@@ -478,7 +478,7 @@ theorem traceMatrix_reindex {κ' : Type*} (b : Basis κ A B) (f : κ ≃ κ') :
 variable {A}
 
 theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
-    traceMatrix A (P.map (algebraMap A B) *ᵥ b) = Pᵀ * traceMatrix A b * P := by
+    traceMatrix A (b ᵥ* P.map (algebraMap A B)) = Pᵀ * traceMatrix A b * P := by
   ext (α β)
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
@@ -513,9 +513,9 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
 #align algebra.trace_matrix_of_basis Algebra.traceMatrix_of_basis
 
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
-    (traceMatrix A b).mulVec (b.equivFun z) = fun i => trace A B (z * b i) := by
+    traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
   ext i
-  rw [← col_apply ((traceMatrix A b).mulVec (b.equivFun z)) i Unit.unit, col_mulVec,
+  rw [← col_apply (traceMatrix A b *ᵥ b.equivFun z) i Unit.unit, col_mulVec,
     Matrix.mul_apply, traceMatrix]
   simp only [col_apply, traceForm_apply]
   conv_lhs =>
