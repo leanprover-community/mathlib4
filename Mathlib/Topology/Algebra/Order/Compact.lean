@@ -195,37 +195,28 @@ theorem IsCompact.exists_isLUB [ClosedIciTopology α] {s : Set α} (hs : IsCompa
 
 theorem CompactIccSpace.cocompact_le [LinearOrder α] [CompactIccSpace α] :
     cocompact α ≤ atBot ⊔ atTop := by
-  refine fun s hs ↦ mem_cocompact.mpr ?_
-  cases isEmpty_or_nonempty α with
-  | inl _ => exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
-  | inr _ =>
-    obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs.1
+  refine fun s hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
+  · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs.1
     obtain ⟨u, hu⟩ := mem_atTop_sets.mp hs.2
-    refine ⟨Icc t u, isCompact_Icc, fun x hx ↦ (not_and_or.mp hx).casesOn ?_ ?_⟩
-    exact fun hx ↦ ht x (le_of_not_le hx)
-    exact fun hx ↦ hu x (le_of_not_le hx)
+    refine ⟨Icc t u, isCompact_Icc, fun x hx ↦ ?_⟩
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht x (le_of_not_le h)) fun h ↦ hu x (le_of_not_le h)
 
 theorem CompactIccSpace.cocompact_le_atBot [LinearOrder α] [OrderTop α] [CompactIccSpace α] :
     cocompact α ≤ atBot := by
-  refine fun s hs ↦ mem_cocompact.mpr ?_
-  cases isEmpty_or_nonempty α with
-  | inl _ => exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
-  | inr _ =>
-    obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
-    use Icc t ⊤, isCompact_Icc
-    refine fun x hx ↦ (not_and_or.mp hx).casesOn (fun h ↦ ?_) (fun h ↦ (h le_top).elim)
-    exact ht _ (le_of_not_le h)
+  refine fun _ hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
+  · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
+    refine ⟨Icc t ⊤, isCompact_Icc, fun _ hx ↦ ?_⟩
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht _ (le_of_not_le h)) (fun h ↦ (h le_top).elim)
 
 theorem CompactIccSpace.cocompact_le_atTop [LinearOrder α] [OrderBot α] [CompactIccSpace α] :
     cocompact α ≤ atTop := by
-  refine fun s hs ↦ mem_cocompact.mpr ?_
-  cases isEmpty_or_nonempty α with
-  | inl _ => exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
-  | inr _ =>
-    obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
-    use Icc ⊥ t, isCompact_Icc
-    refine fun x hx ↦ (not_and_or.mp hx).casesOn (fun h ↦ (h bot_le).elim) (fun h ↦ ?_)
-    exact ht _ (le_of_not_le h)
+  refine fun _ hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
+  · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
+    refine ⟨Icc ⊥ t, isCompact_Icc, fun _ hx ↦ ?_⟩
+    exact (not_and_or.mp hx).casesOn (fun h ↦ (h bot_le).elim) (fun h ↦ ht _ (le_of_not_le h))
 
 private theorem CompactIccSpace.cocompact_ge_aux [LinearOrder α] [CompactIccSpace α] {l : Filter α}
     (h_aux : (s t : Set α) → t.Nonempty → Nonempty α → IsCompact t → tᶜ ⊆ s → s ∈ l) :
@@ -256,6 +247,14 @@ theorem CompactIccSpace.cocompact_ge_atBot [LinearOrder α] [NoMinOrder α] [Clo
 theorem CompactIccSpace.cocompact_eq [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
     [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
   cocompact_le.antisymm (sup_le cocompact_ge_atBot cocompact_ge_atTop)
+
+theorem CompactIccSpace.cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
+    [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
+  cocompact_le_atTop.antisymm cocompact_ge_atTop
+
+theorem CompactIccSpace.cocompact_eq_atBot [LinearOrder α] [NoMinOrder α] [OrderTop α]
+    [ClosedIicTopology α] [CompactIccSpace α] : cocompact α = atBot :=
+  cocompact_le_atBot.antisymm cocompact_ge_atBot
 
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
