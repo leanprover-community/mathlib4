@@ -32,6 +32,8 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 The locale `Matrix` gives the following notation:
 
 * `⬝ᵥ` for `Matrix.dotProduct`
+* `*ᵥ` for `Matrix.mulVec`
+* `ᵥ*` for `Matrix.vecMul`
 * `ᵀ` for `Matrix.transpose`
 * `ᴴ` for `Matrix.conjTranspose`
 
