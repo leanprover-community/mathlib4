@@ -3389,7 +3389,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.AEMesurable
+import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Continuous
@@ -3686,6 +3686,9 @@ import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.CountableSeparatingOn
 import Mathlib.Topology.Covering
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Topology.Defs.Filter
+import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.DiscreteSubset
