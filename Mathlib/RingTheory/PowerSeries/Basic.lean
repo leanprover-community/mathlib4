@@ -831,7 +831,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     else
       -a *
         ∑ x in antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
-termination_by _ n => n
+termination_by n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
@@ -2288,7 +2288,8 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine' not_iff_not.mp _
   push_neg
-  simp [PowerSeries.ext_iff]
+  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
+  simp [PowerSeries.ext_iff, (coeff R _).map_zero]
 #align power_series.exists_coeff_ne_zero_iff_ne_zero PowerSeries.exists_coeff_ne_zero_iff_ne_zero
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
@@ -2383,7 +2384,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
-  · simpa using (PartENat.natCast_ne_top _).symm
+  · simpa [(coeff R _).map_zero] using (PartENat.natCast_ne_top _).symm
   simp [order, dif_neg hφ, Nat.find_eq_iff]
 #align power_series.order_eq_nat PowerSeries.order_eq_nat
 
