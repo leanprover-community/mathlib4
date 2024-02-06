@@ -44,10 +44,6 @@ This result is not yet formalised.
   To do this, it is probably a good idea to think about a suitable
   categorical induction principle that should be applied to the category of `R`-modules,
   and that will take care of the administrative side of the proof.
-* Define flat `R`-algebras
-* Define flat ring homomorphisms
-  - Show that the identity is flat
-  - Show that composition of flat morphisms is flat
 * Show that flatness is stable under base change (aka extension of scalars)
   For base change, it will be very useful to have a "characteristic predicate"
   instead of relying on the construction `A ⊗ B`.
