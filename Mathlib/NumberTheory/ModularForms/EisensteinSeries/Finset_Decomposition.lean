@@ -1,10 +1,16 @@
 /-
 Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler
+Authors: Chris Birkbeck
 -/
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.IsROrC.Basic
+
+/-! # Decomposing `ℤ × ℤ` into squares
+
+We partition `ℤ × ℤ` into squares of the form `Icc (-n) n × Icc (-n) n` for `n : ℕ`. This is useful
+for bounding Eisenstein series.
+-/
 
 open Complex
 
