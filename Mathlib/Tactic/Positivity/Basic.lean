@@ -210,7 +210,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonzero q(mul_ne_zero_of_ne_zero_of_pos $pa $pb))
   | .nonzero pa, .nonzero pb =>
     let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero $pa $pb)))
+    pure (.nonzero q(mul_ne_zero $pa $pb))
   | _, _ => pure .none
 
 
@@ -273,25 +273,25 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
-    pure (by exact .nonnegative q(pow_bit0_nonneg $a $m))
+    pure (.nonnegative q(pow_bit0_nonneg $a $m))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
-      pure (by exact .nonnegative (q(pow_nonneg $pa $b)))
+      pure (.nonnegative q(pow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       let _a ← synthInstanceQ q(NoZeroDivisors $α)
-      pure (.nonzero (by exact q(pow_ne_zero $b $pa)))
+      pure (.nonzero q(pow_ne_zero $b $pa))
     match ra with
     | .positive pa =>
       try
         let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
-        pure (by exact .positive (q(pow_pos $pa $b)))
+        pure (.positive q(pow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(OrderedSemiring $α)
@@ -367,13 +367,13 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   match ra with
   | .positive pa =>
     let _oα ← synthInstanceQ (q(OrderedRing $α) : Q(Type u))
-    let _nt ← synthInstanceQ (q(Nontrivial $α))
+    let _nt ← synthInstanceQ q(Nontrivial $α)
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
     pure (.positive q(Int.cast_pos.mpr $pa))
   | .nonnegative pa =>
-    let _oα ← synthInstanceQ (q(OrderedRing $α))
-    let _nt ← synthInstanceQ (q(Nontrivial $α))
+    let _oα ← synthInstanceQ q(OrderedRing $α)
+    let _nt ← synthInstanceQ q(Nontrivial $α)
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
     pure (.nonnegative q(Int.cast_nonneg.mpr $pa))

@@ -478,6 +478,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Squarefree.Basic
@@ -859,6 +860,7 @@ import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
 import Mathlib.Analysis.NormedSpace.Ray
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
@@ -2094,6 +2096,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
+import Mathlib.Dynamics.Newton
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.FieldTheory.AbelRuffini
@@ -2130,6 +2133,7 @@ import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
@@ -2657,7 +2661,10 @@ import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Function.LpOrder
-import Mathlib.MeasureTheory.Function.LpSeminorm
+import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
@@ -3110,6 +3117,7 @@ import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.Bialgebra
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
@@ -3774,6 +3782,7 @@ import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
+import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn

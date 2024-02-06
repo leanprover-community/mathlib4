@@ -110,6 +110,8 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop [IsMeasurablyGenerated (atT
 
 end LinearOrder
 
+section LinearOrderedAddCommGroup
+
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/
 theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
@@ -134,3 +136,5 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
   refine integrableOn_univ.mp ?_
   convert integrableOn_union.mpr ⟨h_int_neg, h_int⟩
   exact (Set.Iic_union_Ici_of_le (by simp)).symm
+
+end LinearOrderedAddCommGroup
