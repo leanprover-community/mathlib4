@@ -487,7 +487,7 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     (B : Matrix m n 𝕜) (D : Matrix n n 𝕜) (x : m → 𝕜) (y : n → 𝕜) [Invertible A]
     (hA : A.IsHermitian) :
     vecMul (star (x ⊕ᵥ y)) (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      vecMul (star (x + (A⁻¹ * B).mulVec y)) A ⬝ᵥ (x + (A⁻¹ * B).mulVec y) +
+      vecMul (star (x + (A⁻¹ * B) *ᵥ y)) A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
         vecMul (star y) (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
   simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
@@ -499,7 +499,7 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (x : m → 𝕜) (y : n → 𝕜) [Invertible D]
     (hD : D.IsHermitian) :
     vecMul (star (x ⊕ᵥ y)) (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
-      vecMul (star ((D⁻¹ * Bᴴ).mulVec x + y)) D ⬝ᵥ ((D⁻¹ * Bᴴ).mulVec x + y) +
+      vecMul (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
         vecMul (star x) (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
   simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,

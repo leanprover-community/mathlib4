@@ -183,13 +183,13 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 -/
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
-    mulVecᵣ A v = A.mulVec v := by
+    mulVecᵣ A v = A *ᵥ v := by
   simp [mulVecᵣ, Function.comp]
   rfl
 #align matrix.mul_vecᵣ_eq Matrix.mulVecᵣ_eq
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-    !![a₁₁, a₁₂; a₂₁, a₂₂].mulVec ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
+    !![a₁₁, a₁₂; a₂₁, a₂₂] *ᵥ ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
   (mulVecᵣ_eq _ _).symm
 
 /-- `Matrix.vecMul` with better defeq for `Fin` -/
@@ -207,13 +207,13 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 -/
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
-    vecMulᵣ v A = vecMul v A := by
+    vecMulᵣ v A = v ᵥ* A := by
   simp [vecMulᵣ, Function.comp]
   rfl
 #align matrix.vec_mulᵣ_eq Matrix.vecMulᵣ_eq
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-    vecMul ![b₁, b₂] !![a₁₁, a₁₂; a₂₁, a₂₂] = ![b₁ * a₁₁ + b₂ * a₂₁, b₁ * a₁₂ + b₂ * a₂₂] :=
+    ![b₁, b₂] ᵥ* !![a₁₁, a₁₂; a₂₁, a₂₂] = ![b₁ * a₁₁ + b₂ * a₂₁, b₁ * a₁₂ + b₂ * a₂₂] :=
   (vecMulᵣ_eq _ _).symm
 
 /-- Expand `A` to `!![A 0 0, ...; ..., A m n]` -/

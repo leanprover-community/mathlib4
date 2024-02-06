@@ -98,7 +98,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
   classical
   obtain ⟨g, hg, i, hi⟩ := Fintype.not_linearIndependent_iff.1 hli
-  have : (traceMatrix A b).mulVec g = 0 := by
+  have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
       intro j;
@@ -121,9 +121,9 @@ theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
 #align algebra.discr_of_matrix_vec_mul Algebra.discr_of_matrix_vecMul
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`. -/
+`Algebra.discr A ((P.map (algebraMap A B)) *ᵥ b)`. -/
 theorem discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).mulVec b) = P.det ^ 2 * discr A b := by
+    discr A (P.map (algebraMap A B) *ᵥ b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_mulVec, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_mul_vec Algebra.discr_of_matrix_mulVec

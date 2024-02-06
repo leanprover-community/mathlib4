@@ -174,7 +174,7 @@ theorem exists_mulVec_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDo
 #align matrix.exists_mul_vec_eq_zero_iff Matrix.exists_mulVec_eq_zero_iff
 
 theorem exists_vecMul_eq_zero_iff {A : Type*} [DecidableEq n] [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : (∃ v ≠ 0, M.vecMul v = 0) ↔ M.det = 0 := by
+    {M : Matrix n n A} : (∃ v ≠ 0, v ᵥ* M = 0) ↔ M.det = 0 := by
   simpa only [← M.det_transpose, ← mulVec_transpose] using exists_mulVec_eq_zero_iff
 #align matrix.exists_vec_mul_eq_zero_iff Matrix.exists_vecMul_eq_zero_iff
 
