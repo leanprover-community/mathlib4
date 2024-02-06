@@ -25,7 +25,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 * `Algebra.discr_zero_of_not_linearIndependent` : if `b` is not linear independent, then
   `Algebra.discr A b = 0`.
 * `Algebra.discr_of_matrix_vecMul` and `Algebra.discr_of_matrix_mulVec` : formulas relating
-  `Algebra.discr A ι b` with `Algebra.discr A ((P.map (algebraMap A B)).vecMul b)` and
+  `Algebra.discr A ι b` with `Algebra.discr A (b ᵥ* P.map (algebraMap A B))` and
   `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`.
 * `Algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
   `Algebra.discr K b ≠ 0`.
@@ -113,9 +113,9 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
 variable {A}
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).vecMul b)`. -/
+`Algebra.discr A (b ᵥ* P.map (algebraMap A B))`. -/
 theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).vecMul b) = P.det ^ 2 * discr A b := by
+    discr A (b ᵥ* P.map (algebraMap A B)) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_vecMul, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_vec_mul Algebra.discr_of_matrix_vecMul
