@@ -18,10 +18,10 @@ of fields.
   `E / F` is purely inseparable if and only if the minimal polynomial of every element of `E ∖ F`
   is not separable.
 
-- `perfectClosure`: the relative perfect closure of `F` in `E`, it consists of the elements `x` of `E`
-  such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in
-  `F`, where `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal
-  purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
+- `perfectClosure`: the relative perfect closure of `F` in `E`, it consists of the elements
+  `x` of `E` such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n`
+  is contained in `F`, where `ringExpChar F` is the exponential characteristic of `F`.
+  It is also the maximal purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
 
 ## Main results
 
@@ -315,6 +315,8 @@ theorem separableClosure_inf_perfectClosure : separableClosure F E ⊓ perfectCl
   haveI := (le_perfectClosure_iff F E _).mp (inf_le_right (a := separableClosure F E))
   eq_bot_of_isPurelyInseparable_of_isSeparable _
 
+section map
+
 variable {F E K}
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `i x` is contained in
@@ -354,6 +356,8 @@ def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
 alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
+
+end map
 
 end perfectClosure
 
@@ -688,6 +692,7 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 `F`-linearly independent for any natural number `n`. -/
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
+  classical
   have halg := IsSeparable.isAlgebraic F E
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
   intro s
