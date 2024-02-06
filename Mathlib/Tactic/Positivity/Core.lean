@@ -234,39 +234,54 @@ def compareHypEq (e a b : Q($α)) (p₂ : Q($a = $b)) : MetaM (Strictness zα p�
 initialize registerTraceClass `Tactic.positivity
 initialize registerTraceClass `Tactic.positivity.failure
 
+/- If the expression is of the form `$op 0 $rhs`, we return the expression. -/
+def literalZero (lhs rhs : Q($α)) (pred : Q($α → $α → Prop)) (h : Q($pred $lhs $rhs)) :
+  MetaM (Q($pred 0 $rhs)) := do
+  match lhs with
+  | ~q(0) => pure h
+  | _ => throwError "not a literal zero"
+
 /-- A variation on `assumption` which checks if the hypothesis `ldecl` is `a [</≤/=] e`
 where `a` is a numeral. -/
 def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
   have e' : Q(Prop) := ldecl.type
   match e' with
-  | ~q(@LE.le _ $_a $lo $hi) =>
-    guard <| ← isDefEq e hi
-    compareHypLE zα pα lo e (.fvar ldecl.fvarId)
+  | ~q(@LE.le.{u} _ $_a $lo $hi) =>
+    let .defEq _ ← isDefEqQ e hi | return .none
+    let p : Q($lo ≤ $hi) := .fvar ldecl.fvarId
+    try pure <| .nonnegative (← literalZero zα lo hi q((· ≤ ·)) p)
+    catch _ => compareHypLE zα pα lo e p
   | ~q(@LT.lt.{u} $β $_a $lo $hi) =>
-    guard <| ← isDefEq e hi
-    match ← compareHypLT zα pα lo e (.fvar ldecl.fvarId) with
-    | .none =>
-      let .defEq (_ : $α =Q $β) ← isDefEqQ α β | pure .none
-      let .defEq _ ← isDefEqQ q((0 : $α)) lo | pure .none
-      let p : Q(0 < $e) := .fvar ldecl.fvarId
-      return .positive p
-    | result => pure result
-  | ~q(($lo : $α') = $hi) =>
-    let .true ← isDefEq α α' | return .none
-    let p : Q($lo = $hi) := .fvar ldecl.fvarId
-    match ← compareHypEq zα pα e lo hi p with
-    | .none => compareHypEq zα pα e hi lo (q(Eq.symm $p) : Expr)
-    | result => pure result
-  | ~q(($a : $α') ≠ $b) =>
-    let .true ← isDefEq α α' | return .none
-    if ← isDefEq q((0 : $α)) a then
-      let .true ← isDefEq e b | return .none
-      let p : Q(0 ≠ $e) := .fvar ldecl.fvarId
-      pure (.nonzero q(Ne.symm $p))
-    else
-      let .true ← isDefEq q((0 : $α)) b | return .none
-      let .true ← isDefEq e a | return .none
-      pure (.nonzero (.fvar ldecl.fvarId))
+    let .defEq _ ← isDefEqQ e hi | return .none
+    let p : Q($lo < $hi) := .fvar ldecl.fvarId
+    try pure <| .positive (← literalZero zα lo hi q((· < ·)) p)
+    catch _ => compareHypLT zα pα lo e p
+  | ~q(@Eq.{u+1} $α' $lhs $rhs) =>
+    let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
+    let p : Q($lhs = $rhs) := .fvar ldecl.fvarId
+    match ← isDefEqQ e rhs with
+    | .defEq _ =>
+      try
+        let eq ← literalZero zα lhs rhs q((· = ·)) p
+        pure <| .nonnegative q(le_of_eq $eq)
+      catch _ => compareHypEq zα pα e lhs rhs p
+    | .notDefEq =>
+      let .defEq _ ← isDefEqQ e lhs | pure .none
+      try
+        let eq ← literalZero zα rhs lhs q((· = ·)) q(Eq.symm $p)
+        pure <| .nonnegative q(le_of_eq $eq)
+      catch _ => compareHypEq zα pα e rhs lhs (q(Eq.symm $p) : Expr)
+  | ~q(@Ne.{u + 1} $α' $lhs $rhs) =>
+    let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
+    let p : Q($lhs ≠ $rhs) := .fvar ldecl.fvarId
+    match ← isDefEqQ e lhs with
+    | .defEq _ =>
+      let ne ← literalZero zα _ _ q((· ≠ ·)) q(Ne.symm $p)
+      pure <| .nonzero q(Ne.symm $ne)
+    | .notDefEq =>
+      let .defEq _ ← isDefEqQ e rhs | pure .none
+      let ne ← literalZero zα lhs rhs q((· ≠ ·)) p
+      pure <| .nonzero q(Ne.symm $ne)
   | _ => pure .none
 
 variable {zα pα} in
