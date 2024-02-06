@@ -77,7 +77,7 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
 #align LDL.invertible_lower_inv LDL.invertibleLowerInv
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
-    ⟪LDL.lowerInv hS i, Sᵀ *ᵥ (LDL.lowerInv hS j)⟫ₑ = 0 :=
+    ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
   @gramSchmidt_orthogonal 𝕜 _ _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
 #align LDL.lower_inv_orthogonal LDL.lowerInv_orthogonal
 
