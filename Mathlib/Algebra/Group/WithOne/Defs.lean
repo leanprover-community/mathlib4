@@ -134,7 +134,8 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 #align with_zero.unzero_coe WithZero.unzero_coe
 
 @[to_additive (attr := simp) coe_unzero]
-theorem coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x | (x : α), _ => rfl
+lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
+  | (x : α), _ => rfl
 #align with_one.coe_unone WithOne.coe_unone
 #align with_zero.coe_unzero WithZero.coe_unzero
 
