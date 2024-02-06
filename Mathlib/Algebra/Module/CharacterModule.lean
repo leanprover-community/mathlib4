@@ -47,11 +47,13 @@ def CharacterModule : Type uA := A →+ (AddCircle (1 : ℚ))
 
 namespace CharacterModule
 
-instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
+instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective' _ _ _ := by aesop
-  map_add := by aesop
-  map_smulₛₗ := by aesop
+
+instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
+  map_add _ _ _ := by rw [AddMonoidHom.map_add]
+  map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
 
 instance : AddCommGroup (CharacterModule A) :=
   inferInstanceAs (AddCommGroup (A →+ _))
@@ -235,9 +237,10 @@ noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
 
 lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
-  erw [ofSpanSingleton, LinearMap.comp_apply,
-    equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    LinearMap.toAddMonoidHom_coe, int.divByNat, LinearMap.toSpanSingleton_one,
+
+  erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
+     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
