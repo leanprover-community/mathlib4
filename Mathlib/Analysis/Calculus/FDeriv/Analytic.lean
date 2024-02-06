@@ -308,8 +308,8 @@ protected theorem hasFiniteFPowerSeriesOnBall :
 theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
   Finset.sum_eq_zero fun _ _ ↦ by
-    rw [FormalMultilinearSeries.changeOriginSeriesTerm, AddEquivClass.map_eq_zero_iff]
-    simp only [toFormalMultilinearSeries, h.symm, dite_false]
+    simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
+      toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
 variable {n : ℕ∞} (x : ∀ i, E i)
 
@@ -320,7 +320,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   ext y
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
       changeOrigin, FormalMultilinearSeries.sum]
-  cases he : isEmpty_or_nonempty ι
+  cases isEmpty_or_nonempty ι
   · have (l) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
