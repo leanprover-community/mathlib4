@@ -259,7 +259,7 @@ The corresponding Coxeter-Dynkin diagram is:
 abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
-      else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2)
+      else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
 
 theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
 
@@ -275,7 +275,7 @@ abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
-        else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2))
+        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
 
@@ -294,7 +294,7 @@ abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if (i : ℤ) - (j : ℤ) = 1 ∨ (j : ℤ) - (i : ℤ) = 1 then 3 else 2))
+        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
 
