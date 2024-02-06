@@ -147,7 +147,7 @@ namespace SubMulAction
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 

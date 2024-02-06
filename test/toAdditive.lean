@@ -271,7 +271,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 

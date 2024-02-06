@@ -246,7 +246,7 @@ attribute [pp_dot] Indep E
       · obtain ⟨J, hJ, -, hJmax⟩ := hzorn
         exact ⟨J, hJ, fun K hK hJK ↦ (hJmax K hK hJK).subset⟩
 
-      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem ⟩
+      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
       · refine indep_compact _ fun J hJ hJfin ↦ ?_
         have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I
         · exact fun _ he ↦ mem_sUnion.1 <| hJ he

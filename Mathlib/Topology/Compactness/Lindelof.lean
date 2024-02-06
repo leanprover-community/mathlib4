@@ -248,7 +248,7 @@ theorem isLindelof_of_countable_subcover
   simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
     (nhds_basis_opens _).disjoint_iff_left] at h
   choose fsub U hU hUf using h
-  refine ⟨s, U, fun x ↦ (hU x).2, fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1 ⟩, ?_ ⟩
+  refine ⟨s, U, fun x ↦ (hU x).2, fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1 ⟩, ?_⟩
   intro t ht h
   have uinf := f.sets_of_superset (le_principal_iff.1 fsub) h
   have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
