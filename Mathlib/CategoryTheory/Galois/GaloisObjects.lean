@@ -63,8 +63,8 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient
     (X : C) [ConnectedObject X] :
     IsTerminal (colimit <| SingleObj.functor <| Aut.toEnd X) ≃
     Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
-  letI J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
-  letI e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
+  let J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
+  let e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
     (Equiv.toIso <| SingleObj.Types.colimitEquivQuotient (J ⋙ F ⋙ FintypeCat.incl))
   apply Equiv.trans
@@ -86,7 +86,7 @@ theorem galois_iff_pretransitive (X : C) [ConnectedObject X] :
 /-- For a Galois object `X`, the quotient `X / Aut X` is terminal.  -/
 noncomputable def isTerminalQuotientGaloisObject (X : C) [GaloisObject X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
-  Nonempty.some (GaloisObject.quotientByAutTerminal)
+  Nonempty.some GaloisObject.quotientByAutTerminal
 
 /-- For a Galois object `X` and fibre functor `F`, the action of `Aut X` on `F.obj X` is
 transitive. -/
