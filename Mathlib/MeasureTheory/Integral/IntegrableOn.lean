@@ -255,6 +255,12 @@ theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {
   simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
     Measure.restrict_restrict_of_subset hs]
 
+theorem _root_.MeasurableSet.integrable_subtype_iff_integrableOn (hs : MeasurableSet s) :
+    Integrable (fun (x : Subtype s) => f ↑x) (μ.comap Subtype.val) ↔ IntegrableOn f s μ := by
+  rewrite [IntegrableOn, ← map_comap_subtype_coe hs,
+    (MeasurableEmbedding.subtype_coe hs).integrable_map_iff]
+  rfl
+
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]
