@@ -12,9 +12,8 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
