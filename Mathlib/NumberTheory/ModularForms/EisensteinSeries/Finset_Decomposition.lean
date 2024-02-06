@@ -37,7 +37,7 @@ lemma square_union {n : ℤ} :
     and_iff_right_of_imp le_of_eq, Int.le_add_one_iff, or_comm]
 
 lemma square_disjunion (n : ℤ) :
-  (square (n+1)).disjUnion (Icc (-n) n ×ˢ Icc (-n) n) square_disj =
+    (square (n+1)).disjUnion (Icc (-n) n ×ˢ Icc (-n) n) square_disj =
     Icc (-(n+1)) (n+1) ×ˢ Icc (-(n+1)) (n+1) := by rw [disjUnion_eq_union, square_union]
 
 theorem square_size (n : ℕ) : Finset.card (square (n + 1)) = 8 * (n + 1) := by
