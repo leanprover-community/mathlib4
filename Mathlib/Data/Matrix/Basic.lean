@@ -1679,27 +1679,33 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-/-- `mulVec M v` is the matrix-vector product of `M` and `v`, where `v` is seen as a column matrix.
-    Put another way, `mulVec M v` is the vector whose entries
-    are those of `M * col v` (see `col_mulVec`). -/
+/--
+`M *ᵥ v` (notation for `mulVec M v`) is the matrix-vector product of matrix `M` and vector `v`,
+where `v` is seen as a column vector.
+Put another way, `M *ᵥ v` is the vector whose entries are those of `M * col v` (see `col_mulVec`).
+
+The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`,
+so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
+-/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
   | i => (fun j => M i j) ⬝ᵥ v
 #align matrix.mul_vec Matrix.mulVec
 
-/- The precedence of 73 comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`
-   so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)` here. -/
 @[inherit_doc]
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 
-/-- `vecMul v M` is the vector-matrix product of `v` and `M`, where `v` is seen as a row matrix.
-    Put another way, `vecMul v M` is the vector whose entries
-    are those of `row v * M` (see `row_vecMul`). -/
+/--
+`v ᵥ* M` (notation for `vecMul v M`) is the vector-matrix product of vector `v` and matrix `M`,
+where `v` is seen as a row vector.
+Put another way, `v ᵥ* M` is the vector whose entries are those of `row v * M` (see `row_vecMul`).
+
+The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`,
+so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
+-/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
   | j => v ⬝ᵥ fun i => M i j
 #align matrix.vec_mul Matrix.vecMul
 
-/- The precedence of 73 comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`
-   so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)` here. -/
 @[inherit_doc]
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
 
