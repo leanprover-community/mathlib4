@@ -51,7 +51,7 @@ theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 
-initialize_simps_projections Closeds (carrier → coe)
+initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
 
 @[ext]
 protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
@@ -64,6 +64,7 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 #align topological_space.closeds.coe_mk TopologicalSpace.Closeds.coe_mk
 
 /-- The closure of a set, as an element of `TopologicalSpace.Closeds`. -/
+@[simps]
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 #align topological_space.closeds.closure TopologicalSpace.Closeds.closure
@@ -80,7 +81,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 #align topological_space.closeds.gi TopologicalSpace.Closeds.gi
 
-instance : CompleteLattice (Closeds α) :=
+instance completeLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -105,7 +106,7 @@ instance : Inhabited (Closeds α) :=
   ⟨⊥⟩
 
 @[simp, norm_cast]
-theorem coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
+theorem coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t := by
   rfl
 #align topological_space.closeds.coe_sup TopologicalSpace.Closeds.coe_sup
 
@@ -139,6 +140,10 @@ theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
 theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, ↑i :=
   rfl
 #align topological_space.closeds.coe_Inf TopologicalSpace.Closeds.coe_sInf
+
+@[simp]
+lemma coe_sSup {S : Set (Closeds α)} : ((sSup S : Closeds α) : Set α) =
+    closure (⋃₀ ((↑) '' S)) := by rfl
 
 @[simp, norm_cast]
 theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :

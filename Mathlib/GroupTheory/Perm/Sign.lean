@@ -390,7 +390,7 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
         dsimp [finPairsLT] at hab
         simp? at * says
           simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and, not_lt, apply_inv_self, not_le, Int.neg_units_ne_self] at *
+            true_and, not_lt, apply_inv_self, not_le, neg_units_ne_self] at *
         exact absurd h₃ (asymm_of LT.lt hab)
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
