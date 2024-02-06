@@ -19,6 +19,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Finset_Decomposition
 # Uniform convergence of Eisenstein series
 
 We show that `eis` converges locally uniformly on `ℍ` to the Eisenstein series `E` of weight `k`
+and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
 
 noncomputable section
@@ -327,8 +328,8 @@ theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
 
 lemma  eisensteinSeries_TendstoLocallyUniformlyOn  (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
-  (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
-  ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
+    (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
+    ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact, eisensteinSeries_SIF]
