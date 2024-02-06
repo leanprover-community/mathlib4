@@ -237,7 +237,6 @@ initialize registerTraceClass `Tactic.positivity.failure
 where `a` is a numeral. -/
 def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
   have e' : Q(Prop) := ldecl.type
-  trace[tactic.Positivity] "trying to prove positivity of {e} from {ldecl.type}."
   match e' with
   | ~q(@LE.le.{u} $β $_le $lo $hi) =>
     let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
@@ -320,7 +319,7 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
     return result
   for ldecl in ← getLCtx do
     if !ldecl.isImplementationDetail then
-      result ← orElse result <| (do let x ← compareHyp zα pα e ldecl; trace[Tactic.positivity] "{e} => {x.toString}"; pure x)
+      result ← orElse result <| compareHyp zα pα e ldecl
   trace[Tactic.positivity] "{e} => {result.toString}"
   throwNone (pure result)
 
