@@ -458,15 +458,10 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
-  let .isBool b p ← derive q($a) | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
-  haveI' : $e =Q ¬ $a := ⟨⟩
-  if b then
-    have p : Q($a) := p
-    return .isFalse q(not_not_intro $p)
-  else
-    have p : Q(¬ $a) := p
-    return .isTrue q($p)
+  let ⟨b, p⟩ ← deriveBool q($a)
+  match b with
+  | true => return .isFalse q(not_not_intro $p)
+  | false => return .isTrue q($p)
 
 /-! # (In)equalities -/
 
