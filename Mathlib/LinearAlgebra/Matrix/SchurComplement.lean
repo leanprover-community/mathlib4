@@ -453,7 +453,7 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A).mulVec u`.
+`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
 theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
     (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
@@ -537,7 +537,7 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
   · refine' fun h => ⟨h.1, fun x => _⟩
-    have := h.2 (-(A⁻¹ * B).mulVec x ⊕ᵥ x)
+    have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this

@@ -26,7 +26,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   `Algebra.discr A b = 0`.
 * `Algebra.discr_of_matrix_vecMul` and `Algebra.discr_of_matrix_mulVec` : formulas relating
   `Algebra.discr A ι b` with `Algebra.discr A (b ᵥ* P.map (algebraMap A B))` and
-  `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`.
+  `Algebra.discr A (P.map (algebraMap A B) *ᵥ b)`.
 * `Algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
   `Algebra.discr K b ≠ 0`.
 * `Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two` : if `L/K` is a field extension and
@@ -295,7 +295,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
   have hinv : IsUnit (traceMatrix K B.basis).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
-    (traceMatrix K B.basis).det • (traceMatrix K B.basis).mulVec (B.basis.equivFun z) =
+    (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
       (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) :=
     by congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
