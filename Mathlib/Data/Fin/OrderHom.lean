@@ -355,9 +355,20 @@ theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
 
-/-
-TBD: succAbove antitone
--/
+theorem succAbove_le_succAbove_of_index_ge (i : Fin n) {a b : Fin (n + 1)} (h : a ≤ b) :
+    b.succAbove i ≤ a.succAbove i := by
+  obtain ha | ha := a.castSucc_lt_or_lt_succ i
+  · rw [succAbove_of_castSucc_lt _ _ (h.trans_lt' ha), succAbove_of_castSucc_lt _ _ ha]
+  · obtain hb | hb := b.castSucc_lt_or_lt_succ i
+    · rw [succAbove_of_castSucc_lt _ _ hb, succAbove_of_lt_succ _ _ ha]
+      exact (castSucc_lt_succ _).le
+    · rw [succAbove_of_lt_succ _ _ ha, succAbove_of_lt_succ _ _ hb]
+
+theorem succAbove_left_antitone {i : Fin n} : Antitone (succAbove · i) :=
+  fun _ _ => i.succAbove_le_succAbove_of_index_ge
+
+theorem succAbove_antitone : Antitone (succAbove (n := n)) :=
+  fun _ _ h _ => succAbove_left_antitone h
 
 end SuccAbove
 
@@ -517,17 +528,22 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove :=
 
 theorem predAbove_le_predAbove_of_index_le (i : Fin (n + 1)) {a b : Fin n} (h : a ≤ b) :
     a.predAbove i ≤ b.predAbove i := by
-  obtain ha | ha := i.succ_le_or_le_castSucc a <;>
   obtain hb | hb := i.castSucc_lt_or_lt_succ b
-  · rw [predAbove_of_succ_le _ _ ha, predAbove_of_castSucc_lt _ _ hb]
-  · rw [predAbove_of_succ_le _ _ ha, predAbove_of_lt_succ _ _ hb]
-    exact (pred_lt_castPred _ _).le
-  · exact ((castSucc_lt_castSucc_iff.mp (ha.trans_lt' hb)).not_le h).elim
-  · rw [predAbove_of_le_castSucc _ _ ha, predAbove_of_lt_succ _ _ hb]
+  · rw [← castSucc_le_castSucc_iff] at h
+    rw [predAbove_of_castSucc_lt _ _ (h.trans_lt hb), predAbove_of_castSucc_lt _ _ hb]
+  · obtain ha | ha := i.castSucc_lt_or_lt_succ a
+    · rw [predAbove_of_castSucc_lt _ _ ha, predAbove_of_lt_succ _ _ hb]
+      exact (pred_lt_castPred _ _).le
+    · rw [predAbove_of_lt_succ _ _ ha, predAbove_of_lt_succ _ _ hb]
 
 theorem predAbove_left_monotone (i : Fin (n + 1)) :
     Monotone (predAbove · i) := fun _ _ => i.predAbove_le_predAbove_of_index_le
 #align fin.pred_above_left_monotone Fin.predAbove_left_monotone
+
+theorem predAbove_monotone :
+    Monotone (predAbove (n := n)) := fun _ _ h _ =>
+  predAbove_le_predAbove_of_index_le _ h
+
 
 /--  `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
