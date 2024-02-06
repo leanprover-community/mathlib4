@@ -223,8 +223,7 @@ def compareHypLT (lo e : Q($α)) (p₂ : Q($lo < $e)) : MetaM (Strictness zα p�
   | _ => pure .none
 
 /-- A variation on `assumption` when the hypothesis is `a = b` where `a` is a numeral. -/
-def compareHypEq (e a b : Q($α)) (p₂ : Q($a = $b)) : MetaM (Strictness zα pα e) := do
-  let .defEq _ ← isDefEqQ e b | return .none
+def compareHypEq (e a : Q($α)) (p₂ : Q($a = $e)) : MetaM (Strictness zα pα e) := do
   match ← normNumPositivity zα pα a with
   | .positive p₁ => pure (.positive q(lt_of_lt_of_eq $p₁ $p₂))
   | .nonnegative p₁ => pure (.nonnegative q(le_of_le_of_eq $p₁ $p₂))
@@ -261,14 +260,16 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
   | ~q(@Eq.{u+1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
     let p : Q($lhs = $rhs) := .fvar ldecl.fvarId
-    match lhs, rhs with
-    | ~q(0), _ =>
-      let .defEq _ ← isDefEqQ e rhs | pure .none
-      pure <| .nonnegative q(le_of_eq $p)
-    | _, ~q(0) =>
+    match ← isDefEqQ e rhs with
+    | .defEq _ =>
+      match lhs with
+      | ~q(0) => pure <| .nonnegative q(le_of_eq $p)
+      | _ => compareHypEq zα pα e lhs q($p)
+    | .notDefEq =>
       let .defEq _ ← isDefEqQ e lhs | pure .none
-      pure <| .nonnegative q(ge_of_eq $p)
-    | _, _ => pure .none
+      match rhs with
+      | ~q(0) => pure <| .nonnegative q(ge_of_eq $p)
+      | _ => compareHypEq zα pα e rhs q(Eq.symm $p)
   | ~q(@Ne.{u + 1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
     let p : Q($lhs ≠ $rhs) := .fvar ldecl.fvarId
