@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.Data.Fin.OrderHom
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -329,7 +330,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
       exact hjk.trans_lt H
     · rw [Fin.predAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hjk),
       Fin.predAbove_of_castSucc_lt _ _ hjk, Fin.succAbove_of_castSucc_lt,
-      Fin.castSucc_pred_eq_pred_castSucc]
+      Fin.castSucc_pred]
       rwa [Fin.castSucc_lt_iff_succ_le, Fin.succ_pred]
   · rw [Fin.succAbove_of_le_castSucc _ _ (Fin.succ_le_castSucc_iff.mpr hik)]
     have hjk := H.trans hik
@@ -384,6 +385,33 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.succ_le_castSucc_iff.mpr h)]
 #align simplex_category.σ_comp_σ SimplexCategory.σ_comp_σ
 
+open Fin Nat in
+theorem σ_comp_σ_predAbove_zero {n : ℕ } (i j : Fin (n+3)) (i_lt_j: i < j)
+    (h1:i≠Fin.last (n+2):= Fin.ne_of_lt (gt_of_ge_of_gt j.le_last (i_lt_j)))
+    (h2:j≠0:=(Fin.pos_iff_ne_zero.mp (Nat.zero_lt_of_lt i_lt_j))):
+    σ (Fin.predAbove 0 i) ≫ σ (Fin.predAbove 0 (j.pred h2))=
+    σ (Fin.predAbove 0 j) ≫ σ (Fin.predAbove 0 (i.castPred h1)):= by
+  rw [predAbove_of_castSucc_lt 0 j (zero_lt_of_lt i_lt_j)]
+  by_cases hj: j=1
+  · subst hj
+    have: i=0 :=eq_of_val_eq (lt_one_iff.mp i_lt_j)
+    subst this
+    rfl
+  · nth_rewrite 2 [← show (predAbove 0 (j.pred h2)).succ =
+    j.pred h2 by
+      rw [eq_iff_veq,val_succ,coe_pred,predAbove_zero_of_ne_zero ?_]
+      refine Nat.succ_pred ?_
+      all_goals simp only [coe_pred, Nat.sub_eq, tsub_zero, ne_eq, tsub_eq_zero_iff_le, not_le,
+      eq_iff_veq, coe_pred, val_zero]
+      all_goals exact lt_of_le_of_ne (zero_lt_of_lt i_lt_j) (Ne.symm ((ne_iff_vne j 1).mp hj))]
+    rw [show predAbove 0 i =(predAbove 0 (i.castPred h1)).castSucc by
+          by_cases  hi : i =0
+          case' pos => subst hi
+          case' neg => rw [predAbove_zero_of_ne_zero hi,
+            predAbove_zero_of_ne_zero ((castSucc_ne_zero_iff (i.castPred _)).mp hi)]
+          all_goals rfl]
+    refine σ_comp_σ (by apply predAbove_right_monotone 0; exact Nat.le_sub_one_of_lt i_lt_j)
+
 /--
 If `f : [m] ⟶ [n+1]` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `[m] ⟶ [n]` such that
@@ -393,9 +421,15 @@ def factor_δ {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2)
     ([m] : SimplexCategory) ⟶ [n] :=
   f ≫ σ (Fin.predAbove 0 j)
 
+/--
+Given a `f : [m] ⟶ [n+1]` the condition on a `j ∈ Fin (n+1)` to not be in the image of `f`. -/
+def notInImage {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n]) (j: Fin (n+1)) : Prop:=
+  ∀ k, f.toOrderHom k ≠  j
+
+
 open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
-    (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
+    (hj : notInImage f j) :
     factor_δ f j ≫ δ j = f := by
   ext k : 3
   specialize hj k
@@ -421,68 +455,38 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
-open Fin Nat in
-lemma factor_δ_comp_lt {n m : ℕ } (f : ([m] : SimplexCategory) ⟶ [n+2])
-    (i j : Fin (n+3)) (i_lt_j : i<j):
-    factor_δ (factor_δ f j) ((last (n+1)).predAbove i) =
-    factor_δ (factor_δ f i) ((0 : Fin (n+2)).predAbove j) := by
-  rw [factor_δ,factor_δ,factor_δ,factor_δ,Category.assoc,Category.assoc]
-  congr 1
-  have h1: i ≤ (last (n+1)).castSucc:= le_castSucc_iff.mpr (lt_of_lt_of_le i_lt_j (j.le_last))
-  rw [predAbove_above 0 j (zero_lt_of_lt i_lt_j), (last (n+1)).predAbove_below i h1]
-  by_cases hj: j=1
-  · subst hj
-    have: i=0 :=eq_of_val_eq (lt_one_iff.mp i_lt_j)
-    subst this
-    rfl
-  · symm
-    nth_rewrite 2 [← show (predAbove 0 (j.pred ((pos_iff_ne_zero' j).mp
-        (zero_lt_of_lt i_lt_j)))).succ= j.pred ((pos_iff_ne_zero' j).mp (zero_lt_of_lt i_lt_j)) by
-      rw [eq_iff_veq,val_succ,coe_pred,predAbove_zero ?_]
-      refine Nat.succ_pred ?_
-      all_goals simp only [coe_pred, Nat.sub_eq, tsub_zero, ne_eq, tsub_eq_zero_iff_le, not_le,
-      eq_iff_veq, coe_pred, val_zero]
-      all_goals exact lt_of_le_of_ne (zero_lt_of_lt i_lt_j) (Ne.symm ((ne_iff_vne j 1).mp hj))]
-    rw [show predAbove 0 i =(predAbove 0 (i.castPred
-            (ne_of_lt (lt_of_le_of_lt h1 (last (n + 1)).castSucc_lt_last)))).castSucc by
-          by_cases  hi : i =0
-          case' pos => subst hi
-          case' neg => rw [predAbove_zero hi,
-            predAbove_zero ((castSucc_ne_zero_iff (i.castPred _)).mp hi)]
-          all_goals rfl]
-    exact σ_comp_σ (by apply predAbove_right_monotone 0; exact Nat.le_sub_one_of_lt i_lt_j)
-
-lemma factor_δ_comp_spec_lt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
-    {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
-    (exclude_i1 :  ∀ k, f.toOrderHom k ≠  i1) (exclude_i2 :  ∀ k, f.toOrderHom k ≠  i2):
-    (factor_δ (factor_δ f i1) (Fin.predAbove 0 i2)) ≫ δ (Fin.predAbove 0 i2)
-    = factor_δ f i1 := by
-  apply factor_δ_spec
+/--
+If `notInImage f i1` and `notInImage f i2` and  `i1<i2` then
+`notInImage (factor_δ f i2) (i1.castPred _)`.
+-/
+lemma notInImageCond_lt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+1]}
+    {i1 i2 : Fin (n+2)} (i1_lt_i2 : i1<i2) (hi1: notInImage f i1 ) (hi2: notInImage f i2)
+    (h1:i1≠Fin.last (n+1):= Fin.ne_of_lt (gt_of_ge_of_gt i2.le_last (i1_lt_i2))):
+    notInImage (factor_δ f i2) (i1.castPred h1) := by
   intro x
   by_contra h
-  refine exclude_i2 x ?_
-  have hi2: 0<i2 := Nat.zero_lt_of_lt i1_lt_i2
-  rw [← factor_δ_spec f i1 exclude_i1,smallCategory_comp,Hom.comp,Hom.toOrderHom_mk,
-  OrderHom.comp_coe,Function.comp_apply,h, show (δ i1).toOrderHom _=Fin.succAbove i1 _ from rfl,
-  Fin.predAbove_above 0 i2 (hi2),
-  Fin.succAbove_above i1 _ (by exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2)]
-  exact Fin.succ_pred i2 (LT.lt.ne' (LE.le.trans_lt (Fin.zero_le (Fin.castSucc 0)) hi2))
-
-lemma factor_δ_comp_spec_lt' {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
-    {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
-    (exclude_i1 :  ∀ k, f.toOrderHom k ≠  i1) (exclude_i2 :  ∀ k, f.toOrderHom k ≠  i2):
-    (factor_δ (factor_δ f i2) ((Fin.last (n+1)).predAbove i1))≫ δ ((Fin.last (n+1)).predAbove i1)
-    = factor_δ f i2 := by
-  apply factor_δ_spec
-  intro x
-  by_contra h
-  refine exclude_i1 x ?_
-  rw [← factor_δ_spec f i2 exclude_i2,smallCategory_comp,Hom.comp,Hom.toOrderHom_mk,
+  refine hi1 x ?_
+  rw [← factor_δ_spec f i2 hi2,smallCategory_comp,Hom.comp,Hom.toOrderHom_mk,
   OrderHom.comp_coe,Function.comp_apply,h, show (δ i2).toOrderHom _=Fin.succAbove i2 _ from rfl]
-  rw [Fin.predAbove_below (Fin.last (n+1)) i1 (Fin.le_castSucc_iff.mpr
-    (LT.lt.trans_le i1_lt_i2 (Fin.le_last i2))),Fin.succAbove_below i2 _ (by exact i1_lt_i2) ]
+  rw [Fin.succAbove_of_castSucc_lt i2 _ (by exact i1_lt_i2) ]
   rfl
 
+/--
+If `notInImage f i1` and `notInImage f i2` and  `i1<i2` then
+`notInImage (factor_δ f i1) (i2.pred _)`.
+-/
+lemma notInImageCond_gt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+1]}
+    {i1 i2 : Fin (n+2)} (i1_lt_i2 : i1<i2) (hi1: notInImage f i1 ) (hi2: notInImage f i2)
+    (h2:i2≠0:=(Fin.pos_iff_ne_zero.mp (Nat.zero_lt_of_lt i1_lt_i2))):
+    notInImage (factor_δ f i1) (i2.pred h2) := by
+  intro x
+  by_contra h
+  refine hi2 x ?_
+  have hi2: 0<i2 := Nat.zero_lt_of_lt i1_lt_i2
+  rw [← factor_δ_spec f i1 hi1,smallCategory_comp,Hom.comp,Hom.toOrderHom_mk,
+  OrderHom.comp_coe,Function.comp_apply,h, show (δ i1).toOrderHom _=Fin.succAbove i1 _ from rfl,
+   Fin.succAbove_of_le_castSucc i1 _ (by exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2)]
+  exact Fin.succ_pred i2 (LT.lt.ne' (LE.le.trans_lt (Fin.zero_le (Fin.castSucc 0)) hi2))
 
 end Generators
 

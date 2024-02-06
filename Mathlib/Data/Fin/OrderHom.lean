@@ -164,6 +164,13 @@ theorem succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0
   mt (succAbove_eq_zero_iff ha).mp hb
 #align fin.succ_above_ne_zero Fin.succAbove_ne_zero
 
+theorem succAbove_ne_zero' [NeZero n] {a : Fin (n + 1)} {b : Fin n} (hb : b ≠ 0) :
+    a.succAbove b ≠ 0 :=by
+  by_cases ha: a=0
+  · subst ha
+    exact succAbove_ne 0 b
+  · exact succAbove_ne_zero ha hb
+
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp]
 theorem succAbove_zero : succAbove (0 : Fin (n + 1)) = Fin.succ :=
