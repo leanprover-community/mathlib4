@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Anne Baanen
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Regular
 
 #align_import algebra.order.absolute_value from "leanprover-community/mathlib"@"0013240bce820e3096cebb7ccf6d17e3f35f77ca"
@@ -49,22 +50,24 @@ section Semiring
 
 variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
+instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
 instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_mul := fun f => f.map_mul' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
 instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_nonneg := fun f => f.nonneg' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
 instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
 @[simp]
@@ -74,7 +77,7 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 
 @[ext]
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
 
 /-- See Note [custom simps projection]. -/
@@ -84,10 +87,10 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
 instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=

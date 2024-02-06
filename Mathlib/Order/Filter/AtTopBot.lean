@@ -10,6 +10,7 @@ import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.Instances
 
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -951,7 +952,7 @@ end OrderedSemiring
 
 theorem zero_pow_eventuallyEq [MonoidWithZero α] :
     (fun n : ℕ => (0 : α) ^ n) =ᶠ[atTop] fun _ => 0 :=
-  eventually_atTop.2 ⟨1, fun _n hn => zero_pow (zero_lt_one.trans_le hn)⟩
+  eventually_atTop.2 ⟨1, fun _n hn ↦ zero_pow $ Nat.one_le_iff_ne_zero.1 hn⟩
 #align filter.zero_pow_eventually_eq Filter.zero_pow_eventuallyEq
 
 section OrderedRing
@@ -991,7 +992,7 @@ theorem tendsto_abs_atTop_atTop : Tendsto (abs : α → α) atTop atTop :=
 
 /-- $\lim_{x\to-\infty}|x|=+\infty$ -/
 theorem tendsto_abs_atBot_atTop : Tendsto (abs : α → α) atBot atTop :=
-  tendsto_atTop_mono neg_le_abs_self tendsto_neg_atBot_atTop
+  tendsto_atTop_mono neg_le_abs tendsto_neg_atBot_atTop
 #align filter.tendsto_abs_at_bot_at_top Filter.tendsto_abs_atBot_atTop
 
 @[simp]

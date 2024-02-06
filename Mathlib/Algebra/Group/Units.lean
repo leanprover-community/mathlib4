@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Nontriviality
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -701,6 +700,13 @@ lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.nsmul IsAddUnit.nsmul
+
+theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
+  Subsingleton.elim u 1
+#align units_eq_one units_eq_one
+
+@[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+  ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid
 

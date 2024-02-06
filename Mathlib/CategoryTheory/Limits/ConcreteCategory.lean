@@ -21,7 +21,7 @@ open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 section Limits
 

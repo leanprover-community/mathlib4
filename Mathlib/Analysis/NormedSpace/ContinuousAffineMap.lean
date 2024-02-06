@@ -235,13 +235,13 @@ theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
       _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
       _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ :=
-        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_op_norm _) _))
+        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_opNorm _) _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
         add_le_add_right
           (mul_le_mul f.norm_contLinear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
   · calc
       ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
-        (g.comp_contLinear f).symm ▸ f.contLinear.op_norm_comp_le _
+        (g.comp_contLinear f).symm ▸ f.contLinear.opNorm_comp_le _
       _ ≤ ‖f‖ * ‖g‖ :=
         (mul_le_mul f.norm_contLinear_le g.norm_contLinear_le (norm_nonneg _) (norm_nonneg _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg

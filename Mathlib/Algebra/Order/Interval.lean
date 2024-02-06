@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.interval from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

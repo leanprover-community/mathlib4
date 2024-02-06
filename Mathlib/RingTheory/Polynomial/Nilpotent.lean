@@ -3,7 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.Nilpotent
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Div
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Nilpotency in polynomial rings.

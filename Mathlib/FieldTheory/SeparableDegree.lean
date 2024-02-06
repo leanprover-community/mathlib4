@@ -7,7 +7,6 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
-import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 
 /-!
