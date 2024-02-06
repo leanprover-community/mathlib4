@@ -246,12 +246,12 @@ where `a` is a numeral. -/
 def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
   have e' : Q(Prop) := ldecl.type
   match e' with
-  | ~q(@LE.le.{u} _ $_a $lo $hi) =>
+  | ~q(@LE.le.{u} _ $_le $lo $hi) =>
     let .defEq _ ← isDefEqQ e hi | return .none
     let p : Q($lo ≤ $hi) := .fvar ldecl.fvarId
     try pure <| .nonnegative (← literalZero zα lo hi q((· ≤ ·)) p)
     catch _ => compareHypLE zα pα lo e p
-  | ~q(@LT.lt.{u} $β $_a $lo $hi) =>
+  | ~q(@LT.lt.{u} _ $_lt $lo $hi) =>
     let .defEq _ ← isDefEqQ e hi | return .none
     let p : Q($lo < $hi) := .fvar ldecl.fvarId
     try pure <| .positive (← literalZero zα lo hi q((· < ·)) p)
