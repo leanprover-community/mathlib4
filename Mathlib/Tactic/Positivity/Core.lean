@@ -247,15 +247,17 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
   have e' : Q(Prop) := ldecl.type
   trace[tactic.Positivity] "trying to prove positivity of {e} from {ldecl.type}."
   match e' with
-  | ~q(@LE.le.{u} _ $_le $lo $hi) =>
+  | ~q(@LE.le.{u} $β $_le $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
     let .defEq _ ← isDefEqQ e hi | return .none
     let p : Q($lo ≤ $hi) := .fvar ldecl.fvarId
-    try pure <| .nonnegative (← literalZero zα lo hi q((· ≤ ·)) p)
+    try pure <| .nonnegative (← literalZero zα lo hi q(@LE.le _ $_le) p)
     catch _ => compareHypLE zα pα lo e p
-  | ~q(@LT.lt.{u} _ $_lt $lo $hi) =>
+  | ~q(@LT.lt.{u} $β $_lt $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
     let .defEq _ ← isDefEqQ e hi | return .none
     let p : Q($lo < $hi) := .fvar ldecl.fvarId
-    try pure <| .positive (← literalZero zα lo hi q((· < ·)) p)
+    try pure <| .positive (← literalZero zα lo hi q(@LT.lt _ $_lt) p)
     catch _ => compareHypLT zα pα lo e p
   | ~q(@Eq.{u+1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
