@@ -218,7 +218,7 @@ theorem CompactIccSpace.cocompact_le_atTop [LinearOrder α] [OrderBot α] [Compa
     refine ⟨Icc ⊥ t, isCompact_Icc, fun _ hx ↦ ?_⟩
     exact (not_and_or.mp hx).casesOn (fun h ↦ (h bot_le).elim) (fun h ↦ ht _ (le_of_not_le h))
 
-private theorem CompactIccSpace.cocompact_ge_aux [LinearOrder α] [CompactIccSpace α] {l : Filter α}
+private theorem CompactIccSpace.cocompact_ge_aux {l : Filter α}
     (h_aux : (s t : Set α) → t.Nonempty → Nonempty α → IsCompact t → tᶜ ⊆ s → s ∈ l) :
     cocompact α ≥ l := by
   refine fun s hs ↦ ?_
