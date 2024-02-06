@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
 import Std.Data.List.Basic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
@@ -15,11 +14,6 @@ set_option autoImplicit true
 open Lean Meta
 
 namespace Lean.MVarId
-
-/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
-    MetaM (FVarId × MVarId) := do
-  (← g.define h (← t.getDM (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
