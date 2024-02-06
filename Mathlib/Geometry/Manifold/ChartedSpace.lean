@@ -1352,8 +1352,7 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
     Structomorph G s t := by
   intro s t
   by_cases h : Nonempty e.source
-  · exact {
-      e.toHomeomorphSourceTarget with
+  · exact { e.toHomeomorphSourceTarget with
       mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
         -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
