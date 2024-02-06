@@ -16,8 +16,8 @@ import Mathlib.FieldTheory.Perfect
 - `PerfectClosure`: the perfect closure of a characteristic `p` ring, which is the smallest
   extension that makes frobenius surjective.
 
-- `PerfectClosure.mk K p (n, x)` for `n : ℕ` and `x : K` is an element of `PerfectClosure K p`,
-  viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
+- `PerfectClosure.mk K p (n, x)`: for `n : ℕ` and `x : K` this is `x ^ (p ^ -n)` viewed as
+  an element of `PerfectClosure K p`. Every element of `PerfectClosure K p` is of this form
   (`PerfectClosure.mk_surjective`).
 
 - `PerfectClosure.of`: the structure map from `K` to `PerfectClosure K p`.
@@ -27,15 +27,15 @@ import Mathlib.FieldTheory.Perfect
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, only
-  need to prove it for all `x ^ (p ^ -n)`.
+- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+  needs to prove it for all elements of the form `x ^ (p ^ -n)`.
 
 - `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
   `PerfectClosure.neg_mk`, `PerfectClosure.zero_def`, `PerfectClosure.mk_zero_zero`,
   `PerfectClosure.mk_zero`, `PerfectClosure.mk_inv`, `PerfectClosure.mk_pow`:
   how to do multiplication, addition, etc. on elements of form `x ^ (p ^ -n)`.
 
-- `PerfectClosure.eq_iff'`: when does `x ^ (p ^ -n)` equal.
+- `PerfectClosure.mk_eq_iff`: when does `x ^ (p ^ -n)` equal.
 
 - `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
 
@@ -320,7 +320,7 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               add_mul, add_comm, add_left_comm] }
 
-theorem eq_iff' (x y : ℕ × K) :
+theorem mk_eq_iff (x y : ℕ × K) :
     mk K p x = mk K p y ↔ ∃ z, (frobenius K p)^[y.1 + z] x.2 = (frobenius K p)^[x.1 + z] y.2 := by
   constructor
   · intro H
@@ -343,16 +343,16 @@ theorem eq_iff' (x y : ℕ × K) :
   cases' H with z H; dsimp only at H
   rw [R.sound K p (n + z) m x _ rfl, R.sound K p (m + z) n y _ rfl, H]
   rw [add_assoc, add_comm, add_comm z]
-#align perfect_closure.eq_iff' PerfectClosure.eq_iff'
+#align perfect_closure.eq_iff' PerfectClosure.mk_eq_iff
 
 @[simp]
 theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
   induction n with
   | zero =>
-    rw [pow_zero, pow_zero, one_def, eq_iff']
+    rw [pow_zero, pow_zero, one_def, mk_eq_iff]
     exact ⟨0, by simp_rw [← coe_iterateFrobenius, map_one]⟩
   | succ n ih =>
-    rw [pow_succ, pow_succ, ih, mk_mul_mk, eq_iff']
+    rw [pow_succ, pow_succ, ih, mk_mul_mk, mk_eq_iff]
     exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul,
       ← pow_add, mul_assoc, ← pow_add]⟩
 
@@ -376,7 +376,7 @@ theorem int_cast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
 
 theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
-  · rw [nat_cast K p 0, nat_cast K p 0, eq_iff'] at H
+  · rw [nat_cast K p 0, nat_cast K p 0, mk_eq_iff] at H
     cases' H with z H
     simpa only [zero_add, iterate_fixed (frobenius_nat_cast K p _)] using H
   rw [nat_cast K p 0, nat_cast K p 0, H]
@@ -421,7 +421,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
     replace h : mk K p x ^ p ^ n = 0 := by
       rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
         pow_add, h, mul_zero]
-    simp only [zero_def, mk_pow, eq_iff', zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
+    simp only [zero_def, mk_pow, mk_eq_iff, zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
     obtain ⟨m, h⟩ := h
     exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
 
@@ -478,7 +478,7 @@ end Ring
 
 theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     Quot.mk (R K p) x = Quot.mk (R K p) y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
-  (eq_iff' K p x y).trans
+  (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
       fun H => ⟨0, H⟩⟩
 #align perfect_closure.eq_iff PerfectClosure.eq_iff
