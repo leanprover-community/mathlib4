@@ -248,17 +248,14 @@ theorem _root_.cocompact_ge_atBot_atTop [LinearOrder α] [NoMinOrder α] [NoMaxO
     [OrderClosedTopology α] : cocompact α ≥ atBot ⊔ atTop :=
   sup_le cocompact_ge_atBot cocompact_ge_atTop
 
-@[simp]
 theorem _root_.cocompact_eq_atBot_atTop [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
     [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
   cocompact_le_atBot_atTop.antisymm cocompact_ge_atBot_atTop
 
-@[simp]
 theorem _root_.cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm cocompact_ge_atTop
 
-@[simp]
 theorem _root_.cocompact_eq_atBot [LinearOrder α] [NoMinOrder α] [OrderTop α]
     [ClosedIicTopology α] [CompactIccSpace α] : cocompact α = atBot :=
   cocompact_le_atBot.antisymm cocompact_ge_atBot
