@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Identities
 import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -37,28 +38,6 @@ noncomputable section
 namespace Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {x : S}
-
-section FindHome -- TODO Relocate these lemmas, then drop this section
-
-variable {a b : S}
-
-lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (b - a)) :
-    IsNilpotent (aeval b P - aeval a P) := by
-  simp only [← eval_map_algebraMap]
-  have ⟨cj, hc⟩ := evalSubFactor (map (algebraMap R S) P) b a
-  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
-
-variable {P}
-
-lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
-    (ha : IsUnit (aeval a P)) (hb : IsNilpotent (b - a)) :
-    IsUnit (aeval b P) := by
-  obtain ⟨u, hu⟩ := ha
-  rw [← add_sub_cancel'_right (aeval a P) (aeval b P), ← hu]
-  refine Commute.IsNilpotent.add_isUnit ?_ (Commute.all _ _)
-  exact hu ▸ isNilpotent_aeval_sub_of_isNilpotent_sub P hb
-
-end FindHome
 
 /-- Given a single-variable polynomial `P` with derivative `P'`, this is the map:
 `x ↦ x - P(x) / P'(x)`. When `P'(x)` is not a unit we use a junk-value pattern and send `x ↦ x`. -/
@@ -113,7 +92,7 @@ unit) then we may write `x` as a sum `x = n + r` where `n` is nilpotent and `r` 
 This can be used to prove the Jordan-Chevalley decomposition of linear endomorphims. -/
 theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) :
-    ∃! s, IsNilpotent (x - s) ∧ aeval s P = 0 := by
+    ∃! r, IsNilpotent (x - r) ∧ aeval r P = 0 := by
   simp_rw [(neg_sub _ x).symm, isNilpotent_neg_iff]
   refine exists_unique_of_exists_of_unique ?_ fun r₁ r₂ ⟨hr₁, hr₁'⟩ ⟨hr₂, hr₂'⟩ ↦ ?_
   · -- Existence
@@ -127,10 +106,10 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
       rwa [derivative_map, eval_map_algebraMap, eval_map_algebraMap, eval_map_algebraMap,
         add_sub_cancel'_right, hr₂', hr₁', zero_add, pow_two, ← mul_assoc, ← add_mul, eq_comm,
         this.mul_right_eq_zero, sub_eq_zero, eq_comm] at hu
-    obtain ⟨v, hv⟩ : IsUnit (aeval r₁ (derivative P)) :=
+    have : IsUnit (aeval r₁ (derivative P)) :=
       isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' hr₁
-    rw [← hv, ← sub_sub_sub_cancel_right r₂ r₁ x]
-    refine Commute.IsNilpotent.add_isUnit ?_ (Commute.all _ _)
+    rw [← sub_sub_sub_cancel_right r₂ r₁ x]
+    refine IsNilpotent.isUnit_add_of_commute ?_ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
 end Polynomial
