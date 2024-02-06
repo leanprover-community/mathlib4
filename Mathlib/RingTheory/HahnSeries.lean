@@ -518,7 +518,7 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
   simp_all only [order, dite_false]
   exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
-theorem order_smul_le {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
