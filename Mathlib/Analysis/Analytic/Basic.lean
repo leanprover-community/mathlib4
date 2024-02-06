@@ -1297,7 +1297,6 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
 
 /-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
 see `HasFPowerSeriesOnBall.fderiv`. -/
-noncomputable
 def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
   (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
