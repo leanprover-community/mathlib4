@@ -255,7 +255,6 @@ private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 <
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
 @[positivity (_ : α) ^ (0:ℕ), Pow.pow _ (0:ℕ)]
 def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
-
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
