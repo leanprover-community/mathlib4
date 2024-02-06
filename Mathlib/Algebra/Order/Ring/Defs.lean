@@ -250,6 +250,20 @@ theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
     exact mul_nonneg H (pow_nonneg H _)
 #align pow_nonneg pow_nonneg
 
+lemma pow_le_pow_of_le_one (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
+  | _, _, Nat.le.refl => le_rfl
+  | _, _, Nat.le.step h => by
+    rw [pow_succ]
+    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
+#align pow_le_pow_of_le_one pow_le_pow_of_le_one
+
+lemma pow_le_of_le_one (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=
+  (pow_one a).subst (pow_le_pow_of_le_one h₀ h₁ (Nat.pos_of_ne_zero hn))
+#align pow_le_of_le_one pow_le_of_le_one
+
+lemma sq_le (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a := pow_le_of_le_one h₀ h₁ two_ne_zero
+#align sq_le sq_le
+
 -- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
@@ -1047,6 +1061,13 @@ theorem mul_self_lt_mul_self_iff {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a < 
 theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   (@strictMonoOn_mul_self α _).eq_iff_eq h1 h2
 #align mul_self_inj mul_self_inj
+
+lemma sign_cases_of_C_mul_pow_nonneg  (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
+  have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
+  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  simpa only [pow_one] using h 1
+set_option linter.uppercaseLean3 false in
+#align sign_cases_of_C_mul_pow_nonneg sign_cases_of_C_mul_pow_nonneg
 
 variable [ExistsAddOfLE α]
 
