@@ -242,9 +242,15 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
   | ~q(@LE.le _ $_a $lo $hi) =>
     guard <| ← isDefEq e hi
     compareHypLE zα pα lo e (.fvar ldecl.fvarId)
-  | ~q(@LT.lt _ $_a $lo $hi) =>
+  | ~q(@LT.lt.{u} $β $_a $lo $hi) =>
     guard <| ← isDefEq e hi
-    compareHypLT zα pα lo e (.fvar ldecl.fvarId)
+    match ← compareHypLT zα pα lo e (.fvar ldecl.fvarId) with
+    | .none =>
+      let .defEq (_ : $α =Q $β) ← isDefEqQ α β | pure .none
+      let .defEq _ ← isDefEqQ q((0 : $α)) lo | pure .none
+      let p : Q(0 < $e) := .fvar ldecl.fvarId
+      return .positive p
+    | result => pure result
   | ~q(($lo : $α') = $hi) =>
     let .true ← isDefEq α α' | return .none
     let p : Q($lo = $hi) := .fvar ldecl.fvarId
