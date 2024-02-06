@@ -187,6 +187,7 @@ def evalRealPi : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _zα _p
   | 0, ~q(ℝ), ~q(Real.pi) =>
     assertInstancesCommute
     pure (.positive q(Real.pi_pos))
+  | _, _, _ => throwError "not Real.pi"
 
 end Mathlib.Meta.Positivity
 
