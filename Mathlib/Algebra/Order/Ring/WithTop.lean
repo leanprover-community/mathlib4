@@ -60,7 +60,8 @@ lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
 @[simp] lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', if_neg hb]
 #align with_top.top_mul WithTop.top_mul
 
-@[simp] lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
+-- eligible for dsimp
+@[simp, nolint simpNF] lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
 #align with_top.top_mul_top WithTop.top_mul_top
 
 lemma mul_def (a b : WithTop α) :
@@ -240,7 +241,8 @@ lemma bot_mul' : ∀ (b : WithBot α), ⊥ * b = if b = 0 then 0 else ⊥
 @[simp] lemma bot_mul (hb : b ≠ 0) : ⊥ * b = ⊥ := by rw [bot_mul', if_neg hb]
 #align with_bot.bot_mul WithBot.bot_mul
 
-@[simp] lemma bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ := rfl
+-- eligible for dsimp
+@[simp, nolint simpNF] lemma bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ := rfl
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
 
 lemma mul_def (a b : WithBot α) :
