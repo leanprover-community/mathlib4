@@ -262,7 +262,7 @@ lemma Eise_bound_1 (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ) (hn : 1 ≤
   apply r_mul_n_pos k z n hn
 
 lemma Eis_bound_2 (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ) (hn : 1 ≤ n)
-  (C2 : Complex.abs (x 1 : ℂ) = n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ (k : ℤ)))⁻¹ ≤
+    (C2 : Complex.abs (x 1 : ℂ) = n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ (k : ℤ)))⁻¹ ≤
   (Complex.abs ((r z) ^ (k : ℤ) * n ^ (k : ℤ)))⁻¹ := by
   have h0 : (x 1 : ℂ) ≠ 0 := by
     intro hx
