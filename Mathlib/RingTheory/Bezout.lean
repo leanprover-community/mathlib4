@@ -91,14 +91,9 @@ noncomputable def toGCDDomain [IsDomain R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD gcd gcd_dvd_left gcd_dvd_right fun hac hab => dvd_gcd hac hab
 #align is_bezout.to_gcd_domain IsBezout.toGCDDomain
 
+instance [IsDomain R] : Nonempty (GCDMonoid R) := by classical exact ⟨inferInstance⟩
+
 end Gcd
-
-attribute [local instance] toGCDDomain
-
--- Note that the proof depends on the `local attribute [instance]` above, and is thus necessary to
--- be stated.
-instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
-  classical exact GCDMonoid.toIsIntegrallyClosed
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by

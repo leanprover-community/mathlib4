@@ -842,7 +842,7 @@ open Classical
 
 open Multiset Associates
 
-variable [CancelCommMonoidWithZero α] [Nontrivial α] [UniqueFactorizationMonoid α]
+variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
 protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
@@ -852,7 +852,7 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
         else
           ((normalizedFactors a).map
               (Classical.choose mk_surjective.hasRightInverse : Associates α → α)).prod
-      map_one' := by simp
+      map_one' := by nontriviality α; simp
       map_mul' := fun x y => by
         by_cases hx : x = 0
         · simp [hx]
@@ -874,9 +874,6 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
         associated_iff_eq]
       apply normalizedFactors_prod hx)
 #align unique_factorization_monoid.normalization_monoid UniqueFactorizationMonoid.normalizationMonoid
-
-noncomputable instance : Inhabited (NormalizationMonoid α) :=
-  ⟨UniqueFactorizationMonoid.normalizationMonoid⟩
 
 end UniqueFactorizationMonoid
 
@@ -957,7 +954,7 @@ theorem exists_reduced_factors :
 theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
     ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b :=
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
-  ⟨a', b', c', fun hpb hpa => no_factor hpa hpb, ha, hb⟩
+  ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
 #align unique_factorization_monoid.exists_reduced_factors' UniqueFactorizationMonoid.exists_reduced_factors'
 
 theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
@@ -1084,7 +1081,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
     (is_coprime : ∀ᵉ (q ∈ insert p s) (q' ∈ insert p s), q ∣ q' → q = q') :
     IsRelPrime (p ^ i p) (∏ p' in s, p' ^ i p') := by
   have hp := is_prime _ (Finset.mem_insert_self _ _)
-  refine' fun _ => no_factors_of_no_prime_factors (pow_ne_zero _ hp.ne_zero) _
+  refine' no_factors_of_no_prime_factors (pow_ne_zero _ hp.ne_zero) _
   intro d hdp hdprod hd
   apply hps
   replace hdp := hd.dvd_of_dvd_pow hdp
@@ -1217,49 +1214,6 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
 #align unique_factorization_monoid.multiplicative_of_coprime UniqueFactorizationMonoid.multiplicative_of_coprime
 
 end Multiplicative
-
-section Coprime
-
-variable {x y d : R}
-
-/-- See also `IsCoprime.dvd_of_dvd_mul_left`. -/
--- TODO: generalize to DecompositionMonoid; same for the next two.
--- Reference: https://link.springer.com/article/10.1007/s00233-019-10022-3 Lemma 6.3 (a)(d)
--- also add coprime_mul corresponding to (b), and move to appropriate file
-theorem dvd_of_coprime_of_dvd_mul_left
-    (h : IsRelPrime x y) (h' : y ∣ x * d) : y ∣ d := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · replace h : IsUnit y := h y (dvd_zero y) (refl _); exact h.dvd
-  rcases eq_or_ne y 0 with rfl | hy
-  · simp only [zero_dvd_iff, mul_eq_zero, hx, false_or] at h'; simp [h']
-  induction' y using UniqueFactorizationMonoid.induction_on_coprime
-    with u hu p k hp a b _ ha hb generalizing x d
-  · simpa [hx] using h'
-  · exact hu.dvd
-  · rcases eq_or_ne k 0 with rfl | hk; · simp
-    replace h : ¬ p ∣ x := fun contra ↦ hp.not_unit <| h p contra (dvd_pow_self p hk)
-    exact Prime.pow_dvd_of_dvd_mul_left hp k h h'
-  · rw [ne_eq, mul_eq_zero, not_or] at hy
-    -- TODO: extract IsRelPrime lemmas
-    have hxa : ∀ p, p ∣ x → p ∣ a → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_right b)
-    have hxb : ∀ p, p ∣ x → p ∣ b → IsUnit p := fun p h₁ h₂ ↦ h p h₁ (h₂.mul_left a)
-    obtain ⟨a', rfl⟩ := @ha x d hxa (dvd_of_mul_right_dvd h') hx hy.1
-    rw [mul_left_comm, mul_dvd_mul_iff_left hy.1] at h'
-    exact mul_dvd_mul_left a (@hb x a' hxb h' hx hy.2)
-
-/-- See also `IsCoprime.dvd_of_dvd_mul_right`. -/
-theorem dvd_of_coprime_of_dvd_mul_right
-    (h : IsRelPrime x y) (h' : y ∣ d * x) : y ∣ d := by
-  rw [mul_comm] at h'; exact dvd_of_coprime_of_dvd_mul_left h h'
-
-/-- See also `IsCoprime.mul_dvd`. -/
-theorem mul_dvd_of_coprime (h : IsRelPrime x y) (hx : x ∣ d) (hy : y ∣ d) :
-    x * y ∣ d := by
-  obtain ⟨x', rfl⟩ := hx
-  suffices y ∣ x' from mul_dvd_mul_left x this
-  exact dvd_of_coprime_of_dvd_mul_left h hy
-
-end Coprime
 
 end UniqueFactorizationMonoid
 
@@ -2022,6 +1976,11 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     normalize_gcd := fun a b => by congr; apply normalize_out _
     normalize_lcm := fun a b => by congr; apply normalize_out _ }
 #align unique_factorization_monoid.to_normalized_gcd_monoid UniqueFactorizationMonoid.toNormalizedGCDMonoid
+
+instance (α) [Nontrivial α] [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+    Nonempty (NormalizedGCDMonoid α) := by
+  letI := UniqueFactorizationMonoid.normalizationMonoid (α := α)
+  classical exact ⟨UniqueFactorizationMonoid.toNormalizedGCDMonoid α⟩
 
 end
 

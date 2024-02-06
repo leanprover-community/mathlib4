@@ -72,7 +72,7 @@ theorem dvd_of_squarefree_of_mul_dvd_mul_right
     apply pow_dvd_pow
     omega
   · rw [mul_mul_mul_comm] at h
-    exact mul_dvd_of_coprime hab' (ha <| dvd_of_mul_right_dvd h) (hb <| dvd_of_mul_left_dvd h)
+    exact hab'.mul_dvd (ha <| dvd_of_mul_right_dvd h) (hb <| dvd_of_mul_left_dvd h)
 
 theorem dvd_of_squarefree_of_mul_dvd_mul_left
     (hy : Squarefree y) (h : d * d ∣ x * y) :

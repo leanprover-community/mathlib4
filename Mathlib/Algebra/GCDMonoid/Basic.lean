@@ -309,10 +309,17 @@ section GCDMonoid
 
 variable [CancelCommMonoidWithZero α]
 
+instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
+instance [GCDMonoid α] : Nonempty (GCDMonoid α) := ⟨‹_›⟩
+instance [NormalizedGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) := ⟨‹_›⟩
+instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (NormalizationMonoid α) :=
+  h.elim fun _ ↦ inferInstance
+instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (GCDMonoid α) :=
+  h.elim fun _ ↦ inferInstance
+
 theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
     IsUnit (gcd a b) ↔ IsRelPrime a b :=
-  ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h,
-    (· _ (gcd_dvd_left a b) <| gcd_dvd_right a b)⟩
+  ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h, (· (gcd_dvd_left a b) (gcd_dvd_right a b))⟩
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
@@ -531,8 +538,9 @@ In other words, a `GCDMonoid` is a decomposition monoid
 Note: In general, this representation is highly non-unique.
 
 See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/
-instance [GCDMonoid α] : DecompositionMonoid α where
+instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
   primal k m n H := by
+    cases h
     by_cases h0 : gcd k m = 0
     · rw [gcd_eq_zero_iff] at h0
       rcases h0 with ⟨rfl, rfl⟩
