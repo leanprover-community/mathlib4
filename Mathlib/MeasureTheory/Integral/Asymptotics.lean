@@ -33,24 +33,11 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
     (hf : f =O[l] g) (hfm : StronglyMeasurableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter f l μ := by
   obtain ⟨C, hC⟩ := hf.bound
-  let C' : NNReal := ⟨max C 0, le_max_right C 0⟩
-  obtain ⟨s, hsl, hs⟩ := hC.exists_mem
-  obtain ⟨t, htl, ht⟩ := hg
-  obtain ⟨u, hul, hu⟩ := hfm
-  obtain ⟨S, hS, hs_meas, hs_le⟩ :=
-    IsMeasurablyGenerated.exists_measurable_subset <| inter_mem (inter_mem hsl htl) hul
-  use S, hS, hu.mono_measure <| Measure.restrict_mono (fun _ hx ↦ (hs_le hx).2) le_rfl
-  calc
-    _ ≤ ∫⁻ (x : α) in S, C' * ‖g x‖₊ ∂μ := by
-      refine lintegral_mono_ae <| (ae_restrict_iff' hs_meas).mpr <| ae_of_all _ fun x hx => ?_
-      rewrite [← ENNReal.coe_mul, ENNReal.coe_le_coe]
-      refine (hs x (hs_le hx).1.1).trans ?_
-      show C * ‖g x‖ ≤ (max C 0) * ‖g x‖
-      gcongr
-      apply le_max_left
-    _ = C' * ∫⁻ (x : α) in S, ↑‖g x‖₊ ∂μ := lintegral_const_mul' _ _ ENNReal.coe_ne_top
-    _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_ne_top <| ne_top_of_lt
-      <| ht.mono_set (fun _ hx ↦ (hs_le hx).1.2) |>.2
+  obtain ⟨s, hsl, hsm, hfg, hf, hg⟩ :=
+    (hC.smallSets.and <| hfm.eventually.and hg.eventually).exists_measurable_mem_of_smallSets
+  refine ⟨s, hsl, (hg.norm.const_mul C).mono hf ?_⟩
+  refine (ae_restrict_mem hsm).mono fun x hx ↦ ?_
+  exact (hfg x hx).trans (le_abs_self _)
 
 /-- Variant of `MeasureTheory.Integrable.mono` taking `f =O[⊤] (g)` instead of `‖f(x)‖ ≤ ‖g(x)‖` -/
 theorem _root_.Asymptotics.IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
