@@ -339,11 +339,11 @@ lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
     ring
 
 lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
-    refine match j with
-    | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
-    | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
-    · simp_rw [det_coe A ▸ det_fin_two A.1]
-      ring
+  refine match j with
+  | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
+  | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
 
 end SpecialCases
 
@@ -412,12 +412,12 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.T ModularGroup.T
 
 theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
