@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
