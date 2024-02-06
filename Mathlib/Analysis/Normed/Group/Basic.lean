@@ -523,6 +523,10 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
+@[to_additive (attr := simp) abs_norm]
+theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
+#align abs_norm abs_norm
+
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
@@ -817,6 +821,8 @@ theorem NormedCommGroup.uniformity_basis_dist :
 #align normed_add_comm_group.uniformity_basis_dist NormedAddCommGroup.uniformity_basis_dist
 
 open Finset
+
+variable [FunLike 𝓕 E F]
 
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
@@ -1405,6 +1411,8 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
+
+variable [FunLike 𝓕 E F]
 
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`

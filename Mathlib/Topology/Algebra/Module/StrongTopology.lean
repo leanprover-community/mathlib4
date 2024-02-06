@@ -301,6 +301,19 @@ def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMu
 
 end BoundedSets
 
+section BilinearMaps
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜 G]
+  [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
+def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
+
+end BilinearMaps
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap
