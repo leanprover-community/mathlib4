@@ -10,7 +10,6 @@ import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.GroupTheory.GroupAction.DomAct.ActionHom
 
 /-!
 # Character module of a module
@@ -62,16 +61,7 @@ section module
 variable [Module R A]  [Module R B]
 
 instance : Module R (CharacterModule A) :=
-  letI : DistribMulAction Rᵈᵐᵃ (CharacterModule A) :=
-    inferInstanceAs <| DistribMulAction Rᵈᵐᵃ (A →+ (AddCircle (1 : ℚ)))
-  { smul := fun r l ↦ (DomMulAct.mk r) • l
-    one_smul := fun l ↦ DFunLike.ext _ _ <| fun x ↦ show l _ = _ by simp
-    mul_smul := fun r₁ r₂ l ↦ DFunLike.ext _ _ <| fun x ↦ show l _ = l _ by
-      dsimp; rw [mul_comm, mul_smul]
-    smul_zero := fun _ ↦ rfl
-    smul_add := fun r l₁ l₂ ↦ DFunLike.ext _ _ fun _ ↦ rfl
-    add_smul := fun r₁ r₂ l ↦ DFunLike.ext _ _ fun _ ↦ show l _ = l _ + l _ by simp [add_smul]
-    zero_smul := fun l ↦ DFunLike.ext _ _ fun _ ↦ show l _ = 0 by simp }
+  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
