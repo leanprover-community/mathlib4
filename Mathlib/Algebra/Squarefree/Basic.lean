@@ -194,6 +194,21 @@ end Irreducible
 
 section IsRadical
 
+section
+variable [CommMonoidWithZero R] [DecompositionMonoid R]
+
+theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
+  (isRadical_iff_pow_one_lt 2 one_lt_two).2 fun y hy ↦ by
+    obtain ⟨a, b, ha, hb, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul (sq y ▸ hy)
+    exact (IsRelPrime.of_squarefree_mul hx).mul_dvd ha hb
+#align squarefree.is_radical Squarefree.isRadical
+
+theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
+    x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
+#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree dvd_pow_iff_dvd_of_squarefree
+
+end
+
 variable [CancelCommMonoidWithZero R]
 
 theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
@@ -203,26 +218,10 @@ theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefr
   rw [mul_assoc, mul_ne_zero_iff] at h0; exact h0.2
 #align is_radical.squarefree IsRadical.squarefree
 
-variable [GCDMonoid R]
-
-theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
-  (isRadical_iff_pow_one_lt 2 one_lt_two).2 fun y hy =>
-    And.right <|
-      (dvd_gcd_iff x x y).1
-        (by
-          by_cases h : gcd x y = 0
-          · rw [h]
-            apply dvd_zero
-          replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd
-          obtain ⟨z, hz⟩ := gcd_dvd_left x y
-          nth_rw 1 [hz] at hy ⊢
-          rw [pow_two, mul_dvd_mul_iff_left h] at hy
-          obtain ⟨w, hw⟩ := hy
-          exact (hx z ⟨w, by rwa [mul_right_comm, ← hw]⟩).mul_right_dvd.2 dvd_rfl)
-#align squarefree.is_radical Squarefree.isRadical
+variable [DecompositionMonoid R]
 
 theorem isRadical_iff_squarefree_or_zero {x : R} : IsRadical x ↔ Squarefree x ∨ x = 0 :=
-  ⟨fun hx => (em <| x = 0).elim Or.inr fun h => Or.inl <| hx.squarefree h,
+  ⟨fun hx ↦ (em <| x = 0).elim .inr fun h ↦ .inl <| hx.squarefree h,
     Or.rec Squarefree.isRadical <| by
       rintro rfl
       rw [zero_isRadical_iff]
@@ -264,13 +263,6 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [Decidabl
     specialize h (normalize b)
     assumption_mod_cast
 #align unique_factorization_monoid.squarefree_iff_nodup_normalized_factors UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors
-
-theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
-    x ∣ y ^ n ↔ x ∣ y := by
-  classical
-    haveI := UniqueFactorizationMonoid.toGCDMonoid R
-    exact ⟨hsq.isRadical n y, fun h => h.pow h0⟩
-#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree
 
 end UniqueFactorizationMonoid
 
