@@ -15,6 +15,11 @@ We establish integrability of `f` from `f = O(g)`.
 
 * `Asymptotics.IsBigO.integrableAtFilter`: If `f = O[l] g` on measurably generated `l`,
   `f` is strongly measurable at `l`, and `g` is integrable at `l`, then `f` is integrable at `l`.
+* `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_cocompact`: If `f` is locally integrable,
+  and `f =O[cocompact] g` for some `g` integrable at `cocompact`, then `f` is integrable.
+* `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atBot_atTop`: If `f` is locally integrable,
+  and `f =O[atBot] g`, `f =O[atTop] g'` for some `g`, `g'` integrable at `atBot` and `atTop`
+  respectively, then `f` is integrable.
 -/
 
 open Asymptotics MeasureTheory Set Filter
@@ -57,6 +62,8 @@ variable [TopologicalSpace α] [SecondCountableTopology α]
 
 namespace MeasureTheory
 
+/-- If `f` is locally integrable, and `f =O[cocompact] g` for some `g` integrable at `cocompact`,
+then `f` is integrable. -/
 theorem LocallyIntegrable.integrable_of_isBigO_cocompact [IsMeasurablyGenerated (cocompact α)]
     (hf : LocallyIntegrable f μ) (ho : f =O[cocompact α] g)
     (hg : IntegrableAtFilter g (cocompact α) μ) : Integrable f μ := by
@@ -65,6 +72,8 @@ theorem LocallyIntegrable.integrable_of_isBigO_cocompact [IsMeasurablyGenerated 
 
 variable [LinearOrder α] [CompactIccSpace α] {g' : α → F}
 
+/-- If `f` is locally integrable, and `f =O[atBot] g`, `f =O[atTop] g'` for some
+`g`, `g'` integrable at `atBot` and `atTop` respectively, then `f` is integrable. -/
 theorem LocallyIntegrable.integrable_of_isBigO_atBot_atTop
     [IsMeasurablyGenerated (atBot (α := α))] [IsMeasurablyGenerated (atTop (α := α))]
     (hf : LocallyIntegrable f μ)
@@ -74,12 +83,16 @@ theorem LocallyIntegrable.integrable_of_isBigO_atBot_atTop
     ⟨⟨ho.integrableAtFilter ?_ hg, ho'.integrableAtFilter ?_ hg'⟩, hf⟩
   all_goals exact hf.aestronglyMeasurable.stronglyMeasurableAtFilter
 
+/-- If `f` is locally integrable on `(∞, a]`, and `f =O[atBot] g`, for some
+`g` integrable at `atBot`, then `f` is integrable on `(∞, a]`. -/
 theorem LocallyIntegrableOn.integrableOn_of_isBigO_atBot [IsMeasurablyGenerated (atBot (α := α))]
     (hf : LocallyIntegrableOn f (Iic a) μ) (ho : f =O[atBot] g)
     (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ := by
   refine integrableOn_Iic_iff_integrableAtFilter_atBot.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
   exact ⟨Iic a, Iic_mem_atBot a, hf.aestronglyMeasurable⟩
 
+/-- If `f` is locally integrable on `[a, ∞)`, and `f =O[atTop] g`, for some
+`g` integrable at `atTop`, then `f` is integrable on `[a, ∞)`. -/
 theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop [IsMeasurablyGenerated (atTop (α := α))]
     (hf : LocallyIntegrableOn f (Ici a) μ) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ := by
