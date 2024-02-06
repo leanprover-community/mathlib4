@@ -501,6 +501,13 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 #align measurable_set.inv MeasurableSet.inv
 #align measurable_set.neg MeasurableSet.neg
 
+@[to_additive]
+theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
+    MeasurableEmbedding (Inv.inv (α := α)) := by
+  refine ⟨inv_injective, measurable_inv, fun s hs ↦ ?_⟩
+  rewrite [s.image_inv]
+  exact hs.inv
+
 end Inv
 
 /-- `DivInvMonoid.Pow` is measurable. -/

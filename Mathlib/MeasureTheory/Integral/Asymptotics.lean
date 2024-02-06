@@ -114,27 +114,23 @@ end LinearOrder
 `g` integrable at `atTop`, then `f` is integrable. -/
 theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
     [LinearOrderedAddCommGroup α] [CompactIccSpace α] [IsMeasurablyGenerated (atTop (α := α))]
-    [MeasurableNeg α] [μ.IsNegInvariant]
-    (hf : LocallyIntegrable f μ) (hsymm : norm ∘ f = norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
+    [MeasurableNeg α] [μ.IsNegInvariant] (hf : LocallyIntegrable f μ)
+    (hsymm : norm ∘ f =ᵐ[μ] norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
   refine (isEmpty_or_nonempty α).casesOn (fun _ ↦ ?_) (fun _ ↦ ?_)
   · exact integrableOn_univ.mp (by convert integrableOn_empty)
   let a := -|Classical.arbitrary α|
   have h_int : IntegrableOn f (Ici a) μ :=
     LocallyIntegrableOn.integrableOn_of_isBigO_atTop (hf.locallyIntegrableOn _) ho hg
-  have h_neg :  MeasurableEmbedding (Neg.neg (α := α)) := by
-    refine ⟨neg_injective, measurable_neg, fun s hs ↦ ?_⟩
-    rewrite [s.image_neg]
-    exact hs.neg
   have h_map_neg : (μ.restrict (Ici a)).map Neg.neg = μ.restrict (Iic (-a)) := by
-    rw [show Ici a = Neg.neg ⁻¹' Iic (-a) by simp, ← h_neg.restrict_map, Measure.map_neg_eq_self]
+    rw [show Ici a = Neg.neg ⁻¹' Iic (-a) by simp, ← measurableEmbedding_neg.restrict_map,
+      Measure.map_neg_eq_self]
   have h_int_neg : IntegrableOn (f ∘ Neg.neg) (Ici a) μ := by
-    refine h_int.congr' ?_ (univ_mem' (congrFun hsymm))
-    refine MeasureTheory.AEStronglyMeasurable.comp_aemeasurable ?_ measurable_neg.aemeasurable
-    rewrite [h_map_neg]
-    exact hf.aestronglyMeasurable.restrict
-  replace h_int_neg := h_neg.integrable_map_iff.mpr h_int_neg
+    refine h_int.congr' ?_ hsymm.restrict
+    refine AEStronglyMeasurable.comp_aemeasurable ?_ measurable_neg.aemeasurable
+    convert hf.aestronglyMeasurable.restrict
+  replace h_int_neg := measurableEmbedding_neg.integrable_map_iff.mpr h_int_neg
   rewrite [h_map_neg] at h_int_neg
-  apply integrableOn_univ.mp
+  refine integrableOn_univ.mp ?_
   convert integrableOn_union.mpr ⟨h_int_neg, h_int⟩
   exact (Set.Iic_union_Ici_of_le (by simp)).symm
