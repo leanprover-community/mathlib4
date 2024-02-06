@@ -22,7 +22,7 @@ injective. The value `r = ∞` is not allowed because this way we can define `Di
 not `Dilation.ratio f : ℝ≥0∞`. Also, we do not often need maps sending distinct points to points at
 infinite distance.
 
-## Main defintions
+## Main definitions
 
 * `Dilation.ratio f : ℝ≥0`: the value of `r` in the relation above, defaulting to 1 in the case
   where it is not well-defined.
@@ -34,7 +34,7 @@ infinite distance.
 ## Implementation notes
 
 The type of dilations defined in this file are also referred to as "similarities" or "similitudes"
-by other authors. The name `Dilation` was choosen to match the Wikipedia name.
+by other authors. The name `Dilation` was chosen to match the Wikipedia name.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoEMetricSpace` and we specialize to `PseudoMetricSpace` and `MetricSpace` when
