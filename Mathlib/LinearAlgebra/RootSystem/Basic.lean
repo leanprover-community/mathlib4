@@ -66,10 +66,10 @@ open AddSubgroup (zmultiples)
 
 noncomputable section
 
-variable (ι R M N : Type*) [Finite ι]
+variable (ι R M N : Type*)
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with finite indexing set `ι`
+/-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with indexing set `ι`
 is the data of an `ι`-indexed subset of `M` ("the roots") and an `ι`-indexed subset of `N`
 ("the coroots") satisfying the axioms familiar from the traditional theory of root systems / data.
 
@@ -110,7 +110,8 @@ always an integer.-/
 def IsCrystallographic : Prop :=
   ∀ i, MapsTo (P.toLin (P.root i)) (range P.coroot) (zmultiples (1 : R))
 
-/-- A root pairing is said to be reduced if it never contains the double of a root.-/
+/-- A root pairing is said to be reduced if it never contains the double of a root. (change this
+to say the only constant multiples are ± 1?)-/
 def IsReduced : Prop :=
   ∀ i, 2 • P.root i ∉ range P.root
 
@@ -148,6 +149,19 @@ lemma reflection_apply_self :
     P.reflection i (P.root i) = - P.root i :=
   Module.reflection_apply_self (P.coroot_root_two i)
 
+@[simp]
+lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
+  Module.involutive_reflection (P.coroot_root_two i) x
+
+lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
+    (range P.root) := by
+  constructor
+  exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
+  exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
+
+lemma bijOn_reflection_root : BijOn (P.reflection i) (range P.root) (range P.root) := InvOn.bijOn
+  (reflection_invOn_self P i) (mapsTo_preReflection_root P i) (mapsTo_preReflection_root P i)
+
 /-- The reflection associated to a coroot. -/
 def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
@@ -156,15 +170,18 @@ lemma coreflection_apply (f : N) :
     P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
   rfl
 
-lemma bijOn_reflection_root :
-    BijOn (P.reflection i) (range P.root) (range P.root) :=
-  ((finite_range P.root).injOn_iff_bijOn_of_mapsTo (P.mapsTo_preReflection_root i)).mp <|
-    (P.reflection i).injective.injOn _
+lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.reflection i f :=
+  rfl
 
-lemma bijOn_coreflection_coroot :
-    BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
-  ((finite_range P.coroot).injOn_iff_bijOn_of_mapsTo (P.mapsTo_preReflection_coroot i)).mp <|
-    (P.coreflection i).injective.injOn _
+@[simp]
+lemma coreflection_same (x : N) : P.coreflection i (P.coreflection i x) = x :=
+  reflection_same P.flip i x
+
+lemma coreflection_invOn_self : InvOn (P.coreflection i) (P.coreflection i) (range P.coroot)
+    (range P.coroot) := reflection_invOn_self P.flip i
+
+lemma bijOn_coreflection_coroot : BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
+  bijOn_reflection_root P.flip i
 
 @[simp]
 lemma reflection_image_eq :
@@ -180,6 +197,24 @@ lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
+
+lemma root_scalar (x : M) (c : R) (i : ι) (h : P.root i = c • x) : ∃(a : R), c * a = 2 := by
+  use P.toLin x (P.coroot i)
+  rw [← smul_eq_mul, (LinearMap.map_smul₂ P.toLin c x (P.coroot i)).symm, ← h, P.root_coroot_two i]
+
+/-- An element in the coroot space is preregular if any interval has finite preimage. -/
+def isPreregular [LinearOrderedCommRing R] (x : N) : Prop := ∀ (n : R), 0 ≤ n →
+  Finite { i | 0 ≤ (P.toLin (P.root i) x) ∧ (P.toLin (P.root i) x) ≤ n}
+
+/-- A root pairing is thin if there is a preregular element. -/
+def isThin [LinearOrderedCommRing R] : Prop := ∃ (x : N), isPreregular P x
+
+/-- A regular element is a preregular element that takes no roots to zero.
+(should I change this to injective?) -/
+def isRegularElement [LinearOrderedCommRing R] (x : N) : Prop :=
+  (isPreregular P x) ∧ ∀(i : ι), P.toLin (P.root i) x ≠ 0
+
+variable [Finite ι]
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -291,7 +326,7 @@ namespace RootSystem
 
 open RootPairing
 
-variable {ι}
+variable {ι} [Finite ι]
 variable (P : RootSystem ι R M N)
 
 /-- In characteristic zero if there is no torsion, a root system is determined entirely by its
