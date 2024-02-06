@@ -242,8 +242,7 @@ lemma Eise_bound_1 (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ) (hn : 1 ≤
     simp_rw [← C1] at hn
     simp only [Nat.one_ne_zero, le_zero_iff] at hn
   have h1 : ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
-    ((x 0 : ℂ) ^ (k : ℤ)) * ((z : ℂ) + (x 1 : ℂ) / x 0) ^ (k : ℤ) :=
-    by
+    ((x 0 : ℂ) ^ (k : ℤ)) * ((z : ℂ) + (x 1 : ℂ) / x 0) ^ (k : ℤ) := by
     field_simp
     ring
   rw [h1]
@@ -327,7 +326,7 @@ theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
     apply Eis_bound_2 k z n x hnn C2
 
 lemma  eisensteinSeries_TendstoLocallyUniformlyOn  (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
-      (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
   (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
   ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
