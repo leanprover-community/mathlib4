@@ -57,27 +57,30 @@ namespace MeasureTheory
 
 section Order
 
-variable [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α] [OpensMeasurableSpace α]
-  [OrderClosedTopology α] {g' : α → F}
+variable [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α] {g' : α → F}
 
-theorem LocallyIntegrableOn.integrableOn_of_isBigO_atBot (hf : LocallyIntegrableOn f (Iic a) μ)
+theorem LocallyIntegrableOn.integrableOn_of_isBigO_atBot
+    [IsMeasurablyGenerated (atBot (α := α))] (hf : LocallyIntegrableOn f (Iic a) μ)
     (hfm : StronglyMeasurableAtFilter f atBot μ) (ho : f =O[atBot] g)
     (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ :=
   integrableOn_Iic_iff_integrableAtFilter_atBot.mpr ⟨ho.integrableAtFilter hfm hg, hf⟩
 
-theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop (hf : LocallyIntegrableOn f (Ici a) μ)
+theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop
+    [IsMeasurablyGenerated (atTop (α := α))] (hf : LocallyIntegrableOn f (Ici a) μ)
     (hfm : StronglyMeasurableAtFilter f atTop μ) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ :=
   integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨ho.integrableAtFilter hfm hg, hf⟩
 
 theorem LocallyIntegrable.integrable_of_isBigO_atBot_atTop (hf : LocallyIntegrable f μ)
+    [IsMeasurablyGenerated (atBot (α := α))] [IsMeasurablyGenerated (atTop (α := α))]
     (hfm : StronglyMeasurableAtFilter f atBot μ) (hfm' : StronglyMeasurableAtFilter f atTop μ)
     (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ)
     (ho' : f =O[atTop] g') (hg' : IntegrableAtFilter g' atTop μ) : Integrable f μ :=
   integrable_iff_integrableAtFilter_atBot_atTop.mpr
     ⟨⟨ho.integrableAtFilter hfm hg, ho'.integrableAtFilter hfm' hg'⟩, hf⟩
 
-variable [IsLocallyFiniteMeasure μ] [SecondCountableTopologyEither α E]
+variable [OpensMeasurableSpace α] [OrderClosedTopology α] [IsLocallyFiniteMeasure μ]
+  [SecondCountableTopologyEither α E]
 
 theorem _root_.ContinuousOn.integrableOn_of_of_isBigO_atBot (hf : ContinuousOn f (Iic a))
     (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ := by
