@@ -60,7 +60,7 @@ noncomputable def den (x : K) : nonZeroDivisors A :=
 #align is_fraction_ring.denom IsFractionRing.den
 
 theorem num_den_reduced (x : K) : IsRelPrime (num A x) (den A x) :=
-  fun _ ↦ (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
+  (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 #align is_fraction_ring.num_denom_reduced IsFractionRing.num_den_reduced
 
 -- @[simp] -- Porting note: LHS reduces to give the simp lemma below

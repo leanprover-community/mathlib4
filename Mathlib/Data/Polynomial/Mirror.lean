@@ -238,10 +238,10 @@ theorem irreducible_of_mirror (h1 : ¬IsUnit f)
       exact dvd_mul_left h g.mirror
     have hk := h2 k key
     rcases hk with (hk | hk | hk | hk)
-    · exact Or.inr (h3 h h_dvd_f (by rwa [← hk]))
-    · exact Or.inr (h3 h h_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, mirror_neg, dvd_neg]))
-    · exact Or.inl (h3 g g_dvd_f (by rwa [← hk]))
-    · exact Or.inl (h3 g g_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, dvd_neg]))
+    · exact Or.inr (h3 h_dvd_f (by rwa [← hk]))
+    · exact Or.inr (h3 h_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, mirror_neg, dvd_neg]))
+    · exact Or.inl (h3 g_dvd_f (by rwa [← hk]))
+    · exact Or.inl (h3 g_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, dvd_neg]))
 #align polynomial.irreducible_of_mirror Polynomial.irreducible_of_mirror
 
 end CommRing
