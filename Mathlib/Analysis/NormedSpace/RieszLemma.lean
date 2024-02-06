@@ -5,7 +5,7 @@ Authors: Jean Lo, Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.Seminorm
-import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 #align_import analysis.normed_space.riesz_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

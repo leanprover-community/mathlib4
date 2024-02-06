@@ -7,7 +7,7 @@ import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Topology.MetricSpace.HausdorffDistance.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 #align_import analysis.normed.group.quotient from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
