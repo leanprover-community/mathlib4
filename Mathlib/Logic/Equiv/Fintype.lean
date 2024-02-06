@@ -94,17 +94,20 @@ theorem Equiv.Perm.viaFintypeEmbedding_sign [DecidableEq α] [Fintype β] :
 
 namespace Equiv
 
-variable {p q : α → Prop} [DecidablePred p] [DecidablePred q]
-
 /-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
 `{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known. -/
-noncomputable def toCompl (e : { x // p x } ≃ { x // q x }) : { x // ¬p x } ≃ { x // ¬q x } :=
-  Classical.choice
-    (Fintype.card_eq.mp (Fintype.card_compl_eq_card_compl _ _ (Fintype.card_congr e)))
+noncomputable def toCompl {α : Type*} [Finite α] {p q : α → Prop}
+    (e : { x // p x } ≃ { x // q x }) : { x // ¬p x } ≃ { x // ¬q x } := by
+  apply Classical.choice
+  cases nonempty_fintype α
+  classical
+  exact Fintype.card_eq.mp <| Fintype.card_compl_eq_card_compl _ _ <| Fintype.card_congr e
 #align equiv.to_compl Equiv.toCompl
+
+variable {p q : α → Prop} [DecidablePred p] [DecidablePred q]
 
 /-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.extendSubtype`
 is a permutation of `α` acting like `e` on the subtypes and doing something arbitrary outside.
