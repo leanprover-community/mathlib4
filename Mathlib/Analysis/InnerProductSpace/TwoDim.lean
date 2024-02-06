@@ -456,7 +456,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
         Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
-        real_inner_self_eq_norm_sq]
+        real_inner_self_eq_norm_sq, zero_smul, one_smul]
       exact this
     rintro ⟨ha, hb⟩
     have hx' : 0 < ‖x‖ := by simpa using hx

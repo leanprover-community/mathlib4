@@ -412,7 +412,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 #align Gromov_Hausdorff.GH_dist_eq_Hausdorff_dist GromovHausdorff.ghDist_eq_hausdorffDist
 
-set_option maxHeartbeats 300000 in
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
@@ -442,7 +441,11 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
-      simp only [hausdorffDist_comm]
+      -- The next line had `singlePass := true` before #9928,
+      -- then was changed to be `simp only [hausdorffDist_comm]`,
+      -- then `singlePass := true` was readded in #8386 because of timeouts.
+      -- TODO: figure out what causes the slowdown and make it a `simp only` again?
+      simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
