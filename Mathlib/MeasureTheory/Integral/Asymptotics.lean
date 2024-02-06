@@ -79,10 +79,25 @@ theorem LocallyIntegrable.integrable_of_isBigO_atBot_atTop (hf : LocallyIntegrab
   integrable_iff_integrableAtFilter_atBot_atTop.mpr
     ⟨⟨ho.integrableAtFilter hfm hg, ho'.integrableAtFilter hfm' hg'⟩, hf⟩
 
-variable [OpensMeasurableSpace α] [OrderClosedTopology α] [IsLocallyFiniteMeasure μ]
-  [SecondCountableTopologyEither α E]
+variable [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ] [SecondCountableTopologyEither α E]
+
+theorem _root_.Continuous.integrable_of_isBigO_cocompact [IsMeasurablyGenerated (cocompact α)]
+    (hf : Continuous f) (ho : f =O[cocompact α] g)
+    (hg : IntegrableAtFilter g (cocompact α) μ) : Integrable f μ := by
+  refine integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, hf.locallyIntegrable⟩
+  exact ho.integrableAtFilter (hf.stronglyMeasurableAtFilter _ _) hg
+
+theorem _root_.Continuous.integrable_of_of_isBigO_atBot_atTop (hf : Continuous f)
+    [IsMeasurablyGenerated (atBot (α := α))] [IsMeasurablyGenerated (atTop (α := α))]
+    (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ)
+    (ho' : f =O[atTop] g') (hg' : IntegrableAtFilter g' atTop μ) : Integrable f μ := by
+  refine hf.locallyIntegrable.integrable_of_isBigO_atBot_atTop ?_ ?_ ho hg ho' hg'
+  all_goals apply hf.stronglyMeasurableAtFilter
+
+variable [OrderClosedTopology α]
 
 theorem _root_.ContinuousOn.integrableOn_of_of_isBigO_atBot (hf : ContinuousOn f (Iic a))
+    [IsMeasurablyGenerated (atBot (α := α))] [IsMeasurablyGenerated (atTop (α := α))]
     (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ := by
   refine (hf.locallyIntegrableOn measurableSet_Iic).integrableOn_of_isBigO_atBot ?_ ho hg
   exact ⟨Iic a, Iic_mem_atBot a, hf.aestronglyMeasurable measurableSet_Iic⟩
@@ -91,9 +106,3 @@ theorem _root_.ContinuousOn.integrableOn_of_isBigO_atTop (hf : ContinuousOn f (I
     (ho : f =O[atTop] g) (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ := by
   refine (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop ?_ ho hg
   exact ⟨Ici a, Ici_mem_atTop a, hf.aestronglyMeasurable measurableSet_Ici⟩
-
-theorem _root_.Continuous.integrable_of_of_isBigO_atBot_atTop (hf : Continuous f)
-    (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ)
-    (ho' : f =O[atTop] g') (hg' : IntegrableAtFilter g' atTop μ) : Integrable f μ := by
-  refine hf.locallyIntegrable.integrable_of_isBigO_atBot_atTop ?_ ?_ ho hg ho' hg'
-  all_goals apply hf.stronglyMeasurableAtFilter
