@@ -190,9 +190,9 @@ theorem lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R M] {v : ι → M} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
-  apply h.cardinal_lift_le_rank
-  rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
-  apply Cardinal.nat_lt_aleph0
+  · apply h.cardinal_lift_le_rank
+  · rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
+    apply Cardinal.nat_lt_aleph0
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
@@ -364,20 +364,16 @@ variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
 theorem FiniteDimensional.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
-    0 < finrank R M ↔ ∃ x : M, x ≠ 0 :=
-  Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_pos_iff_exists_ne_zero R M _ _ _ _ _)
+    0 < finrank R M ↔ ∃ x : M, x ≠ 0 := by
+  rw [← @rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_pos_iff_exists_ne_zero FiniteDimensional.finrank_pos_iff_exists_ne_zero
 
 /-- An `R`-finite torsion-free module has positive `finrank` iff it is nontrivial. -/
 theorem FiniteDimensional.finrank_pos_iff [NoZeroSMulDivisors R M] :
-    0 < finrank R M ↔ Nontrivial M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_pos_iff_nontrivial (R := R))
+    0 < finrank R M ↔ Nontrivial M := by
+  rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
@@ -389,26 +385,23 @@ theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M
 /-- See `FiniteDimensional.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
 theorem FiniteDimensional.finrank_eq_zero_iff [Module.Finite R M] :
-    finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_eq_zero_iff (R := R))
+    finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+  rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
+  norm_cast
 
 /-- The `StrongRankCondition` is automatic. See `commRing_strongRankCondition`. -/
 theorem FiniteDimensional.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
     [IsDomain R] [Module R M] [Module.Finite R M] :
-    finrank R M = 0 ↔ Module.IsTorsion R M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_eq_zero_iff_isTorsion (R := R))
+    finrank R M = 0 ↔ Module.IsTorsion R M := by
+  rw [← rank_eq_zero_iff_isTorsion (R := R), ← finrank_eq_rank]
+  norm_cast
 
 /-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem FiniteDimensional.finrank_zero_iff [NoZeroSMulDivisors R M] :
-    finrank R M = 0 ↔ Subsingleton M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_zero_iff (R := R))
+    finrank R M = 0 ↔ Subsingleton M := by
+  rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
 
 end StrongRankCondition

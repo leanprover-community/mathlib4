@@ -768,8 +768,9 @@ theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : 
 #align set.image_vadd_comm Set.image_vadd_comm
 
 @[to_additive]
-theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
-    (s : Set α) : f '' (a • s) = f a • f '' s :=
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+    (f : F) (a : α) (s : Set α) :
+    f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 #align set.image_smul_distrib Set.image_smul_distrib
 #align set.image_vadd_distrib Set.image_vadd_distrib
@@ -951,6 +952,7 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.smul_set_sdiff Set.smul_set_sdiff
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
+open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective a) _ _
@@ -1072,6 +1074,7 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
+open scoped symmDiff in
 theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective₀ ha) _ _
 #align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀

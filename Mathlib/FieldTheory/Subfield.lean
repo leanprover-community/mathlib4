@@ -477,6 +477,9 @@ def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 #align subfield.top_equiv Subfield.topEquiv
 
+-- This triggers a timeout since #8386.
+attribute [nolint simpNF] topEquiv_apply
+
 /-! # comap -/
 
 

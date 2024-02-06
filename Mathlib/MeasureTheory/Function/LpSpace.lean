@@ -1127,7 +1127,7 @@ variable {K : Type*} [IsROrC K]
 
 theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => (f x : K)) p μ :=
-  (@IsROrC.ofRealClm K _).comp_memℒp' hf
+  (@IsROrC.ofRealCLM K _).comp_memℒp' hf
 #align measure_theory.mem_ℒp.of_real MeasureTheory.Memℒp.ofReal
 
 theorem _root_.MeasureTheory.memℒp_re_im_iff {f : α → K} :
@@ -1910,7 +1910,7 @@ variable (μ) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 theorem toLp_norm_eq_toLp_norm_coe :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =
       ‖(BoundedContinuousFunction.toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)‖ :=
-  ContinuousLinearMap.op_norm_comp_linearIsometryEquiv _ _
+  ContinuousLinearMap.opNorm_comp_linearIsometryEquiv _ _
 #align continuous_map.to_Lp_norm_eq_to_Lp_norm_coe ContinuousMap.toLp_norm_eq_toLp_norm_coe
 
 /-- Bound for the operator norm of `ContinuousMap.toLp`. -/

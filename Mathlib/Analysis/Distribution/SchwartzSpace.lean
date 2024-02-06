@@ -10,7 +10,6 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -210,7 +209,8 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _), norm_smul]
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+    norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 #align schwartz_map.decay_smul_aux SchwartzMap.decay_smul_aux
 
 end Aux
@@ -957,7 +957,16 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
       simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 #align schwartz_map.iterated_pderiv_succ_right SchwartzMap.iteratedPDeriv_succ_right
 
--- Todo: `iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ f x m`
+theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
+    iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih =>
+    simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
+    rw [← fderiv_continuousMultilinear_apply_const_apply]
+    · simp [← ih]
+    · exact f.smooth'.differentiable_iteratedFDeriv (WithTop.coe_lt_top n) _
+
 end Derivatives
 
 section BoundedContinuousFunction
@@ -1029,7 +1038,7 @@ variable {E}
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
-  (BoundedContinuousFunction.evalClm 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
 #align schwartz_map.delta SchwartzMap.delta
 
 @[simp]

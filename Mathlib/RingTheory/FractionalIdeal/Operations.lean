@@ -359,6 +359,10 @@ theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I
   not_iff_not.mpr coeIdeal_eq_one
 #align fractional_ideal.coe_ideal_ne_one FractionalIdeal.coeIdeal_ne_one
 
+theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
+   ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+     fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
+
 end IsFractionRing
 
 section Quotient
@@ -569,7 +573,7 @@ theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁�
 
 end Field
 
-section PrincipalIdealRing
+section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
@@ -886,7 +890,14 @@ theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
   simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 #align fractional_ideal.eq_span_singleton_mul FractionalIdeal.eq_spanSingleton_mul
 
-end PrincipalIdealRing
+theorem num_le (I : FractionalIdeal S P) :
+    (I.num : FractionalIdeal S P) ≤ I := by
+  rw [← I.den_mul_self_eq_num', spanSingleton_mul_le_iff]
+  intro _ h
+  rw [← Algebra.smul_def]
+  exact Submodule.smul_mem _ _ h
+
+end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
 
