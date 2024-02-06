@@ -46,8 +46,8 @@ theorem square_size (n : ℕ) : Finset.card (square (n + 1)) = 8 * (n + 1) := by
   · rw [square_disjunion]
   rw [card_disjUnion, card_product, Nat.cast_add, Nat.cast_mul, card_product, Nat.cast_mul,
     Int.card_Icc, Int.card_Icc, Int.toNat_sub_of_le, Int.toNat_sub_of_le,
-    ←eq_sub_iff_add_eq] at this
-  · rw [←Nat.cast_inj (R := ℤ), this, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_add_one]
+    ← eq_sub_iff_add_eq] at this
+  · rw [← Nat.cast_inj (R := ℤ), this, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_add_one]
     ring_nf
   · linarith
   · linarith
