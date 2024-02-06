@@ -227,29 +227,35 @@ theorem CompactIccSpace.cocompact_le_atTop [LinearOrder α] [OrderBot α] [Compa
     refine fun x hx ↦ (not_and_or.mp hx).casesOn (fun h ↦ (h bot_le).elim) (fun h ↦ ?_)
     exact ht _ (le_of_not_le h)
 
+private theorem CompactIccSpace.cocompact_ge_aux [LinearOrder α] [CompactIccSpace α] {l : Filter α}
+    (h_aux : (s t : Set α) → t.Nonempty → Nonempty α → IsCompact t → tᶜ ⊆ s → s ∈ l) :
+    cocompact α ≥ l := by
+  refine fun s hs ↦ ?_
+  obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+  refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
+  · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
+    convert univ_mem
+  · exact h_aux s t h_nonempty h_nonempty.nonempty ht hts
+
+theorem CompactIccSpace.cocompact_ge_atTop [LinearOrder α] [NoMaxOrder α] [ClosedIciTopology α]
+    [CompactIccSpace α] : cocompact α ≥ atTop := by
+  refine cocompact_ge_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atTop_sets.mpr ?_
+  obtain ⟨a, ha⟩ := ht.exists_isGreatest h_nonempty
+  obtain ⟨b, hb⟩ := exists_gt a
+  exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
+    ha.2 (not_not_mem.mp hc) |>.trans_lt hb |>.trans_le hb' |>.false⟩
+
+theorem CompactIccSpace.cocompact_ge_atBot [LinearOrder α] [NoMinOrder α] [ClosedIicTopology α]
+    [CompactIccSpace α] : cocompact α ≥ atBot := by
+  refine cocompact_ge_aux fun s t h_nonempty _ ht hts ↦ Filter.mem_atBot_sets.mpr ?_
+  obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
+  obtain ⟨b, hb⟩ := exists_lt a
+  exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
+    LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
+
 theorem CompactIccSpace.cocompact_eq [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
-    [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop := by
-  cases isEmpty_or_nonempty α with
-  | inl hX => simp_rw [filter_eq_bot_of_isEmpty]
-  | inr hX =>
-    refine cocompact_le.antisymm (fun s hs ↦ ?_)
-    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
-    cases Set.eq_empty_or_nonempty t with
-    | inl h_empty =>
-      rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-      convert univ_mem
-    | inr h_nonempty =>
-      constructor
-      · refine Filter.mem_atBot_sets.mpr ?_
-        obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
-        obtain ⟨b, hb⟩ := exists_lt a
-        exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
-          LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
-      · refine Filter.mem_atTop_sets.mpr ?_
-        obtain ⟨a, ha⟩ := ht.exists_isGreatest h_nonempty
-        obtain ⟨b, hb⟩ := exists_gt a
-        exact ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction fun hc ↦
-          ha.2 (not_not_mem.mp hc) |>.trans_lt hb |>.trans_le hb' |>.false⟩
+    [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
+  cocompact_le.antisymm (sup_le cocompact_ge_atBot cocompact_ge_atTop)
 
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
