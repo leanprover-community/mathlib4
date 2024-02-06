@@ -635,6 +635,9 @@ theorem rightInverse_succAbove_succ_predAbove (p : Fin n) :
 theorem rightInverse_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1)) :
     RightInverse (j.succAbove p).succAbove p.predAbove := j.predAbove_succAbove_succAbove p
 
+theorem rightInverse_succAbove_predAbove_zero [NeZero n] :
+    RightInverse (0 : Fin (n + 1)).succAbove (0 : Fin n).predAbove := predAbove_zero_succAbove_zero
+
 theorem hasRightInverse_predAbove (p : Fin n) : HasRightInverse p.predAbove :=
   ⟨_, p.rightInverse_succAbove_succAbove_predAbove default⟩
 
@@ -717,6 +720,10 @@ theorem leftInvOn_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1)) :
     Set.LeftInvOn (succAbove j p).succAbove p.predAbove {p.castSucc, p.succ}ᶜ := fun _ h => by
   simp_rw [Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at h
   exact p.succAbove_succAbove_predAbove j h.1 h.2
+
+theorem leftInvOn_succAbove_predAbove_zero [NeZero n] :
+    Set.LeftInvOn (0 : Fin (n + 1)).succAbove (0 : Fin n).predAbove {0}ᶜ :=
+  succAbove_zero_predAbove_zero
 
 theorem rightInvOn_succAbove_pred_predAbove (p : Fin (n + 1)) (h : p ≠ 0) :
     Set.RightInvOn (p.pred h).predAbove p.succAbove {p}ᶜ :=
