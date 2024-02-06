@@ -99,7 +99,7 @@ variable [Fintype m] [DecidableEq m]
 
 @[simp]
 theorem Matrix.vecMul_stdBasis (M : Matrix m n R) (i j) :
-    ((LinearMap.stdBasis R (fun _ => R) i 1) ᵥ* M) j = M i j := by
+    (LinearMap.stdBasis R (fun _ => R) i 1 ᵥ* M) j = M i j := by
   have : (∑ i', (if i = i' then 1 else 0) * M i' j) = M i j := by
     simp_rw [boole_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
   simp only [vecMul, dotProduct]
@@ -298,13 +298,13 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
 #align matrix.ker_mul_vec_lin_eq_bot_iff Matrix.ker_mulVecLin_eq_bot_iff
 
 theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
-    (M *ᵥ (LinearMap.stdBasis R (fun _ => R) j 1)) i = M i j :=
+    (M *ᵥ LinearMap.stdBasis R (fun _ => R) j 1) i = M i j :=
   (congr_fun (Matrix.mulVec_single _ _ (1 : R)) i).trans <| mul_one _
 #align matrix.mul_vec_std_basis Matrix.mulVec_stdBasis
 
 @[simp]
 theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
-    M *ᵥ (LinearMap.stdBasis R (fun _ => R) j 1) = Mᵀ j :=
+    M *ᵥ LinearMap.stdBasis R (fun _ => R) j 1 = Mᵀ j :=
   funext fun i => Matrix.mulVec_stdBasis M i j
 #align matrix.mul_vec_std_basis_apply Matrix.mulVec_stdBasis_apply
 

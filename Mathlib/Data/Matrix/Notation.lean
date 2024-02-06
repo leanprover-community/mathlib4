@@ -291,21 +291,21 @@ theorem vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : v
 
 @[simp]
 theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
-    (vecCons x v) ᵥ* (of B) = x • vecHead B + v ᵥ* (of <| vecTail B) := by
+    vecCons x v ᵥ* (of B) = x • vecHead B + v ᵥ* (of <| vecTail B) := by
   ext i
   simp [vecMul]
 #align matrix.cons_vec_mul Matrix.cons_vecMul
 
 @[simp]
 theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
-    v ᵥ* (of <| vecCons w B) = vecHead v • w + (vecTail v) ᵥ* (of B) := by
+    v ᵥ* (of <| vecCons w B) = vecHead v • w + vecTail v ᵥ* (of B) := by
   ext i
   simp [vecMul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
 
 -- @[simp] -- Porting note: simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
-    (vecCons x v) ᵥ* (of <| vecCons w B) = x • w + v ᵥ* (of B) := by simp
+    vecCons x v ᵥ* (of <| vecCons w B) = x • w + v ᵥ* (of B) := by simp
 #align matrix.cons_vec_mul_cons Matrix.cons_vecMul_cons
 
 end VecMul

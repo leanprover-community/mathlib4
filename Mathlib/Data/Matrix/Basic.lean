@@ -1807,7 +1807,7 @@ theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] 
 
 @[simp]
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (i : m) (x : R) : (Pi.single i x) ᵥ* M = fun j => x * M i j :=
+    (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
   funext fun _ => single_dotProduct _ _ _
 #align matrix.single_vec_mul Matrix.single_vecMul
 
