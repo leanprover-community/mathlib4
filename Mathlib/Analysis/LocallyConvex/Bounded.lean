@@ -114,6 +114,26 @@ protected theorem IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBoun
 
 end ContinuousAdd
 
+section TopologicalAddGroup
+
+variable [SeminormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [TopologicalAddGroup E]
+  [DistribMulAction 𝕜 E] {s t : Set E}
+
+protected theorem IsVonNBounded.neg (hs : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (-s) := fun U hU ↦ by
+  rw [← neg_neg U]
+  exact (hs <| neg_mem_nhds_zero _ hU).neg_neg
+
+@[simp]
+theorem isVonNBounded_neg : IsVonNBounded 𝕜 (-s) ↔ IsVonNBounded 𝕜 s :=
+  ⟨fun h ↦ neg_neg s ▸ h.neg, fun h ↦ h.neg⟩
+
+protected theorem IsVonNBounded.sub (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
+    IsVonNBounded 𝕜 (s - t) := by
+  rw [sub_eq_add_neg]
+  exact hs.add ht.neg
+
+end TopologicalAddGroup
+
 end SeminormedRing
 
 section MultipleTopologies
@@ -223,6 +243,7 @@ theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fu
 protected theorem IsVonNBounded.vadd [ContinuousAdd E] {s : Set E}
     (hs : IsVonNBounded 𝕜 s) (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) := by
   rw [← singleton_vadd]
+  -- TODO: dot notation timeouts in the next line
   exact IsVonNBounded.add (isVonNBounded_singleton x) hs
 
 @[simp]
