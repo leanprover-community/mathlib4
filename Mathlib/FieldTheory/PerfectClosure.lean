@@ -8,7 +8,41 @@ import Mathlib.FieldTheory.Perfect
 #align_import field_theory.perfect_closure from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
+
 # The perfect closure of a characteristic `p` ring
+
+## Main definitions
+
+- `PerfectClosure`: the perfect closure of a characteristic `p` ring, which is the smallest
+  extension that makes frobenius surjective.
+
+- `PerfectClosure.mk K p (n, x)` for `n : ℕ` and `x : K` is an element of `PerfectClosure K p`,
+  viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
+  (`PerfectClosure.mk_surjective`).
+
+- `PerfectClosure.of`: the structure map from `K` to `PerfectClosure K p`.
+
+- `PerfectClosure.lift`: given a ring `K` of characteristic `p` and a perfect ring `L` of the same
+  characteristic, any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`.
+
+## Main results
+
+- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, only
+  need to prove it for all `x ^ (p ^ -n)`.
+
+- `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
+  `PerfectClosure.neg_mk`, `PerfectClosure.zero_def`, `PerfectClosure.mk_zero_zero`,
+  `PerfectClosure.mk_zero`, `PerfectClosure.mk_inv`, `PerfectClosure.mk_pow`:
+  how to do multiplication, addition, etc. on elements of form `x ^ (p ^ -n)`.
+
+- `PerfectClosure.eq_iff'`: when does `x ^ (p ^ -n)` equal.
+
+- `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
+
+## Tags
+
+perfect ring, perfect closure
+
 -/
 
 universe u v
@@ -19,7 +53,8 @@ section
 
 variable (K : Type u) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- `PerfectClosure K p` is the quotient by this relation. -/
+/-- `PerfectClosure.R` is the relation `(n, x) ∼ (n + 1, x ^ p)` for `n : ℕ` and `x : K`.
+`PerfectClosure K p` is the quotient by this relation. -/
 @[mk_iff]
 inductive PerfectClosure.R : ℕ × K → ℕ × K → Prop
   | intro : ∀ n x, PerfectClosure.R (n, x) (n + 1, frobenius K p x)
@@ -40,10 +75,14 @@ section Ring
 
 variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- Constructor for `PerfectClosure`. -/
+/-- `PerfectClosure.mk K p (n, x)` for `n : ℕ` and `x : K` is an element of `PerfectClosure K p`,
+viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
+(`PerfectClosure.mk_surjective`). -/
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 #align perfect_closure.mk PerfectClosure.mk
+
+theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
