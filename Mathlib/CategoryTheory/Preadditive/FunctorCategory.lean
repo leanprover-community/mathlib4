@@ -36,12 +36,10 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
         apply add_assoc
       zero_add := by
         intros
-        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
-        dsimp
         ext
         apply add_zero
       add_comm := by

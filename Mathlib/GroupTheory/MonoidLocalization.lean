@@ -1911,7 +1911,7 @@ instance : CommMonoidWithZero (Localization S) where
   mul_comm := mul_comm
 #align localization.mk_zero Localization.mk_zero
 
-theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn 0 f H = f 0 1 := by
+theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn (S := S) 0 f H = f 0 1 := by
   rw [← mk_zero 1, liftOn_mk]
 #align localization.lift_on_zero Localization.liftOn_zero
 
