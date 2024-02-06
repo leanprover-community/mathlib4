@@ -1847,7 +1847,7 @@ protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [Topologi
   have : Inducing ((mapsTo_preimage f s).restrict _ _ _) :=
     (hf.comp inducing_subtype_val).codRestrict _
   have := this.secondCountableTopology
-  exact isSeparable_of_separableSpace_subtype _
+  exact .of_subtype _
 #align inducing.is_separable_preimage Inducing.isSeparable_preimage
 
 protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
@@ -1867,7 +1867,7 @@ end Metric
 /-- A compact set is separable. -/
 theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  isSeparable_of_separableSpace_subtype s
+  .of_subtype s
 #align is_compact.is_separable IsCompact.isSeparable
 
 section Pi

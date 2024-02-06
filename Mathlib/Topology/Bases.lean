@@ -448,37 +448,68 @@ theorem IsSeparable.mono {s u : Set α} (hs : IsSeparable s) (hu : u ⊆ s) : Is
   exact ⟨c, c_count, hu.trans hs⟩
 #align topological_space.is_separable.mono TopologicalSpace.IsSeparable.mono
 
-theorem IsSeparable.union {s u : Set α} (hs : IsSeparable s) (hu : IsSeparable u) :
-    IsSeparable (s ∪ u) := by
-  rcases hs with ⟨cs, cs_count, hcs⟩
-  rcases hu with ⟨cu, cu_count, hcu⟩
-  refine' ⟨cs ∪ cu, cs_count.union cu_count, _⟩
-  exact
-    union_subset (hcs.trans (closure_mono (subset_union_left _ _)))
-      (hcu.trans (closure_mono (subset_union_right _ _)))
-#align topological_space.is_separable.union TopologicalSpace.IsSeparable.union
-
-theorem IsSeparable.closure {s : Set α} (hs : IsSeparable s) : IsSeparable (closure s) := by
-  rcases hs with ⟨c, c_count, hs⟩
-  exact ⟨c, c_count, by simpa using closure_mono hs⟩
-#align topological_space.is_separable.closure TopologicalSpace.IsSeparable.closure
-
-theorem isSeparable_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
+theorem IsSeparable.iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (hs : ∀ i, IsSeparable (s i)) : IsSeparable (⋃ i, s i) := by
   choose c hc h'c using hs
   refine' ⟨⋃ i, c i, countable_iUnion hc, iUnion_subset_iff.2 fun i => _⟩
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
-#align topological_space.is_separable_Union TopologicalSpace.isSeparable_iUnion
+#align topological_space.is_separable_Union TopologicalSpace.IsSeparable.iUnion
 
-lemma isSeparable_pi {ι : Type*} [Finite ι] {α : ι → Type*} {s : ∀ i, Set (α i)}
+@[simp]
+theorem isSeparable_iUnion {ι : Sort*} [Countable ι] {s : ι → Set α} :
+    IsSeparable (⋃ i, s i) ↔ ∀ i, IsSeparable (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion s i, .iUnion⟩
+
+@[simp]
+theorem isSeparable_union {s t : Set α} : IsSeparable (s ∪ t) ↔ IsSeparable s ∧ IsSeparable t := by
+  simp [union_eq_iUnion, and_comm]
+
+theorem IsSeparable.union {s u : Set α} (hs : IsSeparable s) (hu : IsSeparable u) :
+    IsSeparable (s ∪ u) :=
+  isSeparable_union.2 ⟨hs, hu⟩
+#align topological_space.is_separable.union TopologicalSpace.IsSeparable.union
+
+@[simp]
+theorem isSeparable_closure : IsSeparable (closure s) ↔ IsSeparable s := by
+  simp only [IsSeparable, isClosed_closure.closure_subset_iff]
+
+protected alias ⟨_, IsSeparable.closure⟩ := isSeparable_closure
+#align topological_space.is_separable.closure TopologicalSpace.IsSeparable.closure
+
+theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
+  ⟨s, hs, subset_closure⟩
+#align set.countable.is_separable Set.Countable.isSeparable
+
+theorem _root_.Set.Finite.isSeparable {s : Set α} (hs : s.Finite) : IsSeparable s :=
+  hs.countable.isSeparable
+#align set.finite.is_separable Set.Finite.isSeparable
+
+theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : ∀ i, Set (X i)}
+    [∀ i, TopologicalSpace (X i)] (h : ∀ i, IsSeparable (s i)) :
+    IsSeparable (univ.pi s) := by
+  classical
+  rcases eq_empty_or_nonempty (univ.pi s) with he | ⟨f₀, -⟩
+  · rw [he]
+    exact countable_empty.isSeparable
+  · choose c c_count hc using h
+    haveI := fun i ↦ (c_count i).to_subtype
+    set g : (I : Finset ι) × ((i : I) → c i) → (i : ι) → X i := fun ⟨I, f⟩ i ↦
+      if hi : i ∈ I then f ⟨i, hi⟩ else f₀ i
+    refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
+    rcases isOpen_pi_iff.1 ho f hfo with ⟨I, u, huo, hI⟩
+    rsuffices ⟨f, hf⟩ : ∃ f : (i : I) → c i, g ⟨I, f⟩ ∈ Set.pi I u
+    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self _⟩
+    suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
+      choose f hfu hfc using H
+      refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
+      simpa only [dif_pos hi] using hfu i hi
+    intro i hi
+    exact mem_closure_iff.1 (hc i <| hf _ trivial) _ (huo i hi).1 (huo i hi).2
+
+lemma isSeparable_pi {ι : Type*} [Countable ι] {α : ι → Type*} {s : ∀ i, Set (α i)}
     [∀ i, TopologicalSpace (α i)] (h : ∀ i, IsSeparable (s i)) :
     IsSeparable {f : ∀ i, α i | ∀ i, f i ∈ s i} := by
-  choose c c_count hc using h
-  refine ⟨{f | ∀ i, f i ∈ c i}, countable_pi c_count, ?_⟩
-  simp_rw [← mem_univ_pi]
-  dsimp
-  rw [closure_pi_set]
-  exact Set.pi_mono (fun i _ ↦ hc i)
+  simpa only [← mem_univ_pi] using IsSeparable.univ_pi h
 
 lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
     {s : Set α} {t : Set β} (hs : IsSeparable s) (ht : IsSeparable t) :
@@ -489,27 +520,6 @@ lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
   rw [closure_prod_eq]
   exact Set.prod_mono hcs hct
 
-theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
-  ⟨s, hs, subset_closure⟩
-#align set.countable.is_separable Set.Countable.isSeparable
-
-theorem _root_.Set.Finite.isSeparable {s : Set α} (hs : s.Finite) : IsSeparable s :=
-  hs.countable.isSeparable
-#align set.finite.is_separable Set.Finite.isSeparable
-
-theorem isSeparable_univ_iff : IsSeparable (univ : Set α) ↔ SeparableSpace α := by
-  constructor
-  · rintro ⟨c, c_count, hc⟩
-    refine' ⟨⟨c, c_count, by rwa [dense_iff_closure_eq, ← univ_subset_iff]⟩⟩
-  · intro h
-    rcases exists_countable_dense α with ⟨c, c_count, hc⟩
-    exact ⟨c, c_count, by rwa [univ_subset_iff, ← dense_iff_closure_eq]⟩
-#align topological_space.is_separable_univ_iff TopologicalSpace.isSeparable_univ_iff
-
-theorem isSeparable_of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
-  IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
-#align topological_space.is_separable_of_separable_space TopologicalSpace.isSeparable_of_separableSpace
-
 theorem IsSeparable.image {β : Type*} [TopologicalSpace β] {s : Set α} (hs : IsSeparable s)
     {f : α → β} (hf : Continuous f) : IsSeparable (f '' s) := by
   rcases hs with ⟨c, c_count, hc⟩
@@ -518,11 +528,32 @@ theorem IsSeparable.image {β : Type*} [TopologicalSpace β] {s : Set α} (hs : 
   exact hc.trans (closure_subset_preimage_closure_image hf)
 #align topological_space.is_separable.image TopologicalSpace.IsSeparable.image
 
-theorem isSeparable_of_separableSpace_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
-  have : IsSeparable (((↑) : s → α) '' (univ : Set s)) :=
-    (isSeparable_of_separableSpace _).image continuous_subtype_val
-  simpa only [image_univ, Subtype.range_val_subtype] using this
-#align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.isSeparable_of_separableSpace_subtype
+theorem _root_.Dense.isSeparable_iff (hs : Dense s) :
+    IsSeparable s ↔ SeparableSpace α := by
+  simp_rw [IsSeparable, separableSpace_iff, dense_iff_closure_eq, ← univ_subset_iff,
+    ← hs.closure_eq, isClosed_closure.closure_subset_iff]
+
+theorem isSeparable_univ_iff : IsSeparable (univ : Set α) ↔ SeparableSpace α :=
+  dense_univ.isSeparable_iff
+#align topological_space.is_separable_univ_iff TopologicalSpace.isSeparable_univ_iff
+
+theorem isSeparable_range [TopologicalSpace β] [SeparableSpace α] {f : α → β} (hf : Continuous f) :
+    IsSeparable (range f) :=
+  image_univ (f := f) ▸ (isSeparable_univ_iff.2 ‹_›).image hf
+
+theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
+  simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
+#align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
+
+@[deprecated] -- Since 2024/02/05
+alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
+
+theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
+  IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
+#align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
+
+@[deprecated] -- Since 2024/02/05
+alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
 

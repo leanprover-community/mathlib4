@@ -583,13 +583,9 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
       ⟨hf.aemeasurable hs, f '' s, _,
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
-  · let f' : s → β := s.restrict f
-    have A : Continuous f' := continuousOn_iff_continuous_restrict.1 hf
-    have B : IsSeparable (univ : Set s) := isSeparable_of_separableSpace _
-    convert IsSeparable.image B A using 1
-    ext x
-    simp
-  · exact isSeparable_of_separableSpace _
+  · rw [image_eq_range]
+    exact isSeparable_range <| continuousOn_iff_continuous_restrict.1 hf
+  · exact .of_separableSpace _
 #align continuous_on.ae_strongly_measurable ContinuousOn.aestronglyMeasurable
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
