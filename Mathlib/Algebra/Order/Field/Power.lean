@@ -254,7 +254,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+      pure (.nonnegative q(zpow_bit0_nonneg $a $m))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
@@ -263,7 +263,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a (-$m)))
+      pure (.nonnegative q(zpow_bit0_nonneg $a (-$m)))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a
@@ -271,19 +271,19 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
-      pure (by exact .nonnegative (q(zpow_nonneg $pa $b)))
+      pure (.nonnegative q(zpow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
-      pure (.nonzero (by exact q(zpow_ne_zero $b $pa)))
+      pure (.nonzero q(zpow_ne_zero $b $pa))
     match ra with
     | .positive pa =>
       try
         let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
-        pure (by exact .positive (q(zpow_pos_of_pos $pa $b)))
+        pure (.positive q(zpow_pos_of_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(LinearOrderedSemifield $α)
