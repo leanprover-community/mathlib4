@@ -169,7 +169,7 @@ theorem summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ
       rfl
 
 lemma summable_r_pow  (k : ℤ) (z : ℍ) (h : 3 ≤ k) :
-  Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
+    Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
   have hk : 1 < (k - 1 : ℝ) := by
     have : 1 < (k - 1 : ℤ) := by linarith
     norm_cast at *
