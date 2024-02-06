@@ -78,7 +78,7 @@ theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
 instance : DivInvOneMonoid ℝ≥0∞ :=
   { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
-    inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_eq_coe.2 inv_one }
+    inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
   | _, 0 => by simp only [pow_zero, inv_one]
@@ -121,6 +121,8 @@ protected theorem mul_div_right_comm : a * b / c = a / c * b := by
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [none_eq_top, some_eq_coe, -coe_inv, (coe_inv _).symm]
+
+@[simp] protected lemma inv_eq_one : a⁻¹ = 1 ↔ a = 1 := by rw [← inv_inj, inv_inv, inv_one]
 
 @[simp] theorem inv_eq_top : a⁻¹ = ∞ ↔ a = 0 := inv_zero ▸ inv_inj
 #align ennreal.inv_eq_top ENNReal.inv_eq_top
@@ -589,14 +591,14 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
-  · exact ENNReal.pow_pos ha.bot_lt _
+  · simpa using ENNReal.pow_pos ha.bot_lt _
   · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 #align ennreal.zpow_pos ENNReal.zpow_pos
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by
   cases n
-  · exact ENNReal.pow_lt_top h'a.lt_top _
+  · simpa using ENNReal.pow_lt_top h'a.lt_top _
   · simp only [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
 #align ennreal.zpow_lt_top ENNReal.zpow_lt_top
 

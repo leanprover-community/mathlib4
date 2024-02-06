@@ -274,7 +274,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       refine' sum_congr rfl fun i hi => (coe_toNNReal _).symm
       refine' (lt_top_of_sum_ne_top _ hi).ne
       exact hw'.symm ▸ ENNReal.one_ne_top
-    rwa [← coe_eq_coe, ← h_sum_nnreal]
+    rwa [← coe_inj, ← h_sum_nnreal]
 #align ennreal.rpow_arith_mean_le_arith_mean_rpow ENNReal.rpow_arith_mean_le_arith_mean_rpow
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0∞` and real

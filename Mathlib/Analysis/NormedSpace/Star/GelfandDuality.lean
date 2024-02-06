@@ -160,7 +160,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
-  simp only [ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this
+  simp only [ENNReal.coe_inj, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 #align gelfand_transform_isometry gelfandTransform_isometry

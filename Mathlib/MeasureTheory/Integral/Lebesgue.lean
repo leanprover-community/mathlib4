@@ -354,9 +354,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
   let rs := s.map fun a => r * a
-  have eq_rs : (const α r : α →ₛ ℝ≥0∞) * map c s = rs.map c := by
-    ext1 a
-    exact ENNReal.coe_mul.symm
+  have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
     rw [← inter_iUnion]; nth_rw 1 [← inter_univ (map c rs ⁻¹' {p})]
@@ -381,7 +379,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine' inter_subset_inter (Subset.refl _) _
     intro x (hx : r ≤ f i x)
     exact le_trans hx (h_mono h x)
-  have h_meas : ∀ n, MeasurableSet { a : α | (⇑(map c rs)) a ≤ f n a } := fun n =>
+  have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
     measurableSet_le (SimpleFunc.measurable _) (hf n)
   calc
     (r : ℝ≥0∞) * (s.map c).lintegral μ = ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r}) := by
