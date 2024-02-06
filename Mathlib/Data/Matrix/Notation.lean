@@ -298,7 +298,7 @@ theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
 
 @[simp]
 theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
-    v ᵥ* (of <| vecCons w B) = vecHead v • w + vecTail v ᵥ* (of B) := by
+    v ᵥ* of (vecCons w B) = vecHead v • w + vecTail v ᵥ* (of B) := by
   ext i
   simp [vecMul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
