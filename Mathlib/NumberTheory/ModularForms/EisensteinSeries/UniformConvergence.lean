@@ -146,7 +146,7 @@ def sigmaEquiv (ι : α → Finset (β × β)) (HI : ∀ y : β × β , ∃! i :
   right_inv x := by rfl
 
 theorem summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ), 0 ≤ f y)
-  (ι : ℕ → Finset (ℤ × ℤ)) (HI : ∀ y : ℤ × ℤ, ∃! i : ℕ, y ∈ ι i) :
+    (ι : ℕ → Finset (ℤ × ℤ)) (HI : ∀ y : ℤ × ℤ, ∃! i : ℕ, y ∈ ι i) :
     Summable f ↔ Summable fun n : ℕ => ∑ x in ι n, f ![x.1, x.2] := by
   let h2 := Equiv.trans (sigmaEquiv ι HI) (piFinTwoEquiv fun _ => ℤ).symm
   have h22 : ∀ y : Σ s : ℕ, (ι s), 0 ≤ (f ∘ h2) y := by
