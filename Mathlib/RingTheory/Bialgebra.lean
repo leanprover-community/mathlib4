@@ -34,7 +34,7 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   /-- The counit on a bialgebra preserves multiplication. Note that this is written
   in a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R]` are equal.
   The two corresponding uncurried maps `A ⊗[R] A →ₗ[R]` (also equal)
-  are the following: the first factors through `A` and is is multiplication on `A` followed
+  are the following: the first factors through `A` and is multiplication on `A` followed
   by `counit`. The second factors through `R ⊗[R] R`, and is `counit ⊗ counit` followed by
   multiplication on `R`.
 
