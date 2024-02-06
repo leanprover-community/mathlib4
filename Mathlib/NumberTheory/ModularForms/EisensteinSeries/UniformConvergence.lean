@@ -165,7 +165,7 @@ theorem summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ
       simp only [Finset.coe_sort_coe, Equiv.coe_trans, Function.comp_apply,sigmaEquiv]
       convert (Finset.summable (ι x) (f ∘ (piFinTwoEquiv fun _ => ℤ).symm))
     · convert H
-      rw [←Finset.tsum_subtype]
+      rw [← Finset.tsum_subtype]
       rfl
 
 lemma summable_r_pow  (k : ℤ) (z : ℍ) (h : 3 ≤ k) :
