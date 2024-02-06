@@ -98,3 +98,10 @@ theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop [IsMeasurablyGenerated 
     (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ := by
   refine integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
   exact ⟨Ici a, Ici_mem_atTop a, hf.aestronglyMeasurable⟩
+
+/-- If `f` is locally integrable, `f` has a bottom element, and `f =O[atTop] g`, for some
+`g` integrable at `atTop`, then `f` is integrable. -/
+theorem LocallyIntegrable.integrable_of_isBigO_atBot [IsMeasurablyGenerated (atBot (α := α))]
+    [OrderTop α] (hf : LocallyIntegrable f μ) (ho : f =O[atTop] g)
+    (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
+  sorry
