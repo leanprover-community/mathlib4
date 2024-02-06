@@ -37,6 +37,9 @@ import Mathlib.FieldTheory.Perfect
 
 - `PerfectClosure.mk_eq_iff`: when does `x ^ (p ^ -n)` equal.
 
+- `PerfectClosure.eq_iff`: same as `PerfectClosure.mk_eq_iff` but with additional assumption that
+  `K` being reduced, hence gives a simpler criterion.
+
 - `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
 
 ## Tags
@@ -477,7 +480,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
 end Ring
 
 theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
-    Quot.mk (R K p) x = Quot.mk (R K p) y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
+    mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
       fun H => ⟨0, H⟩⟩
