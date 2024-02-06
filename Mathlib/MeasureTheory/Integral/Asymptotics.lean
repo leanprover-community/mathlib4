@@ -3,6 +3,7 @@ Copyright (c) 2024 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 
@@ -18,8 +19,11 @@ We establish integrability of `f` from `f = O(g)`.
 * `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_cocompact`: If `f` is locally integrable,
   and `f =O[cocompact] g` for some `g` integrable at `cocompact`, then `f` is integrable.
 * `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atBot_atTop`: If `f` is locally integrable,
-  and `f =O[atBot] g`, `f =O[atTop] g'` for some `g`, `g'` integrable at `atBot` and `atTop`
+  and `f =O[atBot] g`, `f =O[atTop] g'` for some `g`, `g'` integrable `atBot` and `atTop`
   respectively, then `f` is integrable.
+* `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg`:
+  If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g` for some
+  `g` integrable `atTop`, then `f` is integrable.
 -/
 
 open Asymptotics MeasureTheory Set Filter
@@ -57,6 +61,8 @@ theorem LocallyIntegrable.integrable_of_isBigO_cocompact [IsMeasurablyGenerated 
   refine integrable_iff_integrableAtFilter_cocompact.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
   exact hf.aestronglyMeasurable.stronglyMeasurableAtFilter
 
+section LinearOrder
+
 variable [LinearOrder α] [CompactIccSpace α] {g' : α → F}
 
 /-- If `f` is locally integrable, and `f =O[atBot] g`, `f =O[atTop] g'` for some
@@ -86,9 +92,49 @@ theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop [IsMeasurablyGenerated 
   refine integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
   exact ⟨Ici a, Ici_mem_atTop a, hf.aestronglyMeasurable⟩
 
+/-- If `f` is locally integrable, `f` has a top element, and `f =O[atBot] g`, for some
+`g` integrable at `atBot`, then `f` is integrable. -/
+theorem LocallyIntegrable.integrable_of_isBigO_atBot [IsMeasurablyGenerated (atBot (α := α))]
+    [OrderTop α] (hf : LocallyIntegrable f μ) (ho : f =O[atBot] g)
+    (hg : IntegrableAtFilter g atBot μ) : Integrable f μ := by
+  refine integrable_iff_integrableAtFilter_atBot.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
+  exact hf.aestronglyMeasurable.stronglyMeasurableAtFilter
+
 /-- If `f` is locally integrable, `f` has a bottom element, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/
-theorem LocallyIntegrable.integrable_of_isBigO_atBot [IsMeasurablyGenerated (atBot (α := α))]
-    [OrderTop α] (hf : LocallyIntegrable f μ) (ho : f =O[atTop] g)
+theorem LocallyIntegrable.integrable_of_isBigO_atTop [IsMeasurablyGenerated (atTop (α := α))]
+    [OrderBot α] (hf : LocallyIntegrable f μ) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
-  sorry
+  refine integrable_iff_integrableAtFilter_atTop.mpr ⟨ho.integrableAtFilter ?_ hg, hf⟩
+  exact hf.aestronglyMeasurable.stronglyMeasurableAtFilter
+
+end LinearOrder
+
+/-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
+`g` integrable at `atTop`, then `f` is integrable. -/
+theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
+    [LinearOrderedAddCommGroup α] [CompactIccSpace α] [IsMeasurablyGenerated (atTop (α := α))]
+    [MeasurableNeg α] [μ.IsNegInvariant]
+    (hf : LocallyIntegrable f μ) (hsymm : norm ∘ f = norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
+    (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
+  refine (isEmpty_or_nonempty α).casesOn (fun _ ↦ ?_) (fun _ ↦ ?_)
+  · exact integrableOn_univ.mp (by convert integrableOn_empty)
+  let a := -|Classical.arbitrary α|
+  have h_int : IntegrableOn f (Ici a) μ :=
+    LocallyIntegrableOn.integrableOn_of_isBigO_atTop (hf.locallyIntegrableOn _) ho hg
+  have h_neg :  MeasurableEmbedding (Neg.neg (α := α)) := by
+    refine ⟨neg_injective, measurable_neg, fun s hs ↦ ?_⟩
+    rewrite [s.image_neg]
+    exact hs.neg
+  have h_map_neg : (μ.restrict (Ici a)).map Neg.neg = μ.restrict (Iic (-a)) := by
+    rw [show Ici a = Neg.neg ⁻¹' Iic (-a) by simp, ← h_neg.restrict_map, Measure.map_neg_eq_self]
+  have h_int_neg : IntegrableOn (f ∘ Neg.neg) (Ici a) μ := by
+    refine h_int.congr' ?_ (univ_mem' (congrFun hsymm))
+    refine MeasureTheory.AEStronglyMeasurable.comp_aemeasurable ?_ measurable_neg.aemeasurable
+    rewrite [h_map_neg]
+    exact hf.aestronglyMeasurable.restrict
+  replace h_int_neg := h_neg.integrable_map_iff.mpr h_int_neg
+  rewrite [h_map_neg] at h_int_neg
+  apply integrableOn_univ.mp
+  convert integrableOn_union.mpr ⟨h_int_neg, h_int⟩
+  exact (Set.Iic_union_Ici_of_le (by simp)).symm
