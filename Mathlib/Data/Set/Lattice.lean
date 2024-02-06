@@ -1548,27 +1548,32 @@ theorem union_distrib_iInter₂_right (s : ∀ i, κ i → Set α) (t : Set α) 
 
 section Function
 
-/-! ### `mapsTo` -/
+/-! ### Lemmas about `Set.MapsTo`
 
+Porting note: some lemmas in this section were upgraded from implications to `iff`s.
+-/
 
-theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
-    MapsTo f (⋃₀S) t := fun _ ⟨s, hs, hx⟩ => H s hs hx
+@[simp]
+theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
+    MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t :=
+  sUnion_subset_iff
 #align set.maps_to_sUnion Set.mapsTo_sUnion
 
-theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} (H : ∀ i, MapsTo f (s i) t) :
-    MapsTo f (⋃ i, s i) t :=
-  mapsTo_sUnion <| forall_range_iff.2 H
+@[simp]
+theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
+    MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t :=
+  iUnion_subset_iff
 #align set.maps_to_Union Set.mapsTo_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β}
-    (H : ∀ i j, MapsTo f (s i j) t) : MapsTo f (⋃ (i) (j), s i j) t :=
-  mapsTo_iUnion fun i => mapsTo_iUnion (H i)
+theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
+    MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
+  iUnion₂_subset_iff
 #align set.maps_to_Union₂ Set.mapsTo_iUnion₂
 
 theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋃ i, s i) (⋃ i, t i) :=
-  mapsTo_iUnion fun i => (H i).mono (Subset.refl _) (subset_iUnion t i)
+  mapsTo_iUnion.2 fun i ↦ (H i).mono_right (subset_iUnion t i)
 #align set.maps_to_Union_Union Set.mapsTo_iUnion_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1578,23 +1583,27 @@ theorem mapsTo_iUnion₂_iUnion₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i
   mapsTo_iUnion_iUnion fun i => mapsTo_iUnion_iUnion (H i)
 #align set.maps_to_Union₂_Union₂ Set.mapsTo_iUnion₂_iUnion₂
 
-theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, MapsTo f s t) :
-    MapsTo f s (⋂₀ T) := fun _ hx t ht => H t ht hx
+@[simp]
+theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} :
+    MapsTo f s (⋂₀ T) ↔ ∀ t ∈ T, MapsTo f s t :=
+  forall₂_swap
 #align set.maps_to_sInter Set.mapsTo_sInter
 
-theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, MapsTo f s (t i)) :
-    MapsTo f s (⋂ i, t i) := fun _ hx => mem_iInter.2 fun i => H i hx
+@[simp]
+theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} :
+    MapsTo f s (⋂ i, t i) ↔ ∀ i, MapsTo f s (t i) :=
+  mapsTo_sInter.trans forall_range_iff
 #align set.maps_to_Inter Set.mapsTo_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem mapsTo_iInter₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
-    (H : ∀ i j, MapsTo f s (t i j)) : MapsTo f s (⋂ (i) (j), t i j) :=
-  mapsTo_iInter fun i => mapsTo_iInter (H i)
+theorem mapsTo_iInter₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β} :
+    MapsTo f s (⋂ (i) (j), t i j) ↔ ∀ i j, MapsTo f s (t i j) := by
+  simp only [mapsTo_iInter]
 #align set.maps_to_Inter₂ Set.mapsTo_iInter₂
 
 theorem mapsTo_iInter_iInter {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋂ i, s i) (⋂ i, t i) :=
-  mapsTo_iInter fun i => (H i).mono (iInter_subset s i) (Subset.refl _)
+  mapsTo_iInter.2 fun i => (H i).mono_left (iInter_subset s i)
 #align set.maps_to_Inter_Inter Set.mapsTo_iInter_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1988,6 +1997,13 @@ theorem prod_sInter {T : Set (Set β)} (hT : T.Nonempty) (s : Set α) :
   rw [← sInter_singleton s, sInter_prod_sInter (singleton_nonempty s) hT, sInter_singleton]
   simp_rw [singleton_prod, mem_image, iInter_exists, biInter_and', iInter_iInter_eq_right]
 #align set.prod_sInter Set.prod_sInter
+
+theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
+    (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
+  ext x
+  simp only [mem_prod, mem_iInter]
+  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
+#align prod_Inter Set.prod_iInter
 
 end Prod
 

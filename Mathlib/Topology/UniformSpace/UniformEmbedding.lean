@@ -38,9 +38,12 @@ structure UniformInducing (f : α → β) : Prop where
 #align uniform_inducing UniformInducing
 #align uniform_inducing_iff uniformInducing_iff
 
-protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : UniformInducing f) :
-    ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
-  UniformSpace.ext hf.1
+lemma uniformInducing_iff_uniformSpace {f : α → β} :
+    UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
+  rw [uniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
+  rfl
+
+protected alias ⟨UniformInducing.comap_uniformSpace, _⟩ := uniformInducing_iff_uniformSpace
 #align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
 lemma uniformInducing_iff' {f : α → β} :
