@@ -75,10 +75,8 @@ variable {R} {a : R} {b : M}
 
 lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
 #align smul_eq_zero_of_left smul_eq_zero_of_left
---#align smul_eq_zero_of_right smul_eq_zero_of_right
 lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
---#align right_ne_zero_of_smul right_ne_zero_of_smul
 
 variable [Zero R'] [Zero M'] [SMul R M']
 
