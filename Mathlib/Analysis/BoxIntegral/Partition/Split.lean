@@ -297,7 +297,7 @@ theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Fi
     exact (Hle hy).2
 #align box_integral.prepartition.not_disjoint_imp_le_of_subset_of_mem_split_many BoxIntegral.Prepartition.not_disjoint_imp_le_of_subset_of_mem_splitMany
 
-section Fintype
+section Finite
 
 variable [Finite ι]
 
@@ -386,7 +386,7 @@ theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=
   (isPartitionTop I).compl_eq_bot
 #align box_integral.prepartition.compl_top BoxIntegral.Prepartition.compl_top
 
-end Fintype
+end Finite
 
 end Prepartition
 

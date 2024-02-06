@@ -122,7 +122,7 @@ def restrict (f : ι →ᵇᵃ[I₀] M) (I : WithTop (Box ι)) (hI : I ≤ I₀)
 
 /-- If `f : Box ι → M` is box additive on partitions of the form `split I i x`, then it is box
 additive. -/
-def ofMapSplitAdd [Fintype ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
+def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     (hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ {i x}, x ∈ Ioo (I.lower i) (I.upper i) →
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I) :
     ι →ᵇᵃ[I₀] M := by
