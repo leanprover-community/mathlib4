@@ -155,6 +155,39 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     exact Subsingleton.elim _ _
   rwa [hp, one_pow, pow_one] at h
 
+namespace PerfectClosure
+
+variable (K : Type*) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p] (x : ℕ × K) (n : ℕ)
+
+-- TODO: remove once XX is merged
+theorem mk_pow : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, one_def, eq_iff']
+    exact ⟨0, by simp_rw [← coe_iterateFrobenius, map_one]⟩
+  | succ n ih =>
+    rw [pow_succ, pow_succ, ih, mk_mul_mk, eq_iff']
+    exact ⟨0, by simp_rw [← coe_iterateFrobenius, add_zero, iterateFrobenius_add_apply, map_mul]⟩
+
+-- TODO: remove once XX is merged
+instance instReduced : IsReduced (PerfectClosure K p) where
+  eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
+    replace h : mk K p x ^ p ^ n = 0 := by
+      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+        pow_add, h, mul_zero]
+    simp only [zero_def, mk_pow, eq_iff', zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
+    obtain ⟨m, h⟩ := h
+    exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
+
+-- TODO: remove once XX is merged
+instance instPerfectRing :
+    PerfectRing (PerfectClosure K p) p := .ofSurjective _ p fun x ↦ induction_on x fun x ↦ by
+  use mk K p (x.1 + 1, x.2)
+  rw [frobenius_def, mk_pow, eq_iff']
+  exact ⟨0, by simp_rw [iterate_frobenius, add_zero, pow_succ, pow_mul]⟩
+
+end PerfectClosure
+
 section IsPerfectClosure
 
 variable {K L M : Type*}
@@ -164,28 +197,46 @@ section CommSemiring
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
   (i : K →+* L) (j : K →+* M) (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
 
+/-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
+`p`-radical if the following conditions are satisfied:
+
+- For any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`.
+- The kernel of `i` is contained in the `p`-nilradical of `K`.
+
+It is a generalization of purely inseparable extension for fields. -/
+@[mk_iff]
+class IsPRadical : Prop where
+  pow_mem' : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n
+  ker_le' : RingHom.ker i ≤ pNilradical K p
+
+theorem IsPRadical.pow_mem [IsPRadical i p] (x : L) :
+    ∃ (n : ℕ) (y : K), i y = x ^ p ^ n := pow_mem' x
+
+theorem IsPRadical.ker_le [IsPRadical i p] :
+    RingHom.ker i ≤ pNilradical K p := ker_le'
+
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it makes `L`
 a perfect closure of `K` if the following conditions are satisfied:
 
 - `L` is a perfect ring.
-- `i : K →+* L` is "purely inseparable" in the sense that for any element `x` of `L` there exists
-  a natural number `n` such that `x ^ (p ^ n)` is contained in `K`.
-- The kernel of `i` is contained in (in fact, equal to, see `IsPerfectClosure.ker_eq`)
-  the `p`-nilradical of `K`. -/
+- `i : K →+* L` is `p`-radical.
+
+In this case the kernel of `i` is equal to the `p`-nilradical of `K`
+(see `IsPerfectClosure.ker_eq`). -/
 @[mk_iff]
 class IsPerfectClosure : Prop where
   [perfectRing' : PerfectRing L p]
-  pow_mem' : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n
-  ker_le' : RingHom.ker i ≤ pNilradical K p
+  [isPRadical' : IsPRadical i p]
+
+/- Marked as instance, so `IsPerfectClosure` can be deduced automatically from `PerfectRing` and
+`IsPRadical`. Will it impact performance? -/
+attribute [instance] IsPerfectClosure.mk
 
 theorem IsPerfectClosure.perfectRing [IsPerfectClosure i p] :
     PerfectRing L p := perfectRing' i
 
-theorem IsPerfectClosure.pow_mem [IsPerfectClosure i p] (x : L) :
-    ∃ (n : ℕ) (y : K), i y = x ^ p ^ n := pow_mem' x
-
-theorem IsPerfectClosure.ker_le [IsPerfectClosure i p] :
-    RingHom.ker i ≤ pNilradical K p := ker_le'
+instance IsPerfectClosure.isPRadical [IsPerfectClosure i p] :
+    IsPRadical i p := isPRadical'
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`
 is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
@@ -197,20 +248,23 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
     map_zero, map_zero] at h
 
 theorem IsPerfectClosure.ker_eq [IsPerfectClosure i p] : RingHom.ker i = pNilradical K p :=
-  ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
+  isPRadical'.ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
 
 /-- A perfect ring is its perfect closure. -/
 instance IsPerfectClosure.self_of_perfect [PerfectRing M p] :
     IsPerfectClosure (RingHom.id M) p where
-  pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x hx := by convert Ideal.zero_mem _
+  isPRadical'.pow_mem' x := ⟨0, x, by simp⟩
+  isPRadical'.ker_le' x hx := by convert Ideal.zero_mem _
 
-section lift
+section PerfectRing.lift
 
-variable [PerfectRing M p] (H : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n)
+/- NOTE: To define `PerfectRing.lift_aux`, only the `IsPRadical.pow_mem` is required, but not
+`IsPRadical.ker_le`. But in order to use typeclass, here we require the whole `IsPRadical`. -/
+
+variable [PerfectRing M p] [IsPRadical i p]
 
 theorem PerfectRing.lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
-  obtain ⟨n, y, h⟩ := H x
+  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
   exact ⟨(n, y), h⟩
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
@@ -218,17 +272,17 @@ theorem PerfectRing.lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := 
 `L → M` which maps an element `x` of `L` to `y ^ (p ^ -n)` if `x ^ (p ^ n)` is equal to some
 element `y` of `K`. -/
 def PerfectRing.liftAux (x : L) : M :=
-  (iterateFrobeniusEquiv M p (Classical.choose (lift_aux i p H x)).1).symm
-    (j (Classical.choose (lift_aux i p H x)).2)
+  (iterateFrobeniusEquiv M p (Classical.choose (lift_aux i p x)).1).symm
+    (j (Classical.choose (lift_aux i p x)).2)
 
-theorem PerfectRing.liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p H x = x := by
-  rw [liftAux, Classical.choose_spec (lift_aux i p H x), ← iterateFrobenius_def,
+theorem PerfectRing.liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p x = x := by
+  rw [liftAux, Classical.choose_spec (lift_aux i p x), ← iterateFrobenius_def,
     ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
-theorem PerfectRing.liftAux_self [PerfectRing L p] : liftAux i i p H = id :=
-  funext (liftAux_self_apply i p H)
+theorem PerfectRing.liftAux_self [PerfectRing L p] : liftAux i i p = id :=
+  funext (liftAux_self_apply i p)
 
-end lift
+end PerfectRing.lift
 
 end CommSemiring
 
@@ -237,23 +291,22 @@ section CommRing
 variable [CommRing K] [CommRing L] [CommRing M]
   (i : K →+* L) (j : K →+* M) (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
 
-section lift
+section PerfectRing.lift
 
-variable [PerfectRing M p] (H : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n)
-  (hk : RingHom.ker i ≤ pNilradical K p)
+variable [PerfectRing M p] [IsPRadical i p]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is "purely inseparable" and whose kernel is contained in the `p`-nilradical of `K`, and `M` is a
 perfect ring, then `PerfectRing.liftAux` is well-defined. -/
 theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    liftAux i j p H x = (iterateFrobeniusEquiv M p n).symm (j y) := by
+    liftAux i j p x = (iterateFrobeniusEquiv M p n).symm (j y) := by
   rw [liftAux]
-  have h' := Classical.choose_spec (lift_aux i p H x)
-  set n' := (Classical.choose (lift_aux i p H x)).1
+  have h' := Classical.choose_spec (lift_aux i p x)
+  set n' := (Classical.choose (lift_aux i p x)).1
   replace h := congr($(h.symm) ^ p ^ n')
   rw [← pow_mul, mul_comm, pow_mul, ← h', ← map_pow, ← map_pow, ← sub_eq_zero, ← map_sub,
     ← RingHom.mem_ker] at h
-  obtain ⟨m, h⟩ := mem_pNilradical.1 (hk h)
+  obtain ⟨m, h⟩ := mem_pNilradical.1 (IsPRadical.ker_le i p h)
   refine (iterateFrobeniusEquiv M p (m + n + n')).injective ?_
   conv_lhs => rw [iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply]
   rw [add_assoc, add_comm n n', ← add_assoc,
@@ -264,27 +317,28 @@ theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`, and `M` is
-a perfect ring, then `PerfectRing.liftAux` is a ring homomorphism. -/
+a perfect ring, then `PerfectRing.liftAux` is a ring homomorphism. This is similar to
+`IsAlgClosed.lift` and `IsSepClosed.lift`. -/
 def PerfectRing.lift : L →+* M where
-  toFun := liftAux i j p H
-  map_one' := by simp [liftAux_apply i j p H hk 1 0 1 (by rw [one_pow, map_one])]
+  toFun := liftAux i j p
+  map_one' := by simp [liftAux_apply i j p 1 0 1 (by rw [one_pow, map_one])]
   map_mul' x1 x2 := by
-    obtain ⟨n1, y1, h1⟩ := H x1
-    obtain ⟨n2, y2, h2⟩ := H x2
-    simp only; rw [liftAux_apply i j p H hk _ _ _ h1, liftAux_apply i j p H hk _ _ _ h2,
-      liftAux_apply i j p H hk (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
+    obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
+    obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
+    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+      liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, mul_pow]),
       map_mul, map_pow, map_pow, map_mul, ← iterateFrobeniusEquiv_def]
     nth_rw 1 [iterateFrobeniusEquiv_symm_add_apply]
     rw [RingEquiv.symm_apply_apply, add_comm n1, iterateFrobeniusEquiv_symm_add_apply,
       ← iterateFrobeniusEquiv_def, RingEquiv.symm_apply_apply]
-  map_zero' := by simp [liftAux_apply i j p H hk 0 0 0 (by rw [pow_zero, pow_one, map_zero])]
+  map_zero' := by simp [liftAux_apply i j p 0 0 0 (by rw [pow_zero, pow_one, map_zero])]
   map_add' x1 x2 := by
-    obtain ⟨n1, y1, h1⟩ := H x1
-    obtain ⟨n2, y2, h2⟩ := H x2
-    simp only; rw [liftAux_apply i j p H hk _ _ _ h1, liftAux_apply i j p H hk _ _ _ h2,
-      liftAux_apply i j p H hk (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
+    obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
+    obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
+    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+      liftAux_apply i j p (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, add_pow_expChar_pow]),
       map_add, map_pow, map_pow, map_add, ← iterateFrobeniusEquiv_def]
@@ -293,89 +347,89 @@ def PerfectRing.lift : L →+* M where
       ← iterateFrobeniusEquiv_def, RingEquiv.symm_apply_apply]
 
 theorem PerfectRing.lift_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    lift i j p H hk x = (iterateFrobeniusEquiv M p n).symm (j y) :=
-  liftAux_apply i j p H hk _ _ _ h
+    lift i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
+  liftAux_apply i j p _ _ _ h
 
-theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p H hk x = x :=
-  liftAux_self_apply i p H x
+theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x :=
+  liftAux_self_apply i p x
 
-theorem PerfectRing.lift_self [PerfectRing L p] : lift i i p H hk = RingHom.id L :=
-  RingHom.ext (liftAux_self_apply i p H)
+theorem PerfectRing.lift_self [PerfectRing L p] : lift i i p = RingHom.id L :=
+  RingHom.ext (liftAux_self_apply i p)
 
-theorem PerfectRing.lift_comp_apply (x : K) : lift i j p H hk (i x) = j x := by
-  rw [lift_apply i j p H hk _ 0 x (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]; rfl
+theorem PerfectRing.lift_comp_apply (x : K) : lift i j p (i x) = j x := by
+  rw [lift_apply i j p _ 0 x (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]; rfl
 
-theorem PerfectRing.lift_comp : (lift i j p H hk).comp i = j :=
-  RingHom.ext (lift_comp_apply i j p H hk)
+theorem PerfectRing.lift_comp : (lift i j p).comp i = j :=
+  RingHom.ext (lift_comp_apply i j p)
 
 section comp
 
 variable {N : Type*} [CommRing N] (k : K →+* N) [ExpChar N p] [PerfectRing N p]
-  (H' : ∀ x : M, ∃ (n : ℕ) (y : K), j y = x ^ p ^ n)
-  (hk' : RingHom.ker j ≤ pNilradical K p)
+  [IsPRadical j p]
 
 theorem PerfectRing.lift_comp_lift_apply (x : L) :
-    lift j k p H' hk' (lift i j p H hk x) = lift i k p H hk x := by
-  obtain ⟨n, y, h⟩ := H x
-  rw [lift_apply i j p H hk _ _ _ h, lift_apply i k p H hk _ _ _ h]
+    lift j k p (lift i j p x) = lift i k p x := by
+  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
+  rw [lift_apply i j p _ _ _ h, lift_apply i k p _ _ _ h]
   refine (injective_frobenius N p).iterate n ?_
   rw [← RingHom.map_iterate_frobenius, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
     RingEquiv.apply_symm_apply, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
     RingEquiv.apply_symm_apply, lift_comp_apply]
 
 theorem PerfectRing.lift_comp_lift :
-    (lift j k p H' hk').comp (lift i j p H hk) = lift i k p H hk :=
-  RingHom.ext (lift_comp_lift_apply i j p H hk k H' hk')
+    (lift j k p).comp (lift i j p) = lift i k p :=
+  RingHom.ext (lift_comp_lift_apply i j p k)
 
 theorem PerfectRing.lift_comp_lift_apply_eq_self [PerfectRing L p] (x : L) :
-    lift j i p H' hk' (lift i j p H hk x) = x := by
+    lift j i p (lift i j p x) = x := by
   rw [lift_comp_lift_apply, lift_self_apply]
 
 theorem PerfectRing.lift_comp_lift_eq_id [PerfectRing L p] :
-    (lift j i p H' hk').comp (lift i j p H hk) = RingHom.id L :=
-  RingHom.ext (lift_comp_lift_apply_eq_self i j p H hk H' hk')
+    (lift j i p).comp (lift i j p) = RingHom.id L :=
+  RingHom.ext (lift_comp_lift_apply_eq_self i j p)
 
 end comp
 
-end lift
+end PerfectRing.lift
 
 section equiv
 
 variable [IsPerfectClosure i p] [IsPerfectClosure j p]
 
-/-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`. -/
+/-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`.
+This is similar to `IsAlgClosure.equiv` and `IsSepClosure.equiv`. -/
 def IsPerfectClosure.equiv : L ≃+* M where
-  __ := haveI := perfectRing j p; PerfectRing.lift i j p pow_mem' ker_le'
-  invFun := haveI := perfectRing i p; PerfectRing.liftAux j i p pow_mem'
+  __ := haveI := perfectRing j p; PerfectRing.lift i j p
+  invFun := haveI := perfectRing i p; PerfectRing.liftAux j i p
   left_inv := haveI := perfectRing i p; haveI := perfectRing j p;
-    PerfectRing.lift_comp_lift_apply_eq_self i j p pow_mem' ker_le' pow_mem' ker_le'
+    PerfectRing.lift_comp_lift_apply_eq_self i j p
   right_inv := haveI := perfectRing i p; haveI := perfectRing j p;
-    PerfectRing.lift_comp_lift_apply_eq_self j i p pow_mem' ker_le' pow_mem' ker_le'
+    PerfectRing.lift_comp_lift_apply_eq_self j i p
 
 theorem IsPerfectClosure.equiv_toRingHom : haveI := perfectRing j p;
-    (equiv i j p).toRingHom = PerfectRing.lift i j p pow_mem' ker_le' := rfl
+    (equiv i j p).toRingHom = PerfectRing.lift i j p := rfl
 
 theorem IsPerfectClosure.equiv_symm : (equiv i j p).symm = equiv j i p := rfl
 
 theorem IsPerfectClosure.equiv_symm_toRingHom : haveI := perfectRing i p;
-    (equiv i j p).symm.toRingHom = PerfectRing.lift j i p pow_mem' ker_le' := rfl
+    (equiv i j p).symm.toRingHom = PerfectRing.lift j i p := rfl
 
 theorem IsPerfectClosure.equiv_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     haveI := perfectRing j p; equiv i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
-  haveI := perfectRing j p; PerfectRing.liftAux_apply i j p pow_mem' ker_le' _ _ _ h
+  haveI := perfectRing j p; PerfectRing.liftAux_apply i j p _ _ _ h
 
 theorem IsPerfectClosure.equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x ^ p ^ n) :
     haveI := perfectRing i p; (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
   rw [equiv_symm, equiv_apply j i p _ _ _ h]
 
 theorem IsPerfectClosure.equiv_self_apply (x : L) : equiv i i p x = x :=
-  haveI := perfectRing i p; PerfectRing.liftAux_self_apply i p pow_mem' x
+  haveI := perfectRing i p; PerfectRing.liftAux_self_apply i p x
 
 theorem IsPerfectClosure.equiv_self : equiv i i p = RingEquiv.refl L :=
   RingEquiv.ext (equiv_self_apply i p)
 
 theorem IsPerfectClosure.equiv_comp_apply (x : K) : equiv i j p (i x) = j x :=
-  haveI := perfectRing j p; PerfectRing.lift_comp_apply i j p pow_mem' ker_le' x
+  haveI := perfectRing j p; PerfectRing.lift_comp_apply i j p x
 
 theorem IsPerfectClosure.equiv_comp : (equiv i j p).toRingHom.comp i = j :=
   RingHom.ext (equiv_comp_apply i j p)
@@ -387,7 +441,7 @@ variable {N : Type*} [CommRing N] (k : K →+* N) [ExpChar N p] [IsPerfectClosur
 theorem IsPerfectClosure.equiv_comp_equiv_apply (x : L) :
     equiv j k p (equiv i j p x) = equiv i k p x :=
   haveI := perfectRing j p; haveI := perfectRing k p;
-  PerfectRing.lift_comp_lift_apply i j p pow_mem' ker_le' k pow_mem' ker_le' x
+  PerfectRing.lift_comp_lift_apply i j p k x
 
 theorem IsPerfectClosure.equiv_comp_equiv : (equiv i j p).trans (equiv j k p) = equiv i k p :=
   RingEquiv.ext (equiv_comp_equiv_apply i j p k)
@@ -406,17 +460,21 @@ end equiv
 
 end CommRing
 
+namespace PerfectClosure
+
 -- TODO: relax `Field` assumption (need to change `PerfectClosure` file)
 variable (K) in
 /-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
-instance PerfectClosure.isPerfectClosure [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] :
+instance isPerfectClosure [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] :
     IsPerfectClosure (PerfectClosure.of K p) p where
-  pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
+  isPRadical'.pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
     rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
-  ker_le' x h := by
+  isPRadical'.ker_le' x h := by
     rw [RingHom.mem_ker, of_apply, zero_def, eq_iff'] at h
     obtain ⟨n, h⟩ := h
     simp_rw [zero_add, ← coe_iterateFrobenius, map_zero] at h
     exact mem_pNilradical.2 ⟨n, h⟩
+
+end PerfectClosure
 
 end IsPerfectClosure
