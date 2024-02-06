@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.GroupCat.Abelian
-import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
+import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Logic.Equiv.TransferInstance
 
@@ -23,7 +22,7 @@ abelian groups.
 
 open CategoryTheory
 
-universe v v' u
+universe v u
 variable (R : Type u) [Ring R]
 
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
