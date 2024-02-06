@@ -455,17 +455,13 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
     (L : Type w) [CommRing L] [IsReduced L] :
     Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
   ext x
-  obtain ⟨q, hF⟩ := ExpChar.exists F
+  let q := ringExpChar F
   obtain ⟨n, y, h⟩ := IsPurelyInseparable.pow_mem F q x
   replace heq := congr($heq y)
-  simp_rw [RingHom.comp_apply, h] at heq
-  cases hF
-  · rwa [one_pow, pow_one] at heq
+  simp_rw [RingHom.comp_apply, h, map_pow] at heq
   nontriviality L
-  haveI := charP_of_injective_ringHom (f.comp (algebraMap F E)).injective q
-  haveI := Fact.mk ‹q.Prime›
-  simp_rw [map_pow, ← iterate_frobenius] at heq
-  exact (frobenius_inj L q).iterate n heq
+  haveI := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
+  exact iterateFrobenius_inj L q n heq
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
@@ -748,10 +744,8 @@ theorem Algebra.IsAlgebraic.isSepClosed (halg : Algebra.IsAlgebraic F E)
 
 theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfectClosure F E = ⊥) :
     PerfectField F := by
-  obtain _ | ⟨p, _, _⟩ := CharP.exists' F
-  · exact PerfectField.ofCharZero F
-  haveI := charP_of_injective_algebraMap' F E p
-  haveI := PerfectField.toPerfectRing E p
+  let p := ringExpChar F
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective p
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
@@ -869,7 +863,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine pow_eq_zero ((hlF _).symm.trans ?_)
-  convert map_zero _
+  convert map_zero (algebraMap F E)
   exact congr($h i)
 
 namespace Field
