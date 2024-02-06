@@ -941,56 +941,6 @@ theorem Memℒp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : Memℒp 
       ENNReal.mul_lt_top ENNReal.ofReal_ne_top hg.snorm_ne_top⟩
 #align measure_theory.mem_ℒp.of_le_mul MeasureTheory.Memℒp.of_le_mul
 
-theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α → F}
-    (hg : AEStronglyMeasurable g μ) (b : E → F → G)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ ‖f x‖₊ * ‖g x‖₊) :
-    snorm (fun x => b (f x) (g x)) p μ ≤ snorm f ∞ μ * snorm g p μ := by
-  by_cases hp_top : p = ∞
-  · simp_rw [hp_top, snorm_exponent_top]
-    refine' le_trans (essSup_mono_ae <| h.mono fun a ha => _) (ENNReal.essSup_mul_le _ _)
-    simp_rw [Pi.mul_apply, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
-    exact ha
-  by_cases hp_zero : p = 0
-  · simp only [hp_zero, snorm_exponent_zero, mul_zero, le_zero_iff]
-  simp_rw [snorm_eq_lintegral_rpow_nnnorm hp_zero hp_top, snorm_exponent_top, snormEssSup]
-  calc
-    (∫⁻ x, (‖b (f x) (g x)‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) ≤
-        (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
-      gcongr ?_ ^ _
-      refine' lintegral_mono_ae (h.mono fun a ha => _)
-      rw [← ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg]
-      refine' ENNReal.rpow_le_rpow _ ENNReal.toReal_nonneg
-      rw [← ENNReal.coe_mul, ENNReal.coe_le_coe]
-      exact ha
-    _ ≤
-        (∫⁻ x, essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^
-          (1 / p.toReal) := by
-      gcongr ?_ ^ _
-      refine' lintegral_mono_ae _
-      filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
-      gcongr
-    _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *
-        (∫⁻ x, (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
-      rw [lintegral_const_mul'']
-      swap; · exact hg.nnnorm.aemeasurable.coe_nnreal_ennreal.pow aemeasurable_const
-      rw [ENNReal.mul_rpow_of_nonneg]
-      swap;
-      · rw [one_div_nonneg]
-        exact ENNReal.toReal_nonneg
-      rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel, ENNReal.rpow_one]
-      rw [Ne.def, ENNReal.toReal_eq_zero_iff, not_or]
-      exact ⟨hp_zero, hp_top⟩
-#align measure_theory.snorm_le_snorm_top_mul_snorm MeasureTheory.snorm_le_snorm_top_mul_snorm
-
-theorem snorm_le_snorm_mul_snorm_top (p : ℝ≥0∞) {f : α → E} (hf : AEStronglyMeasurable f μ)
-    (g : α → F) (b : E → F → G) (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ ‖f x‖₊ * ‖g x‖₊) :
-    snorm (fun x => b (f x) (g x)) p μ ≤ snorm f p μ * snorm g ∞ μ :=
-  calc
-    snorm (fun x ↦ b (f x) (g x)) p μ ≤ snorm g ∞ μ * snorm f p μ :=
-      snorm_le_snorm_top_mul_snorm p g hf (flip b) <| by simpa only [mul_comm] using h
-    _ = snorm f p μ * snorm g ∞ μ := mul_comm _ _
-#align measure_theory.snorm_le_snorm_mul_snorm_top MeasureTheory.snorm_le_snorm_mul_snorm_top
-
 end Monotonicity
 
 /-!
@@ -1029,18 +979,6 @@ theorem Memℒp.const_mul {R} [NormedRing R] {f : α → R} (hf : Memℒp f p μ
     Memℒp (fun x => c * f x) p μ :=
   hf.const_smul c
 #align measure_theory.mem_ℒp.const_mul MeasureTheory.Memℒp.const_mul
-
-theorem snorm_smul_le_snorm_top_mul_snorm (p : ℝ≥0∞) {f : α → E} (hf : AEStronglyMeasurable f μ)
-    (φ : α → 𝕜) : snorm (φ • f) p μ ≤ snorm φ ∞ μ * snorm f p μ :=
-  (snorm_le_snorm_top_mul_snorm p φ hf (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _) :
-    _)
-#align measure_theory.snorm_smul_le_snorm_top_mul_snorm MeasureTheory.snorm_smul_le_snorm_top_mul_snorm
-
-theorem snorm_smul_le_snorm_mul_snorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
-    (hφ : AEStronglyMeasurable φ μ) : snorm (φ • f) p μ ≤ snorm φ p μ * snorm f ∞ μ :=
-  (snorm_le_snorm_mul_snorm_top p hφ f (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _) :
-    _)
-#align measure_theory.snorm_smul_le_snorm_mul_snorm_top MeasureTheory.snorm_smul_le_snorm_mul_snorm_top
 
 end BoundedSMul
 
