@@ -1715,7 +1715,7 @@ theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) 
   rfl
 
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
-    mulVec (diagonal v) w x = v x * w x :=
+    (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x
 #align matrix.mul_vec_diagonal Matrix.mulVec_diagonal
 
@@ -1726,7 +1726,7 @@ theorem vecMul_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
 
 /-- Associate the dot product of `mulVec` to the left. -/
 theorem dotProduct_mulVec [Fintype n] [Fintype m] [NonUnitalSemiring R] (v : m → R)
-    (A : Matrix m n R) (w : n → R) : v ⬝ᵥ mulVec A w = v ᵥ* A ⬝ᵥ w := by
+    (A : Matrix m n R) (w : n → R) : v ⬝ᵥ A *ᵥ w = v ᵥ* A ⬝ᵥ w := by
   simp only [dotProduct, vecMul, mulVec, Finset.mul_sum, Finset.sum_mul, mul_assoc]
   exact Finset.sum_comm
 #align matrix.dot_product_mul_vec Matrix.dotProduct_mulVec
@@ -1794,7 +1794,7 @@ theorem vecMul_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
-    M.mulVec (b • v) = b • M *ᵥ v := by
+    M *ᵥ (b • v) = b • M *ᵥ v := by
   ext i
   simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
 #align matrix.mul_vec_smul Matrix.mulVec_smul
@@ -1930,7 +1930,7 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
 #align matrix.mul_vec_neg Matrix.mulVec_neg
 
 theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
-    mulVec (A - B) x = mulVec A x - mulVec B x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
+    (A - B) *ᵥ x = A *ᵥ x - B *ᵥ x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
 #align matrix.sub_mul_vec Matrix.sub_mulVec
 
 theorem vecMul_sub [Fintype m] (A B : Matrix m n α) (x : m → α) :

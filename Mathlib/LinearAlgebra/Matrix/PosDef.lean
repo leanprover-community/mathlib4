@@ -204,7 +204,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
       _ = star v ⬝ᵥ A *ᵥ (A - B) *ᵥ v + star v ⬝ᵥ (A - B) *ᵥ B *ᵥ v := by
         rw [mulVec_mulVec, mulVec_mulVec, ← dotProduct_add, ← add_mulVec, mul_sub, sub_mul,
           add_sub, sub_add_cancel, pow_two, pow_two]
-      _ = t * (star v ⬝ᵥ A *ᵥ v) + vecMul (star v) (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
+      _ = t * (star v ⬝ᵥ A *ᵥ v) + (star v) ᵥ* (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
         rw [hv', mulVec_smul, dotProduct_smul, IsROrC.real_smul_eq_coe_mul,
           dotProduct_mulVec _ (A - B), hA.1.sub hB.1]
       _ = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := by
