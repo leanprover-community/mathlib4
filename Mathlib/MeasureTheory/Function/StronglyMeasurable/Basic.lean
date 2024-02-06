@@ -129,15 +129,20 @@ theorem SimpleFunc.stronglyMeasurable {α β} {_ : MeasurableSpace α} [Topologi
   ⟨fun _ => f, fun _ => tendsto_const_nhds⟩
 #align measure_theory.simple_func.strongly_measurable MeasureTheory.SimpleFunc.stronglyMeasurable
 
-theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
-    (f : α → β) : StronglyMeasurable f :=
-  ⟨fun _ => SimpleFunc.ofIsEmpty, isEmptyElim⟩
-#align measure_theory.strongly_measurable_of_is_empty MeasureTheory.stronglyMeasurable_of_isEmpty
-
-theorem stronglyMeasurable_of_fintype [Fintype α] {_ : MeasurableSpace α}
+@[nontriviality]
+theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     [MeasurableSingletonClass α] [TopologicalSpace β]
     (f : α → β) : StronglyMeasurable f :=
-  ⟨fun _ => SimpleFunc.ofFintype f, fun _ => tendsto_const_nhds⟩
+  ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
+
+@[deprecated] -- Since 2024/02/05
+alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
+
+@[deprecated StronglyMeasurable.of_finite]
+theorem stronglyMeasurable_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} [TopologicalSpace β]
+    (f : α → β) : StronglyMeasurable f :=
+  .of_finite f
+#align measure_theory.strongly_measurable_of_is_empty MeasureTheory.StronglyMeasurable.of_finite
 
 theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSpace β] {b : β} :
     StronglyMeasurable fun _ : α => b :=
@@ -147,7 +152,7 @@ theorem stronglyMeasurable_const {α β} {_ : MeasurableSpace α} [TopologicalSp
 @[to_additive]
 theorem stronglyMeasurable_one {α β} {_ : MeasurableSpace α} [TopologicalSpace β] [One β] :
     StronglyMeasurable (1 : α → β) :=
-  @stronglyMeasurable_const _ _ _ _ 1
+  stronglyMeasurable_const
 #align measure_theory.strongly_measurable_one MeasureTheory.stronglyMeasurable_one
 #align measure_theory.strongly_measurable_zero MeasureTheory.stronglyMeasurable_zero
 
@@ -155,10 +160,10 @@ theorem stronglyMeasurable_one {α β} {_ : MeasurableSpace α} [TopologicalSpac
 This version works for functions between empty types. -/
 theorem stronglyMeasurable_const' {α β} {m : MeasurableSpace α} [TopologicalSpace β] {f : α → β}
     (hf : ∀ x y, f x = f y) : StronglyMeasurable f := by
-  cases' isEmpty_or_nonempty α with _ h
-  · exact stronglyMeasurable_of_isEmpty f
-  · convert stronglyMeasurable_const (β := β) using 1
-    exact funext fun x => hf x h.some
+  nontriviality α
+  inhabit α
+  convert stronglyMeasurable_const (β := β) using 1
+  exact funext fun x => hf x default
 #align measure_theory.strongly_measurable_const' MeasureTheory.stronglyMeasurable_const'
 
 -- porting note: changed binding type of `MeasurableSpace α`.
