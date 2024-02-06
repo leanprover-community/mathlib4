@@ -362,6 +362,28 @@ theorem PerfectRing.lift_comp_apply (x : K) : lift i j p (i x) = j x := by
 theorem PerfectRing.lift_comp : (lift i j p).comp i = j :=
   RingHom.ext (lift_comp_apply i j p)
 
+theorem PerfectRing.comp_lift_apply (f : L →+* M) (x : L) : lift i (f.comp i) p x = f x := by
+  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
+  rw [lift_apply i _ p _ _ _ h, RingHom.comp_apply, h, ← iterate_frobenius, f.map_iterate_frobenius,
+    ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
+
+theorem PerfectRing.comp_lift (f : L →+* M) : lift i (f.comp i) p = f :=
+  RingHom.ext (comp_lift_apply i p f)
+
+/-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
+`i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`,
+and `M` is a perfect ring of characteristic `p`, then `K →+* M` is one-to-one correspondence to
+`L →+* M`, given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`. -/
+def PerfectRing.liftEquiv : (K →+* M) ≃ (L →+* M) where
+  toFun j := lift i j p
+  invFun f := f.comp i
+  left_inv f := lift_comp i f p
+  right_inv := comp_lift i p
+
+theorem PerfectRing.liftEquiv_apply : liftEquiv i p j = lift i j p := rfl
+
+theorem PerfectRing.liftEquiv_symm_apply (f : L →+* M) : (liftEquiv i p).symm f = f.comp i := rfl
+
 section comp
 
 variable {N : Type*} [CommRing N] (k : K →+* N) [ExpChar N p] [PerfectRing N p]
