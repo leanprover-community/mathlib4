@@ -85,7 +85,6 @@ section
 variable [LinearOrderedField α]
 
 example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
-set_option pp.explicit true in
 example : (1/4 - 2/3 : α) ≠ 0 := by positivity
 
 end
