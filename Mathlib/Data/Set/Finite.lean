@@ -274,6 +274,7 @@ protected theorem toFinset_diff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
   simp
 #align set.finite.to_finset_diff Set.Finite.toFinset_diff
 
+open scoped symmDiff in
 protected theorem toFinset_symmDiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s ∆ t).Finite) : h.toFinset = hs.toFinset ∆ ht.toFinset := by
   ext
@@ -859,7 +860,7 @@ theorem finite_empty : (∅ : Set α).Finite :=
 #align set.finite_empty Set.finite_empty
 
 protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 $ by
+  nonempty_iff_ne_empty.2 <| by
     rintro rfl
     exact h finite_empty
 #align set.infinite.nonempty Set.Infinite.nonempty
@@ -926,10 +927,10 @@ theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹
 #align set.finite.preimage Set.Finite.preimage
 
 protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
-  fun h ↦ hs $ finite_of_finite_preimage h hf
+  fun h ↦ hs <| finite_of_finite_preimage h hf
 
 lemma Infinite.preimage' (hs : (s ∩ range f).Infinite) : (f ⁻¹' s).Infinite :=
-  (hs.preimage $ inter_subset_right _ _).mono $ preimage_mono $ inter_subset_left _ _
+  (hs.preimage <| inter_subset_right _ _).mono <| preimage_mono <| inter_subset_left _ _
 
 theorem Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : (f ⁻¹' s).Finite :=
   h.preimage fun _ _ _ _ h' => f.injective h'
@@ -992,7 +993,7 @@ protected theorem infinite_prod :
   refine' ⟨fun h => _, _⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
     by_contra!
-    exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
+    exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
   · rintro (h | h)
     · exact h.1.prod_left h.2
     · exact h.1.prod_right h.2
@@ -1227,6 +1228,23 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
   this h
 #align set.finite.dinduction_on Set.Finite.dinduction_on
 
+/-- Induction up to a finite set `S`. -/
+theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
+    (S0 : Set α) (hS0 : S0 ⊆ S) (H0 : C S0) (H1 : ∀ s ⊂ S, C s → ∃ a ∈ S \ s, C (insert a s)) :
+    C S := by
+  have : Finite S := Finite.to_subtype h
+  have : Finite {T : Set α // T ⊆ S} := Finite.of_equiv (Set S) (Equiv.Set.powerset S).symm
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ le_rfl]
+  rw [← Subtype.coe_mk (p := (· ⊆ S)) _ hS0] at H0
+  refine Finite.to_wellFoundedGT.wf.induction_bot' (fun s hs hs' ↦ ?_) H0
+  obtain ⟨a, ⟨ha1, ha2⟩, ha'⟩ := H1 s (ssubset_of_ne_of_subset hs s.2) hs'
+  exact ⟨⟨insert a s.1, insert_subset ha1 s.2⟩, Set.ssubset_insert ha2, ha'⟩
+
+/-- Induction up to `univ`. -/
+theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
+    (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
+  finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
+
 section
 
 attribute [local instance] Nat.fintypeIio
@@ -1257,8 +1275,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  by simp
+theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+  simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -1347,7 +1365,7 @@ alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
-  by_contra! h; exact hs $ ht.subset h
+  by_contra! h; exact hs <| ht.subset h
 
 lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_not_mem_finite t.finite_toSet
@@ -1755,7 +1773,7 @@ lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/
 lemma Set.finite_of_forall_not_lt_lt (h : ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ s, x < y → y < z → False) :
     Set.Finite s :=
-  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt $ by simpa only [SetCoe.forall'] using h
+  @Set.toFinite _ s <| Finite.of_forall_not_lt_lt <| by simpa only [SetCoe.forall'] using h
 #align set.finite_of_forall_not_lt_lt Set.finite_of_forall_not_lt_lt
 
 lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=

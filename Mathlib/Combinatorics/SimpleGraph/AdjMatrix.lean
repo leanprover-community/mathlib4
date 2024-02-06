@@ -243,14 +243,14 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [degree]
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
 
 -- @[simp] -- Porting note: simp can prove this
 theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
-    (G.adjMatrix α).mulVec (Function.const _ a) v = G.degree v * a := by simp [degree]
+    (G.adjMatrix α).mulVec (Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
 theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}

@@ -218,7 +218,7 @@ variable {A}
 
 theorem mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
-  LinearMap.mem_ker.trans $ by
+  LinearMap.mem_ker.trans <| by
     rw [Function.funext_iff]
     simp only [dOne_apply, Pi.zero_apply, Prod.forall]
 
@@ -269,7 +269,7 @@ variable {A}
 theorem mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
       A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
-  LinearMap.mem_ker.trans $ by
+  LinearMap.mem_ker.trans <| by
     rw [Function.funext_iff]
     simp only [dTwo_apply, Prod.mk.eta, Pi.zero_apply, Prod.forall]
 

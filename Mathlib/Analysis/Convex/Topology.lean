@@ -70,7 +70,7 @@ theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
 #align is_compact_std_simplex isCompact_stdSimplex
 
 instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
-  isCompact_iff_compactSpace.mp $ isCompact_stdSimplex _
+  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
 end stdSimplex
 

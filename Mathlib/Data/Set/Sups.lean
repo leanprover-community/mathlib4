@@ -56,7 +56,8 @@ infixl:75 " ⊼ " => HasInfs.infs
 namespace Set
 
 section Sups
-variable [SemilatticeSup α] [SemilatticeSup β] [SupHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Set α) :=
@@ -170,7 +171,7 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
 lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
-  image_image2_distrib $ map_sup f
+  image_image2_distrib <| map_sup f
 
 lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
@@ -223,7 +224,8 @@ end Sups
 
 section Infs
 
-variable [SemilatticeInf α] [SemilatticeInf β] [InfHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Set α) :=
@@ -337,7 +339,7 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
 
 lemma image_infs (f : F) (s t : Set α) : f '' (s ⊼ t) = f '' s ⊼ f '' t :=
-  image_image2_distrib $ map_inf f
+  image_image2_distrib <| map_inf f
 
 lemma subset_infs_self : s ⊆ s ⊼ s := λ _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff

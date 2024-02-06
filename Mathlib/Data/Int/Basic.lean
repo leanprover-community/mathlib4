@@ -3,19 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
-# Basic operations on the integers
+# Basic algebraic instances on the integers
 
-This file contains:
-* instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
-* some basic lemmas about integers
+This file contains instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
 -/
 
 set_option autoImplicit true
@@ -75,6 +73,10 @@ theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fu
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 
+@[simp, norm_cast] lemma cast_pow [Ring R] (n : ℤ) (m : ℕ) : ↑(n ^ m) = (n ^ m : R) := by
+  induction' m with m ih <;> simp [_root_.pow_succ, *]
+#align int.cast_pow Int.cast_pow
+
 /-! ### Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct
@@ -95,5 +97,37 @@ instance : Semiring ℤ         := by infer_instance
 instance instRingInt : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
+lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
+  induction' k with k ih
+  · rfl
+  · rw [_root_.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+#align int.nat_abs_pow Int.natAbs_pow
+
 theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
+
+section Multiplicative
+
+open Multiplicative
+
+lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align int.to_add_pow Int.toAdd_pow
+
+lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+#align int.to_add_zpow Int.toAdd_zpow
+
+@[simp] lemma ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_zpow ..).symm
+#align int.of_add_mul Int.ofAdd_mul
+
+end Multiplicative
+
+end Int
+
+-- TODO: Do we really need this lemma? This is just `smul_eq_mul`
+lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
+#align zsmul_int_int zsmul_int_int
+
+lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _
+#align zsmul_int_one zsmul_int_one
+
+assert_not_exists Set.range

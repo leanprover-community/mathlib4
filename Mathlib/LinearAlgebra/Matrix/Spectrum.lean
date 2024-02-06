@@ -24,15 +24,17 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
 
 variable {A : Matrix n n 𝕜}
-
-open scoped Matrix
 
 open scoped BigOperators
 
 namespace IsHermitian
+
+section DecidableEq
+
+variable [DecidableEq n]
 
 variable (hA : A.IsHermitian)
 
@@ -142,7 +144,7 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 /-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
-allows direct rewriting of A since: $ A = V D V⁻¹$ -/
+allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 lemma spectral_theorem' :
     A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
@@ -172,9 +174,12 @@ lemma mulVec_eigenvectorBasis (i : n) :
   convert this using 1
   rw [mul_comm, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
 
+end DecidableEq
+
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
-lemma exists_eigenvector_of_ne_zero (h_ne : A ≠ 0) :
+lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ mulVec A v = t • v := by
+  classical
   have : hA.eigenvalues ≠ 0
   · contrapose! h_ne
     have := hA.spectral_theorem'

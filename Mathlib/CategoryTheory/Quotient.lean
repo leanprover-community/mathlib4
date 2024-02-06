@@ -104,9 +104,9 @@ instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
   comp := @comp _ _ r
-  comp_id f := Quot.inductionOn f $ by simp
-  id_comp f := Quot.inductionOn f $ by simp
-  assoc f g h := Quot.inductionOn f $ Quot.inductionOn g $ Quot.inductionOn h $ by simp
+  comp_id f := Quot.inductionOn f <| by simp
+  id_comp f := Quot.inductionOn f <| by simp
+  assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/

@@ -113,13 +113,13 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   let u := (t.erase j).erase k
   have hj : j ∉ u := by simp
   have hk : k ∉ u := by simp
-  have ht : t = (u.cons k hk).cons j (mem_cons.not.2 $ not_or_intro (ne_of_apply_ne _ hjk) hj)
+  have ht : t = (u.cons k hk).cons j (mem_cons.not.2 <| not_or_intro (ne_of_apply_ne _ hjk) hj)
   · simp [insert_erase this, insert_erase ‹j ∈ t›, *]
   clear_value u
   subst ht
   simp only [sum_cons]
-  have := h₀ j $ by simp
-  have := h₀ k $ by simp
+  have := h₀ j <| by simp
+  have := h₀ k <| by simp
   let c := w j + w k
   have hc : w j / c + w k / c = 1 := by field_simp
   have hcj : c * (w j / c) = w j := by field_simp; ring
@@ -130,13 +130,13 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
     _ ≤ c • f ((w j / c) • p j + (w k / c) • p k) + ∑ x in u, w x • f (p x) :=
       -- apply the usual Jensen's inequality wrt the weighted average of the two distinguished
       -- points and all the other points
-        hf.convexOn.map_add_sum_le (fun i hi ↦ (h₀ _ $ by simp [hi]).le)
+        hf.convexOn.map_add_sum_le (fun i hi ↦ (h₀ _ <| by simp [hi]).le)
           (by simpa [-cons_eq_insert, ← add_assoc] using h₁)
-          (forall_of_forall_cons $ forall_of_forall_cons hmem) (by positivity) $ by
-           refine hf.1 (hmem _ $ by simp) (hmem _ $ by simp) ?_ ?_ hc <;> positivity
+          (forall_of_forall_cons <| forall_of_forall_cons hmem) (by positivity) <| by
+           refine hf.1 (hmem _ <| by simp) (hmem _ <| by simp) ?_ ?_ hc <;> positivity
     _ < c • ((w j / c) • f (p j) + (w k / c) • f (p k)) + ∑ x in u, w x • f (p x) := by
       -- then apply the definition of strict convexity for the two distinguished points
-      gcongr; refine hf.2 (hmem _ $ by simp) (hmem _ $ by simp) hjk ?_ ?_ hc <;> positivity
+      gcongr; refine hf.2 (hmem _ <| by simp) (hmem _ <| by simp) hjk ?_ ?_ hc <;> positivity
     _ = (w j • f (p j) + w k • f (p k)) + ∑ x in u, w x • f (p x) := by
       rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck]
     _ = w j • f (p j) + (w k • f (p k) + ∑ x in u, w x • f (p x)) := by abel_nf
@@ -163,7 +163,7 @@ lemma StrictConvexOn.eq_of_le_map_sum (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀
     (h₁ : ∑ i in t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : ∑ i in t, w i • f (p i) ≤ f (∑ i in t, w i • p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt $ hf.map_sum_lt h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_lt <| hf.map_sum_lt h₀ h₁ hmem this
 
 /-- A form of the **equality case of Jensen's equality**.
 
@@ -175,7 +175,7 @@ lemma StrictConcaveOn.eq_of_map_sum_eq (hf : StrictConcaveOn 𝕜 s f) (h₀ : �
     (h₁ : ∑ i in t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : f (∑ i in t, w i • p i) ≤ ∑ i in t, w i • f (p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt $ hf.lt_map_sum h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_lt <| hf.lt_map_sum h₀ h₁ hmem this
 
 /-- Canonical form of the **equality case of Jensen's equality**.
 
@@ -249,7 +249,7 @@ section MaximumPrinciple
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup β] [Module 𝕜 E]
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E}
-  {x : E}
+  {x y z : E}
 
 theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
@@ -289,8 +289,8 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
   ConvexOn.exists_ge_of_centerMass (β := βᵒᵈ) h hw₀ hw₁ hp
 #align concave_on.exists_le_of_center_mass ConcaveOn.exists_le_of_centerMass
 
-/-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
-then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
+/-- **Maximum principle** for convex functions. If a function `f` is convex on the convex hull of
+`s`, then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
   rw [_root_.convexHull_eq] at hx
@@ -301,11 +301,35 @@ theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull �
   exact ⟨p i, hp i hit, Hi⟩
 #align convex_on.exists_ge_of_mem_convex_hull ConvexOn.exists_ge_of_mem_convexHull
 
-/-- Minimum principle for concave functions. If a function `f` is concave on the convex hull of `s`,
-then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
+/-- **Minimum principle** for concave functions. If a function `f` is concave on the convex hull of
+`s`, then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f y ≤ f x :=
   ConvexOn.exists_ge_of_mem_convexHull (β := βᵒᵈ) hf hx
 #align concave_on.exists_le_of_mem_convex_hull ConcaveOn.exists_le_of_mem_convexHull
+
+/-- **Maximum principle** for convex functions on a segment. If a function `f` is convex on the
+segment `[x, y]`, then the eventual maximum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConvexOn.le_max_of_mem_segment (hf : ConvexOn 𝕜 [x -[𝕜] y] f) (hz : z ∈ [x -[𝕜] y]) :
+    f z ≤ max (f x) (f y) := by
+  rw [← convexHull_pair] at hf hz; simpa using hf.exists_ge_of_mem_convexHull hz
+
+/-- **Minimum principle** for concave functions on a segment. If a function `f` is concave on the
+segment `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConcaveOn.min_le_of_mem_segment (hf : ConcaveOn 𝕜 [x -[𝕜] y] f) (hz : z ∈ [x -[𝕜] y]) :
+    min (f x) (f y) ≤ f z := by
+  rw [← convexHull_pair] at hf hz; simpa using hf.exists_le_of_mem_convexHull hz
+
+/-- **Maximum principle** for convex functions on an interval. If a function `f` is convex on the
+interval `[x, y]`, then the eventual maximum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConvexOn.le_max_of_mem_Icc {f : 𝕜 → β} {x y z : 𝕜} (hf : ConvexOn 𝕜 (Icc x y) f)
+    (hz : z ∈ Icc x y) : f z ≤ max (f x) (f y) := by
+  rw [← segment_eq_Icc (hz.1.trans hz.2)] at hf hz; exact hf.le_max_of_mem_segment hz
+
+/-- **Minimum principle** for concave functions on an interval. If a function `f` is concave on the
+interval `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
+lemma ConcaveOn.min_le_of_mem_Icc {f : 𝕜 → β} {x y z : 𝕜} (hf : ConcaveOn 𝕜 (Icc x y) f)
+    (hz : z ∈ Icc x y) : min (f x) (f y) ≤ f z := by
+  rw [← segment_eq_Icc (hz.1.trans hz.2)] at hf hz; exact hf.min_le_of_mem_segment hz
 
 end MaximumPrinciple

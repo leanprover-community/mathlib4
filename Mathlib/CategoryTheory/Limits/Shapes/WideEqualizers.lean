@@ -75,7 +75,7 @@ instance : Inhabited (WalkingParallelFamily J) :=
 inductive WalkingParallelFamily.Hom (J : Type w) :
   WalkingParallelFamily J → WalkingParallelFamily J → Type w
   | id : ∀ X : WalkingParallelFamily.{w} J, WalkingParallelFamily.Hom J X X
-  | line : ∀ _ : J, WalkingParallelFamily.Hom J zero one
+  | line : J → WalkingParallelFamily.Hom J zero one
   deriving DecidableEq
 #align
   category_theory.limits.walking_parallel_family.hom
