@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import number_theory.modular from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -147,7 +148,7 @@ theorem tendsto_normSq_coprime_pair :
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i
     · show (z : ℂ).im⁻¹ * (f c).im = c 0
-      rw [f_def, add_im, ofReal_mul_im, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel hz,
+      rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel hz,
         mul_one]
     · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
@@ -435,7 +436,8 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
-/-- Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`  -/
+/-- First Fundamental Domain Lemma: Any `z : ℍ` can be moved to `𝒟` by an element of
+`SL(2,ℤ)` -/
 theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := by
   -- obtain a g₀ which maximizes im (g • z),
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
@@ -527,7 +529,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
   rcases Int.abs_le_one_iff.mp <| abs_c_le_one hz hg with ⟨⟩ <;> tauto
 #align modular_group.c_eq_zero ModularGroup.c_eq_zero
 
-/-- Second Main Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
+/-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2,ℤ)`, then `z = g • z`. -/
 theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z := by
   obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero hz hg)

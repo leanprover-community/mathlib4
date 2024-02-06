@@ -387,7 +387,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => ContinuousMap.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inl (α := X') (β := Y')).toInducing.continuous_iff.mpr
+      apply (embedding_inl (X := X') (Y := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
     · refine' ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ _⟩⟩
@@ -404,7 +404,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine' ⟨⟨l, _⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
           ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (embedding_inr (α := X') (β := Y')).toInducing.continuous_iff.mpr
+      apply (embedding_inr (X := X') (Y := Y')).toInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
   · intro Z f
@@ -434,7 +434,7 @@ theorem finitaryExtensive_of_reflective
       · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
     rw [this]
     rintro Z ⟨_|_⟩ f <;> dsimp <;> infer_instance
-  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
+  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit <| pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm hc
@@ -553,7 +553,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   let e : ∐ f ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
   { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
-    inv := coprod.desc (Sigma.ι f i) (Sigma.desc <| fun j ↦ Sigma.ι f j)
+    inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
     hom_inv_id := by aesop_cat
     inv_hom_id := by
       ext j
@@ -612,7 +612,7 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
     simp [coproductIsCoproduct]
   refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this
     (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
-    (Discrete.natTrans <| fun i ↦ pullback.snd) f ?_
+    (Discrete.natTrans fun i ↦ pullback.snd) f ?_
     (NatTrans.equifibered_of_discrete _) ?_).some
   · ext
     simp [pullback.condition]

@@ -52,7 +52,7 @@ theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t 
 
 @[simp, norm_cast]
 theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.sigma t : Set (Σi, α i)) = (s : Set ι).Sigma fun i => (t i : Set (α i)) :=
+    (s.sigma t : Set (Σ i, α i)) = (s : Set ι).sigma fun i ↦ (t i : Set (α i)) :=
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 

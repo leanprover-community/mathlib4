@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta,
 -/
 
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.LocallyFinite
 
 /-! # Antidiagonal with values in general types
 
@@ -94,9 +93,14 @@ theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy 
   map_prodComm_antidiagonal
 #align finset.nat.map_swap_antidiagonal Finset.map_swap_antidiagonal
 
-/-- A point in the antidiagonal is determined by its first co-ordinate. -/
-theorem antidiagonal_congr [AddCancelMonoid A] [HasAntidiagonal A] {n : A} {p q : A × A}
-    (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n) : p = q ↔ p.fst = q.fst := by
+section AddCancelMonoid
+variable [AddCancelMonoid A] [HasAntidiagonal A] {p q : A × A} {n : A}
+
+/-- A point in the antidiagonal is determined by its first coordinate.
+
+See also `Finset.antidiagonal_congr'`. -/
+theorem antidiagonal_congr (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n) :
+    p = q ↔ p.1 = q.1 := by
   refine' ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((add_right_inj q.fst).mp _)⟩
   rw [mem_antidiagonal] at hp hq
   rw [hq, ← h, hp]
@@ -104,9 +108,23 @@ theorem antidiagonal_congr [AddCancelMonoid A] [HasAntidiagonal A] {n : A} {p q 
 
 /-- A point in the antidiagonal is determined by its first co-ordinate (subtype version of
 `Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/
-@[ext] theorem antidiagonal_subtype_ext [AddCancelMonoid A] [HasAntidiagonal A]
-    {n : A} {p q : antidiagonal n} (h : p.val.1 = q.val.1) :
-    p = q := Subtype.ext ((antidiagonal_congr p.prop q.prop).mpr h)
+@[ext] theorem antidiagonal_subtype_ext {p q : antidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
+  Subtype.ext ((antidiagonal_congr p.prop q.prop).mpr h)
+
+end AddCancelMonoid
+
+section AddCancelCommMonoid
+variable [AddCancelCommMonoid A] [HasAntidiagonal A] {p q : A × A} {n : A}
+
+/-- A point in the antidiagonal is determined by its second coordinate.
+
+See also `Finset.antidiagonal_congr`. -/
+lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n) :
+    p = q ↔ p.2 = q.2 := by
+  rw [← Prod.swap_inj]
+  exact antidiagonal_congr (swap_mem_antidiagonal.2 hp) (swap_mem_antidiagonal.2 hq)
+
+end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 variable [CanonicallyOrderedAddCommMonoid A] [HasAntidiagonal A]

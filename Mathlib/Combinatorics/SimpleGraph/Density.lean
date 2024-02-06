@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
@@ -187,7 +186,7 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
   have hst : (s₂.card : ℚ) * t₂.card ≠ 0 := by simp [hs₂.ne_empty, ht₂.ne_empty]
   rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel _ hst]
   refine' div_le_div_of_le (mod_cast (s₁.card * t₁.card).zero_le) _
-  exact mod_cast card_le_of_subset (interedges_mono hs ht)
+  exact mod_cast card_le_card (interedges_mono hs ht)
 #align rel.mul_edge_density_le_edge_density Rel.mul_edgeDensity_le_edgeDensity
 
 theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hs₂ : s₂.Nonempty)
@@ -197,9 +196,9 @@ theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t�
   refine' le_trans _ (mul_le_of_le_one_right _ (edgeDensity_le_one r s₂ t₂))
   · rw [sub_mul, one_mul]
   refine' sub_nonneg_of_le (mul_le_one _ _ _)
-  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_of_subset hs)) (Nat.cast_nonneg _)
+  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card hs)) (Nat.cast_nonneg _)
   · apply div_nonneg <;> exact mod_cast Nat.zero_le _
-  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_of_subset ht)) (Nat.cast_nonneg _)
+  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card ht)) (Nat.cast_nonneg _)
 #align rel.edge_density_sub_edge_density_le_one_sub_mul Rel.edgeDensity_sub_edgeDensity_le_one_sub_mul
 
 theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)

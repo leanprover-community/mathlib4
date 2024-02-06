@@ -5,7 +5,6 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
-import Mathlib.Data.Sum.Basic
 
 #align_import combinatorics.quiver.symmetric from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -75,7 +74,7 @@ theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
 
 theorem eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
     (g : b ⟶ a) : f = reverse g ↔ reverse f = g := by
-  rw [←reverse_inj, reverse_reverse]
+  rw [← reverse_inj, reverse_reverse]
 #align quiver.eq_reverse_iff Quiver.eq_reverse_iff
 
 section MapReverse

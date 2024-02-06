@@ -422,6 +422,49 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
 
 namespace HomologicalComplex
 
+section PreservesHomology
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [Preadditive C₁] [Preadditive C₂]
+  {K L : HomologicalComplex C₁ c} (φ : K ⟶ L) (F : C₁ ⥤ C₂) [F.Additive]
+  [F.PreservesHomology]
+
+section
+
+variable (i : ι) [K.HasHomology i] [L.HasHomology i]
+  [((F.mapHomologicalComplex c).obj K).HasHomology i]
+  [((F.mapHomologicalComplex c).obj L).HasHomology i]
+
+instance quasiIsoAt_map_of_preservesHomology [hφ : QuasiIsoAt φ i] :
+    QuasiIsoAt ((F.mapHomologicalComplex c).map φ) i := by
+  rw [quasiIsoAt_iff] at hφ ⊢
+  exact ShortComplex.quasiIso_map_of_preservesLeftHomology F
+    ((shortComplexFunctor C₁ c i).map φ)
+
+lemma quasiIsoAt_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+    QuasiIsoAt ((F.mapHomologicalComplex c).map φ) i ↔ QuasiIsoAt φ i := by
+  simp only [quasiIsoAt_iff]
+  exact ShortComplex.quasiIso_map_iff_of_preservesLeftHomology F
+    ((shortComplexFunctor C₁ c i).map φ)
+
+end
+
+section
+
+variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+  [∀ i, ((F.mapHomologicalComplex c).obj K).HasHomology i]
+  [∀ i, ((F.mapHomologicalComplex c).obj L).HasHomology i]
+
+instance quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
+    QuasiIso ((F.mapHomologicalComplex c).map φ) where
+
+lemma quasiIso_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
+    QuasiIso ((F.mapHomologicalComplex c).map φ) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_map_iff_of_preservesHomology φ F]
+
+end
+
+end PreservesHomology
+
 variable (C c)
 
 /-- The morphism property on `HomologicalComplex C c` given by quasi-isomorphisms. -/

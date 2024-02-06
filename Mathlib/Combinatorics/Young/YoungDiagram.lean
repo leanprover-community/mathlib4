@@ -175,7 +175,8 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _
   intros x h
-  simp [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h
+  simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
+    simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
   simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
 #align young_diagram.coe_bot YoungDiagram.coe_bot
 
@@ -247,7 +248,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
   ⟨fun h => by
     convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
-    rw [←transpose_transpose μ] at h
+    rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
@@ -325,7 +326,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 
 @[mono]
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
-  by_contra' h_lt
+  by_contra! h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
   rw [← mem_iff_lt_rowLen] at h_lt ⊢
   exact μ.up_left_mem hi (by rfl) h_lt

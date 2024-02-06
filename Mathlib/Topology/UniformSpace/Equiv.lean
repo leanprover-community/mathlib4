@@ -57,7 +57,7 @@ instance : EquivLike (α ≃ᵤ β) α β where
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv
   right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
 @[simp]
 theorem uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
@@ -348,7 +348,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
-  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp <| fun i ↦ by
+  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using
       Pi.uniformContinuous_proj _ i
   uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e

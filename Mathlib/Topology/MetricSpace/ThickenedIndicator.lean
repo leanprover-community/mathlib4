@@ -3,10 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import topology.metric_space.thickened_indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -195,6 +194,16 @@ theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : 
     (x_mem : x ∈ closure E) : thickenedIndicator δ_pos E x = 1 := by
   rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, one_toNNReal]
 #align thickened_indicator_one_of_mem_closure thickenedIndicator_one_of_mem_closure
+
+lemma one_le_thickenedIndicator_apply' {X : Type _} [PseudoEMetricSpace X]
+    {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ closure F) :
+    1 ≤ thickenedIndicator δ_pos F x := by
+  rw [thickenedIndicator_one_of_mem_closure δ_pos F hxF]
+
+lemma one_le_thickenedIndicator_apply (X : Type _) [PseudoEMetricSpace X]
+    {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ F) :
+    1 ≤ thickenedIndicator δ_pos F x :=
+  one_le_thickenedIndicator_apply' δ_pos (subset_closure hxF)
 
 theorem thickenedIndicator_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
     thickenedIndicator δ_pos E x = 1 :=

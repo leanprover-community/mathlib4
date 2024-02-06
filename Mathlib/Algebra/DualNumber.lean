@@ -108,7 +108,7 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
   algHom_ext' hinl (by
     ext a
     show f (inr a) = g (inr a)
-    simpa only [inr_eq_smul_eps] using FunLike.congr_fun hinr a)
+    simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
@@ -141,7 +141,7 @@ def lift :
       (fg.val.1, fg.val.2 1),
       fg.prop.1 _ _,
       fun a => show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
-        rw [←fg.prop.2.1, ←fg.prop.2.2, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
+        rw [← fg.prop.2.1, ← fg.prop.2.2, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
     left_inv := fun fe => Subtype.ext <| Prod.ext rfl <|
       show fe.val.1 1 * fe.val.2 = fe.val.2 by
         rw [map_one, one_mul]
@@ -164,12 +164,12 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 /-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
 @[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (a • ad) = fe.val.1 a * lift fe ad := by
-  rw [←inl_mul_eq_smul, map_mul, lift_apply_inl]
+  rw [← inl_mul_eq_smul, map_mul, lift_apply_inl]
 
 /-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
 @[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (MulOpposite.op a • ad) = lift fe ad * fe.val.1 a := by
-  rw [←mul_inl_eq_op_smul, map_mul, lift_apply_inl]
+  rw [← mul_inl_eq_op_smul, map_mul, lift_apply_inl]
 
 /-- When applied to `ε`, `DualNumber.lift` produces the element of `B` that squares to 0. -/
 @[simp] theorem lift_apply_eps

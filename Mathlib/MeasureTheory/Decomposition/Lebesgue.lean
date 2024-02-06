@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.Sub
-import Mathlib.MeasureTheory.Decomposition.Jordan
-import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.MeasureTheory.Decomposition.SignedHahn
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 #align_import measure_theory.decomposition.lebesgue from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
@@ -132,8 +132,7 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
     refine ⟨⟨μ.singularPart ν, r⁻¹ • μ.rnDeriv ν⟩, ?_, ?_, ?_⟩
     · change Measurable (r⁻¹ • μ.rnDeriv ν)
       exact hmeas.const_smul _
-    · refine MutuallySingular.mono_ac hsing AbsolutelyContinuous.rfl ?_
-      exact absolutelyContinuous_of_le_smul le_rfl
+    · exact hsing.mono_ac AbsolutelyContinuous.rfl smul_absolutelyContinuous
     · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by simp [ENNReal.smul_def]
       rw [this, withDensity_smul _ hmeas, ENNReal.smul_def r, withDensity_smul_measure,
         ← smul_assoc, smul_eq_mul, ENNReal.coe_inv hr, ENNReal.inv_mul_cancel, one_smul]
@@ -388,8 +387,8 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
     μ.singularPart (r • ν) = μ.singularPart ν := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · refine (eq_singularPart ((measurable_rnDeriv μ ν).const_smul r⁻¹) ?_ ?_).symm
-    · refine (mutuallySingular_singularPart μ ν).mono_ac AbsolutelyContinuous.rfl ?_
-      exact absolutelyContinuous_of_le_smul le_rfl
+    · exact (mutuallySingular_singularPart μ ν).mono_ac AbsolutelyContinuous.rfl
+        smul_absolutelyContinuous
     · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
       convert haveLebesgueDecomposition_add μ ν
@@ -495,10 +494,16 @@ lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] f
   (eq_rnDeriv (measurable_const) MutuallySingular.zero_left (by simp)).symm
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
-theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+theorem rnDeriv_withDensity₀ (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) :
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
-  (eq_rnDeriv hf MutuallySingular.zero_left this).symm
+  (eq_rnDeriv₀ hf MutuallySingular.zero_left this).symm
+
+/-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
+theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
+  rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
@@ -540,11 +545,8 @@ See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
-  suffices ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ by
-    suffices hμ : μ ≪ r • μ by exact hμ.ae_le this
-    refine absolutelyContinuous_of_le_smul (c := r⁻¹) ?_
-    rw [← ENNReal.coe_inv hr, ← ENNReal.smul_def, ← smul_assoc, smul_eq_mul,
-      inv_mul_cancel hr, one_smul]
+  refine (absolutelyContinuous_smul <| ENNReal.coe_ne_zero.2 hr).ae_le
+    (?_ : ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ)
   rw [← withDensity_eq_iff]
   rotate_left
   · exact (measurable_rnDeriv _ _).aemeasurable
@@ -653,7 +655,10 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       exact hA₃ n
     · rw [not_lt, le_zero_iff] at hb
       specialize hA₃ 0
-      simp [hb, le_zero_iff] at hA₃
+      simp? [hb, le_zero_iff] at hA₃ says
+        simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
+          ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
+          ENNReal.coe_eq_zero] at hA₃
       assumption
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h
@@ -1010,11 +1015,8 @@ See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires fini
 theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
     {r : ℝ≥0} (hr : r ≠ 0) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
-  suffices ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ by
-    suffices hμ : μ ≪ r • μ by exact hμ.ae_le this
-    refine absolutelyContinuous_of_le_smul (c := r⁻¹) ?_
-    rw [← ENNReal.coe_inv hr, ← ENNReal.smul_def, ← smul_assoc, smul_eq_mul,
-      inv_mul_cancel hr, one_smul]
+  refine (absolutelyContinuous_smul <| ENNReal.coe_ne_zero.2 hr).ae_le
+    (?_ : ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ)
   rw [← withDensity_eq_iff_of_sigmaFinite]
   · simp_rw [ENNReal.smul_def]
     rw [withDensity_smul _ (measurable_rnDeriv _ _)]

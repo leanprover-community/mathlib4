@@ -59,13 +59,11 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
-  intro z hz
-  obtain ⟨x, y, hx, hy, rfl⟩ := hz
-  obtain ⟨xi, hx'⟩ := Set.mem_iUnion.mp hx
-  obtain ⟨yi, hy'⟩ := Set.mem_iUnion.mp hy
-  refine' Set.mem_iUnion.mpr ⟨⟨xi + yi, by simp only [Nat.cast_add, xi.prop, yi.prop]⟩, _⟩
+  simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
+  rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
+  refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
   simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
-  exact Submodule.mul_mem_mul hx' hy'
+  exact Submodule.mul_mem_mul hx hy
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
@@ -106,7 +104,9 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     | hr r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | hadd x y i hx hy ihx ihy =>
-      rw [AlgHom.map_add, ihx, ihy, ← map_add]
+      -- Note: in #8386 `map_add` had to be specialized to avoid a timeout
+      -- (the definition was already very slow)
+      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
     | hmul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
@@ -120,7 +120,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | hadd x y hx hy ihx ihy =>
-    rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
+    rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
 /-- The clifford algebra is graded by the even and odd parts. -/

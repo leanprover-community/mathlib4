@@ -393,8 +393,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
           ∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
             ∏ j, r * (a ^ c.blocksFun j * p (c.blocksFun j)) := by
       simp_rw [mul_sum]
-      apply sum_congr rfl fun k _ => ?_
-      apply sum_congr rfl fun c _ => ?_
+      congr! with k _ c
       rw [prod_mul_distrib, prod_mul_distrib, prod_pow_eq_pow_sum, Composition.sum_blocksFun,
         prod_const, card_fin]
       ring
@@ -428,7 +427,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         ← sum_sigma' (Ico 2 (n + 1))
           (fun k : ℕ => (Fintype.piFinset fun _ : Fin k => Ico 1 n : Finset (Fin k → ℕ)))
           (fun n e => ∏ j : Fin n, r * (a ^ e j * p (e j)))]
-      apply sum_congr rfl fun j _ => ?_
+      congr! with j
       simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) _ ℝ]
       simp only [←
         MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
@@ -462,8 +461,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
               ‖(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
                   (∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                     p.compAlongComposition (p.rightInv i) c)‖ := by
-      congr 1
-      apply sum_congr rfl fun j hj => ?_
+      congr! 2 with j hj
       rw [rightInv_coeff _ _ _ (mem_Ico.1 hj).1, norm_neg]
     _ ≤
         a * ‖(i.symm : F →L[𝕜] E)‖ +
@@ -472,15 +470,15 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
               (I *
                 ∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                   C * r ^ c.length * ∏ j, ‖p.rightInv i (c.blocksFun j)‖) := by
-      apply_rules [add_le_add, le_refl, sum_le_sum fun j hj => ?_, mul_le_mul_of_nonneg_left,
-        pow_nonneg, ha]
+      gcongr with j
       apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
-      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+      gcongr
       apply (norm_sum_le _ _).trans
-      apply sum_le_sum fun c _ => ?_
+      gcongr
       apply (compAlongComposition_norm _ _ _).trans
-      apply mul_le_mul_of_nonneg_right (hp _)
-      exact prod_nonneg fun j _ => norm_nonneg _
+      gcongr
+      · exact prod_nonneg fun j _ => norm_nonneg _
+      · apply hp
     _ =
         I * a +
           I * C *
@@ -493,7 +491,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       ring
     _ ≤ I * a + I * C *
         ∑ k in Ico 2 (n + 1), (r * ∑ j in Ico 1 n, a ^ j * ‖p.rightInv i j‖) ^ k := by
-      apply_rules [add_le_add, le_refl, mul_le_mul_of_nonneg_left, norm_nonneg, hC, mul_nonneg]
+      gcongr _ + _ * _ * ?_
       simp_rw [mul_pow]
       apply
         radius_right_inv_pos_of_radius_pos_aux1 n (fun k => ‖p.rightInv i k‖)
@@ -541,7 +539,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         sum_nonneg fun x _ => mul_nonneg (pow_nonneg apos.le _) (norm_nonneg _)
       have rSn : r * S n ≤ 1 / 2 :=
         calc
-          r * S n ≤ r * ((I + 1) * a) := mul_le_mul_of_nonneg_left hn rpos.le
+          r * S n ≤ r * ((I + 1) * a) := by gcongr
           _ ≤ 1 / 2 := by rwa [← mul_assoc]
       calc
         S (n + 1) ≤ I * a + I * C * ∑ k in Ico 2 (n + 1), (r * S n) ^ k :=
@@ -549,17 +547,14 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         _ = I * a + I * C * (((r * S n) ^ 2 - (r * S n) ^ (n + 1)) / (1 - r * S n)) := by
           rw [geom_sum_Ico' _ In]; exact ne_of_lt (rSn.trans_lt (by norm_num))
         _ ≤ I * a + I * C * ((r * S n) ^ 2 / (1 / 2)) := by
-          apply_rules [add_le_add, le_refl, mul_le_mul_of_nonneg_left, mul_nonneg, norm_nonneg,
-            Cpos.le]
-          refine' div_le_div (sq_nonneg _) _ (by norm_num) (by linarith only [rSn])
-          simp only [sub_le_self_iff]
-          apply pow_nonneg (mul_nonneg rpos.le Snonneg)
+          gcongr
+          · simp only [sub_le_self_iff]
+            positivity
+          · linarith only [rSn]
         _ = I * a + 2 * I * C * (r * S n) ^ 2 := by ring
-        _ ≤ I * a + 2 * I * C * (r * ((I + 1) * a)) ^ 2 := by
-          apply_rules [add_le_add, le_refl, mul_le_mul_of_nonneg_left, mul_nonneg, norm_nonneg,
-            Cpos.le, zero_le_two, pow_le_pow_of_le_left, rpos.le]
+        _ ≤ I * a + 2 * I * C * (r * ((I + 1) * a)) ^ 2 := by gcongr
         _ = (I + 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) * a := by ring
-        _ ≤ (I + 1) * a := by apply_rules [mul_le_mul_of_nonneg_right, apos.le, add_le_add, le_refl]
+        _ ≤ (I + 1) * a := by gcongr
   -- conclude that all coefficients satisfy `aⁿ Qₙ ≤ (I + 1) a`.
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius
@@ -570,13 +565,12 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   by_cases hn : n = 0
   · have : ‖p.rightInv i n‖ = ‖p.rightInv i 0‖ := by congr <;> try rw [hn]
     simp only [this, norm_zero, zero_mul, rightInv_coeff_zero]
-    apply_rules [mul_nonneg, add_nonneg, norm_nonneg, zero_le_one, apos.le]
+    positivity
   · have one_le_n : 1 ≤ n := bot_lt_iff_ne_bot.2 hn
     calc
       ‖p.rightInv i n‖ * (a' : ℝ) ^ n = a ^ n * ‖p.rightInv i n‖ := mul_comm _ _
       _ ≤ ∑ k in Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
-        (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ =>
-          mul_nonneg (pow_nonneg apos.le _) (norm_nonneg _)
+        (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
       _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos

@@ -3,14 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProductBasis
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -262,7 +255,8 @@ theorem trace_comp_comm :
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
+    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
@@ -299,8 +293,19 @@ lemma trace_comp_cycle' (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R]
 
 @[simp]
 theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj f) = trace R M f := by
-  rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
-    LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
+  classical
+  by_cases hM : ∃ s : Finset M, Nonempty (Basis s R M)
+  · obtain ⟨s, ⟨b⟩⟩ := hM
+    haveI := Module.Finite.of_basis b
+    haveI := (Module.free_def R M).mpr ⟨_, ⟨b⟩⟩
+    haveI := Module.Finite.of_basis (b.map e)
+    haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
+    rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
+      LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
+  · rw [trace, trace, dif_neg hM, dif_neg]; rfl
+    rintro ⟨s, ⟨b⟩⟩
+    exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
+      ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
 #align linear_map.trace_conj' LinearMap.trace_conj'
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]

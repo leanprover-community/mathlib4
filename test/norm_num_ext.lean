@@ -323,12 +323,6 @@ example : Nat.fib 65 = 17167680177565 := by norm_num1
 example : Nat.fib 100 + Nat.fib 101 = Nat.fib 102 := by norm_num1
 example : Nat.fib 1000 + Nat.fib 1001 = Nat.fib 1002 := by norm_num1
 
-/-
-example : (2 : ℝ) ^ (3 : ℝ) = 8 := by norm_num
-example : (1 : ℝ) ^ (20 : ℝ) = 1 := by norm_num
-example : (2 : ℝ) ^ (-3 : ℝ) = 1/8 := by norm_num
--/
-
 section big_operators
 
 variable {α : Type _} [CommRing α]
@@ -376,8 +370,9 @@ example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_
 example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
 example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
 -/
-example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num1
-example : (∏ i in Finset.range 4, ((i+1)^2 : ℕ)) = 576 := by norm_num1
+example : ∑ i in Finset.range 10, i = 45 := by norm_num1
+example : ∑ i in Finset.range 10, (i^2 : ℕ) = 285 := by norm_num1
+example : ∏ i in Finset.range 4, ((i+1)^2 : ℕ) = 576 := by norm_num1
 /-
 example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
 example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num

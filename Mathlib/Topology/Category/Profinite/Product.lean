@@ -102,9 +102,8 @@ instance isIso_indexCone_lift :
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
         apply_fun fun f : (limitCone.{u, u} (indexFunctor hC)).pt => f.val (op J) at h
         exact h
-      · suffices : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
-        · obtain ⟨b, hb⟩ := this
-          use b
+      · rsuffices ⟨b, hb⟩ : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
+        · use b
           apply Subtype.ext
           apply funext
           intro J

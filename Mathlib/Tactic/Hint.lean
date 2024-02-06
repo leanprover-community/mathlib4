@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Std.Tactic.TryThis
 import Std.Linter.UnreachableTactic
-import Mathlib.Data.Nondet.Basic
+import Std.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Mathport.Rename
 

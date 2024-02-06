@@ -159,12 +159,6 @@ end
 instance [CompleteSpace β] : CompleteSpace C(α, β) :=
   (isometryEquivBoundedOfCompact α β).completeSpace
 
-/-- See also `ContinuousMap.continuous_eval'`. -/
-@[continuity]
-theorem continuous_eval : Continuous fun p : C(α, β) × α => p.1 p.2 :=
-  continuous_eval.comp ((isometryEquivBoundedOfCompact α β).continuous.prod_map continuous_id)
-#align continuous_map.continuous_eval ContinuousMap.continuous_eval
-
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
 instance : Norm C(α, E) where norm x := dist x 0
@@ -238,7 +232,7 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 #align continuous_map.apply_le_norm ContinuousMap.apply_le_norm
 
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
-  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs_self (f x)))
+  le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 #align continuous_map.neg_norm_le_apply ContinuousMap.neg_norm_le_apply
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
@@ -288,12 +282,12 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
 
 variable {α E}
 
--- to match `BoundedContinuousFunction.evalClm`
+-- to match `BoundedContinuousFunction.evalCLM`
 /-- The evaluation at a point, as a continuous linear map from `C(α, 𝕜)` to `𝕜`. -/
-def evalClm (x : α) : C(α, E) →L[𝕜] E :=
-  (BoundedContinuousFunction.evalClm 𝕜 x).comp
+def evalCLM (x : α) : C(α, E) →L[𝕜] E :=
+  (BoundedContinuousFunction.evalCLM 𝕜 x).comp
     (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
-#align continuous_map.eval_clm ContinuousMap.evalClm
+#align continuous_map.eval_clm ContinuousMap.evalCLM
 
 end
 
@@ -498,7 +492,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     simp
     -- This used to be the end of the proof before leanprover/lean4#2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
-    simp
+    simp? says simp only [coe_sum, Finset.sum_apply]
     congr!
   simpa only [HasSum, A] using (hF K).of_norm
 #align continuous_map.summable_of_locally_summable_norm ContinuousMap.summable_of_locally_summable_norm

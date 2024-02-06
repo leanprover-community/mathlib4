@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
@@ -49,8 +48,8 @@ noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
   CliffordAlgebra.lift Q <| by
     refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
     refine (CliffordAlgebra.ι_sq_scalar (Q.baseChange A) (1 ⊗ₜ v)).trans ?_
-    rw [QuadraticForm.baseChange_tmul, one_mul, ←Algebra.algebraMap_eq_smul_one,
-      ←IsScalarTower.algebraMap_apply]
+    rw [QuadraticForm.baseChange_tmul, one_mul, ← Algebra.algebraMap_eq_smul_one,
+      ← IsScalarTower.algebraMap_apply]
 
 @[simp] theorem ofBaseChangeAux_ι (Q : QuadraticForm R V) (v : V) :
     ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (1 ⊗ₜ v) :=
@@ -67,7 +66,7 @@ noncomputable def ofBaseChange (Q : QuadraticForm R V) :
 @[simp] theorem ofBaseChange_tmul_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     ofBaseChange A Q (z ⊗ₜ ι Q v) = ι (Q.baseChange A) (z ⊗ₜ v) := by
   show algebraMap _ _ z * ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (z ⊗ₜ[R] v)
-  rw [ofBaseChangeAux_ι, ←Algebra.smul_def, ←map_smul, TensorProduct.smul_tmul', smul_eq_mul,
+  rw [ofBaseChangeAux_ι, ← Algebra.smul_def, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul,
     mul_one]
 
 @[simp] theorem ofBaseChange_tmul_one (Q : QuadraticForm R V) (z : A) :
@@ -117,7 +116,7 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
       TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
-  FunLike.congr_fun (toBaseChange_comp_involute A Q) x
+  DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
 
 open MulOpposite
 
@@ -141,10 +140,10 @@ theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
 theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
-  have := FunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
+  have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
-  rw [reverse, ←AlgEquiv.toLinearMap, ←AlgEquiv.toLinearEquiv_toLinearMap,
+  rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
     AlgEquiv.toLinearEquiv_toOpposite]
   dsimp
   -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?

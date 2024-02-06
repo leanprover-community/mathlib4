@@ -459,16 +459,16 @@ theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m →
     (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
   rwa [← Matrix.mul_nonsing_inv_cancel_left A (col u * row v),
-    ←Matrix.mul_add, det_mul, ←Matrix.mul_assoc, det_one_add_mul_comm,
-    ←Matrix.mul_assoc]
+    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
+    ← Matrix.mul_assoc]
 
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
     (V : Matrix n m α) (hA : IsUnit A.det) :
     (A + U * V).det = A.det * (1 + V * A⁻¹ * U).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (U * V), ←Matrix.mul_add,
-    det_mul, ←Matrix.mul_assoc, det_one_add_mul_comm, ←Matrix.mul_assoc]
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (U * V), ← Matrix.mul_add,
+    det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
 
 end Det
 

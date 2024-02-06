@@ -3,10 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.Arrow
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 #align_import category_theory.morphism_property from "leanprover-community/mathlib"@"7f963633766aaa3ebc8253100a5229dd463040c7"
 
@@ -27,7 +27,7 @@ The following meta-properties are defined
 -/
 
 
-universe v u
+universe w v v' u u'
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -807,7 +807,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 
@@ -937,6 +937,29 @@ lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty 
     (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
   rw [isIso_prod_iff]
   exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
+
+end
+
+section
+
+variable {J : Type w} {C : J → Type u} {D : J → Type u'}
+  [∀ j, Category.{v} (C j)] [∀ j, Category.{v'} (D j)]
+  (W : ∀ j, MorphismProperty (C j))
+
+/-- If `W j` are morphism properties on categories `C j` for all `j`, this is the
+induced morphism property on the category `∀ j, C j`. -/
+def pi : MorphismProperty (∀ j, C j) := fun _ _ f => ∀ j, (W j) (f j)
+
+instance Pi.containsIdentities [∀ j, (W j).ContainsIdentities] :
+    (pi W).ContainsIdentities :=
+  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
+
+lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (F j)) :
+    (MorphismProperty.pi W).IsInvertedBy (Functor.pi F) := by
+  intro _ _ f hf
+  rw [isIso_pi_iff]
+  intro j
+  exact hF j _ (hf j)
 
 end
 

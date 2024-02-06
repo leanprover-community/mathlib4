@@ -22,8 +22,6 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Metric Function AffineMap Set AffineSubspace
@@ -206,9 +204,9 @@ open EuclideanGeometry
 ### Continuity of inversion
 -/
 
-protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
-    (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R)) (hx : Tendsto fx l (𝓝 x))
-    (hne : x ≠ c) :
+protected theorem Filter.Tendsto.inversion {α : Type*} {x c : P} {R : ℝ} {l : Filter α}
+    {fc fx : α → P} {fR : α → ℝ} (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R))
+    (hx : Tendsto fx l (𝓝 x)) (hne : x ≠ c) :
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
   (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
 

@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
@@ -259,11 +260,11 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < log (b i * 
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongInductionOn
-  case ind n h_ind =>
-    rcases lt_or_le n R.n₀ with hn|hn
-    case inl => exact R.T_gt_zero' n hn   -- n < R.n₀
-    case inr =>   -- R.n₀ ≤ n
+  induction n using Nat.strongInductionOn with
+  | ind n h_ind =>
+    cases lt_or_le n R.n₀ with
+    | inl hn => exact R.T_gt_zero' n hn   -- n < R.n₀
+    | inr hn =>   -- R.n₀ ≤ n
       rw [R.h_rec n hn]
       have := R.g_nonneg
       refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by aesop)
@@ -302,7 +303,7 @@ lemma one_add_smoothingFn_le_two {x : ℝ} (hx : exp 1 ≤ x) : 1 + ε x ≤ 2 :
          _ ≤ x := hx
   rw [div_le_one (log_pos this)]
   calc 1 = log (exp 1) := by simp
-       _ ≤ log x := log_le_log' (exp_pos _) hx
+       _ ≤ log x := log_le_log (exp_pos _) hx
 
 lemma isLittleO_smoothingFn_one : ε =o[atTop] (fun _ => (1:ℝ)) := by
   unfold smoothingFn
@@ -498,7 +499,7 @@ namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`.  -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ <| fun i _ => Continuous.mul (by continuity) ?_
+  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by continuity) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -591,7 +592,7 @@ lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
                     have := R.g_nonneg
-                    aesop (add safe Real.rpow_nonneg_of_nonneg,
+                    aesop (add safe Real.rpow_nonneg,
                                safe div_nonneg,
                                safe Finset.sum_nonneg)
 
@@ -614,8 +615,8 @@ lemma eventually_atTop_sumTransform_le :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  rcases le_or_lt 0 (p a b + 1) with hp|hp
-  case h.inl =>   -- 0 ≤ p a b + 1
+  cases le_or_lt 0 (p a b + 1) with
+  | inl hp =>   -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -647,7 +648,7 @@ lemma eventually_atTop_sumTransform_le :
          _ = c₂ * g n / c₁ ^ ((p a b) + 1) := by rw [div_self (by positivity), mul_one]
          _ = (c₂ / c₁ ^ ((p a b) + 1)) * g n := by ring
          _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_right _ _
-  case h.inr =>   -- p a b + 1 < 0
+  | inr hp =>   -- p a b + 1 < 0
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -693,8 +694,8 @@ lemma eventually_atTop_sumTransform_ge :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  rcases le_or_gt 0 (p a b + 1) with hp|hp
-  case h.inl =>   -- 0 ≤ (p a b) + 1
+  cases le_or_gt 0 (p a b + 1) with
+  | inl hp =>   -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))     := by rfl
          _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
@@ -728,7 +729,7 @@ lemma eventually_atTop_sumTransform_ge :
          _ = c₂ * (1 - c₃) * g n := by rw [div_self (by positivity), mul_one]
          _ ≥ min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁ ^ ((p a b) + 1)) * g n := by
                 gcongr; exact min_le_left _ _
-  case h.inr =>  -- (p a b) + 1 < 0
+  | inr hp =>  -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
         = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u^((p a b) + 1))     := by rfl
       _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -910,8 +911,8 @@ lemma isTheta_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0) :
 
 lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     GrowsPolynomially fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖ := by
-  rcases eq_or_ne p 0 with hp|hp
-  case inl => -- p = 0
+  cases eq_or_ne p 0 with
+  | inl hp => -- p = 0
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
@@ -924,7 +925,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with _ hx
     exact log_nonneg hx
-  case inr =>  -- p ≠ 0
+  | inr hp =>  -- p ≠ 0
     refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
       (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
@@ -932,8 +933,8 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
 
 lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     GrowsPolynomially fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖ := by
-  rcases eq_or_ne p 0 with hp|hp
-  case inl =>   -- p = 0
+  cases eq_or_ne p 0 with
+  | inl hp =>   -- p = 0
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
@@ -947,8 +948,8 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with x hx
     exact log_nonneg hx
-  case inr =>    -- p ≠ 0
-    refine GrowsPolynomially.of_isTheta ((growsPolynomially_rpow (p-1)))
+  | inr hp =>    -- p ≠ 0
+    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
       (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
@@ -1212,8 +1213,8 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn
-  case ind n h_ind =>
+  induction n using Nat.strongInductionOn with
+  | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀      := Nat.floor_le <| by positivity
                                   _ ≤ b' * n        := by gcongr
@@ -1225,9 +1226,9 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             -- Apply the induction hypothesis, or use the base case depending on how large n is
             gcongr (∑ i, a i * ?_) + g n with i _
             · exact le_of_lt <| R.a_pos _
-            · by_cases ri_lt_n₀ : r i n < n₀
-              case pos => exact h_base _ <| by aesop
-              case neg =>
+            · if ri_lt_n₀ : r i n < n₀ then
+                exact h_base _ <| by aesop
+              else
                 push_neg at ri_lt_n₀
                 exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
                   (h_asympBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
@@ -1358,8 +1359,8 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn
-  case ind n h_ind =>
+  induction n using Nat.strongInductionOn with
+  | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * ↑n₀⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
                                   _ ≤ b' * n := by gcongr
@@ -1371,9 +1372,9 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · rcases lt_or_le (r i n) n₀ with ri_lt_n₀ | n₀_le_ri
-                case inl => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
-                case inr =>
+              · cases lt_or_le (r i n) n₀ with
+                | inl ri_lt_n₀ => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
+                | inr n₀_le_ri =>
                   exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri
                     (h_asympBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
         _ = (∑ i, a i * (C * ((1 + ε (r i n)) * ((r i n) ^ (p a b)

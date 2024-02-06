@@ -616,7 +616,7 @@ theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : 
     (h₁ : k ≫ snd t = l ≫ snd t) : ∀ j : WalkingCospan, k ≫ t.π.app j = l ≫ t.π.app j
   | some WalkingPair.left => h₀
   | some WalkingPair.right => h₁
-  | none => by rw [← t.w inl]; dsimp [h₀]; simp only [← Category.assoc, congrArg (· ≫ f) h₀]
+  | none => by rw [← t.w inl, reassoc_of% h₀]
 #align category_theory.limits.pullback_cone.equalizer_ext CategoryTheory.Limits.PullbackCone.equalizer_ext
 
 theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W ⟶ t.pt}
@@ -635,7 +635,7 @@ theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
 theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono g] :
     Mono t.fst := by
   refine ⟨fun {W} h k i => IsLimit.hom_ext ht i ?_⟩
-  rw [← cancel_mono g, Category.assoc, Category.assoc, ←condition]
+  rw [← cancel_mono g, Category.assoc, Category.assoc, ← condition]
   have := congrArg (· ≫ f) i; dsimp at this
   rwa [Category.assoc, Category.assoc] at this
 #align category_theory.limits.pullback_cone.mono_fst_of_is_pullback_of_mono CategoryTheory.Limits.PullbackCone.mono_fst_of_is_pullback_of_mono

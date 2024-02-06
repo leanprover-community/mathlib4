@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
@@ -144,11 +144,10 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       (Finset.sum_congr rfl fun i _hi => by
         simp_rw [f.map_mul, f.map_pow, pow_add, hsa.mul_pow, mul_assoc])
     _ = p.support.sum fun i : ℕ => f s ^ p.natDegree * (f (p.coeff i) * a ^ i) :=
-      (Finset.sum_congr rfl fun i hi => by
+      Finset.sum_congr rfl fun i hi => by
         rw [mul_assoc, ← map_pow, (hf _ _).left_comm, map_pow, tsub_add_cancel_of_le]
-        exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi))
-    _ = f s ^ p.natDegree * p.support.sum fun i : ℕ => f (p.coeff i) * a ^ i := Finset.mul_sum.symm
-    _ = f s ^ p.natDegree * eval₂ f a p := by simp [eval₂_eq_sum, sum_def]
+        exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi)
+    _ = f s ^ p.natDegree * eval₂ f a p := by simp [← Finset.mul_sum, eval₂_eq_sum, sum_def]
 
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=

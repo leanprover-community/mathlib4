@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -44,7 +45,7 @@ variable {x : M}
 
 section
 
-variable [RingHomSurjective σ₁₂] {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable [RingHomSurjective σ₁₂] {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
@@ -142,7 +143,7 @@ end
 
 section SemilinearMap
 
-variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
 linearly equivalent to the original submodule. See also `LinearEquiv.submoduleMap` for a
@@ -156,7 +157,8 @@ noncomputable def equivMapOfInjective (f : F) (i : Injective f) (p : Submodule R
       rfl
     map_smul' := by
       intros
-      simp only [coe_smul_of_tower, map_smulₛₗ, Equiv.toFun_as_coe, Equiv.Set.image_apply]
+      -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+      simp only [coe_smul_of_tower, map_smulₛₗ _, Equiv.toFun_as_coe, Equiv.Set.image_apply]
       rfl }
 #align submodule.equiv_map_of_injective Submodule.equivMapOfInjective
 
@@ -166,11 +168,18 @@ theorem coe_equivMapOfInjective_apply (f : F) (i : Injective f) (p : Submodule R
   rfl
 #align submodule.coe_equiv_map_of_injective_apply Submodule.coe_equivMapOfInjective_apply
 
+@[simp]
+theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submodule R M)
+    (x : p.map f) : f ((equivMapOfInjective f i p).symm x) = x := by
+  rw [← LinearEquiv.apply_symm_apply (equivMapOfInjective f i p) x, coe_equivMapOfInjective_apply,
+    i.eq_iff, LinearEquiv.apply_symm_apply]
+
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
 def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
-    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h] }
+    -- Note: #8386 added `map_smulₛₗ _`
+    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 #align submodule.comap Submodule.comap
 
 @[simp]
@@ -384,7 +393,7 @@ end SemilinearMap
 
 section OrderIso
 
-variable {F : Type*} [SemilinearEquivClass F σ₁₂ M M₂]
+variable {F : Type*} [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂]
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
@@ -398,7 +407,7 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂ where
 
 end OrderIso
 
-variable {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
@@ -441,6 +450,11 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
     ⟨fun ⟨x, hx, hy⟩ => hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ =>
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 #align submodule.map_neg Submodule.map_neg
+
+@[simp]
+lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
+    p.comap (-f) = p.comap f := by
+  ext; simp
 
 end AddCommGroup
 
@@ -619,3 +633,23 @@ def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
 #align submodule.compatible_maps Submodule.compatibleMaps
 
 end Submodule
+
+namespace LinearMap
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- A linear map between two modules restricts to a linear map from any submodule p of the
+domain onto the image of that submodule.
+
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.-/
+def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
+  f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
+
+@[simp]
+theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p) :
+    ↑(f.submoduleMap p x) = f x := rfl
+
+theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
+    Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
+
+end LinearMap

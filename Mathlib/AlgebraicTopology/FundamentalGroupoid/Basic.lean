@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
+import Mathlib.Data.Set.Basic
 
 #align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -114,7 +115,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
 def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
-  (reflTransSymm p.symm).cast rfl <| congr_arg _ Path.symm_symm
+  (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 #align path.homotopy.refl_symm_trans Path.Homotopy.reflSymmTrans
 
 end
@@ -387,8 +388,12 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+@[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+
+/-- The fundamental groupoid of a topological space. -/
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+
+/-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :

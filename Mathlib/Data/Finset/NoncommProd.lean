@@ -75,7 +75,7 @@ theorem noncommFoldr_eq_foldr (s : Multiset α) (h : LeftCommutative f) (b : β)
 
 section assoc
 
-variable [assoc : IsAssociative α op]
+variable [assoc : Std.Associative op]
 
 /-- Fold of a `s : Multiset α` with an associative `op : α → α → α`, given a proofs that `op`
 is commutative on all elements `x ∈ s`. -/
@@ -100,8 +100,8 @@ theorem noncommFold_cons (s : Multiset α) (a : α) (h h') (x : α) :
   simp
 #align multiset.noncomm_fold_cons Multiset.noncommFold_cons
 
-theorem noncommFold_eq_fold (s : Multiset α) [IsCommutative α op] (a : α) :
-    noncommFold op s (fun x _ y _ _ => IsCommutative.comm x y) a = fold op a s := by
+theorem noncommFold_eq_fold (s : Multiset α) [Std.Commutative op] (a : α) :
+    noncommFold op s (fun x _ y _ _ => Std.Commutative.comm x y) a = fold op a s := by
   induction s using Quotient.inductionOn
   simp
 #align multiset.noncomm_fold_eq_fold Multiset.noncommFold_eq_fold
@@ -183,6 +183,8 @@ lemma noncommProd_induction (s : Multiset α) (comm)
   simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
+variable [FunLike F α β]
+
 @[to_additive]
 protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
@@ -217,7 +219,7 @@ theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :
 #align multiset.noncomm_prod_eq_prod Multiset.noncommProd_eq_prod
 #align multiset.noncomm_sum_eq_sum Multiset.noncommSum_eq_sum
 
-@[to_additive noncommSum_addCommute]
+@[to_additive]
 theorem noncommProd_commute (s : Multiset α) (comm) (y : α) (h : ∀ x ∈ s, Commute y x) :
     Commute y (s.noncommProd comm) := by
   induction s using Quotient.inductionOn
@@ -349,6 +351,8 @@ theorem noncommProd_singleton (a : α) (f : α → β) :
 #align finset.noncomm_prod_singleton Finset.noncommProd_singleton
 #align finset.noncomm_sum_singleton Finset.noncommSum_singleton
 
+variable [FunLike F β γ]
+
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
@@ -366,7 +370,7 @@ theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) 
 #align finset.noncomm_prod_eq_pow_card Finset.noncommProd_eq_pow_card
 #align finset.noncomm_sum_eq_card_nsmul Finset.noncommSum_eq_card_nsmul
 
-@[to_additive noncommSum_addCommute]
+@[to_additive]
 theorem noncommProd_commute (s : Finset α) (f : α → β) (comm) (y : β)
     (h : ∀ x ∈ s, Commute y (f x)) : Commute y (s.noncommProd f comm) := by
   apply Multiset.noncommProd_commute
@@ -478,7 +482,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
-      simp at hj
+      simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
       simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
         ne_eq, dite_eq_right_iff]
       intro h
