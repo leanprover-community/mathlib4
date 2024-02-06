@@ -40,11 +40,9 @@ theorem exp_neg_integrableOn_Ioi (a : ℝ) {b : ℝ} (h : 0 < b) :
 `f` is integrable on `(a, ∞)`. -/
 theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (hf : ContinuousOn f (Ici a)) (ho : f =O[atTop] fun x => exp (-b * x)) :
-    IntegrableOn f (Ioi a) := by
-  rewrite [← integrableOn_Ici_iff_integrableOn_Ioi, integrableOn_Ici_iff_integrableAtFilter_atTop]
-  refine ⟨Asymptotics.IsBigO.integrableAtFilter ho ?_ ?_, hf.locallyIntegrableOn measurableSet_Ici⟩
-  · exact ⟨Ici a, Ici_mem_atTop a, hf.aestronglyMeasurable measurableSet_Ici⟩
-  · exact ⟨Ioi a, Ioi_mem_atTop a, exp_neg_integrableOn_Ioi _ h0⟩
+    IntegrableOn f (Ioi a) :=
+  integrableOn_Ici_iff_integrableOn_Ioi.mp
+    <| hf.integrableOn_of_isBigO_atTop ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
 
 set_option linter.uppercaseLean3 false in
 #align integrable_of_is_O_exp_neg integrable_of_isBigO_exp_neg

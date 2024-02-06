@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.MeasureTheory.Integral.IntegrableOn
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 
 /-!
 # Bounding of integrals by asymptotics
@@ -51,3 +52,45 @@ theorem _root_.Asymptotics.IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
     (hf : f =O[⊤] g) (hg : Integrable g μ) : Integrable f μ := by
   rewrite [← integrableAtFilter_top] at *
   exact hf.integrableAtFilter ⟨univ, univ_mem, hfm.restrict⟩ hg
+
+namespace MeasureTheory
+
+section Order
+
+variable [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α] [OpensMeasurableSpace α]
+  [OrderClosedTopology α] {g' : α → F}
+
+theorem LocallyIntegrableOn.integrableOn_of_isBigO_atBot (hf : LocallyIntegrableOn f (Iic a) μ)
+    (hfm : StronglyMeasurableAtFilter f atBot μ) (ho : f =O[atBot] g)
+    (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ :=
+  integrableOn_Iic_iff_integrableAtFilter_atBot.mpr ⟨ho.integrableAtFilter hfm hg, hf⟩
+
+theorem LocallyIntegrableOn.integrableOn_of_isBigO_atTop (hf : LocallyIntegrableOn f (Ici a) μ)
+    (hfm : StronglyMeasurableAtFilter f atTop μ) (ho : f =O[atTop] g)
+    (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ :=
+  integrableOn_Ici_iff_integrableAtFilter_atTop.mpr ⟨ho.integrableAtFilter hfm hg, hf⟩
+
+theorem LocallyIntegrable.integrable_of_isBigO_atBot_atTop (hf : LocallyIntegrable f μ)
+    (hfm : StronglyMeasurableAtFilter f atBot μ) (hfm' : StronglyMeasurableAtFilter f atTop μ)
+    (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ)
+    (ho' : f =O[atTop] g') (hg' : IntegrableAtFilter g' atTop μ) : Integrable f μ :=
+  integrable_iff_integrableAtFilter_atBot_atTop.mpr
+    ⟨⟨ho.integrableAtFilter hfm hg, ho'.integrableAtFilter hfm' hg'⟩, hf⟩
+
+variable [IsLocallyFiniteMeasure μ] [SecondCountableTopologyEither α E]
+
+theorem _root_.ContinuousOn.integrableOn_of_of_isBigO_atBot (hf : ContinuousOn f (Iic a))
+    (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ) : IntegrableOn f (Iic a) μ := by
+  refine (hf.locallyIntegrableOn measurableSet_Iic).integrableOn_of_isBigO_atBot ?_ ho hg
+  exact ⟨Iic a, Iic_mem_atBot a, hf.aestronglyMeasurable measurableSet_Iic⟩
+
+theorem _root_.ContinuousOn.integrableOn_of_isBigO_atTop (hf : ContinuousOn f (Ici a))
+    (ho : f =O[atTop] g) (hg : IntegrableAtFilter g atTop μ) : IntegrableOn f (Ici a) μ := by
+  refine (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop ?_ ho hg
+  exact ⟨Ici a, Ici_mem_atTop a, hf.aestronglyMeasurable measurableSet_Ici⟩
+
+theorem _root_.Continuous.integrable_of_of_isBigO_atBot_atTop (hf : Continuous f)
+    (ho : f =O[atBot] g) (hg : IntegrableAtFilter g atBot μ)
+    (ho' : f =O[atTop] g') (hg' : IntegrableAtFilter g' atTop μ) : Integrable f μ := by
+  refine hf.locallyIntegrable.integrable_of_isBigO_atBot_atTop ?_ ?_ ho hg ho' hg'
+  all_goals apply hf.stronglyMeasurableAtFilter
