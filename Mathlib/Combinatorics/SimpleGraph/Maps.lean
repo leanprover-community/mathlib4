@@ -3,7 +3,7 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.FunLike.Fintype
 
 /-!
@@ -24,6 +24,15 @@ injective, surjective and bijective, and have corresponding notation.
 * `SimpleGraph.Hom`, `G →g H`: a graph homomorphism from `G` to `H`.
 * `SimpleGraph.Embedding`, `G ↪g H`: a graph embedding of `G` in `H`.
 * `SimpleGraph.Iso`, `G ≃g H`: a graph isomorphism between `G` and `H`.
+
+Note that a graph embedding is a stronger notion than an injective graph homomorphism,
+since its image is an induced subgraph.
+
+## Implementation notes
+
+Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
+To make use of pre-existing simp lemmas, definitions involving morphisms are
+abbreviations as well.
 -/
 
 
