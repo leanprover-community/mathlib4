@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Divisibility.Units
 
 #align_import algebra.group_with_zero.divisibility from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -77,6 +77,20 @@ theorem dvdNotUnit_of_dvd_of_not_dvd {a b : α} (hd : a ∣ b) (hnd : ¬b ∣ a)
     simp at hnd
 #align dvd_not_unit_of_dvd_of_not_dvd dvdNotUnit_of_dvd_of_not_dvd
 
+variable {x y : α}
+
+theorem isRelPrime_zero_left : IsRelPrime 0 x ↔ IsUnit x :=
+  ⟨(· (dvd_zero _) dvd_rfl), IsUnit.isRelPrime_right⟩
+
+theorem isRelPrime_zero_right : IsRelPrime x 0 ↔ IsUnit x :=
+  isRelPrime_comm.trans isRelPrime_zero_left
+
+theorem not_isRelPrime_zero_zero [Nontrivial α] : ¬IsRelPrime (0 : α) 0 :=
+  mt isRelPrime_zero_right.mp not_isUnit_zero
+
+theorem IsRelPrime.ne_zero_or_ne_zero [Nontrivial α] (h : IsRelPrime x y) : x ≠ 0 ∨ y ≠ 0 :=
+  not_or_of_imp <| by rintro rfl rfl; exact not_isRelPrime_zero_zero h
+
 end CommMonoidWithZero
 
 theorem dvd_and_not_dvd_iff [CancelCommMonoidWithZero α] {x y : α} :
@@ -103,6 +117,9 @@ theorem ne_zero_of_dvd_ne_zero {p q : α} (h₁ : q ≠ 0) (h₂ : p ∣ q) : p 
   rcases h₂ with ⟨u, rfl⟩
   exact left_ne_zero_of_mul h₁
 #align ne_zero_of_dvd_ne_zero ne_zero_of_dvd_ne_zero
+
+theorem isPrimal_zero : IsPrimal (0 : α) :=
+  fun a b h ↦ ⟨a, b, dvd_rfl, dvd_rfl, (zero_dvd_iff.mp h).symm⟩
 
 end MonoidWithZero
 
