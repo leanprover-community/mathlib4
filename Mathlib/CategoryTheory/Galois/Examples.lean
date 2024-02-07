@@ -17,10 +17,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 We show that for a group `G` the category of finite `G`-sets is a `PreGaloisCategory` and that the
 forgetful functor to `FintypeCat` is a `FibreFunctor`.
 
-## Todo
-
-* Characterize connected objects in the category of finite `G`-sets as those with transitive
-  `G`-action
+The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
 -/
 
@@ -105,15 +102,15 @@ theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
   exists_smul_eq x y := by
     /- We show that the `G`-orbit of `x` is a non-initial subobject of `X` and hence by
     connectedness, the orbit equals `X.V`. -/
-    letI T : Set X.V := MulAction.orbit G x
+    let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
     letI : MulAction G (FintypeCat.of T) := MulAction.instMulActionElemOrbit
-    letI T' : Action FintypeCat (MonCat.of G) := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
-    letI i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
+    let T' : Action FintypeCat (MonCat.of G) := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
+    let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
       apply ConnectedObject.noTrivialComponent T' i
-      apply (not_initial_iff_fibre_nonempty (Action.forget _ _) T').mpr
+      apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
       exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
     have hb : Function.Bijective i.hom := by
       apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
@@ -130,7 +127,7 @@ theorem Action.connected_of_transitive (X : FintypeCat) [MulAction G X]
   noTrivialComponent Y i hm hni := by
     /- We show that the induced inclusion `i.hom` of finite sets is surjective, using the
     transitivity of the `G`-action. -/
-    obtain ⟨(y : Y.V)⟩ := (not_initial_iff_fibre_nonempty (Action.forget _ _) Y).mp hni
+    obtain ⟨(y : Y.V)⟩ := (not_initial_iff_fiber_nonempty (Action.forget _ _) Y).mp hni
     have : IsIso i.hom := by
       refine (ConcreteCategory.isIso_iff_bijective i.hom).mpr ⟨?_, fun x' ↦ ?_⟩
       · haveI : Mono i.hom := map_mono (forget₂ _ _) i
