@@ -12,8 +12,8 @@ import Mathlib.Logic.Equiv.TransferInstance
 /-!
 # Galois objects in Galois categories
 
-We define when a connected object of a Galois category `C` is Galois in a fibre functor independent way and show
-equivalent characterisations.
+We define when a connected object of a Galois category `C` is Galois in a fibre functor independent
+way and show equivalent characterisations.
 
 ## Main definitions
 
