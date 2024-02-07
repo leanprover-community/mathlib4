@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 import Mathlib.Topology.Basic
-import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
@@ -49,7 +48,7 @@ theorem isRegularOpen_iff : IsRegularOpen s ↔ interior (closure s) = s := Iff.
 
 section Lemmas
 
-/-! ### Basic properties of the interior of the closure
+/-! ### Basic properties of `interior (closure s)`
 -/
 
 @[simp]
@@ -66,17 +65,13 @@ theorem IsOpen.subset_interior_closure (s_open : IsOpen s) :
   nth_rw 1 [← IsOpen.interior_eq s_open]
   exact interior_mono subset_closure
 
-theorem IsOpen.interior_closure_disjoint_left {s t : Set X} (t_open : IsOpen t)
-    (disj : Disjoint s t) : Disjoint (interior (closure s)) t := by
-  apply Set.disjoint_of_subset_left interior_subset
-  exact disj.closure_left t_open
-
 theorem IsOpen.interior_closure_disjoint_left_iff {s t : Set X} (s_open : IsOpen s)
     (t_open : IsOpen t) : Disjoint (interior (closure s)) t ↔ Disjoint s t := by
-  refine ⟨fun h => ?disj, t_open.interior_closure_disjoint_left⟩
-  apply Set.disjoint_of_subset_left subset_closure
-  rw [← s_open.closure_interior_closure_eq_closure]
-  exact h.closure_left t_open
+  refine ⟨fun h => ?disj_ic, fun disj_ic => ?disj⟩
+  · apply Set.disjoint_of_subset_left subset_closure
+    rw [← s_open.closure_interior_closure_eq_closure]
+    exact h.closure_left t_open
+  · exact Set.disjoint_of_subset_left interior_subset <| disj_ic.closure_left t_open
 
 /--
 If `s` and `t` are open, then `s` is disjoint from `t` iff `interior (closure s)` is disjoint from
@@ -97,10 +92,9 @@ lemma IsOpen.inter_interior_closure (s_open : IsOpen s) :
     s ∩ interior (closure t) ⊆ interior (closure (s ∩ t)) := by
   have res := interior_mono (IsOpen.inter_closure s_open (t := t))
   rw [← Set.compl_subset_compl, ← closure_compl (s := s ∩ closure t), Set.compl_inter,
-    ← Set.compl_subset_compl, ← interior_compl] at res
-  simp only [closure_compl, compl_compl, Set.compl_union, interior_inter,
-    s_open.interior_eq] at res
-  assumption
+    Set.compl_subset_comm, ← interior_compl] at res
+  simpa [closure_compl, Set.compl_union, interior_inter, s_open.interior_eq] using res
+
 end Lemmas
 
 namespace IsRegularOpen
@@ -152,8 +146,7 @@ theorem iInter_of_finite {ι : Sort*} [Finite ι] {f : ι → Set X}
     intro i
     rw [← regular i]
     exact interior_mono (closure_mono (Set.iInter_subset _ i))
-  · apply IsOpen.subset_interior_closure
-    exact isOpen_iInter_of_finite fun i => (regular i).isOpen
+  · exact IsOpen.subset_interior_closure <| isOpen_iInter_of_finite fun i => (regular i).isOpen
 
 theorem biInter_of_finite {ι : Type*} {f : ι → Set X} {s : Set ι} (finite : s.Finite)
     (regular : ∀ i ∈ s, IsRegularOpen (f i)) : IsRegularOpen (⋂ i ∈ s, f i) := by
@@ -205,9 +198,9 @@ theorem IsRegularOpen.disjoint_open_subset_of_not_subset {s t : Set X} (s_open :
 
 variable (X) in
 /--
-The type of sets that are regular open in α.
+Bundled regular open sets in the ambient topological space of `X`.
 
-The regular open sets in a topology form a boolean algebra, with as complement operator
+These sets form a boolean algebra, with as complement operator
 `s ↦ (closure s)ᶜ` and as infimum `s ∩ t`.
 -/
 structure TopologicalSpace.RegularOpens :=
@@ -386,7 +379,7 @@ variable (X) in
 theorem fromSet_empty : fromSet (∅ : Set X) = ⊥ := by
   rw [← SetLike.coe_set_eq, coe_fromSet, closure_empty, interior_empty, coe_bot]
 
-theorem disjoint_fromSet {s t : Set X} (s_open : IsOpen s) (t_open : IsOpen t):
+theorem disjoint_fromSet {s t : Set X} (s_open : IsOpen s) (t_open : IsOpen t) :
     Disjoint (fromSet s) (fromSet t) ↔ Disjoint s t := by
   rw [disjoint_iff (a := fromSet s), ← SetLike.coe_set_eq, coe_bot, coe_inf, coe_fromSet,
     coe_fromSet, ← Set.disjoint_iff_inter_eq_empty,
@@ -472,13 +465,11 @@ theorem compl_smul (g : G) (r : RegularOpens X) : (g • r)ᶜ = g • rᶜ := b
   rfl
 
 theorem sup_smul (g : G) (r s : RegularOpens X) : (g • r) ⊔ (g • s) = g • (r ⊔ s) := by
-  repeat rw [sup_def]
-  simp only [inf_smul, compl_smul]
+  simp_rw [sup_def, compl_smul, inf_smul, compl_smul]
 
 theorem mem_smul_iff_inv_mem {g : G} {r : RegularOpens X} {x : X} :
     x ∈ g • r ↔ g⁻¹ • x ∈ r := by
-  rw [← SetLike.mem_coe, coe_smul, Set.mem_smul_set_iff_inv_smul_mem]
-  rfl
+  rw [← SetLike.mem_coe, coe_smul, Set.mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe]
 
 @[simp]
 theorem disjoint_coe {r s : RegularOpens X} :
