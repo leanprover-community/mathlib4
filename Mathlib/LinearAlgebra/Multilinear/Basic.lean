@@ -892,7 +892,7 @@ instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S
 
 section Module
 
-variable [Semiring S] [Module S M₂] [Module R M₂] [SMulCommClass R S M₂]
+variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
@@ -906,7 +906,7 @@ variable (R S M₁ M₂ M₃)
 
 section OfSubsingleton
 
-variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
