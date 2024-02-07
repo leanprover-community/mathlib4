@@ -225,11 +225,11 @@ theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     constructor
     · use t ∘ Sum.inl
       constructor
-      · exact ⟨fun x ↦ ht1.1 (Sum.inl x), fun x ↦ ht1.2 (Sum.inl x)⟩
+      · exact ⟨(ht1.1 <| Sum.inl ·), (ht1.2 <| Sum.inl ·)⟩
       simp [ht2, Prod.fst_sum, Prod.snd_sum]
     · use t ∘ Sum.inr
       constructor
-      · exact ⟨fun x ↦ ht1.1 (Sum.inr x), fun x ↦ ht1.2 (Sum.inr x)⟩
+      · exact ⟨(ht1.1 <| Sum.inr ·), (ht1.2 <| Sum.inr ·)⟩
       simp [ht2, Prod.fst_sum, Prod.snd_sum]
   intro h
   rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
@@ -256,8 +256,8 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
-    SigmaFinite b.addHaar := by
+instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
@@ -277,10 +277,12 @@ theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepip
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
-variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
+variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 
 theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
+  have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
   simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end NormedSpace
