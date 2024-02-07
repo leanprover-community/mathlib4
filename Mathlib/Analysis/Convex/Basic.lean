@@ -694,7 +694,7 @@ theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
   eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
 
 /-- The standard simplex in the zero-dimensional space is empty. -/
-lemma stdSimplex_of_isEmpty [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
+lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
   eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
 
 lemma stdSimplex_unique [Unique ι] : stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
