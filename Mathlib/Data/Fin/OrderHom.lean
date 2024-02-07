@@ -149,30 +149,90 @@ def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around zero embeds by `succ`. -/
 @[simp]
-theorem succAbove_zero : succAbove (0 : Fin (n + 1)) = Fin.succ :=
+theorem succAbove_zero : succAbove (0 : Fin (n + 1)) = succ :=
   rfl
 #align fin.succ_above_zero Fin.succAbove_zero
 
 theorem succAbove_zero_apply (i : Fin n) : succAbove 0 i = succ i := by rw [succAbove_zero]
 
-@[simp]
-theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by
-  rw [Fin.succAbove_of_castSucc_lt]
-  · exact castSucc_zero'
-  · exact bot_lt_iff_ne_bot.mpr ha
-#align fin.succ_above_ne_zero_zero Fin.succAbove_ne_zero_zero
+theorem succAbove_eq_zero_of_ne_zero_of_castSucc_eq_zero {a : Fin (n + 1)} {b : Fin n}
+    (ha : a ≠ 0) (hb : castSucc b = 0) : a.succAbove b = 0 := by
+  rw [← pos_iff_ne_zero] at ha
+  rwa [succAbove_of_castSucc_lt _ _ (hb ▸ ha)]
 
-theorem succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
-    a.succAbove b = 0 ↔ b = 0 := by
-  rw [← succAbove_ne_zero_zero ha, succAbove_right_inj]
-#align fin.succ_above_eq_zero_iff Fin.succAbove_eq_zero_iff
+theorem ne_zero_of_succAbove_eq_zero {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b = 0) : a ≠ 0 := by
+  rintro rfl
+  rw [succAbove_zero] at hab
+  exact ((succ_ne_zero b) hab).elim
 
-theorem succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (hb : b ≠ 0) :
-    a.succAbove b ≠ 0 := by
-  cases' a using cases with a
-  · exact succAbove_ne _ _
-  · exact mt (succAbove_eq_zero_iff (succ_ne_zero _)).mp hb
-#align fin.succ_above_ne_zero Fin.succAbove_ne_zero
+theorem castSucc_eq_zero_of_succAbove_eq_zero {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b = 0) : castSucc b = 0 := by
+  obtain ha | ha := a.castSucc_lt_or_lt_succ b
+  · rwa [succAbove_of_castSucc_lt _ _ ha] at hab
+  · rw [succAbove_of_lt_succ _ _ ha] at hab
+    exact ((succ_ne_zero _) hab).elim
+
+theorem succAbove_eq_zero_iff {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b = 0 ↔ (a ≠ 0 ∧ castSucc b = 0) :=
+  ⟨fun h => ⟨ne_zero_of_succAbove_eq_zero h, castSucc_eq_zero_of_succAbove_eq_zero h⟩,
+  fun h => succAbove_eq_zero_of_ne_zero_of_castSucc_eq_zero h.1 h.2⟩
+
+theorem succAbove_eq_zero_iff_castSucc_eq_zero_of_ne_zero {a : Fin (n + 1)} {b : Fin n}
+    (ha : a ≠ 0) : a.succAbove b = 0 ↔ castSucc b = 0 := by
+  simp_rw [succAbove_eq_zero_iff, and_iff_right ha]
+
+theorem succAbove_ne_zero_iff {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b ≠ 0 ↔ (castSucc b = 0 → a = 0) := by
+  rw [ne_eq, succAbove_eq_zero_iff, not_and, not_imp_not]
+
+theorem succAbove_ne_zero_of_castSucc_ne_zero {a : Fin (n + 1)} {b : Fin n}
+    (hb : castSucc b ≠ 0) : a.succAbove b ≠ 0 := by
+  rw [succAbove_ne_zero_iff]
+  exact fun h => (hb h).elim
+
+theorem succAbove_ne_zero_of_zero {b : Fin n} :
+    (0 : Fin (n + 1)).succAbove b ≠ 0 := by
+  rw [succAbove_ne_zero_iff]
+  exact fun _ => rfl
+
+theorem eq_zero_of_succAbove_ne_zero_of_castSucc_eq_zero {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b ≠ 0) (hb : castSucc b = 0) : a = 0 := by
+  rw [succAbove_ne_zero_iff] at hab
+  exact hab hb
+
+theorem succAbove_zero_eq_zero_of_ne_zero [NeZero n] {a : Fin (n + 1)}
+    (ha : a ≠ 0) : a.succAbove 0 = 0 :=
+  succAbove_eq_zero_of_ne_zero_of_castSucc_eq_zero ha rfl
+#align fin.succ_above_ne_zero_zero Fin.succAbove_zero_eq_zero_of_ne_zero
+
+theorem eq_zero_of_succAbove_eq_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b = 0) : b = 0 :=
+  (castSucc_eq_zero_iff' b).mp (castSucc_eq_zero_of_succAbove_eq_zero hab)
+
+theorem succAbove_eq_zero_iff_eq_zero_of_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
+    a.succAbove b = 0 ↔ b = 0 :=
+  (succAbove_eq_zero_iff_castSucc_eq_zero_of_ne_zero ha).trans (castSucc_eq_zero_iff' b)
+#align fin.succ_above_eq_zero_iff Fin.succAbove_eq_zero_iff_eq_zero_of_ne_zero
+
+theorem succAbove_ne_zero_of_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (hb : b ≠ 0) :
+    a.succAbove b ≠ 0 :=
+  succAbove_ne_zero_of_castSucc_ne_zero ((castSucc_ne_zero_iff' b).mpr hb)
+#align fin.succ_above_ne_zero Fin.succAbove_ne_zero_of_ne_zero
+
+theorem eq_zero_of_succAbove_zero_ne_zero [NeZero n] {a : Fin (n + 1)}
+    (hab : a.succAbove 0 ≠ 0) : a = 0 :=
+  eq_zero_of_succAbove_ne_zero_of_castSucc_eq_zero hab rfl
+
+theorem succAbove_eq_zero_iff' [NeZero n] {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b = 0 ↔ (a ≠ 0 ∧ b = 0) := by
+  rw [succAbove_eq_zero_iff, castSucc_eq_zero_iff']
+
+theorem succAbove_ne_zero_iff' [NeZero n] {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b ≠ 0 ↔ (b = 0 → a = 0) := by
+  rw [succAbove_ne_zero_iff, castSucc_eq_zero_iff']
+
+/- TBD: Copy the above for last -/
 
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
 @[simp]
@@ -237,7 +297,7 @@ theorem lt_succAbove_iff_lt_succ (p : Fin (n + 1)) (i : Fin n) :
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 theorem succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
   rw [pos_iff_ne_zero']
-  exact succAbove_ne_zero h.ne'
+  exact succAbove_ne_zero_of_ne_zero h.ne'
 #align fin.succ_above_pos Fin.succAbove_pos
 
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
@@ -253,7 +313,7 @@ theorem castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
 #align fin.cast_lt_succ_above Fin.castPred_succAbove
 
 theorem pred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
-    (h' := (y.zero_le.trans_lt <| (lt_succAbove_iff_le_castSucc _ _).2 h).ne') :
+    (h' := (succAbove_ne_zero_iff).mpr (fun hx => le_antisymm (hx ▸ h) (zero_le y))) :
     (y.succAbove x).pred h' = x := by rw [pred_eq_iff_eq_succ, succAbove_of_le_castSucc _ _ h]
 #align fin.pred_succ_above Fin.pred_succAbove
 
@@ -319,7 +379,7 @@ theorem castSucc_succAbove_castSucc {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
 
 /-- `pred` commutes with `succAbove`. -/
 theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ 0)
-    (hk := succAbove_ne_zero hb) :
+    (hk := succAbove_ne_zero_of_ne_zero hb) :
     (a.pred ha).succAbove (b.pred hb) = (a.succAbove b).pred hk := by
   simp_rw [← succ_inj (b := pred (succAbove a b) hk), ← succ_succAbove_succ, succ_pred]
 #align fin.pred_succ_above_pred Fin.pred_succAbove_pred
