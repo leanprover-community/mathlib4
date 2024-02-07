@@ -342,7 +342,7 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
         dvd_mul_of_dvd_left · _)⟩
 #align prime.irreducible Prime.irreducible
 
-theorem irreducible_iff_prime [DecompositionMonoid α] {a : α} : Irreducible a ↔ Prime a :=
+theorem irreducible_iff_prime' [DecompositionMonoid α] {a : α} : Irreducible a ↔ Prime a :=
   ⟨Irreducible.prime, Prime.irreducible⟩
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : α} {k l : ℕ} :

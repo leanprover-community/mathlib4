@@ -901,19 +901,7 @@ end LCM
 
 namespace GCDMonoid
 
-theorem prime_of_irreducible [GCDMonoid α] {x : α} (hi : Irreducible x) : Prime x :=
-  ⟨hi.ne_zero,
-    ⟨hi.1, fun a b h => by
-      cases' gcd_dvd_left x a with y hy
-      cases' hi.isUnit_or_isUnit hy with hu hu
-      · right
-        trans gcd (x * b) (a * b)
-        apply dvd_gcd (dvd_mul_right x b) h
-        rw [(gcd_mul_right' b x a).dvd_iff_dvd_left]
-        exact (associated_unit_mul_left _ _ hu).dvd
-      · left
-        rw [hy]
-        exact dvd_trans (associated_mul_unit_left _ _ hu).dvd (gcd_dvd_right x a)⟩⟩
+theorem prime_of_irreducible [GCDMonoid α] {x : α} (hi : Irreducible x) : Prime x := hi.prime
 #align gcd_monoid.prime_of_irreducible GCDMonoid.prime_of_irreducible
 
 theorem irreducible_iff_prime [GCDMonoid α] {p : α} : Irreducible p ↔ Prime p :=

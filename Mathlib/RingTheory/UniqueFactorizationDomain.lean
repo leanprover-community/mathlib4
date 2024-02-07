@@ -171,10 +171,9 @@ class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] exten
 #align unique_factorization_monoid UniqueFactorizationMonoid
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
-@[reducible]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α] [GCDMonoid α] :
-    UniqueFactorizationMonoid α :=
-  { ‹WfDvdMonoid α› with irreducible_iff_prime := GCDMonoid.irreducible_iff_prime }
+theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
+  { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime' }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_gcd_of_wfDvdMonoid
 
 instance Associates.ufm [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
@@ -1624,7 +1623,6 @@ theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {h
   rw [factors_mk _ hz]
   apply mem_factorSet_some.2 h_mem
 #align associates.dvd_of_mem_factors' Associates.dvd_of_mem_factors'
-
 
 theorem mem_factors'_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd : p ∣ a) :
     Subtype.mk (Associates.mk p) ((irreducible_mk _).2 hp) ∈ factors' a := by
