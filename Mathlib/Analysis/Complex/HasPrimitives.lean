@@ -452,7 +452,7 @@ theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
 
 end WedgeIntDeriv
 
-/-- *** Moreira's theorem *** A function which is continuous on a disc and whose integral on
+/-- *** Morera's theorem *** A function which is continuous on a disc and whose integral on
   rectangles in the disc vanishes has a primitive on the disc. -/
 theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → ℂ}
     (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
