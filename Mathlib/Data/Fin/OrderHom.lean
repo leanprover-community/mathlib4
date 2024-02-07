@@ -210,8 +210,8 @@ theorem eq_zero_of_succAbove_eq_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n}
     (hab : a.succAbove b = 0) : b = 0 :=
   (castSucc_eq_zero_iff' b).mp (castSucc_eq_zero_of_succAbove_eq_zero hab)
 
-theorem succAbove_eq_zero_iff_eq_zero_of_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
-    a.succAbove b = 0 ↔ b = 0 :=
+theorem succAbove_eq_zero_iff_eq_zero_of_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n}
+    (ha : a ≠ 0) : a.succAbove b = 0 ↔ b = 0 :=
   (succAbove_eq_zero_iff_castSucc_eq_zero_of_ne_zero ha).trans (castSucc_eq_zero_iff' b)
 #align fin.succ_above_eq_zero_iff Fin.succAbove_eq_zero_iff_eq_zero_of_ne_zero
 
