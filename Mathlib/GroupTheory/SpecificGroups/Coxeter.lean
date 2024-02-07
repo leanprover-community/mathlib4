@@ -31,10 +31,10 @@ And the exceptional systems:
 
 ## Implementation details
 
-In this file a Coxeter system, designated as `CoxeterSystem W`, is implemented as a
+In this file a Coxeter system, designated as `CoxeterSystem M W`, is implemented as a
 structure which effectively records the isomorphism between a group `W` and the corresponding
-group presentation derived from a Coxeter matrix.  From another perspective, it serves as a
-set of generators for `W`, tailored to the underlying type of `M`, while ensuring compliance
+group presentation derived from a Coxeter matrix `M`.  From another perspective, it serves as
+a set of generators for `W`, tailored to the underlying type of `M`, while ensuring compliance
 with the relations specified by the Coxeter matrix `M`.
 
 A type class `IsCoxeterGroup` is introduced, for groups that are isomorphic to a group
@@ -75,9 +75,7 @@ presentation corresponding to a Coxeter matrix which is registered in a Coxeter 
 ## TODO
 
 * The canonical map from the type to the Coxeter group `W` is an injection.
-
 * A group `W` registered in a Coxeter system is a Coxeter group.
-
 * A Coxeter group is an instance of `IsCoxeterGroup`.
 
 ## Tags
