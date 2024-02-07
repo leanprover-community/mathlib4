@@ -244,7 +244,7 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
         cardQuot_pow_of_prime hI.ne_zero)
       fun {I J} hIJ => cardQuot_mul_of_coprime <| Ideal.isCoprime_iff_sup_eq.mpr
         (Ideal.isUnit_iff.mp
-          (hIJ _ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
+          (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 #align card_quot_mul cardQuot_mul
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
