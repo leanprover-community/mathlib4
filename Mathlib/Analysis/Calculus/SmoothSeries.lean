@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 
