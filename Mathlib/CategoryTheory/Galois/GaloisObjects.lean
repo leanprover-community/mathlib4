@@ -12,12 +12,12 @@ import Mathlib.Logic.Equiv.TransferInstance
 /-!
 # Galois objects in Galois categories
 
-We define Galois objects in a Galois category `C` in a fibre functor independent way and show
+We define when a connected object of a Galois category `C` is Galois in a fibre functor independent way and show
 equivalent characterisations.
 
 ## Main definitions
 
-* `GaloisObject` : Connected object `X` of `C` such that `X / Aut X` is terminal.
+* `IsGalois` : Connected object `X` of `C` such that `X / Aut X` is terminal.
 
 ## Main results
 
@@ -39,7 +39,7 @@ noncomputable instance {G : Type v} [Group G] [Finite G] :
   exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
-class GaloisObject {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
+class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
     extends ConnectedObject X : Prop where
   quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X)
 
@@ -73,24 +73,24 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient
   exact Types.isTerminalEquivUnique _
 
 lemma galois_iff_aux (X : C) [ConnectedObject X] :
-    GaloisObject X ↔ Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X) :=
+    IsGalois X ↔ Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X) :=
   ⟨fun h ↦ h.quotientByAutTerminal, fun h ↦ ⟨h⟩⟩
 
 /-- Given a fibre functor `F` and a connected object `X` of `C`. Then `X` is Galois if and only if
 the natural action of `Aut X` on `F.obj X` is transitive. -/
 theorem galois_iff_pretransitive (X : C) [ConnectedObject X] :
-    GaloisObject X ↔ MulAction.IsPretransitive (Aut X) (F.obj X) := by
+    IsGalois X ↔ MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [galois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- For a Galois object `X`, the quotient `X / Aut X` is terminal.  -/
-noncomputable def isTerminalQuotientGaloisObject (X : C) [GaloisObject X] :
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+noncomputable def isTerminalQuotientGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
-  Nonempty.some GaloisObject.quotientByAutTerminal
+  Nonempty.some IsGalois.quotientByAutTerminal
 
-/-- For a Galois object `X` and fibre functor `F`, the action of `Aut X` on `F.obj X` is
-transitive. -/
-instance isPretransitive_of_galoisObject (X : C) [GaloisObject X] :
+/-- If `X` is Galois, then the action of `Aut X` on `F.obj X` is
+transitive for every fibre functor `F`. -/
+instance isPretransitive_of_galois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [← galois_iff_pretransitive]
   infer_instance
