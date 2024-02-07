@@ -556,12 +556,6 @@ instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
       rw [← ha]
       exact dvd_gcd_mul_of_dvd_mul H
 
-theorem dvd_mul [GCDMonoid α] {k m n : α} : k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
-  refine' ⟨exists_dvd_and_dvd_of_dvd_mul, _⟩
-  rintro ⟨d₁, d₂, hy, hz, rfl⟩
-  exact mul_dvd_mul hy hz
-#align dvd_mul dvd_mul
-
 theorem gcd_mul_dvd_mul_gcd [GCDMonoid α] (k m n : α) : gcd k (m * n) ∣ gcd k m * gcd k n := by
   obtain ⟨m', n', hm', hn', h⟩ := exists_dvd_and_dvd_of_dvd_mul (gcd_dvd_right k (m * n))
   replace h : gcd k (m * n) = m' * n' := h

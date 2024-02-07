@@ -212,6 +212,13 @@ theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
   Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
 #align dvd_of_mul_left_dvd dvd_of_mul_left_dvd
 
+theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
+    k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
+  refine ⟨exists_dvd_and_dvd_of_dvd_mul, ?_⟩
+  rintro ⟨d₁, d₂, hy, hz, rfl⟩
+  exact mul_dvd_mul hy hz
+#align dvd_mul dvd_mul
+
 end CommSemigroup
 
 section CommMonoid
