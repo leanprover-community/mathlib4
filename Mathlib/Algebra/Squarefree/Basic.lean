@@ -200,9 +200,11 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
     exact (IsRelPrime.of_squarefree_mul hx).mul_dvd ha hb
 #align squarefree.is_radical Squarefree.isRadical
 
-theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
+theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
-#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree dvd_pow_iff_dvd_of_squarefree
+#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree Squarefree.dvd_pow_iff_dvd
+@[deprecated]
+alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
 
 end
 
