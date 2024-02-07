@@ -54,7 +54,7 @@ section
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
 class BoundedContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] extends ContinuousMapClass F α β where
+    [PseudoMetricSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 #align bounded_continuous_map_class BoundedContinuousMapClass
 
@@ -70,21 +70,18 @@ variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-instance : BoundedContinuousMapClass (α →ᵇ β) α β where
+instance : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : BoundedContinuousMapClass (α →ᵇ β) α β where
   map_continuous f := f.continuous_toFun
   map_bounded f := f.map_bounded'
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (α →ᵇ β) fun _ => α → β :=
-  DFunLike.hasCoeToFun
-
-instance [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
+instance [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
   ⟨fun f =>
     { toFun := f
       continuous_toFun := map_continuous f
@@ -1198,11 +1195,11 @@ protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[
   LinearMap.mkContinuous
     { toFun := fun f =>
         ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x =>
-          g.le_op_norm_of_le (f.norm_coe_le_norm x)
+          g.le_opNorm_of_le (f.norm_coe_le_norm x)
       map_add' := fun f g => by ext; simp
       map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
-          (fun x => by exact g.le_op_norm_of_le (f.norm_coe_le_norm x))
+          (fun x => by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
 #align continuous_linear_map.comp_left_continuous_bounded ContinuousLinearMap.compLeftContinuousBounded
 
 @[simp]

@@ -121,7 +121,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * C) t := by
   -- porting note: had to add `f := _`
   refine' le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => _) (fun t ht => _) t
-  · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
+  · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
       refine' ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, _⟩
@@ -152,7 +152,7 @@ theorem HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupp
     ‖L (f (x - t)) (g t)‖ ≤
       (-tsupport f + s).indicator (fun t => (‖L‖ * ⨆ i, ‖f i‖) * ‖g t‖) t := by
   convert hcf.convolution_integrand_bound_right L.flip hf hx using 1
-  simp_rw [L.op_norm_flip, mul_right_comm]
+  simp_rw [L.opNorm_flip, mul_right_comm]
 #align has_compact_support.convolution_integrand_bound_left HasCompactSupport.convolution_integrand_bound_left
 
 end NoMeasurability
@@ -231,7 +231,7 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
       ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t
   · refine' eventually_of_forall _
     refine' le_indicator (fun t ht => _) fun t ht => _
-    · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
+    · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine' (le_ciSup_set hbg <| mem_preimage.mpr _)
       rwa [neg_sub, sub_add_cancel]
     · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
@@ -249,7 +249,7 @@ theorem ConvolutionExistsAt.ofNorm' {x₀ : G}
   refine'
     (h.const_mul ‖L‖).mono' (hmf.convolution_integrand_snd' L hmg) (eventually_of_forall fun x => _)
   rw [mul_apply', ← mul_assoc]
-  apply L.le_op_norm₂
+  apply L.le_opNorm₂
 #align convolution_exists_at.of_norm' ConvolutionExistsAt.ofNorm'
 
 end
@@ -312,7 +312,7 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
   · simp_rw [← integral_mul_left]
     rw [Real.norm_of_nonneg]
     · exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_op_norm₂ _ _)
+        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
     exact integral_nonneg fun x => norm_nonneg _
 #align measure_theory.integrable.convolution_integrand MeasureTheory.Integrable.convolution_integrand
 
@@ -683,7 +683,7 @@ theorem BddAbove.continuous_convolution_right_of_integrable
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
   have : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t : G ∂μ, ‖L (f t) (g (x - t))‖ ≤ ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖ := by
     refine' eventually_of_forall fun x => eventually_of_forall fun t => _
-    apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
+    apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
   refine' continuousAt_of_dominated _ this _ _
   · exact eventually_of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
@@ -824,7 +824,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       rw [mem_ball_zero_iff] at h2t
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
-      refine' ((L (f t)).dist_le_op_norm _ _).trans _
+      refine' ((L (f t)).dist_le_opNorm _ _).trans _
       exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
     · rw [nmem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
@@ -838,7 +838,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   refine' mul_le_mul_of_nonneg_right _ hε
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
-    exact L.le_op_norm (f t)
+    exact L.le_opNorm (f t)
   refine' (integral_mono (L.integrable_comp hif).norm (hif.norm.const_mul _) h3).trans_eq _
   rw [integral_mul_left]
 #align dist_convolution_le' dist_convolution_le'
@@ -858,7 +858,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
   convert (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
   · simp_rw [lsmul_apply, integral_smul_const, hintf, one_smul]
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
-    exact (mul_le_mul_of_nonneg_right op_norm_lsmul_le hε).trans_eq (one_mul ε)
+    exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
 #align dist_convolution_le dist_convolution_le
 
 /-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
@@ -1025,7 +1025,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     · refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
         ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
       simp only [← mul_assoc ‖L₄‖]
-      apply_rules [ContinuousLinearMap.le_of_op_norm₂_le_of_le, le_rfl]
+      apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
     exact integral_nonneg fun x => norm_nonneg _
 #align convolution_assoc convolution_assoc
 

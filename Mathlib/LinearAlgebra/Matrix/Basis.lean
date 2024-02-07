@@ -126,7 +126,7 @@ theorem toMatrix_smul {R₁ S : Type*} [CommRing R₁] [Ring S] [Algebra R₁ S]
   rfl
 
 theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
-    (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
+    (v : ι' → S) : b ᵥ* ((b.toMatrix v).map <| algebraMap R S) = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
     sum_toMatrix_smul_self]

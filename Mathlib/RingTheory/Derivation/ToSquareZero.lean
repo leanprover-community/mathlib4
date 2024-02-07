@@ -85,7 +85,10 @@ def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
   { ((I.restrictScalars R).subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
-    map_one' := by dsimp; rw [map_one, f.map_one_eq_zero, Submodule.coe_zero, zero_add]
+    map_one' := by
+      dsimp
+      -- Note: added the `(algebraMap _ _)` hint because otherwise it would match `f 1`
+      rw [map_one (algebraMap _ _), f.map_one_eq_zero, Submodule.coe_zero, zero_add]
     map_mul' := fun x y => by
       have : (f x : B) * f y = 0 := by
         rw [← Ideal.mem_bot, ← hI, pow_two]

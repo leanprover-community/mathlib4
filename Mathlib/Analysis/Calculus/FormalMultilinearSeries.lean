@@ -35,7 +35,7 @@ variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x
 
 section
 
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
@@ -59,11 +59,9 @@ instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
 
 section Module
 
-/- `derive` is not able to find the module structure, probably because Lean is confused by the
-dependent types. We register it explicitly. -/
--- Porting note: rewrote with `inferInstanceAs`
-instance : Module 𝕜 (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| Module 𝕜 <| ∀ n : ℕ, E[×n]→L[𝕜] F
+instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    Module 𝕜' (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| Module 𝕜' <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
 end Module
 
@@ -138,7 +136,7 @@ theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u 
   rfl
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
 
-variable (𝕜) [CommRing 𝕜'] [SMul 𝕜 𝕜']
+variable (𝕜) [Ring 𝕜'] [SMul 𝕜 𝕜']
 
 variable [Module 𝕜' E] [ContinuousConstSMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
@@ -181,12 +179,14 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 
 end FormalMultilinearSeries
 
-namespace ContinuousLinearMap
+section
 
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
   [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+namespace ContinuousLinearMap
 
 /-- Composing each term `pₙ` in a formal multilinear series with a continuous linear map `f` on the
 left gives a new formal multilinear series `f.compFormalMultilinearSeries p` whose general term
@@ -208,11 +208,28 @@ theorem compFormalMultilinearSeries_apply' (f : F →L[𝕜] G) (p : FormalMulti
 
 end ContinuousLinearMap
 
+namespace ContinuousMultilinearMap
+
+variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E i)] [∀ i, TopologicalAddGroup (E i)]
+  [∀ i, ContinuousConstSMul 𝕜 (E i)] [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
+
+/-- Realize a ContinuousMultilinearMap on `∀ i : ι, E i` as the evaluation of a
+FormalMultilinearSeries by choosing an arbitrary identification `ι ≃ Fin (Fintype.card ι)`. -/
+noncomputable def toFormalMultilinearSeries : FormalMultilinearSeries 𝕜 (∀ i, E i) F :=
+  fun n ↦ if h : Fintype.card ι = n then
+    (f.compContinuousLinearMap .proj).domDomCongr (Fintype.equivFinOfCardEq h)
+  else 0
+
+end ContinuousMultilinearMap
+
+end
+
 namespace FormalMultilinearSeries
 
 section Order
 
-variable [CommRing 𝕜] {n : ℕ} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Ring 𝕜] {n : ℕ} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
   [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
   {p : FormalMultilinearSeries 𝕜 E F}

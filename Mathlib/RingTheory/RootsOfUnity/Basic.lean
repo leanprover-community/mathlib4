@@ -133,7 +133,7 @@ theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [CommSemiring R] [CommSemiring S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
 def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
@@ -248,7 +248,8 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
+theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [RingHomClass F R R] (σ : F)
+    (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
@@ -264,16 +265,16 @@ section Reduced
 variable (R) [CommRing R] [IsReduced R]
 
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
-theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
-    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, hp.1.pos⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
+theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [ExpChar R p]
+    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, expChar_pos R p⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', PNat.mul_coe, PNat.pow_coe, PNat.mk_coe,
-    CharP.pow_prime_pow_mul_eq_one_iff]
+    ExpChar.pow_prime_pow_mul_eq_one_iff]
 #align mem_roots_of_unity_prime_pow_mul_iff mem_rootsOfUnity_prime_pow_mul_iff
 
 @[simp]
-theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
+theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ+) [ExpChar R p]
     {ζ : Rˣ} : ζ ^ (p ^ k * ↑m) = 1 ↔ ζ ∈ rootsOfUnity m R := by
-  rw [← PNat.mk_coe p hp.1.pos, ← PNat.pow_coe, ← PNat.mul_coe, ← mem_rootsOfUnity,
+  rw [← PNat.mk_coe p (expChar_pos R p), ← PNat.pow_coe, ← PNat.mul_coe, ← mem_rootsOfUnity,
     mem_rootsOfUnity_prime_pow_mul_iff]
 
 end Reduced
@@ -511,6 +512,8 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
 section Maps
 
 open Function
+
+variable [FunLike F M N]
 
 theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k where
@@ -779,7 +782,7 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     _ = Fintype.card (Subgroup.zpowers ζ) := Fintype.card_congr h.zmodEquivZPowers.toEquiv
 #align is_primitive_root.zpowers_eq IsPrimitiveRoot.zpowers_eq
 
-lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
     {ζ : R} {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
     (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
   letI : CommMonoid Sˣ := inferInstance
@@ -793,14 +796,15 @@ then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
 @[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
 noncomputable
-def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
+    [FunLike F R S] [MonoidHomClass F R S]
     {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
     (rootsOfUnity n R) ≃* rootsOfUnity n S :=
   (Subgroup.equivMapOfInjective _ _ (Units.map_injective hf)).trans (MulEquiv.subgroupCongr
     (((mem_primitiveRoots (k := n) n.2).mp hζ.choose_spec).map_rootsOfUnity hf))
 
 lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
-    {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
     {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
     f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η

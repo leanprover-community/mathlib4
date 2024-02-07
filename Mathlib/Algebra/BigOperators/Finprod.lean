@@ -6,6 +6,7 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Function.Finite
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 

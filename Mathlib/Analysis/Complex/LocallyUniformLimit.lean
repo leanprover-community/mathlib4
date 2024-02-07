@@ -5,6 +5,7 @@ Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 #align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
