@@ -6,7 +6,6 @@ Authors: Scott Morrison, Bhavik Mehta
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Functor.InvIsos
 
 #align_import category_theory.closed.monoidal from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
@@ -312,7 +311,7 @@ noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj
-        have i := compInvIso (MonoidalFunctor.commTensorLeft F X)
+        have i := (MonoidalFunctor.commTensorLeft F X).compInvIso
         exact Adjunction.leftAdjointOfNatIso i }
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 
@@ -327,7 +326,7 @@ theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
       (F.1.1.adjunction.homEquiv Y ((ihom _).obj _))
         (MonoidalClosed.curry
           (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z
-            ((compInvIso (F.commTensorLeft X)).hom.app Y ≫ f))) :=
+            ((F.commTensorLeft X).compInvIso.hom.app Y ≫ f))) :=
   rfl
 #align category_theory.monoidal_closed.of_equiv_curry_def CategoryTheory.MonoidalClosed.ofEquiv_curry_def
 
@@ -340,7 +339,7 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
     [MonoidalClosed D] {X Y Z : C}
     (f : Y ⟶ (@ihom _ _ _ X <| (MonoidalClosed.ofEquiv F).1 X).obj Z) :
     @MonoidalClosed.uncurry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
-      (compInvIso (F.commTensorLeft X)).inv.app Y ≫
+      (F.commTensorLeft X).compInvIso.inv.app Y ≫
         (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z).symm
           (MonoidalClosed.uncurry
             ((F.1.1.adjunction.homEquiv Y ((ihom (F.1.1.obj X)).obj (F.1.1.obj Z))).symm f)) :=
