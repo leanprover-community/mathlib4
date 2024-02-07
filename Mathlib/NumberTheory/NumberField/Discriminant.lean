@@ -18,7 +18,7 @@ This file defines the discriminant of a number field.
 ## Main result
 
 * `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-nontrivial discriminant.
+discriminant greater than `2`.
 
 ## Tags
 number field, discriminant
@@ -197,7 +197,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
 
-/-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
+/-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
