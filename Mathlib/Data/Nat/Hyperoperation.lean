@@ -45,7 +45,7 @@ def hyperoperation : ℕ → ℕ → ℕ → ℕ
 -- Basic hyperoperation lemmas
 @[simp]
 theorem hyperoperation_zero (m : ℕ) : hyperoperation 0 m = Nat.succ :=
-  funext fun k => by rw [hyperoperation, Nat.succ_eq_add_one]
+  funext fun k => by rw [hyperoperation]
 #align hyperoperation_zero hyperoperation_zero
 
 theorem hyperoperation_ge_three_eq_one (n m : ℕ) : hyperoperation (n + 3) m 0 = 1 := by

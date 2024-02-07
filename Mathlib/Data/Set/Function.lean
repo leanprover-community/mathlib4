@@ -804,7 +804,7 @@ theorem surjOn_iff_exists_map_subtype :
     ⟨_, (mapsTo_image f s).restrict f s _, h, surjective_mapsTo_image_restrict _ _, fun _ => rfl⟩,
     fun ⟨t', g, htt', hg, hfg⟩ y hy =>
     let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
-    ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
+    ⟨x, x.2, by rw [hfg, hx]⟩⟩
 #align set.surj_on_iff_exists_map_subtype Set.surjOn_iff_exists_map_subtype
 
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=

@@ -614,7 +614,7 @@ lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
 @[to_additive (attr := simp, nolint simpNF) finEquivMultiples_symm_apply]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
-  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
+  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf]
 #align fin_equiv_powers_symm_apply finEquivPowers_symm_apply
 #align fin_equiv_multiples_symm_apply finEquivMultiples_symm_apply
 

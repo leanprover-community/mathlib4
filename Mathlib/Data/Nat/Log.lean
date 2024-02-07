@@ -206,7 +206,7 @@ theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) 
 @[simp]
 theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   rcases le_or_lt b 1 with hb | hb
-  · rw [log_of_left_le_one hb, log_of_left_le_one hb, Nat.zero_sub]
+  · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   cases' lt_or_le n b with h h
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, add_tsub_cancel_right]

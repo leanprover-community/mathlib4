@@ -304,7 +304,7 @@ theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
-  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one, Cardinal.natCast_inj]
+  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one]
 #align rank_fun' rank_fun'
 
 theorem rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']

@@ -902,7 +902,7 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
   intro x1 hx1
   refine' SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ _)
     (subset_adjoin F (rootSet (minpoly F x1) E) _)
-  · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
+  · rw [IntermediateField.minpoly_eq]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
     exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''

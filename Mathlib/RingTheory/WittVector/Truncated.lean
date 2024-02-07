@@ -112,7 +112,7 @@ def out (x : TruncatedWittVector p n R) : 𝕎 R :=
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
-  rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
+  rw [out]; dsimp only; rw [dif_pos i.is_lt]
 #align truncated_witt_vector.coeff_out TruncatedWittVector.coeff_out
 
 theorem out_injective : Injective (@out p n R _) := by
@@ -153,7 +153,7 @@ theorem out_truncateFun (x : 𝕎 R) : (truncateFun n x).out = init n x := by
   ext i
   dsimp [TruncatedWittVector.out, init, select, coeff_mk]
   split_ifs with hi; swap; · rfl
-  rw [coeff_truncateFun, Fin.val_mk]
+  rw [coeff_truncateFun]
 #align witt_vector.out_truncate_fun WittVector.out_truncateFun
 
 end WittVector
