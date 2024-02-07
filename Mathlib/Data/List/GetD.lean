@@ -15,21 +15,15 @@ is out of range.
 
 -/
 
-open Function
-
-open Nat hiding one_pos
-
-assert_not_exists Set.range
-
 namespace List
 
-universe u v w
+universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {β : Type v} (l : List α) (x : α) (xs : List α) (n : ℕ)
 
 section getD
 
-variable (l : List α) (x : α) (xs : List α) (d : α) (n : ℕ)
+variable (d : α)
 
 @[simp]
 theorem getD_nil : getD [] n d = d :=
@@ -124,7 +118,7 @@ end getD
 
 section getI
 
-variable [Inhabited α] (l : List α) (x : α) (xs : List α) (n : ℕ)
+variable [Inhabited α]
 
 @[simp]
 theorem getI_nil : getI ([] : List α) n = default :=
