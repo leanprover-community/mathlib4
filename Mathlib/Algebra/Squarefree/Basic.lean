@@ -248,15 +248,15 @@ theorem dvd_of_squarefree_of_mul_dvd_mul_right (hx : Squarefree x) (h : d * d �
 theorem dvd_of_squarefree_of_mul_dvd_mul_left (hy : Squarefree y) (h : d * d ∣ x * y) : d ∣ x :=
   dvd_of_squarefree_of_mul_dvd_mul_right hy (mul_comm x y ▸ h)
 
+end Squarefree
+
+variable [DecompositionMonoid R]
+
 /-- `x * y` is square-free iff `x` and `y` have no common factors and are themselves square-free. -/
 theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefree x ∧ Squarefree y :=
   ⟨fun h ↦ ⟨IsRelPrime.of_squarefree_mul h, h.of_mul_left, h.of_mul_right⟩,
     fun ⟨hp, sqx, sqy⟩ _ dvd ↦ hp (sqy.dvd_of_squarefree_of_mul_dvd_mul_left dvd)
       (sqx.dvd_of_squarefree_of_mul_dvd_mul_right dvd)⟩
-
-end Squarefree
-
-variable [DecompositionMonoid R]
 
 theorem isRadical_iff_squarefree_or_zero : IsRadical x ↔ Squarefree x ∨ x = 0 :=
   ⟨fun hx ↦ (em <| x = 0).elim .inr fun h ↦ .inl <| hx.squarefree h,
@@ -276,7 +276,7 @@ namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
-lemma exists_squarefree_dvd_pow_of_ne_zero {x y : R} (hx : x ≠ 0) :
+lemma exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
   induction' x using WfDvdMonoid.induction_on_irreducible with u hu z p hz hp ih
   · contradiction
@@ -289,7 +289,7 @@ lemma exists_squarefree_dvd_pow_of_ne_zero {x y : R} (hx : x ≠ 0) :
         mul_comm p z ▸ pow_succ' y n ▸ mul_dvd_mul hy' hp'⟩
     · suffices Squarefree (p * y) from ⟨p * y, n, this,
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
-      exact squarefree_mul_iff.mpr ⟨hp.coprime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
+      exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by

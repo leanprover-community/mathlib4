@@ -227,6 +227,16 @@ theorem _root_.IsRelPrime.isCoprime (h : IsRelPrime x y) : IsCoprime x y := by
 theorem _root_.isRelPrime_iff_isCoprime : IsRelPrime x y ↔ IsCoprime x y :=
   ⟨IsRelPrime.isCoprime, IsCoprime.isRelPrime⟩
 
+variable (R)
+
+/-- Any bezout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
+and this might not be how we would like to construct it. -/
+noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
+  gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
+#align is_bezout.to_gcd_domain IsBezout.toGCDDomain
+
+instance [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by classical exact ⟨toGCDDomain R⟩
+
 end IsBezout
 
 namespace IsPrime
@@ -455,7 +465,8 @@ end GCD
 
 theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
-  letI := UniqueFactorizationMonoid.toGCDMonoid R
+  classical
+  letI := IsBezout.toGCDDomain R
   rw [← gcd_isUnit_iff]
   by_contra h
   refine' H _ h _ (gcd_dvd_left _ _) (gcd_dvd_right _ _)
@@ -496,9 +507,10 @@ theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCopr
 #align irreducible.coprime_or_dvd Irreducible.coprime_or_dvd
 
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a :=
-  letI := UniqueFactorizationMonoid.toGCDMonoid R
-  exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
+    (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a := by
+  classical
+  letI := IsBezout.toGCDDomain R
+  exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
 
 end Bezout
@@ -517,7 +529,7 @@ theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
 
 theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : R, Prime z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  isCoprime_of_irreducible_dvd nonzero fun z zi => H z <| GCDMonoid.prime_of_irreducible zi
+  isCoprime_of_irreducible_dvd nonzero fun z zi ↦ H z zi.prime
 #align is_coprime_of_prime_dvd isCoprime_of_prime_dvd
 
 end

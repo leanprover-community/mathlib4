@@ -80,14 +80,4 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     tfae_finish
 #align is_bezout.tfae IsBezout.TFAE
 
-variable (R)
-
-/-- Any bezout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
-and this might not be how we would like to construct it. -/
-noncomputable def toGCDDomain [IsDomain R] [DecidableEq R] : GCDMonoid R :=
-  gcdMonoidOfGCD gcd gcd_dvd_left gcd_dvd_right fun hac hab => dvd_gcd hac hab
-#align is_bezout.to_gcd_domain IsBezout.toGCDDomain
-
-instance [IsDomain R] : Nonempty (GCDMonoid R) := by classical exact ⟨toGCDDomain R⟩
-
 end IsBezout

@@ -167,13 +167,13 @@ of prime factors, use the definition `of_exists_prime_factors`
 -/
 class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends WfDvdMonoid α :
   Prop where
-  irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
+  protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 #align unique_factorization_monoid UniqueFactorizationMonoid
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
 theorem ufm_of_decomposition_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
-  { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime' }
+  { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_decomposition_of_wfDvdMonoid
 @[deprecated] alias ufm_of_gcd_of_wfDvdMonoid := ufm_of_decomposition_of_wfDvdMonoid
 
@@ -201,7 +201,7 @@ lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
   refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
   obtain ⟨f, hf, -⟩ := WfDvdMonoid.exists_irreducible_factor hxu hx₀
-  exact ⟨f, irreducible_iff_prime.mp hf⟩
+  exact ⟨f, UniqueFactorizationMonoid.irreducible_iff_prime.mp hf⟩
 
 @[elab_as_elim]
 theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x : α, IsUnit x → P x)
@@ -245,8 +245,8 @@ variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
     (hg : ∀ x ∈ g, Irreducible x) (h : f.prod ~ᵤ g.prod) : Multiset.Rel Associated f g :=
-  prime_factors_unique (fun x hx => irreducible_iff_prime.mp (hf x hx))
-    (fun x hx => irreducible_iff_prime.mp (hg x hx)) h
+  prime_factors_unique (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hf x hx))
+    (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hg x hx)) h
 #align unique_factorization_monoid.factors_unique UniqueFactorizationMonoid.factors_unique
 
 end UniqueFactorizationMonoid
@@ -1668,7 +1668,7 @@ theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
   rw [Multiset.inf_eq_inter] at p0_mem
   obtain ⟨p, rfl⟩ : ∃ p, Associates.mk p = p0 := Quot.exists_rep p0
   refine' ⟨p, _, _, _⟩
-  · rw [← irreducible_iff_prime, ← irreducible_mk]
+  · rw [← UniqueFactorizationMonoid.irreducible_iff_prime, ← irreducible_mk]
     exact p0_irr
   · apply dvd_of_mk_le_mk
     apply dvd_of_mem_factors' (Multiset.mem_inter.mp p0_mem).left
@@ -1767,8 +1767,8 @@ theorem count_of_coprime {a : Associates α} (ha : a ≠ 0) {b : Associates α} 
   rw [or_iff_not_imp_left, ← Ne.def]
   intro hca
   contrapose! hab with hcb
-  exact
-    ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb, irreducible_iff_prime.mp hp⟩
+  exact ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb,
+    UniqueFactorizationMonoid.irreducible_iff_prime.mp hp⟩
 #align associates.count_of_coprime Associates.count_of_coprime
 
 theorem count_mul_of_coprime {a : Associates α} {b : Associates α} (hb : b ≠ 0) {p : Associates α}
@@ -1976,7 +1976,7 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     normalize_lcm := fun a b => by congr; apply normalize_out _ }
 #align unique_factorization_monoid.to_normalized_gcd_monoid UniqueFactorizationMonoid.toNormalizedGCDMonoid
 
-instance (α) [Nontrivial α] [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+instance (α) [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     Nonempty (NormalizedGCDMonoid α) := by
   letI := UniqueFactorizationMonoid.normalizationMonoid (α := α)
   classical exact ⟨UniqueFactorizationMonoid.toNormalizedGCDMonoid α⟩
