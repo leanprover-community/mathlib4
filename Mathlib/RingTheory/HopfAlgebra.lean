@@ -17,6 +17,19 @@ In this file we define `HopfAlgebra`, and provide instances for:
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode R A` : The `R`-linear map `A →ₗ[R] A`
 
+## TODO
+
+* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
+agree then the antipodes must also agree).
+
+* S(1)=1 and S(ab)=S(b)S(a), so in particular if A is commutative then S is an algebra homomorphism.
+
+* If H is commutative then S is necessarily a bijection (and I guess its square must be the
+identity?)
+
+References for these facts: Christian Kassel "Quantum Groups" (Springer GTM), around Prop III.3.1,
+Theorem III.3.4 etc.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
