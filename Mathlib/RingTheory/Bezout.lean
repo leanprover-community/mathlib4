@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 
 #align_import ring_theory.bezout from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
