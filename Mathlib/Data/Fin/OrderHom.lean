@@ -625,15 +625,13 @@ theorem predAbove_predAbove_succAbove (p : Fin (n + 1)) (i j : Fin n) :
   · rw [predAbove_pred_succAbove]
   · rw [predAbove_castPred_succAbove]
 
-@[simp]
 theorem predAbove_last_succAbove_last (i : Fin (n + 1)) :
     predAbove (last n) (succAbove (last (n + 1)) i) = i := by
-  rw [← succ_last, predAbove_succAbove_succ]
+  rw [succAbove_last, predAbove_last_castSucc]
 
-@[simp]
 theorem predAbove_zero_succAbove_zero [NeZero n] (i : Fin n) :
     predAbove 0 (succAbove 0 i) = i := by
-  rw [← castSucc_zero', predAbove_succAbove_castSucc]
+  rw [zero_succAbove, predAbove_zero_succ]
 
 theorem rightInverse_succAbove_castSucc_predAbove (p : Fin n) :
     RightInverse p.castSucc.succAbove p.predAbove := p.predAbove_succAbove_castSucc
@@ -647,7 +645,7 @@ theorem rightInverse_succAbove_succAbove_predAbove (p : Fin n) (j : Fin (n + 1))
 theorem rightInverse_succAbove_predAbove_zero [NeZero n] :
     RightInverse (0 : Fin (n + 1)).succAbove (0 : Fin n).predAbove := predAbove_zero_succAbove_zero
 
-theorem rightInverse_succAbove_predAbove_last [NeZero n] :
+theorem rightInverse_succAbove_predAbove_last :
     RightInverse (last (n + 1)).succAbove (last n).predAbove := predAbove_last_succAbove_last
 
 theorem hasRightInverse_predAbove (p : Fin n) : HasRightInverse p.predAbove :=
@@ -712,12 +710,10 @@ theorem succAbove_predAbove_predAbove (j : Fin n) (i : Fin (n + 1)) {p} (h : i �
   · rw [p.succAbove_predAbove_pred h]
   · rw [p.succAbove_predAbove_castPred h]
 
-@[simp]
 theorem succAbove_zero_predAbove_zero [NeZero n] (i : Fin (n + 1)) (h : i ≠ 0) :
     succAbove 0 (predAbove 0 i) = i := by
   rw [← castSucc_zero', succAbove_castSucc_predAbove 0 i h]
 
-@[simp]
 theorem succAbove_last_predAbove_last (i : Fin (n + 2)) (h : i ≠ last (n + 1)) :
     succAbove (last (n + 1)) (predAbove (last n) i) = i := by
   rw [← succ_last, succAbove_succ_predAbove (last n) i h]
@@ -909,6 +905,8 @@ lemma eq_succAbove_iff {p k : Fin (n + 1)} (h : k ≠ p) (i j : Fin n) :
     k = succAbove p i ↔ predAbove (predAbove j p) k = i := by
   rw [eq_comm, succAbove_eq_iff h, eq_comm]
 
+/-- Equivalence which swaps members of `Fin (n + 1)` and `Fin n`, so that
+with `p : Fin (n + 1)` and `i : Fin n`, we map to `i relative to p` and `p relative to i`.-/
 def succAbove_predAbove_equiv : (Fin (n + 1) × Fin n) ≃ (Fin (n + 1) × Fin n) where
   toFun := fun (p, i) => (p.succAbove i, i.predAbove p)
   invFun := fun (p, i) => (p.succAbove i, i.predAbove p)
