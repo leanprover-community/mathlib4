@@ -10,8 +10,8 @@ import Mathlib.Data.List.Basic
 /-! # getD and getI
 
 This file provides theorems for working with the `getD` and `getI` functions. These are used to
-access an element of a list by numerical index, with a default value or an inhabited type as
-fallback when the index is out of range.
+access an element of a list by numerical index, with a default value as a fallback when the index
+is out of range.
 
 -/
 
