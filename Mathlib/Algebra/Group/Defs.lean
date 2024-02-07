@@ -621,6 +621,20 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
+instance {M} [Monoid M] : Std.Associative (α := M) (op := (· * ·)) where
+  assoc := mul_assoc
+
+instance {M} [Monoid M] : Std.LawfulIdentity (α := M) (op := (· * ·)) (o := 1) where
+  left_id := one_mul
+  right_id := mul_one
+
+instance {M} [AddMonoid M] : Std.Associative (α := M) (op := (· + ·)) where
+  assoc := add_assoc
+
+instance {M} [AddMonoid M] : Std.LawfulIdentity (α := M) (op := (· + ·)) (o := 0) where
+  left_id := zero_add
+  right_id := add_zero
+
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 

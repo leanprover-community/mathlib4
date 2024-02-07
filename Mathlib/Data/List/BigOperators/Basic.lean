@@ -26,26 +26,15 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
-@[to_additive (attr := simp)]
-theorem prod_nil : ([] : List M).prod = 1 :=
-  rfl
-#align list.prod_nil List.prod_nil
-#align list.sum_nil List.sum_nil
+attribute [to_additive existing] prod_nil
+attribute [to_additive existing] prod_cons
+attribute [to_additive existing] prod_append
 
 @[to_additive]
 theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
-
-@[to_additive (attr := simp)]
-theorem prod_cons : (a :: l).prod = a * l.prod :=
-  calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l :=
-      by simp only [List.prod, foldl_cons, one_mul, mul_one]
-    _ = _ := foldl_assoc
-#align list.prod_cons List.prod_cons
-#align list.sum_cons List.sum_cons
 
 @[to_additive]
 lemma prod_induction
@@ -55,14 +44,6 @@ lemma prod_induction
   rw [List.prod_cons]
   simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
   exact hom _ _ (base.1) (ih base.2)
-
-@[to_additive (attr := simp)]
-theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
-  calc
-    (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]
-    _ = l₁.prod * l₂.prod := foldl_assoc
-#align list.prod_append List.prod_append
-#align list.sum_append List.sum_append
 
 @[to_additive]
 theorem prod_concat : (l.concat a).prod = l.prod * a := by
