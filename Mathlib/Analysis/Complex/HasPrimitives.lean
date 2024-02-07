@@ -14,7 +14,7 @@ is to prove that holomorphic functions on simply connected domains have primitiv
 we prove that holomorphic functions on discs have primitives. The approach is based on Moreira's
 theorem, that a continuous function (on a disc) whose `RectangleIntegral` vanishes on all
 rectangles contained in the disc has a primitive. (Coupled with the fact that holomorphic functions
-satisfy this propoerty.) To prove Moreira's theorem, we first define the `WedgeInt`, which is the
+satisfy this property.) To prove Morera's theorem, we first define the `WedgeInt`, which is the
 integral of a function over a "wedge" (a horizontal segment followed by a vertical segment in the
 disc), and compute its derivative.
 
