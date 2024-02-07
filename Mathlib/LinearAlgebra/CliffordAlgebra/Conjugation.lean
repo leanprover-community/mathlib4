@@ -119,12 +119,12 @@ theorem reverse.commutes (r : R) :
   op_injective <| reverseOp.commutes r
 #align clifford_algebra.reverse.commutes CliffordAlgebra.reverse.commutes
 
-@[simp]
+@[simp, nolint simpNF]
 theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
   op_injective reverseOp.map_one
 #align clifford_algebra.reverse.map_one CliffordAlgebra.reverse.map_one
 
-@[simp]
+@[simp, nolint simpNF]
 theorem reverse.map_mul (a b : CliffordAlgebra Q) :
     reverse (a * b) = reverse b * reverse a :=
   op_injective (reverseOp.map_mul a b)

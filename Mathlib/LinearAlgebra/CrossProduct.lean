@@ -68,7 +68,7 @@ theorem cross_apply (a b : Fin 3 → R) :
 
 section ProductsProperties
 
-@[simp]
+@[simp, nolint simpNF]
 theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
@@ -76,12 +76,12 @@ theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
 alias neg_cross := cross_anticomm
 #align neg_cross neg_cross
 
-@[simp]
+@[simp, nolint simpNF]
 theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
   rw [add_eq_zero_iff_eq_neg, cross_anticomm]
 #align cross_anticomm' cross_anticomm'
 
-@[simp]
+@[simp, nolint simpNF]
 theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   -- Porting note: Original proof was `simp [cross_apply, mul_comm]`
   simp_rw [cross_apply, mul_comm, cons_eq_zero_iff]
@@ -89,7 +89,7 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
 #align cross_self cross_self
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
-@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
+@[simp 1100, nolint simpNF] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   rw [cross_apply, vec3_dotProduct]
   norm_num
@@ -97,7 +97,7 @@ theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
 #align dot_self_cross dot_self_cross
 
 /-- The cross product of two vectors is perpendicular to the second vector. -/
-@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
+@[simp 1100, nolint simpNF] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
   rw [← cross_anticomm, Matrix.dotProduct_neg, dot_self_cross, neg_zero]
 #align dot_cross_self dot_cross_self

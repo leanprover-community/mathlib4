@@ -417,7 +417,10 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  have := map_polynomial_aeval a (X ^ n)
+  simp only [aeval_X_pow, eval_pow, eval_X] at *
+  assumption
+  -- simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
 
 end NonemptySpectrum

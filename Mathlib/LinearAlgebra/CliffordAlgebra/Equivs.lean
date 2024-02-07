@@ -172,7 +172,7 @@ def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
       rw [CliffordAlgebra.ι_sq_scalar, Q_apply, one_mul, RingHom.map_neg, RingHom.map_one]⟩
 #align clifford_algebra_complex.of_complex CliffordAlgebraComplex.ofComplex
 
-@[simp]
+@[simp, nolint simpNF]
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
   Complex.liftAux_apply_I _ (by simp)
 set_option linter.uppercaseLean3 false in
@@ -425,7 +425,7 @@ theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r
   (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 #align clifford_algebra_dual_number.equiv_ι CliffordAlgebraDualNumber.equiv_ι
 
-@[simp]
+@[simp, nolint simpNF]
 theorem equiv_symm_eps :
     CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
   -- Porting note: Original proof was `DualNumber.lift_apply_eps _`

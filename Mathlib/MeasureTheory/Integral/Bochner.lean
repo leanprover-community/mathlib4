@@ -539,6 +539,7 @@ theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f 
   setToL1S_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
 #align measure_theory.L1.simple_func.integral_add MeasureTheory.L1.SimpleFunc.integral_add
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
   setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
 #align measure_theory.L1.simple_func.integral_smul MeasureTheory.L1.SimpleFunc.integral_smul

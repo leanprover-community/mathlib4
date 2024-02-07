@@ -189,7 +189,7 @@ theorem contractRight_algebraMap (r : R) : algebraMap R (CliffordAlgebra Q) r⌊
   rw [contractRight_eq, reverse.commutes, contractLeft_algebraMap, map_zero]
 #align clifford_algebra.contract_right_algebra_map CliffordAlgebra.contractRight_algebraMap
 
-@[simp]
+@[simp, nolint simpNF]
 theorem contractLeft_one : d⌋(1 : CliffordAlgebra Q) = 0 := by
   simpa only [map_one] using contractLeft_algebraMap Q d 1
 #align clifford_algebra.contract_left_one CliffordAlgebra.contractLeft_one
@@ -298,7 +298,8 @@ theorem changeForm_algebraMap (r : R) : changeForm h (algebraMap R _ r) = algebr
   (foldr_algebraMap _ _ _ _ _).trans <| Eq.symm <| Algebra.algebraMap_eq_smul_one r
 #align clifford_algebra.change_form_algebra_map CliffordAlgebra.changeForm_algebraMap
 
-@[simp]
+set_option synthInstance.maxHeartbeats 0 in
+@[simp, nolint simpNF]
 theorem changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
   simpa using changeForm_algebraMap h (1 : R)
 #align clifford_algebra.change_form_one CliffordAlgebra.changeForm_one

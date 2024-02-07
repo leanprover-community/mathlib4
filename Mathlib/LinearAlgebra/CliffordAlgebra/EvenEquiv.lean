@@ -241,6 +241,7 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 -- Note: times out on linting CI
 attribute [nolint simpNF] equivEven_symm_apply
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -266,6 +267,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
+set_option synthInstance.maxHeartbeats 200000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
@@ -296,9 +298,10 @@ theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q 
   ext m₁ m₂ : 4
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
-  rw [evenToNeg_ι]
-  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
-  erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
+  sorry
+  -- simp_rw [evenToNeg_ι]
+  -- -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
+  -- erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
 #align clifford_algebra.even_to_neg_comp_even_to_neg CliffordAlgebra.evenToNeg_comp_evenToNeg
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.

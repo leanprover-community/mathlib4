@@ -517,7 +517,7 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
-    (centerToCentroid z) a = z * a := rfl
+    (centerToCentroid.toMulHom.toFun z) a = z * a := rfl
 
 lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
@@ -562,7 +562,7 @@ def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
+    left_inv := fun z ↦ Subtype.ext <| by dsimp; simp [centerToCentroid_apply]
     right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
 
 end NonAssocSemiring

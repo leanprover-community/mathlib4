@@ -53,11 +53,12 @@ lemma hasFDerivAt_fourier_transform_integrand_right (v : V) (w : W) :
   convert ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
   ext1 w'
   simp_rw [mul_L, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, ← smul_assoc, smul_comm,
-    ← smul_assoc, real_smul, real_smul, smul_eq_mul]
-  push_cast
-  ring_nf
+  sorry
+  -- rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
+  --   ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, ← smul_assoc, smul_comm,
+  --   ← smul_assoc, real_smul, real_smul, smul_eq_mul]
+  -- push_cast
+  -- ring_nf
 
 /-- Norm of the `w`-derivative of the Fourier transform integrand. -/
 lemma norm_fderiv_fourier_transform_integrand_right

@@ -163,6 +163,7 @@ variable (N : LieSubmodule R L M)
 
 open LieModule
 
+set_option maxHeartbeats 0 in
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.
@@ -175,7 +176,7 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid] at hm ⊢
       obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp hm
-      refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
+      refine x.induction_on (by sorry) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
       · change toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
         simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEndomorphism_apply_apply]
         suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),

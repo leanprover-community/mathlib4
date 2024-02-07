@@ -295,7 +295,7 @@ example : DistribMulAction ℝ≥0ˣ ℝ := by infer_instance
 
 end Actions
 
-example : MonoidWithZero ℝ≥0 := by infer_instance
+noncomputable example : MonoidWithZero ℝ≥0 := by infer_instance
 
 example : CommMonoidWithZero ℝ≥0 := by infer_instance
 

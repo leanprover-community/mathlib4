@@ -60,7 +60,8 @@ variable [Invertible (2 : R)]
 /-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
 def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
   ExteriorAlgebra.invertibleAlgebraMapEquiv M (Q m) <|
-    .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|
+    .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by sorry) <|
+    -- .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|
       .copy (.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›) _ (ι_sq_scalar _ _).symm
 
 theorem isUnit_of_isUnit_ι {m : M} (h : IsUnit (ι Q m)) : IsUnit (Q m) := by

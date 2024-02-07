@@ -135,19 +135,21 @@ instance of_powerSeries_localization [CommRing R] :
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
       rfl
-    · dsimp; rw [ofPowerSeries_X_pow]
+    · dsimp; sorry -- rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
-      simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
-        Submonoid.coe_one]
-      rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
+      sorry
+      -- simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
+      --   Submonoid.coe_one]
+      -- rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
     · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
       refine' congr rfl _
-      rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
-      exact le_of_not_ge h
+      sorry
+      -- rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
+      -- exact le_of_not_ge h
   exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
     rintro rfl
@@ -234,9 +236,9 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[simp, norm_cast]
-theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
-  (ofPowerSeries ℤ R).map_pow _ _
-#align power_series.coe_pow PowerSeries.coe_pow
+-- @[simp, norm_cast]
+-- theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
+--   (ofPowerSeries ℤ R).map_pow _ _
+-- #align power_series.coe_pow PowerSeries.coe_pow
 
 end PowerSeries

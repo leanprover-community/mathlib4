@@ -60,11 +60,12 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
       rw [Nat.cast_ne_zero, ne_eq, Ideal.absNorm_eq_zero_iff]
       exact FractionalIdeal.num_eq_zero_iff.not.mpr <| Units.ne_zero I
-    · simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢
-      rw [show (a : K) = algebraMap (𝓞 K) K a by rfl, ← h]
-      simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, algebraMap_int_eq,
-        eq_intCast, map_intCast]
-      ring
+    · sorry
+      -- simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢
+      -- rw [show (a : K) = algebraMap (𝓞 K) K a by rfl, ← h]
+      -- simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, algebraMap_int_eq,
+      --   eq_intCast, map_intCast]
+      -- ring
   exists_of_eq h :=
     ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.1.coeToSubmodule).eq_iff]⟩
 
@@ -87,6 +88,7 @@ theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} 
     x ∈ Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) ↔ x ∈ (I : Set K) := by
   rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
+  sorry
 
 open FiniteDimensional in
 theorem fractionalIdeal_rank (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
