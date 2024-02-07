@@ -232,33 +232,94 @@ theorem succAbove_ne_zero_iff' [NeZero n] {a : Fin (n + 1)} {b : Fin n} :
     a.succAbove b ≠ 0 ↔ (b = 0 → a = 0) := by
   rw [succAbove_ne_zero_iff, castSucc_eq_zero_iff']
 
-/- TBD: Copy the above for last -/
-
 /-- Embedding `Fin n` into `Fin (n + 1)` with a hole around `last n` embeds by `castSucc`. -/
 @[simp]
 theorem succAbove_last : succAbove (last n) = castSucc := by
-  ext
-  simp only [succAbove_of_castSucc_lt, castSucc_lt_last]
+  ext i : 1
+  exact succAbove_of_castSucc_lt _ _ (castSucc_lt_last _)
 #align fin.succ_above_last Fin.succAbove_last
 
 theorem succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by
   rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[simp]
-theorem succAbove_ne_last_last {a : Fin (n + 2)} (h : a ≠ last (n + 1)) :
-    a.succAbove (last n) = last (n + 1) := by
-  rw [succAbove_of_lt_succ _ _ (succ_last _ ▸ lt_top_iff_ne_top.mpr h), succ_last]
-
-theorem succAbove_eq_last_iff {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) :
-    a.succAbove b = last _ ↔ b = last _ := by
-  simp [← succAbove_ne_last_last ha, succAbove_right_inj]
-
-theorem succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (hb : b ≠ last n) :
-    a.succAbove b ≠ last (n + 1) := by
+theorem succAbove_eq_last_of_ne_last_of_succ_eq_last {a : Fin (n + 1)} {b : Fin n}
+    (ha : a ≠ last n) (hb : succ b = last n) : a.succAbove b = last n := by
   cases' a using lastCases with a
-  · exact succAbove_ne _ _
-  · exact mt (succAbove_eq_last_iff (castSucc_lt_last _).ne).mp hb
+  · exact (ha rfl).elim
+  · cases n
+    · exact a.elim0
+    · rw [succ_eq_last_succ] at hb
+      rw [hb, succAbove_castSucc_of_le _ _ (le_last a), succ_last]
+
+theorem ne_last_of_succAbove_eq_last {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b = last n) : a ≠ last n := by
+  rintro rfl
+  rw [succAbove_last] at hab
+  exact ((castSucc_lt_last b).ne hab).elim
+
+theorem succ_eq_last_of_succAbove_eq_last {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b = last n) : succ b = last n := by
+  obtain ha | ha := a.castSucc_lt_or_lt_succ b
+  · rw [succAbove_of_castSucc_lt _ _ ha] at hab
+    exact ((castSucc_lt_last b).ne hab).elim
+  · rwa [succAbove_of_lt_succ _ _ ha] at hab
+
+theorem succAbove_eq_last_iff {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b = last n ↔ (a ≠ last n ∧ succ b = last n) :=
+  ⟨fun h => ⟨ne_last_of_succAbove_eq_last h, succ_eq_last_of_succAbove_eq_last h⟩,
+  fun h => succAbove_eq_last_of_ne_last_of_succ_eq_last h.1 h.2⟩
+
+theorem succAbove_eq_last_iff_castSucc_eq_last_of_ne_last {a : Fin (n + 1)} {b : Fin n}
+    (ha : a ≠ last n) : a.succAbove b = last n ↔ succ b = last n := by
+  simp_rw [succAbove_eq_last_iff, and_iff_right ha]
+
+theorem succAbove_ne_last_iff {a : Fin (n + 1)} {b : Fin n} :
+    a.succAbove b ≠ last n ↔ (succ b = last n → a = last n) := by
+  rw [ne_eq, succAbove_eq_last_iff, not_and, not_imp_not]
+
+theorem succAbove_ne_last_of_succ_ne_last {a : Fin (n + 1)} {b : Fin n}
+    (hb : succ b ≠ last n) : a.succAbove b ≠ last n := by
+  rw [succAbove_ne_last_iff]
+  exact fun h => (hb h).elim
+
+theorem succAbove_ne_last_of_last {b : Fin n} :
+    (last n : Fin (n + 1)).succAbove b ≠ last n := by
+  rw [succAbove_ne_last_iff]
+  exact fun _ => rfl
+
+theorem eq_last_of_succAbove_ne_last_of_succ_eq_last {a : Fin (n + 1)} {b : Fin n}
+    (hab : a.succAbove b ≠ last n) (hb : succ b = last n) : a = last n := by
+  rw [succAbove_ne_last_iff] at hab
+  exact hab hb
+
+theorem succAbove_last_eq_last_of_ne_last {a : Fin (n + 2)}
+    (ha : a ≠ last (n + 1)) : a.succAbove (last n) = last (n + 1) :=
+  succAbove_eq_last_of_ne_last_of_succ_eq_last ha rfl
+
+theorem eq_last_of_succAbove_eq_last {a : Fin (n + 2)} {b : Fin (n + 1)}
+    (hab : a.succAbove b = last (n + 1)) : b = last n :=
+  (succ_eq_last_succ b).mp (succ_eq_last_of_succAbove_eq_last hab)
+
+theorem succAbove_eq_last_iff_eq_last_of_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)}
+    (ha : a ≠ last (n + 1)) : a.succAbove b = last (n + 1) ↔ b = last n :=
+  (succAbove_eq_last_iff_castSucc_eq_last_of_ne_last ha).trans (succ_eq_last_succ b)
+
+theorem succAbove_ne_last_of_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (hb : b ≠ last n) :
+    a.succAbove b ≠ last (n + 1) :=
+  succAbove_ne_last_of_succ_ne_last ((succ_ne_last_iff b).mpr hb)
+
+theorem eq_last_of_succAbove_last_ne_last {a : Fin (n + 2)}
+    (hab : a.succAbove (last n) ≠ last (n + 1)) : a = last (n + 1) :=
+  eq_last_of_succAbove_ne_last_of_succ_eq_last hab rfl
+
+theorem succAbove_eq_last_iff' {a : Fin (n + 2)} {b : Fin (n + 1)} :
+    a.succAbove b = last (n + 1) ↔ (a ≠ last (n + 1) ∧ b = last n) := by
+  rw [succAbove_eq_last_iff, succ_eq_last_succ]
+
+theorem succAbove_ne_last_iff' {a : Fin (n + 2)} {b : Fin (n + 1)} :
+    a.succAbove b ≠ last (n + 1) ↔ (b = last n → a = last (n + 1)) := by
+  rw [succAbove_ne_last_iff, succ_eq_last_succ]
 
 @[deprecated] theorem succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := lt_or_ge (castSucc i) p
@@ -297,25 +358,36 @@ theorem lt_succAbove_iff_lt_succ (p : Fin (n + 1)) (i : Fin n) :
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 theorem succAbove_pos [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
   rw [pos_iff_ne_zero']
-  exact succAbove_ne_zero_of_ne_zero h.ne'
+  exact succAbove_ne_zero_of_castSucc_ne_zero ((castSucc_ne_zero_iff' _).mpr h.ne')
 #align fin.succ_above_pos Fin.succAbove_pos
 
 /-- Embedding a positive `Fin n` results in a positive `Fin (n + 1)` -/
 theorem succAbove_lt_last (p : Fin (n + 2)) (i : Fin (n + 1)) (h : i < last n) :
     p.succAbove i < last (n + 1) := by
   rw [← top_eq_last, lt_top_iff_ne_top]
-  exact succAbove_ne_last h.ne
+  exact succAbove_ne_last_of_ne_last h.ne
 
-theorem castPred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
-    (h' := ((le_last y).trans_lt' ((succAbove_lt_iff_castSucc_lt _ _).mpr h)).ne) :
+theorem castPred_succAbove_of_succ_le (x : Fin n) (y : Fin (n + 1)) (h : succ x ≤ y)
+    (h' := succAbove_ne_last_iff.mpr (fun hx => le_antisymm (le_last y) (hx ▸ h))) :
     (y.succAbove x).castPred h' = x := by
   simp_rw [succAbove_of_castSucc_lt _ _ h, castPred_castSucc]
-#align fin.cast_lt_succ_above Fin.castPred_succAbove
 
-theorem pred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
+theorem castPred_succAbove_of_castSucc_lt (x : Fin n) (y : Fin (n + 1)) (h : castSucc x < y)
+    (h' := succAbove_ne_last_iff.mpr (fun hx => le_antisymm (le_last y)
+    (hx ▸ (castSucc_lt_iff_succ_le.mpr h)))) :
+    (y.succAbove x).castPred h' = x :=
+  castPred_succAbove_of_succ_le _ _ (castSucc_lt_iff_succ_le.mp h)
+#align fin.cast_lt_succ_above Fin.castPred_succAbove_of_castSucc_lt
+
+theorem pred_succAbove_of_le_castSucc (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
     (h' := (succAbove_ne_zero_iff).mpr (fun hx => le_antisymm (hx ▸ h) (zero_le y))) :
     (y.succAbove x).pred h' = x := by rw [pred_eq_iff_eq_succ, succAbove_of_le_castSucc _ _ h]
-#align fin.pred_succ_above Fin.pred_succAbove
+#align fin.pred_succ_above Fin.pred_succAbove_of_le_castSucc
+
+theorem pred_succAbove_of_lt_succ (x : Fin n) (y : Fin (n + 1)) (h : y < succ x)
+    (h' := (succAbove_ne_zero_iff).mpr (fun hx => le_antisymm
+    (hx ▸ (le_castSucc_iff.mpr h)) (zero_le y))) :
+    (y.succAbove x).pred h' = x := pred_succAbove_of_le_castSucc _ _ (le_castSucc_iff.mpr h)
 
 theorem exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
   cases' h.lt_or_lt with hlt hlt
@@ -386,7 +458,7 @@ theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (
 
 /-- `castPred` commutes with `succAbove`. -/
 theorem castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last (n + 1))
-    (hb : b ≠ last n) (hk := succAbove_ne_last hb) :
+    (hb : b ≠ last n) (hk := succAbove_ne_last_of_ne_last hb) :
     (a.castPred ha).succAbove (b.castPred hb) = (a.succAbove b).castPred hk := by
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]
