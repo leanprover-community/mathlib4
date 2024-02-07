@@ -12,7 +12,7 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developped in `Analysis.Asymptotics.Asymptotics`.
+theory developed in `Analysis.Asymptotics.Asymptotics`.
 -/
 
 

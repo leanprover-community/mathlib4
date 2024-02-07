@@ -31,7 +31,7 @@ We develop the basic properties of these notions, notably:
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOn`.
 * The sum of a finite formal power series with positive radius is well defined on the whole space,
   see `FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite`.
-* If a function admits a finite power series in a ball, then it is continuously polynimial at
+* If a function admits a finite power series in a ball, then it is continuously polynomial at
   any point `y` of this ball, and the power series there can be expressed in terms of the initial
   power series `p` as `p.changeOrigin y`, which is finite (with the same bound as `p`) by
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin `. It follows in
