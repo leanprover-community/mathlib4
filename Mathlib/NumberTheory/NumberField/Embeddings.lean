@@ -560,7 +560,7 @@ theorem card_add_two_mul_card_eq_rank :
 variable {K}
 
 /-- The restriction of an infinite place along an embedding. -/
-def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
+def comap {K : Type*} [Field K] (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
     by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 
