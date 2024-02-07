@@ -50,7 +50,7 @@ presentation corresponding to a Coxeter matrix which is registered in a Coxeter 
 * `equivCoxeterGroup` : Coxeter groups of isomorphic types are isomorphic.
 * `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
-* `CoxeterMatrix.Bₙ` :  Coxeter matrix for the symmetry group of the regular n-hypercube
+* `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
   and its dual, the regular n-orthoplex (or n-cross-polytope).
 * `CoxeterMatrix.Dₙ` : Coxeter matrix for the symmetry group of the n-demicube.
 * `CoxeterMatrix.I₂ₘ` : Coxeter matrix for the symmetry group of the regular (m + 2)-gon.
