@@ -128,7 +128,6 @@ theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_submodule.coe_to_set_mk LieSubmodule.coe_toSet_mk
 
-@[simp]
 theorem coe_toSubmodule_mk (p : Submodule R M) (h) :
     (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by cases p; rfl
 #align lie_submodule.coe_to_submodule_mk LieSubmodule.coe_toSubmodule_mk
@@ -945,6 +944,8 @@ variable (N) in
 noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
+    -- Note: #8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
+    invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
 /-- An equivalence of Lie modules yields an order-preserving equivalence of their lattices of Lie

@@ -637,8 +637,11 @@ theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ 
   simp only [exists_prop, exists_and_left]
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
 
-theorem one_lt_card_iff_nontrivial_coe : 1 < s.card ↔ Nontrivial (s : Type _) := by
-  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe]
+theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
+  rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
+      not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe]; rfl
+
+@[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 
 theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   classical
@@ -726,7 +729,7 @@ def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) →
     H s fun t h =>
       have : t.card < s.card := card_lt_card h
       strongInduction H t
-  termination_by strongInduction s => Finset.card s
+  termination_by s => Finset.card s
 #align finset.strong_induction Finset.strongInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
@@ -775,7 +778,7 @@ protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
     · refine h₁ hs fun t ht hts ↦ ?_
       have := card_lt_card hts
       exact ht.strong_induction h₀ h₁
-termination_by Nonempty.strong_induction _ => Finset.card ‹_›
+termination_by Finset.card ‹_›
 
 /-- Suppose that, given that `p t` can be defined on all supersets of `s` of cardinality less than
 `n`, one knows how to define `p s`. Then one can inductively define `p s` for all finsets `s` of
@@ -788,7 +791,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
     H s fun {t} ht h =>
       have : n - t.card < n - s.card := (tsub_lt_tsub_iff_left_of_le ht).2 (Finset.card_lt_card h)
       strongDownwardInduction H t ht
-  termination_by strongDownwardInduction s => n - s.card
+  termination_by s => n - s.card
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
 @[nolint unusedHavesSuffices] --Porting note: false positive

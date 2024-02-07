@@ -64,7 +64,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
   let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx discharge? loc
+  let _ ← simpLocation ctx {} discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
