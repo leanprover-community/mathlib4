@@ -205,7 +205,7 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m →
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply' (M : Matrix n m R) (v : n → R) (w : m → R) :
-    Matrix.toLinearMap₂' M v w = Matrix.dotProduct v (M.mulVec w) := by
+    Matrix.toLinearMap₂' M v w = Matrix.dotProduct v (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, Matrix.dotProduct, Matrix.mulVec, Matrix.dotProduct]
   refine' Finset.sum_congr rfl fun _ _ => _
   rw [Finset.mul_sum]

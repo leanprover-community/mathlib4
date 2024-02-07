@@ -93,7 +93,7 @@ example {a a' b b' c c' d d' : α} :
 by simp
 
 example {a b c d x y : α} :
-  mulVec !![a, b; c, d] ![x, y] = ![a * x + b * y, c * x + d * y] :=
+  !![a, b; c, d] *ᵥ ![x, y] = ![a * x + b * y, c * x + d * y] :=
 by simp
 
 /-!

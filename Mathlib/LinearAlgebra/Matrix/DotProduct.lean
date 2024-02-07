@@ -148,21 +148,21 @@ lemma mul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (B : Matrix p n R) :
   simpa only [conjTranspose_conjTranspose] using mul_self_mul_conjTranspose_eq_zero Aᴴ _
 
 lemma conjTranspose_mul_self_mulVec_eq_zero (A : Matrix m n R) (v : n → R) :
-    (Aᴴ * A).mulVec v = 0 ↔ A.mulVec v = 0 := by
+    (Aᴴ * A) *ᵥ v = 0 ↔ A *ᵥ v = 0 := by
   simpa only [← Matrix.col_mulVec, col_eq_zero] using
     conjTranspose_mul_self_mul_eq_zero A (col v)
 
 lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
-    (A * Aᴴ).mulVec v = 0 ↔ Aᴴ.mulVec v = 0 := by
+    (A * Aᴴ) *ᵥ v = 0 ↔ Aᴴ *ᵥ v = 0 := by
   simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mulVec_eq_zero Aᴴ _
 
 lemma vecMul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (v : n → R) :
-    vecMul v (Aᴴ * A) = 0 ↔ vecMul v Aᴴ = 0 := by
+    v ᵥ* (Aᴴ * A) = 0 ↔ v ᵥ* Aᴴ = 0 := by
   simpa only [← Matrix.row_vecMul, row_eq_zero] using
     mul_conjTranspose_mul_self_eq_zero A (row v)
 
 lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
-    vecMul v (A * Aᴴ) = 0 ↔ vecMul v A = 0 := by
+    v ᵥ* (A * Aᴴ) = 0 ↔ v ᵥ* A = 0 := by
   simpa only [conjTranspose_conjTranspose] using vecMul_conjTranspose_mul_self_eq_zero Aᴴ _
 
 end StarOrderedRing

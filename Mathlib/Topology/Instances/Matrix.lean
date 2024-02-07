@@ -150,14 +150,14 @@ theorem Continuous.matrix_vecMulVec [Mul R] [ContinuousMul R] {A : X → m → R
 @[continuity]
 theorem Continuous.matrix_mulVec [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype n] {A : X → Matrix m n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => (A x).mulVec (B x) :=
+    Continuous fun x => A x *ᵥ B x :=
   continuous_pi fun i => ((continuous_apply i).comp hA).matrix_dotProduct hB
 #align continuous.matrix_mul_vec Continuous.matrix_mulVec
 
 @[continuity]
 theorem Continuous.matrix_vecMul [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype m] {A : X → m → R} {B : X → Matrix m n R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => vecMul (A x) (B x) :=
+    Continuous fun x => A x ᵥ* B x :=
   continuous_pi fun _i => hA.matrix_dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
 #align continuous.matrix_vec_mul Continuous.matrix_vecMul
 

@@ -29,7 +29,7 @@ variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I :
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
-open BigOperators Polynomial
+open BigOperators Polynomial Matrix
 
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/
@@ -38,7 +38,7 @@ def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R)
 #align pi_to_module.from_matrix PiToModule.fromMatrix
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
-    PiToModule.fromMatrix R b A w = Fintype.total R R b (A.mulVec w) :=
+    PiToModule.fromMatrix R b A w = Fintype.total R R b (A *ᵥ w) :=
   rfl
 #align pi_to_module.from_matrix_apply PiToModule.fromMatrix_apply
 
@@ -90,12 +90,12 @@ def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
 variable {b}
 
 theorem Matrix.Represents.congr_fun {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
-    (x) : Fintype.total R R b (A.mulVec x) = f (Fintype.total R R b x) :=
+    (x) : Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
   LinearMap.congr_fun h x
 #align matrix.represents.congr_fun Matrix.Represents.congr_fun
 
 theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ x, Fintype.total R R b (A.mulVec x) = f (Fintype.total R R b x) :=
+    A.Represents b f ↔ ∀ x, Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
   ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x => H x⟩
 #align matrix.represents_iff Matrix.represents_iff
 

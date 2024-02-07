@@ -220,7 +220,7 @@ alias l2_op_nnnorm_conjTranspose_mul_self :=
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_opNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_opNorm x
 
 @[deprecated l2_opNorm_mulVec]
@@ -228,7 +228,7 @@ alias l2_op_norm_mulVec :=
   l2_opNorm_mulVec -- deprecated on 2024-02-02
 
 lemma l2_opNNNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_opNorm_mulVec x
 
 @[deprecated l2_opNNNorm_mulVec]

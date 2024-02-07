@@ -380,8 +380,8 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
 alias linfty_op_norm_mul :=
   linfty_opNorm_mul -- deprecated on 2024-02-02
 
-theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A.mulVec v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
-  rw [← linfty_opNNNorm_col (A.mulVec v), ← linfty_opNNNorm_col v]
+theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
+  rw [← linfty_opNNNorm_col (A *ᵥ v), ← linfty_opNNNorm_col v]
   exact linfty_opNNNorm_mul A (col v)
 #align matrix.linfty_op_nnnorm_mul_vec Matrix.linfty_opNNNorm_mulVec
 
@@ -389,7 +389,7 @@ theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A.mulVec 
 alias linfty_op_nnnorm_mulVec :=
   linfty_opNNNorm_mulVec -- deprecated on 2024-02-02
 
-theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖Matrix.mulVec A v‖ ≤ ‖A‖ * ‖v‖ :=
+theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNNNorm_mulVec _ _
 #align matrix.linfty_op_norm_mul_vec Matrix.linfty_opNorm_mulVec
 

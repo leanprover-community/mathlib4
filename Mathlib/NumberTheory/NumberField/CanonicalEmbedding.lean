@@ -357,7 +357,7 @@ representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the
 theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :
     ((stdBasis K).repr (commMap K x) c : ℂ) =
-      (mulVec (matrixToStdBasis K) (x ∘ (indexEquiv K))) c := by
+      (matrixToStdBasis K *ᵥ (x ∘ (indexEquiv K))) c := by
   simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk,
     mulVec, dotProduct, Function.comp_apply, index, Fintype.sum_sum_type,
     diagonal_one, reindex_apply, ← Finset.univ_product_univ, Finset.sum_product,

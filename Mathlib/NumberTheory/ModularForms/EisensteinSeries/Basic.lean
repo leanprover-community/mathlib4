@@ -58,9 +58,9 @@ variable {N a}
 
 section gamma_action
 
-/-- Right-multiplying by `γ ∈ SL(2, ℤ)` sends `gammaSet N a` to `gammaSet N (vecMul a γ)`. -/
+/-- Right-multiplying by `γ ∈ SL(2, ℤ)` sends `gammaSet N a` to `gammaSet N (a ᵥ* γ)`. -/
 lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ : SL(2, ℤ)) :
-    vecMul v γ ∈ gammaSet N (vecMul a γ) := by
+    v ᵥ* γ ∈ gammaSet N (a ᵥ* γ) := by
   refine ⟨?_, hv.2.vecMulSL γ⟩
   have := RingHom.map_vecMul (m := Fin 2) (n := Fin 2) (Int.castRingHom (ZMod N)) γ v
   simp only [eq_intCast, Int.coe_castRingHom] at this
@@ -69,9 +69,9 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ 
 
 variable (a) in
 /-- The bijection between `GammaSets` given by multiplying by an element of `SL(2, ℤ)`. -/
-def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N a ≃ gammaSet N (vecMul a γ) where
-  toFun v := ⟨vecMul v.1 γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
-  invFun v := ⟨vecMul v.1 ↑(γ⁻¹), by
+def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N a ≃ gammaSet N (a ᵥ* γ) where
+  toFun v := ⟨v.1 ᵥ* γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
+  invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
       simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
@@ -90,7 +90,7 @@ def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := 1 / (v 0 * z.1 +
 
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
-    eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (vecMul i A) z := by
+    eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (i ᵥ* A) z := by
   simp only [eisSummand, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_int_cast,
     one_div, vecMul, vec2_dotProduct, Int.cast_add, Int.cast_mul]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : ((u * ((a * z + b) / (c * z + d)) + v) ^ k)⁻¹ =
@@ -107,7 +107,7 @@ variable (a)
 def eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, eisSummand k x z
 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
-    eisensteinSeries a k ∣[k] γ = eisensteinSeries (vecMul a γ) k := by
+    eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
   simp_rw [SL_slash, slash_def, slash, det_coe', ofReal_one, one_zpow, mul_one, zpow_neg,
     mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| z.denom_ne_zero _), mul_comm,

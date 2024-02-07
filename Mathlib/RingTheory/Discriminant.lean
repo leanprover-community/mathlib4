@@ -25,8 +25,8 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 * `Algebra.discr_zero_of_not_linearIndependent` : if `b` is not linear independent, then
   `Algebra.discr A b = 0`.
 * `Algebra.discr_of_matrix_vecMul` and `Algebra.discr_of_matrix_mulVec` : formulas relating
-  `Algebra.discr A ι b` with `Algebra.discr A ((P.map (algebraMap A B)).vecMul b)` and
-  `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`.
+  `Algebra.discr A ι b` with `Algebra.discr A (b ᵥ* P.map (algebraMap A B))` and
+  `Algebra.discr A (P.map (algebraMap A B) *ᵥ b)`.
 * `Algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
   `Algebra.discr K b ≠ 0`.
 * `Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two` : if `L/K` is a field extension and
@@ -98,7 +98,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
   classical
   obtain ⟨g, hg, i, hi⟩ := Fintype.not_linearIndependent_iff.1 hli
-  have : (traceMatrix A b).mulVec g = 0 := by
+  have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
       intro j;
@@ -113,17 +113,17 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
 variable {A}
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).vecMul b)`. -/
+`Algebra.discr A (b ᵥ* P.map (algebraMap A B))`. -/
 theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).vecMul b) = P.det ^ 2 * discr A b := by
+    discr A (b ᵥ* P.map (algebraMap A B)) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_vecMul, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_vec_mul Algebra.discr_of_matrix_vecMul
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`. -/
+`Algebra.discr A ((P.map (algebraMap A B)) *ᵥ b)`. -/
 theorem discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).mulVec b) = P.det ^ 2 * discr A b := by
+    discr A (P.map (algebraMap A B) *ᵥ b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_mulVec, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_mul_vec Algebra.discr_of_matrix_mulVec
@@ -295,7 +295,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
   have hinv : IsUnit (traceMatrix K B.basis).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
-    (traceMatrix K B.basis).det • (traceMatrix K B.basis).mulVec (B.basis.equivFun z) =
+    (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
       (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) :=
     by congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
