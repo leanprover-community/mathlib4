@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Bolton Bailey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bolton Bailey, Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn,
+Mario Carneiro
+-/
 
 import Mathlib.Data.List.Basic
 
