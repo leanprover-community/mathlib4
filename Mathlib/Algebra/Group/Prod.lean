@@ -202,7 +202,8 @@ instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (
 
 instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
   { zero_mul := by simp,
-    mul_zero := by simp }
+    mul_zero := by simp,
+    mul_assoc := mul_assoc }
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=

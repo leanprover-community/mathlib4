@@ -110,8 +110,7 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.semigroupWithZero [Zero M₀'] [Mul M₀'] [SemigroupWithZero M₀]
     (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y) :
     SemigroupWithZero M₀' :=
-  { hf.mulZeroClass f zero mul, ‹Zero M₀'› with
-    toSemigroup := hf.semigroup f mul }
+  { hf.mulZeroClass f zero mul, ‹Zero M₀'›, hf.semigroup f mul with }
 #align function.injective.semigroup_with_zero Function.Injective.semigroupWithZero
 
 /-- Push forward a `SemigroupWithZero` along a surjective function.
@@ -120,8 +119,7 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.semigroupWithZero [SemigroupWithZero M₀] [Zero M₀'] [Mul M₀']
     (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y) :
     SemigroupWithZero M₀' :=
-  { hf.mulZeroClass f zero mul, ‹Zero M₀'› with
-    toSemigroup := hf.semigroup f mul }
+  { hf.mulZeroClass f zero mul, ‹Zero M₀'›, hf.semigroup f mul with }
 #align function.surjective.semigroup_with_zero Function.Surjective.semigroupWithZero
 
 end SemigroupWithZero

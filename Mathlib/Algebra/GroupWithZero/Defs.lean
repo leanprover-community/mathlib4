@@ -97,10 +97,10 @@ class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
 export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
 /-- A type `S₀` is a "semigroup with zero” if it is a semigroup with zero element, and `0` is left
 and right absorbing. -/
-class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
+class SemigroupWithZero (S₀ : Type u) extends MulZeroClass S₀, Semigroup S₀
 #align semigroup_with_zero SemigroupWithZero
 
-attribute [instance 0] SemigroupWithZero.toZero
+-- attribute [instance 0] SemigroupWithZero.toMulZeroClass.toZero
 
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
